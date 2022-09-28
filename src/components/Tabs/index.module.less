@@ -1,0 +1,27 @@
+@import '../../../config/theme/variables.less';
+.tabs_wrap {
+  display: flex;
+  margin-top: 10px;
+  // margin-bottom: 20px;
+  > div {
+    margin-right: 36px;
+    color: #868689;
+    cursor: pointer;
+    &.active {
+      color: @primary-color;
+      &::after {
+        content: '';
+        display: block;
+        margin: auto;
+        width: 17px;
+        height: 4px;
+        border-radius: 2px;
+        margin-top: 6px;
+        background: @primary-color;
+      }
+    }
+    &.filter {
+      color: @primary-color;
+    }
+  }
+}

@@ -1,0 +1,2563 @@
+/* eslint-disable @typescript-eslint/no-namespace */
+import type { PluginEvent } from './events';
+import * as pi from './project_issue';
+import * as ex from './external_events';
+import type { LinkInfo } from '@/stores/linkAux';
+import {
+  LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
+  LinkImageInfo, LinkExterneInfo, LinkAppraiseInfo,
+  LinkSpritInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo,
+  LinkAppInfo
+} from '@/stores/linkAux'
+
+
+export function get_issue_type_str(issue_type: number): string {
+  if (issue_type == pi.ISSUE_TYPE_BUG) {
+    return '缺陷';
+  } else if (issue_type == pi.ISSUE_TYPE_TASK) {
+    return '任务';
+  } else {
+    return '';
+  }
+}
+
+function get_issue_state_str(issue_state: number): string {
+  let state_str = '';
+  switch (issue_state) {
+    case pi.ISSUE_STATE_PLAN:
+      state_str = '规划中';
+      break;
+    case pi.ISSUE_STATE_PROCESS:
+      state_str = '处理中';
+      break;
+    case pi.ISSUE_STATE_CHECK:
+      state_str = '检查中';
+      break;
+    case pi.ISSUE_STATE_CLOSE:
+      state_str = '关闭';
+      break;
+    default:
+      break;
+  }
+  return state_str;
+}
+
+export namespace project {
+  /*
+   *  项目相关的事件定义
+   */
+  export type CreateProjectEvent = {};
+  function get_create_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: CreateProjectEvent,
+  ): LinkInfo[] {
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('创建项目')];
+    if (!skip_prj_name) {
+      ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
+    }
+    return ret_list;
+  }
+  export type UpdateProjectEvent = {
+    new_project_name: string;
+  };
+  function get_update_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateProjectEvent,
+  ): LinkInfo[] {
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('修改项目')];
+    if (!skip_prj_name) {
+      ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
+    }
+    if (inner.new_project_name != ev.project_name) {
+      ret_list.push(
+        new LinkNoneInfo(`新项目名 ${inner.new_project_name}`)
+      );
+    }
+    return ret_list;
+  }
+  export type OpenProjectEvent = {};
+  function get_open_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: OpenProjectEvent,
+  ): LinkInfo[] {
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('激活项目')];
+    if (!skip_prj_name) {
+      ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
+    }
+    return ret_list;
+  }
+  export type CloseProjectEvent = {};
+  function get_close_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: CloseProjectEvent,
+  ): LinkInfo[] {
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('激活项目')];
+    if (!skip_prj_name) {
+      ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
+    }
+    return ret_list;
+  }
+  export type GenInviteEvent = {};
+  function get_gen_invite_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: GenInviteEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 发送加入项目邀请`),
+    ];
+    return ret_list;
+  }
+  export type JoinProjectEvent = {};
+  function get_join_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: JoinProjectEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 加入项目`),
+    ];
+    return ret_list;
+  }
+  export type LeaveProjectEvent = {};
+  function get_leave_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: LeaveProjectEvent,
+  ): LinkInfo[] {
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('离开项目')];
+    if (!skip_prj_name) {
+      ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
+    }
+    return ret_list;
+  }
+  export type CreateRoleEvent = {
+    role_id: string;
+    role_name: string;
+  };
+  function get_create_role_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateRoleEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建项目角色`),
+      new LinkNoneInfo(` ${inner.role_name}`),
+    ];
+  }
+  export type UpdateRoleEvent = {
+    role_id: string;
+    old_role_name: string;
+    new_role_name: string;
+  };
+  function get_update_role_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateRoleEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目角色`),
+      new LinkNoneInfo(` ${inner.old_role_name}`)
+    ];
+    if (inner.old_role_name != inner.new_role_name) {
+      ret_list.push(new LinkNoneInfo(`新角色 ${inner.new_role_name}`));
+    }
+    return ret_list;
+  }
+  export type RemoveRoleEvent = {
+    role_id: string;
+    role_name: string;
+  };
+  function get_remove_role_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveRoleEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除项目角色`),
+      new LinkNoneInfo(` ${inner.role_name}`),
+    ];
+  }
+
+  export type UpdateProjectMemberEvent = {
+    member_user_id: string;
+    old_member_display_name: string;
+    new_member_display_name: string;
+  };
+  function get_update_prj_member_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateProjectMemberEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目成员`),
+      new LinkNoneInfo(`${inner.old_member_display_name}`),
+    ];
+    if (inner.old_member_display_name != inner.new_member_display_name) {
+      ret_list.push(new LinkNoneInfo(`新名称 ${inner.new_member_display_name}`));
+    }
+    return ret_list;
+  }
+  export type RemoveProjectMemberEvent = {
+    member_user_id: string;
+    member_display_name: string;
+  };
+  function get_remove_prj_member_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveProjectMemberEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除项目成员 ${inner.member_display_name}`)
+    ];
+  }
+  export type SetProjectMemberRoleEvent = {
+    role_id: string;
+    role_name: string;
+    member_user_id: string;
+    member_display_name: string;
+  };
+  function get_set_role_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetProjectMemberRoleEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目成员角色`),
+      new LinkNoneInfo(` ${inner.member_display_name}`),
+      new LinkNoneInfo(` ${inner.role_name}`),
+    ];
+  }
+
+  export type CreateChannelEvent = {
+    channel_id: string;
+    channel_name: string;
+    pub_channel: boolean;
+    channel_type: number;
+  };
+  function get_create_chan_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateChannelEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建项目频道 ${inner.pub_channel ? '公开频道' : '私有频道'}`),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+    ];
+  }
+  export type UpdateChannelEvent = {
+    channel_id: string;
+    old_channel_name: string;
+    old_pub_channel: boolean;
+    new_channel_name: string;
+    new_pub_channel: boolean;
+  };
+  function get_update_chan_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateChannelEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目频道 ${inner.old_pub_channel ? '公开频道' : '私有频道'}`),
+      new LinkChannelInfo(inner.old_channel_name, ev.project_id, inner.channel_id),
+    ];
+    if (inner.old_channel_name != inner.new_channel_name) {
+      ret_list.push(new LinkNoneInfo(`新频道名称 ${inner.new_channel_name}`));
+    }
+    if (inner.old_pub_channel != inner.new_pub_channel) {
+      ret_list.push(new LinkNoneInfo(`新的可见级别 ${inner.new_pub_channel ? '公开频道' : '私有频道'}`));
+    }
+    return ret_list;
+  }
+  export type OpenChannelEvent = {
+    channel_id: string;
+    channel_name: string;
+  };
+  function get_open_chan_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: OpenChannelEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 激活项目频道`),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+    ];
+  }
+  export type CloseChannelEvent = {
+    channel_id: string;
+    channel_name: string;
+  };
+  function get_close_chan_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CloseChannelEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关闭项目频道`),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+    ];
+  }
+  export type AddChannelMemberEvent = {
+    channel_id: string;
+    channel_name: string;
+    member_user_id: string;
+    member_display_name: string;
+  };
+  function get_add_chan_member_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AddChannelMemberEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在频道`),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+      new LinkNoneInfo(`新增成员${inner.member_display_name}`),
+    ];
+  }
+  export type RemoveChannelMemberEvent = {
+    channel_id: string;
+    channel_name: string;
+    member_user_id: string;
+    member_display_name: string;
+  };
+  function get_remove_chan_member_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveChannelMemberEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在频道`),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+      new LinkNoneInfo(`移除成员${inner.member_display_name}`),
+    ];
+  }
+
+  export type UploadWorkSnapShotEvent = {
+    fs_id: string;
+    file_id: string;
+    thumb_file_id: string;
+  };
+  function get_upload_work_snap_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UploadWorkSnapShotEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 上传工作快照`),
+      new LinkImageInfo('图片', `fs://localhost/${inner.fs_id}/${inner.file_id}/snap.png`, `fs://localhost/${inner.fs_id}/${inner.thumb_file_id}/snap.png`),
+    ];
+  }
+
+  export type CreateAppraiseEvent = {
+    appraise_id: string;
+    title: string;
+  };
+
+  function get_create_appraise_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateAppraiseEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建评估`),
+      new LinkAppraiseInfo(inner.title, ev.project_id, inner.appraise_id),
+    ];
+  }
+
+  export type AddProjectAppEvent = {
+    app_id: string;
+    app_name: string;
+    app_url: string;
+    app_open_type: number;
+  };
+
+  function get_add_project_app_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AddProjectAppEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 添加应用`),
+      new LinkAppInfo(inner.app_name, ev.project_id, inner.app_id, inner.app_url, inner.app_open_type),
+    ];
+  }
+
+  export type RemoveProjectAppEvent = {
+    app_id: string;
+    app_name: string;
+  }
+
+  function get_remove_project_app_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveProjectAppEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除应用`),
+      new LinkNoneInfo(`${inner.app_name}`),
+    ];
+  }
+
+
+  export type AllProjectEvent = {
+    CreateProjectEvent?: CreateProjectEvent;
+    UpdateProjectEvent?: UpdateProjectEvent;
+    OpenProjectEvent?: OpenProjectEvent;
+    CloseProjectEvent?: CloseProjectEvent;
+    GenInviteEvent?: GenInviteEvent;
+    JoinProjectEvent?: JoinProjectEvent;
+    LeaveProjectEvent?: LeaveProjectEvent;
+    CreateRoleEvent?: CreateRoleEvent;
+    UpdateRoleEvent?: UpdateRoleEvent;
+    RemoveRoleEvent?: RemoveRoleEvent;
+    UpdateProjectMemberEvent?: UpdateProjectMemberEvent;
+    RemoveProjectMemberEvent?: RemoveProjectMemberEvent;
+    SetProjectMemberRoleEvent?: SetProjectMemberRoleEvent;
+    CreateChannelEvent?: CreateChannelEvent;
+    UpdateChannelEvent?: UpdateChannelEvent;
+    OpenChannelEvent?: OpenChannelEvent;
+    CloseChannelEvent?: CloseChannelEvent;
+    AddChannelMemberEvent?: AddChannelMemberEvent;
+    RemoveChannelMemberEvent?: RemoveChannelMemberEvent;
+    UploadWorkSnapShotEvent?: UploadWorkSnapShotEvent;
+    CreateAppraiseEvent?: CreateAppraiseEvent;
+    AddProjectAppEvent?: AddProjectAppEvent;
+    RemoveProjectAppEvent?: RemoveProjectAppEvent;
+  };
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllProjectEvent,
+  ): LinkInfo[] {
+    if (inner.CreateProjectEvent !== undefined) {
+      return get_create_simple_content(ev, skip_prj_name);
+    } else if (inner.UpdateProjectEvent !== undefined) {
+      return get_update_simple_content(ev, skip_prj_name, inner.UpdateProjectEvent);
+    } else if (inner.OpenProjectEvent !== undefined) {
+      return get_open_simple_content(ev, skip_prj_name);
+    } else if (inner.CloseProjectEvent !== undefined) {
+      return get_close_simple_content(ev, skip_prj_name);
+    } else if (inner.GenInviteEvent !== undefined) {
+      return get_gen_invite_simple_content(ev, skip_prj_name);
+    } else if (inner.JoinProjectEvent !== undefined) {
+      return get_join_simple_content(ev, skip_prj_name);
+    } else if (inner.LeaveProjectEvent !== undefined) {
+      return get_leave_simple_content(ev, skip_prj_name);
+    } else if (inner.CreateRoleEvent !== undefined) {
+      return get_create_role_simple_content(ev, skip_prj_name, inner.CreateRoleEvent);
+    } else if (inner.UpdateRoleEvent !== undefined) {
+      return get_update_role_simple_content(ev, skip_prj_name, inner.UpdateRoleEvent);
+    } else if (inner.RemoveRoleEvent !== undefined) {
+      return get_remove_role_simple_content(ev, skip_prj_name, inner.RemoveRoleEvent);
+    } else if (inner.UpdateProjectMemberEvent !== undefined) {
+      return get_update_prj_member_simple_content(
+        ev,
+        skip_prj_name,
+        inner.UpdateProjectMemberEvent,
+      );
+    } else if (inner.RemoveProjectMemberEvent !== undefined) {
+      return get_remove_prj_member_simple_content(
+        ev,
+        skip_prj_name,
+        inner.RemoveProjectMemberEvent,
+      );
+    } else if (inner.SetProjectMemberRoleEvent !== undefined) {
+      return get_set_role_simple_content(ev, skip_prj_name, inner.SetProjectMemberRoleEvent);
+    } else if (inner.CreateChannelEvent !== undefined) {
+      return get_create_chan_simple_content(ev, skip_prj_name, inner.CreateChannelEvent);
+    } else if (inner.UpdateChannelEvent !== undefined) {
+      return get_update_chan_simple_content(ev, skip_prj_name, inner.UpdateChannelEvent);
+    } else if (inner.OpenChannelEvent !== undefined) {
+      return get_open_chan_simple_content(ev, skip_prj_name, inner.OpenChannelEvent);
+    } else if (inner.CloseChannelEvent !== undefined) {
+      return get_close_chan_simple_content(ev, skip_prj_name, inner.CloseChannelEvent);
+    } else if (inner.AddChannelMemberEvent !== undefined) {
+      return get_add_chan_member_simple_content(ev, skip_prj_name, inner.AddChannelMemberEvent);
+    } else if (inner.RemoveChannelMemberEvent !== undefined) {
+      return get_remove_chan_member_simple_content(
+        ev,
+        skip_prj_name,
+        inner.RemoveChannelMemberEvent,
+      );
+    } else if (inner.UploadWorkSnapShotEvent !== undefined) {
+      return get_upload_work_snap_simple_content(ev, skip_prj_name, inner.UploadWorkSnapShotEvent);
+    } else if (inner.CreateAppraiseEvent !== undefined) {
+      return get_create_appraise_simple_content(ev, skip_prj_name, inner.CreateAppraiseEvent);
+    } else if (inner.AddProjectAppEvent !== undefined) {
+      return get_add_project_app_simple_content(ev, skip_prj_name, inner.AddProjectAppEvent);
+    } else if (inner.RemoveProjectAppEvent !== undefined) {
+      return get_remove_project_app_simple_content(ev, skip_prj_name, inner.RemoveProjectAppEvent);
+    } else {
+      return [new LinkNoneInfo('未知事件')];
+    }
+  }
+}
+
+export namespace project_doc {
+  export type CreateSpaceEvent = {
+    doc_space_id: string;
+    title: string;
+  };
+
+  function get_create_space_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateSpaceEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 文档空间 ${inner.title}`)
+    ];
+  }
+
+  export type UpdateSpaceEvent = {
+    doc_space_id: string;
+    old_title: string;
+    new_title: string;
+  };
+
+  function get_update_space_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateSpaceEvent,
+  ): LinkInfo[] {
+    const ret_lsit = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改 文档空间 ${inner.old_title}`)
+    ];
+    if (inner.new_title != inner.old_title) {
+      ret_lsit.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
+    }
+    return ret_lsit;
+  }
+
+  export type RemoveSpaceEvent = {
+    doc_space_id: string;
+    title: string;
+  }
+
+  function get_remove_space_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveSpaceEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 文档空间 ${inner.title}`)
+    ];
+  }
+
+  export type CreateDocEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+  }
+
+  function get_create_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在文档空间 ${inner.doc_space_name} 创建文档`),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+    ];
+  }
+
+
+  export type UpdateDocEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    old_title: string;
+    new_title: string;
+  }
+
+  function get_update_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateDocEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在文档空间 ${inner.doc_space_name} 修改文档`),
+      new LinkDocInfo(inner.old_title, ev.project_id, inner.doc_id),
+    ];
+    if (inner.new_title != inner.old_title) {
+      ret_list.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
+    }
+    return ret_list;
+  }
+
+  export type MoveDocToRecycleEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+  }
+
+  function get_move_doc_to_recycle_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: MoveDocToRecycleEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在文档空间 ${inner.doc_space_name} 删除文档 ${inner.title}`),
+    ];
+  }
+
+  export type RemoveDocEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+  }
+
+  function get_remove_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从回收站清除文档 ${inner.title}`),
+    ];
+  }
+
+  export type RecoverDocEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+  }
+
+  function get_recover_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RecoverDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 恢复 文档空间 ${inner.doc_space_name} 文档`),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+    ];
+  }
+
+  export type WatchDocEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+  }
+
+  function get_watch_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: WatchDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在 文档空间 ${inner.doc_space_name} 关注文档`),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+    ];
+  }
+
+  export type UnWatchDocEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+  }
+
+  function get_unwatch_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnWatchDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在 文档空间 ${inner.doc_space_name} 取消关注文档`),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+    ];
+  }
+
+  export type AllProjectDocEvent = {
+    CreateSpaceEvent?: CreateSpaceEvent;
+    UpdateSpaceEvent?: UpdateSpaceEvent;
+    RemoveSpaceEvent?: RemoveSpaceEvent;
+    CreateDocEvent?: CreateDocEvent;
+    UpdateDocEvent?: UpdateDocEvent;
+    MoveDocToRecycleEvent?: MoveDocToRecycleEvent;
+    RemoveDocEvent?: RemoveDocEvent;
+    RecoverDocEvent?: RecoverDocEvent;
+    WatchDocEvent?: WatchDocEvent;
+    UnWatchDocEvent?: UnWatchDocEvent;
+  };
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllProjectDocEvent): LinkInfo[] {
+    if (inner.CreateSpaceEvent !== undefined) {
+      return get_create_space_simple_content(ev, skip_prj_name, inner.CreateSpaceEvent);
+    } else if (inner.UpdateSpaceEvent !== undefined) {
+      return get_update_space_simple_content(ev, skip_prj_name, inner.UpdateSpaceEvent);
+    } else if (inner.RemoveSpaceEvent !== undefined) {
+      return get_remove_space_simple_content(ev, skip_prj_name, inner.RemoveSpaceEvent);
+    } else if (inner.CreateDocEvent !== undefined) {
+      return get_create_doc_simple_content(ev, skip_prj_name, inner.CreateDocEvent);
+    } else if (inner.UpdateDocEvent !== undefined) {
+      return get_update_doc_simple_content(ev, skip_prj_name, inner.UpdateDocEvent);
+    } else if (inner.MoveDocToRecycleEvent !== undefined) {
+      return get_move_doc_to_recycle_simple_content(ev, skip_prj_name, inner.MoveDocToRecycleEvent);
+    } else if (inner.RemoveDocEvent !== undefined) {
+      return get_remove_doc_simple_content(ev, skip_prj_name, inner.RemoveDocEvent);
+    } else if (inner.RecoverDocEvent !== undefined) {
+      return get_recover_doc_simple_content(ev, skip_prj_name, inner.RecoverDocEvent);
+    } else if (inner.WatchDocEvent !== undefined) {
+      return get_watch_doc_simple_content(ev, skip_prj_name, inner.WatchDocEvent);
+    } else if (inner.UnWatchDocEvent !== undefined) {
+      return get_unwatch_doc_simple_content(ev, skip_prj_name, inner.UnWatchDocEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+namespace sprit {
+  /*
+   * 迭代相关的事件定义
+   */
+  export type CreateEvent = {
+    sprit_id: string;
+    title: string;
+  };
+  function get_create_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建迭代`),
+      new LinkSpritInfo(inner.title, ev.project_id, inner.sprit_id),
+    ];
+  }
+  export type UpdateEvent = {
+    sprit_id: string;
+    old_title: string;
+    new_title: string;
+  };
+  function get_update_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新迭代`),
+      new LinkSpritInfo(inner.new_title, ev.project_id, inner.sprit_id),
+    ];
+    if (inner.old_title != inner.new_title) {
+      ret_list.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
+    }
+    return ret_list;
+  }
+
+  export type AllSpritEvent = {
+    CreateEvent?: CreateEvent;
+    UpdateEvent?: UpdateEvent;
+  };
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllSpritEvent,
+  ): LinkInfo[] {
+    if (inner.CreateEvent !== undefined) {
+      return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
+    } else if (inner.UpdateEvent != undefined) {
+      return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+namespace issue {
+  /*
+   * 工单相关的事件定义
+   */
+  export type CreateEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+  };
+  function get_create_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    return ret_list;
+  }
+  export type UpdateEvent = {
+    issue_id: string;
+    issue_type: number;
+    old_title: string;
+    new_title: string;
+  };
+  function get_update_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.old_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.old_title, ev.project_id, inner.issue_id));
+    }
+    if (inner.old_title != inner.new_title) {
+      ret_list.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
+    }
+    return ret_list;
+  }
+  export type AssignExecUserEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    exec_user_id: string;
+    exec_user_display_name: string;
+  };
+  function get_assign_exec_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AssignExecUserEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 指派`),
+      new LinkNoneInfo(`${inner.exec_user_display_name}`),
+      new LinkNoneInfo(`为${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo('执行人'));
+    return ret_list;
+  }
+  export type AssignCheckUserEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    check_user_id: string;
+    check_user_display_name: string;
+  };
+  function get_assign_check_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AssignCheckUserEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 指派`),
+      new LinkNoneInfo(` ${inner.check_user_display_name}`),
+      new LinkNoneInfo(`为${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo('检查人'));
+    return ret_list;
+  }
+
+  export type ChangeStateEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    old_state: number;
+    new_state: number;
+  };
+  function get_change_state_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: ChangeStateEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const old_state_str = get_issue_state_str(inner.old_state);
+    const new_state_str = get_issue_state_str(inner.new_state);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更改${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+
+    ret_list.push(new LinkNoneInfo(`老状态 ${old_state_str} 新状态 ${new_state_str}`));
+    return ret_list;
+  }
+  export type LinkSpritEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    sprit_id: string;
+    sprit_title: string;
+  };
+  function get_link_sprit_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: LinkSpritEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo('到迭代'));
+    ret_list.push(new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id))
+    return ret_list;
+  }
+
+  export type SetStartTimeEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    start_time: number;
+  };
+  function get_set_start_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetStartTimeEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const d = new Date(inner.start_time);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`开始时间 ${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`));
+    return ret_list;
+  }
+  export type SetEndTimeEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    end_time: number;
+  };
+  function get_set_end_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetEndTimeEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const d = new Date(inner.end_time);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`结束时间 ${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`));
+    return ret_list;
+  }
+  export type SetEstimateMinutesEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    estimate_minutes: number;
+  };
+  function get_set_estimate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetEstimateMinutesEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`预估时间 ${(inner.estimate_minutes / 60).toFixed(1)}小时`));
+    return ret_list;
+  }
+
+  export type SetRemainMinutesEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    remain_minutes: number;
+    has_spend_minutes: boolean;
+    spend_minutes: number;
+  };
+  function get_set_remain_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetRemainMinutesEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`剩余时间 ${(inner.remain_minutes / 60).toFixed(1)}小时`));
+    if (inner.has_spend_minutes) {
+      ret_list.push(new LinkNoneInfo(`新增开销时间 ${(inner.spend_minutes / 60).toFixed(1)}小时`));
+    }
+    return ret_list;
+  }
+  export class AllIssueEvent {
+    CreateEvent?: CreateEvent;
+    UpdateEvent?: UpdateEvent;
+    AssignExecUserEvent?: AssignExecUserEvent;
+    AssignCheckUserEvent?: AssignCheckUserEvent;
+    ChangeStateEvent?: ChangeStateEvent;
+    LinkSpritEvent?: LinkSpritEvent;
+    SetStartTimeEvent?: SetStartTimeEvent;
+    SetEndTimeEvent?: SetEndTimeEvent;
+    SetEstimateMinutesEvent?: SetEstimateMinutesEvent;
+    SetRemainMinutesEvent?: SetRemainMinutesEvent;
+  }
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllIssueEvent,
+  ): LinkInfo[] {
+    if (inner.CreateEvent !== undefined) {
+      return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
+    } else if (inner.UpdateEvent !== undefined) {
+      return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
+    } else if (inner.AssignExecUserEvent !== undefined) {
+      return get_assign_exec_simple_content(ev, skip_prj_name, inner.AssignExecUserEvent);
+    } else if (inner.AssignCheckUserEvent !== undefined) {
+      return get_assign_check_simple_content(ev, skip_prj_name, inner.AssignCheckUserEvent);
+    } else if (inner.ChangeStateEvent !== undefined) {
+      return get_change_state_simple_content(ev, skip_prj_name, inner.ChangeStateEvent);
+    } else if (inner.LinkSpritEvent !== undefined) {
+      return get_link_sprit_simple_content(ev, skip_prj_name, inner.LinkSpritEvent);
+    } else if (inner.SetStartTimeEvent !== undefined) {
+      return get_set_start_simple_content(ev, skip_prj_name, inner.SetStartTimeEvent);
+    } else if (inner.SetEndTimeEvent !== undefined) {
+      return get_set_end_simple_content(ev, skip_prj_name, inner.SetEndTimeEvent);
+    } else if (inner.SetEstimateMinutesEvent !== undefined) {
+      return get_set_estimate_simple_content(ev, skip_prj_name, inner.SetEstimateMinutesEvent);
+    } else if (inner.SetRemainMinutesEvent !== undefined) {
+      return get_set_remain_simple_content(ev, skip_prj_name, inner.SetRemainMinutesEvent);
+    } else {
+      return [new LinkNoneInfo('未知事件')];
+    }
+  }
+}
+
+namespace book_shelf {
+  export type AddBookEvent = {
+    book_id: string;
+    book_title: string;
+  };
+
+  function get_add_simple_content(ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AddBookEvent): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 增加书本 ${inner.book_title}`),
+    ];
+  }
+
+
+  export type RemoveBookEvent = {
+    book_id: string;
+    book_title: string;
+  };
+
+  function get_remove_simple_content(ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveBookEvent): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除书本 ${inner.book_title}`),
+    ];
+  }
+
+  export class AllBookShelfEvent {
+    AddBookEvent?: AddBookEvent;
+    RemoveBookEvent?: RemoveBookEvent;
+  }
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllBookShelfEvent,
+  ): LinkInfo[] {
+    if (inner.AddBookEvent !== undefined) {
+      return get_add_simple_content(ev, skip_prj_name, inner.AddBookEvent);
+    } else if (inner.RemoveBookEvent !== undefined) {
+      return get_remove_simple_content(ev, skip_prj_name, inner.RemoveBookEvent);
+    } else {
+      return [new LinkNoneInfo('未知事件')];
+    }
+  }
+}
+
+namespace ext_event {
+  /*
+   * 第三方接入相关的事件
+   */
+  function get_event_source_str(event_source: number): string {
+    let event_source_str = '';
+    switch (event_source) {
+      case ex.EVENT_SOURCE_GITLAB:
+        event_source_str = 'gitlab';
+        break;
+      case ex.EVENT_SOURCE_GITHUB:
+        event_source_str = 'github';
+        break;
+      case ex.EVENT_SOURCE_GITEA:
+        event_source_str = 'gitea';
+        break;
+      case ex.EVENT_SOURCE_GITEE:
+        event_source_str = 'gitee';
+        break;
+      case ex.EVENT_SOURCE_GOGS:
+        event_source_str = 'gogs';
+        break;
+      case ex.EVENT_SOURCE_JIRA:
+        event_source_str = 'jira';
+        break;
+      case ex.EVENT_SOURCE_CONFLUENCE:
+        event_source_str = 'confluence';
+        break;
+      case ex.EVENT_SOURCE_JENKINS:
+        event_source_str = 'jenkins';
+        break;
+    }
+    return event_source_str;
+  }
+
+  function get_user_policy_str(user_policy: number): string {
+    let user_policy_str = '';
+    switch (user_policy) {
+      case ex.SOURCE_USER_POLICY_NONE:
+        user_policy_str = '未设置策略';
+        break;
+      case ex.SOURCE_USER_POLICY_DISCARD:
+        user_policy_str = '丢弃';
+        break;
+      case ex.SOURCE_USER_POLICY_MAPPING:
+        user_policy_str = '关联成员';
+        break;
+      case ex.SOURCE_USER_POLICY_SKIP_MAPPING:
+        user_policy_str = '不记名';
+        break;
+    }
+    return user_policy_str;
+  }
+  export type CreateEvent = {
+    event_source_id: string;
+    event_source: number;
+    title: string;
+  };
+  function get_create_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateEvent,
+  ): LinkInfo[] {
+    const event_source_str = get_event_source_str(inner.event_source);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建第三方接入 ${event_source_str} ${inner.title}`),
+    ];
+  }
+  export type UpdateEvent = {
+    event_source_id: string;
+    event_source: number;
+    old_title: string;
+    new_title: string;
+  };
+  function get_update_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateEvent,
+  ): LinkInfo[] {
+    const event_source_str = get_event_source_str(inner.event_source);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新第三方接入 ${event_source_str} ${inner.old_title}`),
+    ];
+    if (inner.new_title != inner.old_title) {
+      ret_list.push(new LinkNoneInfo(` 新标题 ${inner.new_title}`));
+    }
+    return ret_list;
+  }
+  export type GetSecretEvent = {
+    event_source_id: string;
+    event_source: number;
+    title: string;
+  };
+  function get_secret_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: GetSecretEvent,
+  ): LinkInfo[] {
+    const event_source_str = get_event_source_str(inner.event_source);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 获取密钥 ${event_source_str} ${inner.title}`),
+    ];
+  }
+  export type RemoveEvent = {
+    event_source_id: string;
+    event_source: number;
+    title: string;
+  };
+  function get_remove_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveEvent,
+  ): LinkInfo[] {
+    const event_source_str = get_event_source_str(inner.event_source);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除第三方接入 ${event_source_str} ${inner.title}`),
+    ];
+  }
+  export type SetSourceUserPolicyEvent = {
+    event_source_id: string;
+    event_source: number;
+    title: string;
+    source_user_name: string;
+    source_display_name: string;
+    user_policy: number;
+    map_user_id: string;
+    map_user_display_name: string;
+  };
+  function get_set_policy_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetSourceUserPolicyEvent,
+  ): LinkInfo[] {
+    const event_source_str = get_event_source_str(inner.event_source);
+    const user_policy_str = get_user_policy_str(inner.user_policy);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name
+        } 设置第三方接入用户策略 ${event_source_str} ${inner.title}`),
+      new LinkNoneInfo(` 第三方用户${inner.source_display_name},策略设置为${user_policy_str}`),
+    ];
+    if (inner.map_user_id != '' && inner.map_user_display_name != '') {
+      ret_list.push(new LinkNoneInfo(` ${inner.map_user_display_name}`));
+    }
+    return ret_list;
+  }
+
+  export class AllExtEvEvent {
+    CreateEvent?: CreateEvent;
+    UpdateEvent?: UpdateEvent;
+    GetSecretEvent?: GetSecretEvent;
+    RemoveEvent?: RemoveEvent;
+    SetSourceUserPolicyEvent?: SetSourceUserPolicyEvent;
+  }
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllExtEvEvent,
+  ): LinkInfo[] {
+    if (inner.CreateEvent !== undefined) {
+      return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
+    } else if (inner.UpdateEvent !== undefined) {
+      return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
+    } else if (inner.GetSecretEvent !== undefined) {
+      return get_secret_simple_content(ev, skip_prj_name, inner.GetSecretEvent);
+    } else if (inner.RemoveEvent !== undefined) {
+      return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
+    } else if (inner.SetSourceUserPolicyEvent !== undefined) {
+      return get_set_policy_simple_content(ev, skip_prj_name, inner.SetSourceUserPolicyEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+namespace gitlab {
+  /*
+   * gitlab相关的事件
+   */
+  export type Author = {
+    name: string;
+    email: string;
+  };
+  export type Variable = {
+    key: string;
+    value: string;
+  };
+  export type User = {
+    id: number;
+    name: string;
+    user_name: string;
+    avatar_url: string;
+    email: string;
+  };
+  export type BuildCommit = {
+    id: number;
+    sha: string;
+    message: string;
+    author_name: string;
+    author_email: string;
+    status: string;
+    duration: number;
+    started_at: number[];
+    finished_at: number[];
+  };
+  export type Repository = {
+    name: string;
+    url: string;
+    description: string;
+    homepage: string;
+    git_ssh_url: string;
+    git_http_url: string;
+    visibility_level: number;
+  };
+  export type Runner = {
+    id: number;
+    description: string;
+    active: boolean;
+    is_shared: boolean;
+  };
+
+  export type Project = {
+    id: number;
+    name: string;
+    description: string;
+    web_url: string;
+    avatar_url: string;
+    git_ssh_url: string;
+    git_http_url: string;
+    namespace: string;
+    visibility_level: number;
+    path_with_namespace: string;
+    default_branch: string;
+    homepage: string;
+    url: string;
+    ssh_url: string;
+    http_url: string;
+  };
+  export type Position = {
+    base_sha: string;
+    start_sha: string;
+    head_sha: string;
+    old_path: string;
+    new_path: string;
+    position_type: string;
+    old_line: number;
+    new_line: number;
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+  };
+  export type StDiff = {
+    diff: string;
+    new_path: string;
+    old_path: string;
+    a_mode: string;
+    b_mode: string;
+    new_file: boolean;
+    renamed_file: boolean;
+    deleted_file: boolean;
+  };
+  export type Source = {
+    name: string;
+    description: string;
+    web_url: string;
+    avatar_url: string;
+    git_ssh_url: string;
+    git_http_url: string;
+    namespace: string;
+    visibility_level: number;
+    path_with_namespace: string;
+    default_branch: string;
+    homepage: string;
+    url: string;
+    ssh_url: string;
+    http_url: string;
+  };
+
+  export type Target = {
+    name: string;
+    description: string;
+    web_url: string;
+    avatar_url: string;
+    git_ssh_url: string;
+    git_http_url: string;
+    namespace: string;
+    visibility_level: number;
+    path_with_namespace: string;
+    default_branch: string;
+    homepage: string;
+    url: string;
+    ssh_url: string;
+    http_url: string;
+  };
+
+  export type LastCommit = {
+    id: string;
+    message: string;
+    timestamp: number[];
+    url: string;
+    author: null | Author;
+  };
+
+  export type ObjectAttributes = {
+    id: number;
+    title: string;
+    assignee_ids: number[];
+    assignee_id: number;
+    author_id: number;
+    project_id: number;
+    created_at: number[];
+    updated_at: number[];
+    updated_by_id: number;
+    last_edited_at: number[];
+    last_edited_by_id: number;
+    relative_position: number;
+    position: null | Position;
+    branch_name: string;
+    description: string;
+    milestone_id: number;
+    state: string;
+    state_id: number;
+    conf_idential: boolean;
+    discussion_locked: boolean;
+    due_date: number[];
+    time_estimate: number;
+    total_time_spent: number;
+    iid: number;
+    url: string;
+    action: string;
+    target_branch: string;
+    source_branch: string;
+    source_project_id: number;
+    target_project_id: number;
+    st_commits: string;
+    merge_status: string;
+    content: string;
+    format: string;
+    message: string;
+    slug: string;
+    ref: string;
+    tag: boolean;
+    sha: string;
+    before_sha: string;
+    status: string;
+    stages: string[];
+    duration: number;
+    note: string;
+    notebook_type: string;
+    at: number[];
+    line_code: string;
+    commit_id: string;
+    noteable_id: number;
+    system: boolean;
+    work_in_progress: boolean;
+    st_diffs: StDiff[];
+    source: null | Source;
+    target: null | Target;
+    last_commit: null | LastCommit;
+    assignee: null | Assignee;
+  };
+  export type Assignee = {
+    id: number;
+    name: string;
+    username: string;
+    avatar_url: string;
+    email: string;
+  };
+  export type MergeRequest = {
+    id: number;
+    target_branch: string;
+    source_branch: string;
+    source_project_id: number;
+    assignee_id: number;
+    author_id: number;
+    title: string;
+    created_at: number[];
+    updated_at: number[];
+    milestone_id: number;
+    state: string;
+    merge_status: string;
+    target_project_id: number;
+    iid: number;
+    description: string;
+    position: number;
+    locked_at: number[];
+    source: null | Source;
+    target: null | Target;
+    last_commit: null | LastCommit;
+    work_in_progress: boolean;
+    assignee: null | Assignee;
+    url: string;
+  };
+  export type Commit = {
+    id: string;
+    message: string;
+    title: string;
+    timestamp: number[];
+    url: string;
+    author: null | Author;
+    added: string[];
+    modified: string[];
+    removed: string[];
+  };
+  export type Issue = {
+    id: number;
+    title: string;
+    assignee_id: number;
+    author_id: number;
+    project_id: number;
+    created_at: number[];
+    updated_at: number[];
+    position: number;
+    branch_name: string;
+    description: string;
+    milestone_id: number;
+    state: string;
+    iid: number;
+  };
+  export type Snippet = {
+    id: number;
+    title: string;
+    content: string;
+    author_id: number;
+    project_id: number;
+    created_at: number[];
+    updated_at: number[];
+    file_name: string;
+    expires_at: number[];
+    type: string;
+    visibility_level: number;
+  };
+  export type Label = {
+    id: number;
+    title: string;
+    color: string;
+    project_id: number;
+    created_at: number[];
+    updated_at: number[];
+    template: boolean;
+    description: string;
+    type: string;
+    group_id: number;
+  };
+  export type LabelChanges = {
+    previous: Label[];
+    current: Label[];
+  };
+  export type Changes = {
+    label_changes: null | LabelChanges;
+  };
+  export type PipelineObjectAttributes = {
+    id: number;
+    ref: string;
+    tag: boolean;
+    sha: string;
+    before_sha: string;
+    source: string;
+    status: string;
+    stages: string[];
+    created_at: number[];
+    finished_at: number[];
+    duration: number;
+    variables: Variable[];
+  };
+
+  export type ArtifactsFile = {
+    filename: string;
+    size: string;
+  };
+  export type Build = {
+    id: number;
+    stage: string;
+    name: string;
+    status: string;
+    created_at: number[];
+    started_at: number[];
+    finished_at: number[];
+    when: string;
+    manual: boolean;
+    user: null | User;
+    runner: null | Runner;
+    artifacts_file: null | ArtifactsFile;
+  };
+  export type Wiki = {
+    web_url: string;
+    git_ssh_url: string;
+    git_http_url: string;
+    path_with_namespace: string;
+    default_branch: string;
+  };
+  export type BuildEvent = {
+    object_kind: string;
+    ref: string;
+    tag: boolean;
+    before_sha: string;
+    sha: string;
+    build_id: number;
+    build_name: string;
+    build_stage: string;
+    build_status: string;
+    build_started_at: number[];
+    build_finished_at: number[];
+    build_duration: number;
+    build_allow_failure: boolean;
+    project_id: number;
+    project_name: string;
+    user: null | User;
+    commit: null | BuildCommit;
+    repository: null | Repository;
+    runner: null | Runner;
+  };
+  function get_build_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: BuildEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type CommentEvent = {
+    object_kind: string;
+    user: null | User;
+    project_id: number;
+    project: null | Project;
+    repository: null | Repository;
+    object_attributes: null | ObjectAttributes;
+    merge_request: null | MergeRequest;
+    commit: null | Commit;
+    issue: null | Issue;
+    snippet: null | Snippet;
+  };
+  function get_comment_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CommentEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type IssueEvent = {
+    object_kind: string;
+    user: null | User;
+    project: null | Project;
+    repository: null | Repository;
+    object_attributes: null | ObjectAttributes;
+    assignee: null | Assignee;
+    changes: null | Changes;
+  };
+  function get_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: IssueEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type JobEvent = {
+    object_kind: string;
+    ref: string;
+    tag: boolean;
+    before_sha: string;
+    sha: string;
+    build_id: number;
+    build_name: string;
+    build_stage: string;
+    build_status: string;
+    build_started_at: number[];
+    build_finished_at: number[];
+    build_duration: number;
+    build_allow_failure: boolean;
+    build_failure_reason: string;
+    pipeline_id: number;
+    project_id: number;
+    project_name: string;
+    user: null | User;
+    commit: null | BuildCommit;
+    repository: null | Repository;
+    runner: null | Runner;
+  };
+  function get_job_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: JobEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type MergeRequestEvent = {
+    object_kind: string;
+    user: null | User;
+    object_attributes: null | ObjectAttributes;
+    changes: null | Changes;
+    project: null | Project;
+    repository: null | Repository;
+    labels: Label[];
+    assignees: Assignee[];
+  };
+  function get_merge_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: MergeRequestEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type PipelineEvent = {
+    object_kind: string;
+    user: null | User;
+    project: null | Project;
+    commit: null | Commit;
+    object_attributes: null | PipelineObjectAttributes;
+    merge_request: null | MergeRequest;
+    builds: Build[];
+  };
+  function get_pipe_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: PipelineEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type PushEvent = {
+    object_kind: string;
+    before: string;
+    after: string;
+    ref: string;
+    checkout_sha: string;
+    user_id: number;
+    user_name: string;
+    user_username: string;
+    user_email: string;
+    user_avatar: string;
+    project_id: number;
+    project: null | Project;
+    repository: null | Repository;
+    commits: Commit[];
+    total_commits_count: number;
+  };
+  function get_push_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: PushEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type TagEvent = {
+    object_kind: string;
+    before: string;
+    after: string;
+    ref: string;
+    checkout_sha: string;
+    user_id: number;
+    user_name: string;
+    user_username: string;
+    user_avatar: string;
+    project_id: number;
+    project: null | Project;
+    repository: null | Repository;
+    commits: Commit[];
+    total_commits_count: number;
+  };
+  function get_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: TagEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type WikiEvent = {
+    object_kind: string;
+    user: null | User;
+    project: null | Project;
+    wiki: null | Wiki;
+    object_attributes: null | ObjectAttributes;
+  };
+  function get_wiki_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: WikiEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export class AllGitlabEvent {
+    BuildEvent?: BuildEvent;
+    CommentEvent?: CommentEvent;
+    IssueEvent?: IssueEvent;
+    JobEvent?: JobEvent;
+    MergeRequestEvent?: MergeRequestEvent;
+    PipelineEvent?: PipelineEvent;
+    PushEvent?: PushEvent;
+    TagEvent?: TagEvent;
+    WikiEvent?: WikiEvent;
+  }
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllGitlabEvent,
+  ): LinkInfo[] {
+    if (inner.BuildEvent !== undefined) {
+      return get_build_simple_content(ev, skip_prj_name, inner.BuildEvent);
+    } else if (inner.CommentEvent !== undefined) {
+      return get_comment_simple_content(ev, skip_prj_name, inner.CommentEvent);
+    } else if (inner.IssueEvent !== undefined) {
+      return get_issue_simple_content(ev, skip_prj_name, inner.IssueEvent);
+    } else if (inner.MergeRequestEvent !== undefined) {
+      return get_merge_simple_content(ev, skip_prj_name, inner.MergeRequestEvent);
+    } else if (inner.PipelineEvent !== undefined) {
+      return get_pipe_simple_content(ev, skip_prj_name, inner.PipelineEvent);
+    } else if (inner.PushEvent !== undefined) {
+      return get_push_simple_content(ev, skip_prj_name, inner.PushEvent);
+    } else if (inner.TagEvent !== undefined) {
+      return get_tag_simple_content(ev, skip_prj_name, inner.TagEvent);
+    } else if (inner.WikiEvent !== undefined) {
+      return get_wiki_simple_content(ev, skip_prj_name, inner.WikiEvent);
+    } else if (inner.JobEvent != undefined) {
+      return get_job_simple_content(ev, skip_prj_name, inner.JobEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+namespace gogs {
+  /*
+   * gogs相关事件
+   */
+  export type Permission = {
+    admin: boolean;
+    push: boolean;
+    pull: boolean;
+  };
+  export type User = {
+    id: number;
+    user_name: string;
+    login: string;
+    full_name: string;
+    email: string;
+    avatar_url: string;
+  };
+  export type Repository = {
+    id: number;
+    owner: User[];
+    name: string;
+    full_name: string;
+    description: string;
+    private_flag: boolean;
+    unlisted: boolean;
+    fork: boolean;
+    parent: Repository[];
+    empty: boolean;
+    mirror: boolean;
+    size: number;
+    html_url: string;
+    ssh_url: string;
+    clone_url: string;
+    website: string;
+    stars: number;
+    forks: number;
+    watchers: number;
+    open_issues: number;
+    default_branch: string;
+    created: string;
+    updated: string;
+    permissions: Permission[];
+  };
+  export type Label = {
+    id: number;
+    name: string;
+    color: string;
+    url: string;
+  };
+  export type Milestone = {
+    id: number;
+    title: string;
+    description: string;
+    state: string;
+    open_issues: number;
+    closed_issues: number;
+    closed: string[];
+    deadline: string[];
+  };
+  export type PullRequestMeta = {
+    has_merged: boolean;
+    merged: string[];
+  };
+  export type Issue = {
+    id: number;
+    index: number;
+    poster: User[];
+    title: string;
+    body: string;
+    labels: Label[];
+    milestone: Milestone[];
+    assignee: User[];
+    state: string;
+    comments: number;
+    created: string;
+    updated: string;
+    pull_request: PullRequestMeta[];
+  };
+  export type Comment = {
+    id: number;
+    html_url: string;
+    poster: User[];
+    body: string;
+    created: string;
+    updated: string;
+  };
+  export type ChangesFrom = {
+    from_value: string;
+  };
+  export type Changes = {
+    title: ChangesFrom[];
+    body: ChangesFrom[];
+  };
+  export type PullRequest = {
+    id: number;
+    index: number;
+    poster: User[];
+    title: string;
+    body: string;
+    labels: Label[];
+    milestone: Milestone[];
+    assignee: User[];
+    state: string;
+    comments: number;
+    head_branch: string;
+    head_repo: Repository[];
+    base_branch: string;
+    base_repo: Repository[];
+    html_url: string;
+    mergeable: boolean[];
+    has_merged: boolean;
+    merged: string[];
+    merged_commit_id: string[];
+    merged_by: User[];
+  };
+  export type CommitUser = {
+    name: string;
+    email: string;
+    user_name: string;
+  };
+  export type Commit = {
+    id: string;
+    message: string;
+    url: string;
+    author: CommitUser[];
+    committer: CommitUser[];
+    added: string[];
+    removed: string[];
+    modified: string[];
+    timestamp: number;
+  };
+  export type Release = {
+    id: number;
+    tag_name: string;
+    target_commitish: string;
+    name: string;
+    body: string;
+    draft: boolean;
+    prerelease: boolean;
+    author: User[];
+    created: string;
+  };
+  export type CreateEvent = {
+    ref: string;
+    ref_type: string;
+    sha: string;
+    default_branch: string;
+    repo: Repository[];
+    sender: User[];
+  };
+  function get_create_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type DeleteEvent = {
+    ref: string;
+    ref_type: string;
+    pusher_type: string;
+    repo: Repository[];
+    sender: User[];
+  };
+  function get_delete_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: DeleteEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type ForkEvent = {
+    forkee: Repository[];
+    repo: Repository[];
+    sender: User[];
+  };
+  function get_fork_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: ForkEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type IssueCommentEvent = {
+    action: string;
+    issue: Issue[];
+    comment: Comment[];
+    changes: Changes[];
+    repository: Repository[];
+    sender: User[];
+  };
+  function get_issue_comment_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: IssueCommentEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type IssueEvent = {
+    action: string;
+    index: number;
+    issue: Issue[];
+    changes: Changes[];
+    repository: Repository[];
+    sender: User[];
+  };
+  function get_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: IssueEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type PullRequestEvent = {
+    action: string;
+    index: number;
+    pull_request: PullRequest[];
+    changes: Changes[];
+    repository: Repository[];
+    sender: User[];
+  };
+  function get_pr_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: PullRequestEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+  export type PushEvent = {
+    ref: string;
+    before: string;
+    after: string;
+    compare_url: string;
+    commits: Commit[];
+    repo: Repository[];
+    pusher: User[];
+    sender: User[];
+  };
+  function get_push_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: PushEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type ReleaseEvent = {
+    action: string;
+    release: Release[];
+    repository: Repository[];
+    sender: User[];
+  };
+  function get_relase_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: ReleaseEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export class AllGogsEvent {
+    CreateEvent?: CreateEvent;
+    DeleteEvent?: DeleteEvent;
+    ForkEvent?: ForkEvent;
+    IssueCommentEvent?: IssueCommentEvent;
+    IssueEvent?: IssueEvent;
+    PullRequestEvent?: PullRequestEvent;
+    PushEvent?: PushEvent;
+    ReleaseEvent?: ReleaseEvent;
+  }
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllGogsEvent,
+  ): LinkInfo[] {
+    if (inner.CreateEvent !== undefined) {
+      return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
+    } else if (inner.DeleteEvent !== undefined) {
+      return get_delete_simple_content(ev, skip_prj_name, inner.DeleteEvent);
+    } else if (inner.ForkEvent !== undefined) {
+      return get_fork_simple_content(ev, skip_prj_name, inner.ForkEvent);
+    } else if (inner.IssueCommentEvent !== undefined) {
+      return get_issue_comment_simple_content(ev, skip_prj_name, inner.IssueCommentEvent);
+    } else if (inner.IssueEvent !== undefined) {
+      return get_issue_simple_content(ev, skip_prj_name, inner.IssueEvent);
+    } else if (inner.PullRequestEvent !== undefined) {
+      return get_pr_simple_content(ev, skip_prj_name, inner.PullRequestEvent);
+    } else if (inner.PushEvent !== undefined) {
+      return get_push_simple_content(ev, skip_prj_name, inner.PushEvent);
+    } else if (inner.ReleaseEvent !== undefined) {
+      return get_relase_simple_content(ev, skip_prj_name, inner.ReleaseEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+namespace gitee {
+  /*
+   * gitee相关事件
+   */
+  export type User = {
+    id: number[];
+    name: string;
+    email: string;
+    username: string[];
+    url: string[];
+    login: string[];
+    avatar_url: string[];
+    html_url: string[];
+    type_str: string[];
+    site_admin: boolean;
+    time: number[];
+    remark: string[];
+  };
+  export type Project = {
+    id: number;
+    name: string;
+    path: string;
+    full_name: string;
+    owner: User[];
+    private_flag: boolean;
+    html_url: string;
+    url: string;
+    description: string;
+    fork: boolean;
+    created_at: number;
+    updated_at: number;
+    pushed_at: number;
+    git_url: string;
+    ssh_url: string;
+    clone_url: string;
+    svn_url: string;
+    git_http_url: string;
+    git_ssh_url: string;
+    git_svn_url: string;
+    homepage: string[];
+    stargazers_count: number;
+    watchers_count: number;
+    forks_count: number;
+    language: string;
+    has_issues: boolean;
+    has_wiki: boolean;
+    has_pages: boolean;
+    license: string[];
+    open_issues_count: number;
+    default_branch: string;
+    namespace: string;
+    name_with_namespace: string;
+    path_with_namespace: string;
+  };
+  export type Commit = {
+    id: string;
+    tree_id: string;
+    parent_ids: string[];
+    msg: string;
+    timestamp: number;
+    url: string;
+    author: User[];
+    committer: User[];
+    distinct: boolean;
+    added: string[];
+    removed: string[];
+    modified: string[];
+  };
+  export type Enterprise = {
+    name: string;
+    url: string;
+  };
+  export type Label = {
+    id: number;
+    name: string;
+    color: string;
+  };
+  export type Milestone = {
+    html_url: string;
+    id: number;
+    number: number;
+    title: string;
+    description: string;
+    open_issues: number;
+    closed_issues: number;
+    state: string;
+    created_at: number;
+    updated_at: number;
+    due_on: number[];
+  };
+  export type Issue = {
+    html_url: string;
+    id: number;
+    number: string;
+    title: string;
+    user: User[];
+    labels: Label[];
+    state: string;
+    state_name: string;
+    type_name: string;
+    assignee: User[];
+    collaborators: User[];
+    milestone: Milestone[];
+    comments: number;
+    created_at: number;
+    updated_at: number;
+    body: string;
+  };
+  export type Note = {
+    id: number;
+    body: string;
+    user: User[];
+    created_at: number;
+    updated_at: number;
+    html_url: string;
+    position: string[];
+    commit_id: string[];
+  };
+  export type PullRequest = {
+    id: number;
+    number: number;
+    state: string;
+    html_url: string;
+    diff_url: string;
+    patch_url: string;
+    title: string;
+    body: string[];
+    created_at: number;
+    updated_at: number;
+    closed_at: number[];
+    merged_at: number[];
+    merge_commit_sha: string;
+    merge_reference_name: string;
+    user: User[];
+    assignee: User[];
+    assignees: User[];
+    tester: User[];
+    testers: User[];
+    need_test: boolean;
+    need_review: boolean;
+    milestone: Milestone[];
+    head: Branch[];
+    base: Branch[];
+    merged: boolean;
+    mergeable: boolean;
+    merge_status: string;
+    updated_by: User[];
+    comments: number;
+    commits: number;
+    additions: number;
+    deletions: number;
+    changed_files: number;
+  };
+  export type Branch = {
+    label: string;
+    ref: string;
+    sha: string;
+    user: string;
+    repo: Project[];
+  };
+  export type PushEvent = {
+    hook_id: number;
+    hook_url: string;
+    hook_name: string;
+    timestamp: number;
+    sign: string;
+    ref: string;
+    before: string;
+    after: string;
+    total_commits_count: number;
+    commits_more_than_ten: boolean;
+    created: boolean;
+    deleted: boolean;
+    compare: string;
+    commits: Commit[];
+    head_commit: null | Commit;
+    project: Project[];
+    user_id: number;
+    user_name: string;
+    user: User[];
+    pusher: User[];
+    sender: User[];
+    enterprise: Enterprise[];
+  };
+  function get_push_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: PushEvent,
+  ): LinkInfo[] {
+    let repo_url = "";
+    if (inner.project.length > 0) {
+      repo_url = inner.project[0].url;
+    }
+    let project_name = '';
+    if (inner.project.length > 0) {
+      project_name = inner.project[0].full_name;
+    }
+    let src_user = '';
+    if (inner.sender.length > 0) {
+      src_user = inner.sender[0].name;
+    }
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户(${src_user})推送`),
+      new LinkExterneInfo(project_name, repo_url),
+      new LinkNoneInfo(`包含${inner.total_commits_count}次提交`),
+    ];
+    if (inner.head_commit != null) {
+      ret_list.push(new LinkNoneInfo(`最新提交内容:${inner.head_commit.msg}`));
+    }
+    return ret_list;
+  }
+  export type IssueEvent = {
+    hook_id: number;
+    hook_url: string;
+    hook_name: string;
+    timestamp: number;
+    sign: string;
+    action: string;
+    issue: Issue[];
+    project: Project[];
+    sender: User[];
+    target_user: User[];
+    user: User[];
+    assignee: User[];
+    updated_by: User[];
+    iid: string;
+    title: string;
+    description: string;
+    state: string;
+    milestone: string;
+    url: string;
+    enterprise: Enterprise[];
+  };
+  function get_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: IssueEvent,
+  ): LinkInfo[] {
+    let action_str = '';
+    if (inner.action == 'open') {
+      action_str = '新建工单';
+    } else if (inner.action == 'state_change') {
+      action_str = '修改工单状态';
+    } else if (inner.action == 'delete') {
+      action_str = '删除工单';
+    }
+    let issue_title = "";
+    let issue_url = "";
+    if (inner.issue.length > 0) {
+      issue_title = inner.issue[0].title;
+      issue_url = inner.issue[0].html_url;
+    }
+    let src_user = '';
+    if (inner.sender.length > 0) {
+      src_user = inner.sender[0].name;
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户(${src_user}) ${action_str}`),
+      new LinkExterneInfo(issue_title, issue_url),
+    ];
+  }
+
+  export type PullRequestEvent = {
+    hook_id: number;
+    hook_url: string;
+    hook_name: string;
+    timestamp: number;
+    sign: string;
+    action: string;
+    pull_request: PullRequest[];
+    number: number;
+    iid: number;
+    title: string;
+    body: string[];
+    state: string;
+    merge_status: string;
+    merge_commit_sha: string;
+    url: string;
+    source_branch: string[];
+    source_repo: Project[];
+    target_branch: string;
+    target_repo: Project[];
+    project: Project[];
+    author: User[];
+    updated_by: User[];
+    sender: User[];
+    target_user: User[];
+    enterprise: Enterprise[];
+  };
+
+  function get_pr_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: PullRequestEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type NoteEvent = {
+    hook_id: number;
+    hook_url: string;
+    hook_name: string;
+    timestamp: number;
+    sign: string;
+    action: string;
+    comment: null | Note;
+    project: Project[];
+    author: User[];
+    sender: User[];
+    url: string;
+    note: string;
+    noteable_type: string;
+    noteable_id: number;
+    issue: Issue[];
+    pull_request: PullRequest[];
+    title: string;
+    per_iid: string;
+    short_commit_id: string[];
+    enterprise: Enterprise[];
+  };
+
+  function get_note_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: NoteEvent,
+  ): LinkInfo[] {
+    let comment_url = '';
+    if (inner.comment !== null) {
+      comment_url = inner.comment.html_url;
+    }
+    let issue_url = '';
+    if (inner.issue.length > 0) {
+      issue_url = inner.issue[0].html_url;
+    }
+    let src_user = '';
+    if (inner.sender.length > 0) {
+      src_user = inner.sender[0].name;
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户(${src_user}) 对工单`),
+      new LinkExterneInfo(inner.title, issue_url),
+      new LinkNoneInfo('发表评论'),
+      new LinkExterneInfo(inner.comment?.body || "", comment_url),
+    ];
+  }
+
+  export class AllGiteeEvent {
+    PushEvent?: PushEvent;
+    IssueEvent?: IssueEvent;
+    PullRequestEvent?: PullRequestEvent;
+    NoteEvent?: NoteEvent;
+  }
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllGiteeEvent,
+  ): LinkInfo[] {
+    if (inner.PushEvent !== undefined) {
+      return get_push_simple_content(ev, skip_prj_name, inner.PushEvent);
+    } else if (inner.IssueEvent !== undefined) {
+      return get_issue_simple_content(ev, skip_prj_name, inner.IssueEvent);
+    } else if (inner.PullRequestEvent !== undefined) {
+      return get_pr_simple_content(ev, skip_prj_name, inner.PullRequestEvent);
+    } else if (inner.NoteEvent !== undefined) {
+      return get_note_simple_content(ev, skip_prj_name, inner.NoteEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+export class AllEvent {
+  ProjectEvent?: project.AllProjectEvent;
+  ProjectDocEvent?: project_doc.AllProjectDocEvent;
+  SpritEvent?: sprit.AllSpritEvent;
+  IssueEvent?: issue.AllIssueEvent;
+  BookShelfEvent?: book_shelf.AllBookShelfEvent;
+  ExtEvEvent?: ext_event.AllExtEvEvent;
+  GitlabEvent?: gitlab.AllGitlabEvent;
+  GogsEvent?: gogs.AllGogsEvent;
+  GiteeEvent?: gitee.AllGiteeEvent;
+}
+
+export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
+  if (ev.event_data.ProjectEvent !== undefined) {
+    return project.get_simple_content_inner(ev, skip_prj_name, ev.event_data.ProjectEvent);
+  } else if (ev.event_data.ProjectDocEvent !== undefined) {
+    return project_doc.get_simple_content_inner(ev, skip_prj_name, ev.event_data.ProjectDocEvent);
+  } else if (ev.event_data.SpritEvent !== undefined) {
+    return sprit.get_simple_content_inner(ev, skip_prj_name, ev.event_data.SpritEvent);
+  } else if (ev.event_data.IssueEvent !== undefined) {
+    return issue.get_simple_content_inner(ev, skip_prj_name, ev.event_data.IssueEvent);
+  } else if (ev.event_data.BookShelfEvent !== undefined) {
+    return book_shelf.get_simple_content_inner(ev, skip_prj_name, ev.event_data.BookShelfEvent);
+  } else if (ev.event_data.ExtEvEvent !== undefined) {
+    return ext_event.get_simple_content_inner(ev, skip_prj_name, ev.event_data.ExtEvEvent);
+  } else if (ev.event_data.GitlabEvent !== undefined) {
+    return gitlab.get_simple_content_inner(ev, skip_prj_name, ev.event_data.GitlabEvent);
+  } else if (ev.event_data.GogsEvent !== undefined) {
+    return gogs.get_simple_content_inner(ev, skip_prj_name, ev.event_data.GogsEvent);
+  } else if (ev.event_data.GiteeEvent != undefined) {
+    return gitee.get_simple_content_inner(ev, skip_prj_name, ev.event_data.GiteeEvent);
+  }
+  return [new LinkNoneInfo('未知事件')];
+}

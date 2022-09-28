@@ -1,0 +1,42 @@
+.table {
+  th,
+  tr,
+  td {
+    border: none !important;
+  }
+
+  user-select: none;
+  :global {
+    .ant-table-tbody > tr > td {
+      // transition: background 0.3s;
+      color: #666;
+      border-bottom: 1px solid #f0f0f0 !important;
+    }
+    .ant-table-thead {
+      th {
+        color: #2f3338;
+        background: #f6f6f6 !important;
+      }
+    }
+  }
+}
+
+.title {
+  margin: 0 !important;
+  padding: 16px 0;
+  color: #2f3338 !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.select {
+  width: 90px;
+  :global {
+    .ant-select-arrow {
+      top: 30%;
+    }
+  }
+  span {
+    margin: 0 !important;
+  }
+}

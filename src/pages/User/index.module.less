@@ -1,0 +1,86 @@
+.loginBox {
+  height: 100%;
+  background: #fff;
+
+  >div {
+    height: 100vh;
+    background: #fff;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .form {
+    width: 360px;
+    margin: 0 auto;
+
+    :global {
+      .ant-row {
+        // margin-bottom: 0 !important;
+      }
+
+      .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+        height: 38px;
+        font-size: 14px;
+        border-radius: 10px;
+      }
+
+      .ant-select-single.ant-select-show-arrow .ant-select-selection-item {
+        line-height: 38px;
+      }
+
+      .ant-input {
+        height: 44px;
+        margin-bottom: -1px;
+        font-size: 16px;
+        border: 1px solid #e7e7e7;
+        // border-radius: 4px 4px 0 0;
+      }
+
+      .ant-input:hover,
+      .ant-input:focus {
+        border-color: #e7e7e7 !important;
+        box-shadow: none;
+      }
+
+      .ant-btn {
+        height: 44px;
+        margin-top: 34px;
+        font-size: 16px;
+        background: linear-gradient(90deg, #0e83ff, #3d86ff);
+        border-radius: 10px;
+        box-shadow: 0 6px 16px 0 rgba(61, 134, 255, 0.39);
+      }
+    }
+
+    .voluntarily {
+      color: #7e818a;
+    }
+
+    .login_form_forgot {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+  }
+
+  .logo {
+    padding-top: 100px;
+    padding-bottom: 20px;
+    text-align: center;
+
+    img {
+      width: 105px;
+      height: 105px;
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      color: #060606;
+      font-weight: 600;
+      font-size: 34px;
+      line-height: 30px;
+    }
+  }
+}

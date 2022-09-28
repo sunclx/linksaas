@@ -1,0 +1,39 @@
+.editor_wrap {
+  position: relative;
+  margin: 20px 0;
+  padding: 20px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #eeeef2;
+  .delete {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 111;
+    padding: 4px 4px 0;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+  &:hover {
+    .delete {
+      opacity: 1;
+      &:hover {
+        color: #2997ff;
+      }
+    }
+  }
+
+  // input {
+  //   width: 280px;
+  // }
+}
+.fold {
+  margin-top: -10px;
+  color: #2997ff;
+  text-align: right;
+  user-select: none;
+}

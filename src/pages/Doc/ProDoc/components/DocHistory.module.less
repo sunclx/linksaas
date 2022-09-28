@@ -1,0 +1,110 @@
+.DocHistory_wrap {
+  position: relative;
+  width: 420px;
+  height: 418px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.16);
+  .title {
+    padding: 12px 16px;
+    color: #2c2d2e;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    border-bottom: 1px solid #eaeaef;
+  }
+  ul {
+    height: calc(100% - 80px);
+    padding: 12px 16px;
+    overflow: auto;
+    li {
+      position: relative;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eaeaef;
+      .top {
+        color: #80838c;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 18px;
+        img {
+          width: 20px;
+          height: 20px;
+          margin-right: 5px;
+          border-radius: 20px;
+        }
+      }
+      .time {
+        margin: 5px 0;
+        padding-left: 25px;
+        color: #80838c;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 16px;
+      }
+      .des {
+        padding-left: 25px;
+        color: #202021;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+      }
+      .btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #0078f7;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .mostNew {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.docdiff_wrap {
+  :global {
+    .ant-modal {
+      padding-bottom: 0;
+      border-radius: 6px;
+      box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.16);
+    }
+  }
+  .top {
+    display: flex;
+    margin-bottom: 12px;
+    color: #2c2d2e;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    > div {
+      position: relative;
+      display: flex;
+      width: 50%;
+      &:nth-child(2) {
+        // margin-left: -3%;
+      }
+      .title {
+        margin-left: 10px;
+        color: #666;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+      }
+      .btn {
+        position: absolute;
+        top: 0;
+        right: 8%;
+        color: #0078f7;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+  }
+}

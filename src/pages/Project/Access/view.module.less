@@ -1,0 +1,81 @@
+.content {
+  padding: 30px;
+  .info {
+    .row {
+      display: flex;
+      flex-direction: row;
+      height: 37px;
+      line-height: 37px;
+    }
+    .label {
+      width: 50px;
+      color: #2c2d2e;
+      font-weight: 500;
+    }
+    .value {
+      color: #666;
+      font-weight: 500;
+      > img {
+        width: 20px;
+        height: 20px;
+        margin: 0 5px 0 0;
+        vertical-align: -3px;
+      }
+    }
+    .copy,
+    .watch,
+    .edit,
+    .hide {
+      height: 37px;
+      margin: 0 0 0 15px;
+      color: rgb(183, 183, 183);
+      line-height: 37px;
+      cursor: pointer;
+    }
+    .edit::before,
+    .copy::before,
+    .watch::before,
+    .hide::before {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin: 0 3px 0 0;
+      vertical-align: -2px;
+      background-image: url(@/assets/allIcon/icon-copy.png);
+      background-size: 100%;
+      cursor: pointer;
+      content: '';
+    }
+    .watch::before {
+      background-image: url(@/assets/allIcon/icon-check.png);
+      background-size: 100%;
+    }
+    .edit::before {
+      background-image: url(@/assets/allIcon/icon-edit.png);
+      background-size: 100%;
+    }
+    .hide::before {
+      background-image: url(@/assets/allIcon/icon-uncheck.png);
+      background-size: 100%;
+    }
+  }
+
+  > h3 {
+    margin-bottom: 10px;
+    color: #2c2d2e;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 30px;
+    span {
+      height: 20px;
+      margin: 0 0 0 10px;
+      padding: 0 5px;
+      color: #2c2d2e;
+      font-weight: 400;
+      line-height: 20px;
+      background: #e7eaee;
+      border-radius: 10px;
+      opacity: 0.5;
+    }
+  }
+}

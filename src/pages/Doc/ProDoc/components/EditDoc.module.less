@@ -1,0 +1,113 @@
+.editdoc_wrap {
+  .docInRecycle {
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% + 40px);
+    height: 42px;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    margin-left: -20px;
+    padding: 0 18px;
+    color: #2c2d2e;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 42px;
+    background: #fee;
+    .text_wrap {
+      span {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        margin-right: 5px;
+        color: #fff;
+        font-weight: bold;
+        font-size: 10px;
+        line-height: 14px;
+        text-align: center;
+        background: #f43437;
+        border-radius: 14px;
+      }
+    }
+    .btn_wrap {
+      button {
+        width: 66px;
+        height: 22px;
+        padding: 0;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 22px;
+        background: transparent;
+        border-radius: 4px;
+        &:nth-child(1) {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+  .editdoc_title_wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaef;
+    input {
+      width: calc(100% - 10px);
+      height: 40px;
+      font-size: 18px;
+      border: none;
+      &:focus {
+        border: none;
+      }
+    }
+    :global {
+      .ant-input:focus,
+      .ant-input-focused {
+        border-color: none;
+      }
+    }
+  }
+  .save {
+    position: absolute;
+    right: 0;
+    width: 200px;
+    margin: 10px 0;
+  }
+}
+
+.docbtns_wrap {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  width: 240px;
+  height: 40px;
+  color: #8b8787;
+  font-size: 20px;
+
+  .isCollect {
+    width: 20px;
+    height: 19px;
+    margin-right: 4px;
+    background: url('@/assets//allIcon/collect.png');
+    background-size: 100% 100%;
+    cursor: pointer;
+  }
+
+  .no_Collect {
+    width: 20px;
+    height: 19px;
+    margin-right: 4px;
+    background: url('@/assets//allIcon/no_collect.png');
+    background-size: 100% 100%;
+  }
+  svg {
+    margin-left: 15px;
+    cursor: pointer;
+
+    &:hover {
+      color: #0e83ff;
+    }
+  }
+}

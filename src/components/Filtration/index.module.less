@@ -1,0 +1,57 @@
+.filtration_wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 50px;
+  margin: 8px 0 0;
+  padding-left: 10px;
+  background: #f3f3f9;
+  border-radius: 6px;
+  .triangle {
+    position: absolute;
+    z-index: 5;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin: -56px 0 0 291px;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #f3f3f9;
+    border-left: 5px solid transparent;
+  }
+  > div {
+    margin-right: 10px;
+  }
+  > button {
+    margin-left: 10px;
+  }
+  :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+    display: flex;
+    align-items: center;
+    height: 26px;
+    line-height: 26px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    :global(.ant-select-selection-item) {
+      height: 26px;
+      line-height: 26px;
+    }
+  }
+  :global(.ant-input-affix-wrapper) {
+    display: flex;
+    align-items: center;
+    height: 26px;
+    line-height: 26px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+  }
+
+  :global(.ant-select-selection-placeholder) {
+    color: #2f3338;
+  }
+  :global(.ant-input) {
+    &::placeholder {
+      // color: #2f3338;
+    }
+  }
+}

@@ -1,0 +1,39 @@
+.topnav {
+  display: flex;
+  align-items: center;
+  height: 45px;
+  padding: 0 20px;
+  line-height: 45px;
+  background: #fff;
+  border-top: 1px solid #e4e4e8;
+  .tabs {
+    width: 110px;
+    height: 45px;
+    > div {
+      height: 100%;
+    }
+  }
+  > span {
+    height: 30px;
+    margin: 0 20px 0 -10px;
+    border-left: 1px solid #eaeaef;
+  }
+  .right {
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-left: 8px;
+      color: #bec4cf;
+      cursor: pointer;
+      &:hover {
+        color: #2997ff;
+      }
+    }
+    .doc_title {
+      color: #202021;
+      font-weight: 500;
+      font-size: 12px;
+    }
+  }
+}

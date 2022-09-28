@@ -1,0 +1,79 @@
+.header {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  border-bottom: 1px solid #eaeaef;
+  // padding-left: 16px;
+}
+.title {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+}
+
+.btn_member {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 94px;
+  height: 27px;
+  margin-right: 6px;
+  color: #666;
+  font-size: 12px;
+  border-radius: 4px;
+
+  &::before {
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    background-image: url('@/assets/allIcon/icon-channel-member.png');
+    background-image: -webkit-image-set(
+      url('@/assets/allIcon/icon-channel-member.png') 1x,
+      url('@/assets/allIcon/icon-channel-member@2x.png') 2x
+    );
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: '';
+  }
+
+  .icon_arrow {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    background-image: url('@/assets/allIcon/icon-member-arrow.png');
+    background-image: -webkit-image-set(
+      url('@/assets/allIcon/icon-member-arrow.png') 1x,
+      url('@/assets/allIcon/icon-member-arrow@2x.png') 2x
+    );
+    background-repeat: no-repeat;
+    background-size: contain;
+    transform: rotate(180deg);
+  }
+
+  &:hover {
+    color: currentColor;
+    background-color: #f1f1f5;
+    .icon_arrow {
+      transform: none;
+    }
+  }
+}
+
+:global {
+  .popover {
+    z-index: 999;
+    .ant-popover-arrow {
+      display: none;
+    }
+    .ant-popover-inner {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .popover .ant-popover-inner-content {
+      padding: 0;
+    }
+  }
+}

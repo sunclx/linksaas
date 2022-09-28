@@ -1,0 +1,125 @@
+.tabs {
+  margin-top: -10px;
+  :global(.ant-tabs-nav::before) {
+    display: none;
+  }
+  .top_info {
+    margin-top: 0;
+  }
+}
+
+.top_info {
+  height: 48px;
+  margin: -15px 0 12px;
+  padding: 5px 12px;
+  font-size: 12px;
+  background: #f4f4f8;
+  border-radius: 4px;
+  .title {
+    color: #202021;
+  }
+  .desc {
+    color: #999;
+  }
+}
+.result_list {
+  margin-bottom: 20px;
+}
+.result_title {
+  margin-bottom: 14px;
+  color: #2c2d2e;
+  font-size: 12px;
+  line-height: 17px;
+}
+.result_item {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  margin-bottom: 14px;
+  line-height: 20px;
+
+  .key {
+    width: 24px;
+    padding-left: 6px;
+    color: #666;
+    font-size: 13px;
+  }
+  .result_user {
+    display: flex;
+    .img {
+      width: 20px;
+      height: 20px;
+      margin-right: 6px;
+      border-radius: 999px;
+    }
+    .name {
+      width: 80px;
+      overflow: hidden;
+      color: #666;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .result_rate {
+    .tips {
+      margin-left: 15px;
+    }
+    .warn {
+      color: @warn_color;
+    }
+  }
+}
+
+.actions {
+  position: absolute;
+  right: 0;
+  bottom: 20px;
+  left: 0;
+  text-align: center;
+  .btn {
+    width: 100px;
+    height: 30px;
+    margin: 0 5px;
+  }
+}
+
+.table {
+  margin-bottom: 10px;
+
+  .table_key {
+    width: 85px;
+    padding-left: 11px;
+  }
+
+  .row {
+    color: #666;
+    font-size: 12px;
+    td {
+      padding: 8px 11px;
+      vertical-align: middle;
+      border-color: #eeeef1;
+    }
+  }
+
+  .user {
+    display: flex;
+    align-items: center;
+    .avatar {
+      display: block;
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      border-radius: 999px;
+    }
+  }
+}
+
+.score_info {
+  display: flex;
+  height: 24px;
+  padding: 3px 10px;
+  color: #2f3338;
+  font-size: 12px;
+  background: #f4f4f8;
+  border-radius: 4px;
+}

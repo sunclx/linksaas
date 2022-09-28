@@ -1,0 +1,47 @@
+.stage_form_item_wrap {
+  justify-content: space-between;
+  .statusBtn {
+    > button {
+      position: relative;
+      width: 64px;
+      height: 30px;
+      margin-right: 10px;
+      border-radius: 6px;
+      img {
+        position: absolute;
+        top: 0;
+        right: 0;
+        opacity: 0;
+        &.active {
+          opacity: 1;
+        }
+      }
+
+      &.dispose {
+        color: #006df6;
+        background: #ddf0ff;
+        border: 1px solid #006df6;
+      }
+      &.check {
+        color: #ff835a;
+        background: #ffebe5;
+        border: 1px solid #ff835a;
+      }
+      &.close {
+        color: #b7b7b7;
+        background: #efefef;
+        border: 1px solid #b7b7b7;
+      }
+    }
+    > span {
+      display: inline-block;
+      color: #888;
+    }
+  }
+  :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    border-radius: 6px;
+  }
+}

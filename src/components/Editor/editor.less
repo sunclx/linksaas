@@ -1,0 +1,374 @@
+[contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.remirror-readonly {
+  .excalidraw .App-toolbar {
+    display: none;
+  }
+
+  .remirror-editor.ProseMirror {
+    min-height: 20px;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .remirror-editor-wrapper {
+    padding-top: 0 !important;
+    border-width: 0px;
+
+  }
+}
+
+._chatContext .remirror-editor {
+  min-height: 170px;
+  max-height: calc(100vh - 300px);
+}
+
+.remirror-editor.ProseMirror {
+  position: relative;
+  overflow-y: scroll;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  word-wrap: break-word;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0;
+}
+
+.remirror-editor ul {
+  list-style: disc;
+  padding-left: 30px;
+}
+
+.remirror-editor ol {
+  list-style: decimal;
+  padding-left: 30px;
+}
+
+
+.remirror-floating-popover {
+  z-index: 100;
+}
+
+.remirror-editor p {
+  margin-bottom: 0.5em;
+}
+
+.remirror-theme .remirror-toolbar {
+  overflow-y: hidden !important;
+  height: 30px;
+
+  .remirror-button {
+    box-shadow: none;
+    border-width: 0px;
+  }
+}
+
+
+.remirror-floating-popover {
+  // padding: 5px 10px !important;
+  background: #fff;
+  border: 1px solid #6e6e6e;
+  border-radius: 3px;
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.2);
+
+  >.remirror-toolbar {
+    height: 30px;
+    margin: 5px 10px 0;
+    box-shadow: none;
+  }
+}
+
+.luckysheet-bottom-controll-row {
+  display: none;
+}
+
+.widget-node-view-wrapper {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.remirror-toolbar .undo-enable-btn,
+.remirror-toolbar .undo-disable-btn,
+.remirror-toolbar .redo-enable-btn,
+.remirror-toolbar .redo-disable-btn,
+.remirror-toolbar .copy-enable-btn,
+.remirror-toolbar .copy-disable-btn,
+.remirror-toolbar .cut-enable-btn,
+.remirror-toolbar .cut-disable-btn,
+.remirror-toolbar .paste-enable-btn,
+.remirror-toolbar .paste-disable-btn,
+.remirror-toolbar .bullet-list-btn,
+.remirror-toolbar .bullet-list-active-btn,
+.remirror-toolbar .order-list-btn,
+.remirror-toolbar .order-list-active-btn,
+.remirror-toolbar .draw-btn,
+.remirror-toolbar .table-draw,
+.remirror-toolbar .file-btn,
+.remirror-toolbar .code-btn,
+.remirror-toolbar .bold-btn,
+.remirror-toolbar .bold-active-btn,
+.remirror-toolbar .italic-btn,
+.remirror-toolbar .italic-active-btn,
+.remirror-toolbar .underline-btn,
+.remirror-toolbar .underline-active-btn,
+.remirror-toolbar .strike-btn,
+.remirror-toolbar .strike-active-btn,
+.remirror-toolbar .sub-btn,
+.remirror-toolbar .sub-active-btn,
+.remirror-toolbar .sup-btn,
+.remirror-toolbar .sup-active-btn,
+.remirror-toolbar .link-btn,
+.remirror-toolbar .link-active-btn,
+.remirror-toolbar .img-btn {
+  width: 35px;
+  height: 25px;
+  background: url(@/assets/editor/image.png) 50% 50% no-repeat;
+  background-size: 50%;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #d0d0d0;
+  }
+}
+
+.remirror-toolbar .undo-enable-btn {
+  background-image: url(@/assets/editor/undo-enable.png);
+}
+
+.remirror-toolbar .undo-disable-btn {
+  background-image: url(@/assets/editor/undo-disable.png);
+  cursor: auto;
+  &:hover {
+    background-color: inherit;
+  }
+}
+
+.remirror-toolbar .redo-enable-btn {
+  background-image: url(@/assets/editor/redo-enable.png);
+}
+
+.remirror-toolbar .redo-disable-btn {
+  background-image: url(@/assets/editor/redo-disable.png);
+  cursor: auto;
+  &:hover {
+    background-color: inherit;
+  }
+}
+
+.remirror-toolbar .copy-enable-btn {
+  background-image: url(@/assets/editor/copy-enable.png);
+}
+
+.remirror-toolbar .copy-disable-btn {
+  background-image: url(@/assets/editor/copy-disable.png);
+  cursor: auto;
+  &:hover {
+    background-color: inherit;
+  }
+}
+
+.remirror-toolbar .cut-enable-btn {
+  background-image: url(@/assets/editor/cut-enable.png);
+}
+
+.remirror-toolbar .cut-disable-btn {
+  background-image: url(@/assets/editor/cut-disable.png);
+  cursor: auto;
+  &:hover {
+    background-color: inherit;
+  }
+}
+
+.remirror-toolbar .paste-enable-btn {
+  background-image: url(@/assets/editor/paste-enable.png);
+}
+
+.remirror-toolbar .paste-disable-btn {
+  background-image: url(@/assets/editor/paste-disable.png);
+  cursor: auto;
+  &:hover {
+    background-color: inherit;
+  }
+}
+
+.remirror-toolbar .bullet-list-btn {
+  background-image: url(@/assets/editor/bullet-list.png);
+}
+
+.remirror-toolbar .bullet-list-active-btn {
+  background-image: url(@/assets/editor/bullet-list.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .order-list-btn {
+  background-image: url(@/assets/editor/order-list.png);
+}
+
+.remirror-toolbar .order-list-active-btn {
+  background-image: url(@/assets/editor/order-list.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .file-btn {
+  background-image: url(@/assets/editor/file.png);
+}
+
+.remirror-toolbar .code-btn {
+  background-image: url(@/assets/editor/code.png);
+}
+
+.remirror-toolbar .table-btn {
+  background-image: url(@/assets/editor/table.png);
+}
+
+.remirror-toolbar .draw-btn {
+  background-image: url(@/assets/editor/draw.png);
+}
+
+.remirror-toolbar .widget-btn {
+  height: 25px;
+  padding-right: 6px;
+  color: #2c2d2e;
+  font-size: 12px;
+  line-height: 25px;
+  cursor: pointer;
+
+  &::before {
+    display: inline-block;
+    width: 35px;
+    height: 25px;
+    vertical-align: middle;
+    background: url(@/assets/editor/widget.png) 50% 50% no-repeat;
+    background-size: 50%;
+    content: '';
+  }
+
+  >span {
+    margin-left: 5px;
+  }
+}
+
+.remirror-toolbar .widget-btn:hover {
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .vc-btn {
+  height: 25px;
+  padding-right: 6px;
+  color: #2c2d2e;
+  font-size: 12px;
+  line-height: 25px;
+  cursor: pointer;
+
+  &::before {
+    display: inline-block;
+    width: 35px;
+    height: 25px;
+    vertical-align: middle;
+    background: url(@/assets/editor/vc.png) 50% 50% no-repeat;
+    background-size: 50%;
+    content: '';
+  }
+
+  >span {
+    margin-left: 5px;
+  }
+}
+
+.remirror-toolbar .vc-btn:hover {
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .bold-btn {
+  background-image: url(@/assets/editor/bold.png);
+}
+
+.remirror-toolbar .bold-active-btn {
+  background-image: url(@/assets/editor/bold.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .italic-btn {
+  background-image: url(@/assets/editor/italic.png);
+}
+
+.remirror-toolbar .italic-active-btn {
+  background-image: url(@/assets/editor/italic.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .underline-btn {
+  background-image: url(@/assets/editor/underline.png);
+}
+
+.remirror-toolbar .underline-active-btn {
+  background-image: url(@/assets/editor/underline.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .strike-btn {
+  background-image: url(@/assets/editor/strike.png);
+}
+
+.remirror-toolbar .strike-active-btn {
+  background-image: url(@/assets/editor/strike.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .sub-btn {
+  background-image: url(@/assets/editor/sub.png);
+}
+
+.remirror-toolbar .sub-active-btn {
+  background-image: url(@/assets/editor/sub.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .sup-btn {
+  background-image: url(@/assets/editor/sup.png);
+}
+
+.remirror-toolbar .sup-active-btn {
+  background-image: url(@/assets/editor/sup.png);
+  background-color: #d0d0d0;
+}
+
+.remirror-toolbar .link-btn {
+  background-image: url(@/assets/editor/link.png);
+}
+
+.remirror-toolbar .link-active-btn {
+  background-image: url(@/assets/editor/link.png);
+  background-color: #d0d0d0;
+}
+
+.channel-editor-virew {
+  .remirror-readonly {
+    margin-right: 10px;
+    overflow: hidden;
+    border-bottom: 1px solid #eeeef2;
+  }
+}
+
+.remirror-editor-wrapper {
+  padding-top: 0px !important;
+  border: 1px solid #6e6e6e;
+}
+
+.remirror-editor.ProseMirror,
+.remirror-theme .ProseMirror:active,
+.remirror-theme .ProseMirror:focus {
+  min-height: 181px;
+  box-shadow: none;
+}
+
+.remirror-toolbar hr.remirror-separator {
+  position: relative;
+  top: 4px;
+  height: 15px;
+  border-color: #eaeaef !important;
+  border-width: 0 1px 0 0;
+}

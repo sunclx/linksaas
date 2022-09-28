@@ -1,0 +1,281 @@
+.list{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  height: 50px;
+  line-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #202021;
+  padding-left: 13px;
+  flex: 1;
+}
+.add {
+  display: block;
+  padding: 3px;
+  border-radius: 4px;
+  margin-right: 1px;
+
+  &:hover {
+    background-color: #EAEAEF;
+  }
+  .icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    background-image: url('@/assets/allIcon/icon-add-channel.png');
+    background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x, url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
+    background-size: contain;
+    background-repeat: no-repeat;
+    
+  }
+}
+
+.more {
+  composes: add;
+  .icon {
+    background-image: url('@/assets/allIcon/icon-more-channel.png');
+    background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x, url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
+  }
+}
+
+// composes
+.mod_icon_channel {
+  width: 14px;
+  height: 14px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-right: 6px;
+}
+
+// .icon_channel_task {
+//   composes: mod_icon_channel;
+//   background-image: url('@/assets/allIcon/icon-channel-task.png');
+// }
+// .icon_channel_bug {
+//   composes: mod_icon_channel;
+//   background-image: url('@/assets/allIcon/icon-channel-bug.png');
+// }
+// .icon_channel_customize {
+//   composes: mod_icon_channel;
+//   background-image: url('@/assets/allIcon/icon-channel-customize.png');
+// }
+
+.icon_channel_all {
+  width: 22px;
+  height: 14px;
+  display: block;
+  margin-right: 6px;
+  background-color: #CDD1D9;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 12px;
+  overflow: hidden;
+  padding-left: 2px;
+  &::after {
+    content: '全员';
+    transform: scale(.75);
+    transform-origin: 0 50%;
+    line-height: 14px;
+    white-space: nowrap;
+    font-style: normal;
+    display: block;
+  }
+
+}
+
+.icon_channel_task {
+  composes: icon_channel_all;
+  &::after {
+    content: '任务'
+  }
+}
+.icon_channel_bug {
+  composes: icon_channel_all;
+  &::after {
+    content: '缺陷'
+  }
+}
+.icon_channel_customize {
+  composes: icon_channel_all;
+  width: 32px;
+  &::after {
+    content: '自定义'
+  }
+}
+
+.menu {
+  background-color: #fff;
+  border-top: 1px solid #F0F0F5;
+  width: 100%;
+  overflow-y: scroll;
+  margin-bottom: 40px;
+
+  .menu_item {
+    position: relative;
+    height: 48px;
+    line-height: 48px;
+    color: @link_color;
+    padding-left: 15px;
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #2C2D2E;
+
+    &:after{
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 10px;
+      border-bottom: 1px solid #F0F0F5;
+    }
+    &:hover {
+      background-color: #F1F1F5;
+      cursor: pointer;
+    }
+    &.current {
+      background-color: rgba(14, 131, 255, .1);
+      color: @link_active_color;
+      border-left: 3px solid #0E83FF;
+      padding-left: 12px;
+      .icon_channel_all,
+      .icon_channel_bug,
+      .icon_channel_task{
+        background-color: #0084FF;
+      }
+    }
+    &.closed {
+      color: #bbb;
+    }
+
+  }
+
+  .menu_box{
+    flex: 1;
+    display: flex;
+    align-items:center;
+  }
+
+  .menu_title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .system {
+    font-weight: 900;
+  }
+
+  .menu_tips {
+    margin-left: 4px;
+    color: #DD4E55;
+  }
+
+  .menu_news {
+    margin-right: 5px;
+    max-width: 32px;
+    height: 16px;
+    min-width: 24px;
+    background: linear-gradient(180deg, #F56D79 0%, #F43437 100%);
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: Helvetica;
+    color: #FFFFFF;
+    line-height: 16px;
+    text-align: center;
+    padding: 0 2px;
+    box-sizing: border-box;
+  }
+}
+// 右键菜单
+.contextmenu_box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  transition: opacity 250ms ease;
+  opacity: 0;
+  pointer-events: none;
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 9999;
+  }
+}
+.contextmenu {
+  position: fixed;
+  width: 116px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  border: 1px solid #EAEAEF;
+  padding: 7px 6px;
+  box-sizing: border-box;
+
+  .divider {
+    border-bottom: 1px solid #F0F0F5;
+    cursor: inherit;
+    margin: 6px 0;
+  }
+
+  .item {
+    color: #000;
+    cursor: pointer;
+    font-weight: 400;
+    line-height: 27px;
+    padding: 0 7px;
+    text-align: inherit;
+    white-space: nowrap;
+    font-size: 12px;
+    &:hover {
+      background: #F1F1F5;
+      border-radius: 4px;
+    }
+
+    &.disabled,
+    &.disabled:hover {
+      background-color: transparent;
+      color: #bbb;
+      cursor: inherit;
+      pointer-events: none;
+    }
+  }
+}
+
+// 更多菜单
+.moremenu{
+  composes: contextmenu;
+  position: static;
+  width: 156px;
+  .item {
+    position: relative;
+    padding-left: 20px;
+    &.selected::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      margin-top: -6px;
+      left: 3px;
+      width: 13px;
+      height: 12px;
+      background-image: url('@/assets/allIcon/icon-list-channel-select.png');
+      background-image: -webkit-image-set(url('@/assets/allIcon/icon-list-channel-select.png') 1x, url('@/assets/allIcon/icon-list-channel-select@2x.png') 2x);
+    }
+  }
+}
+

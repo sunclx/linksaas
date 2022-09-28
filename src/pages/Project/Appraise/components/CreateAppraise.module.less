@@ -1,0 +1,64 @@
+.box{
+    margin: calc(-20px - 0.5em) -20px -20px;
+    height: 342px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form {
+    flex: 1;
+    padding-top: 20px;
+    label {
+        font-size: 12px;
+        font-weight: 500;
+        padding-right: 10px;
+        &:after {
+            display: none;
+        }
+    }
+    .icon_tag_delete {
+        display: block;
+        width: 12px;
+        height: 12px;
+        margin-left: 12px;
+        background-image: url('@/assets/allIcon/icon-tag-delete.png');
+        background-image: -webkit-image-set(
+            url('@/assets/allIcon/icon-tag-delete.png') 1x,
+            url('@/assets/allIcon/icon-tag-delete@2x.png') 2x
+        );
+    }
+    :global(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+        height: 118px;
+        align-items: flex-start;
+        padding: 8px 10px;
+    }
+    :global(.ant-select-multiple .ant-select-selection-item) {
+        height: 24px;
+        background: #F4F4F8;
+        border-radius: 4px;
+        line-height: 18px;
+        padding: 3px 6px;
+        margin-right: 6px;
+        border: 0 none;
+        font-size: 12px;
+        color: #202021;
+    }
+}
+
+.select_tag_cover {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    pointer-events: none;
+    margin-right: 4px;
+}
+
+.actions {
+    padding: 20px 0;
+    text-align: center;
+    .btn {
+        margin:0 5px;
+        width: 100px;
+        height: 30px;
+    }
+}

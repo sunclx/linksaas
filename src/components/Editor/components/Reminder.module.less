@@ -1,0 +1,71 @@
+.reminder_dropdown {
+  padding: 0;
+  overflow: unset;
+  background: transparent;
+  border-radius: 8px;
+  box-shadow: none;
+  &::after {
+    display: block;
+    width: 0;
+    height: 0;
+    margin-left: 33px;
+    border-top: 8px solid rgb(255, 255, 255);
+    border-right: 8px solid transparent;
+    border-left: 8px solid transparent;
+    content: '';
+  }
+  .reminder_modal {
+    width: 200px;
+    height: 180px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.12);
+
+    .user_wrap {
+      height: 140px;
+      padding: 12px 4px;
+      overflow: auto;
+    }
+    .reminder_item {
+      margin: 8px 0;
+      padding: 2px 2px 2px 16px;
+      color: #000;
+      font-weight: 400;
+      font-size: 12px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      line-height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      img {
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+        border-radius: 20px;
+      }
+      .name {
+        margin-right: 6px;
+      }
+      .tag {
+        padding: 0 6px;
+        color: #0e83ff;
+        font-weight: 400;
+        font-size: 10px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        line-height: 10px;
+        background: rgba(51, 162, 255, 0.2);
+        border-radius: 10px;
+      }
+      &:hover {
+        background: #f1f1f5;
+      }
+    }
+    .hr {
+      border-top: 1px solid #eaeaef;
+    }
+    .channel_all {
+      height: 33px;
+      margin: 2px 4px 0;
+      line-height: 33px;
+    }
+  }
+}

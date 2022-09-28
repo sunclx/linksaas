@@ -1,0 +1,167 @@
+.selectHd {
+  display: flex;
+  flex-direction: row;
+  flex-direction: row-reverse;
+  margin: 0 0 10px;
+
+  :global {
+    .ant-select {
+      width: 130px;
+
+      .ant-select-arrow {
+        top: 30%;
+      }
+    }
+
+    .ant-select span {
+      margin: 0 !important;
+    }
+  }
+}
+
+.fileUpload {
+  position: relative;
+  width: 236px;
+  height: 70px;
+  margin: 20px 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+
+  .loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .delete {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 111;
+    padding: 4px 4px 0;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  &:hover {
+    .delete {
+      opacity: 1;
+
+      &:hover {
+        color: #2997ff;
+      }
+    }
+  }
+
+  .name {
+    display: -webkit-box;
+    width: 174px;
+    height: 36px;
+    margin: 8px 0 0 8px !important;
+    overflow: hidden;
+    color: #202021;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    word-wrap: break-word;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .size {
+    margin: 4px 0 0 8px !important;
+    color: #888;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 12px;
+  }
+}
+
+.docIcon,
+.videoIcon,
+.audioIcon,
+.imgIcon,
+.othersIcon {
+  float: right;
+  width: 40px;
+  height: 40px;
+  margin: 8px 8px 0 0 !important;
+  background-image: url(@/assets/editor/zip@2x.png);
+  background-size: 100%;
+}
+
+.docIcon {
+  background-image: url(@/assets/editor/doc@2x.png);
+}
+
+.videoIcon {
+  background-image: url(@/assets/editor/video@2x.png);
+}
+
+.audioIcon {
+  background-image: url(@/assets/editor/audio@2x.png);
+}
+
+.imgIcon {
+  background-image: url(@/assets/editor/img@2x.png);
+}
+
+.imgUpload {
+  position: relative;
+  width: fit-content;
+  margin: 20px 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  .img {
+    min-width: 200px;
+    min-height: 150px;
+  }
+  .loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .delete {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 111;
+    padding: 4px 4px 0;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  &:hover {
+    .delete {
+      opacity: 1;
+
+      &:hover {
+        color: #2997ff;
+      }
+    }
+  }
+}

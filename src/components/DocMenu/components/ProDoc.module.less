@@ -1,0 +1,89 @@
+.left_pro_doc_wrap {
+  height: 100%;
+  // height: 50%;
+  // padding: 10px;
+  overflow: auto;
+
+  // border-bottom: 1px solid #eaeaef;
+  .li_item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 6px 8px 6px 26px;
+    color: #2c2d2e;
+    border-radius: 6px;
+    cursor: pointer;
+
+    .isCollect {
+      position: absolute;
+      left: 8px;
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+      background: url('../../../assets//allIcon/collect.png');
+      background-size: 100% 100%;
+    }
+
+    .no_Collect {
+      position: absolute;
+      left: 8px;
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+      background: url('../../../assets//allIcon/no_collect.png');
+      background-size: 100% 100%;
+    }
+
+    .btn_wrap {
+      position: absolute;
+      right: 8px;
+      display: flex;
+      display: none;
+      align-content: center;
+      svg {
+        color: #8b8787;
+        font-size: 14px;
+
+        &:hover {
+          color: #0e83ff;
+          background: rgba(14, 131, 255, 0.2);
+        }
+      }
+    }
+
+    &:hover {
+      color: #0e83ff;
+      background: rgba(14, 131, 255, 0.2);
+      .btn_wrap {
+        display: block;
+      }
+    }
+  }
+  .curDoc {
+    background: rgba(14, 131, 255, 0.2);
+  }
+}
+
+// .add {
+//   display: block;
+//   margin-right: 1px;
+//   padding: 3px;
+//   border-radius: 4px;
+
+//   &:hover {
+//     background-color: #eaeaef;
+//   }
+
+//   .icon {
+//     display: block;
+//     width: 14px;
+//     height: 14px;
+//     background-image: url('@/assets/allIcon/icon-add-channel.png');
+//     background-image: -webkit-image-set(
+//       url('@/assets/allIcon/icon-add-channel.png') 1x,
+//       url('@/assets/allIcon/icon-add-channel@2x.png') 2x
+//     );
+//     background-repeat: no-repeat;
+//     background-size: contain;
+//   }
+// }

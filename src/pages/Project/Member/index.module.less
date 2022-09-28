@@ -1,0 +1,26 @@
+.member_wrap {
+  padding: 20px 30px;
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    > h2 {
+      color: #202021;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 14px;
+      > span {
+        color: #666;
+        font-weight: 400;
+      }
+    }
+  }
+  .table_wrap {
+    :global(.ant-table-thead > tr > th) {
+      border: none;
+    }
+    :global(.ant-table-tbody > tr > td) {
+      border: none;
+    }
+  }
+}

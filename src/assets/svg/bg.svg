@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em"
+  viewBox="0 0 11 13" version="1.1">
+  <title>背景</title>
+  <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="浮动工具栏" transform="translate(-361.000000, -218.000000)">
+      <g id="编组-2备份-4" transform="translate(142.000000, 206.000000)">
+        <g id="背景" transform="translate(219.000000, 12.000000)">
+          <rect id="矩形" stroke="#2F3338"
+            transform="translate(5.500000, 5.500000) rotate(-330.000000) translate(-5.500000, -5.500000) " x="2.5"
+            y="2.5" width="6" height="6" />
+          <polygon id="矩形" fill="#2F3338"
+            transform="translate(3.000000, 10.000000) rotate(-330.000000) translate(-3.000000, -10.000000) "
+            points="1 8 5 8 5 10 1 12" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

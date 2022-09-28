@@ -1,0 +1,137 @@
+import React from 'react';
+import type { WebMsg } from '@/stores/chatMsg';
+import { MSG_LINK_BUG, MSG_LINK_TASK, MSG_LINK_CHANNEL } from '@/api/project_channel';
+import type { MSG_LINK_TYPE } from '@/api/project_channel';
+import { observer } from 'mobx-react';
+import { runInAction } from 'mobx';
+import { Space } from 'antd';
+import { useStores } from '@/hooks';
+import { useHistory } from 'react-router-dom';
+import { LinkTaskInfo, LinkBugInfo, LinkChannelInfo } from '@/stores/linkAux';
+import { ReadOnlyEditor } from '@/components/Editor';
+import UserPhoto from '@/components/Portrait/UserPhoto';
+import styles from './ChatMsg.module.less';
+import { LinkOutlined } from '@ant-design/icons';
+import moment from 'moment';
+import { CloseOutlined } from '@ant-design/icons';
+
+export type ChatMsgProp = {
+  msg: WebMsg;
+};
+
+const ChatMsg: React.FC<ChatMsgProp> = (props) => {
+  const { msg } = props;
+  const chatMsgStore = useStores('chatMsgStore');
+  const channelStore = useStores('channelStore');
+  const linkAuxStore = useStores('linkAuxStore');
+  const history = useHistory();
+
+  const goToDest = () => {
+    if (msg.msg.basic_msg.link_type == MSG_LINK_TASK) {
+      linkAuxStore.goToLink(
+        new LinkTaskInfo('', msg.msg.project_id, msg.msg.basic_msg.link_dest_id),
+        history,
+      );
+    } else if (msg.msg.basic_msg.link_type == MSG_LINK_BUG) {
+      linkAuxStore.goToLink(
+        new LinkBugInfo('', msg.msg.project_id, msg.msg.basic_msg.link_dest_id),
+        history,
+      );
+    } else if (msg.msg.basic_msg.link_type == MSG_LINK_CHANNEL) {
+      linkAuxStore.goToLink(
+        new LinkChannelInfo('', msg.msg.project_id, msg.msg.basic_msg.link_dest_id, msg.msg.msg_id),
+        history,
+      );
+    }
+  };
+  const setHover = (hover: boolean) => {
+    if (channelStore.curChannel?.channelInfo.closed) {
+      return;
+    }
+    if (channelStore.curChannel?.channelInfo.readonly) {
+      return;
+    }
+    runInAction(() => (msg.hovered = hover));
+  };
+  const getLinkType = (linkType: MSG_LINK_TYPE) => {
+    if (linkType == MSG_LINK_BUG) {
+      return "缺陷";
+    } else if (linkType == MSG_LINK_TASK) {
+      return "任务";
+    } else if (linkType == MSG_LINK_CHANNEL) {
+      return "频道";
+    }
+    return "";
+  };
+  return (
+    <>
+      <div
+        className={styles.chatItem}
+        onMouseOver={() => setHover(true)}
+        onMouseOut={() => setHover(false)}
+      >
+        <div>
+          <UserPhoto
+            logoUri={msg.msg.sender_logo_uri ?? ''}
+            width="32px"
+            height="32px"
+            style={{
+              borderRadius: '20px',
+              position: 'absolute',
+              left: '16px',
+              top: '10px',
+            }}
+          />
+          <span className={styles.chatName}>{msg.msg.sender_display_name}</span>
+          <span className={styles.chatTime}>{moment(msg.msg.send_time).format("YYYY-MM-DD HH:mm:ss")}</span>
+          {msg.msg.basic_msg.link_dest_id != "" && (
+            <span className={styles.tools}>
+              来自{getLinkType(msg.msg.basic_msg.link_type)}:
+              <a
+                style={{ marginLeft: "10px" }}
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  goToDest();
+                }}><Space>{msg.msg.link_dest_title}<LinkOutlined /></Space></a>
+            </span>
+          )}
+          {msg.hovered && (
+            <span className={styles.tools}>
+              <span
+                title="创建文档"
+                className={styles.docBtn}
+                onClick={() => linkAuxStore.goToCreateDoc(msg.msg.basic_msg.msg_data, history)}
+              />
+              <span
+                title="创建任务"
+                className={styles.taskBtn}
+                onClick={() => linkAuxStore.goToCreateTask(msg.msg.basic_msg.msg_data, history)}
+              />
+              <span
+                title=" 创建缺陷"
+                className={styles.bugBtn}
+                onClick={() => linkAuxStore.goToCreateBug(msg.msg.basic_msg.msg_data, history)}
+              />
+            </span>
+          )}
+        </div>
+        <div>
+          <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} collapse={true} />
+        </div>
+      </div>
+      {chatMsgStore.listRefMsgId == msg.msg.msg_id && (
+        <div style={{ backgroundColor: "#E18160", position: "relative", textAlign: "center" }}>
+          来自提到我的(关闭后查看更多信息)<CloseOutlined style={{ position: "absolute", right: "5px", top: "5px" }} onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            chatMsgStore.listRefMsgId = '';
+          }} />
+          &nbsp;&nbsp;
+        </div>
+      )}
+    </>
+  );
+};
+
+export default observer(ChatMsg);

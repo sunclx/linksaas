@@ -1,0 +1,38 @@
+.modal_wrap {
+  :global(.ant-modal-content) {
+    background: transparent;
+  }
+  :global(.ant-modal-body) {
+    padding: 0;
+    background: #fff;
+    border-radius: 6px;
+    .title {
+      height: 50px;
+      color: #2c2d2e;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      line-height: 50px;
+      text-align: center;
+      border-bottom: 1px solid #eaeaef;
+    }
+    .content_wrap {
+      padding: 20px;
+    }
+    .footer {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      > button {
+        margin: 0 20px;
+      }
+    }
+  }
+  .btn_wrap {
+    padding: 0 24px 24px;
+    text-align: center;
+    button {
+      margin: 0 10px;
+    }
+  }
+}
