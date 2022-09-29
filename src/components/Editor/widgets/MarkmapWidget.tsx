@@ -33,12 +33,15 @@ const EditMarkmap: React.FC<WidgetProps> = (props) => {
       const transformer = new Transformer();
       const { root } = transformer.transform(spec);
 
-      if (graphRef.current != null) {
-        const ins = markmap.Markmap.create(graphRef.current, undefined, root);
-        setInstance(ins);
-        const linkList = graphRef.current.querySelectorAll('a');
-        linkList.forEach((link) => (link.target = '_blank'));
-      }
+      setTimeout(() => {
+        if (graphRef.current != null) {
+          const ins = markmap.Markmap.create(graphRef.current, undefined, root);
+          setInstance(ins);
+          const linkList = graphRef.current.querySelectorAll('a');
+          linkList.forEach((link) => (link.target = '_blank'));
+        }
+      }, 100);
+
     }
   }, [spec, activateKey]);
 
@@ -67,7 +70,7 @@ const EditMarkmap: React.FC<WidgetProps> = (props) => {
               }}
             />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="预览" key="2" style={{ overflowY: 'scroll', maxHeight: 500 }}>
+          <Tabs.TabPane tab="预览" key="2" style={{ overflow: "scroll", maxHeight: "400px" }}>
             <svg ref={graphRef} style={{ height: '400px', width: '90%' }} />
           </Tabs.TabPane>
         </Tabs>
