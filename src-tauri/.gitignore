@@ -3,3 +3,5 @@
 /target/
 WixTools
 *tauri.windows.conf.json
+*tauri.linux.conf.json
+*tauri.macos.conf.json

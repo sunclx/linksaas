@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { FloatingWrapper, Toolbar, useActive, useAttrs } from '@remirror/react';
-import type { ToolbarItemUnion } from '@remirror/react';
-import { ComponentItem, useCommands, useHelpers, useRemirrorContext } from '@remirror/react';
+import { FloatingWrapper, useActive, useAttrs } from '@remirror/react';
+import Toolbar from './Toolbar';
+import { useCommands, useHelpers, useRemirrorContext } from '@remirror/react';
 import { LinkSelect } from '.';
 import type { LinkInfo } from '@/stores/linkAux';
 import { Select, Tooltip, Popover } from 'antd';
@@ -10,6 +10,7 @@ import type { TextColorAttributes } from '@remirror/extension-text-color';
 import type { TextHighlightAttributes } from '@remirror/extension-text-highlight';
 import s from './FloatToolbar.module.less';
 import { ReactComponent as Bgsvg } from '@/assets/svg/bg.svg';
+import ToolbarGroup from './ToolbarGroup';
 
 const LinkBtn = () => {
   const [showModal, setShowModal] = useState(false);
@@ -52,12 +53,12 @@ const LinkBtn = () => {
   );
 };
 
-const headAndLinkItem: ToolbarItemUnion = {
-  type: ComponentItem.ToolbarGroup,
-  label: 'link',
-  items: [{ type: ComponentItem.ToolbarElement, element: <LinkBtn /> }],
-  separator: 'end',
-};
+const headAndLinkItem = (
+  <ToolbarGroup
+    items={[<LinkBtn key="link" />]}
+    separator={true}
+  />
+);
 
 const FontSize = () => {
   const commands = useCommands();
@@ -202,16 +203,12 @@ const FontHightLight = () => {
   );
 };
 
-const fontItem: ToolbarItemUnion = {
-  type: ComponentItem.ToolbarGroup,
-  label: 'Config Font',
-  items: [
-    { type: ComponentItem.ToolbarElement, element: <FontSize /> },
-    { type: ComponentItem.ToolbarElement, element: <FontColor /> },
-    { type: ComponentItem.ToolbarElement, element: <FontHightLight /> },
-  ],
-  separator: 'end',
-};
+const fontItem = (
+  <ToolbarGroup
+    items={[<FontSize key="fontSize" />, <FontColor key="fontColor" />, <FontHightLight key="fontHightLight" />]}
+    separator={true}
+  />
+);
 
 const BoldBtn = () => {
   const { toggleBold } = useCommands();
@@ -339,23 +336,26 @@ const Superscript = () => {
   );
 };
 
-const formatItem: ToolbarItemUnion = {
-  type: ComponentItem.ToolbarGroup,
-  label: 'Simple Formatting',
-  items: [
-    { type: ComponentItem.ToolbarElement, element: <BoldBtn /> },
-    { type: ComponentItem.ToolbarElement, element: <ItalicBtn /> },
-    { type: ComponentItem.ToolbarElement, element: <UnderlineBtn /> },
-    { type: ComponentItem.ToolbarElement, element: <StrikeBtn /> },
-    { type: ComponentItem.ToolbarElement, element: <SubscriptBtn /> },
-    { type: ComponentItem.ToolbarElement, element: <Superscript /> },
-  ],
-};
+const formatItem = (
+  <ToolbarGroup
+    items={[
+      <BoldBtn key="bold" />,
+      <ItalicBtn key="italic" />,
+      <UnderlineBtn key="underline" />,
+      <StrikeBtn key="strike" />,
+      <SubscriptBtn key="sub" />,
+      <Superscript key="sup" />
+    ]}
+    separator={false}
+  />);
 
-export const FloatToolBar = () => {
+
+const FloatToolBar = () => {
   return (
     <FloatingWrapper displayArrow={true} positioner="selection" placement="top">
       <Toolbar items={[headAndLinkItem, fontItem, formatItem]} />
     </FloatingWrapper>
   );
 };
+
+export default FloatToolBar;

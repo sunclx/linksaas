@@ -1,6 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Remirror, useRemirror, EditorComponent } from '@remirror/react';
-import { Toolbar, ThemeProvider } from '@remirror/react';
+import { ThemeProvider } from '@remirror/react';
+import Toolbar from './components/Toolbar';
+import  FloatToolBar  from './components/FloatToolbar';
+
 import { AllStyledComponent } from '@remirror/styles/emotion';
 
 import {
@@ -11,8 +14,8 @@ import {
   newCommItem,
   contentWidgetItem,
   vcWidgetItem
-} from './components/Toolbar';
-import { FloatToolBar, Reminder } from './components/index';
+} from './components/ToolbarItem';
+import { Reminder } from './components/index';
 
 import type { EditorRef } from './common';
 import { ImperativeHandle } from './common';
@@ -87,7 +90,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
     <ThemeProvider>
       <AllStyledComponent>
         <Remirror manager={manager} initialContent={state}>
-          <Toolbar items={toolbarItems} refocusEditor label="Top Toolbar" />
+          <Toolbar items={toolbarItems} />
           <FloatToolBar />
           {attrs.showReminder && (
             <Reminder enabled={showReminder} channelMember={attrs.channelMember} />
