@@ -5,7 +5,10 @@ import { exec_sidecar_shell } from '@/api/shell';
 import EditorWrap from '../components/EditorWrap';
 import style from './GitlabListWidget.module.less';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 const { Option } = Select;
+
+
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 interface WidgetData {
   proto: 'http' | 'https';
@@ -20,8 +23,6 @@ export const gitlabListWikiWidgetInitData: WidgetData = {
   host: 'jihulab.com',
   access_token: '',
   project_id: 0,
-  // access_token: 'x2nspLoDZd8ziVKvVZQ2',
-  // project_id: 20535,
 };
 
 interface WikiInfo {
@@ -95,7 +96,7 @@ const EditGitlabListWiki: React.FC<WidgetProps> = (props) => {
         <h2 className={style.title}>Gitlab Wiki列表</h2>
         <Form onFinish={(values: WidgetData) => listWiki(values)}>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
             label="域名"
             name="host"
@@ -125,7 +126,7 @@ const EditGitlabListWiki: React.FC<WidgetProps> = (props) => {
             />
           </Form.Item>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
             label="端口"
             name="port"
@@ -149,9 +150,9 @@ const EditGitlabListWiki: React.FC<WidgetProps> = (props) => {
             />
           </Form.Item>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
-            label="密码"
+            label={<span>访问令牌<a href="https://docs.gitlab.cn/jh/user/profile/personal_access_tokens.html" target="_blank" rel="noreferrer"><QuestionCircleOutlined/></a></span>}
             name="access_token"
             initialValue={data.access_token}
             rules={[{ type: 'string' }]}
@@ -165,7 +166,7 @@ const EditGitlabListWiki: React.FC<WidgetProps> = (props) => {
             />
           </Form.Item>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
             label="项目ID"
             name="project_id"

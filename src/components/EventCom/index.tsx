@@ -51,7 +51,10 @@ const EventCom: FC<EventComProps> = ({
             <Image
               preview={{
                 src: imgUrl,
-                width: 200,
+                mask: false,
+                wrapStyle: {
+                  margin: "60px 60px 60px 60px"
+                },
               }}
               src={thumbImgUrl}
             />

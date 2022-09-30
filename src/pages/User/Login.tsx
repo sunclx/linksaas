@@ -23,6 +23,16 @@ const Login: React.FC = () => {
     },
   );
 
+  const localUserStr = localStorage.getItem("userInfo");
+  let localUser = {
+    username: "",
+    password: "",
+    voluntarily: false,
+  };
+  if (localUserStr != null) {
+    localUser = JSON.parse(localUserStr);
+  }
+  console.log(localUser);
   return (
     <div className={cls.loginBox}>
       <Row>
@@ -57,7 +67,6 @@ const Login: React.FC = () => {
                     password: string;
                     voluntarily: boolean;
                   }) => {
-                    console.log(voluntarily);
                     localStorage.setItem(
                       'userInfo',
                       JSON.stringify({
@@ -70,7 +79,7 @@ const Login: React.FC = () => {
                     userStore.callLogin(username, password);
                   }}
                   autoComplete="off"
-                  initialValues={{ username: '', password: '' }}
+                  initialValues={localUser}
                 >
                   <Form.Item name="username">
                     <Input
@@ -80,13 +89,13 @@ const Login: React.FC = () => {
                       spellCheck={false}
                     />
                   </Form.Item>
-                  <Form.Item name="password">
+                  <Form.Item name="password" initialValue={localUser.password}>
                     <Input placeholder="密码" type="password" autoComplete="off" />
                   </Form.Item>
                   <Form.Item>
-                    <Form.Item name="voluntarily" valuePropName="checked" noStyle>
+                    <Form.Item name="voluntarily" valuePropName="checked" noStyle initialValue={localUser.voluntarily}>
                       <Checkbox>
-                        <span className={cls.voluntarily}>自动登录</span>
+                        <span className={cls.voluntarily}>记录账号密码</span>
                       </Checkbox>
                     </Form.Item>
                   </Form.Item>

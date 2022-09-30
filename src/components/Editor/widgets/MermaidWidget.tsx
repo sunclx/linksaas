@@ -7,6 +7,8 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import EditorWrap from '../components/EditorWrap';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import style from './MermaidWidget.module.less';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 
 interface WidgetData {
@@ -164,9 +166,11 @@ const EditMermaid: React.FC<WidgetProps> = (props) => {
       try {
         mermaid.parse(spec);
         mermaid.render('__inEditor', spec, (svgCode) => {
-          if (graphRef.current != null) {
-            graphRef.current.innerHTML = svgCode;
-          }
+          setTimeout(() => {
+            if (graphRef.current != null) {
+              graphRef.current.innerHTML = svgCode;
+            }
+          }, 200);
         });
       } catch (e) {
         if (graphRef.current != null) {
@@ -186,42 +190,45 @@ const EditMermaid: React.FC<WidgetProps> = (props) => {
           }}
           tabBarExtraContent={{
             right: (
-              <Select
-                style={{ width: 150 }}
-                placeholder="请选择图表类型"
-                onChange={(value) => {
-                  setDemo(value);
-                }}
-                className={style.select}
-              >
-                <Select.Option key="flow" value="flow">
-                  流程图
-                </Select.Option>
-                <Select.Option key="seq" value="seq">
-                  时序图
-                </Select.Option>
-                <Select.Option key="class" value="class">
-                  类图
-                </Select.Option>
-                <Select.Option key="state" value="state">
-                  状态图
-                </Select.Option>
-                <Select.Option key="gantt" value="gantt">
-                  甘特图
-                </Select.Option>
-                <Select.Option key="pie" value="pie">
-                  圆饼图
-                </Select.Option>
-                <Select.Option key="er" value="er">
-                  ER图
-                </Select.Option>
-                <Select.Option key="journey" value="journey">
-                  用户体验图
-                </Select.Option>
-                <Select.Option key="git" value="git">
-                  GIT历史
-                </Select.Option>
-              </Select>
+              <>
+                <Select
+                  style={{ width: 150 }}
+                  placeholder="请选择图表类型"
+                  onChange={(value) => {
+                    setDemo(value);
+                  }}
+                  className={style.select}
+                >
+                  <Select.Option key="flow" value="flow">
+                    流程图
+                  </Select.Option>
+                  <Select.Option key="seq" value="seq">
+                    时序图
+                  </Select.Option>
+                  <Select.Option key="class" value="class">
+                    类图
+                  </Select.Option>
+                  <Select.Option key="state" value="state">
+                    状态图
+                  </Select.Option>
+                  <Select.Option key="gantt" value="gantt">
+                    甘特图
+                  </Select.Option>
+                  <Select.Option key="pie" value="pie">
+                    圆饼图
+                  </Select.Option>
+                  <Select.Option key="er" value="er">
+                    ER图
+                  </Select.Option>
+                  <Select.Option key="journey" value="journey">
+                    用户体验图
+                  </Select.Option>
+                  <Select.Option key="git" value="git">
+                    GIT历史
+                  </Select.Option>
+                </Select>
+                <a href="https://mermaid-js.github.io/mermaid/#/" target="_blank" rel="noreferrer"><QuestionCircleOutlined style={{ marginLeft: "10px" }} /></a>
+              </>
             ),
           }}
         >
