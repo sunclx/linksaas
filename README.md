@@ -1,4 +1,4 @@
-[![login](preview/1.jpg)](https://www.linksaas.pro)
+[![login](screenshot/1.png)](https://www.linksaas.pro)
 
 
 # 凌鲨简介
