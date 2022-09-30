@@ -5,6 +5,7 @@ import EditorWrap from '../components/EditorWrap';
 import { exec_sidecar_shell } from '@/api/shell';
 import style from './GitlabListWidget.module.less';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 const { Option } = Select;
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 interface WidgetData {
@@ -19,7 +20,6 @@ export const gitlabListProjectWidgetInitData: WidgetData = {
   proto: 'https',
   host: 'jihulab.com',
   access_token: '',
-  // access_token: 'x2nspLoDZd8ziVKvVZQ2',
 };
 
 interface ProjectInfo {
@@ -27,7 +27,6 @@ interface ProjectInfo {
   name: string;
   description: string;
   web_url: string;
-  //TODO
 }
 
 const columns = [
@@ -113,7 +112,7 @@ const EditGitlabListProject: React.FC<WidgetProps> = (props) => {
         <h2 className={style.title}>Gitlab项目列表</h2>
         <Form onFinish={(values: WidgetData) => listProject(values)}>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
             label="域名"
             name="host"
@@ -146,7 +145,7 @@ const EditGitlabListProject: React.FC<WidgetProps> = (props) => {
             label="端口"
             name="port"
             initialValue={data.port ?? 443}
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
             rules={[
               {
@@ -167,9 +166,9 @@ const EditGitlabListProject: React.FC<WidgetProps> = (props) => {
             />
           </Form.Item>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
-            label="密码"
+            label={<span>访问令牌<a href="https://docs.gitlab.cn/jh/user/profile/personal_access_tokens.html" target="_blank" rel="noreferrer"><QuestionCircleOutlined/></a></span>}
             name="access_token"
             initialValue={data.access_token}
             rules={[{ type: 'string' }]}
@@ -183,9 +182,9 @@ const EditGitlabListProject: React.FC<WidgetProps> = (props) => {
             />
           </Form.Item>
           <Form.Item
-            labelCol={{ span: 2 }}
+            labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
-            label="组ID"
+            label="项目组ID"
             name="group_id"
             initialValue={data.group_id ?? 0}
             rules={[{ type: 'number', warningOnly: true, transform: (value) => parseInt(value) }]}

@@ -5,6 +5,7 @@ import { Tabs, Input } from 'antd';
 import 'swagger-ui-react/swagger-ui.css';
 import EditorWrap from '../components/EditorWrap';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 
@@ -22,7 +23,9 @@ const EditSwagger: React.FC<WidgetProps> = (props) => {
   return (
     <ErrorBoundary>
       <EditorWrap onChange={() => props.removeSelf()}>
-        <Tabs defaultActiveKey="1">
+        <Tabs defaultActiveKey="1" tabBarExtraContent={
+          <a href="https://swagger.io/docs/" target="_blank" rel="noreferrer"><QuestionCircleOutlined style={{ marginLeft: "10px" }} /></a>
+        }>
           <Tabs.TabPane tab="编辑" key="1">
             <Input.TextArea
               rows={10}
@@ -48,7 +51,7 @@ const ViewSwagger: React.FC<WidgetProps> = (props) => {
   return (
     <ErrorBoundary>
       <EditorWrap collapse={props.collapse}>
-        <SwaggerUI spec={data.spec}/>
+        <SwaggerUI spec={data.spec} />
       </EditorWrap>
     </ErrorBoundary>
   );
