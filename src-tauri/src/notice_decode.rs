@@ -7,11 +7,13 @@ pub mod project {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         UpdateProjectNotice(notices_project::UpdateProjectNotice),
+        RemoveProjectNotice(notices_project::RemoveProjectNotice),
         AddMemberNotice(notices_project::AddMemberNotice),
         UpdateMemberNotice(notices_project::UpdateMemberNotice),
         RemoveMemberNotice(notices_project::RemoveMemberNotice),
         AddChannelNotice(notices_project::AddChannelNotice),
         UpdateChannelNotice(notices_project::UpdateChannelNotice),
+        RemoveChannelNotice(notices_project::RemoveChannelNotice),
         AddChannelMemberNotice(notices_project::AddChannelMemberNotice),
         RemoveChannelMemberNotice(notices_project::RemoveChannelMemberNotice),
         NewMsgNotice(notices_project::NewMsgNotice),
@@ -28,6 +30,11 @@ pub mod project {
             if let Ok(notice) = notices_project::UpdateProjectNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::UpdateProjectNotice(notice));
+            }
+        } else if data.type_url == notices_project::RemoveProjectNotice::type_url() {
+            if let Ok(notice) = notices_project::RemoveProjectNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::RemoveProjectNotice(notice));
             }
         } else if data.type_url == notices_project::AddMemberNotice::type_url() {
             if let Ok(notice) = notices_project::AddMemberNotice::decode(data.value.as_slice()) {
@@ -49,6 +56,11 @@ pub mod project {
             if let Ok(notice) = notices_project::UpdateChannelNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::UpdateChannelNotice(notice));
+            }
+        } else if data.type_url == notices_project::RemoveChannelNotice::type_url() {
+            if let Ok(notice) = notices_project::RemoveChannelNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::RemoveChannelNotice(notice));
             }
         } else if data.type_url == notices_project::AddChannelMemberNotice::type_url() {
             if let Ok(notice) =
@@ -115,7 +127,7 @@ pub mod project_doc {
         RecoverDocInRecycleNotice(notices_doc::RecoverDocInRecycleNotice),
         RemoveDocInRecycleNotice(notices_doc::RemoveDocInRecycleNotice),
     }
-    
+
     pub fn decode_notice(data: &Any) -> Option<Notice> {
         if data.type_url == notices_doc::NewDocSpaceNotice::type_url() {
             if let Ok(notice) = notices_doc::NewDocSpaceNotice::decode(data.value.as_slice()) {
@@ -166,6 +178,7 @@ pub mod issue {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         NewIssueNotice(notices_issue::NewIssueNotice),
+        RemoveIssueNotice(notices_issue::RemoveIssueNotice),
         SetExecUserNotice(notices_issue::SetExecUserNotice),
         SetCheckUserNotice(notices_issue::SetCheckUserNotice),
         UpdateIssueNotice(notices_issue::UpdateIssueNotice),
@@ -176,6 +189,10 @@ pub mod issue {
         if data.type_url == notices_issue::NewIssueNotice::type_url() {
             if let Ok(notice) = notices_issue::NewIssueNotice::decode(data.value.as_slice()) {
                 return Some(Notice::NewIssueNotice(notice));
+            }
+        } else if data.type_url == notices_issue::RemoveIssueNotice::type_url() {
+            if let Ok(notice) = notices_issue::RemoveIssueNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RemoveIssueNotice(notice));
             }
         } else if data.type_url == notices_issue::SetExecUserNotice::type_url() {
             if let Ok(notice) = notices_issue::SetExecUserNotice::decode(data.value.as_slice()) {

@@ -212,6 +212,11 @@ export type GetResponse = {
   info: IssueInfo;
 };
 
+export type RemoveResponse = {
+  code: number;
+  err_msg: string;
+};
+
 export type ListResponse = {
   code: number;
   err_msg: string;
@@ -396,6 +401,25 @@ export async function get(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<GetResponse>(cmd, {
+    request,
+  });
+}
+
+//删除单个工单
+export async function remove(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<RemoveResponse> {
+  const cmd = 'plugin:project_issue_api|remove';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<RemoveResponse>(cmd, {
     request,
   });
 }
