@@ -15,7 +15,6 @@ type MemberSelectProps = FormItemProps &
 
 const MemberSelect: React.FC<MemberSelectProps> = observer(({ all, memberUserId, ...props }) => {
   const memberStore = useStores('memberStore');
-  console.log("333333333",props.disable)
   return (
     <Form.Item {...props}>
       <Select
