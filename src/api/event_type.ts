@@ -1659,8 +1659,15 @@ namespace gitlab {
     skip_prj_name: boolean,
     inner: CommentEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    const retList = [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.user?.name} 评论`)];
+    if (inner.commit?.url ?? "" != "") {
+      retList.push(new LinkExterneInfo(`Commit(${inner.commit?.id})`, inner.commit?.url ?? ""));
+    }
+    if (inner.issue?.id ?? 0 != 0) {
+      retList.push(new LinkNoneInfo(`工单:${inner.issue?.title ?? ""}`));
+    }
+    retList.push(new LinkNoneInfo(`内容:${inner.object_attributes?.description}`));
+    return retList;
   }
   export type IssueEvent = {
     object_kind: string;
@@ -1676,8 +1683,17 @@ namespace gitlab {
     skip_prj_name: boolean,
     inner: IssueEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let opt = "创建";
+    if (inner.object_attributes?.action == "close") {
+      opt = "关闭";
+    } else if (inner.object_attributes?.action == "reopen") {
+      opt = "重新打开";
+    }
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.user?.name ?? ""} ${opt}工单`),
+      new LinkExterneInfo(inner.object_attributes?.title ?? "", inner.object_attributes?.url ?? ""),
+    ];
+    return retList;
   }
   export type JobEvent = {
     object_kind: string;
@@ -1768,8 +1784,12 @@ namespace gitlab {
     skip_prj_name: boolean,
     inner: PushEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.user_name}推送`),
+      new LinkExterneInfo(inner.project?.name ?? "", inner.project?.homepage ?? ""),
+      new LinkNoneInfo(`包含${inner.commits.length}次提交`),
+      new LinkNoneInfo(`最后提交内容:${inner.commits[inner.commits.length - 1]?.title}`),
+    ];
   }
   export type TagEvent = {
     object_kind: string;
@@ -1792,8 +1812,19 @@ namespace gitlab {
     skip_prj_name: boolean,
     inner: TagEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let opt = "新增";
+    if (inner.commits.length == 0) {
+      opt = "删除";
+    }
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.user_name} ${opt}标签`),
+    ];
+    if (inner.commits.length > 0) {
+      retList.push(new LinkExterneInfo(inner.ref, inner.commits[inner.commits.length - 1]?.url ?? ""));
+    } else {
+      retList.push(new LinkNoneInfo(inner.ref));
+    }
+    return retList;
   }
   export type WikiEvent = {
     object_kind: string;
@@ -1807,8 +1838,23 @@ namespace gitlab {
     skip_prj_name: boolean,
     inner: WikiEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let opt = "创建";
+    if (inner.object_attributes?.action == "update") {
+      opt = "更新";
+    } else if (inner.object_attributes?.action == "delete") {
+      opt = "删除";
+    }
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.user?.name ?? ""} ${opt}WIKI`),
+    ];
+    if (inner.object_attributes?.action == "delete") {
+      retList.push(new LinkNoneInfo(inner.object_attributes?.title ?? ""));
+    } else {
+      if (inner.object_attributes?.url ?? "" != "") {
+        retList.push(new LinkExterneInfo(inner.object_attributes?.title ?? "", inner.object_attributes?.url ?? ""));
+      }
+    }
+    return retList;
   }
 
   export class AllGitlabEvent {
@@ -1827,6 +1873,7 @@ namespace gitlab {
     skip_prj_name: boolean,
     inner: AllGitlabEvent,
   ): LinkInfo[] {
+    // console.log(JSON.stringify(inner));
     if (inner.BuildEvent !== undefined) {
       return get_build_simple_content(ev, skip_prj_name, inner.BuildEvent);
     } else if (inner.CommentEvent !== undefined) {
@@ -2360,6 +2407,8 @@ namespace gitee {
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户(${src_user})推送`),
       new LinkExterneInfo(project_name, repo_url),
       new LinkNoneInfo(`包含${inner.total_commits_count}次提交`),
+      new LinkNoneInfo(`最后提交内容:${inner.commits.pop()?.msg}`),
+
     ];
     if (inner.head_commit != null) {
       ret_list.push(new LinkNoneInfo(`最新提交内容:${inner.head_commit.msg}`));
