@@ -1,7 +1,7 @@
 import Button from '@/components/Button';
 import CardWrap from '@/components/CardWrap';
 import DetailsNav from '@/components/DetailsNav';
-import { Form, Input, message } from 'antd';
+import { Form, Input, message, Modal } from 'antd';
 import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 import s from './index.module.less';
@@ -15,6 +15,7 @@ import {
   set_end_time,
   set_estimate_minutes,
   set_remain_minutes,
+  remove,
   update,
   ISSUE_STATE_PLAN,
   ISSUE_TYPE_TASK,
@@ -42,6 +43,7 @@ import { useCommonEditor, change_file_fs, change_file_owner } from '@/components
 import type { LinkIssueState } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import { FILE_OWNER_TYPE_PROJECT, FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
+import { DeleteOutlined } from '@ant-design/icons/lib/icons';
 
 export enum TASK_INSIDE_PAGES_ENUM {
   ADD = 'add',
@@ -105,13 +107,14 @@ const CreateTask: FC = observer(() => {
       can_assign_exec_user: false,
       can_assign_check_user: false,
       next_state_list: [],
+      can_remove: false,
     },
     extra_info: {
       //TODO
     },
   };
   const [details, setDetails] = useState<IssueInfo>(emptyIssue);
-
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   const { editor, editorRef } = id == "" ? useCommonEditor({
     content: taskContent,
@@ -137,8 +140,17 @@ const CreateTask: FC = observer(() => {
 
   // 获取详情
   const getDetails = async () => {
-    const res = await request<GetResponse>(get(session_id, project_id, id!));
-    setDetails(res.info);
+    try {
+      const res = await request<GetResponse>(get(session_id, project_id, id!));
+      setDetails(res.info);
+    } catch (error) {
+      console.log(error);
+      if (getIsTask(pathname)) {
+        history.push("/app/project/task");
+      } else {
+        history.push("/app/project/bug");
+      }
+    }
   };
 
   // 详情左边、右边内容
@@ -344,10 +356,20 @@ const CreateTask: FC = observer(() => {
   const getBtn = () => {
     if (pageType === TASK_INSIDE_PAGES_ENUM.DETAILS) {
       return (
-        <Button type="primary" onClick={setEditValue}>
-          <img src={editIcon} alt="" style={{ marginRight: '5px' }} />
-          编辑
-        </Button>
+        <>
+          <Button type="primary" onClick={setEditValue} disabled={id == ""}>
+            <img src={editIcon} alt="" style={{ marginRight: '5px' }} />
+            编辑
+          </Button>
+          {details.user_issue_perm.can_remove && (
+            <Button danger onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              setShowRemoveModal(true);
+            }}>
+              <DeleteOutlined />删除
+            </Button>)}
+        </>
       );
     }
     return (
@@ -400,6 +422,28 @@ const CreateTask: FC = observer(() => {
             </div>
           </div>
         </Form>
+        {showRemoveModal && (
+          <Modal
+            title={`删除${getIssueText(pathname)}`}
+            open={showRemoveModal}
+            onCancel={() => setShowRemoveModal(false)}
+            onOk={async (e): Promise<void> => {
+              e.stopPropagation();
+              e.preventDefault();
+              await request(remove(userStore.sessionId, details.project_id, details.issue_id));
+              message.info(`删除${getIssueText(pathname)}成功`);
+              setShowRemoveModal(false);
+              if (getIsTask(pathname)) {
+                history.push("/app/project/task");
+              } else {
+                history.push("/app/project/bug");
+              }
+            }}
+          >
+            <p>是否删除当前{getIssueText(pathname)}?</p>
+            <p style={{ color: "red" }}>删除后将无法恢复当前{getIssueText(pathname)}</p>
+          </Modal>
+        )}
       </div>
     </CardWrap>
   );
