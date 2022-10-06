@@ -172,6 +172,7 @@ type UserIssuePerm = {
   can_assign_exec_user: boolean;
   can_assign_check_user: boolean;
   next_state_list: ISSUE_STATE[];
+  can_remove: boolean;
 };
 
 export type IssueInfo = {
@@ -210,6 +211,11 @@ export type GetResponse = {
   code: number;
   err_msg: string;
   info: IssueInfo;
+};
+
+export type RemoveResponse = {
+  code: number;
+  err_msg: string;
 };
 
 export type ListResponse = {
@@ -396,6 +402,25 @@ export async function get(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<GetResponse>(cmd, {
+    request,
+  });
+}
+
+//删除单个工单
+export async function remove(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<RemoveResponse> {
+  const cmd = 'plugin:project_issue_api|remove';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<RemoveResponse>(cmd, {
     request,
   });
 }

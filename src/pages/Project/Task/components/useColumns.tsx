@@ -16,6 +16,7 @@ import { getIssueText, getIsTask, timeToDateString, getIssueViewUrl } from '@/ut
 import { ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from '@/api/project_issue';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { Tooltip } from 'antd';
+import { LinkOutlined } from '@ant-design/icons/lib/icons';
 
 type useTableProps = {
   setStageModelData: (boo: boolean, v: IssueInfo) => void;
@@ -86,7 +87,7 @@ const useTable = (props: useTableProps) => {
               );
             }}
           >
-            {v}
+            <a><LinkOutlined />&nbsp;&nbsp;{v}</a>
           </span>
         );
       },

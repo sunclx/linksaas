@@ -61,6 +61,7 @@ type UserChannelPerm = {
   can_remove_member: boolean;
   can_leave: boolean;
   can_set_top: boolean;
+  can_remove: boolean;
 };
 
 export type ChannelInfo = {
@@ -224,6 +225,11 @@ export type GetResponse = {
   code: number;
   err_msg: string;
   info: ChannelInfo;
+};
+
+export type RemoveByAdminResponse = {
+  code: number;
+  err_msg: string;
 };
 
 //创建频道
@@ -530,3 +536,17 @@ export async function join_by_admin(
   });
 }
 
+//删除频道(管理模式)
+export async function remove_by_admin(
+  session_id: string,
+  project_id: string,
+  channel_id: string,
+): Promise<RemoveByAdminResponse> {
+  return invoke<RemoveByAdminResponse>('plugin:project_channel_api|remove_by_admin', {
+    request: {
+      session_id: session_id,
+      project_id: project_id,
+      channel_id: channel_id,
+    },
+  });
+}

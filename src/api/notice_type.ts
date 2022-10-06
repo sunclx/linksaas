@@ -4,6 +4,9 @@ export namespace project {
   export type UpdateProjectNotice = {
     project_id: string;
   };
+  export type RemoveProjectNotice = {
+    project_id: string;
+  };
   export type AddMemberNotice = {
     project_id: string;
     member_user_id: string;
@@ -21,6 +24,10 @@ export namespace project {
     channel_id: string;
   };
   export type UpdateChannelNotice = {
+    project_id: string;
+    channel_id: string;
+  };
+  export type RemoveChannelNotice = {
     project_id: string;
     channel_id: string;
   };
@@ -67,11 +74,13 @@ export namespace project {
 
   export type AllNotice = {
     UpdateProjectNotice?: UpdateProjectNotice;
+    RemoveProjectNotice?: RemoveProjectNotice;
     AddMemberNotice?: AddMemberNotice;
     UpdateMemberNotice?: UpdateMemberNotice;
     RemoveMemberNotice?: RemoveMemberNotice;
     AddChannelNotice?: AddChannelNotice;
     UpdateChannelNotice?: UpdateChannelNotice;
+    RemoveChannelNotice?: RemoveChannelNotice;
     AddChannelMemberNotice?: AddChannelMemberNotice;
     RemoveChannelMemberNotice?: RemoveChannelMemberNotice;
     NewMsgNotice?: NewMsgNotice;
@@ -142,16 +151,26 @@ export namespace issue {
   export type NewIssueNotice = {
     project_id: string;
     issue_id: string;
+    create_user_id: string;
+  };
+  export type RemoveIssueNotice = {
+    project_id: string;
+    issue_id: string;
+    create_user_id: string;
+    exec_user_id: string;
+    check_user_id: string;
   };
   export type SetExecUserNotice = {
     project_id: string;
     issue_id: string;
     exec_user_id: string;
+    old_exec_user_id: string;
   };
   export type SetCheckUserNotice = {
     project_id: string;
     issue_id: string;
     check_user_id: string;
+    old_check_user_id: string;
   };
   export type UpdateIssueNotice = {
     project_id: string;
@@ -160,10 +179,13 @@ export namespace issue {
   export type UpdateIssueStateNotice = {
     project_id: string;
     issue_id: string;
+    exec_user_id: string;
+    check_user_id: string;
   };
 
   export type AllNotice = {
     NewIssueNotice?: NewIssueNotice;
+    RemoveIssueNotice?: RemoveIssueNotice;
     SetExecUserNotice?: SetExecUserNotice;
     SetCheckUserNotice?: SetCheckUserNotice;
     UpdateIssueNotice?: UpdateIssueNotice;
