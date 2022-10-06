@@ -137,6 +137,10 @@ class NoticeStore {
       if (notice.UpdateChannelNotice.project_id == this.rootStore.projectStore.curProjectId) {
         await this.rootStore.channelStore.updateChannel(notice.UpdateChannelNotice.channel_id);
       }
+    } else if (notice.RemoveChannelNotice !== undefined) {
+      if (notice.RemoveChannelNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        this.rootStore.channelStore.removeChannel(notice.RemoveChannelNotice.channel_id);
+      }
     } else if (notice.AddChannelMemberNotice !== undefined) {
       if (notice.AddChannelMemberNotice.project_id == this.rootStore.projectStore.curProjectId &&
         notice.AddChannelMemberNotice.member_user_id == this.rootStore.userStore.userInfo.userId) {

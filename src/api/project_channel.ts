@@ -61,6 +61,7 @@ type UserChannelPerm = {
   can_remove_member: boolean;
   can_leave: boolean;
   can_set_top: boolean;
+  can_remove: boolean;
 };
 
 export type ChannelInfo = {
