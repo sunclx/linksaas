@@ -151,20 +151,26 @@ export namespace issue {
   export type NewIssueNotice = {
     project_id: string;
     issue_id: string;
+    create_user_id: string;
   };
   export type RemoveIssueNotice = {
     project_id: string;
     issue_id: string;
+    create_user_id: string;
+    exec_user_id: string;
+    check_user_id: string;
   };
   export type SetExecUserNotice = {
     project_id: string;
     issue_id: string;
     exec_user_id: string;
+    old_exec_user_id: string;
   };
   export type SetCheckUserNotice = {
     project_id: string;
     issue_id: string;
     check_user_id: string;
+    old_check_user_id: string;
   };
   export type UpdateIssueNotice = {
     project_id: string;
@@ -173,6 +179,8 @@ export namespace issue {
   export type UpdateIssueStateNotice = {
     project_id: string;
     issue_id: string;
+    exec_user_id: string;
+    check_user_id: string;
   };
 
   export type AllNotice = {

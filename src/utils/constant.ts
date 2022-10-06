@@ -161,7 +161,8 @@ export const filterProjectItemList = [
 export enum PROJECT_STATE_OPT_ENUM {
   FINISH = 'finish',
   ACTIVATE = 'activate',
-  QUIT = 'quit ',
+  QUIT = 'quit',
+  REMOVE = 'remove',
 }
 
 export const snapShotOpt = [

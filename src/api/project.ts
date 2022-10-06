@@ -23,6 +23,7 @@ type UserProjectPerm = {
   can_add_member: boolean;
   can_remove_member: boolean;
   can_leave: boolean;
+  can_remove: boolean;
   can_admin: boolean;
 };
 

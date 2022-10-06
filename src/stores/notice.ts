@@ -3,6 +3,7 @@ import type * as NoticeType from '@/api/notice_type'
 import { listen } from '@tauri-apps/api/event';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import type { RootStore } from '.';
+import { createBrowserHistory } from 'history';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 
@@ -106,17 +107,27 @@ class NoticeStore {
   private async processProjectNotice(notice: NoticeType.project.AllNotice) {
     if (notice.UpdateProjectNotice !== undefined) {
       await this.rootStore.projectStore.updateProject(notice.UpdateProjectNotice.project_id);
+    } else if (notice.RemoveProjectNotice !== undefined) {
+      this.rootStore.projectStore.removeProject(notice.RemoveProjectNotice.project_id, createBrowserHistory());
     } else if (notice.AddMemberNotice !== undefined) {
       if (notice.AddMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        //TODO 更新成员信息
+        //更新成员信息
+        await this.rootStore.memberStore.updateMemberInfo(notice.AddMemberNotice.project_id, notice.AddMemberNotice.member_user_id);
+        const member = this.rootStore.memberStore.getMember(notice.AddMemberNotice.member_user_id);
+        if (member != undefined) {
+          await this.rootStore.memberStore.updateLastEvent(notice.AddMemberNotice.project_id, notice.AddMemberNotice.member_user_id, member.member.last_event_id);
+        }
+        await this.rootStore.memberStore.updateIssueState(notice.AddMemberNotice.project_id, notice.AddMemberNotice.member_user_id);
       }
     } else if (notice.UpdateMemberNotice !== undefined) {
       if (notice.UpdateMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
         await this.rootStore.memberStore.updateMemberInfo(notice.UpdateMemberNotice.project_id, notice.UpdateMemberNotice.member_user_id);
       }
     } else if (notice.RemoveMemberNotice !== undefined) {
-      if (notice.RemoveMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        //TODO 删除成员信息
+      if (notice.RemoveMemberNotice.member_user_id == this.rootStore.userStore.userInfo.userId) {
+        this.rootStore.projectStore.removeProject(notice.RemoveMemberNotice.project_id, createBrowserHistory());
+      } else if (notice.RemoveMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        this.rootStore.memberStore.loadMemberList(notice.RemoveMemberNotice.project_id);
       }
     } else if (notice.AddChannelNotice !== undefined) {
       if (notice.AddChannelNotice.project_id == this.rootStore.projectStore.curProjectId) {
@@ -196,21 +207,60 @@ class NoticeStore {
     }
   }
 
-  private processIssueNotice(notice: NoticeType.issue.AllNotice) {
+  private async processIssueNotice(notice: NoticeType.issue.AllNotice) {
     if (notice.NewIssueNotice !== undefined) {
-      this.rootStore.projectStore.updateProjectIssueCount(notice.NewIssueNotice.project_id);
-    }
-    else if (notice.SetExecUserNotice !== undefined) {
-      this.rootStore.projectStore.updateProjectIssueCount(notice.SetExecUserNotice.project_id);
-    }
-    else if (notice.SetCheckUserNotice != undefined) {
+      await this.rootStore.projectStore.updateProjectIssueCount(notice.NewIssueNotice.project_id);
+      if (notice.NewIssueNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        await this.rootStore.memberStore.updateIssueState(notice.NewIssueNotice.project_id, notice.NewIssueNotice.create_user_id);
+      }
+    } else if (notice.SetExecUserNotice !== undefined) {
+      await this.rootStore.projectStore.updateProjectIssueCount(notice.SetExecUserNotice.project_id);
+      if (notice.SetExecUserNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        if (notice.SetExecUserNotice.exec_user_id != notice.SetExecUserNotice.old_exec_user_id) {
+          if (notice.SetExecUserNotice.exec_user_id != "") {
+            await this.rootStore.memberStore.updateIssueState(notice.SetExecUserNotice.project_id, notice.SetExecUserNotice.exec_user_id);
+          }
+          if (notice.SetExecUserNotice.old_exec_user_id != "") {
+            await this.rootStore.memberStore.updateIssueState(notice.SetExecUserNotice.project_id, notice.SetExecUserNotice.old_exec_user_id);
+          }
+        }
+      }
+    } else if (notice.SetCheckUserNotice !== undefined) {
       this.rootStore.projectStore.updateProjectIssueCount(notice.SetCheckUserNotice.project_id);
+      if (notice.SetCheckUserNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        if (notice.SetCheckUserNotice.check_user_id != notice.SetCheckUserNotice.old_check_user_id) {
+          if (notice.SetCheckUserNotice.check_user_id != "") {
+            await this.rootStore.memberStore.updateIssueState(notice.SetCheckUserNotice.project_id, notice.SetCheckUserNotice.check_user_id);
+          }
+          if (notice.SetCheckUserNotice.old_check_user_id != "") {
+            await this.rootStore.memberStore.updateIssueState(notice.SetCheckUserNotice.project_id, notice.SetCheckUserNotice.old_check_user_id);
+          }
+        }
+      }
+    } else if (notice.UpdateIssueNotice !== undefined) {
+      //TODO
     }
-    else if (notice.UpdateIssueNotice != undefined) {
-      this.rootStore.projectStore.updateProjectIssueCount(notice.UpdateIssueNotice.project_id);
-    }
-    else if (notice.UpdateIssueStateNotice != undefined) {
+    else if (notice.UpdateIssueStateNotice !== undefined) {
       this.rootStore.projectStore.updateProjectIssueCount(notice.UpdateIssueStateNotice.project_id);
+      if (notice.UpdateIssueStateNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        if (notice.UpdateIssueStateNotice.exec_user_id != "") {
+          await this.rootStore.memberStore.updateIssueState(notice.UpdateIssueStateNotice.project_id, notice.UpdateIssueStateNotice.exec_user_id);
+        }
+        if (notice.UpdateIssueStateNotice.check_user_id != "") {
+          await this.rootStore.memberStore.updateIssueState(notice.UpdateIssueStateNotice.project_id, notice.UpdateIssueStateNotice.check_user_id);
+        }
+      }
+    } else if (notice.RemoveIssueNotice !== undefined) {
+      this.rootStore.projectStore.updateProjectIssueCount(notice.RemoveIssueNotice.project_id);
+      if (notice.RemoveIssueNotice.create_user_id != "") {
+        await this.rootStore.memberStore.updateIssueState(notice.RemoveIssueNotice.project_id, notice.RemoveIssueNotice.create_user_id);
+      }
+      if (notice.RemoveIssueNotice.exec_user_id != "") {
+        await this.rootStore.memberStore.updateIssueState(notice.RemoveIssueNotice.project_id, notice.RemoveIssueNotice.exec_user_id);
+      }
+      if (notice.RemoveIssueNotice.check_user_id != "") {
+        await this.rootStore.memberStore.updateIssueState(notice.RemoveIssueNotice.project_id, notice.RemoveIssueNotice.check_user_id);
+      }
     }
   }
 
