@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "linksaas",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "build": {
     "distDir": "../dist",
@@ -23,7 +23,9 @@
         "icons/icon.ico"
       ],
       "resources": [],
-      "externalBin": ["bin/shell"],
+      "externalBin": [
+        "bin/shell"
+      ],
       "copyright": "",
       "category": "DeveloperTool",
       "shortDescription": "",
@@ -58,7 +60,9 @@
       "active": false
     },
     "allowlist": {
-      "all": true,
+      "window": {
+        "all": true
+      },
       "shell": {
         "sidecar": true,
         "open": ".*",
@@ -69,6 +73,24 @@
             "args": true
           }
         ]
+      },
+      "dialog": {
+        "all": true
+      },
+      "notification": {
+        "all": true
+      },
+      "os": {
+        "all": true
+      },
+      "protocol": {
+        "all": true
+      },
+      "process": {
+        "all": true
+      },
+      "clipboard": {
+        "all": true
       }
     },
     "windows": [

@@ -57,6 +57,31 @@ async fn get<R: Runtime>(
 }
 
 #[tauri::command]
+async fn remove<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveRequest,
+) -> Result<RemoveResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.remove(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn update<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -96,7 +121,10 @@ async fn assign_exec_user<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == assign_exec_user_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("assign_exec_user".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("assign_exec_user".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -121,7 +149,10 @@ async fn assign_check_user<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == assign_check_user_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("assign_check_user".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("assign_check_user".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -146,7 +177,9 @@ async fn change_state<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == change_state_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("change_state".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("change_state".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -196,7 +229,9 @@ async fn list_by_id<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_by_id_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_by_id".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_by_id".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -221,7 +256,9 @@ async fn list_my_todo<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_my_todo_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_my_todo".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_my_todo".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -246,7 +283,9 @@ async fn list_attr_value<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_attr_value_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_attr_value".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_attr_value".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -271,7 +310,9 @@ async fn link_sprit<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == link_sprit_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("link_sprit".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("link_sprit".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -296,7 +337,9 @@ async fn set_start_time<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_start_time_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_start_time".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_start_time".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -320,7 +363,9 @@ async fn set_end_time<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_end_time_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_end_time".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_end_time".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -344,7 +389,10 @@ async fn set_estimate_minutes<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_estimate_minutes_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_estimate_minutes".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_estimate_minutes".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -368,7 +416,10 @@ async fn set_remain_minutes<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_remain_minutes_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_remain_minutes".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_remain_minutes".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -393,7 +444,10 @@ async fn get_member_state<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_member_state_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_member_state".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_member_state".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -418,7 +472,10 @@ async fn list_member_state<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_member_state_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_member_state".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_member_state".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -443,7 +500,9 @@ async fn add_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("add_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -468,7 +527,9 @@ async fn list_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -493,7 +554,9 @@ async fn remove_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -512,6 +575,7 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 create,
                 get,
+                remove,
                 update,
                 assign_exec_user,
                 assign_check_user,

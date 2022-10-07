@@ -23,6 +23,7 @@ type UserProjectPerm = {
   can_add_member: boolean;
   can_remove_member: boolean;
   can_leave: boolean;
+  can_remove: boolean;
   can_admin: boolean;
 };
 
@@ -57,12 +58,17 @@ export type GetResponse = {
   info: ProjectInfo;
 };
 
-type OpenResponse = {
+export type OpenResponse = {
   code: number;
   err_msg: string;
 };
 
-type CloseResponse = {
+export type CloseResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type RemoveResponse = {
   code: number;
   err_msg: string;
 };
@@ -157,6 +163,20 @@ export async function close(session_id: string, project_id: string): Promise<Clo
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<CloseResponse>(cmd, {
+    request,
+  });
+}
+
+//删除项目
+export async function remove(session_id: string, project_id: string): Promise<RemoveResponse> {
+  const cmd = 'plugin:project_api|remove';
+  const request = {
+    session_id,
+    project_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<RemoveResponse>(cmd, {
     request,
   });
 }

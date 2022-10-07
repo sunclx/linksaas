@@ -7,7 +7,7 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.1.1"
+version = "0.1.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -26,7 +26,7 @@ rust-string-random = "0.1.0"
 scrap = "0.5"
 serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = {version = "1.0.5", features = ["api-all", "devtools", "process-command-api", "system-tray", "updater"] }
+tauri = {version = "1.0.5", features = ["clipboard-all", "devtools", "dialog-all", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all"] }
 tokio = {version = "1.17.0", feature = ["time", "macros"] }
 tokio-stream = "0.1.6"
 tonic = "0.6.2"

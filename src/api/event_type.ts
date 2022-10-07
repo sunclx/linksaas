@@ -89,6 +89,7 @@ export namespace project {
     }
     return ret_list;
   }
+
   export type CloseProjectEvent = {};
   function get_close_simple_content(
     ev: PluginEvent,
@@ -101,6 +102,20 @@ export namespace project {
     }
     return ret_list;
   }
+
+  export type RemoveProjectEvent = {};
+  function get_remove_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: RemoveProjectEvent,
+  ): LinkInfo[] {
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('删除项目')];
+    if (!skip_prj_name) {
+      ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
+    }
+    return ret_list;
+  }
+
   export type GenInviteEvent = {};
   function get_gen_invite_simple_content(
     ev: PluginEvent,
@@ -249,6 +264,7 @@ export namespace project {
       new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
     ];
   }
+
   export type UpdateChannelEvent = {
     channel_id: string;
     old_channel_name: string;
@@ -273,6 +289,7 @@ export namespace project {
     }
     return ret_list;
   }
+
   export type OpenChannelEvent = {
     channel_id: string;
     channel_name: string;
@@ -287,6 +304,7 @@ export namespace project {
       new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
     ];
   }
+
   export type CloseChannelEvent = {
     channel_id: string;
     channel_name: string;
@@ -301,6 +319,22 @@ export namespace project {
       new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
     ];
   }
+
+  export type RemoveChannelEvent = {
+    channel_id: string;
+    channel_name: string;
+  };
+  function get_remove_chan_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveChannelEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除项目频道`),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+    ];
+  }
+
   export type AddChannelMemberEvent = {
     channel_id: string;
     channel_name: string;
@@ -408,6 +442,7 @@ export namespace project {
     UpdateProjectEvent?: UpdateProjectEvent;
     OpenProjectEvent?: OpenProjectEvent;
     CloseProjectEvent?: CloseProjectEvent;
+    RemoveProjectEvent?: RemoveProjectEvent;
     GenInviteEvent?: GenInviteEvent;
     JoinProjectEvent?: JoinProjectEvent;
     LeaveProjectEvent?: LeaveProjectEvent;
@@ -421,6 +456,7 @@ export namespace project {
     UpdateChannelEvent?: UpdateChannelEvent;
     OpenChannelEvent?: OpenChannelEvent;
     CloseChannelEvent?: CloseChannelEvent;
+    RemoveChannelEvent?: RemoveChannelEvent;
     AddChannelMemberEvent?: AddChannelMemberEvent;
     RemoveChannelMemberEvent?: RemoveChannelMemberEvent;
     UploadWorkSnapShotEvent?: UploadWorkSnapShotEvent;
@@ -435,6 +471,8 @@ export namespace project {
   ): LinkInfo[] {
     if (inner.CreateProjectEvent !== undefined) {
       return get_create_simple_content(ev, skip_prj_name);
+    } else if (inner.RemoveProjectEvent !== undefined) {
+      return get_remove_simple_content(ev, skip_prj_name);
     } else if (inner.UpdateProjectEvent !== undefined) {
       return get_update_simple_content(ev, skip_prj_name, inner.UpdateProjectEvent);
     } else if (inner.OpenProjectEvent !== undefined) {
@@ -475,6 +513,8 @@ export namespace project {
       return get_open_chan_simple_content(ev, skip_prj_name, inner.OpenChannelEvent);
     } else if (inner.CloseChannelEvent !== undefined) {
       return get_close_chan_simple_content(ev, skip_prj_name, inner.CloseChannelEvent);
+    } else if (inner.RemoveChannelEvent !== undefined) {
+      return get_remove_chan_simple_content(ev, skip_prj_name, inner.RemoveChannelEvent);
     } else if (inner.AddChannelMemberEvent !== undefined) {
       return get_add_chan_member_simple_content(ev, skip_prj_name, inner.AddChannelMemberEvent);
     } else if (inner.RemoveChannelMemberEvent !== undefined) {
@@ -801,6 +841,7 @@ namespace issue {
     }
     return ret_list;
   }
+
   export type UpdateEvent = {
     issue_id: string;
     issue_type: number;
@@ -826,6 +867,23 @@ namespace issue {
     }
     return ret_list;
   }
+
+  export type RemoveEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+  };
+  function get_remove_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveEvent,
+  ) {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除${issue_type_str} ${inner.title}`),
+    ];
+  }
+
   export type AssignExecUserEvent = {
     issue_id: string;
     issue_type: number;
@@ -1035,6 +1093,7 @@ namespace issue {
   export class AllIssueEvent {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
+    RemoveEvent?: RemoveEvent;
     AssignExecUserEvent?: AssignExecUserEvent;
     AssignCheckUserEvent?: AssignCheckUserEvent;
     ChangeStateEvent?: ChangeStateEvent;
@@ -1053,6 +1112,8 @@ namespace issue {
       return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
     } else if (inner.UpdateEvent !== undefined) {
       return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
+    } else if (inner.RemoveEvent !== undefined) {
+      return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
     } else if (inner.AssignExecUserEvent !== undefined) {
       return get_assign_exec_simple_content(ev, skip_prj_name, inner.AssignExecUserEvent);
     } else if (inner.AssignCheckUserEvent !== undefined) {

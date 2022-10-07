@@ -4,7 +4,7 @@ import type { MemberInfo } from '@/api/project_member';
 import type { PluginEvent } from '@/api/events';
 import { list_event_by_id, get_event } from '@/api/events';
 import type { MemberState as IssueMemberState } from '@/api/project_issue';
-import { list_member,get_member } from '@/api/project_member';
+import { list_member, get_member } from '@/api/project_member';
 import { list_member_state as list_member_issue_state } from '@/api/project_issue';
 import { request } from '@/utils/request';
 import type { RootStore } from '.';
@@ -47,11 +47,11 @@ class MemberStore {
       memberList.splice(ownerIndex, 1);
       memberList.unshift(ownerObj);
     }
-    runInAction(()=>{
+    runInAction(() => {
       this._memberList = memberList;
       this.syncToMap();
     });
-    
+
     //获取最后事件
     const eventIdList = memberList.filter(item => item.member.last_event_id != "").map(item => item.member.last_event_id);
     if (eventIdList.length > 0) {
@@ -63,7 +63,7 @@ class MemberStore {
           item.last_event = tmpMap.get(item.member.last_event_id);
           return item;
         });
-        runInAction(()=>{
+        runInAction(() => {
           this._memberList = memberList;
           this.syncToMap();
         });
@@ -146,20 +146,38 @@ class MemberStore {
     });
   }
 
-  async updateMemberInfo(projectId: string, memberUserId: string) {
-    const res = await request(get_member(this.rootStore.userStore.sessionId,projectId,memberUserId));
-    if (!res){
-      return;
-    }
-    runInAction(()=>{
-      const index = this._memberList.findIndex((item)=>item.member.project_id==projectId && item.member.member_user_id==memberUserId);
+  async updateIssueState(projectId: string, memberUserId: string) {
+    const res = await request(list_member_issue_state(this.rootStore.userStore.sessionId, projectId, true, [memberUserId]));
+    if (res && res.member_state_list.length == 1) {
+      const index = this._memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId)
       if (index != -1) {
-        this._memberList[index].member = res.member;
+        this._memberList[index].issue_member_state = res.member_state_list[0];
       }
       const memberInfo = this._memberMap.get(memberUserId);
-      if (memberInfo !== undefined && memberInfo.member.project_id == projectId) {
-        memberInfo.member = res.member;
+      if (memberInfo !== undefined) {
+        memberInfo.issue_member_state = res.member_state_list[0];
         this._memberMap.set(memberUserId, memberInfo);
+      }
+    }
+  }
+
+  async updateMemberInfo(projectId: string, memberUserId: string) {
+    const res = await request(get_member(this.rootStore.userStore.sessionId, projectId, memberUserId));
+    if (!res) {
+      return;
+    }
+    runInAction(() => {
+      const index = this._memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId);
+      if (index == -1) {
+        this._memberList.push({ member: res.member });
+        this._memberMap.set(memberUserId, { member: res.member });
+      } else {
+        this._memberList[index].member = res.member;
+        const memberInfo = this._memberMap.get(memberUserId);
+        if (memberInfo !== undefined && memberInfo.member.project_id == projectId) {
+          memberInfo.member = res.member;
+          this._memberMap.set(memberUserId, memberInfo);
+        }
       }
     });
   }

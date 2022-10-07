@@ -8,8 +8,10 @@ import {
   set_top,
   unset_top,
   join_by_admin,
+  remove_by_admin,
   leave as leave_channel,
-  LIST_CHAN_SCOPE_INCLUDE_ME
+  LIST_CHAN_SCOPE_INCLUDE_ME,
+  LIST_CHAN_SCOPE_ORPHAN
 } from '@/api/project_channel';
 import { request } from '@/utils/request';
 import type { WebChannelInfo } from '@/stores/channel';
@@ -33,6 +35,7 @@ const ChannelList = observer(() => {
   const [showModalExit, setShowModalExit] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalJoin, setShowModalJoin] = useState(false);
+  const [showModalRemove, setShowModalRemove] = useState(false);
 
   // 右键菜单
   const handleContextMenu = (event: React.MouseEvent<Element, MouseEvent>, channelId: string) => {
@@ -68,6 +71,7 @@ const ChannelList = observer(() => {
       canExit: channelItem?.channelInfo.user_channel_perm?.can_leave,
       canClose: channelItem?.channelInfo.user_channel_perm?.can_close,
       canOpen: channelItem?.channelInfo.user_channel_perm?.can_open,
+      canRemove: channelItem?.channelInfo.user_channel_perm?.can_remove,
     }
 
     // 置顶频道
@@ -112,6 +116,10 @@ const ChannelList = observer(() => {
       setShowModalJoin(true);
     }
 
+    const removeChannel = () => {
+      setShowModalRemove(true);
+    }
+
     if (channelItem?.channelInfo.system_channel) {
       return (<div />);
     }
@@ -125,38 +133,47 @@ const ChannelList = observer(() => {
         style={{ top: contextMenuCfg.y, left: contextMenuCfg.x }}
         onMouseLeave={hideContextMenu}
       >
-        <div
-          className={styles.item + ' ' + (permission.canUpdate ? '' : styles.disabled)}
-          onClick={() => updateChannel()}
-        >
-          修改频道
-        </div>
-        <div className={styles.divider} />
-        <div
-          className={styles.item + ' ' + (permission.canSetTop ? '' : styles.disabled)}
-          onClick={() => setTopChannel(channelItem?.channelInfo.top_weight || 0)}
-        >
-          {(channelItem?.channelInfo.top_weight || 0) > 0 ? '取消置顶' : '置顶频道'}
-        </div>
-        <div className={styles.divider} />
-        <div
-          className={styles.item + ' ' + (permission.canExit ? '' : styles.disabled)}
-          onClick={() => exitChannel()}
-        >
-          退出频道
-        </div>
-        <div
-          className={styles.item + ' ' + (permission.canClose ? '' : styles.disabled)}
-          onClick={() => closeChannel()}
-        >
-          关闭频道
-        </div>
-        <div
-          className={styles.item + ' ' + (permission.canOpen ? '' : styles.disabled)}
-          onClick={() => openChannel()}
-        >
-          激活频道
-        </div>
+        {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (
+          <>
+            <div
+              className={styles.item + ' ' + (permission.canUpdate ? '' : styles.disabled)}
+              onClick={() => updateChannel()}
+            >
+              修改频道
+            </div>
+            <div className={styles.divider} />
+            <div
+              className={styles.item + ' ' + (permission.canSetTop ? '' : styles.disabled)}
+              onClick={() => setTopChannel(channelItem?.channelInfo.top_weight || 0)}
+            >
+              {(channelItem?.channelInfo.top_weight || 0) > 0 ? '取消置顶' : '置顶频道'}
+            </div>
+          </>
+        )}
+        {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (
+          <>
+            <div className={styles.divider} />
+            <div
+              className={styles.item + ' ' + (permission.canExit ? '' : styles.disabled)}
+              onClick={() => exitChannel()}
+            >
+              退出频道
+            </div>
+            <div
+              className={styles.item + ' ' + (permission.canClose ? '' : styles.disabled)}
+              onClick={() => closeChannel()}
+            >
+              关闭频道
+            </div>
+            <div
+              className={styles.item + ' ' + (permission.canOpen ? '' : styles.disabled)}
+              onClick={() => openChannel()}
+            >
+              激活频道
+            </div>
+          </>
+        )}
+
         {channelStore.channelScope != LIST_CHAN_SCOPE_INCLUDE_ME && (
           <div
             className={styles.item}
@@ -165,6 +182,20 @@ const ChannelList = observer(() => {
             加入频道
           </div>
         )}
+        {channelStore.channelScope == LIST_CHAN_SCOPE_ORPHAN && (
+          <>
+            <div className={styles.divider} />
+            <div
+              className={styles.item}
+              style={{ color: "red" }}
+              onClick={() => removeChannel()}
+            >
+              删除频道
+            </div>
+          </>
+        )}
+
+
       </div>
     </div>);
   };
@@ -223,7 +254,7 @@ const ChannelList = observer(() => {
 
       {showModalExit && <Modal
         title='警告'
-        visible={showModalExit}
+        open={showModalExit}
         onOk={async (): Promise<void> => {
           const res = await request(leave_channel(sessionId, curProjectId, contextMenuCfg.channelId));
           if (res) {
@@ -241,7 +272,7 @@ const ChannelList = observer(() => {
 
       {showModalJoin && <Modal
         title='警告'
-        visible={showModalJoin}
+        open={showModalJoin}
         onOk={async (): Promise<void> => {
           const res = await request(join_by_admin(sessionId, curProjectId, contextMenuCfg.channelId));
           if (res) {
@@ -264,6 +295,25 @@ const ChannelList = observer(() => {
         onChange={(value: boolean) => setShowModalUpdate(value)}
         title="更新频道"
       />}
+
+      {showModalRemove && (
+        <Modal
+          title="删除频道"
+          open={showModalRemove}
+          onCancel={() => {
+            setShowModalRemove(false);
+          }}
+          onOk={async (): Promise<void> => {
+            const res = await request(remove_by_admin(sessionId, curProjectId, contextMenuCfg.channelId));
+            if (res) {
+              channelStore.removeChannel(contextMenuCfg.channelId);
+            }
+            setShowModalRemove(false);
+          }}>
+          <p>是否确认删除频道 {channelStore.getChannel(contextMenuCfg.channelId)?.channelInfo.basic_info.channel_name ?? ""}？</p>
+          <p style={{ color: "red" }}>频道删除后将不能再恢复。</p>
+        </Modal>
+      )}
     </div>
   );
 });

@@ -1,5 +1,5 @@
 import type { ProjectInfo } from '@/api/project';
-import { close, open } from '@/api/project';
+import { close, open, remove } from '@/api/project';
 import { leave } from '@/api/project_member';
 import { useStores } from '@/hooks';
 import type { FILTER_PROJECT_ENUM } from '@/utils/constant';
@@ -8,9 +8,9 @@ import { filterProjectItemList, PROJECT_STATE_OPT_ENUM } from '@/utils/constant'
 import { request } from '@/utils/request';
 import { FolderFilled, VideoCameraOutlined } from '@ant-design/icons';
 import { useSetState } from 'ahooks';
-import { Badge, message, Popover } from 'antd';
+import { Badge, message, Popover, Input } from 'antd';
 import { runInAction } from 'mobx';
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ActionModal from '../ActionModal';
 import Button from '../Button';
@@ -69,6 +69,8 @@ const useProjectMenu = () => {
     pjId: '',
   });
 
+  const [disableBtn, setDisableBtn] = useState(false);
+
   const hideContextMenu = (e: React.MouseEvent<Element, MouseEvent>) => {
     e.stopPropagation();
     if (!pjMenu.id) return;
@@ -85,8 +87,7 @@ const useProjectMenu = () => {
         projectStore.updateProject(pjChangeObj.pjId);
       } catch (error) { }
       return;
-    }
-    if (pjChangeObj.type === PROJECT_STATE_OPT_ENUM.ACTIVATE) {
+    } else if (pjChangeObj.type === PROJECT_STATE_OPT_ENUM.ACTIVATE) {
       try {
         await request(open(userStore.sessionId, pjChangeObj.pjId));
         message.success('项目激活成功');
@@ -94,8 +95,7 @@ const useProjectMenu = () => {
         projectStore.updateProject(pjChangeObj.pjId);
       } catch (error) { }
       return;
-    }
-    if (pjChangeObj.type === PROJECT_STATE_OPT_ENUM.QUIT) {
+    } else if (pjChangeObj.type === PROJECT_STATE_OPT_ENUM.QUIT) {
       try {
         await request(leave(userStore.sessionId, pjChangeObj.pjId));
         message.success('项目退出成功');
@@ -105,16 +105,29 @@ const useProjectMenu = () => {
         console.log(error);
       }
       return;
+    } else if (pjChangeObj.type == PROJECT_STATE_OPT_ENUM.REMOVE) {
+      try {
+        await request(remove(userStore.sessionId, pjChangeObj.pjId));
+        message.success("项目删除成功");
+        setPjChangeObj({ visible: false });
+        projectStore.removeProject(pjChangeObj.pjId, history);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   // 结束项目弹窗
   const renderPjItemChange = () => {
+    let width = 330;
+    if (pjChangeObj.type === PROJECT_STATE_OPT_ENUM.REMOVE) {
+      width = 430;
+    }
     return (
       <ActionModal
-        visible={pjChangeObj.visible}
+        open={pjChangeObj.visible}
         title={`${pjChangeObj.text}项目`}
-        width={330}
+        width={width}
         mask={false}
         onCancel={() => setPjChangeObj({ visible: false })}
       >
@@ -125,11 +138,25 @@ const useProjectMenu = () => {
           {pjChangeObj.type === PROJECT_STATE_OPT_ENUM.FINISH && (
             <p>结束后项目将会封存，无法创建新的聊天/任务/缺陷</p>
           )}
+          {pjChangeObj.type === PROJECT_STATE_OPT_ENUM.REMOVE && (
+            <>
+              <p style={{ color: "red" }}>项目被删除后，将无法再访问该项目的任何内容</p>
+              <Input addonBefore="请输入要删除的项目名称" onChange={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (e.target.value == pjChangeObj.name) {
+                  setDisableBtn(false);
+                } else {
+                  setDisableBtn(true);
+                }
+              }} />
+            </>
+          )}
           <div className={cls.btn_wrap}>
             <Button ghost onClick={() => setPjChangeObj({ visible: false })}>
               取消
             </Button>
-            <Button onClick={submitPjItem}>确定</Button>
+            <Button onClick={submitPjItem} disabled={disableBtn}>确定</Button>
           </div>
         </div>
       </ActionModal>
@@ -140,6 +167,7 @@ const useProjectMenu = () => {
   const pjItemChange = (obj: ProjectInfo, type: PROJECT_STATE_OPT_ENUM) => {
     switch (type) {
       case PROJECT_STATE_OPT_ENUM.FINISH:
+        setDisableBtn(false);
         setPjChangeObj({
           visible: true,
           type: PROJECT_STATE_OPT_ENUM.FINISH,
@@ -149,6 +177,7 @@ const useProjectMenu = () => {
         });
         return;
       case PROJECT_STATE_OPT_ENUM.ACTIVATE:
+        setDisableBtn(false);
         setPjChangeObj({
           visible: true,
           type: PROJECT_STATE_OPT_ENUM.ACTIVATE,
@@ -158,10 +187,21 @@ const useProjectMenu = () => {
         });
         return;
       case PROJECT_STATE_OPT_ENUM.QUIT:
+        setDisableBtn(false);
         setPjChangeObj({
           visible: true,
           type: PROJECT_STATE_OPT_ENUM.QUIT,
           text: '退出',
+          name: obj.basic_info.project_name,
+          pjId: obj.project_id,
+        });
+        return;
+      case PROJECT_STATE_OPT_ENUM.REMOVE:
+        setDisableBtn(true);
+        setPjChangeObj({
+          visible: true,
+          type: PROJECT_STATE_OPT_ENUM.REMOVE,
+          text: '删除',
           name: obj.basic_info.project_name,
           pjId: obj.project_id,
         });
@@ -185,7 +225,7 @@ const useProjectMenu = () => {
           style={{ top: pjMenu.y, left: pjMenu.x }}
           onMouseLeave={hideContextMenu}
         >
-          {obj.user_project_perm.can_admin && !obj.closed && (
+          {obj.user_project_perm.can_close && (
             <div
               className={cls.item}
               onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.FINISH)}
@@ -193,7 +233,7 @@ const useProjectMenu = () => {
               结束项目
             </div>
           )}
-          {obj.user_project_perm.can_admin && obj.closed && (
+          {obj.user_project_perm.can_open && (
             <div
               className={cls.item}
               onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.ACTIVATE)}
@@ -201,12 +241,20 @@ const useProjectMenu = () => {
               激活项目
             </div>
           )}
-          {!obj.user_project_perm.can_admin && (
+          {obj.user_project_perm.can_leave && (
             <div
               className={cls.item}
               onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.QUIT)}
             >
               退出项目
+            </div>
+          )}
+          {obj.user_project_perm.can_remove && (
+            <div
+              className={cls.item}
+              onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.REMOVE)}
+            >
+              删除项目
             </div>
           )}
         </div>

@@ -10,6 +10,7 @@ pub mod project {
         UpdateProjectEvent(events_project::UpdateProjectEvent),
         OpenProjectEvent(events_project::OpenProjectEvent),
         CloseProjectEvent(events_project::CloseProjectEvent),
+        RemoveProjectEvent(events_project::RemoveProjectEvent),
         GenInviteEvent(events_project::GenInviteEvent),
         JoinProjectEvent(events_project::JoinProjectEvent),
         LeaveProjectEvent(events_project::LeaveProjectEvent),
@@ -23,6 +24,7 @@ pub mod project {
         UpdateChannelEvent(events_project::UpdateChannelEvent),
         OpenChannelEvent(events_project::OpenChannelEvent),
         CloseChannelEvent(events_project::CloseChannelEvent),
+        RemoveChannelEvent(events_project::RemoveChannelEvent),
         AddChannelMemberEvent(events_project::AddChannelMemberEvent),
         RemoveChannelMemberEvent(events_project::RemoveChannelMemberEvent),
         UploadWorkSnapShotEvent(events_project::UploadWorkSnapShotEvent),
@@ -47,6 +49,10 @@ pub mod project {
         } else if data.type_url == events_project::CloseProjectEvent::type_url() {
             if let Ok(ev) = events_project::CloseProjectEvent::decode(data.value.as_slice()) {
                 return Some(Event::CloseProjectEvent(ev));
+            }
+        } else if data.type_url == events_project::RemoveProjectEvent::type_url() {
+            if let Ok(ev) = events_project::RemoveProjectEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveProjectEvent(ev));
             }
         } else if data.type_url == events_project::GenInviteEvent::type_url() {
             if let Ok(ev) = events_project::GenInviteEvent::decode(data.value.as_slice()) {
@@ -102,6 +108,10 @@ pub mod project {
         } else if data.type_url == events_project::CloseChannelEvent::type_url() {
             if let Ok(ev) = events_project::CloseChannelEvent::decode(data.value.as_slice()) {
                 return Some(Event::CloseChannelEvent(ev));
+            }
+        } else if data.type_url == events_project::RemoveChannelEvent::type_url() {
+            if let Ok(ev) = events_project::RemoveChannelEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveChannelEvent(ev));
             }
         } else if data.type_url == events_project::AddChannelMemberEvent::type_url() {
             if let Ok(ev) = events_project::AddChannelMemberEvent::decode(data.value.as_slice()) {
@@ -260,6 +270,7 @@ pub mod issue {
     pub enum Event {
         CreateEvent(events_issue::CreateEvent),
         UpdateEvent(events_issue::UpdateEvent),
+        RemoveEvent(events_issue::RemoveEvent),
         AssignExecUserEvent(events_issue::AssignExecUserEvent),
         AssignCheckUserEvent(events_issue::AssignCheckUserEvent),
         ChangeStateEvent(events_issue::ChangeStateEvent),
@@ -278,6 +289,10 @@ pub mod issue {
         } else if data.type_url == events_issue::UpdateEvent::type_url() {
             if let Ok(ev) = events_issue::UpdateEvent::decode(data.value.as_slice()) {
                 return Some(Event::UpdateEvent(ev));
+            }
+        } else if data.type_url == events_issue::RemoveEvent::type_url() {
+            if let Ok(ev) = events_issue::RemoveEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveEvent(ev));
             }
         } else if data.type_url == events_issue::AssignExecUserEvent::type_url() {
             if let Ok(ev) = events_issue::AssignExecUserEvent::decode(data.value.as_slice()) {
