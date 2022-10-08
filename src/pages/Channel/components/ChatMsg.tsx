@@ -22,6 +22,7 @@ export type ChatMsgProp = {
 
 const ChatMsg: React.FC<ChatMsgProp> = (props) => {
   const { msg, readonly } = props;
+  const userStore = useStores('userStore');
   const chatMsgStore = useStores('chatMsgStore');
   const linkAuxStore = useStores('linkAuxStore');
   const history = useHistory();
@@ -98,7 +99,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           )}
           {msg.hovered && (
             <span className={styles.tools}>
-              {readonly == false && moment().diff(msg.msg.send_time) < (900 * 1000) && (<span
+              {readonly == false && msg.msg.sender_user_id == userStore.userInfo.userId && moment().diff(msg.msg.send_time) < (900 * 1000) && (<span
                 title="修改"
                 className={styles.editBtn}
                 onClick={() => chatMsgStore.setEditMsg(msg)}
