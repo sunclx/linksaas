@@ -264,6 +264,59 @@ async fn send_msg<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateMsgRequest,
+) -> Result<UpdateMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.update_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_msg_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_msg".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetMsgRequest,
+) -> Result<GetMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.get_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_msg_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_msg".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_msg<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -548,6 +601,8 @@ impl<R: Runtime> ProjectChannelApiPlugin<R> {
                 remove_member,
                 list_member,
                 send_msg,
+                update_msg,
+                get_msg,
                 list_msg,
                 clear_un_read_count,
                 list_read_msg_stat,

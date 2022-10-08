@@ -4,6 +4,7 @@ import type { RootStore } from '.';
 import { request } from '@/utils/request';
 import {
     list_msg,
+    get_msg,
     clear_un_read_count,
     LIST_MSG_TYPE_BEFORE,
     LIST_MSG_TYPE_AFTER,
@@ -212,6 +213,37 @@ class ChatMsgStore {
             await request(clear_un_read_count(this.rootStore.userStore.sessionId, projectId, channelId));
             this.rootStore.channelStore.updateUnReadMsgCount(channelId);
             this.rootStore.projectStore.updateProjectUnreadMsgCount(projectId);
+        }
+    }
+
+    private _editMsg: WebMsg | undefined = undefined;
+
+    getEditMsg(): WebMsg | undefined {
+        return this._editMsg;
+    }
+
+    setEditMsg(val: WebMsg | undefined) {
+        runInAction(() => {
+            this._editMsg = val;
+        });
+    }
+
+    async updateMsg(msgId: string) {
+        const msgIndex = this._msgList.findIndex(item => item.msg.msg_id == msgId);
+        if (msgIndex == -1) {
+            return;
+        }
+        const res = await request(get_msg(this.rootStore.userStore.sessionId,
+            this.rootStore.projectStore.curProjectId,
+            this.rootStore.channelStore.curChannelId,
+            msgId));
+        if (res) {
+            const index = this._msgList.findIndex(item => item.msg.msg_id == msgId);
+            if (index != -1) {
+                runInAction(() => {
+                    this._msgList[index].msg = res.msg;
+                });
+            }
         }
     }
 };

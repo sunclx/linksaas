@@ -17,6 +17,7 @@ pub mod project {
         AddChannelMemberNotice(notices_project::AddChannelMemberNotice),
         RemoveChannelMemberNotice(notices_project::RemoveChannelMemberNotice),
         NewMsgNotice(notices_project::NewMsgNotice),
+        UpdateMsgNotice(notices_project::UpdateMsgNotice),
         SetWorkSnapShotNotice(notices_project::SetWorkSnapShotNotice),
         UserOnlineNotice(notices_project::UserOnlineNotice),
         UserOfflineNotice(notices_project::UserOfflineNotice),
@@ -77,6 +78,10 @@ pub mod project {
         } else if data.type_url == notices_project::NewMsgNotice::type_url() {
             if let Ok(notice) = notices_project::NewMsgNotice::decode(data.value.as_slice()) {
                 return Some(Notice::NewMsgNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateMsgNotice::type_url() {
+            if let Ok(notice) = notices_project::UpdateMsgNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateMsgNotice(notice));
             }
         } else if data.type_url == notices_project::SetWorkSnapShotNotice::type_url() {
             if let Ok(notice) =

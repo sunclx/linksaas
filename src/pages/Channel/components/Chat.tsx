@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import styles from './Chat.module.less';
@@ -9,17 +9,18 @@ import {
   change_file_fs,
   get_reminder_info,
 } from '@/components/Editor';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { request } from '@/utils/request';
-import { send_msg, MSG_LINK_NONE, LIST_CHAN_SCOPE_INCLUDE_ME } from '@/api/project_channel';
+import { send_msg, update_msg, MSG_LINK_NONE, LIST_CHAN_SCOPE_INCLUDE_ME } from '@/api/project_channel';
 import { FILE_OWNER_TYPE_CHANNEL } from '@/api/fs';
 
 const ChannelHeader = observer(() => {
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
+  const chatMsgStore = useStores('chatMsgStore');
   const userStore = useStores('userStore');
 
-  const { editor, editorRef } = useCommonEditor({
+  const editorParam = {
     content: '',
     fsId: projectStore.curProject?.channel_fs_id ?? '',
     ownerType: FILE_OWNER_TYPE_CHANNEL,
@@ -29,10 +30,30 @@ const ChannelHeader = observer(() => {
     widgetInToolbar: true,
     showReminder: true,
     channelMember: true,
-  });
+  };
+
+  const sendEditor = useCommonEditor(editorParam);
+
+  const updateEditor = useCommonEditor(editorParam);
+
+  useEffect(() => {
+    const editMsg = chatMsgStore.getEditMsg();
+    if (editMsg == undefined) {
+      if (updateEditor.editorRef !== null) {
+        updateEditor.editorRef.current?.clearContent();
+      }
+      return;
+    }
+    setTimeout(() => {
+      console.log(editMsg!.msg.basic_msg.msg_data);
+      if (updateEditor.editorRef !== null) {
+        updateEditor.editorRef.current?.setContent(editMsg!.msg.basic_msg.msg_data);
+      }
+    }, 200);
+  }, [chatMsgStore.getEditMsg()]);
 
   const sendContent = async () => {
-    const chatJson = editorRef.current?.getContent() || {
+    const chatJson = sendEditor.editorRef.current?.getContent() || {
       type: 'doc',
     };
     if (is_empty_doc(chatJson)) {
@@ -57,7 +78,33 @@ const ChannelHeader = observer(() => {
         link_dest_id: '',
       }),
     );
-    editorRef.current?.clearContent();
+    sendEditor.editorRef.current?.clearContent();
+  };
+
+  const updateContent = async () => {
+    const editMsg = chatMsgStore.getEditMsg();
+    if (editMsg == undefined) {
+      return;
+    }
+    const chatJson = updateEditor.editorRef.current?.getContent() || {
+      type: 'doc',
+    };
+    await change_file_fs(
+      chatJson,
+      projectStore.curProject?.channel_fs_id ?? '',
+      userStore.sessionId,
+      FILE_OWNER_TYPE_CHANNEL,
+      channelStore.curChannelId,
+    );
+    const remindInfo = get_reminder_info(chatJson);
+    await request(update_msg(userStore.sessionId, projectStore.curProjectId, channelStore.curChannelId, editMsg.msg.msg_id, {
+      msg_data: JSON.stringify(chatJson),
+      ref_msg_id: '',
+      remind_info: remindInfo,
+      link_type: MSG_LINK_NONE,
+      link_dest_id: '',
+    }));
+    chatMsgStore.setEditMsg(undefined);
   };
 
   return (
@@ -68,12 +115,32 @@ const ChannelHeader = observer(() => {
         channelStore.curChannel?.channelInfo.readonly == false &&
         channelStore.curChannel?.channelInfo.closed == false && (
           <div className={styles.chatInput + ' _chatContext'}>
-            {editor}
+            {sendEditor.editor}
             <Button className={styles.chatBtn} type="primary" onClick={() => sendContent()}>
               发送
             </Button>
           </div>
         )}
+      {chatMsgStore.getEditMsg() != undefined && (
+        <Modal open
+          title="修改聊天内容"
+          width="80%"
+          style={{ height: "500px", paddingTop: "100px" }}
+          onCancel={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            chatMsgStore.setEditMsg(undefined);
+          }}
+          onOk={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            updateContent();
+          }}>
+          <div className='_editChatContext'>
+            {updateEditor.editor}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 });

@@ -1,5 +1,6 @@
 @import './reset.less';
 @import '../../node_modules/antd/dist/antd.compact.less';
+
 html,
 body {
   margin: 0;
@@ -31,14 +32,14 @@ code {
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
 }
+
 // tablb表头颜色
-.ant-table-thead > tr > th {
+.ant-table-thead>tr>th {
   background: #fff !important;
 }
+
 // tablb表头系列中间｜
-.ant-table-thead
-  > tr
-  > th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
+.ant-table-thead>tr>th:not(:last-child):not(.ant-table-selection-column):not(.ant-table-row-expand-icon-cell):not([colspan])::before {
   display: none;
 }
 
@@ -50,6 +51,7 @@ code {
   height: 8px;
   background: transparent;
 }
+
 &:hover {
   &::-webkit-scrollbar-thumb {
     // background: rgb(0 0 0 / 80%);
@@ -58,6 +60,7 @@ code {
     // opacity: 0.1;
   }
 }
+
 // }
 
 .table_state_plan {
@@ -72,6 +75,7 @@ code {
 .no-editable-cell-value-wrap {
   padding: 5px 12px;
 }
+
 .editable-cell-value-wrap {
   padding: 5px 12px;
   overflow: hidden;
@@ -86,6 +90,7 @@ code {
   border: 1px solid #d9d9d9;
   border-radius: 6px;
 }
+
 .ant-input {
   border-radius: 6px;
 }
@@ -93,27 +98,49 @@ code {
 [data-theme='dark'] .editable-cell-value-wrap:hover {
   border: 1px solid #434343;
 }
+
 .ant-modal-wrap,
 .ant-modal-mask,
 .ant-select-dropdown {
   z-index: 2000;
 }
 
+.ant-tooltip {
+  z-index: 2000;
+}
+
+.ant-popover {
+  z-index: 2000;
+}
+
+.ant-dropdown {
+  z-index: 2000;
+}
+
+.ant-dropdown-menu {
+  z-index: 2000;
+}
+
+//TODO 
 .basicLayout {
+
   // select 组件
   .ant-select:not(.ant-select-customize-input) .ant-select-selector {
     height: 26px;
     border: 1px solid #dcdcdc;
     border-radius: 6px;
   }
+
   .ant-menu-root {
     background: #1d2330 !important;
+
     .ant-menu-sub {
       padding: 0 10px !important;
       font-weight: 500 !important;
       font-size: 14px !important;
       background: #1d2330 !important;
     }
+
     .ant-menu-item {
       border-radius: 10px !important;
     }
