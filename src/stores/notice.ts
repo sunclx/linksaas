@@ -170,6 +170,11 @@ class NoticeStore {
       }
       //更新未读消息数量
       this.rootStore.projectStore.updateProjectUnreadMsgCount(notice.NewMsgNotice.project_id);
+    }else if(notice.UpdateMsgNotice !== undefined) {
+      if (this.rootStore.projectStore.curProjectId == notice.UpdateMsgNotice.project_id && this.rootStore.channelStore.curChannelId == notice.UpdateMsgNotice.channel_id) {
+        //替换内容
+        this.rootStore.chatMsgStore.updateMsg(notice.UpdateMsgNotice.msg_id);
+      }
     } else if (notice.SetWorkSnapShotNotice !== undefined) {
       if (notice.SetWorkSnapShotNotice.project_id == this.rootStore.projectStore.curProjectId) {
         await this.rootStore.memberStore.updateSnapShot(notice.SetWorkSnapShotNotice.member_user_id, notice.SetWorkSnapShotNotice.enable);

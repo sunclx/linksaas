@@ -17,12 +17,12 @@ import { CloseOutlined } from '@ant-design/icons';
 
 export type ChatMsgProp = {
   msg: WebMsg;
+  readonly: boolean;
 };
 
 const ChatMsg: React.FC<ChatMsgProp> = (props) => {
-  const { msg } = props;
+  const { msg, readonly } = props;
   const chatMsgStore = useStores('chatMsgStore');
-  const channelStore = useStores('channelStore');
   const linkAuxStore = useStores('linkAuxStore');
   const history = useHistory();
 
@@ -45,12 +45,6 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
     }
   };
   const setHover = (hover: boolean) => {
-    if (channelStore.curChannel?.channelInfo.closed) {
-      return;
-    }
-    if (channelStore.curChannel?.channelInfo.readonly) {
-      return;
-    }
     runInAction(() => (msg.hovered = hover));
   };
   const getLinkType = (linkType: MSG_LINK_TYPE) => {
@@ -84,6 +78,12 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           />
           <span className={styles.chatName}>{msg.msg.sender_display_name}</span>
           <span className={styles.chatTime}>{moment(msg.msg.send_time).format("YYYY-MM-DD HH:mm:ss")}</span>
+          {msg.msg.has_update_time && (
+            <>
+              <span className={styles.chatName}>修改时间</span>
+              <span className={styles.chatTime}>&nbsp;&nbsp;{moment(msg.msg.update_time).format("YYYY-MM-DD HH:mm:ss")}</span>
+            </>
+          )}
           {msg.msg.basic_msg.link_dest_id != "" && (
             <span className={styles.tools}>
               来自{getLinkType(msg.msg.basic_msg.link_type)}:
@@ -98,6 +98,11 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           )}
           {msg.hovered && (
             <span className={styles.tools}>
+              {readonly == false && moment().diff(msg.msg.send_time) < (900 * 1000) && (<span
+                title="修改"
+                className={styles.editBtn}
+                onClick={() => chatMsgStore.setEditMsg(msg)}
+              />)}
               <span
                 title="创建文档"
                 className={styles.docBtn}
