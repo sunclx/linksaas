@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "linksaas",
-    "version": "0.1.3"
+    "version": "0.1.4"
   },
   "build": {
     "distDir": "../dist",
@@ -52,7 +52,7 @@
           "dialogImagePath": "assets/wix-dialog.bmp"
         },
         "webviewInstallMode": {
-          "type": "embedBootstrapper"
+          "type": "offlineInstaller"
         }
       }
     },
