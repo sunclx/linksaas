@@ -61,28 +61,38 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
-  const tablist = [
-    {
+  const tabList = [];
+  if (props.showChannel) {
+    tabList.push({
       label: '频道',
       value: 'channel',
-    },
-    {
+    });
+  }
+  if (props.showDoc) {
+    tabList.push({
       label: '项目文档',
       value: 'doc',
-    },
-    {
+    });
+  }
+  if (props.showTask) {
+    tabList.push({
       label: '任务',
       value: 'task',
-    },
-    {
+    });
+  }
+  if (props.showBug) {
+    tabList.push({
       label: '缺陷',
       value: 'bug',
-    },
-    {
+    });
+  }
+  if (props.showExterne){
+    tabList.push({
       label: '外部链接',
       value: 'externe',
-    },
-  ];
+    });
+  }
+  
   const [pageOpt, setPageOpt] = useSetState<Partial<PageOptType>>({
     pageSize: 10,
     pageNum: 1,
@@ -316,7 +326,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
         <div className={s.title}>{props.title}</div>
         <div className={s.bodywrap}>
           <div className={s.bodyleft}>
-            {tablist.map((item) => (
+            {tabList.map((item) => (
               <div
                 className={classNames(s.item, tab === item.value ? s.active : '')}
                 key={item.value}

@@ -484,17 +484,28 @@ export type RemoveDependenceResponse = {
   err_msg: string;
 };
 
-export type ListDependenceRequest = {
+export type ListMyDependRequest = {
   session_id: string;
   project_id: string;
   issue_id: string;
 };
 
-export type ListDependenceResponse = {
+export type ListMyDependResponse = {
   code: number;
   err_msg: string;
-  my_depend_list: IssueInfo[];
-  depend_me_list: IssueInfo[];
+  issue_list: IssueInfo[];
+};
+
+export type ListDependMeRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type ListDependMeResponse = {
+  code: number;
+  err_msg: string;
+  issue_list: IssueInfo[];
 };
 
 //创建工单，根据类型区分是任务还是缺陷
@@ -872,11 +883,20 @@ export async function remove_dependence(request: RemoveDependenceRequest): Promi
   });
 }
 
-//列出依赖
-export async function list_dependence(request: ListDependenceRequest): Promise<ListDependenceResponse> {
-  const cmd = 'plugin:project_issue_api|list_dependence';
+//列出我的依赖
+export async function list_my_depend(request: ListMyDependRequest): Promise<ListMyDependResponse> {
+  const cmd = 'plugin:project_issue_api|list_my_depend';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<ListDependenceResponse>(cmd, {
+  return invoke<ListMyDependResponse>(cmd, {
+    request,
+  });
+}
+
+//列出依赖我的
+export async function list_depend_me(request: ListDependMeRequest): Promise<ListDependMeResponse> {
+  const cmd = 'plugin:project_issue_api|list_depend_me';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListDependMeResponse>(cmd, {
     request,
   });
 }

@@ -1,27 +1,35 @@
 @import '../../../../../config/theme/variables.less';
+
 .leftCom {
   width: 100%;
   height: 100%;
-  padding: 20px 26px;
   overflow: auto;
+
+  h2 {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 10px;
+    color: #2c2d2e;
+    background-image: linear-gradient(to right, #eeeeee, #ffffff);
+    font-weight: 550;
+    font-size: 16px;
+  }
+
   .top_wrap {
     height: calc(100% - 282px);
     border-bottom: 1px solid #f0f0f5;
-    > h2 {
-      padding-bottom: 12px;
-      color: #2c2d2e;
-      font-weight: 550;
-      font-size: 14px;
-    }
+
     .content_wrap {
       height: calc(100% - 50px);
       padding-left: 40px;
       overflow: auto;
     }
   }
+
   .stage_form_wrap {
     position: relative;
     width: 100%;
+
     // height: 265px;
     h2 {
       margin: 14px 0;
@@ -29,6 +37,7 @@
       font-weight: 550;
       font-size: 14px;
     }
+
     .submit {
       // position: absolute;
       margin-top: 10px;
@@ -41,6 +50,7 @@
 .RightCom {
   width: 100%;
   height: 100%;
+
   .basic_info_wrap {
     .basic_info {
       display: flex;
@@ -48,22 +58,27 @@
       color: #2c2d2e;
       font-size: 12px;
       line-height: 26px;
-      > span {
+
+      >span {
         display: inline-block;
         width: 130px;
         color: #666;
       }
-      > div {
+
+      >div {
         width: 100%;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
       }
+
       .channel_child {
         display: flex;
-        > span {
+
+        >span {
           color: #ff4c30;
         }
+
         .btnText {
           margin-left: 5px;
           color: @primary-color;
@@ -72,12 +87,14 @@
       }
     }
   }
+
   .hr {
     width: 100%;
     height: 1px;
     margin: 14px 0;
     background: #eeeef3;
   }
+
   .time_line_wrap {
     height: 100%;
     height: calc(100% - 390px);
@@ -89,11 +106,13 @@
       font-size: 14px;
       line-height: 24px;
     }
+
     .timeLine {
       height: calc(100% - 30px);
       padding-top: 8px;
       overflow: auto;
-      > li {
+
+      >li {
         font-size: 12px;
       }
     }

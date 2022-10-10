@@ -1,6 +1,8 @@
 import React from "react";
 import { Tabs } from 'antd';
 import { SubIssuePanel } from "./SubIssuePanel";
+import { MyDependPanel } from "./MyDependPanel";
+import { DependMePanel } from "./DependMePanel";
 
 
 
@@ -18,11 +20,11 @@ export const ExtraIssueInfo: React.FC<ExtraIssueInfoProps> = (props) => {
                 <Tabs.TabPane tab="子工单" key="sub">
                     <SubIssuePanel issueId={props.issueId}/>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="依赖工单" key="myDepend">
-                    Content of Tab Pane 2
+                <Tabs.TabPane tab="我的依赖" key="myDepend">
+                    <MyDependPanel issueId={props.issueId}/>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="被依赖工单" key="dependMe">
-                    Content of Tab Pane 3
+                <Tabs.TabPane tab="依赖我的" key="dependMe">
+                    <DependMePanel issueId={props.issueId}/>
                 </Tabs.TabPane>
             </Tabs>
             

@@ -761,22 +761,49 @@ async fn remove_dependence<R: Runtime>(
 }
 
 #[tauri::command]
-async fn list_dependence<R: Runtime>(
+async fn list_my_depend<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: ListDependenceRequest,
-) -> Result<ListDependenceResponse, String> {
+    request: ListMyDependRequest,
+) -> Result<ListMyDependResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectIssueApiClient::new(chan.unwrap());
-    match client.list_dependence(request).await {
+    match client.list_my_depend(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == list_dependence_response::Code::WrongSession as i32 {
+            if inner_resp.code == list_my_depend_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_dependence".into()))
+                    window.emit("notice", new_wrong_session_notice("list_my_depend".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_depend_me<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListDependMeRequest,
+) -> Result<ListDependMeResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.list_depend_me(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_depend_me_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_depend_me".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -823,7 +850,8 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 remove_sub_issue,
                 add_dependence,
                 remove_dependence,
-                list_dependence,
+                list_my_depend,
+                list_depend_me,
             ]),
         }
     }
