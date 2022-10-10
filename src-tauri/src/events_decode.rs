@@ -279,6 +279,13 @@ pub mod issue {
         SetEndTimeEvent(events_issue::SetEndTimeEvent),
         SetEstimateMinutesEvent(events_issue::SetEstimateMinutesEvent),
         SetRemainMinutesEvent(events_issue::SetRemainMinutesEvent),
+
+        CreateSubIssueEvent(events_issue::CreateSubIssueEvent),
+        UpdateSubIssueEvent(events_issue::UpdateSubIssueEvent),
+        UpdateSubIssueStateEvent(events_issue::UpdateSubIssueStateEvent),
+        RemoveSubIssueEvent(events_issue::RemoveSubIssueEvent),
+        AddDependenceEvent(events_issue::AddDependenceEvent),
+        RemoveDependenceEvent(events_issue::RemoveDependenceEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -326,8 +333,31 @@ pub mod issue {
             if let Ok(ev) = events_issue::SetRemainMinutesEvent::decode(data.value.as_slice()) {
                 return Some(Event::SetRemainMinutesEvent(ev));
             }
+        }else if data.type_url == events_issue::CreateSubIssueEvent::type_url() {
+            if let Ok(ev) = events_issue::CreateSubIssueEvent::decode(data.value.as_slice()){
+                return Some(Event::CreateSubIssueEvent(ev));
+            }
+        }else if data.type_url == events_issue::UpdateSubIssueEvent::type_url(){
+            if let Ok(ev) = events_issue::UpdateSubIssueEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateSubIssueEvent(ev))
+            }
+        }else if data.type_url == events_issue::UpdateSubIssueStateEvent::type_url() {
+            if let Ok(ev) = events_issue::UpdateSubIssueStateEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateSubIssueStateEvent(ev));
+            }
+        }else if data.type_url == events_issue::RemoveSubIssueEvent::type_url() {
+            if let Ok(ev) = events_issue::RemoveSubIssueEvent::decode(data.value.as_slice()){
+                return Some(Event::RemoveSubIssueEvent(ev));
+            }
+        }else if data.type_url == events_issue::AddDependenceEvent::type_url() {
+            if let Ok(ev) = events_issue::AddDependenceEvent::decode(data.value.as_slice()) {
+                return Some(Event::AddDependenceEvent(ev));
+            }
+        }else if data.type_url == events_issue::RemoveDependenceEvent::type_url() {
+            if let Ok(ev) = events_issue::RemoveDependenceEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveDependenceEvent(ev));
+            }
         }
-
         None
     }
 }

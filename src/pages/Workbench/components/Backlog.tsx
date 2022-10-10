@@ -205,7 +205,7 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
       },
     },
     {
-      title: `任务阶段`,
+      title: `阶段`,
       dataIndex: 'state',
       sorter: {
         compare: (a: { state: number }, b: { state: number }) => {

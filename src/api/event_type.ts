@@ -1090,6 +1090,167 @@ namespace issue {
     }
     return ret_list;
   }
+
+  export type CreateSubIssueEvent = {
+    issue_id: string;
+    issue_type: number;
+    issue_title: string;
+    title: string;
+  };
+
+  function get_create_sub_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateSubIssueEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`子工单 ${inner.title}`));
+    return ret_list;
+  }
+
+  export type UpdateSubIssueEvent = {
+    issue_id: string;
+    issue_type: number;
+    issue_title: string;
+    old_title: string;
+    new_title: string;
+  };
+
+  function get_update_sub_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateSubIssueEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`子工单 原标题:${inner.old_title} 现标题:${inner.new_title}`));
+    return ret_list;
+  }
+
+  export type UpdateSubIssueStateEvent = {
+    issue_id: string;
+    issue_type: number;
+    issue_title: string;
+    title: string;
+    done: boolean;
+  };
+
+  function get_update_sub_issue_state_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateSubIssueStateEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 标记 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`子工单 ${inner.title} 状态 为 ${inner.done ? "完成" : "未完成"}`));
+    return ret_list;
+  }
+
+  export type RemoveSubIssueEvent = {
+    issue_id: string;
+    issue_type: number;
+    issue_title: string;
+    title: string;
+  };
+
+  function get_remove_sub_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveSubIssueEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`子工单 ${inner.title}`));
+    return ret_list;
+  }
+
+  export type AddDependenceEvent = {
+    issue_id: string;
+    issue_type: number;
+    issue_title: string;
+    depend_issue_id: string;
+    depend_issue_type: number;
+    depend_issue_title: string;
+  };
+
+  function get_add_depend_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AddDependenceEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`依赖${get_issue_type_str(inner.depend_issue_type)}`));
+    if (inner.depend_issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.depend_issue_title, ev.project_id, inner.depend_issue_id));
+    } else if (inner.depend_issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.depend_issue_title, ev.project_id, inner.depend_issue_id));
+    }
+    return ret_list;
+  }
+
+  export type RemoveDependenceEvent = {
+    issue_id: string;
+    issue_type: number;
+    issue_title: string;
+    depend_issue_id: string;
+    depend_issue_type: number;
+    depend_issue_title: string;
+  };
+
+  function get_remove_depend_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveDependenceEvent,
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消关联 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`依赖${get_issue_type_str(inner.depend_issue_type)}`));
+    if (inner.depend_issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.depend_issue_title, ev.project_id, inner.depend_issue_id));
+    } else if (inner.depend_issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.depend_issue_title, ev.project_id, inner.depend_issue_id));
+    }
+    return ret_list;
+  }
+
   export class AllIssueEvent {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
@@ -1102,6 +1263,12 @@ namespace issue {
     SetEndTimeEvent?: SetEndTimeEvent;
     SetEstimateMinutesEvent?: SetEstimateMinutesEvent;
     SetRemainMinutesEvent?: SetRemainMinutesEvent;
+    CreateSubIssueEvent?: CreateSubIssueEvent;
+    UpdateSubIssueEvent?: UpdateSubIssueEvent;
+    UpdateSubIssueStateEvent?: UpdateSubIssueStateEvent;
+    RemoveSubIssueEvent?: RemoveSubIssueEvent;
+    AddDependenceEvent?: AddDependenceEvent;
+    RemoveDependenceEvent?: RemoveDependenceEvent;
   }
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -1130,6 +1297,18 @@ namespace issue {
       return get_set_estimate_simple_content(ev, skip_prj_name, inner.SetEstimateMinutesEvent);
     } else if (inner.SetRemainMinutesEvent !== undefined) {
       return get_set_remain_simple_content(ev, skip_prj_name, inner.SetRemainMinutesEvent);
+    } else if (inner.CreateSubIssueEvent !== undefined) {
+      return get_create_sub_issue_simple_content(ev, skip_prj_name, inner.CreateSubIssueEvent);
+    } else if (inner.UpdateSubIssueEvent !== undefined) {
+      return get_update_sub_issue_simple_content(ev, skip_prj_name, inner.UpdateSubIssueEvent);
+    } else if (inner.UpdateSubIssueStateEvent !== undefined) {
+      return get_update_sub_issue_state_simple_content(ev, skip_prj_name, inner.UpdateSubIssueStateEvent);
+    } else if (inner.RemoveSubIssueEvent !== undefined) {
+      return get_remove_sub_issue_simple_content(ev, skip_prj_name, inner.RemoveSubIssueEvent);
+    } else if (inner.AddDependenceEvent !== undefined) {
+      return get_add_depend_simple_content(ev, skip_prj_name, inner.AddDependenceEvent);
+    } else if (inner.RemoveDependenceEvent !== undefined) {
+      return get_remove_depend_simple_content(ev, skip_prj_name, inner.RemoveDependenceEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }

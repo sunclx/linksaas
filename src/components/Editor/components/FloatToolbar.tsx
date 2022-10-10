@@ -21,7 +21,7 @@ const LinkBtn = () => {
   };
   return (
     <>
-      <Tooltip title="下划线">
+      <Tooltip title="链接">
         <div
           tabIndex={0}
           className="link-btn"
