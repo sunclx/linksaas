@@ -106,7 +106,8 @@ async fn keep_alive<R: Runtime>(app_handle: &AppHandle<R>) {
                     } else {
                         if resp.unwrap().into_inner().code != keep_alive_response::Code::Ok as i32 {
                             let window = (&handle).get_window("main").unwrap();
-                            let res = window.emit("notice", new_wrong_session_notice("keep_alive".into()));
+                            let res = window
+                                .emit("notice", new_wrong_session_notice("keep_alive".into()));
                             if res.is_err() {
                                 println!("{:?}", res);
                             }
@@ -174,7 +175,11 @@ async fn check_need_snap_shot<R: Runtime>(
     if now_timestamp - ((last_snap_info.last_time_stamp / 1000) as u64)
         < work_snap_config.interval as u64
     {
-        println!("time diff {} {}",now_timestamp - ((last_snap_info.last_time_stamp / 1000) as u64),work_snap_config.interval);
+        println!(
+            "time diff {} {}",
+            now_timestamp - ((last_snap_info.last_time_stamp / 1000) as u64),
+            work_snap_config.interval
+        );
         return CheckSnapShotResult {
             need_snap_shot: false,
             fs_id: "".into(),
@@ -385,20 +390,34 @@ async fn login<R: Runtime>(
                         (&url).host().unwrap().to_string(),
                         (&url).port().unwrap(),
                     );
-                    let (client, mut eventloop) = MqttClient::new(option, 10);
-                    if let Ok(()) = client.subscribe(topic, QoS::AtLeastOnce).await {
-                        let notice_client = (&app_handle).state::<CurNoticeClient>().inner();
-                        *notice_client.0.lock().await = Some(client);
-                        loop {
-                            let notice = eventloop.poll().await;
-                            if notice.is_err() {
-                                println!("disconnect mqtt");
-                                break;
+                    loop {
+                        let (client, mut eventloop) = MqttClient::new(option.clone(), 10);
+                        let sub_res = client.subscribe(topic.clone(), QoS::AtLeastOnce).await;
+                        if sub_res.is_ok() {
+                            println!("sub {} success", topic);
+                            let notice_client = (&app_handle).state::<CurNoticeClient>().inner();
+                            *notice_client.0.lock().await = Some(client);
+                            loop {
+                                let notice = eventloop.poll().await;
+                                if notice.is_err() {
+                                    println!("disconnect mqtt");
+                                    break;
+                                }
+                                emit_notice(&window, notice.unwrap());
                             }
-                            emit_notice(&window, notice.unwrap());
+                        } else {
+                            println!("{:?}", sub_res.err().unwrap());
                         }
-                    } 
+                        let cur_value = (&app_handle).state::<CurSession>().inner();
+                        let cur_session = cur_value.0.lock().await;
+                        if cur_session.is_none() {
+                            break;
+                        }
+                        sleep(Duration::from_secs(5)).await;
+                    }
                 });
+            } else {
+                println!("xxxxxxxxx");
             }
             Ok(ret)
         }
