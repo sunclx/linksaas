@@ -12,7 +12,7 @@ version = "0.1.4"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.0.0-rc.7", features = []}
+tauri-build = {version = "1.0.0-rc.7", features = [] }
 
 [dependencies]
 base64 = "0.13.0"
@@ -24,29 +24,14 @@ proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branc
 rumqttc = "0.11.0"
 rust-string-random = "0.1.0"
 scrap = "0.5"
-serde = {version = "1.0", features = ["derive"]}
+serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = {version = "1.0.5", features = [
-  "clipboard-all",
-  "devtools",
-  "dialog-all",
-  "notification-all",
-  "os-all",
-  "process-all",
-  "process-command-api",
-  "protocol-all",
-  "shell-open",
-  "shell-sidecar",
-  "system-tray",
-  "updater",
-  "window-all",
-  "windows7-compat",
-]}
-tokio = {version = "1.17.0", feature = ["time", "macros"]}
+tauri = {version = "1.0.5", features = ["clipboard-all", "devtools", "dialog-all", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all", "windows7-compat"] }
+tokio = {version = "1.17.0", feature = ["time", "macros"] }
 tokio-stream = "0.1.6"
 tonic = "0.6.2"
 url = "2.2.2"
-uuid = {version = "0.8", features = ["serde", "v4"]}
+uuid = {version = "0.8", features = ["serde", "v4"] }
 
 [features]
 # by default Tauri runs in production mode
