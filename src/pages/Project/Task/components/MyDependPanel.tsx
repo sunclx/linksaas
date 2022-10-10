@@ -10,7 +10,11 @@ import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from "@/hooks";
 import { get_issue_type_str } from '@/api/event_type';
 import { renderState, renderTitle } from "./dependComon";
-
+import { getIssueViewUrl } from '@/utils/utils';
+import { useHistory, useLocation } from "react-router-dom";
+import type { LinkIssueState } from '@/stores/linkAux';
+import { LinkOutlined } from '@ant-design/icons/lib/icons';
+import { TASK_INSIDE_PAGES_ENUM } from "../CreateTask";
 
 
 
@@ -25,6 +29,9 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
 
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
     const [showSelectLink, setShowSelectLink] = useState(false);
+
+    const { pathname } = useLocation();
+    const { push } = useHistory();
 
     const loadIssue = async () => {
         const res = await request(list_my_depend({
@@ -68,9 +75,27 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
     const issueColums: ColumnsType<IssueInfo> = [
         {
             title: 'ID',
+            dataIndex: 'issue_index',
+            ellipsis: true,
             width: 60,
-            render: (_, record: IssueInfo) => {
-                return <span>{record.issue_index}</span>
+            render: (v, record: IssueInfo) => {
+                return (
+                    <span
+                        style={{ cursor: 'pointer' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            push(
+                                getIssueViewUrl(pathname), {
+                                    issueId: record.issue_id,
+                                    mode: TASK_INSIDE_PAGES_ENUM.DETAILS,
+                                    content: "",
+                                } as LinkIssueState
+                            );
+                        }}
+                    >
+                        <a><LinkOutlined />&nbsp;&nbsp;{v}</a>
+                    </span>
+                );
             },
         },
         {
@@ -120,15 +145,15 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
     return (
         <>
             <div style={{ position: "relative", paddingBottom: "28px" }}>
-                <Button 
-                style={{ position: "absolute", right: "10px" }} 
-                type="primary" 
-                disabled={!props.canOptDependence}
-                onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowSelectLink(true);
-                }}>新增依赖工单</Button>
+                <Button
+                    style={{ position: "absolute", right: "10px" }}
+                    type="primary"
+                    disabled={!props.canOptDependence}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowSelectLink(true);
+                    }}>新增依赖工单</Button>
             </div>
             <Table dataSource={issueList} columns={issueColums} pagination={false} />
             {showSelectLink == true && (

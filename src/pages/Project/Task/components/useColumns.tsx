@@ -47,6 +47,7 @@ type ColumnsTypes = ColumnType<IssueInfo> & {
 
 const useTable = (props: useTableProps) => {
   const { pathname } = useLocation();
+  const { push } = useHistory();
   const { dataSource, setDataSource, onSuccess } = props;
 
   const getColor = (v: number) => {
@@ -63,7 +64,6 @@ const useTable = (props: useTableProps) => {
         return ISSUE_STATE_COLOR_ENUM.规划中颜色;
     }
   };
-  const { push } = useHistory();
 
   const columnsList: ColumnsTypes[] = [
     {

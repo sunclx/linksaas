@@ -7,6 +7,11 @@ import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from "@/hooks";
 import { get_issue_type_str } from '@/api/event_type';
 import { renderState, renderTitle } from "./dependComon";
+import { getIssueViewUrl } from '@/utils/utils';
+import { useHistory, useLocation } from "react-router-dom";
+import type { LinkIssueState } from '@/stores/linkAux';
+import { LinkOutlined } from '@ant-design/icons/lib/icons';
+import { TASK_INSIDE_PAGES_ENUM } from "../CreateTask";
 
 
 
@@ -20,6 +25,8 @@ export const DependMePanel: React.FC<DependMePanelProps> = (props) => {
 
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
 
+    const { pathname } = useLocation();
+    const { push } = useHistory();
 
     const loadIssue = async () => {
         const res = await request(list_depend_me({
@@ -35,9 +42,27 @@ export const DependMePanel: React.FC<DependMePanelProps> = (props) => {
     const issueColums: ColumnsType<IssueInfo> = [
         {
             title: 'ID',
+            dataIndex: 'issue_index',
+            ellipsis: true,
             width: 60,
-            render: (_, record: IssueInfo) => {
-                return <span>{record.issue_index}</span>
+            render: (v, record: IssueInfo) => {
+                return (
+                    <span
+                        style={{ cursor: 'pointer' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            push(
+                                getIssueViewUrl(pathname), {
+                                    issueId: record.issue_id,
+                                    mode: TASK_INSIDE_PAGES_ENUM.DETAILS,
+                                    content: "",
+                                } as LinkIssueState
+                            );
+                        }}
+                    >
+                        <a><LinkOutlined />&nbsp;&nbsp;{v}</a>
+                    </span>
+                );
             },
         },
         {
