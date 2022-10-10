@@ -8,20 +8,20 @@ import { DependMePanel } from "./DependMePanel";
 
 interface ExtraIssueInfoProps {
     issueId: string;
+    canOptSubIssue: boolean;
+    canOptDependence: boolean;
 }
 
 export const ExtraIssueInfo: React.FC<ExtraIssueInfoProps> = (props) => {
- 
-
     return (
         <>
             <h2>额外信息</h2>
             <Tabs defaultActiveKey="sub">
                 <Tabs.TabPane tab="子工单" key="sub">
-                    <SubIssuePanel issueId={props.issueId}/>
+                    <SubIssuePanel issueId={props.issueId} canOptSubIssue={props.canOptSubIssue}/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="我的依赖" key="myDepend">
-                    <MyDependPanel issueId={props.issueId}/>
+                    <MyDependPanel issueId={props.issueId} canOptDependence={props.canOptDependence}/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="依赖我的" key="dependMe">
                     <DependMePanel issueId={props.issueId}/>

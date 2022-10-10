@@ -173,6 +173,8 @@ type UserIssuePerm = {
   can_assign_check_user: boolean;
   next_state_list: ISSUE_STATE[];
   can_remove: boolean;
+  can_opt_dependence: boolean;
+  can_opt_sub_issue: boolean;
 };
 
 export type IssueInfo = {

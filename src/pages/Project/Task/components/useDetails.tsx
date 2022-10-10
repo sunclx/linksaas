@@ -86,7 +86,9 @@ const useDetails = (props: UseDetailsType) => {
             <ReadOnlyEditor content={details?.basic_info?.content ?? ''} />
           </div>
         </div>
-        {getIsTask(pathname) && details.issue_id != "" && <ExtraIssueInfo issueId={details.issue_id} />}
+        {getIsTask(pathname) && details.issue_id != "" && <ExtraIssueInfo issueId={details.issue_id}
+          canOptSubIssue={details.user_issue_perm.can_opt_sub_issue}
+          canOptDependence={details.user_issue_perm.can_opt_dependence} />}
         <div className={s.stage_form_wrap}>
           <h2>{details.user_issue_perm.next_state_list.length > 0 ? "阶段更新" : ""}</h2>
           <StageFormItem

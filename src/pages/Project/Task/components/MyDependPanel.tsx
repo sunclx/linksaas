@@ -16,6 +16,7 @@ import { renderState, renderTitle } from "./dependComon";
 
 interface MyDependPanelProps {
     issueId: string;
+    canOptDependence: boolean;
 }
 
 export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
@@ -99,11 +100,14 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
             width: 80,
             render: (_, record: IssueInfo) => {
                 return (
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        removeDependIssue(record.issue_id);
-                    }}>取消依赖</Button>
+                    <Button
+                        type="link"
+                        disabled={!props.canOptDependence}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            removeDependIssue(record.issue_id);
+                        }}>取消依赖</Button>
                 );
             }
         }
@@ -116,7 +120,11 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
     return (
         <>
             <div style={{ position: "relative", paddingBottom: "28px" }}>
-                <Button style={{ position: "absolute", right: "10px" }} type="primary" onClick={e => {
+                <Button 
+                style={{ position: "absolute", right: "10px" }} 
+                type="primary" 
+                disabled={!props.canOptDependence}
+                onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     setShowSelectLink(true);

@@ -8,6 +8,7 @@ import { useStores } from "@/hooks";
 
 interface SybIssuePanelProps {
     issueId: string;
+    canOptSubIssue: boolean;
 }
 
 export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
@@ -132,23 +133,32 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
             render: (_, record: SubIssueInfo) => {
                 return (
                     <span>
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            updateSubIssueState(record.sub_issue_id, !record.done);
-                        }}>{record.done ? "标记成未完成" : "标记成已完成"}</Button>
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setSubIssueTitle(record.basic_info.title);
-                            setCurSubIssueId(record.sub_issue_id);
-                            setShowUpdateSubIssue(true);
-                        }}>修改</Button>
-                        <Button type="link" danger onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            removeSubIssue(record.sub_issue_id);
-                        }}>删除</Button>
+                        <Button
+                            type="link"
+                            disabled={!props.canOptSubIssue}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                updateSubIssueState(record.sub_issue_id, !record.done);
+                            }}>{record.done ? "标记成未完成" : "标记成已完成"}</Button>
+                        <Button
+                            type="link"
+                            disabled={!props.canOptSubIssue}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSubIssueTitle(record.basic_info.title);
+                                setCurSubIssueId(record.sub_issue_id);
+                                setShowUpdateSubIssue(true);
+                            }}>修改</Button>
+                        <Button
+                            type="link"
+                            disabled={!props.canOptSubIssue}
+                            danger onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                removeSubIssue(record.sub_issue_id);
+                            }}>删除</Button>
                     </span>
                 );
             },
@@ -163,11 +173,15 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
     return (
         <>
             <div style={{ position: "relative", paddingBottom: "28px" }}>
-                <Button style={{ position: "absolute", right: "10px" }} type="primary" onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowAddSubIssue(true);
-                }}>新增子工单</Button>
+                <Button
+                    style={{ position: "absolute", right: "10px" }}
+                    type="primary"
+                    disabled={!props.canOptSubIssue}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowAddSubIssue(true);
+                    }}>新增子工单</Button>
             </div>
             <Table dataSource={subIssueList} columns={subIssueColums} pagination={false} />
             {showAddSubIssue == true && (
