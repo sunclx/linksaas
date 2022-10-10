@@ -1,24 +1,29 @@
-import React, { useCallback } from 'react';
-import { Remirror, useRemirror } from '@remirror/react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { Remirror, useRemirror, EditorComponent } from '@remirror/react';
 import type { RemirrorContentType } from '@remirror/core';
 import { getExtensions } from './extensions';
 import type { InvalidContentHandler } from 'remirror';
 import { AllStyledComponent } from '@remirror/styles/emotion';
 import { ThemeProvider } from '@remirror/react';
+import { observer } from 'mobx-react';
+import { ImperativeHandle } from './common';
+import type { EditorRef } from './common';
+
+
 
 export type ReadOnlyEditorProps = {
   content: RemirrorContentType;
   collapse?: boolean;
 };
 
-export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = (props) => {
+export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) => {
   let content = props.content;
   const collapse = props.collapse || false;
   if (typeof content == 'string') {
     if (content.startsWith('{')) {
       try {
         content = JSON.parse(content);
-      } catch (err) {}
+      } catch (err) { }
     }
   }
 
@@ -33,13 +38,26 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = (props) => {
     stringHandler: 'html',
     onError: onError,
   });
+  const editorRef = useRef<EditorRef | null>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (editorRef != null) {
+        editorRef.current?.setContent(content);
+      }
+    }, 200);
+  }, [content]);
+
   return (
     <div className="remirror-readonly">
       <ThemeProvider>
         <AllStyledComponent>
-          <Remirror manager={manager} initialContent={state} editable={false} />
+          <Remirror manager={manager} initialContent={state} editable={false} >
+            <ImperativeHandle ref={editorRef} />
+            <EditorComponent />
+          </Remirror>
         </AllStyledComponent>
       </ThemeProvider>
     </div>
   );
-};
+});

@@ -129,6 +129,11 @@ export type SendMsgResponse = {
   msg_id: string;
 };
 
+export type UpdateMsgResponse = {
+  code: number;
+  err_msg: string;
+};
+
 export type ListMsgRequest = {
   session_id: string;
   project_id: string;
@@ -146,6 +151,8 @@ export type Msg = {
   basic_msg: BasicMsg;
   sender_user_id: string;
   send_time: number;
+  has_update_time: boolean;
+  update_time: number;
   sender_logo_uri: string;
   sender_display_name: string;
   link_dest_title: string;
@@ -153,6 +160,12 @@ export type Msg = {
   ref_msg_data: string;
   ref_user_logo_uri: string;
   ref_user_display_name: string;
+};
+
+export type GetMsgResponse = {
+  code: number;
+  err_msg: string;
+  msg: Msg;
 };
 
 export type ListMsgResponse = {
@@ -417,6 +430,48 @@ export async function send_msg(
   };
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<SendMsgResponse>(cmd, {
+    request,
+  });
+}
+
+//更新消息
+export async function update_msg(
+  session_id: string,
+  project_id: string,
+  channel_id: string,
+  msg_id: string,
+  msg: BasicMsg,
+): Promise<UpdateMsgResponse> {
+  const cmd = 'plugin:project_channel_api|update_msg';
+  const request = {
+    session_id,
+    project_id,
+    channel_id,
+    msg_id,
+    msg,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateMsgResponse>(cmd, {
+    request,
+  });
+}
+
+//获取单挑消息内容
+export async function get_msg(
+  session_id: string,
+  project_id: string,
+  channel_id: string,
+  msg_id: string,
+): Promise<GetMsgResponse> {
+  const cmd = 'plugin:project_channel_api|get_msg';
+  const request = {
+    session_id,
+    project_id,
+    channel_id,
+    msg_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<GetMsgResponse>(cmd, {
     request,
   });
 }

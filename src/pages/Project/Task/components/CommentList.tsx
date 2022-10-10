@@ -52,7 +52,7 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
 
   return (
     <div>
-      <h3 style={{ fontSize: "22px", fontWeight: 800 }}>评论列表</h3>
+      <h2>评论列表</h2>
       <div style={{ borderTop: '1px solid  #f0f0f5', marginTop: '20px' }}>
         {commentList.map((item) => {
           return (

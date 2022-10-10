@@ -108,6 +108,8 @@ const CreateTask: FC = observer(() => {
       can_assign_check_user: false,
       next_state_list: [],
       can_remove: false,
+      can_opt_sub_issue: false,
+      can_opt_dependence: false,
     },
     extra_info: {
       //TODO

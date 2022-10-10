@@ -45,6 +45,11 @@ export namespace project {
     project_id: string;
     channel_id: string;
   };
+  export type UpdateMsgNotice = {
+    project_id: string;
+    channel_id: string;
+    msg_id: string;
+  };
   export type SetWorkSnapShotNotice = {
     project_id: string;
     member_user_id: string;
@@ -84,6 +89,7 @@ export namespace project {
     AddChannelMemberNotice?: AddChannelMemberNotice;
     RemoveChannelMemberNotice?: RemoveChannelMemberNotice;
     NewMsgNotice?: NewMsgNotice;
+    UpdateMsgNotice?: UpdateMsgNotice;
     SetWorkSnapShotNotice?: SetWorkSnapShotNotice;
     UserOnlineNotice?: UserOnlineNotice,
     UserOfflineNotice?: UserOfflineNotice,

@@ -173,6 +173,8 @@ type UserIssuePerm = {
   can_assign_check_user: boolean;
   next_state_list: ISSUE_STATE[];
   can_remove: boolean;
+  can_opt_dependence: boolean;
+  can_opt_sub_issue: boolean;
 };
 
 export type IssueInfo = {
@@ -376,6 +378,136 @@ export type RemoveCommentRequest = {
 export type RemoveCommentResponse = {
   code: number;
   err_msg: string;
+};
+
+export type BasicSubIssueInfo = {
+  title: string;
+};
+
+export type SubIssueInfo = {
+  sub_issue_id: string;
+  project_id: string;
+  issue_id: string;
+  basic_info: BasicSubIssueInfo;
+  create_user_id: string;
+  create_display_name: string;
+  create_time: number;
+  update_time: number;
+  done: boolean;
+}
+
+export type CreateSubIssueRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  basic_info: BasicSubIssueInfo;
+};
+
+export type CreateSubIssueResponse = {
+  code: number;
+  err_msg: string;
+  sub_issue_id: string;
+};
+
+
+export type UpdateSubIssueRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  sub_issue_id: string;
+  basic_info: BasicSubIssueInfo;
+};
+
+export type UpdateSubIssueResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type UpdateSubIssueStateRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  sub_issue_id: string;
+  done: boolean;
+};
+
+export type UpdateSubIssueStateResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type ListSubIssueRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type ListSubIssueResponse = {
+  code: number;
+  err_msg: string;
+  sub_issue_list: SubIssueInfo[];
+}
+
+
+export type RemoveSubIssueRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  sub_issue_id: string;
+};
+
+export type RemoveSubIssueResponse = {
+  code: number;
+  err_msg: string;
+};
+
+
+export type AddDependenceRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  depend_issue_id: string;
+};
+
+export type AddDependenceResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type RemoveDependenceRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  depend_issue_id: string;
+};
+
+export type RemoveDependenceResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type ListMyDependRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type ListMyDependResponse = {
+  code: number;
+  err_msg: string;
+  issue_list: IssueInfo[];
+};
+
+export type ListDependMeRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type ListDependMeResponse = {
+  code: number;
+  err_msg: string;
+  issue_list: IssueInfo[];
 };
 
 //创建工单，根据类型区分是任务还是缺陷
@@ -686,6 +818,87 @@ export async function remove_comment(request: RemoveCommentRequest): Promise<Rem
   const cmd = 'plugin:project_issue_api|remove_comment';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<RemoveCommentResponse>(cmd, {
+    request,
+  });
+}
+
+//增加子工单
+export async function create_sub_issue(request: CreateSubIssueRequest): Promise<CreateSubIssueResponse> {
+  const cmd = 'plugin:project_issue_api|create_sub_issue';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<CreateSubIssueResponse>(cmd, {
+    request,
+  });
+}
+
+//更新子工单
+export async function update_sub_issue(request: UpdateSubIssueRequest): Promise<UpdateSubIssueResponse> {
+  const cmd = 'plugin:project_issue_api|update_sub_issue';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateSubIssueResponse>(cmd, {
+    request,
+  });
+}
+
+//更新子工单状态
+export async function update_sub_issue_state(request: UpdateSubIssueStateRequest): Promise<UpdateSubIssueStateResponse> {
+  const cmd = 'plugin:project_issue_api|update_sub_issue_state';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateSubIssueStateResponse>(cmd, {
+    request,
+  });
+}
+
+//列出子工单
+export async function list_sub_issue(request: ListSubIssueRequest): Promise<ListSubIssueResponse> {
+  const cmd = 'plugin:project_issue_api|list_sub_issue';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListSubIssueResponse>(cmd, {
+    request,
+  });
+}
+
+//删除子工单
+export async function remove_sub_issue(request: RemoveSubIssueRequest): Promise<RemoveSubIssueResponse> {
+  const cmd = 'plugin:project_issue_api|remove_sub_issue';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<RemoveSubIssueResponse>(cmd, {
+    request,
+  });
+}
+
+//增加依赖
+export async function add_dependence(request: AddDependenceRequest): Promise<AddDependenceResponse> {
+  const cmd = 'plugin:project_issue_api|add_dependence';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<AddDependenceResponse>(cmd, {
+    request,
+  });
+}
+
+//删除依赖
+export async function remove_dependence(request: RemoveDependenceRequest): Promise<RemoveDependenceResponse> {
+  const cmd = 'plugin:project_issue_api|remove_dependence';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<RemoveDependenceResponse>(cmd, {
+    request,
+  });
+}
+
+//列出我的依赖
+export async function list_my_depend(request: ListMyDependRequest): Promise<ListMyDependResponse> {
+  const cmd = 'plugin:project_issue_api|list_my_depend';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListMyDependResponse>(cmd, {
+    request,
+  });
+}
+
+//列出依赖我的
+export async function list_depend_me(request: ListDependMeRequest): Promise<ListDependMeResponse> {
+  const cmd = 'plugin:project_issue_api|list_depend_me';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListDependMeResponse>(cmd, {
     request,
   });
 }
