@@ -16,7 +16,7 @@ import { getIssueText, getIsTask, timeToDateString, getIssueViewUrl } from '@/ut
 import { ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from '@/api/project_issue';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { Tooltip } from 'antd';
-import { LinkOutlined, QuestionCircleFilled } from '@ant-design/icons/lib/icons';
+import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 
 type useTableProps = {
   setStageModelData: (boo: boolean, v: IssueInfo) => void;
@@ -241,7 +241,7 @@ const useTable = (props: useTableProps) => {
       title: (<span>
         处理贡献&nbsp;
         <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
-          <a><QuestionCircleFilled /></a>
+          <a><QuestionCircleOutlined /></a>
         </Tooltip>
       </span>),
       dataIndex: 'exec_award_point',
@@ -254,7 +254,7 @@ const useTable = (props: useTableProps) => {
       title: (<span>
         验收贡献&nbsp;
         <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
-          <a><QuestionCircleFilled /></a>
+          <a><QuestionCircleOutlined /></a>
         </Tooltip>
       </span>),
       dataIndex: 'check_award_point',

@@ -22,7 +22,7 @@ import { ReadOnlyEditor, useCommonEditor, change_file_fs } from '@/components/Ed
 import { CommentList } from './CommentList';
 import { FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
 import { ExtraIssueInfo } from './ExtraIssueInfo';
-import { QuestionCircleFilled } from '@ant-design/icons/lib/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 
 type UseDetailsType = {
   details: IssueInfo;
@@ -175,15 +175,15 @@ const useDetails = (props: UseDetailsType) => {
           <div className={s.basic_info}>
             <span>处理贡献&nbsp;
               <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
-                <a><QuestionCircleFilled /></a>
+                <a><QuestionCircleOutlined /></a>
               </Tooltip>
             </span>
             <div>{details.exec_award_point}</div>
           </div>
           <div className={s.basic_info}>
             <span>验收贡献&nbsp;
-            <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
-                <a><QuestionCircleFilled /></a>
+              <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
+                <a><QuestionCircleOutlined /></a>
               </Tooltip>
             </span>
             <div>{details.check_award_point}</div>

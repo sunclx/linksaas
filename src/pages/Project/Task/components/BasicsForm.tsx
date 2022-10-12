@@ -15,7 +15,7 @@ import { getIsTask, getIssueText } from '@/utils/utils';
 import { useLocation } from 'react-router-dom';
 import BugLevelSelect from '@/components/BugLevelSelect';
 import InputNumber from '@/components/InputNumber';
-import { QuestionCircleFilled } from '@ant-design/icons/lib/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 
 
 type BasicsFormProps = {
@@ -74,7 +74,7 @@ const BasicsForm: FC<BasicsFormProps> = ({ pageType, details }) => {
       <div className={s.add__info_item}>
         <span>处理贡献&nbsp;
           <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
-            <a><QuestionCircleFilled /></a>
+            <a><QuestionCircleOutlined /></a>
           </Tooltip>
         </span>
         <Form.Item className={s.antFormItem} name="exec_award">
@@ -84,7 +84,7 @@ const BasicsForm: FC<BasicsFormProps> = ({ pageType, details }) => {
       <div className={s.add__info_item}>
         <span>验收贡献&nbsp;
           <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
-            <a><QuestionCircleFilled /></a>
+            <a><QuestionCircleOutlined /></a>
           </Tooltip>
         </span>
         <Form.Item className={s.antFormItem} name="check_award">
