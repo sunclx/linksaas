@@ -9,6 +9,7 @@ import NoFond from '@/pages/NoFond';
 import ProjectHome from '@/pages/Project/Home';
 import ProjectMember from '@/pages/Project/Member';
 import ProjectAppraise from '@/pages/Project/Appraise';
+import ProjectAward from '@/pages/Project/Award';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectTask from '@/pages/Project/Task';
 import CreateTask from '@/pages/Project/Task/CreateTask';
@@ -19,6 +20,7 @@ import AppStore from '@/pages/Project/AppStore';
 import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
+
 
 export interface IRouteConfig {
   // 路由路径
@@ -53,6 +55,11 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/appraise',
       title: '项目互评',
       component: ProjectAppraise,
+    },
+    {
+      path: prefix + '/award',
+      title: '项目贡献',
+      component: ProjectAward,
     },
     {
       path: prefix + '/task',

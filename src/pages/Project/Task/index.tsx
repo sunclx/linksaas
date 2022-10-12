@@ -174,7 +174,7 @@ const Task: FC = observer(() => {
       {
         stageModelData.visible && (
           <StageModel
-            visible={stageModelData.visible}
+            open={stageModelData.visible}
             details={stageModelData.param!}
             handleCancel={(bool) => setStageModelData(bool)}
             title={`${getIssueText(location.pathname)}阶段更新`}

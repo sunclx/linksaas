@@ -54,6 +54,11 @@ const Toolbar: React.FC = observer(() => {
         title="项目互评"
         badge={projectStore.curProject?.project_status.undone_appraise_count || 0}
       />
+      <Item
+        id="award"
+        pathname={pathname}
+        title="项目贡献"
+      />
       <Divider />
       <Item
         id="task"

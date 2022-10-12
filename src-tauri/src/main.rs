@@ -26,6 +26,7 @@ mod project_sprit_api_plugin;
 mod project_vc_api_plugin;
 mod project_book_store_api_plugin;
 mod project_book_shelf_api_plugin;
+mod project_award_api_plugin;
 mod restrict_api_plugin;
 mod search_api_plugin;
 mod user_api_plugin;
@@ -235,6 +236,7 @@ fn main() {
         .plugin(project_app_api_plugin::ProjectAppApiPlugin::new())
         .plugin(project_book_store_api_plugin::ProjectBookStoreApiPlugin::new())
         .plugin(project_book_shelf_api_plugin::ProjectBookShelfApiPlugin::new())
+        .plugin(project_award_api_plugin::ProjectAwardApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

@@ -9,10 +9,10 @@ const InputNumber: FC<InputNumberProps> = ({ ...props }) => {
   return (
     <AntdInputNumber
       style={{ width: 150 }}
-      placeholder="请输入工时"
+      placeholder={props.placeholder}
       formatter={(value) => String(value).replace(/^(-)*(\d+)\.(\d).*$/, '$1$2.$3')}
       controls={false}
-      addonAfter={'h'}
+      addonAfter={props.addonAfter}
       {...props}
     />
   );

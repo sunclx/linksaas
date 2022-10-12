@@ -1,7 +1,7 @@
 import MemberSelect from '@/components/MemberSelect';
 import PrioritySelect from '@/components/PrioritySelect';
 import { statusText } from '@/utils/constant';
-import { DatePicker, Form, Input } from 'antd';
+import { DatePicker, Form, Input, Tooltip } from 'antd';
 import type { FC } from 'react';
 import React from 'react';
 import { TASK_INSIDE_PAGES_ENUM } from '../CreateTask';
@@ -11,10 +11,12 @@ import type { IssueInfo } from '@/api/project_issue';
 import { ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS } from '@/api/project_issue';
 import { useStores } from '@/hooks';
 import BugPrioritySelect from '@/components/BugPrioritySelect';
-import { getIsTask } from '@/utils/utils';
+import { getIsTask, getIssueText } from '@/utils/utils';
 import { useLocation } from 'react-router-dom';
 import BugLevelSelect from '@/components/BugLevelSelect';
 import InputNumber from '@/components/InputNumber';
+import { QuestionCircleFilled } from '@ant-design/icons/lib/icons';
+
 
 type BasicsFormProps = {
   pageType: TASK_INSIDE_PAGES_ENUM;
@@ -62,12 +64,34 @@ const BasicsForm: FC<BasicsFormProps> = ({ pageType, details }) => {
       </div>
       <div className={s.add__info_item}>
         <span>处理人</span>
-        <MemberSelect className={s.antFormItem} name="exec_user_id" disable={!details.user_issue_perm.can_assign_exec_user}/>
+        <MemberSelect className={s.antFormItem} name="exec_user_id" disable={!details.user_issue_perm.can_assign_exec_user} memberUserId={details.exec_user_id} />
       </div>
+
       <div className={s.add__info_item}>
         <span>验收人</span>
-        <MemberSelect className={s.antFormItem} name="check_user_id" disable={!details.user_issue_perm.can_assign_check_user}/>
+        <MemberSelect className={s.antFormItem} name="check_user_id" disable={!details.user_issue_perm.can_assign_check_user} memberUserId={details.check_user_id} />
       </div>
+      <div className={s.add__info_item}>
+        <span>处理贡献&nbsp;
+          <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
+            <a><QuestionCircleFilled /></a>
+          </Tooltip>
+        </span>
+        <Form.Item className={s.antFormItem} name="exec_award">
+          <InputNumber placeholder="请输入处理贡献" />
+        </Form.Item>
+      </div>
+      <div className={s.add__info_item}>
+        <span>验收贡献&nbsp;
+          <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
+            <a><QuestionCircleFilled /></a>
+          </Tooltip>
+        </span>
+        <Form.Item className={s.antFormItem} name="check_award">
+          <InputNumber placeholder="请输入验收贡献" />
+        </Form.Item>
+      </div>
+
       {pageType === TASK_INSIDE_PAGES_ENUM.EDIT &&
         state === ISSUE_STATE_PROCESS &&
         userId === exec_user_id && (
@@ -75,13 +99,13 @@ const BasicsForm: FC<BasicsFormProps> = ({ pageType, details }) => {
             <div className={s.add__info_item}>
               <span>预估工时</span>
               <Form.Item className={s.antFormItem} name="estimate_minutes">
-                <InputNumber />
+                <InputNumber placeholder="请输入预估工时" addonAfter='h' />
               </Form.Item>
             </div>
             <div className={s.add__info_item}>
               <span>剩余工时</span>
               <Form.Item className={s.antFormItem} name="remain_minutes">
-                <InputNumber />
+                <InputNumber placeholder="请输入剩余工时" addonAfter='h' />
               </Form.Item>
             </div>
             <div className={s.add__info_item}>

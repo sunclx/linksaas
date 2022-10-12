@@ -15,6 +15,8 @@ import {
   set_end_time,
   set_estimate_minutes,
   set_remain_minutes,
+  set_exec_award,
+  set_check_award,
   remove,
   update,
   ISSUE_STATE_PLAN,
@@ -111,6 +113,8 @@ const CreateTask: FC = observer(() => {
       can_opt_sub_issue: false,
       can_opt_dependence: false,
     },
+    exec_award_point: 10,
+    check_award_point: 10,
     extra_info: {
       //TODO
     },
@@ -212,6 +216,8 @@ const CreateTask: FC = observer(() => {
       end_time,
       software_version,
       level,
+      exec_award,
+      check_award,
     } = form.getFieldsValue();
     const contentJson = editorRef.current?.getContent() || {
       type: 'doc',
@@ -332,6 +338,19 @@ const CreateTask: FC = observer(() => {
     if (isPageEdit() && end_time !== undefined && details.end_time !== getTime(end_time)) {
       await request(set_end_time(...userObj, res.issue_id, getTime(end_time)));
     }
+    //奖励值
+    await request(set_exec_award({
+      session_id,
+      project_id,
+      issue_id: res.issue_id,
+      point: exec_award ?? 0,
+    }));
+    await request(set_check_award({
+      session_id,
+      project_id,
+      issue_id: res.issue_id,
+      point: check_award ?? 0,
+    }));
 
     message.success('保存成功');
     if (data.issue_type == ISSUE_TYPE_TASK) {
@@ -393,7 +412,7 @@ const CreateTask: FC = observer(() => {
         <Form
           form={form}
           className={s.createTaskForm}
-          initialValues={{ priority: ISSUE_STATE_PLAN }}
+          initialValues={{ priority: 0, exec_award: details.exec_award_point, check_award: details.check_award_point }}
         >
           <div className={s.content_left}>
             {pageType !== TASK_INSIDE_PAGES_ENUM.DETAILS && (
