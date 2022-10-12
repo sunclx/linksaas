@@ -12,6 +12,7 @@ import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 import { useHistory } from "react-router-dom";
 import { LinkTaskInfo, LinkBugInfo } from '@/stores/linkAux';
+import { LinkOutlined } from "@ant-design/icons/lib/icons";
 
 
 const ITEM_PER_PAGE = 10;
@@ -159,17 +160,39 @@ const ProjectAward: React.FC = () => {
                                 </div>
                                 {curMemberUserId == state.member_user_id && (
                                     <>
-                                        <Table
-                                            dataSource={recordList}
-                                            columns={columns}
-                                            pagination={{
-                                                current: page + 1,
-                                                total: recordCount,
-                                                pageSize: ITEM_PER_PAGE,
-                                                onChange: pageNum => {
-                                                    setPage(pageNum - 1);
-                                                },
-                                            }} />
+                                        {recordList.length > 0 &&
+                                            <Table
+                                                style={{ marginLeft: "30px" }}
+                                                dataSource={recordList}
+                                                columns={columns}
+                                                pagination={recordCount <= ITEM_PER_PAGE ? false : {
+                                                    current: page + 1,
+                                                    total: recordCount,
+                                                    pageSize: ITEM_PER_PAGE,
+                                                    onChange: pageNum => {
+                                                        setPage(pageNum - 1);
+                                                    },
+                                                }} />
+                                        }
+                                        {recordList.length == 0 && (
+                                            <span style={{ marginLeft: "40px" }}>暂无记录，您可以通过完成<a onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                linkAuxStore.goToTaskList({
+                                                    stateList: [],
+                                                    execUserIdList: [],
+                                                    checkUserIdList: [],
+                                                }, history);
+                                            }}><LinkOutlined />任务</a>或修复<a onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                linkAuxStore.goToBugList({
+                                                    stateList: [],
+                                                    execUserIdList: [],
+                                                    checkUserIdList: [],
+                                                }, history);
+                                            }}><LinkOutlined />缺陷</a>来获得贡献值。</span>
+                                        )}
                                     </>
                                 )}
                             </div>
