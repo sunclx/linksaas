@@ -45,7 +45,8 @@ import { useCommonEditor, change_file_fs, change_file_owner } from '@/components
 import type { LinkIssueState } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import { FILE_OWNER_TYPE_PROJECT, FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
-import { DeleteOutlined } from '@ant-design/icons/lib/icons';
+import { DeleteOutlined, ExportOutlined } from '@ant-design/icons/lib/icons';
+import { SHORT_NOTE_TYPE, showShortNote } from '@/utils/short_note';
 
 export enum TASK_INSIDE_PAGES_ENUM {
   ADD = 'add',
@@ -192,12 +193,32 @@ const CreateTask: FC = observer(() => {
   };
 
   const getTitle = () => {
-    return `${getIssueText(pathname)}${pageType === TASK_INSIDE_PAGES_ENUM.ADD
+    const title = `${getIssueText(pathname)}${pageType === TASK_INSIDE_PAGES_ENUM.ADD
       ? '创建'
       : pageType === TASK_INSIDE_PAGES_ENUM.EDIT
         ? '编辑'
         : `详情-[${details?.issue_index}]${details?.basic_info?.title}`
       }`;
+    if (pageType == TASK_INSIDE_PAGES_ENUM.DETAILS) {
+      return (<span>{title}&nbsp;&nbsp;<a
+        onClick={e => {
+          let projectName = "";
+          projectStore.projectList.forEach(prj => {
+            if (prj.project_id == details.project_id) {
+              projectName = prj.basic_info.project_name;
+            }
+          })
+          e.stopPropagation();
+          e.preventDefault();
+          showShortNote({
+            shortNoteType: details.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+            data: details,
+          }, projectName);
+        }}
+      ><ExportOutlined style={{ fontSize: "16px" }} /></a></span>);
+    } else {
+      return (<span>{title}</span>);
+    }
   };
 
   // 保存

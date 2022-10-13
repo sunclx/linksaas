@@ -19,7 +19,7 @@ import { observer } from 'mobx-react';
 
 const Workbench: FC = () => {
   const location = useLocation();
-  const { push } = useHistory();
+  const history = useHistory();
   const urlParams = new URLSearchParams(location.search);
   const type = urlParams.get('type');
   const [passwordModal, setPasswordModal] = useState(type === 'resetPassword');
@@ -75,12 +75,12 @@ const Workbench: FC = () => {
           onCancel={(bool) => {
             userStore.logout();
             if (userStore.isResetPassword) {
-              push(USER_LOGIN_PATH);
+              history.push(USER_LOGIN_PATH);
             }
             setPasswordModal(bool);
           }}
           onSuccess={async () => {
-            push(WORKBENCH_PATH);
+            history.push(WORKBENCH_PATH);
             setPasswordModal(false);
           }}
         />

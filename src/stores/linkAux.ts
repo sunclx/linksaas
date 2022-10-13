@@ -314,6 +314,10 @@ class LinkAuxStore {
           return;
         }
       }
+      if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
+        this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
+      }
+      console.log(taskLink);
       history.push('/app/project/task/view', {
         issueId: taskLink.issueId,
         mode: 'details',
@@ -337,6 +341,9 @@ class LinkAuxStore {
           return;
         }
       }
+      if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
+        this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
+      }
       history.push('/app/project/bug/view', {
         issueId: taskLink.issueId,
         mode: 'details',
@@ -358,6 +365,9 @@ class LinkAuxStore {
           message.warn('没有权限查看对应文档');
           return;
         }
+      }
+      if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
+        this.rootStore.projectStore.setCurProjectId(docLink.projectId);
       }
       this.rootStore.projectStore.setShowChannel(false);
       history.push(APP_PROJECT_DOC_PRO_PATH, {

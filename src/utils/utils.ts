@@ -39,21 +39,6 @@ export const getIssue_type = (pathname: string): ISSUE_TYPE => {
 };
 
 export const getIssueViewUrl = (pathname: string): string => {
-  // if (pathname.includes('/app/project' + '/task')) {
-  //   return '/app/project' + TASK_VIEW_SUFFIX;
-  // } else if (pathname.includes('/app/project' + '/bug')) {
-  //   return '/app/project' + BUG_VIEW_SUFFIX;
-  // }
-  // else if (pathname.includes(APP_PROJECT_DOC_PATH + '/task')) {
-  //   return APP_PROJECT_DOC_PATH + TASK_VIEW_SUFFIX;
-  // } else if (pathname.includes(APP_PROJECT_DOC_PATH + '/bug')) {
-  //   return APP_PROJECT_DOC_PATH + BUG_VIEW_SUFFIX;
-  // } else if (pathname.includes(APP_PROJECT_DOC_CB_PATH + '/task')) {
-  //   return APP_PROJECT_DOC_CB_PATH + TASK_VIEW_SUFFIX;
-  // } else if (pathname.includes(APP_PROJECT_DOC_CB_PATH + '/bug')) {
-  //   return APP_PROJECT_DOC_CB_PATH + BUG_VIEW_SUFFIX;
-  // }
-
   if (pathname.includes('/task')) return APP_PROJECT_PATH + TASK_VIEW_SUFFIX;
   return APP_PROJECT_PATH + BUG_VIEW_SUFFIX;
 };

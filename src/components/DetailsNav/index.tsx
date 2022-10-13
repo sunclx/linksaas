@@ -5,7 +5,7 @@ import leftArrow from '@/assets/image/leftArrow.png';
 import { useHistory } from 'react-router-dom';
 
 type DetailsNavProps = {
-  title: string;
+  title: React.ReactNode;
   children?: React.ReactNode;
 };
 

@@ -1,4 +1,6 @@
 import type { IssueInfo } from '@/api/project_issue';
+import { ISSUE_TYPE_TASK } from '@/api/project_issue';
+
 import RenderSelectOpt from '@/components/RenderSelectOpt';
 import {
   bugLevel,
@@ -16,7 +18,9 @@ import { getIssueText, getIsTask, timeToDateString, getIssueViewUrl } from '@/ut
 import { ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from '@/api/project_issue';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { Tooltip } from 'antd';
-import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { SHORT_NOTE_TYPE, showShortNote } from '@/utils/short_note';
+import { useStores } from '@/hooks';
 
 type useTableProps = {
   setStageModelData: (boo: boolean, v: IssueInfo) => void;
@@ -48,6 +52,7 @@ type ColumnsTypes = ColumnType<IssueInfo> & {
 };
 
 const useTable = (props: useTableProps) => {
+  const projectStore = useStores("projectStore");
   const { pathname } = useLocation();
   const { push } = useHistory();
   const { dataSource, setDataSource, onSuccess } = props;
@@ -133,6 +138,27 @@ const useTable = (props: useTableProps) => {
       },
       editable: () => { return true; },
       formtype: TABLE_FORM_TYPE_ENUM.TITLE,
+    },
+    {
+      title: "桌面便签",
+      dataIndex: "issue_index",
+      width: 70,
+      render: (_, record: IssueInfo) => {
+        let projectName = "";
+        projectStore.projectList.forEach(prj => {
+          if (prj.project_id == record.project_id) {
+            projectName = prj.basic_info.project_name;
+          }
+        })
+        return (<a onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          showShortNote({
+            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+            data: record,
+          }, projectName);
+        }}><ExportOutlined style={{ fontSize: "16px" }} /></a>);
+      }
     },
     {
       title: `级别`,
