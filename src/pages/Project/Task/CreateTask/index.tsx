@@ -15,6 +15,8 @@ import {
   set_end_time,
   set_estimate_minutes,
   set_remain_minutes,
+  set_exec_award,
+  set_check_award,
   remove,
   update,
   ISSUE_STATE_PLAN,
@@ -43,7 +45,8 @@ import { useCommonEditor, change_file_fs, change_file_owner } from '@/components
 import type { LinkIssueState } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import { FILE_OWNER_TYPE_PROJECT, FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
-import { DeleteOutlined } from '@ant-design/icons/lib/icons';
+import { DeleteOutlined, ExportOutlined } from '@ant-design/icons/lib/icons';
+import { SHORT_NOTE_TYPE, showShortNote } from '@/utils/short_note';
 
 export enum TASK_INSIDE_PAGES_ENUM {
   ADD = 'add',
@@ -111,6 +114,8 @@ const CreateTask: FC = observer(() => {
       can_opt_sub_issue: false,
       can_opt_dependence: false,
     },
+    exec_award_point: 10,
+    check_award_point: 10,
     extra_info: {
       //TODO
     },
@@ -188,12 +193,32 @@ const CreateTask: FC = observer(() => {
   };
 
   const getTitle = () => {
-    return `${getIssueText(pathname)}${pageType === TASK_INSIDE_PAGES_ENUM.ADD
+    const title = `${getIssueText(pathname)}${pageType === TASK_INSIDE_PAGES_ENUM.ADD
       ? '创建'
       : pageType === TASK_INSIDE_PAGES_ENUM.EDIT
         ? '编辑'
         : `详情-[${details?.issue_index}]${details?.basic_info?.title}`
       }`;
+    if (pageType == TASK_INSIDE_PAGES_ENUM.DETAILS) {
+      return (<span>{title}&nbsp;&nbsp;<a
+        onClick={e => {
+          let projectName = "";
+          projectStore.projectList.forEach(prj => {
+            if (prj.project_id == details.project_id) {
+              projectName = prj.basic_info.project_name;
+            }
+          })
+          e.stopPropagation();
+          e.preventDefault();
+          showShortNote({
+            shortNoteType: details.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+            data: details,
+          }, projectName);
+        }}
+      ><ExportOutlined style={{ fontSize: "16px" }} /></a></span>);
+    } else {
+      return (<span>{title}</span>);
+    }
   };
 
   // 保存
@@ -212,6 +237,8 @@ const CreateTask: FC = observer(() => {
       end_time,
       software_version,
       level,
+      exec_award,
+      check_award,
     } = form.getFieldsValue();
     const contentJson = editorRef.current?.getContent() || {
       type: 'doc',
@@ -332,6 +359,19 @@ const CreateTask: FC = observer(() => {
     if (isPageEdit() && end_time !== undefined && details.end_time !== getTime(end_time)) {
       await request(set_end_time(...userObj, res.issue_id, getTime(end_time)));
     }
+    //奖励值
+    await request(set_exec_award({
+      session_id,
+      project_id,
+      issue_id: res.issue_id,
+      point: exec_award ?? 0,
+    }));
+    await request(set_check_award({
+      session_id,
+      project_id,
+      issue_id: res.issue_id,
+      point: check_award ?? 0,
+    }));
 
     message.success('保存成功');
     if (data.issue_type == ISSUE_TYPE_TASK) {
@@ -393,7 +433,7 @@ const CreateTask: FC = observer(() => {
         <Form
           form={form}
           className={s.createTaskForm}
-          initialValues={{ priority: ISSUE_STATE_PLAN }}
+          initialValues={{ priority: 0, exec_award: details.exec_award_point, check_award: details.check_award_point }}
         >
           <div className={s.content_left}>
             {pageType !== TASK_INSIDE_PAGES_ENUM.DETAILS && (

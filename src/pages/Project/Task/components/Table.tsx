@@ -5,6 +5,8 @@ import {
   set_end_time,
   set_estimate_minutes,
   set_remain_minutes,
+  set_exec_award,
+  set_check_award,
   update,
   ISSUE_STATE_CLOSE
 } from '@/api/project_issue';
@@ -198,6 +200,26 @@ const EditableCell: FC<EditableCellProps> = ({
         await request(assign_check_user(session_id, record.project_id, record.issue_id, val));
         successRefresh();
       }
+      //处理人贡献
+      if (val !== record.exec_award_point && formtype == TABLE_FORM_TYPE_ENUM.EXEC_USER_AWARD) {
+        await request(set_exec_award({
+          session_id,
+          project_id: record.project_id,
+          issue_id: record.issue_id,
+          point: val,
+        }));
+        successRefresh();
+      }
+      //验收人贡献
+      if (val !== record.check_award_point && formtype == TABLE_FORM_TYPE_ENUM.CHECK_USER_AWARD) {
+        await request(set_check_award({
+          session_id,
+          project_id: record.project_id,
+          issue_id: record.issue_id,
+          point: val,
+        }));
+        successRefresh();
+      }
 
       // 预估工时
       if (val !== record.estimate_minutes && formtype === TABLE_FORM_TYPE_ENUM.ESTIMATE) {
@@ -275,6 +297,14 @@ const EditableCell: FC<EditableCellProps> = ({
         <MemberSelect onBlur={save} onChange={save} name={formtype} style={{ width: '90px' }} />
       );
     }
+    //处理贡献，验收贡献
+    if (formtype == TABLE_FORM_TYPE_ENUM.EXEC_USER_AWARD || formtype === TABLE_FORM_TYPE_ENUM.CHECK_USER_AWARD) {
+      return (
+        <Form.Item style={{ margin: 0 }} name={formtype}>
+          <InputNumber style={{ width: 90 }} onPressEnter={save} onBlur={save} autoFocus />
+        </Form.Item>
+      );
+    }
     // 剩余工时、预估工时
     if (formtype === TABLE_FORM_TYPE_ENUM.REMAIN || formtype === TABLE_FORM_TYPE_ENUM.ESTIMATE) {
       return (
@@ -307,8 +337,8 @@ const EditableCell: FC<EditableCellProps> = ({
     ) : (
       <div
         className={`${record?.state === ISSUE_STATE_CLOSE
-            ? 'no-editable-cell-value-wrap'
-            : 'editable-cell-value-wrap'
+          ? 'no-editable-cell-value-wrap'
+          : 'editable-cell-value-wrap'
           }`}
         style={{ paddingRight: 24 }}
         onClick={toggleEdit}

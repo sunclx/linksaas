@@ -3,9 +3,16 @@ import type * as NoticeType from '@/api/notice_type'
 import { listen } from '@tauri-apps/api/event';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import type { RootStore } from '.';
-import { createBrowserHistory } from 'history';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
+import type { ShortNoteEvent } from '@/utils/short_note';
+import { SHORT_NOTE_TYPE } from '@/utils/short_note';
+import { LinkBugInfo, LinkDocInfo, LinkTaskInfo } from './linkAux';
+import { isString } from 'lodash';
+import type { History } from 'history';
+import { createBrowserHistory } from 'history';
+import { appWindow } from '@tauri-apps/api/window';
+
 
 
 class NoticeStore {
@@ -15,6 +22,14 @@ class NoticeStore {
   }
   private rootStore: RootStore;
   private unlistenFn: UnlistenFn | null = null;
+  private unlistenShortNoteFn: UnlistenFn | null = null;
+  private history: History = createBrowserHistory();
+
+  setHistory(history: History) {
+    runInAction(() => {
+      this.history = history;
+    });
+  }
 
   //成功登录后接收通知
   async initListen() {
@@ -23,10 +38,8 @@ class NoticeStore {
       runInAction(() => {
         this.unlistenFn = null;
       });
-
     }
     const unlistenFn = await listen<NoticeType.AllNotice>('notice', (ev) => {
-      console.log('notice', ev);
       const notice = ev.payload
       if (notice.ProjectNotice !== undefined) {
         this.processProjectNotice(notice.ProjectNotice);
@@ -42,6 +55,25 @@ class NoticeStore {
     });
     runInAction(() => {
       this.unlistenFn = unlistenFn;
+    });
+
+
+    if (this.unlistenShortNoteFn !== null) {
+      this.unlistenShortNoteFn();
+      runInAction(() => {
+        this.unlistenShortNoteFn = null;
+      });
+    }
+    const unlistenShortNoteFn = await listen<ShortNoteEvent | string>("shortNote", (ev) => {
+      if (isString(ev.payload)) {
+        this.processShortNoteEvent(JSON.parse(ev.payload));
+      } else {
+        this.processShortNoteEvent(ev.payload);
+      }
+
+    });
+    runInAction(() => {
+      this.unlistenShortNoteFn = unlistenShortNoteFn;
     });
   }
 
@@ -108,7 +140,7 @@ class NoticeStore {
     if (notice.UpdateProjectNotice !== undefined) {
       await this.rootStore.projectStore.updateProject(notice.UpdateProjectNotice.project_id);
     } else if (notice.RemoveProjectNotice !== undefined) {
-      this.rootStore.projectStore.removeProject(notice.RemoveProjectNotice.project_id, createBrowserHistory());
+      this.rootStore.projectStore.removeProject(notice.RemoveProjectNotice.project_id, this.history);
     } else if (notice.AddMemberNotice !== undefined) {
       if (notice.AddMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
         //更新成员信息
@@ -125,7 +157,7 @@ class NoticeStore {
       }
     } else if (notice.RemoveMemberNotice !== undefined) {
       if (notice.RemoveMemberNotice.member_user_id == this.rootStore.userStore.userInfo.userId) {
-        this.rootStore.projectStore.removeProject(notice.RemoveMemberNotice.project_id, createBrowserHistory());
+        this.rootStore.projectStore.removeProject(notice.RemoveMemberNotice.project_id, this.history);
       } else if (notice.RemoveMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.loadMemberList(notice.RemoveMemberNotice.project_id);
       }
@@ -170,7 +202,7 @@ class NoticeStore {
       }
       //更新未读消息数量
       this.rootStore.projectStore.updateProjectUnreadMsgCount(notice.NewMsgNotice.project_id);
-    }else if(notice.UpdateMsgNotice !== undefined) {
+    } else if (notice.UpdateMsgNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId == notice.UpdateMsgNotice.project_id && this.rootStore.channelStore.curChannelId == notice.UpdateMsgNotice.channel_id) {
         //替换内容
         this.rootStore.chatMsgStore.updateMsg(notice.UpdateMsgNotice.msg_id);
@@ -273,6 +305,20 @@ class NoticeStore {
     }
   }
 
+  private async processShortNoteEvent(ev: ShortNoteEvent) {
+    if (ev.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_TASK) {
+      this.rootStore.linkAuxStore.goToLink(new LinkTaskInfo("", ev.projectId, ev.targetId), this.history);
+    } else if (ev.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_BUG) {
+      this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
+    } else if (ev.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_DOC) {
+      this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.targetId), this.history);
+    }
+    await appWindow.show();
+    await appWindow.setAlwaysOnTop(true);
+    setTimeout(()=>{
+      appWindow.setAlwaysOnTop(false);
+    },500);
+  }
 }
 
 export default NoticeStore;

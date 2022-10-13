@@ -1,4 +1,6 @@
 import type { IssueInfo } from '@/api/project_issue';
+import { ISSUE_TYPE_TASK } from '@/api/project_issue';
+
 import RenderSelectOpt from '@/components/RenderSelectOpt';
 import {
   bugLevel,
@@ -16,7 +18,9 @@ import { getIssueText, getIsTask, timeToDateString, getIssueViewUrl } from '@/ut
 import { ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from '@/api/project_issue';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { Tooltip } from 'antd';
-import { LinkOutlined } from '@ant-design/icons/lib/icons';
+import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { SHORT_NOTE_TYPE, showShortNote } from '@/utils/short_note';
+import { useStores } from '@/hooks';
 
 type useTableProps = {
   setStageModelData: (boo: boolean, v: IssueInfo) => void;
@@ -31,6 +35,8 @@ export enum TABLE_FORM_TYPE_ENUM {
   PRIORITY = 'priority', // 优先级
   EXEC_USER = 'exec_user_id', // 处理人
   CHECK_USER = 'check_user_id', // 验收人
+  EXEC_USER_AWARD = 'exec_award_point', //处理贡献
+  CHECK_USER_AWARD = 'check_award_point',//验收贡献
   REMAIN = 'remain_minutes', // 剩余工时
   ESTIMATE = 'estimate_minutes', // 预估工时
   END = 'end_time', // 预估完成时间
@@ -46,6 +52,7 @@ type ColumnsTypes = ColumnType<IssueInfo> & {
 };
 
 const useTable = (props: useTableProps) => {
+  const projectStore = useStores("projectStore");
   const { pathname } = useLocation();
   const { push } = useHistory();
   const { dataSource, setDataSource, onSuccess } = props;
@@ -133,21 +140,31 @@ const useTable = (props: useTableProps) => {
       formtype: TABLE_FORM_TYPE_ENUM.TITLE,
     },
     {
+      title: "桌面便签",
+      dataIndex: "issue_index",
+      width: 70,
+      render: (_, record: IssueInfo) => {
+        let projectName = "";
+        projectStore.projectList.forEach(prj => {
+          if (prj.project_id == record.project_id) {
+            projectName = prj.basic_info.project_name;
+          }
+        })
+        return (<a onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          showShortNote({
+            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+            data: record,
+          }, projectName);
+        }}><ExportOutlined style={{ fontSize: "16px" }} /></a>);
+      }
+    },
+    {
       title: `级别`,
       width: 100,
       align: 'center',
       dataIndex: ['extra_info', 'ExtraBugInfo', 'level'],
-      sorter: {
-        compare: (a: IssueInfo, b: IssueInfo) => {
-          return (
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-            a.extra_info.ExtraBugInfo?.level! -
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-            b.extra_info.ExtraBugInfo?.level!
-          );
-        },
-        multiple: 1,
-      },
       render: (v: string | number) => {
         return RenderSelectOpt(bugLevel[v]) || '-';
       },
@@ -164,17 +181,6 @@ const useTable = (props: useTableProps) => {
       ],
       width: 120,
       align: 'center',
-      sorter: {
-        compare: (a: IssueInfo, b: IssueInfo) => {
-          return (
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-            a.extra_info[`${getIsTask(pathname) ? 'ExtraTaskInfo' : 'ExtraBugInfo'}`]?.priority! -
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-            b.extra_info[`${getIsTask(pathname) ? 'ExtraTaskInfo' : 'ExtraBugInfo'}`]?.priority!
-          );
-        },
-        multiple: 1,
-      },
       render: (val: string | number) =>
         RenderSelectOpt(getIsTask(pathname) ? taskPriority[val] : bugPriority[val]),
       editable: () => { return true; },
@@ -198,12 +204,6 @@ const useTable = (props: useTableProps) => {
       dataIndex: 'state',
       width: 100,
       align: 'center',
-      sorter: {
-        compare: (a: { state: number }, b: { state: number }) => {
-          return a.state - b.state;
-        },
-        multiple: 1,
-      },
       render: (val: number, row: IssueInfo) => {
         const v = issueState[val];
         let cursor = "auto";
@@ -264,15 +264,36 @@ const useTable = (props: useTableProps) => {
       },
     },
     {
+      title: (<span>
+        处理贡献&nbsp;
+        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
+          <a><QuestionCircleOutlined /></a>
+        </Tooltip>
+      </span>),
+      dataIndex: 'exec_award_point',
+      width: 100,
+      align: 'center',
+      editable: (issue: IssueInfo) => { return issue.user_issue_perm.can_assign_exec_user },
+      formtype: TABLE_FORM_TYPE_ENUM.EXEC_USER_AWARD,
+    },
+    {
+      title: (<span>
+        验收贡献&nbsp;
+        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
+          <a><QuestionCircleOutlined /></a>
+        </Tooltip>
+      </span>),
+      dataIndex: 'check_award_point',
+      width: 100,
+      align: 'center',
+      editable: (issue: IssueInfo) => { return issue.user_issue_perm.can_assign_check_user; },
+      formtype: TABLE_FORM_TYPE_ENUM.CHECK_USER_AWARD,
+    },
+    {
       title: '剩余工时',
       dataIndex: 'remain_minutes',
       width: 100,
       align: 'center',
-      sorter: {
-        compare: (a: { remain_minutes: number }, b: { remain_minutes: number }) => {
-          return a.remain_minutes - b.remain_minutes;
-        },
-      },
       editable: (issue: IssueInfo) => { return props.userId == issue.exec_user_id; },
       formtype: TABLE_FORM_TYPE_ENUM.REMAIN,
       render: (v, record: IssueInfo) => {
@@ -284,11 +305,6 @@ const useTable = (props: useTableProps) => {
       dataIndex: 'estimate_minutes',
       width: 100,
       align: 'center',
-      sorter: {
-        compare: (a: { estimate_minutes: number }, b: { estimate_minutes: number }) => {
-          return a.estimate_minutes - b.estimate_minutes;
-        },
-      },
       editable: (issue: IssueInfo) => { return props.userId == issue.exec_user_id; },
       formtype: TABLE_FORM_TYPE_ENUM.ESTIMATE,
       render: (v, record: IssueInfo) => {
@@ -300,11 +316,6 @@ const useTable = (props: useTableProps) => {
       dataIndex: 'end_time',
       width: 120,
       align: 'center',
-      sorter: {
-        compare: (a: { end_time: number }, b: { end_time: number }) => {
-          return a.end_time - b.end_time;
-        },
-      },
       editable: (issue: IssueInfo) => { return props.userId == issue.exec_user_id; },
       formtype: TABLE_FORM_TYPE_ENUM.END,
       render: (v, row) => {

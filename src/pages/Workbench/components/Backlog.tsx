@@ -1,6 +1,14 @@
 import type { ExtraBugInfo, ExtraTaskInfo, IssueInfo, ListResponse } from '@/api/project_issue';
 import { list_my_todo } from '@/api/project_issue';
-import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from '@/api/project_issue';
+import {
+  SORT_KEY_UPDATE_TIME,
+  SORT_TYPE_DSC,
+  ISSUE_STATE_PLAN,
+  ISSUE_STATE_PROCESS,
+  ISSUE_STATE_CHECK,
+  ISSUE_STATE_CLOSE,
+  ISSUE_TYPE_TASK,
+} from '@/api/project_issue';
 import RenderSelectOpt from '@/components/RenderSelectOpt';
 import {
   bugPriority,
@@ -26,6 +34,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { observer } from 'mobx-react';
+import { showShortNote, SHORT_NOTE_TYPE } from '@/utils/short_note';
+import { ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
 
 
 type BacklogProps = {
@@ -103,7 +113,16 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
   const renderTitle = (row: IssueInfo) => {
     return (
       <div>
-        <span>{row.basic_info?.title}</span>
+        <a onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          projectStore.setCurProjectId(row.project_id);
+          push(getIssueViewUrl(pathname), {
+            issueId: row.issue_id,
+            mode: "details",
+            content: "",
+          } as LinkIssueState);
+        }}><span><LinkOutlined />{row.basic_info?.title}</span></a>
         {row.msg_count && (
           <span
             style={{
@@ -171,9 +190,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
     {
       title: `类别`,
       dataIndex: 'issue_type',
-      sorter: {
-        compare: (a: IssueInfo, b: IssueInfo) => a.issue_type - b.issue_type,
-      },
       width: 100,
       render: (v: number) => {
         return get_issue_type_str(v);
@@ -187,13 +203,27 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
       render: (v: string, row: IssueInfo) => renderTitle(row),
     },
     {
+      title: "桌面便签",
+      width: 70,
+      render: (_, record: IssueInfo) => {
+        let projectName = "";
+        projectStore.projectList.forEach(prj => {
+          if (prj.project_id == record.project_id) {
+            projectName = prj.basic_info.project_name;
+          }
+        })
+        return (<a onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          showShortNote({
+            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+            data: record,
+          }, projectName);
+        }}><ExportOutlined style={{fontSize:"16px"}}/></a>);
+      }
+    },
+    {
       title: '优先级',
-      sorter: {
-        compare: (a: IssueInfo, b: IssueInfo) => {
-          return (getExtraInfoType(a)?.priority || 0) - (getExtraInfoType(b)?.priority || 1);
-        },
-        multiple: 1,
-      },
       width: 100,
       align: 'center',
       render: (row: IssueInfo) => {
@@ -207,11 +237,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
     {
       title: `阶段`,
       dataIndex: 'state',
-      sorter: {
-        compare: (a: { state: number }, b: { state: number }) => {
-          return a.state - b.state;
-        },
-      },
       width: 100,
       align: 'center',
       render: (val: number) => renderState(val),
@@ -235,11 +260,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
       dataIndex: 'remain_minutes',
       width: 100,
       align: 'center',
-      sorter: {
-        compare: (a: { remain_minutes: number }, b: { remain_minutes: number }) => {
-          return a.remain_minutes - b.remain_minutes;
-        },
-      },
       render: (v: number, record: IssueInfo) => renderManHour(record.has_remain_minutes, v),
     },
     {
@@ -247,11 +267,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
       dataIndex: 'estimate_minutes',
       width: 100,
       align: 'center',
-      sorter: {
-        compare: (a: { estimate_minutes: number }, b: { estimate_minutes: number }) => {
-          return a.estimate_minutes - b.estimate_minutes;
-        },
-      },
       render: (v: number, record: IssueInfo) => renderManHour(record.has_estimate_minutes, v),
     },
     {
@@ -259,11 +274,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
       dataIndex: 'end_time',
       width: 120,
       align: 'center',
-      sorter: {
-        compare: (a: { end_time: number }, b: { end_time: number }) => {
-          return a.end_time - b.end_time;
-        },
-      },
       render: (v: number, record: IssueInfo) => renderEndTime(record.has_end_time, v),
     },
     {
@@ -285,18 +295,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
             scroll={{ x: 100 }}
             dataSource={dataSource}
             pagination={false}
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  projectStore.setCurProjectId(record.project_id);
-                  push(getIssueViewUrl(pathname), {
-                    issueId: record.issue_id,
-                    mode: "details",
-                    content: "",
-                  } as LinkIssueState);
-                },
-              };
-            }}
           />
           <Pagination
             total={pageOpt.total!}
