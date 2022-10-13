@@ -23,7 +23,8 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   const { sessionId } = useStores('userStore');
   const userStore = useStores('userStore');
   const { curProjectId } = useStores('projectStore');
-  // const docStore = useStores('docStore');
+  const noticeStore = useStores('noticeStore');
+  noticeStore.setHistory(history);
 
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);

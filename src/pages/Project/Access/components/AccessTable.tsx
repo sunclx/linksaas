@@ -1,10 +1,11 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Tooltip } from 'antd';
 import type * as API from '@/api/external_events';
 import type { ColumnsType } from 'antd/es/table';
 import { Link } from 'react-router-dom';
 import style from '../index.module.less';
 import { APP_PROJECT_PATH } from '@/utils/constant';
+import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 
 const AccessTable: React.FC<{
   data: API.EventSourceInfo[];
@@ -22,16 +23,8 @@ const AccessTable: React.FC<{
       dataIndex: 'title',
       key: 'title',
       render: (text, record) => {
-        // let destPath = '';
-        // if (location.pathname.includes(APP_PROJECT_PATH)) {
-        //   destPath = APP_PROJECT_PATH + '/access/view';
-        // } else if (location.pathname.includes(APP_PROJECT_DOC_PATH)) {
-        //   destPath = APP_PROJECT_DOC_PATH + '/access/view';
-        // } else if (location.pathname.includes(APP_PROJECT_DOC_CB_PATH)) {
-        //   destPath = APP_PROJECT_DOC_CB_PATH + '/access/view';
-        // }
         const destPath = APP_PROJECT_PATH + '/access/view';
-        return <Link to={`${destPath}?event_source_id=${record.event_source_id}`}>{text}</Link>;
+        return <Link to={`${destPath}?event_source_id=${record.event_source_id}`}>{text}&nbsp;<LinkOutlined /></Link>;
       },
       ellipsis: false,
     },
@@ -43,9 +36,13 @@ const AccessTable: React.FC<{
       width: 300,
     },
     {
-      title: '用户数',
-      dataIndex: 'source_user_count',
-      key: 'source_user_count',
+      title: '用户映射',
+      render: (_, record: API.EventSourceInfo) => {
+        return (<span>{record.map_user_count}/{record.source_user_count}&nbsp;
+          <Tooltip title={`有${record.source_user_count}个第三方系统账号，做了${record.map_user_count}个映射。只有映射后，才会在工作记录里面出现对应记录。`} trigger="click">
+            <a><QuestionCircleOutlined /></a>
+          </Tooltip></span>);
+      }
     },
     {
       title: '消息数',

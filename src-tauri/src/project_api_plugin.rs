@@ -170,7 +170,7 @@ async fn remove<R: Runtime>(
     match client.remove(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == close_response::Code::WrongSession as i32 {
+            if inner_resp.code == remove_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("remove".into())) {
                     println!("{:?}", err);
                 }

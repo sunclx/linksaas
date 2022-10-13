@@ -86,7 +86,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
             </>
           )}
           {msg.msg.basic_msg.link_dest_id != "" && (
-            <span className={styles.tools}>
+            <span className={styles.linkInfo}>
               来自{getLinkType(msg.msg.basic_msg.link_type)}:
               <a
                 style={{ marginLeft: "10px" }}

@@ -2,7 +2,7 @@ import type { IssueInfo } from '@/api/project_issue';
 import Button from '@/components/Button';
 import StageFormItem, { STAGE_FORM_TYPE_ENUM } from '@/components/StageFormItem';
 import type { FormInstance } from 'antd';
-import { Timeline } from 'antd';
+import { Timeline, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import s from './useDetails.module.less';
 import { bugLevel, bugPriority, statusText, taskPriority } from '@/utils/constant';
@@ -22,6 +22,7 @@ import { ReadOnlyEditor, useCommonEditor, change_file_fs } from '@/components/Ed
 import { CommentList } from './CommentList';
 import { FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
 import { ExtraIssueInfo } from './ExtraIssueInfo';
+import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 
 type UseDetailsType = {
   details: IssueInfo;
@@ -170,6 +171,22 @@ const useDetails = (props: UseDetailsType) => {
           <div className={s.basic_info}>
             <span>验收人</span>
             <div>{details.check_display_name}</div>
+          </div>
+          <div className={s.basic_info}>
+            <span>处理贡献&nbsp;
+              <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
+                <a><QuestionCircleOutlined /></a>
+              </Tooltip>
+            </span>
+            <div>{details.exec_award_point}</div>
+          </div>
+          <div className={s.basic_info}>
+            <span>验收贡献&nbsp;
+              <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
+                <a><QuestionCircleOutlined /></a>
+              </Tooltip>
+            </span>
+            <div>{details.check_award_point}</div>
           </div>
           <div className={s.basic_info}>
             <span>预估工时</span>
