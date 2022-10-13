@@ -91,6 +91,11 @@ const ProjectAward: React.FC = () => {
             }
         },
         {
+            title: "贡献值",
+            dataIndex: "point",
+            width: 60,
+        },
+        {
             title: "贡献内容",
             render: (_, record: AwardRecord) => {
                 if (record.relate_type == AWARD_RELATE_TASK) {
