@@ -17,6 +17,9 @@ mod notice_decode;
 mod project_api_plugin;
 mod project_app_api_plugin;
 mod project_appraise_api_plugin;
+mod project_award_api_plugin;
+mod project_book_shelf_api_plugin;
+mod project_book_store_api_plugin;
 mod project_channel_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
@@ -24,9 +27,6 @@ mod project_issue_api_plugin;
 mod project_member_api_plugin;
 mod project_sprit_api_plugin;
 mod project_vc_api_plugin;
-mod project_book_store_api_plugin;
-mod project_book_shelf_api_plugin;
-mod project_award_api_plugin;
 mod restrict_api_plugin;
 mod search_api_plugin;
 mod user_api_plugin;
@@ -36,6 +36,7 @@ use std::time::Duration;
 use tauri::http::ResponseBuilder;
 use tauri::{
     AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, Window,
+    WindowBuilder,WindowUrl
 };
 use tokio::fs;
 
@@ -167,6 +168,7 @@ fn main() {
     let tray_menu = SystemTrayMenu::new()
         .add_item(CustomMenuItem::new("devtools", "调试"))
         .add_item(CustomMenuItem::new("show_app", "显示界面"))
+        .add_item(CustomMenuItem::new("about", "关于"))
         .add_item(CustomMenuItem::new("exit_app", "退出"));
     tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
@@ -205,6 +207,16 @@ fn main() {
                         win.show().unwrap();
                         if let Err(_) = win.set_always_on_top(true) {}
                         if let Err(_) = win.set_always_on_top(false) {}
+                    }
+                }
+                "about" => {
+                    let about_win = app.get_window("about");
+                    if about_win.is_none() {
+                        if let Ok(_) = WindowBuilder::new(app, "about", WindowUrl::App("about.html".into()))
+                        .inner_size(250.0, 180.0).resizable(false).skip_taskbar(true).title("关于")
+                        .always_on_top(true).center().decorations(false).visible(true).build() {
+
+                        }
                     }
                 }
                 "exit_app" => {
