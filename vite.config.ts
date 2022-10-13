@@ -47,7 +47,7 @@ export default ({ command, mode }: ConfigEnv) => {
           default: 'index.html',
           vc: 'vc.html',
           about: 'about.html',
-          shortNote: "show_note.html",
+          shortNote: "short_note.html",
         },
       },
       terserOptions: {
