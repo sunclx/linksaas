@@ -225,7 +225,11 @@ class NoticeStore {
       this.rootStore.projectStore.addNewEventCount(notice.NewEventNotice.project_id);
     } else if (notice.SetMemberRoleNotice !== undefined) {
       if (notice.SetMemberRoleNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        //TODO 更新成员信息
+        this.rootStore.memberStore.updateMemberRole(notice.SetMemberRoleNotice.member_user_id, notice.SetMemberRoleNotice.role_id);
+      }
+    } else if (notice.SetMemberFloatNotice !== undefined) {
+      if (notice.SetMemberFloatNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        this.rootStore.memberStore.updateFloatNoticeCount(notice.SetMemberFloatNotice.member_user_id, notice.SetMemberFloatNotice.float_notice_per_day);
       }
     } else if (notice.ReminderNotice !== undefined) {
       let permissionGranted = await isPermissionGranted();
@@ -315,9 +319,9 @@ class NoticeStore {
     }
     await appWindow.show();
     await appWindow.setAlwaysOnTop(true);
-    setTimeout(()=>{
+    setTimeout(() => {
       appWindow.setAlwaysOnTop(false);
-    },500);
+    }, 500);
   }
 }
 
