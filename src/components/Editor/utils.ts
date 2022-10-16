@@ -46,10 +46,10 @@ export async function change_file_fs(state: RemirrorJSON, destFsId: string, sess
                 const attrs = child.attrs as unknown as ImageAttributes;
                 if (attrs.fsId != destFsId) {
                     const toFildId = await copy_file(sessionId, attrs.fsId, attrs.fileId ?? "", destFsId, ownerType, ownerId);
-                    const toThumbFileId  = await copy_file(sessionId, attrs.fsId, attrs.thumbFileId ?? "", destFsId, ownerType, ownerId);
+                    const toThumbFileId = await copy_file(sessionId, attrs.fsId, attrs.thumbFileId ?? "", destFsId, ownerType, ownerId);
                     attrs.fsId = destFsId;
                     attrs.fileId = toFildId;
-                    attrs.thumbFileId = toThumbFileId; 
+                    attrs.thumbFileId = toThumbFileId;
                 }
             }
         } else if (child.type == "fileUpload") {
@@ -120,6 +120,7 @@ export function get_reminder_info(state: RemirrorJSON): MsgReminderInfo {
     const retInfo: MsgReminderInfo = {
         reminder_all: false,
         extra_reminder_list: [],
+        float_notice_minute: 0,
     }
     process_get_reminder_info(retInfo, state);
     if (retInfo.reminder_all) {

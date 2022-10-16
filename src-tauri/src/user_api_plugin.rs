@@ -461,6 +461,15 @@ async fn logout<R: Runtime>(
                 c.disconnect().await.unwrap();
             }
             *mq_client.0.lock().await = None;
+            //关闭main以外的所有窗口
+            let win_map = app_handle.windows();
+            for win in win_map.values() {
+                if win.label() != "main" {
+                    if let Err(err) = win.close() {
+                        println!("{:?}", err);
+                    }
+                }
+            }
             Ok(response.into_inner())
         }
         Err(status) => Err(status.message().into()),
