@@ -113,6 +113,7 @@ export type ChannelMemberInfo = {
 export type MsgReminderInfo = {
   reminder_all: boolean;
   extra_reminder_list: string[];
+  float_notice_minute: number;
 };
 
 export type BasicMsg = {
