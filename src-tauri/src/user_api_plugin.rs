@@ -1,4 +1,7 @@
-use crate::notice_decode::{decode_notice, new_upload_snap_shot_notice, new_wrong_session_notice};
+use crate::notice_decode::{
+    decode_notice, new_upload_snap_shot_notice, new_wrong_session_notice,
+    project::Notice as ProjectNotice, NoticeMessage,
+};
 use prost::Message;
 use proto_gen_rust::fs_api::{FileOwnerType, SetFileOwnerRequest};
 use proto_gen_rust::google::protobuf::Any;
@@ -11,11 +14,11 @@ use rumqttc::AsyncClient as MqttClient;
 use rumqttc::{MqttOptions, QoS};
 use std::time::Duration;
 use tauri::async_runtime::Mutex;
-use tauri::Manager;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
+use tauri::{Manager, WindowBuilder, WindowUrl};
 use tokio::time::sleep;
 use url::Url;
 use uuid::Uuid;
@@ -365,6 +368,7 @@ async fn login<R: Runtime>(
         return Err("no grpc conn".into());
     }
     let mut client = UserApiClient::new(chan.unwrap());
+    let app_for_float = app_handle.clone();
     match client.login(request).await {
         Ok(response) => {
             let ret = response.into_inner();
@@ -403,7 +407,8 @@ async fn login<R: Runtime>(
                                     println!("disconnect mqtt");
                                     break;
                                 }
-                                emit_notice(&window, notice.unwrap());
+                                let float_notice_win = app_handle.get_window("float_notice");
+                                emit_notice(&window, float_notice_win, notice.unwrap());
                             }
                         } else {
                             println!("{:?}", sub_res.err().unwrap());
@@ -419,21 +424,54 @@ async fn login<R: Runtime>(
             } else {
                 println!("xxxxxxxxx");
             }
+            //创建浮动通知页面
+            let res = WindowBuilder::new(
+                &app_for_float,
+                "float_notice",
+                WindowUrl::App("float_notice.html".into()),
+            )
+            .always_on_top(true)
+            .visible(true)
+            .skip_taskbar(true)
+            .resizable(false)
+            .disable_file_drop_handler()
+            .decorations(false)
+            .position(-1000.0, -1000.0)
+            .build();
+            if res.is_err() {
+                println!("{:?}", res.err().unwrap());
+            }
             Ok(ret)
         }
         Err(status) => Err(status.message().into()),
     }
 }
 
-fn emit_notice<R: Runtime>(window: &Window<R>, event: rumqttc::Event) {
+fn emit_notice<R: Runtime>(
+    window: &Window<R>,
+    float_notice_win: Option<Window<R>>,
+    event: rumqttc::Event,
+) {
     if let rumqttc::Event::Incoming(income_event) = event {
         if let rumqttc::Packet::Publish(pub_event) = income_event {
             if let Ok(any) = Any::decode(pub_event.payload) {
                 if let Some(notice) = decode_notice(&any) {
-                    println!("{:?}", &notice);
-                    let res = window.emit("notice", notice);
-                    if res.is_err() {
-                        println!("{:?}", res);
+                    match notice {
+                        NoticeMessage::ProjectNotice(ProjectNotice::NewFloatMsgNotice(_)) => {
+                            if let Some(float_win) = float_notice_win {
+                                let res = float_win.emit("notice", notice);
+                                if res.is_err() {
+                                    println!("{:?}", res);
+                                }
+                                println!("rrrrrrrrrrrrrrrrrrrrrrrr");
+                            }
+                        }
+                        _ => {
+                            let res = window.emit("notice", notice);
+                            if res.is_err() {
+                                println!("{:?}", res);
+                            }
+                        }
                     }
                 }
             }
@@ -562,6 +600,16 @@ async fn check_session<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_session<R: Runtime>(app_handle: AppHandle<R>) -> String {
+    let cur_value = app_handle.state::<CurSession>().inner();
+    let cur_session = cur_value.0.lock().await;
+    if let Some(cur_session) = cur_session.clone() {
+        return cur_session;
+    }
+    return "".into();
+}
+
+#[tauri::command]
 async fn set_cur_work_snapshot<R: Runtime>(app_handle: AppHandle<R>, project_id: String) {
     println!("set cur work snapshot for project {}", &project_id);
     let cur_value = app_handle.state::<CurWorkSnapShotProject>().inner();
@@ -590,6 +638,7 @@ impl<R: Runtime> UserApiPlugin<R> {
                 pre_reset_password,
                 reset_password,
                 check_session,
+                get_session,
                 set_cur_work_snapshot,
             ]),
         }
