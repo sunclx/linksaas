@@ -37,8 +37,7 @@ const ProjectMember: React.FC = () => {
 
   useEffect(() => {
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  });
+  }, [memberStore.memberList]);
 
   return (
     <CardWrap title="项目成员列表" halfContent>
@@ -59,7 +58,7 @@ const ProjectMember: React.FC = () => {
             rowKey={(e) => e?.member?.member_user_id}
             scroll={{ y: 'calc(100vh - 260px)' }}
             columns={columns as ColumnsType<WebMemberInfo>}
-            dataSource={memberStore.memberList.slice()}
+            dataSource={memberStore.memberList}
             pagination={false}
           />
         </div>

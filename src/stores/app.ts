@@ -7,7 +7,6 @@ class AppStore {
   constructor() {
     makeAutoObservable(this);
     platform().then((platName: string) => {
-      console.log()
       if (platName.includes("win32")) {
         this._isOsWindows = true;
       }

@@ -7,11 +7,12 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { SHORT_NOTE_TYPE } from '@/utils/short_note';
-import { LinkBugInfo, LinkDocInfo, LinkTaskInfo } from './linkAux';
+import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
+import type { FloatNoticeDetailEvent } from '@/utils/float_notice';
 
 
 
@@ -23,6 +24,8 @@ class NoticeStore {
   private rootStore: RootStore;
   private unlistenFn: UnlistenFn | null = null;
   private unlistenShortNoteFn: UnlistenFn | null = null;
+  private unlistenFloatNoticeFn: UnlistenFn | null = null;
+
   private history: History = createBrowserHistory();
 
   setHistory(history: History) {
@@ -74,6 +77,23 @@ class NoticeStore {
     });
     runInAction(() => {
       this.unlistenShortNoteFn = unlistenShortNoteFn;
+    });
+
+    if (this.unlistenFloatNoticeFn != null) {
+      this.unlistenFloatNoticeFn();
+      runInAction(() => {
+        this.unlistenFloatNoticeFn = null;
+      });
+    }
+    const unlistenFloatNoticeFn = await listen<FloatNoticeDetailEvent | string>("floatNoticeDetail", (ev) => {
+      if (isString(ev.payload)) {
+        this.processFloatNoticeDetailEvent(JSON.parse(ev.payload));
+      } else {
+        this.processFloatNoticeDetailEvent(ev.payload);
+      }
+    });
+    runInAction(() => {
+      this.unlistenFloatNoticeFn = unlistenFloatNoticeFn;
     });
   }
 
@@ -225,7 +245,11 @@ class NoticeStore {
       this.rootStore.projectStore.addNewEventCount(notice.NewEventNotice.project_id);
     } else if (notice.SetMemberRoleNotice !== undefined) {
       if (notice.SetMemberRoleNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        //TODO 更新成员信息
+        this.rootStore.memberStore.updateMemberRole(notice.SetMemberRoleNotice.member_user_id, notice.SetMemberRoleNotice.role_id);
+      }
+    } else if (notice.SetMemberFloatNotice !== undefined) {
+      if (notice.SetMemberFloatNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        this.rootStore.memberStore.updateFloatNoticeCount(notice.SetMemberFloatNotice.member_user_id, notice.SetMemberFloatNotice.float_notice_per_day);
       }
     } else if (notice.ReminderNotice !== undefined) {
       let permissionGranted = await isPermissionGranted();
@@ -315,10 +339,16 @@ class NoticeStore {
     }
     await appWindow.show();
     await appWindow.setAlwaysOnTop(true);
-    setTimeout(()=>{
+    setTimeout(() => {
       appWindow.setAlwaysOnTop(false);
-    },500);
+    }, 500);
+  }
+
+  private async processFloatNoticeDetailEvent(ev: FloatNoticeDetailEvent) {
+    this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.channelId, ev.msgId), this.history);
   }
 }
+
+
 
 export default NoticeStore;

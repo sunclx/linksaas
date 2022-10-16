@@ -230,7 +230,11 @@ export async function check_session(session_id: string): Promise<CheckSessionRes
 export function set_cur_work_snapshot(project_id: string) {
   invoke<null>('plugin:user_api|set_cur_work_snapshot', {
     projectId: project_id,
-  }).finally(()=>{
-    
+  }).finally(() => {
+
   });
+}
+//获取session
+export async function get_session(): Promise<string> {
+  return invoke<string>('plugin:user_api|get_session', {})
 }

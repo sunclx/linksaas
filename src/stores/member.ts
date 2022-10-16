@@ -91,7 +91,7 @@ class MemberStore {
   }
 
   get memberList(): WebMemberInfo[] {
-    return this._memberList
+    return this._memberList;
   }
 
   getMember(userId: string): WebMemberInfo | undefined {
@@ -100,10 +100,12 @@ class MemberStore {
 
   updateOnline(userId: string, online: boolean) {
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.member_user_id == userId);
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
       if (index != -1) {
-        this._memberList[index].member.online = online;
+        memberList[index].member.online = online;
       }
+      this._memberList = memberList;
       const member = this._memberMap.get(userId);
       if (member !== undefined) {
         member.member.online = online;
@@ -114,13 +116,47 @@ class MemberStore {
 
   updateSnapShot(userId: string, enable: boolean) {
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.member_user_id == userId);
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
       if (index != -1) {
-        this._memberList[index].member.work_snap_shot_info.enable = enable;
+        memberList[index].member.work_snap_shot_info.enable = enable;
       }
+      this._memberList = memberList;
       const member = this._memberMap.get(userId);
       if (member !== undefined) {
         member.member.work_snap_shot_info.enable = enable;
+        this._memberMap.set(userId, member);
+      }
+    });
+  }
+
+  updateMemberRole(userId: string, roleId: string) {
+    runInAction(() => {
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
+      if (index != -1) {
+        memberList[index].member.role_id = roleId;
+      }
+      this._memberList = memberList;
+      const member = this._memberMap.get(userId);
+      if (member !== undefined) {
+        member.member.role_id = roleId;
+        this._memberMap.set(userId, member);
+      }
+    });
+  }
+
+  updateFloatNoticeCount(userId: string, count: number) {
+    runInAction(() => {
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
+      if (index != -1) {
+        memberList[index].member.float_notice_per_day = count;
+      }
+      this._memberList = memberList;
+      const member = this._memberMap.get(userId);
+      if (member !== undefined) {
+        member.member.float_notice_per_day = count;
         this._memberMap.set(userId, member);
       }
     });
@@ -132,11 +168,14 @@ class MemberStore {
       return;
     }
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId)
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId)
       if (index != -1) {
-        this._memberList[index].member.last_event_id = res.event.event_id;
-        this._memberList[index].last_event = res.event;
+        memberList[index].member.last_event_id = res.event.event_id;
+        memberList[index].last_event = res.event;
       }
+      this._memberList = memberList;
+
       const memberInfo = this._memberMap.get(memberUserId);
       if (memberInfo !== undefined) {
         memberInfo.member.last_event_id = res.event.event_id;
@@ -181,6 +220,8 @@ class MemberStore {
       }
     });
   }
+
+
 }
 
 export default MemberStore;
