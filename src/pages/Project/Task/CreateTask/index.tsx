@@ -46,7 +46,8 @@ import type { LinkIssueState } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import { FILE_OWNER_TYPE_PROJECT, FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
 import { DeleteOutlined, ExportOutlined } from '@ant-design/icons/lib/icons';
-import { SHORT_NOTE_TYPE, showShortNote } from '@/utils/short_note';
+import { showShortNote } from '@/utils/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG } from '@/api/short_note';
 
 export enum TASK_INSIDE_PAGES_ENUM {
   ADD = 'add',
@@ -210,8 +211,8 @@ const CreateTask: FC = observer(() => {
           })
           e.stopPropagation();
           e.preventDefault();
-          showShortNote({
-            shortNoteType: details.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+          showShortNote(userStore.sessionId, {
+            shortNoteType: details.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TASK : SHORT_NOTE_BUG,
             data: details,
           }, projectName);
         }}

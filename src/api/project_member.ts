@@ -85,6 +85,7 @@ export type MemberInfo = {
   is_project_owner: boolean;
   can_admin: boolean;
   reminder_channel_id: string;
+  float_notice_per_day: number;
 };
 
 type SetWorkSnapShotRequest = {
@@ -118,6 +119,31 @@ export type GetWorkSnapShotStatusResponse = {
   last_time_stamp: number;
   work_snap_shot_info: WorkSnapShotInfo;
 };
+
+export type SetFloatNoticePerDayRequest = {
+  session_id: string;
+  project_id: string;
+  member_user_id: string;
+  float_notice_per_day: number;
+};
+
+export type SetFloatNoticePerDayResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type GetFloatNoticePerDayRequest = {
+  session_id: string;
+  project_id: string;
+};
+
+export type GetFloatNoticePerDayResponse = {
+  code: number;
+  err_msg: string;
+  float_notice_per_day: number;
+  remain_count: number;
+};
+
 
 //生成加入项目邀请码
 export async function gen_invite(
@@ -341,5 +367,24 @@ export async function get_work_snap_shot_status(session_id: string, project_id: 
       session_id,
       project_id,
     },
+  });
+}
+
+//设置浮动提示数量
+export async function set_float_notice_per_day(request: SetFloatNoticePerDayRequest): Promise<SetFloatNoticePerDayResponse> {
+  const cmd = 'plugin:project_member_api|set_float_notice_per_day';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<SetFloatNoticePerDayResponse>(cmd, {
+    request,
+  });
+}
+//获取浮动提示剩余数量
+export async function get_float_notice_per_day(request: GetFloatNoticePerDayRequest): Promise<GetFloatNoticePerDayResponse> {
+  const cmd = 'plugin:project_member_api|get_float_notice_per_day';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<GetFloatNoticePerDayResponse>(cmd, {
+    request,
   });
 }

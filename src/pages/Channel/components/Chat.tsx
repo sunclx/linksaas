@@ -9,10 +9,11 @@ import {
   change_file_fs,
   get_reminder_info,
 } from '@/components/Editor';
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import { request } from '@/utils/request';
 import { send_msg, update_msg, MSG_LINK_NONE, LIST_CHAN_SCOPE_INCLUDE_ME } from '@/api/project_channel';
 import { FILE_OWNER_TYPE_CHANNEL } from '@/api/fs';
+import SendMsgBtn from './SendMsgBtn';
 
 const ChannelHeader = observer(() => {
   const projectStore = useStores('projectStore');
@@ -52,7 +53,7 @@ const ChannelHeader = observer(() => {
     }, 200);
   }, [chatMsgStore.getEditMsg()]);
 
-  const sendContent = async () => {
+  const sendContent = async (floatNoticeMinute: number) => {
     const chatJson = sendEditor.editorRef.current?.getContent() || {
       type: 'doc',
     };
@@ -68,6 +69,7 @@ const ChannelHeader = observer(() => {
       channelStore.curChannelId,
     );
     const remindInfo = get_reminder_info(chatJson);
+    remindInfo.float_notice_minute = floatNoticeMinute;
 
     await request(
       send_msg(userStore.sessionId, projectStore.curProjectId, channelStore.curChannelId, {
@@ -116,9 +118,7 @@ const ChannelHeader = observer(() => {
         channelStore.curChannel?.channelInfo.closed == false && (
           <div className={styles.chatInput + ' _chatContext'}>
             {sendEditor.editor}
-            <Button className={styles.chatBtn} type="primary" onClick={() => sendContent()}>
-              发送
-            </Button>
+            <SendMsgBtn editorRef={sendEditor.editorRef} onSend={(floatNoticeMinute: number) => sendContent(floatNoticeMinute)} />
           </div>
         )}
       {chatMsgStore.getEditMsg() != undefined && (

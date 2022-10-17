@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "linksaas",
-    "version": "0.1.6"
+    "version": "0.1.7"
   },
   "build": {
     "distDir": "../dist",
@@ -109,6 +109,7 @@
     ],
     "systemTray": {
       "iconPath": "icons/icon.ico"
-    }
+    },
+    "macOSPrivateApi": true
   }
 }

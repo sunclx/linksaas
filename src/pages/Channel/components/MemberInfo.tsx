@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './MemberInfo.module.less';
 import { useStores } from "@/hooks";
 import { getTimeDescFromNow } from '@/utils/time';
@@ -6,6 +6,10 @@ import EventCom from '@/components/EventCom';
 import { useHistory } from 'react-router-dom';
 import { ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK } from '@/api/project_issue';
 import UserPhoto from '@/components/Portrait/UserPhoto';
+import type { ShortNote, SHORT_NOTE_TYPE } from '@/api/short_note';
+import { SHORT_NOTE_BUG, SHORT_NOTE_TASK, SHORT_NOTE_DOC } from '@/api/short_note';
+import { LinkDocInfo, LinkTaskInfo, LinkBugInfo } from '@/stores/linkAux';
+import { observer } from 'mobx-react';
 
 
 export type MemberInfoProps = {
@@ -20,8 +24,26 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
   const linkAuxStore = useStores('linkAuxStore');
   const history = useHistory();
 
-  useEffect(() => {
-  }, []);
+  const getShortNoteTypeName = (shortNoteType: SHORT_NOTE_TYPE): string => {
+    if (shortNoteType == SHORT_NOTE_TASK) {
+      return "任务";
+    } else if (shortNoteType == SHORT_NOTE_BUG) {
+      return "缺陷";
+    } else if (shortNoteType == SHORT_NOTE_DOC) {
+      return "文档";
+    }
+    return "";
+  }
+
+  const goToTarget = (shortNote: ShortNote) => {
+    if (shortNote.short_note_type == SHORT_NOTE_TASK) {
+      linkAuxStore.goToLink(new LinkTaskInfo(shortNote.title, shortNote.project_id, shortNote.target_id), history);
+    } else if (shortNote.short_note_type == SHORT_NOTE_BUG) {
+      linkAuxStore.goToLink(new LinkBugInfo(shortNote.title, shortNote.project_id, shortNote.target_id), history);
+    } else if (shortNote.short_note_type == SHORT_NOTE_DOC) {
+      linkAuxStore.goToLink(new LinkDocInfo(shortNote.title, shortNote.project_id, shortNote.target_id), history);
+    }
+  };
 
 
   const member = memberStore.getMember(memberId);
@@ -30,7 +52,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
     <div className={styles.member_info}>
       <div className={styles.info}>
         <div className={styles.cover}>
-        <UserPhoto logoUri={member?.member.logo_uri ?? ""} className={styles.avatar}/>
+          <UserPhoto logoUri={member?.member.logo_uri ?? ""} className={styles.avatar} />
           <div className={member?.member.online ? styles.icon_online : styles.icon_offline} />
         </div>
         <div className={styles.bd}>
@@ -41,7 +63,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
         </div>
       </div>
 
-      <ul>
+      <ul className={styles.task_list}>
         <li className={styles.item}>
           <div className={styles.title}>工作状态</div>
           <div className={styles.cont}>
@@ -50,7 +72,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
         </li>
         <li>
           <div className={styles.member_state}>
-            {member?.last_event && <EventCom key={member.last_event.event_id} item={member.last_event!} skipProjectName={true} skipLink={true} showMoreLink={props.showLink} onLinkClick={()=>props.hideMemberInfo()} />}
+            {member?.last_event && <EventCom key={member.last_event.event_id} item={member.last_event!} skipProjectName={true} skipLink={true} showMoreLink={props.showLink} onLinkClick={() => props.hideMemberInfo()} />}
           </div>
         </li>
       </ul>
@@ -68,7 +90,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
                 checkUserIdList: [],
               }, history);
               props.hideMemberInfo();
-            }}>查看详情</a>)} 
+            }}>查看详情</a>)}
           </div>
         </li>
         <li className={styles.item}>
@@ -141,8 +163,25 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
           <div className={styles.cont}>{member?.issue_member_state ? member?.issue_member_state.bug_check_done_count : 0}</div>
         </li>
       </ul>
+      {(member?.short_note_list.length  ?? 0 )> 0 && (
+        <ul className={styles.task_list}>
+          <li className={styles.item}>
+            <div className={styles.title}>桌面便签</div>
+          </li>
+          {member?.short_note_list.map(shortNote => (
+            <li className={styles.item} key={shortNote.target_id}>
+              <div className={styles.title}>{getShortNoteTypeName(shortNote.short_note_type)}</div>
+              <div className={styles.cont}><a onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                goToTarget(shortNote);
+              }}>{shortNote.title}</a></div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
 
-export default MemberInfo;
+export default observer(MemberInfo);

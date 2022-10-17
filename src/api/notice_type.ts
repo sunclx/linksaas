@@ -76,6 +76,17 @@ export namespace project {
     link_type: number;
     link_title: string;
   };
+  export type SetMemberFloatNotice = {
+    project_id: string;
+    member_user_id: string;
+    float_notice_per_day: number;
+  };
+  export type NewFloatMsgNotice = {};
+
+  export type UpdateShortNoteNotice = {
+    project_id: string;
+    member_user_id: string;
+  };
 
   export type AllNotice = {
     UpdateProjectNotice?: UpdateProjectNotice;
@@ -96,6 +107,9 @@ export namespace project {
     NewEventNotice?: NewEventNotice,
     SetMemberRoleNotice?: SetMemberRoleNotice,
     ReminderNotice?: ReminderNotice,
+    SetMemberFloatNotice?: SetMemberFloatNotice,
+    NewFloatMsgNotice?: NewFloatMsgNotice,
+    UpdateShortNoteNotice?: UpdateShortNoteNotice,
   };
 }
 

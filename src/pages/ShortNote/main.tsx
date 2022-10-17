@@ -4,37 +4,47 @@ import '@/styles/global.less';
 import randomColor from 'randomcolor';
 import { CloseSquareOutlined, FormatPainterOutlined } from '@ant-design/icons/lib/icons';
 import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
-import { SHORT_NOTE_TYPE } from '@/utils/short_note';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { useLocation } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
-
-
-
+import type { SHORT_NOTE_TYPE } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC } from '@/api/short_note';
+import { get_session } from '@/api/user';
+import { remove } from '@/api/short_note';
+import { request } from '@/utils/request';
+import '@/styles/global.less';
 
 const Content = () => {
     const [bgColor, setBgColor] = useState("");
 
     const location = useLocation();
     const urlParams = new URLSearchParams(location.search);
-    const shortNoteType = urlParams.get("type");
+    const shortNoteTypeStr = urlParams.get("type");
     const projectId = urlParams.get("projectId");
     const projectName = urlParams.get("projectName");
     const id = urlParams.get("id");
     const title = urlParams.get("title");
 
+    let shortNoteType: SHORT_NOTE_TYPE = SHORT_NOTE_TASK;
+    if (shortNoteTypeStr == "task") {
+        shortNoteType = SHORT_NOTE_TASK;
+    } else if (shortNoteTypeStr == "bug") {
+        shortNoteType = SHORT_NOTE_BUG;
+    } else if (shortNoteTypeStr == "doc") {
+        shortNoteType = SHORT_NOTE_DOC;
+    }
 
     const randomBgColor = () => {
-        const color = randomColor({ luminosity: "light" });
+        const color = randomColor({ luminosity: "light", format: "rgba", alpha: 0.8 });
         setBgColor(color);
     };
 
     const getShortNoteType = () => {
-        if (shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_TASK) {
+        if (shortNoteType == SHORT_NOTE_TASK) {
             return "任务";
-        } else if (shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_BUG) {
+        } else if (shortNoteType == SHORT_NOTE_BUG) {
             return "缺陷";
-        } else if (shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_DOC) {
+        } else if (shortNoteType == SHORT_NOTE_DOC) {
             return "文档";
         }
         return "";
@@ -43,11 +53,24 @@ const Content = () => {
     const showDetail = () => {
         const ev: ShortNoteEvent = {
             projectId: projectId ?? "",
-            shortNoteType: shortNoteType ?? "",
+            shortNoteType: shortNoteType,
             targetId: id ?? "",
         };
         const mainWindow = WebviewWindow.getByLabel("main");
         mainWindow?.emit("shortNote", ev);
+    };
+
+    const closeWindow = async () => {
+        const sessionId = await get_session();
+        const res = await request(remove({
+            session_id: sessionId,
+            project_id: projectId ?? "",
+            short_note_type: shortNoteType,
+            target_id: id ?? "",
+        }));
+        if (res) {
+            appWindow.close();
+        }
     };
 
     useMemo(() => {
@@ -71,7 +94,7 @@ const Content = () => {
                     <a style={{ marginLeft: "20px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        appWindow.close();
+                        closeWindow();
                     }}><CloseSquareOutlined style={{ fontSize: "24px", color: "black" }} /></a>
                 </div>
             </div>

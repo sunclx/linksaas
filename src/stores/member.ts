@@ -8,6 +8,9 @@ import { list_member, get_member } from '@/api/project_member';
 import { list_member_state as list_member_issue_state } from '@/api/project_issue';
 import { request } from '@/utils/request';
 import type { RootStore } from '.';
+import type { ShortNote } from '@/api/short_note';
+import { list_by_project as listShortNoteByproject, list_by_member as listShortNoteByMember } from '@/api/short_note';
+
 
 /*
  * 只保存当前项目的成员列表
@@ -21,6 +24,7 @@ export class WebMemberInfo {
   member: MemberInfo;
   last_event?: PluginEvent = undefined;
   issue_member_state?: IssueMemberState = undefined;
+  short_note_list: ShortNote[] = [];
 }
 
 class MemberStore {
@@ -47,10 +51,6 @@ class MemberStore {
       memberList.splice(ownerIndex, 1);
       memberList.unshift(ownerObj);
     }
-    runInAction(() => {
-      this._memberList = memberList;
-      this.syncToMap();
-    });
 
     //获取最后事件
     const eventIdList = memberList.filter(item => item.member.last_event_id != "").map(item => item.member.last_event_id);
@@ -62,10 +62,6 @@ class MemberStore {
         memberList = memberList.map(item => {
           item.last_event = tmpMap.get(item.member.last_event_id);
           return item;
-        });
-        runInAction(() => {
-          this._memberList = memberList;
-          this.syncToMap();
         });
       }
     }
@@ -79,9 +75,37 @@ class MemberStore {
         item.issue_member_state = tmpMap2.get(item.member.member_user_id);
         return item;
       });
+    }
+
+    //获取用户便签
+    const shortNoteRes = await request(listShortNoteByproject({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+    }));
+    if (shortNoteRes) {
+      const tmpMap3: Map<string, ShortNote[]> = new Map();
+      shortNoteRes.short_note_list.forEach(item => {
+        let tmpList = tmpMap3.get(item.member_user_id);
+        if (tmpList == undefined) {
+          tmpList = [];
+        }
+        tmpList.push(item);
+        tmpMap3.set(item.member_user_id, tmpList);
+      });
+      memberList = memberList.map(item => {
+        let tmpList = tmpMap3.get(item.member.member_user_id);
+        if (tmpList == undefined) {
+          tmpList = [];
+        }
+        item.short_note_list = tmpList;
+        return item;
+      });
+    }
+
+    runInAction(() => {
       this._memberList = memberList;
       this.syncToMap();
-    }
+    });
   }
 
   private syncToMap() {
@@ -91,7 +115,7 @@ class MemberStore {
   }
 
   get memberList(): WebMemberInfo[] {
-    return this._memberList
+    return this._memberList;
   }
 
   getMember(userId: string): WebMemberInfo | undefined {
@@ -100,10 +124,12 @@ class MemberStore {
 
   updateOnline(userId: string, online: boolean) {
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.member_user_id == userId);
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
       if (index != -1) {
-        this._memberList[index].member.online = online;
+        memberList[index].member.online = online;
       }
+      this._memberList = memberList;
       const member = this._memberMap.get(userId);
       if (member !== undefined) {
         member.member.online = online;
@@ -114,13 +140,47 @@ class MemberStore {
 
   updateSnapShot(userId: string, enable: boolean) {
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.member_user_id == userId);
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
       if (index != -1) {
-        this._memberList[index].member.work_snap_shot_info.enable = enable;
+        memberList[index].member.work_snap_shot_info.enable = enable;
       }
+      this._memberList = memberList;
       const member = this._memberMap.get(userId);
       if (member !== undefined) {
         member.member.work_snap_shot_info.enable = enable;
+        this._memberMap.set(userId, member);
+      }
+    });
+  }
+
+  updateMemberRole(userId: string, roleId: string) {
+    runInAction(() => {
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
+      if (index != -1) {
+        memberList[index].member.role_id = roleId;
+      }
+      this._memberList = memberList;
+      const member = this._memberMap.get(userId);
+      if (member !== undefined) {
+        member.member.role_id = roleId;
+        this._memberMap.set(userId, member);
+      }
+    });
+  }
+
+  updateFloatNoticeCount(userId: string, count: number) {
+    runInAction(() => {
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
+      if (index != -1) {
+        memberList[index].member.float_notice_per_day = count;
+      }
+      this._memberList = memberList;
+      const member = this._memberMap.get(userId);
+      if (member !== undefined) {
+        member.member.float_notice_per_day = count;
         this._memberMap.set(userId, member);
       }
     });
@@ -132,11 +192,14 @@ class MemberStore {
       return;
     }
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId)
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId)
       if (index != -1) {
-        this._memberList[index].member.last_event_id = res.event.event_id;
-        this._memberList[index].last_event = res.event;
+        memberList[index].member.last_event_id = res.event.event_id;
+        memberList[index].last_event = res.event;
       }
+      this._memberList = memberList;
+
       const memberInfo = this._memberMap.get(memberUserId);
       if (memberInfo !== undefined) {
         memberInfo.member.last_event_id = res.event.event_id;
@@ -161,26 +224,49 @@ class MemberStore {
     }
   }
 
+  async updateShortNote(projectId: string, memberUserId: string) {
+    const res = await request(listShortNoteByMember({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+      member_user_id: memberUserId,
+    }));
+    if (res) {
+      const index = this._memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId)
+      if (index != -1) {
+        this._memberList[index].short_note_list = res.short_note_list;
+      }
+      const memberInfo = this._memberMap.get(memberUserId);
+      if (memberInfo !== undefined) {
+        memberInfo.short_note_list = res.short_note_list;
+        this._memberMap.set(memberUserId, memberInfo);
+      }
+    }
+  }
+
   async updateMemberInfo(projectId: string, memberUserId: string) {
     const res = await request(get_member(this.rootStore.userStore.sessionId, projectId, memberUserId));
     if (!res) {
       return;
     }
     runInAction(() => {
-      const index = this._memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId);
+      const memberList = this._memberList.slice();
+      const index = memberList.findIndex((item) => item.member.project_id == projectId && item.member.member_user_id == memberUserId);
       if (index == -1) {
-        this._memberList.push({ member: res.member });
-        this._memberMap.set(memberUserId, { member: res.member });
+        memberList.push({ member: res.member, short_note_list: [] });
+        this._memberMap.set(memberUserId, { member: res.member, short_note_list: [] });
       } else {
-        this._memberList[index].member = res.member;
+        memberList[index].member = res.member;
         const memberInfo = this._memberMap.get(memberUserId);
         if (memberInfo !== undefined && memberInfo.member.project_id == projectId) {
           memberInfo.member = res.member;
           this._memberMap.set(memberUserId, memberInfo);
         }
       }
+      this._memberList = memberList;
     });
   }
+
+
 }
 
 export default MemberStore;

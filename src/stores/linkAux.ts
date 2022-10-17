@@ -315,7 +315,7 @@ class LinkAuxStore {
         }
       }
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
-        this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
+        await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
       console.log(taskLink);
       history.push('/app/project/task/view', {
@@ -342,7 +342,7 @@ class LinkAuxStore {
         }
       }
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
-        this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
+        await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
       history.push('/app/project/bug/view', {
         issueId: taskLink.issueId,
@@ -367,7 +367,7 @@ class LinkAuxStore {
         }
       }
       if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
-        this.rootStore.projectStore.setCurProjectId(docLink.projectId);
+        await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
       }
       this.rootStore.projectStore.setShowChannel(false);
       history.push(APP_PROJECT_DOC_PRO_PATH, {

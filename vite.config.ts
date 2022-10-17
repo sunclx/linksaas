@@ -48,6 +48,7 @@ export default ({ command, mode }: ConfigEnv) => {
           vc: 'vc.html',
           about: 'about.html',
           shortNote: "short_note.html",
+          floatNotice: "float_notice.html",
         },
       },
       terserOptions: {

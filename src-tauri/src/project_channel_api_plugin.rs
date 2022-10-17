@@ -583,6 +583,33 @@ async fn remove_by_admin<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn list_float_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListFloatMsgRequest,
+) -> Result<ListFloatMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.list_float_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_float_msg_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_float_msg".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectChannelApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -613,6 +640,7 @@ impl<R: Runtime> ProjectChannelApiPlugin<R> {
                 list_by_admin,
                 join_by_admin,
                 remove_by_admin,
+                list_float_msg,
             ]),
         }
     }
