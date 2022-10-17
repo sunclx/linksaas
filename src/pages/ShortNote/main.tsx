@@ -35,7 +35,7 @@ const Content = () => {
     }
 
     const randomBgColor = () => {
-        const color = randomColor({ luminosity: "light" });
+        const color = randomColor({ luminosity: "light", format: "rgba", alpha: 0.8 });
         setBgColor(color);
     };
 

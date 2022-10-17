@@ -59,6 +59,7 @@ export async function showShortNote(sessionId: string, data: ShortNoteData, proj
         alwaysOnTop: true,
         skipTaskbar: true,
         fileDropEnabled: false,
+        transparent: true,
     });
     webview.once('tauri://created', async () => {
         await request(add({
@@ -86,6 +87,7 @@ export async function showMyShortNote(sessionId: string) {
                 alwaysOnTop: true,
                 skipTaskbar: true,
                 fileDropEnabled: false,
+                transparent: true,
             });
         }
     }

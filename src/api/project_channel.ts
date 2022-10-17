@@ -254,6 +254,7 @@ export type FloatMsg = {
   sender_user_id: string;
   sender_logo_uri: string;
   sender_display_name: string;
+  send_time_stamp: number;
   end_time_stamp: number;
 };
 

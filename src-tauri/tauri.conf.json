@@ -109,6 +109,7 @@
     ],
     "systemTray": {
       "iconPath": "icons/icon.ico"
-    }
+    },
+    "macOSPrivateApi": true
   }
 }

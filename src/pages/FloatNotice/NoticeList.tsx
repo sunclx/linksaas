@@ -12,12 +12,14 @@ import moment from 'moment';
 import { platform } from '@tauri-apps/api/os';
 import type { FloatNoticeDetailEvent } from '@/utils/float_notice';
 import { sendFloatNoticeDetailEvent } from '@/utils/float_notice';
+import { Badge } from "antd";
 
 
 const NoticeList = () => {
     const [noticeList, setNoticeList] = useState<FloatMsg[]>([]);
     const [hover, setHover] = useState(false);
     const [platWin, setPlatWin] = useState(false);
+
 
     platform().then((platName: string) => {
         if (platName.includes("win32")) {
@@ -32,6 +34,12 @@ const NoticeList = () => {
         return imgUrl;
     }
 
+    const getRemainMinute = (endTime: number) => {
+        const diffTime = moment(endTime).diff(moment());
+        return Math.ceil(diffTime / 60 / 1000);
+    }
+
+
     const loadMsg = async () => {
         const sessionId = await get_session();
         const res = await request(list_float_msg(sessionId));
@@ -40,10 +48,7 @@ const NoticeList = () => {
         }
     };
 
-    const getRemainMinute = (endTime: number) => {
-        const diffTime = moment(endTime).diff(moment());
-        return Math.ceil(diffTime / 60 / 1000);
-    }
+
 
     const adjustPositon = async () => {
         const curPos = await appWindow.outerPosition();
@@ -73,7 +78,7 @@ const NoticeList = () => {
             if (hover) {
                 appWindow.setSize(new LogicalSize(300, 400));
             } else {
-                appWindow.setSize(new LogicalSize(150, 50));
+                appWindow.setSize(new LogicalSize(260, 50));
             }
             adjustPositon();
         }
@@ -108,12 +113,13 @@ const NoticeList = () => {
         data-tauri-drag-region={true}
     >
 
-        <span data-tauri-drag-region={true}>
-            <img src={logoPng} width="32px" height="32px" style={{ marginRight: "10px" }} data-tauri-drag-region={true} />
-            浮动消息:{noticeList.length}
-        </span>
+        <div data-tauri-drag-region={true}>
+            <Badge count={noticeList.length} overflowCount={99} color="volcano" offset={[5, 22]}>
+                <img src={logoPng} width="32px" height="32px" style={{ verticalAlign: "baseline" }} data-tauri-drag-region={true} />
+            </Badge>
+        </div>
         {hover && (
-            <div data-tauri-drag-region={true} style={{ overflowY: "scroll", height: "340px", paddingLeft: "10px" }}>
+            <div data-tauri-drag-region={true} style={{ overflowY: "scroll", height: "340px", paddingLeft: "10px",backgroundColor:"white" }}>
                 {noticeList.map(notice => {
                     return (
                         <div key={notice.msg_id} data-tauri-drag-region={true}>

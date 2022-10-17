@@ -437,6 +437,7 @@ async fn login<R: Runtime>(
             .disable_file_drop_handler()
             .decorations(false)
             .position(-1000.0, -1000.0)
+            .transparent(true)
             .build();
             if res.is_err() {
                 println!("{:?}", res.err().unwrap());
@@ -463,7 +464,6 @@ fn emit_notice<R: Runtime>(
                                 if res.is_err() {
                                     println!("{:?}", res);
                                 }
-                                println!("rrrrrrrrrrrrrrrrrrrrrrrr");
                             }
                         }
                         _ => {
