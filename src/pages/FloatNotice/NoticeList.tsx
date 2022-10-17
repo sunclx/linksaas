@@ -3,7 +3,7 @@ import type { FloatMsg } from '@/api/project_channel';
 import { list_float_msg } from '@/api/project_channel';
 import { get_session } from '@/api/user';
 import logoPng from '@/assets/allIcon/logo.png';
-import { appWindow, currentMonitor, LogicalPosition, LogicalSize } from '@tauri-apps/api/window';
+import { appWindow, LogicalSize } from '@tauri-apps/api/window';
 import type * as NoticeType from '@/api/notice_type'
 import { listen } from '@tauri-apps/api/event';
 import { request } from '@/utils/request';
@@ -50,17 +50,6 @@ const NoticeList = () => {
 
 
 
-    const adjustPositon = async () => {
-        const curPos = await appWindow.outerPosition();
-        if (curPos.x > 10 && curPos.y > 10) {
-            return;
-        }
-        const monitor = await currentMonitor();
-        if (monitor != null) {
-            appWindow.setPosition(new LogicalPosition(monitor.size.width * 0.85, monitor.size.height * 0.05));
-        }
-    }
-
     useEffect(() => {
         loadMsg();
         const unlisten = listen<NoticeType.AllNotice>('notice', () => {
@@ -73,14 +62,14 @@ const NoticeList = () => {
 
     useEffect(() => {
         if (noticeList.length == 0) {
-            appWindow.setPosition(new LogicalPosition(-1000, -1000));
+            appWindow.hide();
         } else {
             if (hover) {
                 appWindow.setSize(new LogicalSize(300, 400));
             } else {
                 appWindow.setSize(new LogicalSize(260, 50));
             }
-            adjustPositon();
+            appWindow.show();
         }
     }, [noticeList, hover]);
 
@@ -119,7 +108,7 @@ const NoticeList = () => {
             </Badge>
         </div>
         {hover && (
-            <div data-tauri-drag-region={true} style={{ overflowY: "scroll", height: "340px", paddingLeft: "10px",backgroundColor:"white" }}>
+            <div data-tauri-drag-region={true} style={{ overflowY: "scroll", height: "340px", paddingLeft: "10px", backgroundColor: "white" }}>
                 {noticeList.map(notice => {
                     return (
                         <div key={notice.msg_id} data-tauri-drag-region={true}>
