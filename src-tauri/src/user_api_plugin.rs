@@ -369,6 +369,7 @@ async fn login<R: Runtime>(
     }
     let mut client = UserApiClient::new(chan.unwrap());
     let app_for_float = app_handle.clone();
+    let monitor = window.clone().current_monitor();
     match client.login(request).await {
         Ok(response) => {
             let ret = response.into_inner();
@@ -425,18 +426,27 @@ async fn login<R: Runtime>(
                 println!("xxxxxxxxx");
             }
             //创建浮动通知页面
+            let mut monitor_width = 0.0 as f64;
+            let mut monitor_height = 0.0 as f64;
+            if monitor.is_ok() {
+                if let Some(monitor) = monitor.unwrap() {
+                    monitor_width = monitor.size().width as f64;
+                    monitor_height = monitor.size().height as f64;
+                }
+            }
+
             let res = WindowBuilder::new(
                 &app_for_float,
                 "float_notice",
                 WindowUrl::App("float_notice.html".into()),
             )
             .always_on_top(true)
-            .visible(true)
+            .visible(false)
             .skip_taskbar(true)
             .resizable(false)
             .disable_file_drop_handler()
             .decorations(false)
-            .position(-1000.0, -1000.0)
+            .position(monitor_width * 0.8, monitor_height * 0.05)
             .transparent(true)
             .build();
             if res.is_err() {
