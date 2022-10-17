@@ -67,7 +67,7 @@ const NoticeList = () => {
             if (hover) {
                 appWindow.setSize(new LogicalSize(300, 400));
             } else {
-                appWindow.setSize(new LogicalSize(260, 50));
+                appWindow.setSize(new LogicalSize(260, 100));
             }
             appWindow.show();
         }
