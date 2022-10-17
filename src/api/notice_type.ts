@@ -83,6 +83,10 @@ export namespace project {
   };
   export type NewFloatMsgNotice = {};
 
+  export type UpdateShortNoteNotice = {
+    project_id: string;
+    member_user_id: string;
+  };
 
   export type AllNotice = {
     UpdateProjectNotice?: UpdateProjectNotice;
@@ -105,6 +109,7 @@ export namespace project {
     ReminderNotice?: ReminderNotice,
     SetMemberFloatNotice?: SetMemberFloatNotice,
     NewFloatMsgNotice?: NewFloatMsgNotice,
+    UpdateShortNoteNotice?: UpdateShortNoteNotice,
   };
 }
 

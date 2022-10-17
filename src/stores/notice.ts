@@ -6,7 +6,7 @@ import type { RootStore } from '.';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
-import { SHORT_NOTE_TYPE } from '@/utils/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC } from '@/api/short_note';
 import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
@@ -269,6 +269,10 @@ class NoticeStore {
         const body = `在项目 ${notice.ReminderNotice.project_name} ${linkType} ${notice.ReminderNotice.link_title} 提到了你`;
         sendNotification({ title: "凌鲨", body: body });
       }
+    } else if (notice.UpdateShortNoteNotice !== undefined) {
+      if (notice.UpdateShortNoteNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        this.rootStore.memberStore.updateShortNote(notice.UpdateShortNoteNotice.project_id, notice.UpdateShortNoteNotice.member_user_id);
+      }
     }
   }
 
@@ -330,11 +334,11 @@ class NoticeStore {
   }
 
   private async processShortNoteEvent(ev: ShortNoteEvent) {
-    if (ev.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_TASK) {
+    if (ev.shortNoteType == SHORT_NOTE_TASK) {
       this.rootStore.linkAuxStore.goToLink(new LinkTaskInfo("", ev.projectId, ev.targetId), this.history);
-    } else if (ev.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_BUG) {
+    } else if (ev.shortNoteType == SHORT_NOTE_BUG) {
       this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
-    } else if (ev.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_DOC) {
+    } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
       this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.targetId), this.history);
     }
     await appWindow.show();

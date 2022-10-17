@@ -34,7 +34,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { observer } from 'mobx-react';
-import { showShortNote, SHORT_NOTE_TYPE } from '@/utils/short_note';
+import { showShortNote } from '@/utils/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG } from '@/api/short_note';
 import { ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
 
 
@@ -215,11 +216,11 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
         return (<a onClick={e => {
           e.stopPropagation();
           e.preventDefault();
-          showShortNote({
-            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+          showShortNote(userStore.sessionId, {
+            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TASK : SHORT_NOTE_BUG,
             data: record,
           }, projectName);
-        }}><ExportOutlined style={{fontSize:"16px"}}/></a>);
+        }}><ExportOutlined style={{ fontSize: "16px" }} /></a>);
       }
     },
     {

@@ -25,7 +25,8 @@ pub mod project {
         SetMemberRoleNotice(notices_project::SetMemberRoleNotice),
         ReminderNotice(notices_project::ReminderNotice),
         SetMemberFloatNotice(notices_project::SetMemberFloatNotice),
-        NewFloatMsgNotice(notices_project::NewFloatMsgNotice ),
+        NewFloatMsgNotice(notices_project::NewFloatMsgNotice),
+        UpdateShortNoteNotice(notices_project::UpdateShortNoteNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -112,13 +113,20 @@ pub mod project {
             if let Ok(notice) = notices_project::ReminderNotice::decode(data.value.as_slice()) {
                 return Some(Notice::ReminderNotice(notice));
             }
-        }else if data.type_url == notices_project::SetMemberFloatNotice::type_url() {
-            if let Ok(notice) = notices_project::SetMemberFloatNotice::decode(data.value.as_slice()) {
+        } else if data.type_url == notices_project::SetMemberFloatNotice::type_url() {
+            if let Ok(notice) = notices_project::SetMemberFloatNotice::decode(data.value.as_slice())
+            {
                 return Some(Notice::SetMemberFloatNotice(notice));
             }
-        }else if data.type_url == notices_project::NewFloatMsgNotice::type_url() {
-            if let Ok(notice) = notices_project::NewFloatMsgNotice::decode(data.value.as_slice()){
+        } else if data.type_url == notices_project::NewFloatMsgNotice::type_url() {
+            if let Ok(notice) = notices_project::NewFloatMsgNotice::decode(data.value.as_slice()) {
                 return Some(Notice::NewFloatMsgNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateShortNoteNotice::type_url() {
+            if let Ok(notice) =
+                notices_project::UpdateShortNoteNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::UpdateShortNoteNotice(notice));
             }
         }
         None

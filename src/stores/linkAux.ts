@@ -367,7 +367,7 @@ class LinkAuxStore {
         }
       }
       if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
-        this.rootStore.projectStore.setCurProjectId(docLink.projectId);
+        await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
       }
       this.rootStore.projectStore.setShowChannel(false);
       history.push(APP_PROJECT_DOC_PRO_PATH, {

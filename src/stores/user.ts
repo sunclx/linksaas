@@ -4,6 +4,7 @@ import { login, logout as user_logout } from '@/api/user';
 import { request } from '@/utils/request';
 
 import type { RootStore } from './index';
+import { showMyShortNote } from '@/utils/short_note';
 
 type UserInfo = {
   userId: string;
@@ -70,6 +71,7 @@ class UserStore {
         sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo));
         this.rootStore.projectStore.initLoadProjectList();
       });
+      await showMyShortNote(res.session_id);
     }
   }
 

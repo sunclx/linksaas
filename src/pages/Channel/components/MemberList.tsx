@@ -109,9 +109,9 @@ const MemberList: React.FC<MemberListProps> = (props) => {
                 key={memberItem.member_user_id}
                 transitionName=''
                 overlayClassName="popover"
-                visible={visibleKey === memberItem.member_user_id ? visible : false}
+                open={visibleKey === memberItem.member_user_id ? visible : false}
                 trigger="hover"
-                onVisibleChange={e => {
+                onOpenChange={e => {
                   handleMemberInfo(e, memberItem.member_user_id)
                 }
                 }
@@ -120,7 +120,7 @@ const MemberList: React.FC<MemberListProps> = (props) => {
                   className={styles.member_item}
                 >
                   <div className={styles.cover}>
-                    <UserPhoto logoUri={member?.member.logo_uri??""} className={styles.avatar}/>
+                    <UserPhoto logoUri={member?.member.logo_uri ?? ""} className={styles.avatar} />
                     <div className={member?.member.online ? styles.icon_online : styles.icon_offline} />
                   </div>
                   <div className={styles.member_bd}>

@@ -19,8 +19,9 @@ import { ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_C
 import type { LinkIssueState } from '@/stores/linkAux';
 import { Tooltip } from 'antd';
 import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
-import { SHORT_NOTE_TYPE, showShortNote } from '@/utils/short_note';
+import { showShortNote } from '@/utils/short_note';
 import { useStores } from '@/hooks';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG } from '@/api/short_note';
 
 type useTableProps = {
   setStageModelData: (boo: boolean, v: IssueInfo) => void;
@@ -52,6 +53,7 @@ type ColumnsTypes = ColumnType<IssueInfo> & {
 };
 
 const useTable = (props: useTableProps) => {
+  const userStore = useStores('userStore');
   const projectStore = useStores("projectStore");
   const { pathname } = useLocation();
   const { push } = useHistory();
@@ -153,8 +155,8 @@ const useTable = (props: useTableProps) => {
         return (<a onClick={e => {
           e.stopPropagation();
           e.preventDefault();
-          showShortNote({
-            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TYPE.SHORT_NOTE_TASK : SHORT_NOTE_TYPE.SHORT_NOTE_BUG,
+          showShortNote(userStore.sessionId, {
+            shortNoteType: record.issue_type == ISSUE_TYPE_TASK ? SHORT_NOTE_TASK : SHORT_NOTE_BUG,
             data: record,
           }, projectName);
         }}><ExportOutlined style={{ fontSize: "16px" }} /></a>);

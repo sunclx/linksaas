@@ -2,13 +2,9 @@
 import type { IssueInfo } from '@/api/project_issue';
 import type { Doc } from '@/api/project_doc';
 import { WebviewWindow } from '@tauri-apps/api/window';
-
-
-export enum SHORT_NOTE_TYPE {
-    SHORT_NOTE_TASK = "task",
-    SHORT_NOTE_BUG = "bug",
-    SHORT_NOTE_DOC = "doc",
-}
+import type { SHORT_NOTE_TYPE } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, add, list_my } from '@/api/short_note';
+import { request } from '@/utils/request';
 
 export type ShortNoteData = {
     shortNoteType: SHORT_NOTE_TYPE;
@@ -17,20 +13,31 @@ export type ShortNoteData = {
 
 export interface ShortNoteEvent {
     projectId: string;
-    shortNoteType: string;
+    shortNoteType: SHORT_NOTE_TYPE;
     targetId: string;
 }
 
-export async function showShortNote(data: ShortNoteData, projectName: string) {
+function getShortNoteTypeStr(shortNoteType: SHORT_NOTE_TYPE): string {
+    if (shortNoteType == SHORT_NOTE_TASK) {
+        return "task";
+    } else if (shortNoteType == SHORT_NOTE_BUG) {
+        return "bug";
+    } else if (shortNoteType == SHORT_NOTE_DOC) {
+        return "doc";
+    }
+    return "";
+}
+
+export async function showShortNote(sessionId: string, data: ShortNoteData, projectName: string) {
     let id = "";
     let projectId = "";
     let title = "";
-    if (data.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_TASK || data.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_BUG) {
+    if (data.shortNoteType == SHORT_NOTE_TASK || data.shortNoteType == SHORT_NOTE_BUG) {
         const issue = data.data as IssueInfo;
         id = issue.issue_id;
         projectId = issue.project_id;
         title = issue.basic_info.title;
-    } else if (data.shortNoteType == SHORT_NOTE_TYPE.SHORT_NOTE_DOC) {
+    } else if (data.shortNoteType == SHORT_NOTE_DOC) {
         const doc = data.data as Doc;
         id = doc.doc_id;
         projectId = doc.project_id;
@@ -38,11 +45,12 @@ export async function showShortNote(data: ShortNoteData, projectName: string) {
     }
     const label = `shortNote-${id}`;
     const view = WebviewWindow.getByLabel(label);
-    if(view != null){
+    if (view != null) {
         await view.close();
     }
-    new WebviewWindow(label, {
-        url: `short_note.html?type=${data.shortNoteType}&projectId=${projectId}&id=${id}&title=${encodeURIComponent(title)}&projectName=${encodeURIComponent(projectName)}`,
+    const shortNoteTypeStr = getShortNoteTypeStr(data.shortNoteType);
+    const webview = new WebviewWindow(label, {
+        url: `short_note.html?type=${shortNoteTypeStr}&projectId=${projectId}&id=${id}&title=${encodeURIComponent(title)}&projectName=${encodeURIComponent(projectName)}`,
         width: 250,
         minWidth: 200,
         height: 150,
@@ -52,4 +60,33 @@ export async function showShortNote(data: ShortNoteData, projectName: string) {
         skipTaskbar: true,
         fileDropEnabled: false,
     });
+    webview.once('tauri://created', async () => {
+        await request(add({
+            session_id: sessionId,
+            project_id: projectId,
+            short_note_type: data.shortNoteType,
+            target_id: id,
+        }));
+    });
+}
+
+export async function showMyShortNote(sessionId: string) {
+    const res = await request(list_my({ session_id: sessionId }));
+    if (res) {
+        for (const item of res.short_note_list) {
+            const label = `shortNote-${item.target_id}`;
+            const shortNoteTypeStr = getShortNoteTypeStr(item.short_note_type);
+            new WebviewWindow(label, {
+                url: `short_note.html?type=${shortNoteTypeStr}&projectId=${item.project_id}&id=${item.target_id}&title=${encodeURIComponent(item.title)}&projectName=${encodeURIComponent(item.project_name)}`,
+                width: 250,
+                minWidth: 200,
+                height: 150,
+                minHeight: 100,
+                decorations: false,
+                alwaysOnTop: true,
+                skipTaskbar: true,
+                fileDropEnabled: false,
+            });
+        }
+    }
 }
