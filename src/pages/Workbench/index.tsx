@@ -49,16 +49,19 @@ const Workbench: FC = () => {
       <div className={s.my_wrap}>
         <Card className={s.project_wrap} title="我的项目" extraContent={(
           <Space style={{ position: "absolute", right: "20px", top: "-5px" }}>
-            <Button type="ghost" onClick={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              appStore.showJoinProject = true;
-            }}>加入项目</Button>
-            <Button type="ghost" onClick={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              appStore.showCreateProject = true;
-            }}>创建项目</Button>
+            {projectStore.projectList.length == 0 && (<>
+              <Button type="ghost" onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                appStore.showJoinProject = true;
+              }}>加入项目</Button>
+              <Button type="ghost" onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                appStore.showCreateProject = true;
+              }}>创建新项目</Button>
+            </>)
+            }
           </Space>
         )}>
           {!userStore.isResetPassword && <Myproject />}
