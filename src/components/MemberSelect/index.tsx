@@ -33,6 +33,7 @@ const MemberSelect: React.FC<MemberSelectProps> = observer(({ all, memberUserId,
         placeholder={props.placeholder ?? "请选择"}
         defaultValue={defaultValue}
         allowClear
+        style={{ width: "100px" }}
       >
         {all && <Option value={''}>全部</Option>}
         {memberStore.memberList.map((item) => (

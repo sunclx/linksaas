@@ -2,8 +2,8 @@ import type { FC } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { ReactComponent as Packupsvg } from '@/assets/svg/packup.svg';
-import { useHistory } from 'react-router-dom';
-import { APP_PROJECT_PATH } from '@/utils/constant';
+import { useHistory, useLocation } from 'react-router-dom';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 
 type CardWrapProps = {
   title?: string;
@@ -18,17 +18,27 @@ const CardWrap: FC<CardWrapProps> = (props) => {
   let cardWrap = s.cardWrap;
   if (className) cardWrap += ' ' + className;
   const history = useHistory();
+  const { pathname } = useLocation();
 
   const isHalfStyle = halfContent
     ? {
-        width: '570px',
-        marginLeft: `calc(100% - ${570 + 59}px)`,
-      }
+      width: '570px',
+      marginLeft: `calc(100% - ${570 + 59}px)`,
+    }
     : '';
+
+  let backUrl = "";
+  if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+    backUrl = APP_PROJECT_CHAT_PATH;
+  } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+    backUrl = APP_PROJECT_KB_DOC_PATH;
+  } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
+    backUrl = APP_PROJECT_KB_CB_PATH;
+  }
 
   return (
     <div className={cardWrap} style={{ ...isHalfStyle, ...style }}>
-      <div className={s.packup} onClick={() => history.push(APP_PROJECT_PATH)}>
+      <div className={s.packup} onClick={() => history.push(backUrl)}>
         <Packupsvg />
       </div>
       {title && (

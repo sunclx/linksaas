@@ -140,6 +140,18 @@ export type ListDocSpaceResponse = {
     doc_space_list: DocSpace[],
 };
 
+export type GetDocSpaceRequest = {
+    session_id: string;
+    project_id: string;
+    doc_space_id: string;
+}
+
+export type GetDocSpaceResponse = {
+    code: number;
+    err_msg: string;
+    doc_space: DocSpace;
+};
+
 export type RemoveDocSpaceRequest = {
     session_id: string;
     project_id: string;
@@ -527,6 +539,15 @@ export async function list_doc_space(request: ListDocSpaceRequest): Promise<List
     const cmd = 'plugin:project_doc_api|list_doc_space';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListDocSpaceResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个文档空间
+export async function get_doc_space(request: GetDocSpaceRequest): Promise<GetDocSpaceResponse> {
+    const cmd = 'plugin:project_doc_api|get_doc_space';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetDocSpaceResponse>(cmd, {
         request,
     });
 }

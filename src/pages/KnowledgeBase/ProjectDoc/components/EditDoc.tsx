@@ -152,14 +152,14 @@ const WriteDoc: React.FC = () => {
     //变更文件Owner
     await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_PROJECT_DOC, res.doc_id);
     //刷新左侧列表
-    await docStore.updateDocKey(res.doc_id);
+    // await docStore.updateDocKey(res.doc_id);
     //回到阅读模式
-    docStore.setCurDoc(res.doc_id, false, docStore.curDocInRecycle);
+    // docStore.setCurDoc(res.doc_id, false, docStore.curDocInRecycle);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      docStore.setEditing(true);
+      // docStore.setEditing(true);
     }, 2000);
 
     return () => {

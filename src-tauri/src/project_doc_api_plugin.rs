@@ -90,6 +90,33 @@ async fn list_doc_space<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_doc_space<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetDocSpaceRequest,
+) -> Result<GetDocSpaceResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectDocApiClient::new(chan.unwrap());
+    match client.get_doc_space(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_doc_space_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_doc_space".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn remove_doc_space<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -814,6 +841,7 @@ impl<R: Runtime> ProjectDocApiPlugin<R> {
                 create_doc_space,
                 update_doc_space,
                 list_doc_space,
+                get_doc_space,
                 remove_doc_space,
                 create_doc,
                 update_doc_perm,

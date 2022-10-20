@@ -2,7 +2,7 @@ import React from 'react';
 import s from './EditDoc.module.less';
 import { ReactComponent as Historysvg } from '@/assets/svg/history.svg';
 import { ReactComponent as Msgsvg } from '@/assets/svg/msg.svg';
-import RemoveDocBtn from '@/components/DocMenu/components/RemoveDocBtn';
+import RemoveDocBtn from './RemoveDocBtn';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
@@ -10,19 +10,26 @@ import * as docApi from '@/api/project_doc';
 import { Button, message, Popover } from 'antd';
 import DocHistory from './DocHistory';
 import DocComment from './DocComment';
+import { runInAction } from 'mobx';
 
-const RenderDocBtns: React.FC = () => {
+
+
+const RenderDocBtns = () => {
   const userStore = useStores('userStore');
-  const docStore = useStores('docStore');
+  const docSpaceStore = useStores('docSpaceStore');
 
-  const setWatch = async (docKey: docApi.DocKey, watchValue: boolean) => {
-    if (watchValue) {
+  const toggleWatch = async () => {
+    if (docSpaceStore.curDoc == undefined) {
+      return;
+    }
+    const nextValue = !docSpaceStore.curDoc.my_watch;
+    if (nextValue) {
       const res = await request(
         docApi.watch_doc({
           session_id: userStore.sessionId,
-          project_id: docKey.project_id,
-          doc_space_id: docKey.doc_space_id,
-          doc_id: docKey.doc_id,
+          project_id: docSpaceStore.curDoc.project_id,
+          doc_space_id: docSpaceStore.curDoc.doc_space_id,
+          doc_id: docSpaceStore.curDocId,
         }),
       );
       message.success('已关注此文档');
@@ -33,9 +40,9 @@ const RenderDocBtns: React.FC = () => {
       const res = await request(
         docApi.un_watch_doc({
           session_id: userStore.sessionId,
-          project_id: docKey.project_id,
-          doc_space_id: docKey.doc_space_id,
-          doc_id: docKey.doc_id,
+          project_id: docSpaceStore.curDoc.project_id,
+          doc_space_id: docSpaceStore.curDoc.doc_space_id,
+          doc_id: docSpaceStore.curDocId,
         }),
       );
       message.success('已取消关注此文档');
@@ -44,29 +51,33 @@ const RenderDocBtns: React.FC = () => {
         return;
       }
     }
-    docStore.setMyWatch(docKey.doc_id, watchValue);
+    runInAction(()=>{
+      if (docSpaceStore.curDoc != undefined) {
+        docSpaceStore.curDoc.my_watch = nextValue;
+      }
+    });
   };
 
   return (
     <div className={s.docbtns_wrap}>
-      {!docStore.curDocInRecycle && (
+      {!docSpaceStore.recycleBin && (
         <>
           <span
-            className={docStore.curDocKey!.my_watch ? s.isCollect : s.no_Collect}
+            className={(docSpaceStore.curDoc?.my_watch ?? false) ? s.isCollect : s.no_Collect}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              setWatch(docStore.curDocKey!, !docStore.curDocKey!.my_watch);
+              toggleWatch();
             }}
           />
           <Popover
             placement="bottom"
             content={() => <DocComment />}
-            onVisibleChange={(v) => {
+            onOpenChange={(v) => {
               if (v) {
-                docStore.loadDocComment(0);
+                // docStore.loadDocComment(0);
               } else {
-                docStore.clearDocComment();
+                // docStore.clearDocComment();
               }
             }}
             // visible={true}
@@ -77,11 +88,12 @@ const RenderDocBtns: React.FC = () => {
           <Popover
             placement="bottom"
             content={() => <DocHistory />}
-            onVisibleChange={(v) => {
+            onOpenChange={(v) => {
               if (v) {
-                docStore.loadDocHistory();
+                // docStore.loadDocHistory();
               } else {
-                docStore.clearDocHistory();
+                // docStore.clearDocHistory();
+                //TODO
               }
             }}
             trigger="hover"
@@ -89,14 +101,14 @@ const RenderDocBtns: React.FC = () => {
             <Historysvg />
           </Popover>
 
-          <RemoveDocBtn docKey={docStore.curDocKey!} recycleBin={docStore.curDocInRecycle} />
+          <RemoveDocBtn />
           <Button
             type="primary"
             style={{ marginLeft: '40px' }}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              docStore.setCurDoc(docStore.curDocId, true, false);
+              docSpaceStore.showDoc(docSpaceStore.curDocId, true);
             }}
           >
             编辑

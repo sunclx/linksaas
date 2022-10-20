@@ -1,13 +1,12 @@
 import * as issueApi from '@/api/project_issue';
 
 export const USER_LOGIN_PATH = '/user/login';
-export const APP_PROJECT_PATH = '/app/project';
 export const WORKBENCH_PATH = '/app/workbench';
 export const RESET_TEXT = 'resetPassword';
-export const CHANNEL_PATH = '/app/project/channel';
-export const APP_PROJECT_DOC_PATH = '/app/project/doc';
-export const APP_PROJECT_DOC_PRO_PATH = '/app/project/doc/pro_doc';
-export const APP_PROJECT_DOC_CB_PATH = '/app/project/doc/content_block';
+export const APP_PROJECT_CHAT_PATH = '/app/project/chat';
+export const APP_PROJECT_KB_PATH = '/app/project/kb';
+export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
+export const APP_PROJECT_KB_CB_PATH = '/app/project/kb/content_block';
 
 export const TASK_VIEW_SUFFIX = '/task/view';
 export const BUG_VIEW_SUFFIX = '/bug/view';

@@ -15,7 +15,7 @@ import bottom_arrow from '@/assets/allIcon/bottom_arrow.png';
 import { DeleteOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
 import ActionModal from '@/components/ActionModal';
 
-const ContentBlack = () => {
+const ContentBlock = () => {
   const [showAddColl, setShowAddColl] = useState(false);
 
   const [dataVersion, setDataVersion] = useState(0);
@@ -179,4 +179,4 @@ const ContentBlack = () => {
   );
 };
 
-export default observer(ContentBlack);
+export default observer(ContentBlock);
