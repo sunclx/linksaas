@@ -27,7 +27,7 @@ const MemberSelect: React.FC<MemberSelectProps> = observer(({ all, memberUserId,
   }
 
   return (
-    <Form.Item>
+    <Form.Item {...props}>
       <Select
         {...props}
         placeholder={props.placeholder ?? "请选择"}
