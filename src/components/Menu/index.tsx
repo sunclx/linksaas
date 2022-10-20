@@ -78,6 +78,9 @@ const Header: React.FC = () => {
           }
         }}
       />
+      {projectStore.projectList.length == 0 && (<div className={cls.zero_project_tips}>
+        您还没有加入项目，你可以通过上方的<i className={cls.add} />加入或创建新项目。
+      </div>)}
       {appStore.showJoinProject && <JoinProject
         visible={appStore.showJoinProject}
         onChange={(val) => (appStore.showJoinProject = val)}

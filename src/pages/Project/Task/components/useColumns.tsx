@@ -79,7 +79,7 @@ const useTable = (props: useTableProps) => {
       title: 'ID',
       dataIndex: 'issue_index',
       ellipsis: true,
-      width: 80,
+      width: 70,
       fixed: true,
       render: (v: IssueInfo['issue_index'], record: IssueInfo) => {
         return (
@@ -103,14 +103,14 @@ const useTable = (props: useTableProps) => {
     },
     {
       title: `${getIssueText(pathname)}名称`,
-      width: 200,
+      width: 300,
       ellipsis: true,
       dataIndex: ['basic_info', 'title'],
       fixed: true,
       render: (v: string, record: IssueInfo) => {
         return (
           <div>
-            {v}
+            <span title={v}>{v}</span>
             <a
               style={{
                 padding: '0px 7px',

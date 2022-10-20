@@ -452,6 +452,11 @@ async fn login<R: Runtime>(
             if res.is_err() {
                 println!("{:?}", res.err().unwrap());
             }
+            //设置切换用户菜单
+            let munu_item = app_for_float.tray_handle().get_item("switch_user");
+            if let Err(err) = munu_item.set_enabled(true) {
+                println!("{:?}", err);
+            }
             Ok(ret)
         }
         Err(status) => Err(status.message().into()),
@@ -517,6 +522,11 @@ async fn logout<R: Runtime>(
                         println!("{:?}", err);
                     }
                 }
+            }
+            //设置切换用户菜单
+            let munu_item = &app_handle.tray_handle().get_item("switch_user");
+            if let Err(err) = munu_item.set_enabled(false) {
+                println!("{:?}", err);
             }
             Ok(response.into_inner())
         }

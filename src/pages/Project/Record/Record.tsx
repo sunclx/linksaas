@@ -170,6 +170,7 @@ const ProjectRecord: React.FC = () => {
               localStore.memberUserId = e;
             });
           }}
+          style={{width:"80px"}}
           label={'操作用户'}
           allowClear={false}
         />

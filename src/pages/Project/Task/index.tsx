@@ -42,7 +42,7 @@ const Task: FC = observer(() => {
   const filterState: LinkIssueListState | undefined = location.state as LinkIssueListState | undefined;
 
   const [activeVal, setActiveVal] = useState<TAB_LIST_ENUM>(filterState ? TAB_LIST_ENUM.全部 : TAB_LIST_ENUM.指派给我);
-  const [isFilter, setIsFilter] = useState(filterState ? (filterState.checkUserIdList.length > 0 || filterState.execUserIdList.length > 0 || filterState.stateList.length > 0) : false);
+  const [isFilter, setIsFilter] = useState(true);
   const [stageModelData, setStageModelData] = useVisible<IssueInfo>();
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');

@@ -22,7 +22,8 @@ const AddMenu: React.FC = observer(() => {
   const appStore = useStores('appStore');
 
   return (
-    <div className={cls.moremenu} onClick={(e) => e.stopPropagation()}>
+    <div className={cls.moremenu}
+      onClick={(e) => e.stopPropagation()}>
       {appStore.clientCfg?.can_invite && (
         <div
           className={cls.item}
@@ -262,6 +263,7 @@ const useProjectMenu = () => {
     );
   };
 
+
   // 项目列表目录
   const renderProjectItemsChilds = () => {
     return projectStore.filterProjectList.map((item) => {
@@ -352,8 +354,6 @@ const useProjectMenu = () => {
               content={<AddMenu />}
               trigger="click"
               overlayClassName="popover"
-              // @ts-ignore
-              onClick={(e) => e.stopPropagation()}
             >
               <a className={cls.icon_wrap}>
                 <i className={cls.add} />
@@ -364,8 +364,6 @@ const useProjectMenu = () => {
               content={rendeFilterMenu}
               trigger="click"
               overlayClassName="popover"
-              // @ts-ignore
-              onClick={(e) => e.stopPropagation()}
             >
               <a className={cls.icon_wrap}>
                 <i className={cls.more} />

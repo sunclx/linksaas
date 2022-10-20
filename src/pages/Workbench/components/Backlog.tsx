@@ -123,7 +123,7 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
             mode: "details",
             content: "",
           } as LinkIssueState);
-        }}><span><LinkOutlined />{row.basic_info?.title}</span></a>
+        }} title={row.basic_info?.title}><span><LinkOutlined />{row.basic_info?.title}</span></a>
         {row.msg_count && (
           <span
             style={{

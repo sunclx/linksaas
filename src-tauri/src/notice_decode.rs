@@ -278,9 +278,14 @@ pub mod client {
     }
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    #[serde(rename_all = "snake_case")]
+    pub struct SwitchUserNotice {}
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         WrongSessionNotice(WrongSessionNotice),
         UploadSnapShotNotice(UploadSnapShotNotice),
+        SwitchUserNotice(SwitchUserNotice),
     }
 }
 
@@ -322,5 +327,11 @@ pub fn new_upload_snap_shot_notice(project_id: String) -> NoticeMessage {
         client::UploadSnapShotNotice {
             project_id: project_id,
         },
+    ));
+}
+
+pub fn new_switch_user_notice() -> NoticeMessage {
+    return NoticeMessage::ClientNotice(client::Notice::SwitchUserNotice(
+        client::SwitchUserNotice{},
     ));
 }

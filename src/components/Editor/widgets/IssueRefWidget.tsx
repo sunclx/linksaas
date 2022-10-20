@@ -178,19 +178,25 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
     props.writeData(saveData);
   };
 
+  const removeIssue = (issueIndex: number) => {
+    const tmpList = dataSource.filter(item => item.issue_index != issueIndex);
+    setDataSource(tmpList);
+  }
+
   const columns: ColumnsType<IssueInfo> = [
     {
       title: `ID`,
       dataIndex: 'issue_index',
-      width: 40,
-      render: (v: IssueInfo['issue_index']) => {
+      width: 70,
+      render: (v: number) => {
         return (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Deliconsvg
               style={{ marginRight: '10px', cursor: 'pointer', color: '#0E83FF' }}
               onClick={(e) => {
                 e.stopPropagation();
-                console.log(v);
+                e.preventDefault();
+                removeIssue(v);
               }}
             />
             {v}
