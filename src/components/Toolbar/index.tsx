@@ -18,9 +18,8 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
     <Tooltip
       title={<span>{props.title}</span>}
       placement="left"
-      color="#fff"
-      overlayInnerStyle={{ color: '#777' }}
-      mouseEnterDelay={2}
+      color="#f0f0f0"
+      overlayInnerStyle={{ color: '#555' }}
     >
       <div
         data-menu-id={props.id}
@@ -45,7 +44,6 @@ const Toolbar: React.FC = observer(() => {
   return (
     <div className={style.toolbar}>
       <Item id="home" pathname={pathname} title="项目详情" />
-      {/* <Item id="setting" pathname={pathname} title="项目设置" /> */}
       <Divider />
       <Item id="member" pathname={pathname} title="项目成员列表" />
       <Item
