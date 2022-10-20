@@ -232,12 +232,17 @@ export namespace client {
   export type WrongSessionNotice = {
     name: string;
   };
+  
   export type UploadSnapShotNotice = {
     project_id: string;
   };
+
+  export type SwitchUserNotice = {};
+
   export type AllNotice = {
     WrongSessionNotice?: WrongSessionNotice;
     UploadSnapShotNotice?: UploadSnapShotNotice;
+    SwitchUserNotice?: SwitchUserNotice;
   };
 }
 

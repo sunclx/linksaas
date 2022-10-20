@@ -153,6 +153,8 @@ class NoticeStore {
       if (notice.WrongSessionNotice.name.indexOf("snap") == -1) { //忽略快照相关接口报错
         this.rootStore.userStore.logout();
       }
+    } else if (notice.SwitchUserNotice !== undefined) {
+      this.rootStore.userStore.logout();
     }
   }
 
