@@ -14,16 +14,25 @@ type MemberSelectProps = FormItemProps &
   };
 
 const MemberSelect: React.FC<MemberSelectProps> = observer(({ all, memberUserId, ...props }) => {
+
   const memberStore = useStores('memberStore');
+
+  let defaultValue = undefined;
+  if (all !== undefined && all) {
+    defaultValue = '';
+  } else {
+    if (memberUserId != undefined && memberUserId != "") {
+      defaultValue = memberUserId;
+    }
+  }
+
   return (
-    <Form.Item {...props}>
+    <Form.Item>
       <Select
-        disabled={props.disable ?? false}
-        style={{ width: 150 }}
-        placeholder="请选择"
-        defaultValue={all ? undefined : (memberUserId ? memberUserId : '')}
-        allowClear
         {...props}
+        placeholder={props.placeholder ?? "请选择"}
+        defaultValue={defaultValue}
+        allowClear
       >
         {all && <Option value={''}>全部</Option>}
         {memberStore.memberList.map((item) => (
