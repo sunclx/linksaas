@@ -19,7 +19,7 @@ const DocHistory: React.FC = () => {
     const res = await request(prjDocApi.list_doc_key_history({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      doc_space_id: docSpaceStore.curDocSpaceId,
+      doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
       doc_id: docSpaceStore.curDocId,
     }));
     if (res) {
