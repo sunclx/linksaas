@@ -87,12 +87,12 @@ const KnowledgeBaseMenu = () => {
           e.preventDefault();
           if (docSpaceStore.inEdit) {
             docSpaceStore.showCheckLeave(() => {
-              docSpaceStore.showDocList(projectStore.curProject?.default_doc_space_id ?? "", false);
+              docSpaceStore.showDocList("", false);
               history.push(APP_PROJECT_KB_DOC_PATH);
             });
             return;
           }
-          docSpaceStore.showDocList(projectStore.curProject?.default_doc_space_id ?? "", false);
+          docSpaceStore.showDocList("", false);
           history.push(APP_PROJECT_KB_DOC_PATH);
         }}
       >

@@ -145,7 +145,7 @@ const DocList = () => {
             extra={genExtra()}
         >
             <div className={s.contentWrap}>
-                <Table dataSource={docKeyList} columns={columns} pagination={false} />
+                <Table dataSource={docKeyList} columns={columns} pagination={false} rowKey="doc_id"/>
                 {docCount > PAGE_SIZE && (<div className={s.pagingWrap}>
                     <div className={s.paging} >
                         <Pagination current={curPage + 1} total={docCount} pageSize={PAGE_SIZE}

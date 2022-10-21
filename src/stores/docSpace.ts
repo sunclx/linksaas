@@ -65,6 +65,9 @@ export default class DocSpaceStore {
     }
 
     async loadDocSpace() {
+        if (this._docSpaceList.length > 0 && this._docSpaceList[0].project_id == this.rootStore.projectStore.curProjectId) {
+            return;
+        }
         const res = await request(prjDocApi.list_doc_space({
             session_id: this.rootStore.userStore.sessionId,
             project_id: this.rootStore.projectStore.curProjectId,
@@ -137,7 +140,6 @@ export default class DocSpaceStore {
         if (docId == "") {
             return;
         }
-        console.log("bbbbbbbb", this._curDocSpaceId, docId, this._recycleBin);
         if (this._recycleBin) {
             const res = await request(
                 prjDocApi.get_doc_in_recycle({
@@ -167,6 +169,9 @@ export default class DocSpaceStore {
     }
 
     async showDoc(docId: string, inEdit: boolean, forceReload: boolean = false) {
+        if (this._docSpaceList.length == 0) {
+            await this.loadDocSpace();
+        }
         let newDoc: prjDocApi.Doc | undefined = undefined;
         if (forceReload) {
             newDoc = await this.loadDoc(docId);
@@ -246,7 +251,7 @@ export default class DocSpaceStore {
     }
 
     reset() {
-        runInAction(()=>{
+        runInAction(() => {
             this._pageType = PAGE_TYPE.PAGE_DOC_LIST;
             this._curDocId = "";
             this._curDoc = undefined;

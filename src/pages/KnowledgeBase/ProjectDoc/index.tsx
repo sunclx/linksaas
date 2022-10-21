@@ -30,7 +30,7 @@ const ProjectDoc = () => {
           const onLeave = docSpaceStore.onLeave;
           docSpaceStore.clearCheckLeave();
           docSpaceStore.reset();
-          if (onLeave != undefined){
+          if (onLeave != undefined) {
             onLeave();
           }
         }}

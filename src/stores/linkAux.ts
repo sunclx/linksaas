@@ -369,11 +369,8 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
       }
-      history.push(APP_PROJECT_KB_DOC_PATH, {
-        writeDoc: false,
-        content: '',
-        docId: docLink.docId,
-      } as LinkDocState);
+      await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
+      history.push(APP_PROJECT_KB_DOC_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -382,7 +379,7 @@ class LinkAuxStore {
 
   //跳转到创建文档
   goToCreateDoc(content: string, history: History) {
-    this.rootStore.docSpaceStore.showDoc("",true);
+    this.rootStore.docSpaceStore.showDoc("", true);
     history.push(APP_PROJECT_KB_DOC_PATH, {
       writeDoc: true,
       content: content,
