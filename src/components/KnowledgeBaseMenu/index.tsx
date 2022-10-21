@@ -85,6 +85,13 @@ const KnowledgeBaseMenu = () => {
         onClick={e => {
           e.stopPropagation();
           e.preventDefault();
+          if (docSpaceStore.inEdit) {
+            docSpaceStore.showCheckLeave(() => {
+              docSpaceStore.showDocList(projectStore.curProject?.default_doc_space_id ?? "", false);
+              history.push(APP_PROJECT_KB_DOC_PATH);
+            });
+            return;
+          }
           docSpaceStore.showDocList(projectStore.curProject?.default_doc_space_id ?? "", false);
           history.push(APP_PROJECT_KB_DOC_PATH);
         }}
@@ -99,6 +106,13 @@ const KnowledgeBaseMenu = () => {
         onClick={e => {
           e.stopPropagation();
           e.preventDefault();
+          if (docSpaceStore.inEdit) {
+            docSpaceStore.showCheckLeave(() => {
+              docSpaceStore.showDocList("", true);
+              history.push(APP_PROJECT_KB_DOC_PATH);
+            });
+            return;
+          }
           docSpaceStore.showDocList("", true);
           history.push(APP_PROJECT_KB_DOC_PATH);
         }}
@@ -108,6 +122,12 @@ const KnowledgeBaseMenu = () => {
       <div
         className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_CB_PATH) && s.active)}
         onClick={() => {
+          if (docSpaceStore.inEdit) {
+            docSpaceStore.showCheckLeave(() => {
+              history.push(APP_PROJECT_KB_CB_PATH);
+            });
+            return;
+          }
           history.push(APP_PROJECT_KB_CB_PATH);
         }}
       >

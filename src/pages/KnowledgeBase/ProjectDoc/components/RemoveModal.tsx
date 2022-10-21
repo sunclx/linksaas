@@ -26,6 +26,7 @@ const RemoveModal: React.FC<RemoveModalProps> = (props) => {
         );
         if (res) {
             message.success(`删除文档 ${docSpaceStore.curDoc?.base_info.title ?? ""}`);
+            props.onOk();
         }
     };
 
@@ -40,6 +41,7 @@ const RemoveModal: React.FC<RemoveModalProps> = (props) => {
         );
         if (res) {
             message.success(`彻底删除文档 ${docSpaceStore.curDoc?.base_info.title ?? ""}`);
+            props.onOk();
         }
     };
 

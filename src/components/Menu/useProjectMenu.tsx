@@ -55,7 +55,7 @@ const useProjectMenu = () => {
   const userStore = useStores('userStore');
   const history = useHistory();
   const pjMenuItemH = 40;
-  // const docStore = useStores('docStore');
+  const docSpaceStore = useStores('docSpaceStore');
   const [pjMenu, setPjMenu] = useSetState({
     x: 0,
     y: 0,
@@ -273,12 +273,13 @@ const useProjectMenu = () => {
           <div
             key={item.project_id}
             onClick={() => {
-              // if (docStore.editing) {
-              //   docStore.setShowleavePage(true);
-              //   docStore.setNextLocation(APP_PROJECT_CHAT_PATH);
-              //   docStore.setCurProjectId(item.project_id);
-              //   return;
-              // }
+              if (docSpaceStore.inEdit) {
+                docSpaceStore.showCheckLeave(() => {
+                  history.push(APP_PROJECT_CHAT_PATH);
+                  projectStore.setCurProjectId(item.project_id);
+                });
+                return;
+              }
               history.push(APP_PROJECT_CHAT_PATH);
               projectStore.setCurProjectId(item.project_id);
             }}

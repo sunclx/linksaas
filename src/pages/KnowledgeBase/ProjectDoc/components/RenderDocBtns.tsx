@@ -74,13 +74,8 @@ const RenderDocBtns = () => {
             placement="bottom"
             content={() => <DocComment />}
             onOpenChange={(v) => {
-              if (v) {
-                // docStore.loadDocComment(0);
-              } else {
-                // docStore.clearDocComment();
-              }
+              docSpaceStore.showDocComment = v;
             }}
-            // visible={true}
             trigger="hover"
           >
             <Msgsvg />
@@ -89,12 +84,7 @@ const RenderDocBtns = () => {
             placement="bottom"
             content={() => <DocHistory />}
             onOpenChange={(v) => {
-              if (v) {
-                // docStore.loadDocHistory();
-              } else {
-                // docStore.clearDocHistory();
-                //TODO
-              }
+              docSpaceStore.showDocHistory = v;
             }}
             trigger="hover"
           >

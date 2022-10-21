@@ -16,7 +16,7 @@ interface DocDiffProps {
 const DocDiff: React.FC<DocDiffProps> = (props) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const docStore = useStores('docStore');
+  const docSpaceStore = useStores('docSpaceStore');
 
   const [oldData, setOldData] = useState('');
   const [newData, setNewData] = useState('');
@@ -26,8 +26,8 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.get_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: projectStore.curProject?.default_doc_space_id ?? '',
-        doc_id: docStore.curDocId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
       }),
     );
     if (docRes) {
@@ -38,8 +38,8 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.get_doc_in_history({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: projectStore.curProject?.default_doc_space_id ?? '',
-        doc_id: docStore.curDocId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
         history_id: props.historyId,
       }),
     );
@@ -54,21 +54,21 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.recover_doc_in_history({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: projectStore.curProject?.default_doc_space_id ?? '',
-        doc_id: docStore.curDocId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
         history_id: props.historyId,
       }),
     );
     if (!res) {
       return;
     }
-    docStore.loadDocHistory();
+    docSpaceStore.loadDoc(docSpaceStore.curDocId);
     props.onRecover();
   };
 
   useEffect(() => {
     loadData();
-  }, [docStore.curDocId, props.historyId]);
+  }, [docSpaceStore.curDocId, props.historyId]);
 
   return (
     <Modal

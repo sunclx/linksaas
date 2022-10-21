@@ -47,6 +47,11 @@ export default class DocSpaceStore {
     get recycleBin(): boolean {
         return this._recycleBin;
     }
+    set recycleBin(val: boolean) {
+        runInAction(() => {
+            this._recycleBin = val;
+        });
+    }
 
     get inEdit(): boolean {
         return this._inEdit;
@@ -70,14 +75,22 @@ export default class DocSpaceStore {
                 const tmpMap: Map<string, prjDocApi.DocSpace> = new Map();
                 res.doc_space_list.forEach(docSpace => tmpMap.set(docSpace.doc_space_id, docSpace));
                 this._docSpaceMap = tmpMap;
-                if (res.doc_space_list.length > 0) {
-                    this._curDocSpaceId = res.doc_space_list[0].doc_space_id;
-                    this._pageType = PAGE_TYPE.PAGE_DOC_LIST;
-                    this._curDocId = "";
-                    this._recycleBin = false;
-                }
+                this._curDocSpaceId = "";
+                this._pageType = PAGE_TYPE.PAGE_DOC_LIST;
+                this._curDocId = "";
+                this._recycleBin = false;
             });
         }
+    }
+
+    removeDocSpace(docSpaceId: string) {
+        runInAction(() => {
+            if (docSpaceId == this._curDocSpaceId) {
+                this._curDocSpaceId = "";
+            }
+            const tmpList = this._docSpaceList.filter(item => item.doc_space_id != docSpaceId);
+            this._docSpaceList = tmpList;
+        });
     }
 
     async updateDocSpace(docSpaceId: string) {
@@ -120,8 +133,12 @@ export default class DocSpaceStore {
         });
     }
 
-    private async loadDoc(docId: string): Promise<prjDocApi.Doc | undefined> {
-        if (this.recycleBin) {
+    async loadDoc(docId: string): Promise<prjDocApi.Doc | undefined> {
+        if (docId == "") {
+            return;
+        }
+        console.log("bbbbbbbb", this._curDocSpaceId, docId, this._recycleBin);
+        if (this._recycleBin) {
             const res = await request(
                 prjDocApi.get_doc_in_recycle({
                     session_id: this.rootStore.userStore.sessionId,
@@ -149,18 +166,22 @@ export default class DocSpaceStore {
         return undefined;
     }
 
-    async showDoc(docId: string, inEdit: boolean) {
+    async showDoc(docId: string, inEdit: boolean, forceReload: boolean = false) {
         let newDoc: prjDocApi.Doc | undefined = undefined;
-        if (this._curDoc == undefined) {
-            if (docId != "") {
-                newDoc = await this.loadDoc(docId);
-            }
+        if (forceReload) {
+            newDoc = await this.loadDoc(docId);
         } else {
-            if (this._curDoc.doc_id == docId) {
-                newDoc = this._curDoc;
-            } else {
+            if (this._curDoc == undefined) {
                 if (docId != "") {
                     newDoc = await this.loadDoc(docId);
+                }
+            } else {
+                if (this._curDoc.doc_id == docId) {
+                    newDoc = this._curDoc;
+                } else {
+                    if (docId != "") {
+                        newDoc = await this.loadDoc(docId);
+                    }
                 }
             }
         }
@@ -169,6 +190,70 @@ export default class DocSpaceStore {
             this._curDoc = newDoc;
             this._inEdit = inEdit;
             this._pageType = PAGE_TYPE.PAGE_DOC;
+            if (inEdit && this._curDocSpaceId == "") {
+                this._curDocSpaceId = this.rootStore.projectStore.curProject?.default_doc_space_id ?? "";
+            }
+        });
+    }
+
+    //文档额外信息
+    private _showDocComment = false;
+    private _showDocHistory = false;
+
+    get showDocComment(): boolean {
+        return this._showDocComment;
+    }
+
+    set showDocComment(val: boolean) {
+        runInAction(() => {
+            this._showDocComment = val;
+        });
+    }
+
+    get showDocHistory(): boolean {
+        return this._showDocHistory;
+    }
+
+    set showDocHistory(val: boolean) {
+        runInAction(() => {
+            this._showDocHistory = val;
+        });
+    }
+
+    //离开编辑状态提示
+    private _checkLeave = false;
+    private _onLeave: (() => void) | undefined = undefined;
+
+    get checkLeave(): boolean {
+        return this._checkLeave;
+    }
+    get onLeave(): (() => void) | undefined {
+        return this._onLeave;
+    }
+
+    showCheckLeave(fn: () => void) {
+        runInAction(() => {
+            this._checkLeave = true;
+            this._onLeave = fn;
+        });
+    }
+
+    clearCheckLeave() {
+        runInAction(() => {
+            this._checkLeave = false;
+            this._onLeave = undefined;
+        });
+    }
+
+    reset() {
+        runInAction(()=>{
+            this._pageType = PAGE_TYPE.PAGE_DOC_LIST;
+            this._curDocId = "";
+            this._curDoc = undefined;
+            this._recycleBin = false;
+            this._inEdit = false;
+            this._showDocComment = false;
+            this._showDocHistory = false;
         });
     }
 }

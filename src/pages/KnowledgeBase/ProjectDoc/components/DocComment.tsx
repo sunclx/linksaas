@@ -1,32 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import { Modal } from 'antd';
 import { useSimpleEditor, ReadOnlyEditor } from '@/components/Editor';
-import * as docApi from '@/api/project_doc';
+import * as prjDocApi from '@/api/project_doc';
 import { request } from '@/utils/request';
 import s from './DocComment.module.less';
 import { PlusOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
 import moment from 'moment';
 
+const PAGE_SIZE = 10;
+
 const DocComment: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const docStore = useStores('docStore');
+  const docSpaceStore = useStores('docSpaceStore');
   const [showModal, setShowModal] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
+  const [commentList, setCommentList] = useState<prjDocApi.Comment[]>([]);
+  const [curPage, setCurPage] = useState(0);
 
   const { editor, editorRef } = useSimpleEditor("请写下你的评论");
+
+  const loadComment = async () => {
+    const res = await request(prjDocApi.list_comment({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      doc_space_id: docSpaceStore.curDocSpaceId,
+      doc_id: docSpaceStore.curDocId,
+      offset: curPage * PAGE_SIZE,
+      limit: PAGE_SIZE,
+    }));
+    if(res){
+      setCommentCount(res.total_count);
+      setCommentList(res.comment_list);
+    }
+  };
 
   const addComment = async () => {
     const content = editorRef.current?.getContent() ?? {};
     const res = await request(
-      docApi.add_comment({
+      prjDocApi.add_comment({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: projectStore.curProject?.default_doc_space_id ?? '',
-        doc_id: docStore.curDocId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
         comment: {
           comment_data: JSON.stringify(content),
           ref_comment_id: '',
@@ -36,9 +56,21 @@ const DocComment: React.FC = () => {
     if (!res) {
       return;
     }
-    docStore.loadDocComment(0);
+
     setShowModal(false);
+    setCurPage(0);
+    loadComment();
   };
+
+  useEffect(() => {
+    if (!docSpaceStore.showDocComment) {
+      setCommentCount(0);
+      setCommentList([]);
+      setCurPage(0);
+      return;
+    }
+    loadComment();
+  }, [docSpaceStore.showDocComment, docSpaceStore.curDocSpaceId, docSpaceStore.curDocId, curPage]);
 
   return (
     <div className={s.DocComment_wrap}>
@@ -61,8 +93,7 @@ const DocComment: React.FC = () => {
       </div>
 
       <ul className={s.item_wrap}>
-        {docStore.curDocCommentList.map((item) => (
-          // {[{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}].map((item) => (
+        {commentList.map((item) => (
           <li key={item.comment_id}>
             <div className={s.top_wrap}>
               <div className={s.top}>
@@ -81,18 +112,18 @@ const DocComment: React.FC = () => {
           </li>
         ))}
       </ul>
-      {!!docStore.curDocCommentList.length && (
+      {commentCount > 0 && (
         <Pagination
-          total={docStore.curDocCommentCount}
-          pageSize={10}
-          current={docStore.curDocCommentPage + 1}
-          onChange={(page: number) => docStore.loadDocComment(page - 1)}
+          total={commentCount}
+          pageSize={PAGE_SIZE}
+          current={curPage + 1}
+          onChange={(page: number) => setCurPage(page - 1)}
         />
       )}
       {showModal && (
         <Modal
           title="添加文档评论"
-          visible
+          open={showModal}
           okText="发布"
           onCancel={() => setShowModal(false)}
           onOk={() => addComment()}

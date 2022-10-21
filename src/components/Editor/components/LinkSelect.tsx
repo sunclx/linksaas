@@ -14,6 +14,8 @@ import {
   ASSGIN_USER_ALL,
 } from '@/api/project_issue';
 import type { IssueInfo, ListParam as ListIssueParam } from '@/api/project_issue';
+import type { DocKey } from '@/api/project_doc';
+import { list_doc_key } from '@/api/project_doc';
 import { request } from '@/utils/request';
 import { observer } from 'mobx-react';
 import s from './LinkSelect.module.less';
@@ -53,6 +55,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [bugPage] = useState(0);
   const [taskList, setTaskList] = useState([] as IssueInfo[]);
   const [bugList, setBugList] = useState([] as IssueInfo[]);
+  const [docList, setDocList] = useState([] as DocKey[]);
   const [tab, setTab] = useState(defaultTab);
   const [keyword, setKeyword] = useState('');
   const [externeUrl, setExterneUrl] = useState('');
@@ -60,7 +63,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const channelStore = useStores('channelStore');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const docStore = useStores('docStore');
   const tabList = [];
   if (props.showChannel) {
     tabList.push({
@@ -86,13 +88,13 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       value: 'bug',
     });
   }
-  if (props.showExterne){
+  if (props.showExterne) {
     tabList.push({
       label: '外部链接',
       value: 'externe',
     });
   }
-  
+
   const [pageOpt, setPageOpt] = useSetState<Partial<PageOptType>>({
     pageSize: 10,
     pageNum: 1,
@@ -161,7 +163,23 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
         setPageOpt({ total: res.total_count });
       });
     } else if (tab == 'doc') {
-      docStore.loadDocKey(projectStore.curProject?.default_doc_space_id ?? '');
+      request(list_doc_key({
+        session_id: userStore.sessionId,
+        project_id: projectStore.curProjectId,
+        filter_by_doc_space_id: false,
+        doc_space_id: "",
+        list_param: {
+          filter_by_tag: false,
+          tag_list: [],
+          filter_by_watch: false,
+          watch: false,
+        },
+        offset: (pageOpt.pageNum! - 1) * pageOpt.pageSize!,
+        limit: pageOpt.pageSize!,
+      })).then((res) => {
+        setDocList(res.doc_key_list);
+        setPageOpt({ total: res.total_count });
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskPage, bugPage, tab, keyword, pageOpt.pageNum]);
@@ -195,7 +213,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     } else if (props.showDoc && tab === 'doc') {
       return (
         <div className={s.con_item_wrap}>
-          {docStore.curDocKeyList.map((item) => (
+          {docList.map((item) => (
             <div
               className={s.con_item}
               key={item.doc_id}
@@ -208,6 +226,12 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
               <div>{item.title}</div>
             </div>
           ))}
+          <Pagination
+            total={pageOpt.total!}
+            pageSize={pageOpt.pageSize!}
+            current={pageOpt.pageNum}
+            onChange={(page: number) => setPageOpt({ pageNum: page })}
+          />
         </div>
       );
     } else if (props.showTask && tab === 'task') {

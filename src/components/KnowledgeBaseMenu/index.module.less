@@ -2,10 +2,12 @@
   width: 200px;
   height: 100%;
   border-left: 1px solid #e4e4e8;
+  background-color: #fff;
 
   .doc_space_wrap {
     height: calc(100% - 120px);
     border-top: 1px solid #d9d9d9;
+    overflow-y: scroll;
   }
 
   .content_block {
@@ -22,8 +24,7 @@
     }
 
     &.active {
-      color: #fff;
-      background: #0e83ff;
+      background-color: rgba(14, 131, 255, .1);
     }
   }
 }

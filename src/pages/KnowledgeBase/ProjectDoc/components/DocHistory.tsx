@@ -1,26 +1,49 @@
 import { useStores } from '@/hooks';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import DocDiff from './DocDiff';
 import s from './DocHistory.module.less';
 import moment from 'moment';
+import * as prjDocApi from '@/api/project_doc';
+import { request } from '@/utils/request';
 
 const DocHistory: React.FC = () => {
-  const docStore = useStores('docStore');
+  const userStore = useStores('userStore');
+  const projectStore = useStores('projectStore');
+  const docSpaceStore = useStores('docSpaceStore');
   const [historyId, setHistoryId] = useState('');
+  const [historyList, setHistoryList] = useState<prjDocApi.DocKeyHistory[]>([]);
+
+  const loadHistory = async () => {
+    const res = await request(prjDocApi.list_doc_key_history({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      doc_space_id: docSpaceStore.curDocSpaceId,
+      doc_id: docSpaceStore.curDocId,
+    }));
+    if (res) {
+      setHistoryList(res.history_list);
+    }
+  };
 
   const onRecover = async () => {
-    await docStore.updateDocKey(docStore.curDocId);
-    setHistoryId('');
+    loadHistory();
   };
+
+  useEffect(() => {
+    if (!docSpaceStore.showDocHistory) {
+      setHistoryList([]);
+      return;
+    }
+    loadHistory();
+  }, [docSpaceStore.showDocHistory, docSpaceStore.curDocSpaceId, docSpaceStore.curDocId]);
 
   return (
     <div className={s.DocHistory_wrap}>
       <div className={s.title}>历史版本</div>
       <ul>
-        {/* {[{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}].map((item) => ( */}
-        {docStore.curDocHsitoryList.map((item, index) => (
+        {historyList.map((item, index) => (
           <li key={item.history_id}>
             <div className={s.top}>
               <UserPhoto logoUri={item.doc_key?.update_logo_uri} width="20px" height="20px" />

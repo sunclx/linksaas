@@ -102,6 +102,7 @@ export type DocSpace = {
     create_user_id: string;
     doc_count: number;
     system_doc_space: boolean;
+    user_perm: UserPerm;
 };
 
 export type CreateDocSpaceRequest = {
@@ -526,10 +527,10 @@ export async function create_doc_space(request: CreateDocSpaceRequest): Promise<
 }
 
 //更新文档空间
-export async function update_doc_space(request: UpdateDocSpaceRequest): Promise<UpdateDocSpaceRequest> {
+export async function update_doc_space(request: UpdateDocSpaceRequest): Promise<UpdateDocSpaceResponse> {
     const cmd = 'plugin:project_doc_api|update_doc_space';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdateDocSpaceRequest>(cmd, {
+    return invoke<UpdateDocSpaceResponse>(cmd, {
         request,
     });
 }

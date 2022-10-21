@@ -382,7 +382,7 @@ class LinkAuxStore {
 
   //跳转到创建文档
   goToCreateDoc(content: string, history: History) {
-    // this.rootStore.docStore.setShowProDoc(true);
+    this.rootStore.docSpaceStore.showDoc("",true);
     history.push(APP_PROJECT_KB_DOC_PATH, {
       writeDoc: true,
       content: content,

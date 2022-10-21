@@ -8,6 +8,8 @@ import s from './EditDoc.module.less';
 import RenderDocBtns from './RenderDocBtns';
 import { Button, message } from 'antd';
 import RemoveModal from './RemoveModal';
+import leftArrow from '@/assets/image/leftArrow.png';
+
 
 const ReadDoc: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +28,7 @@ const ReadDoc: React.FC = () => {
     );
     if (res) {
       message.success(`恢复文档 ${docSpaceStore.curDoc?.base_info.title ?? ""}`);
-      docSpaceStore.showDocList("", true);
+      docSpaceStore.recycleBin = false;
     }
   };
 
@@ -72,7 +74,16 @@ const ReadDoc: React.FC = () => {
         </div>
       )}
       <div className={s.editdoc_title_wrap}>
-        <h1>{docSpaceStore.curDoc?.base_info.title ?? ""}</h1>
+        <h1>
+          <a onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            docSpaceStore.showDocList(docSpaceStore.curDocSpaceId, docSpaceStore.recycleBin);
+          }}>
+            <img src={leftArrow} />
+          </a>
+          {docSpaceStore.curDoc?.base_info.title ?? ""}
+        </h1>
         <RenderDocBtns />
       </div>
 
