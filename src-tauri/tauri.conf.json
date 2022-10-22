@@ -13,7 +13,12 @@
   "tauri": {
     "bundle": {
       "active": true,
-      "targets": ["appimage","msi","app","updater"],
+      "targets": [
+        "appimage",
+        "msi",
+        "app",
+        "updater"
+      ],
       "identifier": "pro.linksaas.desktop",
       "icon": [
         "icons/32x32.png",
