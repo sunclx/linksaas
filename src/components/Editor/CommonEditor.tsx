@@ -89,7 +89,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
   const editor = (
     <ThemeProvider>
       <AllStyledComponent>
-        <Remirror manager={manager} initialContent={state}>
+        <Remirror manager={manager} initialContent={state} placeholder="请输入......">
           <Toolbar items={toolbarItems} />
           <FloatToolBar />
           {attrs.showReminder && (

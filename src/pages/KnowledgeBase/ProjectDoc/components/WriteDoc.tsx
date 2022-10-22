@@ -57,7 +57,7 @@ const WriteDoc: React.FC = () => {
       docApi.start_update_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? "",
         doc_id: docSpaceStore.curDocId,
       }),
     ).catch((e) => {
@@ -70,7 +70,7 @@ const WriteDoc: React.FC = () => {
       docApi.get_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? "",
         doc_id: docSpaceStore.curDocId,
       }),
     ).then((res) => {
@@ -98,7 +98,7 @@ const WriteDoc: React.FC = () => {
       docApi.update_doc_content({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? "",
         doc_id: docSpaceStore.curDocId,
         title: docSpaceStore.curDoc?.base_info.title ?? '',
         content: JSON.stringify(content),
@@ -131,7 +131,7 @@ const WriteDoc: React.FC = () => {
       docApi.create_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? "",
         base_info: {
           title: newTitle,
           content: JSON.stringify(content),
@@ -185,7 +185,12 @@ const WriteDoc: React.FC = () => {
             onClick={e => {
               e.stopPropagation();
               e.preventDefault();
-              docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
+              if (docSpaceStore.curDocId == "") {
+                docSpaceStore.clearCurDoc();
+                docSpaceStore.showDocList(docSpaceStore.curDocSpaceId, false);
+              } else {
+                docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
+              }
             }}>取消</Button>
           <Button
             style={{ width: "80px" }}

@@ -46,7 +46,9 @@ export class CodeExtension extends NodeExtension<CodeOptions> {
     return ({ tr, dispatch }) => {
       const { from, to } = getTextSelection(selection ?? tr.selection, tr.doc);
       const node = this.type.create({});
-      dispatch?.(tr.replaceRangeWith(from, to, node));
+      tr.insertText("\n", from, to);
+      tr.replaceRangeWith(from, from, node);
+      dispatch?.(tr);
       return true;
     };
   }

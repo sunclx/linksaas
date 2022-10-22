@@ -50,7 +50,9 @@ export class WidgetExtension extends NodeExtension<WidgetOptions> {
         widgetType: widgetType,
         widgetData: widgetData,
       } as WidgetAttributes);
-      dispatch?.(tr.replaceRangeWith(from, to, node));
+      tr.insertText("\n", from, to);
+      tr.replaceRangeWith(from, from, node);
+      dispatch?.(tr);
       return true;
     };
   }
@@ -65,7 +67,6 @@ export class WidgetExtension extends NodeExtension<WidgetOptions> {
         dispatch?.(tr);
         return true;
       }
-
       return false;
     };
   }

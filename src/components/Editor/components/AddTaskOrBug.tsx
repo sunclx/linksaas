@@ -27,7 +27,6 @@ import React from 'react';
 import RenderSelectOpt from '@/components/RenderSelectOpt';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { request } from '@/utils/request';
-import type { WidgetData } from '../widgets/IssueRefWidget';
 import type {
   ListParam as ListIssueParam,
   ExtraBugInfo,
@@ -46,7 +45,7 @@ type AddTaskOrBugProps = Omit<ModalProps, 'onOk'> & {
   onCancel?: () => void;
   okText?: string;
   cancelText?: string;
-  data: WidgetData;
+  issueIdList: string[];
   type: 'task' | 'bug';
 };
 
@@ -133,7 +132,9 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const projectStore = useStores('projectStore');
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const [keyword, setKeyword] = useState('');
-  const [selectedRowKeys, setselectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRowKeys, setselectedRowKeys] = useState<React.Key[]>(props.issueIdList);
+
+  console.log(selectedRowKeys);
 
   const [pageOpt, setPageOpt] = useSetState<Partial<PageOptType>>({
     pageSize: 10,
@@ -208,13 +209,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       render: (v: IssueInfo['issue_index']) => {
         return (
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            {/* <Deliconsvg
-              style={{ marginRight: '10px', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log(v);
-              }}
-            /> */}
             {v}
           </div>
         );
@@ -337,6 +331,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         pagination={false}
         rowSelection={{
           type: 'checkbox',
+          selectedRowKeys: selectedRowKeys,
           ...rowSelection,
         }}
       />

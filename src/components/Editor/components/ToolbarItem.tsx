@@ -326,7 +326,6 @@ const ContentWidget = () => {
         if (index != -1) {
           commands.insertWidget(value.key);
         }
-        console.log(value);
       }}
       items={[
         {
