@@ -48,7 +48,9 @@ export class IframeExtension extends NodeExtension<IframeOptions> {
         src: srcUrl,
         height: height,
       });
-      dispatch?.(tr.replaceRangeWith(from, to, node));
+      tr.insertText("\n", from, to);
+      tr.replaceRangeWith(from, from, node);
+      dispatch?.(tr);
       return true;
     };
   }

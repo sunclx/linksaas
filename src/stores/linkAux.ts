@@ -6,7 +6,7 @@ import { message } from 'antd';
 import type { History } from 'history';
 import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
-import { APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 
 /*
@@ -247,6 +247,7 @@ class LinkAuxStore {
   rootStore: RootStore;
 
   async goToLink(link: LinkInfo, history: History, remoteCheck: boolean = true) {
+    const pathname = history.location.pathname;
     if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CHANNEL) {
       const channelLink = link as LinkChannelInfo;
       if (remoteCheck) {
@@ -273,7 +274,7 @@ class LinkAuxStore {
         this.rootStore.chatMsgStore.listRefMsgId = channelLink.msgId;
       }
       this.rootStore.channelStore.curChannelId = channelLink.channelId;
-      history.push('/app/project');
+      history.push(APP_PROJECT_CHAT_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EVENT) {
       const eventLink = link as LinkEventlInfo;
       if (remoteCheck) {
@@ -292,7 +293,7 @@ class LinkAuxStore {
           return;
         }
       }
-      history.push('/app/project/record', {
+      history.push(this.genUrl(pathname, "/record"), {
         eventTime: eventLink.eventTime,
         memberUserId: eventLink.userId,
       } as LinkEventState);
@@ -317,8 +318,8 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
-      console.log(taskLink);
-      history.push('/app/project/task/view', {
+
+      history.push(this.genUrl(pathname, "/task/view"), {
         issueId: taskLink.issueId,
         mode: 'details',
         content: '',
@@ -344,7 +345,7 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
-      history.push('/app/project/bug/view', {
+      history.push(this.genUrl(pathname, "/bug/view"), {
         issueId: taskLink.issueId,
         mode: 'details',
         content: '',
@@ -389,7 +390,7 @@ class LinkAuxStore {
 
   //跳转到创建任务
   goToCreateTask(content: string, history: History) {
-    history.push('/app/project/task/view', {
+    history.push(this.genUrl(history.location.pathname, "/task/view"), {
       issueId: '',
       mode: 'add',
       content: content,
@@ -397,7 +398,7 @@ class LinkAuxStore {
   }
   //跳转到创建缺陷
   goToCreateBug(content: string, history: History) {
-    history.push('/app/project/bug/view', {
+    history.push(this.genUrl(history.location.pathname, "/bug/view"), {
       issueId: '',
       mode: 'add',
       content: content,
@@ -406,12 +407,23 @@ class LinkAuxStore {
 
   //跳转到任务列表
   goToTaskList(state: LinkIssueListState, history: History) {
-    history.push('/app/project/task', state);
+    history.push(this.genUrl(history.location.pathname, "/task"), state);
   }
 
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState, history: History) {
-    history.push('/app/project/bug', state);
+    history.push(this.genUrl(history.location.pathname, "/bug"), state);
+  }
+
+  private genUrl(pathname: string, suffix: string): string {
+    if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+      return APP_PROJECT_CHAT_PATH + suffix;
+    } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+      return APP_PROJECT_KB_DOC_PATH + suffix;
+    } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
+      return APP_PROJECT_KB_CB_PATH + suffix;
+    }
+    return APP_PROJECT_CHAT_PATH + suffix;
   }
 }
 

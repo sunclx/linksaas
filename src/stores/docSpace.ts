@@ -140,6 +140,7 @@ export default class DocSpaceStore {
     clearCurDoc() {
         runInAction(() => {
             this._curDoc = undefined;
+            this._inEdit = false;
         });
     }
 
@@ -202,7 +203,7 @@ export default class DocSpaceStore {
             this._curDoc = newDoc;
             this._inEdit = inEdit;
             this._pageType = PAGE_TYPE.PAGE_DOC;
-            if (inEdit && this._curDocSpaceId == "") {
+            if (inEdit && this._curDocSpaceId == "" && this._curDocId == "") { //新建文档
                 this._curDocSpaceId = this.rootStore.projectStore.curProject?.default_doc_space_id ?? "";
             }
         });
