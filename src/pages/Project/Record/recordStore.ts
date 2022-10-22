@@ -24,16 +24,6 @@ class AccessStore {
       });
     }
   }
-  updateList() // newList: [
-  //   {
-  //     time: number;
-  //     name: string;
-  //     title: string;
-  //   },
-  // ],
-  {
-    // this.list = this.list.concat(newList);
-  }
 }
 
 export default new AccessStore();

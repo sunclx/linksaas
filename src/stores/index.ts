@@ -8,7 +8,7 @@ import AppraiseStore from './appraise';
 import ChannelMemberStore from "./channelMember";
 import ChatMsgStore from "./chatMsg";
 import LinkAuxStore from './linkAux';
-import DocStore from './doc';
+import DocSpaceStore from './docSpace';
 
 export class RootStore {
   userStore: UserStore;
@@ -21,7 +21,7 @@ export class RootStore {
   appraiseStore: AppraiseStore;
   chatMsgStore: ChatMsgStore;
   linkAuxStore: LinkAuxStore;
-  docStore: DocStore;
+  docSpaceStore: DocSpaceStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -34,7 +34,7 @@ export class RootStore {
     this.appraiseStore = new AppraiseStore(this);
     this.chatMsgStore = new ChatMsgStore(this);
     this.linkAuxStore = new LinkAuxStore(this);
-    this.docStore = new DocStore(this);
+    this.docSpaceStore = new DocSpaceStore(this);
   }
 }
 
@@ -50,7 +50,7 @@ const _store = {
   appraiseStore: rootStore.appraiseStore,
   chatMsgStore: rootStore.chatMsgStore,
   linkAuxStore: rootStore.linkAuxStore,
-  docStore: rootStore.docStore,
+  docSpaceStore: rootStore.docSpaceStore,
 };
 
 export type StoreType = typeof _store;

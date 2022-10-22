@@ -90,6 +90,33 @@ async fn list_doc_space<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_doc_space<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetDocSpaceRequest,
+) -> Result<GetDocSpaceResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectDocApiClient::new(chan.unwrap());
+    match client.get_doc_space(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_doc_space_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_doc_space".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn remove_doc_space<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -378,6 +405,33 @@ async fn get_doc<R: Runtime>(
             let inner_resp = response.into_inner();
             if inner_resp.code == get_doc_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("get_doc".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn move_doc<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: MoveDocRequest,
+) -> Result<MoveDocResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectDocApiClient::new(chan.unwrap());
+    match client.move_doc(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == move_doc_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("move_doc".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -814,6 +868,7 @@ impl<R: Runtime> ProjectDocApiPlugin<R> {
                 create_doc_space,
                 update_doc_space,
                 list_doc_space,
+                get_doc_space,
                 remove_doc_space,
                 create_doc,
                 update_doc_perm,
@@ -825,6 +880,7 @@ impl<R: Runtime> ProjectDocApiPlugin<R> {
                 list_doc_key,
                 get_doc_key,
                 get_doc,
+                move_doc,
                 remove_doc,
                 list_doc_key_history,
                 get_doc_in_history,

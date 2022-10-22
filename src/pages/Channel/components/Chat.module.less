@@ -1,39 +1,39 @@
 .chat {
   position: relative;
   display: flex;
-  flex: 1;
   flex-direction: column;
+  align-content: flex-end;
   height: 100%;
 }
 
 .chatInput {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  min-height: 220px;
+  position: relative;
   padding-top: 10px;
   background: #fff;
-  border-top: 1px solid #eaeaef;
+  border-top: 1px solid #e4e4e8;
 
   .chatBtnWrap {
     position: absolute;
-    right: 20px;
+    right: 40px;
     bottom: 20px;
-    display: flex;
-    align-items: flex-start;
+
     &:hover {
       background-color: rgba(14, 131, 255, .1);
     }
+
     .floatNotice {
+      display: inline-block;
       margin-right: 20px;
       margin-top: 0px;
       margin-bottom: 0px;
+
       .label {
         margin-bottom: 0px;
       }
     }
+
     .chatBtn {
+      display: inline-block;
       width: 60px;
       height: 60px;
     }

@@ -8,7 +8,6 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
 import { useSetState } from 'ahooks';
-import { now } from 'lodash';
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 const { TextArea } = Input;
 
@@ -32,9 +31,16 @@ export const techCompareWidgetInitData: WidgetData = {
 
 const EditTechCompare: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;
+
+  let nextId = 0;
+  const getnextId = () => {
+    nextId = nextId + 1;
+    return nextId;
+  };
+
   while (data.list.length < 2) {
     data.list.push({
-      id: now(),
+      id: getnextId(),
       technology: '',
       merit: '',
       defect: '',
@@ -53,7 +59,7 @@ const EditTechCompare: React.FC<WidgetProps> = (props) => {
   const addrow = () => {
     console.log(trData);
 
-    trData.list.push({ id: now(), technology: '', merit: '', defect: '' });
+    trData.list.push({ id: getnextId(), technology: '', merit: '', defect: '' });
     setTrData({
       list: trData.list,
     });
@@ -165,7 +171,7 @@ const ViewTechCompare: React.FC<WidgetProps> = (props) => {
             </thead>
             <tbody>
               {data.list?.map((item, i) => (
-                <tr key={item.id}>
+                <tr key={i}>
                   <td>
                     <div className={s.text}>{item.technology}</div>
                   </td>

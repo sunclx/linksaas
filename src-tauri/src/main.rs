@@ -29,15 +29,15 @@ mod project_sprit_api_plugin;
 mod project_vc_api_plugin;
 mod restrict_api_plugin;
 mod search_api_plugin;
+mod short_note_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
-mod short_note_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
 use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, Window,
-    WindowBuilder,WindowUrl
+    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
+    SystemTrayMenuItem, Window, WindowBuilder, WindowUrl,
 };
 use tokio::fs;
 
@@ -167,9 +167,12 @@ async fn capture_screen(
 
 fn main() {
     let tray_menu = SystemTrayMenu::new()
+        .add_item(CustomMenuItem::new("switch_user", "切换用户").disabled())
+        .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("devtools", "调试"))
         .add_item(CustomMenuItem::new("show_app", "显示界面"))
         .add_item(CustomMenuItem::new("about", "关于"))
+        .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("exit_app", "退出"));
     tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
@@ -198,6 +201,12 @@ fn main() {
                 }
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "switch_user" => {
+                    let win = app.get_window("main").unwrap();
+                    if let Err(err) = win.emit("notice", notice_decode::new_switch_user_notice()) {
+                        println!("{:?}", err);
+                    }
+                }
                 "devtools" => {
                     let win = app.get_window("main").unwrap();
                     win.open_devtools();
@@ -213,11 +222,18 @@ fn main() {
                 "about" => {
                     let about_win = app.get_window("about");
                     if about_win.is_none() {
-                        if let Ok(_) = WindowBuilder::new(app, "about", WindowUrl::App("about.html".into()))
-                        .inner_size(250.0, 180.0).resizable(false).skip_taskbar(true).title("关于")
-                        .always_on_top(true).center().decorations(false).visible(true).build() {
-
-                        }
+                        if let Ok(_) =
+                            WindowBuilder::new(app, "about", WindowUrl::App("about.html".into()))
+                                .inner_size(250.0, 180.0)
+                                .resizable(false)
+                                .skip_taskbar(true)
+                                .title("关于")
+                                .always_on_top(true)
+                                .center()
+                                .decorations(false)
+                                .visible(true)
+                                .build()
+                        {}
                     }
                 }
                 "exit_app" => {

@@ -102,6 +102,7 @@ export type DocSpace = {
     create_user_id: string;
     doc_count: number;
     system_doc_space: boolean;
+    user_perm: UserPerm;
 };
 
 export type CreateDocSpaceRequest = {
@@ -138,6 +139,18 @@ export type ListDocSpaceResponse = {
     code: number;
     err_msg: string;
     doc_space_list: DocSpace[],
+};
+
+export type GetDocSpaceRequest = {
+    session_id: string;
+    project_id: string;
+    doc_space_id: string;
+}
+
+export type GetDocSpaceResponse = {
+    code: number;
+    err_msg: string;
+    doc_space: DocSpace;
 };
 
 export type RemoveDocSpaceRequest = {
@@ -291,6 +304,18 @@ export type GetDocResponse = {
     doc: Doc;
 };
 
+export type MoveDocRequest = {
+    session_id: string;
+    project_id: string;
+    doc_space_id: string;
+    doc_id: string;
+    dest_doc_space_id: string;
+};
+
+export type MoveDocResponse = {
+    code: number;
+    err_msg: string;
+};
 
 export type RemoveDocRequest = {
     session_id: string;
@@ -514,10 +539,10 @@ export async function create_doc_space(request: CreateDocSpaceRequest): Promise<
 }
 
 //更新文档空间
-export async function update_doc_space(request: UpdateDocSpaceRequest): Promise<UpdateDocSpaceRequest> {
+export async function update_doc_space(request: UpdateDocSpaceRequest): Promise<UpdateDocSpaceResponse> {
     const cmd = 'plugin:project_doc_api|update_doc_space';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdateDocSpaceRequest>(cmd, {
+    return invoke<UpdateDocSpaceResponse>(cmd, {
         request,
     });
 }
@@ -527,6 +552,15 @@ export async function list_doc_space(request: ListDocSpaceRequest): Promise<List
     const cmd = 'plugin:project_doc_api|list_doc_space';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListDocSpaceResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个文档空间
+export async function get_doc_space(request: GetDocSpaceRequest): Promise<GetDocSpaceResponse> {
+    const cmd = 'plugin:project_doc_api|get_doc_space';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetDocSpaceResponse>(cmd, {
         request,
     });
 }
@@ -626,6 +660,15 @@ export async function get_doc(request: GetDocRequest): Promise<GetDocResponse> {
     const cmd = 'plugin:project_doc_api|get_doc';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetDocResponse>(cmd, {
+        request,
+    });
+}
+
+//移动文档
+export async function move_doc(request: MoveDocRequest): Promise<MoveDocResponse> {
+    const cmd = 'plugin:project_doc_api|move_doc';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<MoveDocResponse>(cmd, {
         request,
     });
 }

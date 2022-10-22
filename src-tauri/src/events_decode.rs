@@ -157,6 +157,7 @@ pub mod project_doc {
         CreateDocEvent(events_doc::CreateDocEvent),
         UpdateDocEvent(events_doc::UpdateDocEvent),
         MoveDocToRecycleEvent(events_doc::MoveDocToRecycleEvent),
+        MoveDocEvent(events_doc::MoveDocEvent),
         RemoveDocEvent(events_doc::RemoveDocEvent),
         RecoverDocEvent(events_doc::RecoverDocEvent),
         WatchDocEvent(events_doc::WatchDocEvent),
@@ -186,6 +187,10 @@ pub mod project_doc {
         } else if data.type_url == events_doc::MoveDocToRecycleEvent::type_url() {
             if let Ok(ev) = events_doc::MoveDocToRecycleEvent::decode(data.value.as_slice()) {
                 return Some(Event::MoveDocToRecycleEvent(ev));
+            }
+        } else if data.type_url == events_doc::MoveDocEvent::type_url() {
+            if let Ok(ev) = events_doc::MoveDocEvent::decode(data.value.as_slice()) {
+                return Some(Event::MoveDocEvent(ev));
             }
         } else if data.type_url == events_doc::RemoveDocEvent::type_url() {
             if let Ok(ev) = events_doc::RemoveDocEvent::decode(data.value.as_slice()) {

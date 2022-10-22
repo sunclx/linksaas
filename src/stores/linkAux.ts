@@ -6,7 +6,7 @@ import { message } from 'antd';
 import type { History } from 'history';
 import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
-import { APP_PROJECT_DOC_PRO_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 
 /*
@@ -369,12 +369,8 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
       }
-      this.rootStore.projectStore.setShowChannel(false);
-      history.push(APP_PROJECT_DOC_PRO_PATH, {
-        writeDoc: false,
-        content: '',
-        docId: docLink.docId,
-      } as LinkDocState);
+      await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
+      history.push(APP_PROJECT_KB_DOC_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -383,9 +379,8 @@ class LinkAuxStore {
 
   //跳转到创建文档
   goToCreateDoc(content: string, history: History) {
-    this.rootStore.projectStore.setShowChannel(false);
-    // this.rootStore.docStore.setShowProDoc(true);
-    history.push(APP_PROJECT_DOC_PRO_PATH, {
+    this.rootStore.docSpaceStore.showDoc("", true);
+    history.push(APP_PROJECT_KB_DOC_PATH, {
       writeDoc: true,
       content: content,
       docId: '',

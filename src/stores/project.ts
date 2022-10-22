@@ -3,7 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import type { ProjectInfo } from '@/api/project';
 import { list as listProject, get_project as getProject } from '@/api/project';
 import { request } from '@/utils/request';
-import { FILTER_PROJECT_ENUM } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
 import { set_cur_work_snapshot } from '@/api/user';
 import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
@@ -51,11 +51,6 @@ export default class ProjectStore {
   private _projectMap: Map<string, WebProjectInfo> = new Map();
 
   filterProjectType: FILTER_PROJECT_ENUM = FILTER_PROJECT_ENUM.ALL;
-  showChannel = true;
-
-  setShowChannel(bool: boolean) {
-    this.showChannel = bool;
-  }
 
   async setCurProjectId(val: string) {
     const oldProjectId = this._curProjectId;
@@ -299,7 +294,7 @@ export default class ProjectStore {
       }
     });
   }
-  
+
   removeProject(projecId: string, history: History) {
     const tmpList = this._projectList.filter((item) => item.project_id != projecId);
     let newProjectId = "";
@@ -316,7 +311,21 @@ export default class ProjectStore {
       history.push('/app/workbench');
     } else {
       this.setCurProjectId(newProjectId);
-      history.push('/app/project');
+      history.push(APP_PROJECT_CHAT_PATH);
     }
+  }
+
+  get isAdmin(): boolean {
+    const curProject = this.curProject;
+    if (curProject !== undefined) {
+      if (curProject.owner_user_id == this.rootStore.userStore.userInfo.userId) {
+        return true
+      }
+    }
+    const member = this.rootStore.memberStore.getMember(this.rootStore.userStore.userInfo.userId);
+    if (member !== undefined) {
+      return member.member.can_admin
+    }
+    return false;
   }
 }

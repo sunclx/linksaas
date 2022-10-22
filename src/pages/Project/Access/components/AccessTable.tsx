@@ -2,15 +2,17 @@ import React from 'react';
 import { Table, Tooltip } from 'antd';
 import type * as API from '@/api/external_events';
 import type { ColumnsType } from 'antd/es/table';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import style from '../index.module.less';
-import { APP_PROJECT_PATH } from '@/utils/constant';
 import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 
 const AccessTable: React.FC<{
   data: API.EventSourceInfo[];
   remove: (eventSourceId: string) => void;
 }> = (props) => {
+  const { pathname } = useLocation();
+
   const columns: ColumnsType<API.EventSourceInfo> = [
     {
       title: '序号',
@@ -23,7 +25,14 @@ const AccessTable: React.FC<{
       dataIndex: 'title',
       key: 'title',
       render: (text, record) => {
-        const destPath = APP_PROJECT_PATH + '/access/view';
+        let destPath = "";
+        if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+          destPath = APP_PROJECT_CHAT_PATH + '/access/view';
+        } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+          destPath = APP_PROJECT_KB_DOC_PATH + '/access/view';
+        } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
+          destPath = APP_PROJECT_KB_CB_PATH + '/access/view';
+        }
         return <Link to={`${destPath}?event_source_id=${record.event_source_id}`}>{text}&nbsp;<LinkOutlined /></Link>;
       },
       ellipsis: false,

@@ -163,7 +163,6 @@ const ProjectRecord: React.FC = () => {
         />
 
         <MemberSelect
-          value={localStore.memberUserId}
           all
           onChange={(e) => {
             runInAction(() => {

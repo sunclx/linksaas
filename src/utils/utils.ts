@@ -2,7 +2,7 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 import { createBrowserHistory } from 'history';
 import moment from 'moment';
-import { TASK_VIEW_SUFFIX, BUG_VIEW_SUFFIX, APP_PROJECT_PATH } from './constant';
+import { BUG_VIEW_SUFFIX, APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_CB_PATH, TASK_VIEW_SUFFIX } from './constant';
 
 export const goBack = (/*history: { goBack: () => void }*/) => {
   createBrowserHistory().goBack();
@@ -22,14 +22,6 @@ export const getTime = (date: moment.MomentInput): number => {
 
 // 判断是任务还是bug
 export const getIsTask = (pathname: string) => {
-  // if (pathname.includes('/task')) {
-  //   return true;
-  // }
-  // else if (pathname.includes(APP_PROJECT_DOC_PATH + "/task")) {
-  //   return true;
-  // } else if (pathname.includes(APP_PROJECT_DOC_CB_PATH + "/task")) {
-  //   return true;
-  // }
   return pathname.includes('/task');
 };
 
@@ -39,8 +31,14 @@ export const getIssue_type = (pathname: string): ISSUE_TYPE => {
 };
 
 export const getIssueViewUrl = (pathname: string): string => {
-  if (pathname.includes('/task')) return APP_PROJECT_PATH + TASK_VIEW_SUFFIX;
-  return APP_PROJECT_PATH + BUG_VIEW_SUFFIX;
+  if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_VIEW_SUFFIX;
+  } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_VIEW_SUFFIX;
+  } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_KB_CB_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_KB_CB_PATH + BUG_VIEW_SUFFIX;
+  }
+  return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_VIEW_SUFFIX;
 };
 
 // 根据数据 issue_type 字段获取 type

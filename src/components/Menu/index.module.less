@@ -3,6 +3,7 @@
   width: 200px;
   background: #1d2330;
 }
+
 .workbench_icon {
   width: 15px;
   margin-top: -4px;
@@ -13,10 +14,12 @@
   display: flex;
   align-items: center;
   padding: 20px 0;
+
   .avatar {
     margin: 0 10px 0 8px;
     padding-left: 12px;
     overflow: hidden;
+
     img {
       width: 32px;
       height: 32px;
@@ -25,6 +28,7 @@
       cursor: pointer;
     }
   }
+
   .name {
     color: #888c93;
     font-size: 12px;
@@ -37,6 +41,7 @@
     .ant-menu-submenu-title {
       padding-right: 10px;
       padding-left: 40px !important;
+
       .ant-menu-submenu-arrow {
         position: absolute;
         left: 24px;
@@ -48,14 +53,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     .submenu_icon_wrap {
       .icon_wrap {
         margin-right: 1px;
         padding: 3px;
         border-radius: 4px;
+
         &:hover {
           background-color: rgb(190 190 190 / 20%);
         }
+
         i {
           display: inline-block;
           width: 14px;
@@ -64,51 +72,57 @@
           background-repeat: no-repeat;
           background-size: contain;
         }
+
         .add {
           background-image: url('@/assets/allIcon/icon-add-channel.png');
-          background-image: -webkit-image-set(
-            url('@/assets/allIcon/icon-add-channel.png') 1x,
-            url('@/assets/allIcon/icon-add-channel@2x.png') 2x
-          );
+          background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
+              url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
         }
+
         .more {
           background-image: url('@/assets/allIcon/icon-more-channel.png');
-          background-image: -webkit-image-set(
-            url('@/assets/allIcon/icon-more-channel.png') 1x,
-            url('@/assets/allIcon/icon-more-channel@2x.png') 2x
-          );
+          background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
+              url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
         }
       }
     }
   }
+
   .project_child_menu {
     position: relative;
     height: 32px !important;
     margin: 5px 0;
     padding-left: 30px !important;
     line-height: 20px !important;
+
     .project_child_wrap {
       height: 22px;
+
       .project_child_title {
         color: #fff;
         opacity: 1;
+
         &.close {
           opacity: 0.6;
         }
+
         .badge {
           position: absolute;
           left: 4px;
-          > sup {
+
+          >sup {
             padding: 0 2px;
             box-shadow: none;
           }
         }
       }
+
       .project_child_time {
         padding-left: 18px;
         font-weight: 400;
         font-size: 12px;
         opacity: 0.8;
+
         .time_text {
           margin-left: 5px;
         }
@@ -127,6 +141,7 @@
   opacity: 0;
   transition: opacity 250ms ease;
   pointer-events: none;
+
   &.show {
     z-index: 9999;
     opacity: 1;
@@ -154,6 +169,7 @@
     white-space: nowrap;
     text-align: inherit;
     cursor: pointer;
+
     &:hover {
       background: #f1f1f5;
       border-radius: 4px;
@@ -172,10 +188,12 @@
     border-bottom: 1px solid #f0f0f5;
     cursor: inherit;
   }
+
   .item {
     position: relative;
     padding-left: 20px;
     color: #000;
+
     &.selected::before {
       position: absolute;
       top: 50%;
@@ -184,10 +202,8 @@
       height: 12px;
       margin-top: -6px;
       background-image: url('@/assets/allIcon/icon-list-channel-select.png');
-      background-image: -webkit-image-set(
-        url('@/assets/allIcon/icon-list-channel-select.png') 1x,
-        url('@/assets/allIcon/icon-list-channel-select@2x.png') 2x
-      );
+      background-image: -webkit-image-set(url('@/assets/allIcon/icon-list-channel-select.png') 1x,
+          url('@/assets/allIcon/icon-list-channel-select@2x.png') 2x);
       content: '';
     }
   }
@@ -197,15 +213,19 @@
 .pj_change_model {
   font-size: 14px;
   text-align: center;
+
   h1 {
     font-family: 550;
   }
+
   p {
     color: #666;
     font-size: 12px;
   }
+
   .btn_wrap {
     margin-top: 20px;
+
     button {
       margin: 0 10px;
     }
@@ -214,9 +234,11 @@
 
 .work_model {
   color: #666;
+
   .text {
     font-size: 12px;
   }
+
   p {
     margin: 10px 0;
 
@@ -224,8 +246,10 @@
       color: rgb(39, 39, 39);
     }
   }
+
   .btn_wrap {
     text-align: center;
+
     button {
       margin: 0 10px;
     }
@@ -238,15 +262,18 @@
   padding: 20px 22px;
   color: #202021;
   border-radius: 8px;
+
   .content {
     margin-bottom: 15px;
   }
+
   .hint {
     span {
       color: #000;
       font-weight: 550;
     }
   }
+
   .state {
     display: flex;
     justify-content: space-around;
@@ -255,8 +282,9 @@
     color: #a5a6a6;
     background: #f6f6f8;
     border-radius: 6px;
-    > div {
-      > span {
+
+    >div {
+      >span {
         padding: 5px 12px;
         color: #fff;
         background: #000;
@@ -264,6 +292,7 @@
       }
     }
   }
+
   .roger_btn {
     text-align: center;
   }
@@ -275,7 +304,28 @@
   left: 0;
   margin: 5px;
   width: 190px;
+
   img {
     width: 100%;
+  }
+}
+
+.zero_project_tips {
+  margin-left: 20px;
+  padding-right: 20px;
+  color: gray;
+
+  .add {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: 6px;
+    margin-right: 6px;
+    vertical-align: baseline;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url('@/assets/allIcon/icon-add-channel.png');
+    background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
+        url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
   }
 }

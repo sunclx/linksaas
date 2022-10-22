@@ -5,9 +5,9 @@ import { useEffect } from 'react';
 import React from 'react';
 import type { ProjectInfo } from '@/api/project';
 import { useHistory } from 'react-router-dom';
-import { APP_PROJECT_PATH } from '@/utils/constant';
 import type { ColumnsType } from 'antd/lib/table';
 import { observer } from 'mobx-react';
+import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
 
 const Myproject: FC = () => {
   const projectStore = useStores('projectStore');
@@ -64,7 +64,7 @@ const Myproject: FC = () => {
           <a
             onClick={() => {
               projectStore.setCurProjectId(record.project_id);
-              push(APP_PROJECT_PATH);
+              push(APP_PROJECT_CHAT_PATH);
             }}
           >
             查看

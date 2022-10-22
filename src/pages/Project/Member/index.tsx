@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import CardWrap from '@/components/CardWrap';
 import { Table } from 'antd';
 import useColums from './components/useColums';
@@ -16,28 +16,16 @@ import AddMember from './components/AddMember';
 const ProjectMember: React.FC = () => {
   const [removeObj, setRemoveObj] = useVisible<WebMemberInfo>();
   const [addObj, setAddObj] = useVisible<WebMemberInfo>();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const projectStore = useStores('projectStore');
+  const appStore = useStores('appStore');
+  const memberStore = useStores('memberStore');
 
   const { columns } = useColums({
     setRemoveObj,
-    isAdmin,
+    isAdmin: projectStore.isAdmin,
   });
-  const appStore = useStores('appStore');
-  const memberStore = useStores('memberStore');
-  const projectStore = useStores('projectStore');
 
-  const init = async () => {
-    const currentMemberInfo = memberStore.memberList.find((item) => item.member.is_cur_user);
-    if (!currentMemberInfo?.member.can_admin) {
-      setIsAdmin(false);
-      return;
-    }
-    setIsAdmin(true);
-  };
 
-  useEffect(() => {
-    init();
-  }, [memberStore.memberList]);
 
   return (
     <CardWrap title="项目成员列表" halfContent>
@@ -46,7 +34,7 @@ const ProjectMember: React.FC = () => {
           <h2>
             成员列表 <span>({memberStore.memberList.length})</span>
           </h2>
-          {!(projectStore.curProject?.closed) && isAdmin && appStore.clientCfg?.can_invite && (
+          {!(projectStore.curProject?.closed) && projectStore.isAdmin && appStore.clientCfg?.can_invite && (
             <Button type="link" onClick={() => setAddObj(true)}>
               <UserAddOutlined />
               添加成员

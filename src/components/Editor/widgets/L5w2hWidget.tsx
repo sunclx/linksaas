@@ -207,7 +207,7 @@ const View5w2h: React.FC<WidgetProps> = (props) => {
               做什么
             </div>
             <div className={classNames(s.textarea, s.text)}>
-              <pre>{data.why}</pre>
+              <pre>{data.what}</pre>
             </div>
           </div>
           <div className={s.l5w2h_item}>
@@ -227,7 +227,7 @@ const View5w2h: React.FC<WidgetProps> = (props) => {
               何时做
             </div>
             <div className={classNames(s.textarea, s.text)}>
-              <pre>{data.why}</pre>
+              <pre>{data.when}</pre>
             </div>
           </div>
           <div className={s.l5w2h_item}>
@@ -237,7 +237,7 @@ const View5w2h: React.FC<WidgetProps> = (props) => {
               何地做
             </div>
             <div className={classNames(s.textarea, s.text)}>
-              <pre>{data.why}</pre>
+              <pre>{data.where}</pre>
             </div>
           </div>
           <div className={s.l5w2h_item}>
@@ -247,7 +247,7 @@ const View5w2h: React.FC<WidgetProps> = (props) => {
               谁去做
             </div>
             <div className={classNames(s.textarea, s.text)}>
-              <pre>{data.why}</pre>
+              <pre>{data.who}</pre>
             </div>
           </div>
           <div className={s.l5w2h_item}>
@@ -257,7 +257,7 @@ const View5w2h: React.FC<WidgetProps> = (props) => {
               如何做
             </div>
             <div className={classNames(s.textarea, s.text)}>
-              <pre>{data.why}</pre>
+              <pre>{data.how}</pre>
             </div>
           </div>
           <div className={s.l5w2h_item}>

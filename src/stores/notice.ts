@@ -99,33 +99,27 @@ class NoticeStore {
 
   private processProjectDocNotice(notice: NoticeType.project_doc.AllNotice) {
     if (notice.NewDocSpaceNotice !== undefined) {
-      //skip
+      if(notice.NewDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId){
+        this.rootStore.docSpaceStore.updateDocSpace(notice.NewDocSpaceNotice.doc_space_id);
+      }
     } else if (notice.UpdateDocSpaceNotice !== undefined) {
-      //skip
+      if(notice.UpdateDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId){
+        this.rootStore.docSpaceStore.updateDocSpace(notice.UpdateDocSpaceNotice.doc_space_id);
+      }
     } else if (notice.RemoveDocSpaceNotice !== undefined) {
-      //skip
+      if(notice.RemoveDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId){
+        this.rootStore.docSpaceStore.removeDocSpace(notice.RemoveDocSpaceNotice.doc_space_id);
+      }
     } else if (notice.NewDocNotice !== undefined) {
-      if (notice.NewDocNotice.project_id == this.rootStore.projectStore.curProjectId && notice.NewDocNotice.doc_space_id == this.rootStore.docStore.curDocSpaceId) {
-        this.rootStore.docStore.addDocKey(notice.NewDocNotice.doc_id);
-      }
+      //skip
     } else if (notice.UpdateDocNotice !== undefined) {
-      if (notice.UpdateDocNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateDocNotice.doc_space_id == this.rootStore.docStore.curDocSpaceId) {
-        this.rootStore.docStore.updateDocKey(notice.UpdateDocNotice.doc_id);
-      }
+      //skip
     } else if (notice.RemoveDocNotice !== undefined) {
-      if (notice.RemoveDocNotice.project_id == this.rootStore.projectStore.curProjectId && notice.RemoveDocNotice.doc_space_id == this.rootStore.docStore.curDocSpaceId) {
-        this.rootStore.docStore.removeDocKey(notice.RemoveDocNotice.doc_id);
-        this.rootStore.docStore.addToRecycle(notice.RemoveDocNotice.doc_id);
-      }
+      //skip
     } else if (notice.RecoverDocInRecycleNotice !== undefined) {
-      if (notice.RecoverDocInRecycleNotice.project_id == this.rootStore.projectStore.curProjectId && notice.RecoverDocInRecycleNotice.doc_space_id == this.rootStore.docStore.curDocSpaceId) {
-        this.rootStore.docStore.removeFromRecycle(notice.RecoverDocInRecycleNotice.doc_id);
-        this.rootStore.docStore.addDocKey(notice.RecoverDocInRecycleNotice.doc_id);
-      }
+      //skip
     } else if (notice.RemoveDocInRecycleNotice !== undefined) {
-      if (notice.RemoveDocInRecycleNotice.project_id == this.rootStore.projectStore.curProjectId && notice.RemoveDocInRecycleNotice.doc_space_id == this.rootStore.docStore.curDocSpaceId) {
-        this.rootStore.docStore.removeFromRecycle(notice.RemoveDocInRecycleNotice.doc_id);
-      }
+      //skip
     }
   }
 
@@ -153,6 +147,8 @@ class NoticeStore {
       if (notice.WrongSessionNotice.name.indexOf("snap") == -1) { //忽略快照相关接口报错
         this.rootStore.userStore.logout();
       }
+    } else if (notice.SwitchUserNotice !== undefined) {
+      this.rootStore.userStore.logout();
     }
   }
 

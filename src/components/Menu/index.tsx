@@ -18,6 +18,8 @@ const Header: React.FC = () => {
   const projectStore = useStores('projectStore');
   const userStore = useStores('userStore');
   const appStore = useStores('appStore');
+  const docSpaceStore = useStores('docSpaceStore');
+
   const history = useHistory();
   const { pathname } = useLocation();
   const [selectedKeys, setSelectedKeys] = useState(projectStore.curProjectId);
@@ -38,6 +40,13 @@ const Header: React.FC = () => {
         <div
           key={WORKBENCH_PATH}
           onClick={() => {
+            if (docSpaceStore.inEdit) {
+              docSpaceStore.showCheckLeave(() => {
+                history.push(WORKBENCH_PATH);
+                setSelectedKeys(WORKBENCH_PATH);
+              });
+              return;
+            }
             history.push(WORKBENCH_PATH);
             setSelectedKeys(WORKBENCH_PATH);
           }}
@@ -78,6 +87,9 @@ const Header: React.FC = () => {
           }
         }}
       />
+      {projectStore.projectList.length == 0 && (<div className={cls.zero_project_tips}>
+        您还没有加入项目，你可以通过上方的<i className={cls.add} />加入或创建新项目。
+      </div>)}
       {appStore.showJoinProject && <JoinProject
         visible={appStore.showJoinProject}
         onChange={(val) => (appStore.showJoinProject = val)}
