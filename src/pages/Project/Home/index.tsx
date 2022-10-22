@@ -18,14 +18,12 @@ enum EDIT_OR_DETAILS_ENUM {
 
 const Home: React.FC = () => {
   const [form] = Form.useForm();
-  const [isAdmin, setIsAdmin] = useState(true);
   const [pageType, setPageType] = useState<EDIT_OR_DETAILS_ENUM>(EDIT_OR_DETAILS_ENUM.DETAILS);
   const [detailsObj, setDetailsObj] = useState({
     title: '',
     content: '',
   });
   const projectStore = useStores('projectStore');
-  const memberStore = useStores('memberStore');
   const userStore = useStores('userStore');
 
   const { editor, editorRef } = useCommonEditor({
@@ -40,17 +38,8 @@ const Home: React.FC = () => {
     channelMember: false,
   });
 
-  const init = async () => {
-    const currentMemberInfo = memberStore.memberList.find((item) => item.member.is_cur_user);
-    if (!currentMemberInfo?.member.can_admin) {
-      setIsAdmin(false);
-      return;
-    }
-    setIsAdmin(true);
-  };
 
   useEffect(() => {
-    init();
     if (pageType == EDIT_OR_DETAILS_ENUM.EDIT) {
       setTimeout(() => {
         editorRef.current!.setContent(detailsObj.content);
@@ -107,7 +96,7 @@ const Home: React.FC = () => {
   return (
     <CardWrap title="项目详情" halfContent>
       <div className={s.pj_detail_wrap}>
-        {isAdmin && (
+        {projectStore.isAdmin && (
           <div className={s.btn_wrap}>
             {pageType === EDIT_OR_DETAILS_ENUM.EDIT ? (
               <>

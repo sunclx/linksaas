@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CardWrap from '@/components/CardWrap';
 import { Button, Modal, Form, Input, message, Image } from 'antd';
 import * as appApi from '@/api/project_app';
@@ -17,17 +17,9 @@ interface AddFormData {
 const AppStore: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const memberStore = useStores('memberStore');
   const [appList, setAppList] = useState([] as appApi.App[]);
   const [showAdd, setShowAdd] = useState(false);
 
-  const isAdmin = useRef(false);
-  const memberInfo = memberStore.getMember(userStore.userInfo.userId);
-  if (memberInfo !== undefined) {
-    if (memberInfo.member.can_admin) {
-      isAdmin.current = true;
-    }
-  }
 
   const loadAppList = async () => {
     const res = await request(
@@ -102,7 +94,7 @@ const AppStore: React.FC = () => {
       <div className={s.appStore}>
         <div className={s.appStoreHd}>
           <h2>应用列表</h2>
-          {isAdmin.current && (
+          {projectStore.isAdmin && (
             <Button
               type="primary"
               onClick={(e) => {
@@ -141,7 +133,7 @@ const AppStore: React.FC = () => {
                 >
                   {item.basic_info.app_name}
                 </div>
-                {isAdmin.current && (
+                {projectStore.isAdmin && (
                   <div
                     className={s.delete}
                     onClick={(e) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 
 import BasicLayout from '@/layouts/BasicLayout';
-import ChatLayout from '@/layouts/ChatLayout';
+import ProjectLayout from '@/layouts/ProjectLayout';
 import UserLayout from '@/layouts/UserLayout';
 import NoFond from '@/pages/NoFond';
 
@@ -20,6 +20,11 @@ import AppStore from '@/pages/Project/AppStore';
 import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
+import ChatLayout from '@/layouts/ChatLayout';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH } from '@/utils/constant';
+import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
+import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
+import ContentBlock from '@/pages/KnowledgeBase/ContentBlock';
 
 
 export interface IRouteConfig {
@@ -134,17 +139,33 @@ const routesConfig: IRouteConfig[] = [
       },
       {
         path: '/app/project',
-        title: '项目沟通',
-        component: ChatLayout,
+        title: '项目',
+        component: ProjectLayout,
         routes: [
-          ...getToolbarRoute('/app/project'),
           {
-            path: '/app/project/doc/pro_doc',
-            title: '文档',
+            path: APP_PROJECT_CHAT_PATH,
+            title: '沟通',
+            component: ChatLayout,
+            routes: getToolbarRoute(APP_PROJECT_CHAT_PATH),
           },
           {
-            path: '/app/project/doc/content_block',
-            title: '可变内容块管理',
+            path: APP_PROJECT_KB_PATH,
+            title: '知识库',
+            component: KnowledgeBaseLayout,
+            routes: [
+              {
+                path: APP_PROJECT_KB_DOC_PATH,
+                title: "文档空间",
+                component: ProjectDoc,
+                routes: getToolbarRoute(APP_PROJECT_KB_DOC_PATH),
+              },
+              {
+                path: APP_PROJECT_KB_CB_PATH,
+                title: "可编辑块",
+                component: ContentBlock,
+                routes: getToolbarRoute(APP_PROJECT_KB_CB_PATH),
+              },
+            ],
           },
         ],
       },

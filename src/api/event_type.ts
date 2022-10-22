@@ -647,6 +647,27 @@ export namespace project_doc {
     ];
   }
 
+  export type MoveDocEvent = {
+    src_doc_space_id: string;
+    src_doc_space_name: string;
+    dest_doc_space_id: string;
+    dest_doc_space_name: string;
+    doc_id: string;
+    title: string;
+  };
+
+  function get_move_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: MoveDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 移动文档`),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+      new LinkNoneInfo(`从${inner.src_doc_space_name} 到 ${inner.dest_doc_space_name}`)
+    ];
+  }
+
   export type RemoveDocEvent = {
     doc_space_id: string;
     doc_space_name: string;
@@ -725,6 +746,7 @@ export namespace project_doc {
     CreateDocEvent?: CreateDocEvent;
     UpdateDocEvent?: UpdateDocEvent;
     MoveDocToRecycleEvent?: MoveDocToRecycleEvent;
+    MoveDocEvent?: MoveDocEvent;
     RemoveDocEvent?: RemoveDocEvent;
     RecoverDocEvent?: RecoverDocEvent;
     WatchDocEvent?: WatchDocEvent;
@@ -747,6 +769,8 @@ export namespace project_doc {
       return get_update_doc_simple_content(ev, skip_prj_name, inner.UpdateDocEvent);
     } else if (inner.MoveDocToRecycleEvent !== undefined) {
       return get_move_doc_to_recycle_simple_content(ev, skip_prj_name, inner.MoveDocToRecycleEvent);
+    } else if (inner.MoveDocEvent !== undefined) {
+      return get_move_doc_simple_content(ev, skip_prj_name, inner.MoveDocEvent);
     } else if (inner.RemoveDocEvent !== undefined) {
       return get_remove_doc_simple_content(ev, skip_prj_name, inner.RemoveDocEvent);
     } else if (inner.RecoverDocEvent !== undefined) {

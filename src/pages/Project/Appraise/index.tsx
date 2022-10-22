@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect } from 'react';
 import CardWrap from '@/components/CardWrap';
 import { Tabs } from 'antd';
 import Button from '@/components/Button';
@@ -15,10 +15,8 @@ const { TabPane } = Tabs;
 
 const Appraise: React.FC = observer(() => {
   const memberStore = useStores('memberStore');
-  const userStore = useStores('userStore');
-  const appraiseStore  = useStores('appraiseStore');
-
-  const [isAdmin,setIsAdmin] = useState(false);
+  const appraiseStore = useStores('appraiseStore');
+  const projectStore = useStores('projectStore');
 
   const localStore = useLocalObservable(() => ({
     showCreateModal: false,
@@ -28,17 +26,12 @@ const Appraise: React.FC = observer(() => {
   }))
 
   useEffect(() => {
-    memberStore.memberList.forEach(item => {
-      if (item.member.member_user_id == userStore.userInfo.userId && item.member.can_admin) {
-        setIsAdmin(true);
-      }
-    });
-    if (isAdmin) {
+    if (projectStore.isAdmin) {
       appraiseStore.loadAllRecord(appraiseStore.myCurPage);
       appraiseStore.loadUserScore();
-    } 
+    }
     appraiseStore.loadMyRecord(appraiseStore.myCurPage);
-  })
+  }, [projectStore.isAdmin]);
 
   // tab
   const renderTabs = () => {
@@ -46,10 +39,10 @@ const Appraise: React.FC = observer(() => {
       <TabPane className={styles.tab_pane} tab="我的评估" key="1">
         <AppraiseRecordList adminMode={false} />
       </TabPane>
-      {isAdmin && (<TabPane className={styles.tab_pane} tab="全部评估" key="2">
+      {projectStore.isAdmin && (<TabPane className={styles.tab_pane} tab="全部评估" key="2">
         <AppraiseRecordList adminMode={true} />
       </TabPane>)}
-      {isAdmin && (<TabPane className={styles.tab_pane} tab="总评表" key="3">
+      {projectStore.isAdmin && (<TabPane className={styles.tab_pane} tab="总评表" key="3">
         <AppraiseList />
       </TabPane>)}
     </Tabs>

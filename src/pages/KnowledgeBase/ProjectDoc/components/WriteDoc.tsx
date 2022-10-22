@@ -10,12 +10,12 @@ import { useLocation } from 'react-router-dom';
 import type { LinkDocState } from '@/stores/linkAux';
 import s from './EditDoc.module.less';
 import { observer } from 'mobx-react';
+import { runInAction } from 'mobx';
 
 const WriteDoc: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const docStore = useStores('docStore');
-  const curDocId = docStore.curDocId;
+  const docSpaceStore = useStores('docSpaceStore');
   const [newTitle, setNewTitle] = useState(''); //新建文档时有空
 
   const location = useLocation();
@@ -23,8 +23,8 @@ const WriteDoc: React.FC = () => {
   const { editor, editorRef } = useCommonEditor({
     content: '',
     fsId: projectStore.curProject?.doc_fs_id ?? '',
-    ownerType: curDocId == '' ? FILE_OWNER_TYPE_PROJECT : FILE_OWNER_TYPE_PROJECT_DOC,
-    ownerId: curDocId == '' ? projectStore.curProjectId : curDocId,
+    ownerType: docSpaceStore.curDocId == '' ? FILE_OWNER_TYPE_PROJECT : FILE_OWNER_TYPE_PROJECT_DOC,
+    ownerId: docSpaceStore.curDocId == '' ? projectStore.curProjectId : docSpaceStore.curDocId,
     historyInToolbar: true,
     clipboardInToolbar: true,
     widgetInToolbar: true,
@@ -33,7 +33,7 @@ const WriteDoc: React.FC = () => {
   });
 
   useEffect(() => {
-    if (curDocId == '') {
+    if (docSpaceStore.curDocId == '') {
       //新增文档模式
       if (location.state != undefined) {
         const state = location.state as LinkDocState;
@@ -45,43 +45,42 @@ const WriteDoc: React.FC = () => {
       request(
         docApi.keep_update_doc({
           session_id: userStore.sessionId,
-          doc_id: curDocId,
+          doc_id: docSpaceStore.curDocId,
         }),
       ).catch((e) => {
         console.log(e);
         message.error('无法维持编辑状态');
-        docStore.setCurDoc(curDocId, false, docStore.curDocInRecycle);
+        docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
       });
     }, 10 * 1000);
     request(
       docApi.start_update_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docStore.curDocSpaceId,
-        doc_id: curDocId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
       }),
     ).catch((e) => {
       console.log(e);
       message.error('无法获得编辑权限');
-      docStore.setCurDoc(curDocId, false, docStore.curDocInRecycle);
+      docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
     });
     //获取内容
     request(
       docApi.get_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docStore.curDocSpaceId,
-        doc_id: curDocId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
       }),
     ).then((res) => {
       editorRef.current?.setContent(res.doc.base_info.content);
     });
     return () => {
       clearInterval(timer);
-      docStore.updateDocKey(curDocId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [curDocId]);
+  }, [docSpaceStore.curDocId]);
 
   //更新文档
   const updateDoc = async () => {
@@ -93,22 +92,22 @@ const WriteDoc: React.FC = () => {
       projectStore.curProject?.doc_fs_id ?? '',
       userStore.sessionId,
       FILE_OWNER_TYPE_PROJECT_DOC,
-      curDocId,
+      docSpaceStore.curDocId,
     );
-    const res = request(
+    const res = await request(
       docApi.update_doc_content({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docStore.curDocSpaceId,
-        doc_id: curDocId,
-        title: docStore.curDocKey?.title ?? '',
+        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_id: docSpaceStore.curDocId,
+        title: docSpaceStore.curDoc?.base_info.title ?? '',
         content: JSON.stringify(content),
       }),
     );
     if (!res) {
       return;
     }
-    docStore.setCurDoc(curDocId, false, docStore.curDocInRecycle);
+    docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
   };
 
   const createDoc = async () => {
@@ -132,7 +131,7 @@ const WriteDoc: React.FC = () => {
       docApi.create_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDocSpaceId,
         base_info: {
           title: newTitle,
           content: JSON.stringify(content),
@@ -151,53 +150,43 @@ const WriteDoc: React.FC = () => {
     }
     //变更文件Owner
     await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_PROJECT_DOC, res.doc_id);
-    //刷新左侧列表
-    await docStore.updateDocKey(res.doc_id);
     //回到阅读模式
-    docStore.setCurDoc(res.doc_id, false, docStore.curDocInRecycle);
+    docSpaceStore.showDoc(res.doc_id, false);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      docStore.setEditing(true);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
 
   return (
     <div className={s.editdoc_wrap}>
       <div className={s.editdoc_title_wrap}>
         <Input
-          placeholder="新文档"
-          defaultValue={docStore.curDocKey?.title ?? ''}
+          placeholder="请输入新文档名称"
+          defaultValue={docSpaceStore.curDoc?.base_info.title ?? ''}
           onChange={(e) => {
-            docStore.setEditing(true);
             e.stopPropagation();
             e.preventDefault();
-            if (curDocId == '') {
+            if (docSpaceStore.curDocId == '') {
               setNewTitle(e.target.value);
             } else {
-              docStore.setDocTitle(docStore.curDocId, e.target.value);
+              runInAction(() => {
+                if (docSpaceStore.curDoc !== undefined) {
+                  docSpaceStore.curDoc.base_info.title = e.target.value;
+                }
+              });
             }
           }}
         />
-        {/* <RenderDocBtns /> */}
       </div>
       <div className="_chatContext">{editor}</div>
       <div className={s.save}>
         <Space size="large">
-          <Button 
-          style={{ width: "80px" }}
-          size='large'
-          onClick={e=>{
-            e.stopPropagation();
-            e.preventDefault();
-            docStore.setEditing(false);
-            docStore.setCurDoc(curDocId, false, docStore.curDocInRecycle);
-          }}>取消</Button>
+          <Button
+            style={{ width: "80px" }}
+            size='large'
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
+            }}>取消</Button>
           <Button
             style={{ width: "80px" }}
             type="primary"
@@ -205,9 +194,7 @@ const WriteDoc: React.FC = () => {
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              docStore.setEditing(false);
-
-              if (curDocId == '') {
+              if (docSpaceStore.curDocId == '') {
                 createDoc();
               } else {
                 updateDoc();

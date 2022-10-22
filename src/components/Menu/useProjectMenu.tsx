@@ -3,7 +3,7 @@ import { close, open, remove } from '@/api/project';
 import { leave } from '@/api/project_member';
 import { useStores } from '@/hooks';
 import type { FILTER_PROJECT_ENUM } from '@/utils/constant';
-import { APP_PROJECT_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
 import { filterProjectItemList, PROJECT_STATE_OPT_ENUM } from '@/utils/constant';
 import { request } from '@/utils/request';
 import { FolderFilled, VideoCameraOutlined } from '@ant-design/icons';
@@ -55,7 +55,7 @@ const useProjectMenu = () => {
   const userStore = useStores('userStore');
   const history = useHistory();
   const pjMenuItemH = 40;
-  const docStore = useStores('docStore');
+  const docSpaceStore = useStores('docSpaceStore');
   const [pjMenu, setPjMenu] = useSetState({
     x: 0,
     y: 0,
@@ -273,15 +273,15 @@ const useProjectMenu = () => {
           <div
             key={item.project_id}
             onClick={() => {
-              if (docStore.editing) {
-                docStore.setShowleavePage(true);
-                docStore.setNextLocation(APP_PROJECT_PATH);
-                docStore.setCurProjectId(item.project_id);
+              if (docSpaceStore.inEdit) {
+                docSpaceStore.showCheckLeave(() => {
+                  history.push(APP_PROJECT_CHAT_PATH);
+                  projectStore.setCurProjectId(item.project_id);
+                });
                 return;
               }
-              history.push(APP_PROJECT_PATH);
+              history.push(APP_PROJECT_CHAT_PATH);
               projectStore.setCurProjectId(item.project_id);
-              projectStore.setShowChannel(true);
             }}
             onContextMenu={(e) => {
               e.preventDefault();

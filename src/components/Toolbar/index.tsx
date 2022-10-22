@@ -5,13 +5,20 @@ import { Badge, Divider, Tooltip } from 'antd';
 import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
-import { APP_PROJECT_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH} from '@/utils/constant';
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = (props) => {
   const history = useHistory();
   const current = props.pathname.includes(props.id);
   const gotoPage = (id: string) => {
-    history.push(APP_PROJECT_PATH + '/' + id);
+    if(props.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)){
+      history.push(APP_PROJECT_KB_DOC_PATH + '/' + id);
+    }else if(props.pathname.startsWith(APP_PROJECT_KB_CB_PATH)){
+      history.push(APP_PROJECT_KB_CB_PATH + '/' + id);
+    }else if (props.pathname.startsWith(APP_PROJECT_CHAT_PATH)){
+      history.push(APP_PROJECT_CHAT_PATH + '/' + id);
+    }
+    
   };
 
   return (
