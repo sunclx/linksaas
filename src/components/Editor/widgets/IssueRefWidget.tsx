@@ -322,7 +322,7 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
           pagination={false}
         />
 
-        <AddTaskOrBug
+        {showAddIssue && <AddTaskOrBug
           title={data.issueType == ISSUE_TYPE_TASK ? '引用任务' : '引用缺陷'}
           visible={showAddIssue}
           onCancel={() => setShowAddIssue(false)}
@@ -331,9 +331,9 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
             addIssue(link);
             setShowAddIssue(false);
           }}
-          data={props.initData as WidgetData}
+          issueIdList={dataSource.map(item => item.issue_id)}
           type={data.issueType == ISSUE_TYPE_TASK ? 'task' : 'bug'}
-        />
+        />}
       </EditorWrap>
     </ErrorBoundary>
   );
