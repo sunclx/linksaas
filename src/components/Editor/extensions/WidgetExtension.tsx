@@ -51,6 +51,7 @@ export class WidgetExtension extends NodeExtension<WidgetOptions> {
         widgetData: widgetData,
       } as WidgetAttributes);
       dispatch?.(tr.replaceRangeWith(from, to, node));
+      dispatch?.(tr.insertText("  "));
       return true;
     };
   }

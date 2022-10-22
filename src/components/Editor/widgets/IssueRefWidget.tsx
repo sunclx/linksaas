@@ -85,7 +85,7 @@ const renderTitle = (
           }
         }}
       >
-        {row.basic_info?.title}
+        <span title={row.basic_info?.title}>{row.basic_info?.title}</span>
       </Button>
       {row.msg_count > 0 && (
         <span
