@@ -32,6 +32,13 @@ export default class DocSpaceStore {
         return this._curDocSpaceId;
     }
 
+    set curDocSpaceId(val: string) {
+        const index = this.docSpaceList.findIndex(item => item.doc_space_id == val);
+        if (index != -1) {
+            this._curDocSpaceId = val;
+        }
+    }
+
     get pageType(): PAGE_TYPE {
         return this._pageType;
     }

@@ -11,11 +11,14 @@ import { Button, message, Popover } from 'antd';
 import DocHistory from './DocHistory';
 import DocComment from './DocComment';
 import { runInAction } from 'mobx';
+import { SwapOutlined } from '@ant-design/icons';
+import SwitchDocSpace from './SwitchDocSpace';
 
 
 
-const RenderDocBtns = () => {
+const RenderDocBtns: React.FC = () => {
   const userStore = useStores('userStore');
+  const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');
 
   const toggleWatch = async () => {
@@ -51,7 +54,7 @@ const RenderDocBtns = () => {
         return;
       }
     }
-    runInAction(()=>{
+    runInAction(() => {
       if (docSpaceStore.curDoc != undefined) {
         docSpaceStore.curDoc.my_watch = nextValue;
       }
@@ -92,6 +95,17 @@ const RenderDocBtns = () => {
           </Popover>
 
           <RemoveDocBtn />
+
+          {projectStore.isAdmin && (
+            <Popover
+              placement="bottom"
+              content={() => <SwitchDocSpace />}
+              trigger="hover"
+            >
+              <SwapOutlined />
+            </Popover>
+          )}
+
           <Button
             type="primary"
             style={{ marginLeft: '40px' }}

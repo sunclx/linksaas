@@ -304,6 +304,18 @@ export type GetDocResponse = {
     doc: Doc;
 };
 
+export type MoveDocRequest = {
+    session_id: string;
+    project_id: string;
+    doc_space_id: string;
+    doc_id: string;
+    dest_doc_space_id: string;
+};
+
+export type MoveDocResponse = {
+    code: number;
+    err_msg: string;
+};
 
 export type RemoveDocRequest = {
     session_id: string;
@@ -648,6 +660,15 @@ export async function get_doc(request: GetDocRequest): Promise<GetDocResponse> {
     const cmd = 'plugin:project_doc_api|get_doc';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetDocResponse>(cmd, {
+        request,
+    });
+}
+
+//移动文档
+export async function move_doc(request: MoveDocRequest): Promise<MoveDocResponse> {
+    const cmd = 'plugin:project_doc_api|move_doc';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<MoveDocResponse>(cmd, {
         request,
     });
 }

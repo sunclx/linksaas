@@ -294,7 +294,7 @@ export default class ProjectStore {
       }
     });
   }
-  
+
   removeProject(projecId: string, history: History) {
     const tmpList = this._projectList.filter((item) => item.project_id != projecId);
     let newProjectId = "";
@@ -313,5 +313,19 @@ export default class ProjectStore {
       this.setCurProjectId(newProjectId);
       history.push(APP_PROJECT_CHAT_PATH);
     }
+  }
+
+  get isAdmin(): boolean {
+    const curProject = this.curProject;
+    if (curProject !== undefined) {
+      if (curProject.owner_user_id == this.rootStore.userStore.userInfo.userId) {
+        return true
+      }
+    }
+    const member = this.rootStore.memberStore.getMember(this.rootStore.userStore.userInfo.userId);
+    if (member !== undefined) {
+      return member.member.can_admin
+    }
+    return false;
   }
 }

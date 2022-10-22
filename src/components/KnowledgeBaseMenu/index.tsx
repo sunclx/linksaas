@@ -16,7 +16,6 @@ import { DeleteOutlined, FileTextOutlined } from '@ant-design/icons';
 const KnowledgeBaseMenu = () => {
   const history = useHistory();
   const { pathname } = useLocation();
-  const memberStore = useStores('memberStore');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');
@@ -25,13 +24,6 @@ const KnowledgeBaseMenu = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [spaceTitle, setSpaceTitle] = useState("");
 
-  let isAdmin = false;
-  const memberInfo = memberStore.getMember(userStore.userInfo.userId);
-  if (memberInfo !== undefined) {
-    if (memberInfo.member.can_admin) {
-      isAdmin = true;
-    }
-  }
 
   const addDocSpace = async () => {
     const title = spaceTitle.trim();
@@ -56,7 +48,7 @@ const KnowledgeBaseMenu = () => {
   const docRightTop = () => {
     return (
       <div className={s.submenu_icon_wrap}>
-        {isAdmin && (
+        {projectStore.isAdmin && (
           <Popover
             placement="bottomLeft"
             trigger="click"
