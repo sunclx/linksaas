@@ -222,7 +222,6 @@ export type LinkEventState = {
 
 export type LinkIssueState = {
   issueId: string;
-  mode: string;
   content: string;
 };
 

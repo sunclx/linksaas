@@ -3,29 +3,22 @@ import { list_my_todo } from '@/api/project_issue';
 import {
   SORT_KEY_UPDATE_TIME,
   SORT_TYPE_DSC,
-  ISSUE_STATE_PLAN,
-  ISSUE_STATE_PROCESS,
-  ISSUE_STATE_CHECK,
-  ISSUE_STATE_CLOSE,
   ISSUE_TYPE_TASK,
 } from '@/api/project_issue';
 import RenderSelectOpt from '@/components/RenderSelectOpt';
 import {
   bugPriority,
   issueState,
-  ISSUE_STATE_COLOR_ENUM,
   taskPriority,
 } from '@/utils/constant';
 import { issueTypeIsTask, timeToDateString, getIssueViewUrl } from '@/utils/utils';
 import { Empty, Table } from 'antd';
-import type { FC } from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import React from 'react';
 import Pagination from '@/components/Pagination';
 import { request } from '@/utils/request';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
-import type { PageOptType } from '@/pages/Project/Task';
 import { debounce } from 'lodash';
 import { get_issue_type_str } from '@/api/event_type';
 import type { ColumnsType } from 'antd/lib/table';
@@ -37,35 +30,39 @@ import { observer } from 'mobx-react';
 import { showShortNote } from '@/utils/short_note';
 import { SHORT_NOTE_TASK, SHORT_NOTE_BUG } from '@/api/short_note';
 import { ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
+import { getStateColor } from '@/pages/Issue/components/utils';
 
 
 type BacklogProps = {
-  pageOpt: Partial<PageOptType>;
-  setPageOpt: (querys: Partial<PageOptType>) => void;
+  onChange: (count: number) => void;
 };
 
-const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
+const Backlog: React.FC<BacklogProps> = (props) => {
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const { push } = useHistory();
   const { pathname } = useLocation();
 
+  const [pageSize, setPageSize] = useState(10);
+  const [curPage, setCurPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
   const getList = async (size?: number) => {
-    const pageSize = size || pageOpt.pageSize;
+    const s = size || pageSize;
+    setPageSize(s);
     const data = {
       session_id: userStore.sessionId,
       sort_type: SORT_TYPE_DSC, // SORT_TYPE_DSC SORT_TYPE_ASC
       sort_key: SORT_KEY_UPDATE_TIME,
-      offset: (pageOpt.pageNum! - 1) * pageSize!,
-      limit: pageSize!,
+      offset: curPage * s,
+      limit: s,
     };
 
     try {
       const res = await request<ListResponse>(list_my_todo(data));
-      setPageOpt({
-        total: res.total_count,
-      });
+      props.onChange(res.total_count);
+      setTotalCount(res.total_count);
       setDataSource(res.info_list);
     } catch (error) { }
   };
@@ -75,9 +72,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
     if (node) {
       const size = Math.floor(node.parentElement!.clientHeight / 46 - 2);
       if (size < 1) return;
-      setPageOpt({
-        pageSize: size,
-      });
       getList(size);
       return;
     }
@@ -86,7 +80,7 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
   useEffect(() => {
     getListType();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageOpt?.pageNum]);
+  }, [curPage]);
 
   useEffect(() => {
     window.addEventListener('resize', debounce(getListType, 1000));
@@ -96,20 +90,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getColor = (v: number) => {
-    switch (v) {
-      case ISSUE_STATE_PLAN:
-        return ISSUE_STATE_COLOR_ENUM.规划中颜色;
-      case ISSUE_STATE_PROCESS:
-        return ISSUE_STATE_COLOR_ENUM.处理颜色;
-      case ISSUE_STATE_CHECK:
-        return ISSUE_STATE_COLOR_ENUM.验收颜色;
-      case ISSUE_STATE_CLOSE:
-        return ISSUE_STATE_COLOR_ENUM.关闭颜色;
-      default:
-        return ISSUE_STATE_COLOR_ENUM.规划中颜色;
-    }
-  };
 
   const renderTitle = (row: IssueInfo) => {
     return (
@@ -120,7 +100,6 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
           projectStore.setCurProjectId(row.project_id);
           push(getIssueViewUrl(pathname), {
             issueId: row.issue_id,
-            mode: "details",
             content: "",
           } as LinkIssueState);
         }} title={row.basic_info?.title}><span><LinkOutlined />{row.basic_info?.title}</span></a>
@@ -149,12 +128,12 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
     return (
       <div
         style={{
-          background: `rgb(${getColor(val)} / 20%)`,
+          background: `rgb(${getStateColor(val)} / 20%)`,
           width: '50px',
           margin: '0 auto',
           borderRadius: '50px',
           textAlign: 'center',
-          color: `rgb(${getColor(val)})`,
+          color: `rgb(${getStateColor(val)})`,
         }}
       >
         {v.label}
@@ -298,10 +277,10 @@ const Backlog: FC<BacklogProps> = ({ pageOpt, setPageOpt }) => {
             pagination={false}
           />
           <Pagination
-            total={pageOpt.total!}
-            pageSize={pageOpt.pageSize!}
-            current={pageOpt.pageNum}
-            onChange={(page: number) => setPageOpt({ pageNum: page })}
+            total={totalCount}
+            pageSize={pageSize}
+            current={curPage + 1}
+            onChange={(page: number) => setCurPage(page - 1)}
           />
         </>
       ) : (

@@ -5,15 +5,9 @@ import {
   SORT_KEY_UPDATE_TIME,
   SORT_TYPE_DSC,
 } from '@/api/project_issue';
-import {
-  ISSUE_STATE_CHECK,
-  ISSUE_STATE_CLOSE,
-  ISSUE_STATE_PLAN,
-  ISSUE_STATE_PROCESS,
-} from '@/api/project_issue';
 import ActionModal from '@/components/ActionModal';
 import { useStores } from '@/hooks';
-import { bugPriority, issueState, ISSUE_STATE_COLOR_ENUM, taskPriority } from '@/utils/constant';
+import { bugPriority, issueState, taskPriority } from '@/utils/constant';
 import { issueTypeIsTask } from '@/utils/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ModalProps } from 'antd';
@@ -37,8 +31,9 @@ import { list as list_issue } from '@/api/project_issue';
 import { LinkTaskInfo, LinkBugInfo, LinkNoneInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import Pagination from '@/components/Pagination';
-import { useSetState } from 'ahooks';
-import type { PageOptType } from '@/pages/Project/Task';
+import { getStateColor } from '@/pages/Issue/components/utils';
+
+const PAGE_SIZE = 10;
 
 type AddTaskOrBugProps = Omit<ModalProps, 'onOk'> & {
   onOK?: (link: LinkInfo | LinkInfo[]) => void;
@@ -49,20 +44,6 @@ type AddTaskOrBugProps = Omit<ModalProps, 'onOk'> & {
   type: 'task' | 'bug';
 };
 
-const getColor = (v: number) => {
-  switch (v) {
-    case ISSUE_STATE_PLAN:
-      return ISSUE_STATE_COLOR_ENUM.规划中颜色;
-    case ISSUE_STATE_PROCESS:
-      return ISSUE_STATE_COLOR_ENUM.处理颜色;
-    case ISSUE_STATE_CHECK:
-      return ISSUE_STATE_COLOR_ENUM.验收颜色;
-    case ISSUE_STATE_CLOSE:
-      return ISSUE_STATE_COLOR_ENUM.关闭颜色;
-    default:
-      return ISSUE_STATE_COLOR_ENUM.规划中颜色;
-  }
-};
 
 const renderTitle = (
   row: IssueInfo,
@@ -99,12 +80,12 @@ const renderState = (val: number) => {
   return (
     <div
       style={{
-        background: `rgb(${getColor(val)} / 20%)`,
+        background: `rgb(${getStateColor(val)} / 20%)`,
         width: '50px',
         margin: '0 auto',
         borderRadius: '50px',
         textAlign: 'center',
-        color: `rgb(${getColor(val)})`,
+        color: `rgb(${getStateColor(val)})`,
       }}
     >
       {v?.label}
@@ -134,13 +115,9 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const [keyword, setKeyword] = useState('');
   const [selectedRowKeys, setselectedRowKeys] = useState<React.Key[]>(props.issueIdList);
 
-  console.log(selectedRowKeys);
+  const [curPage, setCurPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const [pageOpt, setPageOpt] = useSetState<Partial<PageOptType>>({
-    pageSize: 10,
-    pageNum: 1,
-    total: 0,
-  });
 
   useEffect(() => {
     const listIssueParam: ListIssueParam = {
@@ -183,17 +160,15 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         },
         sort_type: SORT_TYPE_DSC,
         sort_key: SORT_KEY_UPDATE_TIME,
-        offset: (pageOpt.pageNum! - 1) * pageOpt.pageSize!,
-        limit: pageOpt.pageSize!,
+        offset: curPage * PAGE_SIZE,
+        limit: PAGE_SIZE,
       }),
     ).then((res) => {
       setDataSource(res.info_list);
-      setPageOpt({
-        total: res.total_count,
-      });
+      setTotalCount(res.total_count);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, props.type, pageOpt.pageNum]);
+  }, [keyword, props.type, curPage]);
 
   const rowSelection = {
     onChange: (keys: React.Key[]) => {
@@ -336,10 +311,10 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         }}
       />
       <Pagination
-        total={pageOpt.total!}
-        pageSize={pageOpt.pageSize!}
-        current={pageOpt.pageNum}
-        onChange={(page: number) => setPageOpt({ pageNum: page })}
+        total={totalCount}
+        pageSize={PAGE_SIZE}
+        current={curPage+1}
+        onChange={(page: number) => setCurPage(page-1)}
       />
     </ActionModal>
   );

@@ -14,7 +14,6 @@ import { getIssueViewUrl } from '@/utils/utils';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkIssueState } from '@/stores/linkAux';
 import { LinkOutlined } from '@ant-design/icons/lib/icons';
-import { TASK_INSIDE_PAGES_ENUM } from "@/pages/Project/Task/CreateTask";
 import Button from "@/components/Button";
 
 
@@ -88,7 +87,6 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                             push(
                                 getIssueViewUrl(pathname), {
                                     issueId: record.issue_id,
-                                    mode: TASK_INSIDE_PAGES_ENUM.DETAILS,
                                     content: "",
                                 } as LinkIssueState
                             );

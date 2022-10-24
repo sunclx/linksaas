@@ -11,7 +11,6 @@ import { Table, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { ColumnType } from 'antd/lib/table';
-import { TASK_INSIDE_PAGES_ENUM } from '@/pages/Project/Task/CreateTask';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { showShortNote } from '@/utils/short_note';
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from '@/api/short_note';
@@ -66,7 +65,6 @@ const IssueEditList: React.FC<TableProps> = ({
               push(
                 getIssueViewUrl(pathname), {
                   issueId: record.issue_id,
-                  mode: TASK_INSIDE_PAGES_ENUM.DETAILS,
                   content: "",
                 } as LinkIssueState
               );
@@ -104,7 +102,6 @@ const IssueEditList: React.FC<TableProps> = ({
                 push(
                   getIssueViewUrl(pathname), {
                     issueId: record.issue_id,
-                    mode: TASK_INSIDE_PAGES_ENUM.DETAILS,
                     content: "",
                   } as LinkIssueState
                 );

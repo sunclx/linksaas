@@ -21,9 +21,9 @@ import { observer } from 'mobx-react';
 import s from './LinkSelect.module.less';
 import classNames from 'classnames';
 import { SearchOutlined } from '@ant-design/icons';
-import { useSetState } from 'ahooks';
-import type { PageOptType } from '@/pages/Project/Task';
 import Pagination from '@/components/Pagination';
+
+const PAGE_SIZE = 10;
 
 export interface LinkSelectProps {
   title: string;
@@ -95,11 +95,9 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     });
   }
 
-  const [pageOpt, setPageOpt] = useSetState<Partial<PageOptType>>({
-    pageSize: 10,
-    pageNum: 1,
-    total: 0,
-  });
+  const [curPage, setCurPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
 
   useMemo(() => {
     const listIssueParam: ListIssueParam = {
@@ -140,12 +138,12 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
           sort_type: SORT_TYPE_DSC,
           sort_key: SORT_KEY_UPDATE_TIME,
 
-          offset: (pageOpt.pageNum! - 1) * pageOpt.pageSize!,
-          limit: pageOpt.pageSize!,
+          offset: curPage * PAGE_SIZE,
+          limit: PAGE_SIZE,
         }),
       ).then((res) => {
         setTaskList(res.info_list);
-        setPageOpt({ total: res.total_count });
+        setTotalCount(res.total_count);
       });
     } else if (tab == 'bug') {
       request(
@@ -155,12 +153,12 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
           list_param: { ...listIssueParam, issue_type: ISSUE_TYPE_BUG },
           sort_type: SORT_TYPE_DSC,
           sort_key: SORT_KEY_UPDATE_TIME,
-          offset: (pageOpt.pageNum! - 1) * pageOpt.pageSize!,
-          limit: pageOpt.pageSize!,
+          offset: curPage * PAGE_SIZE,
+          limit: PAGE_SIZE,
         }),
       ).then((res) => {
         setBugList(res.info_list);
-        setPageOpt({ total: res.total_count });
+        setTotalCount(res.total_count);
       });
     } else if (tab == 'doc') {
       request(list_doc_key({
@@ -174,15 +172,15 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
           filter_by_watch: false,
           watch: false,
         },
-        offset: (pageOpt.pageNum! - 1) * pageOpt.pageSize!,
-        limit: pageOpt.pageSize!,
+        offset: curPage * PAGE_SIZE,
+        limit: PAGE_SIZE,
       })).then((res) => {
         setDocList(res.doc_key_list);
-        setPageOpt({ total: res.total_count });
+        setTotalCount(res.total_count);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskPage, bugPage, tab, keyword, pageOpt.pageNum]);
+  }, [taskPage, bugPage, tab, keyword, curPage]);
 
   // =====
   const renderItemContent = () => {
@@ -227,10 +225,10 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             </div>
           ))}
           <Pagination
-            total={pageOpt.total!}
-            pageSize={pageOpt.pageSize!}
-            current={pageOpt.pageNum}
-            onChange={(page: number) => setPageOpt({ pageNum: page })}
+            total={totalCount}
+            pageSize={PAGE_SIZE}
+            current={curPage + 1}
+            onChange={(page: number) => setCurPage(page - 1)}
           />
         </div>
       );
@@ -263,10 +261,10 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             </div>
           ))}
           <Pagination
-            total={pageOpt.total!}
-            pageSize={pageOpt.pageSize!}
-            current={pageOpt.pageNum}
-            onChange={(page: number) => setPageOpt({ pageNum: page })}
+            total={totalCount}
+            pageSize={PAGE_SIZE}
+            current={curPage + 1}
+            onChange={(page: number) => setCurPage(page - 1)}
           />
         </div>
       );
@@ -299,10 +297,10 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             </div>
           ))}
           <Pagination
-            total={pageOpt.total!}
-            pageSize={pageOpt.pageSize!}
-            current={pageOpt.pageNum}
-            onChange={(page: number) => setPageOpt({ pageNum: page })}
+            total={totalCount}
+            pageSize={PAGE_SIZE}
+            current={curPage + 1}
+            onChange={(page: number) => setCurPage(page - 1)}
           />
         </div>
       );
@@ -357,7 +355,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
                 onClick={() => {
                   setTab(item.value);
                   if (item.value === 'task' || item.value === 'bug') {
-                    setPageOpt({ total: 0, pageNum: 1 });
+                    setTotalCount(0);
+                    setCurPage(0);
                   }
                 }}
               >
