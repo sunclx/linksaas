@@ -8,16 +8,16 @@
             align-items: center;
             color: #2c2d2e;
             font-size: 12px;
-            line-height: 26px;
+            line-height: 28px;
 
             >span {
                 display: inline-block;
-                width: 130px;
+                width: 100px;
                 color: #666;
             }
 
             >div {
-                width: 100%;
+                padding-left: 15px;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -35,6 +35,32 @@
                     color: @primary-color;
                     cursor: pointer;
                 }
+            }
+        }
+    }
+
+    .hr {
+        width: 100%;
+        height: 1px;
+        margin: 14px 0;
+        background: #eeeef3;
+    }
+
+    .time_line_wrap {
+        h2 {
+            margin-bottom: 12px;
+            color: #2c2d2e;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 24px;
+        }
+
+        .timeLine {
+            padding-top: 8px;
+            overflow-y: scroll;
+            height: 100%;
+            >li {
+                font-size: 12px;
             }
         }
     }

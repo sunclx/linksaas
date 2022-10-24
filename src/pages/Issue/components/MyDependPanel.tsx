@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, message } from 'antd';
+import { Table, message } from 'antd';
 import { LinkSelect } from "@/components/Editor/components";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from '@/stores/linkAux';
 import { LINK_TARGET_TYPE } from '@/stores/linkAux';
@@ -15,6 +15,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import type { LinkIssueState } from '@/stores/linkAux';
 import { LinkOutlined } from '@ant-design/icons/lib/icons';
 import { TASK_INSIDE_PAGES_ENUM } from "@/pages/Project/Task/CreateTask";
+import Button from "@/components/Button";
 
 
 

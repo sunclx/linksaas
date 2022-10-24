@@ -27,6 +27,41 @@ export function getMemberSelectItems(memberList: MemberInfo[]): EditSelectItem[]
     });
 }
 
+export async function updateTitle(sessionId: string, projectId: string, issueId: string, title: string): Promise<boolean> {
+    try {
+        const res = await issueApi.update_title({
+            session_id: sessionId,
+            project_id: projectId,
+            issue_id: issueId,
+            title: title,
+        });
+        if (res.code == 0) {
+            return true
+        }
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+export async function updateContent(sessionId: string, projectId: string, issueId: string, content: string): Promise<boolean> {
+    try {
+        const res = await issueApi.update_content({
+            session_id: sessionId,
+            project_id: projectId,
+            issue_id: issueId,
+            content: content,
+        });
+        if (res.code == 0) {
+            return true
+        }
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+
 export async function updateEndTime(sessionId: string, projectId: string, issueId: string, endTime: number): Promise<boolean> {
     try {
         const res = await issueApi.set_end_time(sessionId, projectId, issueId, endTime);
@@ -137,7 +172,7 @@ export async function updateExtraInfo(sessionId: string, projectId: string, issu
             extra_info: extraInfo,
         });
         console.log(res);
-        if(res.code == 0){
+        if (res.code == 0) {
             return true;
         }
         return false;

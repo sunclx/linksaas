@@ -13,8 +13,8 @@ const DetailsNav: FC<DetailsNavProps> = (props) => {
   const history = useHistory();
   return (
     <div className={s.details_nav_wrap}>
-      <div className={s.title} onClick={() => history.goBack()}>
-        <img src={leftArrow} alt="" /> {props.title}
+      <div className={s.title}>
+        <a onClick={() => history.goBack()}><img src={leftArrow} alt="" /></a> <span>{props.title}</span>
       </div>
       <div className={s.child}>{props?.children}</div>
     </div>

@@ -1,5 +1,7 @@
-import { IssueInfo, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS } from "@/api/project_issue";
-import { getIsTask, timeToDateString } from "@/utils/utils";
+import type { IssueInfo } from "@/api/project_issue";
+import { ISSUE_STATE_PROCESS } from "@/api/project_issue";
+
+import { getIssueText, getIsTask, timeToDateString } from "@/utils/utils";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import s from './IssueDetailRight.module.less';
@@ -10,8 +12,13 @@ import EventCom from "@/components/EventCom";
 import { useStores } from "@/hooks";
 import type { ListEventByRefRequest } from '@/api/events';
 import { request } from '@/utils/request';
-import { issueState, ISSUE_STATE_COLOR_ENUM } from "@/utils/constant";
+import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
+import { getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes } from "./utils";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import { EditSelect } from "@/components/EditCell/EditSelect";
+import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
+import { EditDate } from "@/components/EditCell/EditDate";
 
 
 type TimeLineType = PluginEvent;
@@ -27,6 +34,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
     const { pathname } = useLocation();
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const memberStore = useStores("memberStore");
 
     const [timeLine, setTimeLine] = useState<TimeLineType[]>();
 
@@ -48,20 +56,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
         loadEvent();
     }, [props.issue.issue_id, props.dataVersion])
 
-    const getColor = (v: number) => {
-        switch (v) {
-            case ISSUE_STATE_PLAN:
-                return ISSUE_STATE_COLOR_ENUM.规划中颜色;
-            case ISSUE_STATE_PROCESS:
-                return ISSUE_STATE_COLOR_ENUM.处理颜色;
-            case ISSUE_STATE_CHECK:
-                return ISSUE_STATE_COLOR_ENUM.验收颜色;
-            case ISSUE_STATE_CLOSE:
-                return ISSUE_STATE_COLOR_ENUM.关闭颜色;
-            default:
-                return ISSUE_STATE_COLOR_ENUM.规划中颜色;
-        }
-    };
+    const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 
     return (
         <div className={s.RightCom}>
@@ -71,13 +66,13 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     <div
                         tabIndex={0}
                         style={{
-                            background: `rgb(${getColor(props.issue.state)} / 20%)`,
+                            background: `rgb(${getStateColor(props.issue.state)} / 20%)`,
                             width: '50px',
                             borderRadius: '50px',
                             textAlign: 'center',
-                            color: `rgb(${getColor(props.issue.state)})`,
+                            color: `rgb(${getStateColor(props.issue.state)})`,
                             cursor: `${props.issue.user_issue_perm.next_state_list.length > 0 ? "pointer" : "default"}`,
-                            margin: '0 auto',
+                            paddingLeft: "0px",
                         }}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -93,34 +88,182 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                 {!getIsTask(pathname) && (
                     <>
                         <div className={s.basic_info}>
-                            <span>软件版本</span>
-                            <EditText editable={true}
-                                content={props.issue.extra_info.ExtraBugInfo?.software_version ?? ""}
-                                onChange={async (content: string) => {
-                                    //TODO
-                                    return false;
-                                }} showEditIcon={true} />
+                            <span>级别</span>
+                            <div>
+                                <EditSelect editable={true} curValue={props.issue.extra_info.ExtraBugInfo!.level} itemList={bugLvSelectItems} onChange={async (value) => {
+                                    return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
+                                        ExtraBugInfo: {
+                                            ...props.issue.extra_info.ExtraBugInfo!,
+                                            level: value as number,
+                                        },
+                                    });
+                                }} showEditIcon={true} /></div>
                         </div>
                         <div className={s.basic_info}>
-                            <span>级别</span>
-                            <div>XXX</div>
+                            <span>优先级</span>
+                            <div>
+                                <EditSelect editable={true} curValue={props.issue.extra_info.ExtraBugInfo!.priority}
+                                    itemList={bugPrioritySelectItems}
+                                    onChange={async (value) => {
+                                        return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
+                                            ExtraBugInfo: {
+                                                ...props.issue.extra_info.ExtraBugInfo!,
+                                                priority: value as number,
+                                            }
+                                        });
+
+                                    }} showEditIcon={true} />
+                            </div>
                         </div>
+                        <div className={s.basic_info}>
+                            <span>软件版本</span>
+                            <div>
+                                <EditText editable={true}
+                                    content={props.issue.extra_info.ExtraBugInfo?.software_version ?? ""}
+                                    onChange={async (value: string) => {
+                                        return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
+                                            ExtraBugInfo: {
+                                                ...props.issue.extra_info.ExtraBugInfo!,
+                                                software_version: value,
+                                            },
+                                        });
+                                    }} showEditIcon={true} />
+                            </div>
+                        </div>
+
                     </>
                 )}
+                {getIsTask(pathname) && (
+                    <div className={s.basic_info}>
+                        <span>优先级</span>
+                        <div><EditSelect editable={true} curValue={props.issue.extra_info.ExtraTaskInfo!.priority}
+                            itemList={taskPrioritySelectItems}
+                            onChange={async (value) => {
+                                return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
+                                    ExtraTaskInfo: {
+                                        ...props.issue.extra_info.ExtraTaskInfo!,
+                                        priority: value as number,
+                                    }
+                                });
+
+                            }} showEditIcon={true} />
+                        </div>
+                    </div>
+                )}
+                <div className={s.basic_info}>
+                    <span>处理人</span>
+                    <div>
+                        <EditSelect
+                            editable={props.issue.user_issue_perm.can_assign_exec_user}
+                            curValue={props.issue.exec_user_id}
+                            itemList={memberSelectItems}
+                            onChange={async (value) => {
+                                const res = await updateExecUser(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as string);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>验收人</span>
+                    <div>
+                        <EditSelect
+                            editable={props.issue.user_issue_perm.can_assign_check_user}
+                            curValue={props.issue.check_user_id}
+                            itemList={memberSelectItems}
+                            onChange={async (value) => {
+                                const res = await updateCheckUser(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as string);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>处理贡献
+                        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
+                            <a><QuestionCircleOutlined /></a>
+                        </Tooltip>
+                    </span>
+                    <div>
+                        <EditSelect
+                            editable={props.issue.user_issue_perm.can_set_award}
+                            curValue={props.issue.exec_award_point}
+                            itemList={awardSelectItems}
+                            onChange={async (value) => {
+                                return await updateExecAward(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>验收贡献
+                        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
+                            <a><QuestionCircleOutlined /></a>
+                        </Tooltip>
+                    </span>
+                    <div>
+                        <EditSelect
+                            editable={props.issue.user_issue_perm.can_set_award}
+                            curValue={props.issue.check_award_point}
+                            itemList={awardSelectItems}
+                            onChange={async (value) => {
+                                return await updateCheckAward(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>剩余工时</span>
+                    <div>
+                        <EditSelect
+                            editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
+                            curValue={props.issue.has_remain_minutes ? props.issue.remain_minutes : -1}
+                            itemList={hourSelectItems}
+                            onChange={async (value) => {
+                                return await updateRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>预估工时</span>
+                    <div>
+                        <EditSelect
+                            editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
+                            curValue={props.issue.has_estimate_minutes ? props.issue.estimate_minutes : -1}
+                            itemList={hourSelectItems}
+                            onChange={async (value) => {
+                                return await updateEstimateMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>预估完成时间</span>
+                    <div>
+                        <EditDate
+                            editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
+                            hasTimeStamp={props.issue.has_end_time}
+                            timeStamp={props.issue.end_time}
+                            onChange={async (value) => {
+                                return await updateEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
             </div>
             <div className={s.hr} />
             <div
                 className={s.time_line_wrap}
                 style={{
-                    height: `${!getIsTask(pathname) ? 'calc(100% - 470px)' : 'calc(100% - 390px)'}`,
+                    height: `${getIsTask(pathname) ? 'calc(100% - 290px)' : 'calc(100% - 350px)'}`,
                 }}
             >
                 <h2>动态</h2>
-                <Timeline className={`${s.timeLine} detailsTimeline`} reverse={true}>
+                <Timeline className={s.timeLine} reverse={true}>
                     {timeLine?.map((item) => (
                         <Timeline.Item color="gray" key={item.event_id}>
                             <p>{timeToDateString(item.event_time)}</p>
-                            <EventCom item={item} skipProjectName={true} skipLink={true} showMoreLink={true} />
+                            <EventCom key={item.event_id} item={item} skipProjectName={true} skipLink={true} showMoreLink={true} />
                         </Timeline.Item>
                     ))}
                 </Timeline>

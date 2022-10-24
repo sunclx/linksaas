@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Input, message } from 'antd';
+import { Table, Modal, Input, message } from 'antd';
 import type { SubIssueInfo } from '@/api/project_issue';
 import type { ColumnsType } from 'antd/lib/table';
 import { create_sub_issue, list_sub_issue, update_sub_issue, update_sub_issue_state, remove_sub_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
 import { useStores } from "@/hooks";
+import Button from "@/components/Button";
 
 interface SybIssuePanelProps {
     issueId: string;

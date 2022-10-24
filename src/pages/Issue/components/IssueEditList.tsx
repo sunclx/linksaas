@@ -1,6 +1,6 @@
 import type { IssueInfo } from '@/api/project_issue';
 import {
-  ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, update_title,
+  ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK,
 } from '@/api/project_issue';
 
 import { useStores } from '@/hooks';
@@ -17,11 +17,10 @@ import { showShortNote } from '@/utils/short_note';
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from '@/api/short_note';
 import { issueState } from '@/utils/constant';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
-import { request } from '@/utils/request';
 import { EditSelect } from '../../../components/EditCell/EditSelect';
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
 import { EditText } from '@/components/EditCell/EditText';
-import { getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes } from './utils';
+import { getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateTitle } from './utils';
 import { EditDate } from '@/components/EditCell/EditDate';
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
@@ -45,7 +44,7 @@ const IssueEditList: React.FC<TableProps> = ({
 }) => {
   const userStore = useStores("userStore");
   const projectStore = useStores("projectStore");
-  const memberStore = useStores("memberStore")
+  const memberStore = useStores("memberStore");
   const { pathname } = useLocation();
   const { push } = useHistory();
 
@@ -87,17 +86,8 @@ const IssueEditList: React.FC<TableProps> = ({
       render: (v: string, record: IssueInfo) => {
         return (
           <div>
-            <EditText editable={true} content={v} showEditIcon={true} onChange={async (title) => {
-              const res = await request(update_title({
-                session_id: userStore.sessionId,
-                project_id: record.project_id,
-                issue_id: record.issue_id,
-                title: title,
-              }));
-              if (res) {
-                return true;
-              }
-              return false;
+            <EditText editable={true} content={v} showEditIcon={true} onChange={async (value) => {
+              return await updateTitle(userStore.sessionId, record.project_id, record.issue_id, value);
             }} />
             <a
               style={{

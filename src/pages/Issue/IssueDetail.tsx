@@ -14,6 +14,8 @@ import s from './IssueDetail.module.less';
 import IssueDetailLeft from "./components/IssueDetailLeft";
 import IssueDetailRight from "./components/IssueDetailRight";
 import StageModel from "./components/StageModel";
+import { EditText } from "@/components/EditCell/EditText";
+import { updateTitle } from "./components/utils";
 
 const IssueDetail = () => {
     const location = useLocation();
@@ -40,7 +42,11 @@ const IssueDetail = () => {
     }, [state.issueId]);
 
     return (<CardWrap>
-        <DetailsNav title={issue?.basic_info.title ?? ""}>
+        {issue != undefined && (<DetailsNav title={
+            <EditText editable={true} content={issue?.basic_info.title ?? "xxx"} onChange={async (value: string) => {
+                return await updateTitle(userStore.sessionId, issue.project_id, issue.issue_id, value);
+            }} showEditIcon={true} />
+        }>
             {(issue?.user_issue_perm.can_remove ?? false) == true &&
                 (
                     (<Button danger onClick={e => {
@@ -52,10 +58,11 @@ const IssueDetail = () => {
                     </Button>)
                 )
             }
-        </DetailsNav>
+        </DetailsNav>)
+        }
         <div className={s.content_wrap}>
             <div className={s.content_left}>
-                {issue != undefined && <IssueDetailLeft issue={issue} onUpdate={() => { loadIssue() }} />}
+                {issue != undefined && <IssueDetailLeft issue={issue} />}
             </div>
             <div className={s.content_rigth}>
                 {issue != undefined && <IssueDetailRight issue={issue} onUpdate={() => { loadIssue() }} dataVersion={dataVersion} setShowStageModal={() => setShowStageModal(true)} />}
