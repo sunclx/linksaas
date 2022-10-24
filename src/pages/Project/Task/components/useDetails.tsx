@@ -1,6 +1,4 @@
 import type { IssueInfo } from '@/api/project_issue';
-import Button from '@/components/Button';
-import StageFormItem, { STAGE_FORM_TYPE_ENUM } from '@/components/StageFormItem';
 import type { FormInstance } from 'antd';
 import { Timeline, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -15,14 +13,13 @@ import { EVENT_TYPE_BUG } from '@/api/events';
 import { EVENT_REF_TYPE_TASK, EVENT_TYPE_TASK, list_event_by_ref } from '@/api/events';
 import { useLocation } from 'react-router-dom';
 import EventCom from '@/components/EventCom';
-import { updateIssue } from './common';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import { ReadOnlyEditor, useCommonEditor, change_file_fs } from '@/components/Editor';
-import { CommentList } from './CommentList';
+import { CommentList } from '../../../Issue/components/CommentList';
 import { FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
-import { ExtraIssueInfo } from './ExtraIssueInfo';
 import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { ExtraIssueInfo } from '@/pages/Issue/components/ExtraIssueInfo';
 
 type UseDetailsType = {
   details: IssueInfo;
@@ -90,7 +87,7 @@ const useDetails = (props: UseDetailsType) => {
         {getIsTask(pathname) && details.issue_id != "" && <ExtraIssueInfo issueId={details.issue_id}
           canOptSubIssue={details.user_issue_perm.can_opt_sub_issue}
           canOptDependence={details.user_issue_perm.can_opt_dependence} />}
-        <div className={s.stage_form_wrap}>
+        {/* <div className={s.stage_form_wrap}>
           <h2>{details.user_issue_perm.next_state_list.length > 0 ? "阶段更新" : "发表评论"}</h2>
           <StageFormItem
             form={form}
@@ -101,7 +98,7 @@ const useDetails = (props: UseDetailsType) => {
           <div className={s.submit}>
             <Button onClick={submit}>提交</Button>
           </div>
-        </div>
+        </div> */}
         <CommentList issueId={details.issue_id} />
       </div>
     );

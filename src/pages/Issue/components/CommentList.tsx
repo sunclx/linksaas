@@ -6,9 +6,11 @@ import { useStores } from '@/hooks';
 import { ReadOnlyEditor } from '@/components/Editor';
 import Pagination from '@/components/Pagination';
 import { useSetState } from 'ahooks';
-import type { PageOptType } from '..';
+import type { PageOptType } from '../../Project/Task';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import moment from 'moment';
+import { Card } from 'antd';
+import Button from '@/components/Button';
 
 export type CommentListProp = {
   issueId: string;
@@ -47,12 +49,10 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
 
   useEffect(() => {
     loadComment();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.issueId, pageOpt.pageNum]);
 
   return (
-    <div>
-      <h2>评论列表</h2>
+    <Card title={<h2>评论列表</h2>} bordered={false} extra={<Button>新增评论</Button>}>
       <div style={{ borderTop: '1px solid  #f0f0f5', marginTop: '20px' }}>
         {commentList.map((item) => {
           return (
@@ -73,6 +73,6 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
           onChange={(page: number) => setPageOpt({ pageNum: page })}
         />
       </div>
-    </div>
+    </Card>
   );
 };

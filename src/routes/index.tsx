@@ -11,11 +11,11 @@ import ProjectMember from '@/pages/Project/Member';
 import ProjectAppraise from '@/pages/Project/Appraise';
 import ProjectAward from '@/pages/Project/Award';
 import ProjectRecord from '@/pages/Project/Record/Record';
-import ProjectTask from '@/pages/Project/Task';
-import CreateTask from '@/pages/Project/Task/CreateTask';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
 import AppStore from '@/pages/Project/AppStore';
+import IssueList from '@/pages/Issue/IssueList';
+import IssueDetail from '@/pages/Issue/IssueDetail';
 
 import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
@@ -25,6 +25,7 @@ import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH,
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
 import ContentBlock from '@/pages/KnowledgeBase/ContentBlock';
+
 
 
 export interface IRouteConfig {
@@ -69,25 +70,25 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     {
       path: prefix + '/task',
       title: '任务列表',
-      component: ProjectTask,
+      component: IssueList,
       exact: true,
     },
     {
       path: prefix + '/task/view',
-      title: '创建任务',
-      component: CreateTask,
+      title: '任务详情',
+      component: IssueDetail,
       exact: true,
     },
     {
       path: prefix + '/bug',
       title: '缺陷列表',
-      component: ProjectTask,
+      component: IssueList,
       exact: true,
     },
     {
       path: prefix + '/bug/view',
-      title: '创建缺陷',
-      component: CreateTask,
+      title: '缺陷详情',
+      component: IssueDetail,
       exact: true,
     },
     {

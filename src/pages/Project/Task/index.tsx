@@ -11,7 +11,7 @@ import { SORT_TYPE_DSC, SORT_KEY_UPDATE_TIME, ASSGIN_USER_ALL, ASSGIN_USER_EXEC,
 import { list } from '@/api/project_issue';
 import { useSetState } from 'ahooks';
 import { tabList, TAB_LIST_ENUM } from '@/utils/constant';
-import Filtration from '@/components/Filtration';
+import Filtration from '@/pages/Issue/components/Filtration';
 import StageModel from './components/StageModel';
 import useVisible from '@/hooks/useVisible';
 import { request } from '@/utils/request';

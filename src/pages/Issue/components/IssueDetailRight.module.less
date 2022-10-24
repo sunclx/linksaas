@@ -1,0 +1,41 @@
+.RightCom {
+    width: 100%;
+    height: 100%;
+
+    .basic_info_wrap {
+        .basic_info {
+            display: flex;
+            align-items: center;
+            color: #2c2d2e;
+            font-size: 12px;
+            line-height: 26px;
+
+            >span {
+                display: inline-block;
+                width: 130px;
+                color: #666;
+            }
+
+            >div {
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .channel_child {
+                display: flex;
+
+                >span {
+                    color: #ff4c30;
+                }
+
+                .btnText {
+                    margin-left: 5px;
+                    color: @primary-color;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
