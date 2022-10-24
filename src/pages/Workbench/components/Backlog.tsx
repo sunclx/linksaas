@@ -11,7 +11,7 @@ import {
   issueState,
   taskPriority,
 } from '@/utils/constant';
-import { issueTypeIsTask, timeToDateString, getIssueViewUrl } from '@/utils/utils';
+import { issueTypeIsTask, timeToDateString, getIssueDetailUrl } from '@/utils/utils';
 import { Empty, Table } from 'antd';
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -98,7 +98,7 @@ const Backlog: React.FC<BacklogProps> = (props) => {
           e.stopPropagation();
           e.preventDefault();
           projectStore.setCurProjectId(row.project_id);
-          push(getIssueViewUrl(pathname), {
+          push(getIssueDetailUrl(pathname), {
             issueId: row.issue_id,
             content: "",
           } as LinkIssueState);

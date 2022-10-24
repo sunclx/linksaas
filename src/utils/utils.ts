@@ -2,7 +2,7 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 import { createBrowserHistory } from 'history';
 import moment from 'moment';
-import { BUG_VIEW_SUFFIX, APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_CB_PATH, TASK_VIEW_SUFFIX } from './constant';
+import { BUG_DETAIL_SUFFIX, APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_CB_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX } from './constant';
 
 export const goBack = (/*history: { goBack: () => void }*/) => {
   createBrowserHistory().goBack();
@@ -30,15 +30,26 @@ export const getIssue_type = (pathname: string): ISSUE_TYPE => {
   return getIsTask(pathname) ? ISSUE_TYPE_TASK : ISSUE_TYPE_BUG;
 };
 
-export const getIssueViewUrl = (pathname: string): string => {
+export const getIssueDetailUrl = (pathname: string): string => {
   if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-    return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_VIEW_SUFFIX;
+    return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_DETAIL_SUFFIX;
   } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
-    return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_VIEW_SUFFIX;
+    return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_DETAIL_SUFFIX;
   } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
-    return getIsTask(pathname) ? APP_PROJECT_KB_CB_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_KB_CB_PATH + BUG_VIEW_SUFFIX;
+    return getIsTask(pathname) ? APP_PROJECT_KB_CB_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_CB_PATH + BUG_DETAIL_SUFFIX;
   }
-  return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_VIEW_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_VIEW_SUFFIX;
+  return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_DETAIL_SUFFIX;
+};
+
+export const getIssueCreateUrl = (pathname: string): string => {
+  if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_CREATE_SUFFIX;
+  } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_CREATE_SUFFIX;
+  } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_KB_CB_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_CB_PATH + BUG_CREATE_SUFFIX;
+  }
+  return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_CREATE_SUFFIX;
 };
 
 // 根据数据 issue_type 字段获取 type

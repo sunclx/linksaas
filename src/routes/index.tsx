@@ -21,10 +21,11 @@ import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
 import ChatLayout from '@/layouts/ChatLayout';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
 import ContentBlock from '@/pages/KnowledgeBase/ContentBlock';
+import IssueCreate from '@/pages/Issue/IssueCreate';
 
 
 
@@ -74,9 +75,15 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
-      path: prefix + '/task/view',
+      path: prefix + TASK_DETAIL_SUFFIX,
       title: '任务详情',
       component: IssueDetail,
+      exact: true,
+    },
+    {
+      path: prefix + TASK_CREATE_SUFFIX,
+      title: '创建任务',
+      component: IssueCreate,
       exact: true,
     },
     {
@@ -86,9 +93,15 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
-      path: prefix + '/bug/view',
+      path: prefix + BUG_DETAIL_SUFFIX,
       title: '缺陷详情',
       component: IssueDetail,
+      exact: true,
+    },
+    {
+      path: prefix + BUG_CREATE_SUFFIX,
+      title: '创建缺陷',
+      component: IssueCreate,
       exact: true,
     },
     {

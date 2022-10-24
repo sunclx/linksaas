@@ -4,7 +4,7 @@ import {
 } from '@/api/project_issue';
 
 import { useStores } from '@/hooks';
-import { getIssueText, getIsTask, getIssueViewUrl } from '@/utils/utils';
+import { getIssueText, getIsTask, getIssueDetailUrl } from '@/utils/utils';
 import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import { Table, Tooltip } from 'antd';
 
@@ -63,7 +63,7 @@ const IssueEditList: React.FC<TableProps> = ({
             onClick={(e) => {
               e.stopPropagation();
               push(
-                getIssueViewUrl(pathname), {
+                getIssueDetailUrl(pathname), {
                   issueId: record.issue_id,
                   content: "",
                 } as LinkIssueState
@@ -100,7 +100,7 @@ const IssueEditList: React.FC<TableProps> = ({
               onClick={async (e) => {
                 e.stopPropagation();
                 push(
-                  getIssueViewUrl(pathname), {
+                  getIssueDetailUrl(pathname), {
                     issueId: record.issue_id,
                     content: "",
                   } as LinkIssueState

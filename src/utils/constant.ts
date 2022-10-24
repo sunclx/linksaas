@@ -8,8 +8,11 @@ export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
 export const APP_PROJECT_KB_CB_PATH = '/app/project/kb/content_block';
 
-export const TASK_VIEW_SUFFIX = '/task/view';
-export const BUG_VIEW_SUFFIX = '/bug/view';
+export const TASK_DETAIL_SUFFIX = '/task/detail';
+export const BUG_DETAIL_SUFFIX = '/bug/detail';
+
+export const TASK_CREATE_SUFFIX = '/task/create';
+export const BUG_CREATE_SUFFIX = '/bug/create';
 
 export const primaryColor = '#0078F7';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import s from './IssueList.module.less';
 import CardWrap from '@/components/CardWrap';
-import { getIssueText, getIssue_type, getIsTask, getIssueViewUrl } from '@/utils/utils';
+import { getIssueText, getIssue_type, getIsTask, getIssueCreateUrl } from '@/utils/utils';
 import Button from '@/components/Button';
 import { useHistory, useLocation } from "react-router-dom";
 import { useStores } from "@/hooks";
@@ -155,7 +155,7 @@ const IssueList = () => {
                         <h2>{getIssueText(location.pathname)}列表</h2>
                         <Button
                             type="primary"
-                            onClick={() => push(getIssueViewUrl(location.pathname))}
+                            onClick={() => push(getIssueCreateUrl(location.pathname))}
                             disabled={projectStore.curProject?.closed}
                         >
                             <img src={addIcon} alt="" />
