@@ -1,23 +1,31 @@
-import { TAB_LIST_ENUM } from '@/utils/constant';
 import { issueState } from '@/utils/constant';
 import { Form, Input, Select } from 'antd';
 import type { FC } from 'react';
 import React from 'react';
-import s from './index.module.less';
+import s from './Filtration.module.less';
 import { observer } from 'mobx-react';
-import Button from '../Button';
-import type { FilterDataType } from '@/pages/Project/Task';
+import Button from '../../../components/Button';
 import clearFilter from '@/assets/image/clearFilter.png';
-import MemberSelect from '../MemberSelect';
-import PrioritySelect from '../PrioritySelect';
+import MemberSelect from '../../../components/MemberSelect';
+import PrioritySelect from '../../../components/PrioritySelect';
 import { useLocation } from 'react-router-dom';
 import { getIsTask } from '@/utils/utils';
-import BugPrioritySelect from '../BugPrioritySelect';
-import BugLevelSelect from '../BugLevelSelect';
+import BugPrioritySelect from '../../../components/BugPrioritySelect';
+import BugLevelSelect from '../../../components/BugLevelSelect';
+import { ISSUE_TAB_LIST_TYPE } from './constant';
+
+export interface FilterDataType {
+  priority_list?: number[];
+  state_list?: number[];
+  exec_user_id_list?: string[];
+  check_user_id_list?: string[];
+  software_version_list: string[];
+  level_list?: number[];
+};
 
 type FiltrationProps = {
   setFilterData: (val: FilterDataType) => void;
-  activeVal: TAB_LIST_ENUM;
+  activeVal: ISSUE_TAB_LIST_TYPE;
   filterData: FilterDataType;
 };
 
@@ -101,14 +109,14 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
           style={{ width: 120 }}
           placeholder="处理人："
           memberUserId={execUserId}
-          disabled={activeVal !== TAB_LIST_ENUM.全部}
+          disabled={activeVal !== ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL}
         />
         <MemberSelect
           name={'check_user'}
           style={{ width: 120 }}
           placeholder="验收人："
           memberUserId={checkUserId}
-          disabled={activeVal !== TAB_LIST_ENUM.全部}
+          disabled={activeVal !== ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL}
         />
         {!getIsTask(pathname) && (
           <Form.Item name="version">

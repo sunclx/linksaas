@@ -125,6 +125,7 @@ const ChannelHeader = observer(() => {
         <Modal open
           title="修改聊天内容"
           width="80%"
+          mask={false}
           style={{ height: "500px", paddingTop: "100px" }}
           onCancel={e => {
             e.stopPropagation();

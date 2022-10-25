@@ -12,6 +12,7 @@ import {
   APP_PROJECT_KB_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
+import { CommentOutlined, FileDoneOutlined } from '@ant-design/icons';
 
 const TopNav = () => {
   const history = useHistory();
@@ -53,13 +54,13 @@ const TopNav = () => {
             }
           }}
         >
-          <Tabs.TabPane tab="沟通" key={APP_PROJECT_CHAT_PATH} />
-          <Tabs.TabPane tab="知识库" key={APP_PROJECT_KB_PATH} />
+          <Tabs.TabPane tab={<span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_chat_active : s.tab_chat}><CommentOutlined />沟通</span>} key={APP_PROJECT_CHAT_PATH} />
+          <Tabs.TabPane tab={<span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_kb : s.tab_kb_active}><FileDoneOutlined />知识库</span>} key={APP_PROJECT_KB_PATH} />
         </Tabs>
       </div>
       <span />
       <div className={s.right}>
-        {pathname === APP_PROJECT_CHAT_PATH && <ChannelHeader />}
+        {pathname.includes(APP_PROJECT_CHAT_PATH) && <ChannelHeader />}
         {pathname.includes(APP_PROJECT_KB_DOC_PATH) && <div className={s.doc_title}>知识库</div>}
         {pathname.includes(APP_PROJECT_KB_CB_PATH) && (
           <div className={s.doc_title}>可变内容块管理</div>

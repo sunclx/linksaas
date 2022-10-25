@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, message } from 'antd';
+import { Table, message } from 'antd';
 import { LinkSelect } from "@/components/Editor/components";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from '@/stores/linkAux';
 import { LINK_TARGET_TYPE } from '@/stores/linkAux';
@@ -10,11 +10,11 @@ import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from "@/hooks";
 import { get_issue_type_str } from '@/api/event_type';
 import { renderState, renderTitle } from "./dependComon";
-import { getIssueViewUrl } from '@/utils/utils';
+import { getIssueDetailUrl } from '@/utils/utils';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkIssueState } from '@/stores/linkAux';
 import { LinkOutlined } from '@ant-design/icons/lib/icons';
-import { TASK_INSIDE_PAGES_ENUM } from "../CreateTask";
+import Button from "@/components/Button";
 
 
 
@@ -85,9 +85,8 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                         onClick={(e) => {
                             e.stopPropagation();
                             push(
-                                getIssueViewUrl(pathname), {
+                                getIssueDetailUrl(pathname), {
                                     issueId: record.issue_id,
-                                    mode: TASK_INSIDE_PAGES_ENUM.DETAILS,
                                     content: "",
                                 } as LinkIssueState
                             );

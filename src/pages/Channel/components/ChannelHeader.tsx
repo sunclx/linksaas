@@ -20,16 +20,16 @@ const ChannelHeader = observer(() => {
   return (
     <header className={styles.header}>
       <h2 className={styles.title}>
-        #{channelStore.curChannel?.channelInfo.basic_info.channel_name || ''}
+        沟通&nbsp;&nbsp;#{channelStore.curChannel?.channelInfo.basic_info.channel_name || ''}
       </h2>
       {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && channelStore.curChannelId != '' && (
         <Popover
           content={() => <MemberList handlePopover={handlePopover} />}
           placement="bottomRight"
           overlayClassName="popover"
-          onVisibleChange={handlePopover}
+          onOpenChange={handlePopover}
           autoAdjustOverflow={false}
-          visible={visible}
+          open={visible}
           trigger="hover"
         >
           {/* <a className={styles.btn_member}>

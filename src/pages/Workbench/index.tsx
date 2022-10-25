@@ -11,8 +11,6 @@ import InfoCount from './components/InfoCount';
 import Backlog from './components/Backlog';
 import Myproject from './components/MyProject';
 import Record from './components/Record';
-import { useSetState } from 'ahooks';
-import type { PageOptType } from '../Project/Task';
 import { Button, Space } from 'antd';
 import { observer } from 'mobx-react';
 
@@ -27,11 +25,7 @@ const Workbench: FC = () => {
   const projectStore = useStores('projectStore');
   const appStore = useStores('appStore');
 
-  const [pageOpt, setPageOpt] = useSetState<Partial<PageOptType>>({
-    pageSize: 10,
-    pageNum: 1,
-    total: 0,
-  });
+  const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
 
   useMemo(() => {
     projectStore.setCurProjectId('');
@@ -41,10 +35,10 @@ const Workbench: FC = () => {
   return (
     <div className={s.workbench_wrap}>
       <Card className={s.infoCount_wrap} childStyle={{ height: '100%' }}>
-        {!userStore.isResetPassword && <InfoCount total={pageOpt.total} />}
+        {!userStore.isResetPassword && <InfoCount total={totalMyIssueCount} />}
       </Card>
       <Card className={s.backlog_wrap} title="我的待办">
-        {!userStore.isResetPassword && <Backlog pageOpt={pageOpt} setPageOpt={setPageOpt} />}
+        {!userStore.isResetPassword && <Backlog onChange={count=>setTotalMyIssueCount(count)} />}
       </Card>
       <div className={s.my_wrap}>
         <Card className={s.project_wrap} title="我的项目" extraContent={(
