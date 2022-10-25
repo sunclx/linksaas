@@ -14,7 +14,7 @@ import type { ListEventByRefRequest } from '@/api/events';
 import { request } from '@/utils/request';
 import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
-import { getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes } from "./utils";
+import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes } from "./utils";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
@@ -82,7 +82,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                             }
                         }}
                     >
-                        <Tooltip title={""}>{issueState[props.issue.state].label}</Tooltip>
+                        <Tooltip title={`${props.issue.user_issue_perm.next_state_list.length > 0 ? "" : "请等待同事更新状态"}`}>{issueState[props.issue.state].label}</Tooltip>
                     </div>
                 </div>
                 {!getIsTask(pathname) && (
@@ -90,19 +90,26 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                         <div className={s.basic_info}>
                             <span>级别</span>
                             <div>
-                                <EditSelect editable={true} curValue={props.issue.extra_info.ExtraBugInfo!.level} itemList={bugLvSelectItems} onChange={async (value) => {
-                                    return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
-                                        ExtraBugInfo: {
-                                            ...props.issue.extra_info.ExtraBugInfo!,
-                                            level: value as number,
-                                        },
-                                    });
-                                }} showEditIcon={true} /></div>
+                                <EditSelect
+                                    allowClear={false}
+                                    editable={true}
+                                    curValue={props.issue.extra_info.ExtraBugInfo!.level}
+                                    itemList={bugLvSelectItems} onChange={async (value) => {
+                                        return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
+                                            ExtraBugInfo: {
+                                                ...props.issue.extra_info.ExtraBugInfo!,
+                                                level: value as number,
+                                            },
+                                        });
+                                    }} showEditIcon={true} /></div>
                         </div>
                         <div className={s.basic_info}>
                             <span>优先级</span>
                             <div>
-                                <EditSelect editable={true} curValue={props.issue.extra_info.ExtraBugInfo!.priority}
+                                <EditSelect
+                                    allowClear={false}
+                                    editable={true}
+                                    curValue={props.issue.extra_info.ExtraBugInfo!.priority}
                                     itemList={bugPrioritySelectItems}
                                     onChange={async (value) => {
                                         return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
@@ -136,7 +143,10 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                 {getIsTask(pathname) && (
                     <div className={s.basic_info}>
                         <span>优先级</span>
-                        <div><EditSelect editable={true} curValue={props.issue.extra_info.ExtraTaskInfo!.priority}
+                        <div><EditSelect
+                            allowClear={false}
+                            editable={true}
+                            curValue={props.issue.extra_info.ExtraTaskInfo!.priority}
                             itemList={taskPrioritySelectItems}
                             onChange={async (value) => {
                                 return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
@@ -154,6 +164,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     <span>处理人</span>
                     <div>
                         <EditSelect
+                            allowClear={false}
                             editable={props.issue.user_issue_perm.can_assign_exec_user}
                             curValue={props.issue.exec_user_id}
                             itemList={memberSelectItems}
@@ -170,6 +181,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     <span>验收人</span>
                     <div>
                         <EditSelect
+                            allowClear={false}
                             editable={props.issue.user_issue_perm.can_assign_check_user}
                             curValue={props.issue.check_user_id}
                             itemList={memberSelectItems}
@@ -190,6 +202,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     </span>
                     <div>
                         <EditSelect
+                            allowClear={false}
                             editable={props.issue.user_issue_perm.can_set_award}
                             curValue={props.issue.exec_award_point}
                             itemList={awardSelectItems}
@@ -206,6 +219,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     </span>
                     <div>
                         <EditSelect
+                            allowClear={false}
                             editable={props.issue.user_issue_perm.can_set_award}
                             curValue={props.issue.check_award_point}
                             itemList={awardSelectItems}
@@ -218,11 +232,23 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     <span>剩余工时</span>
                     <div>
                         <EditSelect
+                            allowClear={true}
                             editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
-                            curValue={props.issue.has_remain_minutes ? props.issue.remain_minutes : -1}
+                            curValue={props.issue.has_remain_minutes ? props.issue.remain_minutes : ""}
                             itemList={hourSelectItems}
                             onChange={async (value) => {
-                                return await updateRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                                if (value === undefined) {
+                                    const res = await cancelRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id)
+                                    if (res) {
+                                        props.onUpdate();
+                                    }
+                                    return res;
+                                }
+                                const res = await updateRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
                             }} showEditIcon={true} />
                     </div>
                 </div>
@@ -230,11 +256,23 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     <span>预估工时</span>
                     <div>
                         <EditSelect
+                            allowClear={true}
                             editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
-                            curValue={props.issue.has_estimate_minutes ? props.issue.estimate_minutes : -1}
+                            curValue={props.issue.has_estimate_minutes ? props.issue.estimate_minutes : ""}
                             itemList={hourSelectItems}
                             onChange={async (value) => {
-                                return await updateEstimateMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                                if (value === undefined) {
+                                    const res = await cancelEstimateMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                    if (res) {
+                                        props.onUpdate();
+                                    }
+                                    return res;
+                                }
+                                const res = await updateEstimateMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
                             }} showEditIcon={true} />
                     </div>
                 </div>
@@ -246,7 +284,18 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                             hasTimeStamp={props.issue.has_end_time}
                             timeStamp={props.issue.end_time}
                             onChange={async (value) => {
-                                return await updateEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                if(value === undefined){
+                                    const res = await cancelEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                    if (res) {
+                                        props.onUpdate();
+                                    }
+                                    return true;
+                                }
+                                const res = await updateEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
                             }} showEditIcon={true} />
                     </div>
                 </div>

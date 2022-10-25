@@ -12,8 +12,9 @@ export interface EditSelectProps {
     editable: boolean;
     curValue: string | number;
     itemList: EditSelectItem[];
-    onChange: (curValue: string | number) => Promise<boolean>;
+    onChange: (curValue: string | number | undefined) => Promise<boolean>;
     showEditIcon: boolean;
+    allowClear: boolean;
 }
 
 export const EditSelect: React.FC<EditSelectProps> = (props) => {
@@ -47,6 +48,7 @@ export const EditSelect: React.FC<EditSelectProps> = (props) => {
                 <a><EditOutlined /></a>
             }</>)}
             {inEdit && (<Select
+                allowClear={props.allowClear}
                 open={true}
                 showArrow={false}
                 style={{ width: "80px" }}

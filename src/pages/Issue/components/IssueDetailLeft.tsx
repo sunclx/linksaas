@@ -82,13 +82,13 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
 
     return (
         <div className={s.leftCom}>
-            <Card title={<h2>内容详情</h2>} bordered={false} extra={renderContentBtn()}>
+            <Card bordered={false} extra={renderContentBtn()}>
                 {inEdit && (<>
                     {editor.editor}
                 </>)}
                 {!inEdit && (
                     <>
-                        {isEmpty && (<Empty description="内容为空"/>)}
+                        {isEmpty && (<Empty description="内容为空" image={Empty.PRESENTED_IMAGE_SIMPLE}/>)}
                         {!isEmpty && (<ReadOnlyEditor content={issueContent} />)}
                     </>
                 )}

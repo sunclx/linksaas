@@ -423,6 +423,34 @@ async fn set_start_time<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
+
+#[tauri::command]
+async fn cancel_start_time<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelStartTimeRequest,
+) -> Result<CancelStartTimeResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.cancel_start_time(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_start_time_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("cancel_start_time".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 #[tauri::command]
 async fn set_end_time<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -449,6 +477,35 @@ async fn set_end_time<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
+
+#[tauri::command]
+async fn cancel_end_time<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelEndTimeRequest,
+) -> Result<CancelEndTimeResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.cancel_end_time(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_end_time_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("cancel_end_time".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
 #[tauri::command]
 async fn set_estimate_minutes<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -476,6 +533,35 @@ async fn set_estimate_minutes<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
+
+#[tauri::command]
+async fn cancel_estimate_minutes<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelEstimateMinutesRequest,
+) -> Result<CancelEstimateMinutesResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.cancel_estimate_minutes(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_estimate_minutes_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("cancel_estimate_minutes".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 #[tauri::command]
 async fn set_remain_minutes<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -494,6 +580,34 @@ async fn set_remain_minutes<R: Runtime>(
                 if let Err(err) = window.emit(
                     "notice",
                     new_wrong_session_notice("set_remain_minutes".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn cancel_remain_minutes<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelRemainMinutesRequest,
+) -> Result<CancelRemainMinutesResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.cancel_remain_minutes(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_remain_minutes_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("cancel_remain_minutes".into()),
                 ) {
                     println!("{:?}", err);
                 }
@@ -970,6 +1084,10 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 set_end_time,
                 set_estimate_minutes,
                 set_remain_minutes,
+                cancel_start_time,
+                cancel_end_time,
+                cancel_estimate_minutes,
+                cancel_remain_minutes,
                 get_member_state,
                 list_member_state,
                 add_comment,

@@ -284,6 +284,10 @@ pub mod issue {
         SetEndTimeEvent(events_issue::SetEndTimeEvent),
         SetEstimateMinutesEvent(events_issue::SetEstimateMinutesEvent),
         SetRemainMinutesEvent(events_issue::SetRemainMinutesEvent),
+        CancelStartTimeEvent(events_issue::CancelStartTimeEvent),
+        CancelEndTimeEvent(events_issue::CancelEndTimeEvent),
+        CancelEstimateMinutesEvent(events_issue::CancelEstimateMinutesEvent),
+        CancelRemainMinutesEvent(events_issue::CancelRemainMinutesEvent),
 
         CreateSubIssueEvent(events_issue::CreateSubIssueEvent),
         UpdateSubIssueEvent(events_issue::UpdateSubIssueEvent),
@@ -337,6 +341,22 @@ pub mod issue {
         } else if data.type_url == events_issue::SetRemainMinutesEvent::type_url() {
             if let Ok(ev) = events_issue::SetRemainMinutesEvent::decode(data.value.as_slice()) {
                 return Some(Event::SetRemainMinutesEvent(ev));
+            }
+        } else if data.type_url == events_issue::CancelStartTimeEvent::type_url() {
+            if let Ok(ev) = events_issue::CancelStartTimeEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelStartTimeEvent(ev));
+            }
+        } else if data.type_url == events_issue::CancelEndTimeEvent::type_url() {
+            if let Ok(ev) = events_issue::CancelEndTimeEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelEndTimeEvent(ev));
+            }
+        } else if data.type_url == events_issue::CancelEstimateMinutesEvent::type_url() {
+            if let Ok(ev) = events_issue::CancelEstimateMinutesEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelEstimateMinutesEvent(ev));
+            }
+        } else if data.type_url == events_issue::CancelRemainMinutesEvent::type_url() {
+            if let Ok(ev) = events_issue::CancelRemainMinutesEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelRemainMinutesEvent(ev));
             }
         }else if data.type_url == events_issue::CreateSubIssueEvent::type_url() {
             if let Ok(ev) = events_issue::CreateSubIssueEvent::decode(data.value.as_slice()){

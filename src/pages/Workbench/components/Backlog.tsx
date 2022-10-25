@@ -23,7 +23,7 @@ import { debounce } from 'lodash';
 import { get_issue_type_str } from '@/api/event_type';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import type { LinkIssueState } from '@/stores/linkAux';
 import { observer } from 'mobx-react';
@@ -42,7 +42,6 @@ const Backlog: React.FC<BacklogProps> = (props) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const { push } = useHistory();
-  const { pathname } = useLocation();
 
   const [pageSize, setPageSize] = useState(10);
   const [curPage, setCurPage] = useState(0);
@@ -98,12 +97,12 @@ const Backlog: React.FC<BacklogProps> = (props) => {
           e.stopPropagation();
           e.preventDefault();
           projectStore.setCurProjectId(row.project_id);
-          push(getIssueDetailUrl(pathname), {
+          push(getIssueDetailUrl(row.issue_type == ISSUE_TYPE_TASK ? "/task" : "/bug"), {
             issueId: row.issue_id,
             content: "",
           } as LinkIssueState);
         }} title={row.basic_info?.title}><span><LinkOutlined />{row.basic_info?.title}</span></a>
-        {row.msg_count && (
+        {row.msg_count > 0 && (
           <span
             style={{
               padding: '0px 5px',

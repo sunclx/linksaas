@@ -1,6 +1,7 @@
 import type { MemberInfo } from "@/api/project_member";
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
 import * as issueApi from '@/api/project_issue';
+import {message} from 'antd';
 
 export function getStateColor(v: number) {
     switch (v) {
@@ -38,6 +39,7 @@ export async function updateTitle(sessionId: string, projectId: string, issueId:
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -55,6 +57,7 @@ export async function updateContent(sessionId: string, projectId: string, issueI
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -68,6 +71,21 @@ export async function updateEndTime(sessionId: string, projectId: string, issueI
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+
+export async function cancelEndTime(sessionId: string, projectId: string, issueId: string): Promise<boolean> {
+    try {
+        const res = await issueApi.cancel_end_time(sessionId, projectId, issueId);
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -87,6 +105,20 @@ export async function updateRemainMinutes(sessionId: string, projectId: string, 
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+export async function cancelRemainMinutes(sessionId: string, projectId: string, issueId: string): Promise<boolean> {
+    try {
+        const res = await issueApi.cancel_remain_minutes(sessionId, projectId, issueId);
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -99,6 +131,20 @@ export async function updateEstimateMinutes(sessionId: string, projectId: string
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+export async function cancelEstimateMinutes(sessionId: string, projectId: string, issueId: string): Promise<boolean> {
+    try {
+        const res = await issueApi.cancel_estimate_minutes(sessionId, projectId, issueId);
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -116,6 +162,7 @@ export async function updateExecAward(sessionId: string, projectId: string, issu
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -133,6 +180,7 @@ export async function updateCheckAward(sessionId: string, projectId: string, iss
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -145,6 +193,7 @@ export async function updateExecUser(sessionId: string, projectId: string, issue
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -157,6 +206,7 @@ export async function updateCheckUser(sessionId: string, projectId: string, issu
         if (res.code == 0) {
             return true
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;
@@ -171,10 +221,10 @@ export async function updateExtraInfo(sessionId: string, projectId: string, issu
             issue_id: issueId,
             extra_info: extraInfo,
         });
-        console.log(res);
         if (res.code == 0) {
             return true;
         }
+        message.error(res.err_msg);
         return false;
     } catch (_) {
         return false;

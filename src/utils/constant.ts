@@ -16,27 +16,6 @@ export const BUG_CREATE_SUFFIX = '/bug/create';
 
 export const primaryColor = '#0078F7';
 
-export enum TAB_LIST_ENUM {
-  全部 = 'all',
-  指派给我 = 'assign',
-  由我创建 = 'creator',
-}
-
-export const tabList = [
-  {
-    name: '指派给我',
-    value: TAB_LIST_ENUM.指派给我,
-  },
-  {
-    name: '由我创建',
-    value: TAB_LIST_ENUM.由我创建,
-  },
-  {
-    name: '全部',
-    value: TAB_LIST_ENUM.全部,
-  },
-];
-
 export const statusText = {
   [issueApi.ISSUE_STATE_PLAN]: '规划中阶段', //规划中
   [issueApi.ISSUE_STATE_PROCESS]: '处理阶段', //处理
