@@ -1,6 +1,6 @@
 import { useStores } from '@/hooks';
 import React, { useEffect } from 'react';
-import { Input, Button, message, Space } from 'antd';
+import { Input, message, Space } from 'antd';
 import { useCommonEditor, change_file_fs, change_file_owner } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT_DOC, FILE_OWNER_TYPE_PROJECT } from '@/api/fs';
 import { request } from '@/utils/request';
@@ -11,6 +11,7 @@ import type { LinkDocState } from '@/stores/linkAux';
 import s from './EditDoc.module.less';
 import { observer } from 'mobx-react';
 import { runInAction } from 'mobx';
+import Button from '@/components/Button';
 
 const WriteDoc: React.FC = () => {
   const userStore = useStores('userStore');
@@ -175,41 +176,38 @@ const WriteDoc: React.FC = () => {
             }
           }}
         />
+        <div className={s.save}>
+          <Space size="large">
+            <Button
+              type="default"
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (docSpaceStore.curDocId == "") {
+                  docSpaceStore.clearCurDoc();
+                  docSpaceStore.showDocList(docSpaceStore.curDocSpaceId, false);
+                } else {
+                  docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
+                }
+              }}>取消</Button>
+            <Button
+              type="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (docSpaceStore.curDocId == '') {
+                  createDoc();
+                } else {
+                  updateDoc();
+                }
+              }}
+            >
+              保存
+            </Button>
+          </Space>
+        </div>
       </div>
-      <div className="_chatContext">{editor}</div>
-      <div className={s.save}>
-        <Space size="large">
-          <Button
-            style={{ width: "80px" }}
-            size='large'
-            onClick={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (docSpaceStore.curDocId == "") {
-                docSpaceStore.clearCurDoc();
-                docSpaceStore.showDocList(docSpaceStore.curDocSpaceId, false);
-              } else {
-                docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
-              }
-            }}>取消</Button>
-          <Button
-            style={{ width: "80px" }}
-            type="primary"
-            size='large'
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (docSpaceStore.curDocId == '') {
-                createDoc();
-              } else {
-                updateDoc();
-              }
-            }}
-          >
-            保存
-          </Button>
-        </Space>
-      </div>
+      <div className="_docContext">{editor}</div>
     </div>
   );
 };

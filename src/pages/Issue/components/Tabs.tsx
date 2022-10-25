@@ -1,14 +1,14 @@
-import type { TAB_LIST_ENUM } from '@/utils/constant';
+import type { ISSUE_TAB_LIST_TYPE } from './constant';
 import type { FC } from 'react';
 import React from 'react';
-import s from './index.module.less';
+import s from './Tabs.module.less';
 import filterIcon from '@/assets/image/filterIcon.png';
 import noFilterIcon from '@/assets/image/noFilterIcon.png';
 
 type TabsProps = {
-  list: { name: string; value: string }[];
-  activeVal: string;
-  onChang: (val: TAB_LIST_ENUM) => void;
+  list: { name: string; value: ISSUE_TAB_LIST_TYPE }[];
+  activeVal: ISSUE_TAB_LIST_TYPE;
+  onChang: (val: ISSUE_TAB_LIST_TYPE) => void;
   isFilter: boolean;
   setIsFilter: (val: boolean) => void;
 };
@@ -22,7 +22,7 @@ const Tabs: FC<TabsProps> = (props) => {
         <div
           key={item.value}
           className={item.value == activeVal ? s.active : ''}
-          onClick={() => onChang(item.value as TAB_LIST_ENUM)}
+          onClick={() => onChang(item.value)}
         >
           {item.name}
         </div>

@@ -8,31 +8,13 @@ export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
 export const APP_PROJECT_KB_CB_PATH = '/app/project/kb/content_block';
 
-export const TASK_VIEW_SUFFIX = '/task/view';
-export const BUG_VIEW_SUFFIX = '/bug/view';
+export const TASK_DETAIL_SUFFIX = '/task/detail';
+export const BUG_DETAIL_SUFFIX = '/bug/detail';
+
+export const TASK_CREATE_SUFFIX = '/task/create';
+export const BUG_CREATE_SUFFIX = '/bug/create';
 
 export const primaryColor = '#0078F7';
-
-export enum TAB_LIST_ENUM {
-  全部 = 'all',
-  指派给我 = 'assign',
-  由我创建 = 'creator',
-}
-
-export const tabList = [
-  {
-    name: '指派给我',
-    value: TAB_LIST_ENUM.指派给我,
-  },
-  {
-    name: '由我创建',
-    value: TAB_LIST_ENUM.由我创建,
-  },
-  {
-    name: '全部',
-    value: TAB_LIST_ENUM.全部,
-  },
-];
 
 export const statusText = {
   [issueApi.ISSUE_STATE_PLAN]: '规划中阶段', //规划中

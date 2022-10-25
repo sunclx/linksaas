@@ -1115,6 +1115,98 @@ namespace issue {
     return ret_list;
   }
 
+  export type CancelStartTimeEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+  };
+  function get_cancel_start_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelStartTimeEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`开始时间`));
+    return ret_list;
+  }
+  export type CancelEndTimeEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    end_time: number;
+  };
+  function get_cancel_end_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelEndTimeEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`结束时间`));
+    return ret_list;
+  }
+  export type CancelEstimateMinutesEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    estimate_minutes: number;
+  };
+  function get_cancel_estimate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelEstimateMinutesEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`预估时间`));
+    return ret_list;
+  }
+
+  export type CancelRemainMinutesEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+  };
+  function get_cancel_remain_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelRemainMinutesEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消${issue_type_str}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`剩余时间`));
+    return ret_list;
+  }
+
   export type CreateSubIssueEvent = {
     issue_id: string;
     issue_type: number;
@@ -1287,6 +1379,10 @@ namespace issue {
     SetEndTimeEvent?: SetEndTimeEvent;
     SetEstimateMinutesEvent?: SetEstimateMinutesEvent;
     SetRemainMinutesEvent?: SetRemainMinutesEvent;
+    CancelStartTimeEvent?: CancelStartTimeEvent;
+    CancelEndTimeEvent?: CancelEndTimeEvent;
+    CancelEstimateMinutesEvent?: CancelEstimateMinutesEvent;
+    CancelRemainMinutesEvent?: CancelRemainMinutesEvent;
     CreateSubIssueEvent?: CreateSubIssueEvent;
     UpdateSubIssueEvent?: UpdateSubIssueEvent;
     UpdateSubIssueStateEvent?: UpdateSubIssueStateEvent;
@@ -1321,6 +1417,14 @@ namespace issue {
       return get_set_estimate_simple_content(ev, skip_prj_name, inner.SetEstimateMinutesEvent);
     } else if (inner.SetRemainMinutesEvent !== undefined) {
       return get_set_remain_simple_content(ev, skip_prj_name, inner.SetRemainMinutesEvent);
+    } else if (inner.CancelStartTimeEvent !== undefined) {
+      return get_cancel_start_simple_content(ev, skip_prj_name, inner.CancelStartTimeEvent);
+    } else if (inner.CancelEndTimeEvent !== undefined) {
+      return get_cancel_end_simple_content(ev, skip_prj_name, inner.CancelEndTimeEvent);
+    } else if (inner.CancelEstimateMinutesEvent !== undefined) {
+      return get_cancel_estimate_simple_content(ev, skip_prj_name, inner.CancelEstimateMinutesEvent);
+    } else if (inner.CancelRemainMinutesEvent !== undefined) {
+      return get_cancel_remain_simple_content(ev, skip_prj_name, inner.CancelRemainMinutesEvent);
     } else if (inner.CreateSubIssueEvent !== undefined) {
       return get_create_sub_issue_simple_content(ev, skip_prj_name, inner.CreateSubIssueEvent);
     } else if (inner.UpdateSubIssueEvent !== undefined) {

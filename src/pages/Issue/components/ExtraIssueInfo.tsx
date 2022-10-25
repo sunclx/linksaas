@@ -16,8 +16,8 @@ export const ExtraIssueInfo: React.FC<ExtraIssueInfoProps> = (props) => {
     return (
         <>
             <h2>额外信息</h2>
-            <Tabs defaultActiveKey="sub">
-                <Tabs.TabPane tab="子工单" key="sub">
+            <Tabs defaultActiveKey="sub" size="large">
+                <Tabs.TabPane tab="子任务" key="sub">
                     <SubIssuePanel issueId={props.issueId} canOptSubIssue={props.canOptSubIssue}/>
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="我的依赖" key="myDepend">

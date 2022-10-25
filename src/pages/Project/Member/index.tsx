@@ -22,7 +22,6 @@ const ProjectMember: React.FC = () => {
 
   const { columns } = useColums({
     setRemoveObj,
-    isAdmin: projectStore.isAdmin,
   });
 
 
@@ -42,13 +41,24 @@ const ProjectMember: React.FC = () => {
           )}
         </div>
         <div className={s.table_wrap}>
-          <Table<WebMemberInfo>
-            rowKey={(e) => e?.member?.member_user_id}
-            scroll={{ y: 'calc(100vh - 260px)' }}
-            columns={columns as ColumnsType<WebMemberInfo>}
-            dataSource={memberStore.memberList}
-            pagination={false}
-          />
+          {projectStore.isAdmin && (
+            <Table<WebMemberInfo>
+              rowKey={(e) => e?.member?.member_user_id}
+              scroll={{ y: 'calc(100vh - 260px)' }}
+              columns={columns as ColumnsType<WebMemberInfo>}
+              dataSource={memberStore.memberList}
+              pagination={false}
+            />
+          )}
+          {!projectStore.isAdmin && (
+            <Table<WebMemberInfo>
+              rowKey={(e) => e?.member?.member_user_id}
+              scroll={{ y: 'calc(100vh - 260px)' }}
+              columns={columns as ColumnsType<WebMemberInfo>}
+              dataSource={memberStore.memberList}
+              pagination={false}
+            />
+          )}
         </div>
         <RemoveMember
           visible={removeObj.visible}

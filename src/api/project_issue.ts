@@ -104,6 +104,27 @@ type UpdateResponse = {
   err_msg: string;
 };
 
+export type UpdateTitleRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  title: string;
+};
+
+export type UpdateContentRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  content: string;
+};
+
+export type UpdateExtraInfoRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  extra_info: ExtraInfo;
+};
+
 type AssignExecUserResponse = {
   code: number;
   err_msg: string;
@@ -175,6 +196,7 @@ type UserIssuePerm = {
   can_remove: boolean;
   can_opt_dependence: boolean;
   can_opt_sub_issue: boolean;
+  can_set_award: boolean;
 };
 
 export type IssueInfo = {
@@ -272,12 +294,27 @@ type SetStartTimeResponse = {
   err_msg: string;
 };
 
+type CancelStartTimeResponse = {
+  code: number;
+  err_msg: string;
+};
+
 type SetEndTimeResponse = {
   code: number;
   err_msg: string;
 };
 
+type CancelEndTimeResponse = {
+  code: number;
+  err_msg: string;
+};
+
 type SetEstimateMinutesResponse = {
+  code: number;
+  err_msg: string;
+};
+
+type CancelEstimateMinutesResponse = {
   code: number;
   err_msg: string;
 };
@@ -292,6 +329,11 @@ type SetRemainMinutesRequest = {
 };
 
 type SetRemainMinutesResponse = {
+  code: number;
+  err_msg: string;
+};
+
+type CancelRemainMinutesResponse = {
   code: number;
   err_msg: string;
 };
@@ -592,6 +634,34 @@ export async function update(request: UpdateRequest): Promise<UpdateResponse> {
   });
 }
 
+//更新工单标题
+export async function update_title(request: UpdateTitleRequest): Promise<UpdateResponse> {
+  const cmd = 'plugin:project_issue_api|update_title';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateResponse>(cmd, {
+    request,
+  });
+}
+
+//更新工单内容
+export async function update_content(request: UpdateContentRequest): Promise<UpdateResponse> {
+  const cmd = 'plugin:project_issue_api|update_content';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateResponse>(cmd, {
+    request,
+  });
+}
+
+//更新工单额外信息
+export async function update_extra_info(request: UpdateExtraInfoRequest): Promise<UpdateResponse> {
+  const cmd = 'plugin:project_issue_api|update_extra_info';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateResponse>(cmd, {
+    request,
+  });
+}
+
+
 //指派执行人
 export async function assign_exec_user(
   session_id: string,
@@ -733,6 +803,24 @@ export async function set_start_time(
   });
 }
 
+//取消开始时间
+export async function cancel_start_time(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<CancelStartTimeResponse> {
+  const cmd = 'plugin:project_issue_api|cancel_start_time';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<CancelStartTimeResponse>(cmd, {
+    request,
+  });
+}
+
 //设置结束时间
 export async function set_end_time(
   session_id: string,
@@ -749,6 +837,24 @@ export async function set_end_time(
   };
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<SetEndTimeResponse>(cmd, {
+    request,
+  });
+}
+
+//取消结束时间
+export async function cancel_end_time(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<CancelEndTimeResponse> {
+  const cmd = 'plugin:project_issue_api|cancel_end_time';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<CancelEndTimeResponse>(cmd, {
     request,
   });
 }
@@ -774,6 +880,25 @@ export async function set_estimate_minutes(
   });
 }
 
+//取消预估时间
+export async function cancel_estimate_minutes(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<CancelEstimateMinutesResponse> {
+  const cmd = 'plugin:project_issue_api|cancel_estimate_minutes';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<CancelEstimateMinutesResponse>(cmd, {
+    request,
+  });
+}
+
 //设置剩余时间
 export async function set_remain_minutes(
   request: SetRemainMinutesRequest,
@@ -781,6 +906,24 @@ export async function set_remain_minutes(
   const cmd = 'plugin:project_issue_api|set_remain_minutes';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<SetRemainMinutesResponse>(cmd, {
+    request: request,
+  });
+}
+
+//取消剩余时间
+export async function cancel_remain_minutes(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<CancelRemainMinutesResponse> {
+  const cmd = 'plugin:project_issue_api|cancel_remain_minutes';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<CancelRemainMinutesResponse>(cmd, {
     request: request,
   });
 }

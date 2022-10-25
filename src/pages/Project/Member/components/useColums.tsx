@@ -15,11 +15,10 @@ const { Option } = Select;
 
 type UseColumsType = {
   setRemoveObj: (boo: boolean, params: WebMemberInfo) => void;
-  isAdmin: boolean;
 };
 
 const useColums = (props: UseColumsType) => {
-  const { setRemoveObj, isAdmin } = props;
+  const { setRemoveObj } = props;
   const [roleList, setRoleList] = useState<API.RoleInfo[]>();
 
   const projectStore = useStores("projectStore");
@@ -34,11 +33,11 @@ const useColums = (props: UseColumsType) => {
   };
 
   useEffect(() => {
-    if (isAdmin) {
+    if (projectStore.isAdmin) {
       getRoleList();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin]);
+  }, [projectStore.isAdmin]);
 
   // 工作快照设置
   const onChangeSwitch = async (checked: boolean, row: WebMemberInfo) => {
@@ -107,13 +106,13 @@ const useColums = (props: UseColumsType) => {
     {
       title: '角色',
       dataIndex: ['member', 'role_id'],
-      width: isAdmin ? 100 : 200,
+      width: projectStore.isAdmin ? 100 : 200,
       isShow: true,
       align: 'center',
       render: (v: string, row: WebMemberInfo) => {
         return row.member.is_project_owner ? (
           <span>超级管理员</span>
-        ) : isAdmin ? (
+        ) : projectStore.isAdmin ? (
           <Select
             value={v}
             bordered={false}
@@ -143,7 +142,7 @@ const useColums = (props: UseColumsType) => {
       dataIndex: ['member', 'work_snap_shot_info', 'enable'],
       width: 100,
       align: 'center',
-      isShow: isAdmin,
+      isShow: projectStore.isAdmin,
       render: (v: boolean, row: WebMemberInfo) => {
         return <Switch checked={v} onChange={(e) => { onChangeSwitch(e, row) }} />;
       },
@@ -153,7 +152,7 @@ const useColums = (props: UseColumsType) => {
       dataIndex: ['member', 'float_notice_per_day'],
       width: 70,
       align: 'center',
-      isShow: isAdmin,
+      isShow: projectStore.isAdmin,
       render: (count: number, row: WebMemberInfo) => {
         return <Select
           value={count}
@@ -179,8 +178,8 @@ const useColums = (props: UseColumsType) => {
       title: '操作',
       align: 'center',
       width: 100,
-      className: `${!isAdmin && 'notshow'}`,
-      isShow: isAdmin,
+      className: `${!projectStore.isAdmin && 'notshow'}`,
+      isShow: projectStore.isAdmin,
       render: (row: WebMemberInfo) => (
         <Button
           type="link"

@@ -6,7 +6,7 @@ import { message } from 'antd';
 import type { History } from 'history';
 import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 
 /*
@@ -222,7 +222,6 @@ export type LinkEventState = {
 
 export type LinkIssueState = {
   issueId: string;
-  mode: string;
   content: string;
 };
 
@@ -319,9 +318,8 @@ class LinkAuxStore {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
 
-      history.push(this.genUrl(pathname, "/task/view"), {
+      history.push(this.genUrl(pathname, TASK_DETAIL_SUFFIX), {
         issueId: taskLink.issueId,
-        mode: 'details',
         content: '',
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BUG) {
@@ -345,9 +343,8 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
-      history.push(this.genUrl(pathname, "/bug/view"), {
+      history.push(this.genUrl(pathname, BUG_DETAIL_SUFFIX), {
         issueId: taskLink.issueId,
-        mode: 'details',
         content: '',
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
@@ -390,17 +387,15 @@ class LinkAuxStore {
 
   //跳转到创建任务
   goToCreateTask(content: string, history: History) {
-    history.push(this.genUrl(history.location.pathname, "/task/view"), {
+    history.push(this.genUrl(history.location.pathname, TASK_CREATE_SUFFIX), {
       issueId: '',
-      mode: 'add',
       content: content,
     } as LinkIssueState);
   }
   //跳转到创建缺陷
   goToCreateBug(content: string, history: History) {
-    history.push(this.genUrl(history.location.pathname, "/bug/view"), {
+    history.push(this.genUrl(history.location.pathname, BUG_CREATE_SUFFIX), {
       issueId: '',
-      mode: 'add',
       content: content,
     } as LinkIssueState);
   }
