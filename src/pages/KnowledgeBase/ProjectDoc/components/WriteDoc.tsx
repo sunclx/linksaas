@@ -132,7 +132,7 @@ const WriteDoc: React.FC = () => {
       docApi.create_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? "",
+        doc_space_id: docSpaceStore.curDocSpaceId == "" ? (projectStore.curProject?.default_doc_space_id ?? "") : docSpaceStore.curDocSpaceId,
         base_info: {
           title: newTitle,
           content: JSON.stringify(content),
@@ -162,6 +162,7 @@ const WriteDoc: React.FC = () => {
         <Input
           placeholder="请输入新文档名称"
           defaultValue={docSpaceStore.curDoc?.base_info.title ?? ''}
+          bordered={false}
           onChange={(e) => {
             e.stopPropagation();
             e.preventDefault();
