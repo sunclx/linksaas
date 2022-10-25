@@ -37,7 +37,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
 
     const addSubIssue = async () => {
         if (subIssueTitle == "") {
-            message.error("子工单标题不能为空");
+            message.error("子任务标题不能为空");
             return;
         }
         const res = await request(create_sub_issue({
@@ -49,7 +49,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
             },
         }));
         if (res) {
-            message.info("添加子工单成功");
+            message.info("添加子任务成功");
             setShowAddSubIssue(false);
             await loadSubIssue();
         }
@@ -57,7 +57,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
 
     const updateSubIssue = async () => {
         if (subIssueTitle == "") {
-            message.error("子工单标题不能为空");
+            message.error("子任务标题不能为空");
             return;
         }
         const res = await request(update_sub_issue({
@@ -79,7 +79,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
             setSubIssueTitle("");
             setCurSubIssueId("");
             setShowUpdateSubIssue(false);
-            message.info("修改子工单标题成功");
+            message.info("修改子任务标题成功");
         }
     };
 
@@ -98,7 +98,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                 itemList[index].done = done;
                 setSubIssueList(itemList);
             }
-            message.info("设置子工单状态成功");
+            message.info("设置子任务状态成功");
         }
     };
 
@@ -112,7 +112,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
         if (res) {
             const itemList = subIssueList.filter(item => item.sub_issue_id != subIssueId);
             setSubIssueList(itemList);
-            message.info("删除子工单成功");
+            message.info("删除子任务成功");
         }
     };
 
@@ -130,13 +130,14 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
         },
         {
             title: "操作",
-            width: 220,
+            width: 230,
             render: (_, record: SubIssueInfo) => {
                 return (
                     <span>
                         <Button
                             type="link"
                             disabled={!props.canOptSubIssue}
+                            style={{minWidth:"10px" }}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -145,6 +146,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         <Button
                             type="link"
                             disabled={!props.canOptSubIssue}
+                            style={{ minWidth: "10px" }}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -154,6 +156,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                             }}>修改</Button>
                         <Button
                             type="link"
+                            style={{ minWidth: "10px" }}
                             disabled={!props.canOptSubIssue}
                             danger onClick={e => {
                                 e.stopPropagation();
@@ -182,13 +185,13 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowAddSubIssue(true);
-                    }}>新增子工单</Button>
+                    }}>新增子任务</Button>
             </div>
             <Table dataSource={subIssueList} columns={subIssueColums} pagination={false} />
             {showAddSubIssue == true && (
                 <Modal
                     open={showAddSubIssue}
-                    title="新增子工单"
+                    title="新增子任务"
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -199,7 +202,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         e.preventDefault();
                         addSubIssue();
                     }}>
-                    <Input addonBefore="子工单标题" onChange={e => {
+                    <Input addonBefore="子任务标题" onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setSubIssueTitle(e.target.value);
@@ -208,7 +211,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
             {showUpdateSubIssue == true && (
                 <Modal
                     open={showUpdateSubIssue}
-                    title="修改子工单标题"
+                    title="修改子任务标题"
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -222,7 +225,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         updateSubIssue();
                     }}
                 >
-                    <Input addonBefore="子工单标题" defaultValue={subIssueTitle} onChange={e => {
+                    <Input addonBefore="子任务标题" defaultValue={subIssueTitle} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setSubIssueTitle(e.target.value);

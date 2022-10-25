@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import s from './IssueDetailLeft.module.less';
 import { is_empty_doc, ReadOnlyEditor, useCommonEditor } from "@/components/Editor";
-import { Card, Space,Empty, message } from "antd";
+import { Card, Space, Empty, message } from "antd";
 import Button from "@/components/Button";
 import { useLocation } from "react-router-dom";
-import { getIsTask } from "@/utils/utils";
+import { getIssueText, getIsTask } from "@/utils/utils";
 import { ExtraIssueInfo } from "./ExtraIssueInfo";
 import type { IssueInfo } from "@/api/project_issue";
 import { CommentList } from "./CommentList";
@@ -82,20 +82,26 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
 
     return (
         <div className={s.leftCom}>
-            <Card bordered={false} extra={renderContentBtn()}>
+            <Card title={<h2>{getIssueText(pathname)}详情</h2>} bordered={false} extra={renderContentBtn()}>
                 {inEdit && (<>
                     {editor.editor}
                 </>)}
                 {!inEdit && (
                     <>
-                        {isEmpty && (<Empty description="内容为空" image={Empty.PRESENTED_IMAGE_SIMPLE}/>)}
+                        {isEmpty && (<Empty description="内容为空" image={Empty.PRESENTED_IMAGE_SIMPLE} />)}
                         {!isEmpty && (<ReadOnlyEditor content={issueContent} />)}
                     </>
                 )}
             </Card>
-            {getIsTask(pathname) && (props.issue?.issue_id ?? "") != "" && <ExtraIssueInfo issueId={props.issue?.issue_id ?? ""}
-                canOptSubIssue={props.issue?.user_issue_perm.can_opt_sub_issue ?? false}
-                canOptDependence={props.issue?.user_issue_perm.can_opt_dependence ?? false} />}
+            {getIsTask(pathname) && (props.issue?.issue_id ?? "") != "" && (
+                <>
+                    <hr />
+                    <ExtraIssueInfo issueId={props.issue?.issue_id ?? ""}
+                        canOptSubIssue={props.issue?.user_issue_perm.can_opt_sub_issue ?? false}
+                        canOptDependence={props.issue?.user_issue_perm.can_opt_dependence ?? false} />
+                </>
+            )}
+            <hr />
             <CommentList issueId={props.issue?.issue_id ?? ""} />
         </div>
     );
