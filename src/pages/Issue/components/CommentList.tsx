@@ -7,7 +7,7 @@ import { is_empty_doc, ReadOnlyEditor, useCommonEditor } from '@/components/Edit
 import Pagination from '@/components/Pagination';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import moment from 'moment';
-import { Card, Modal, message } from 'antd';
+import { Card, Modal, message, Empty } from 'antd';
 import Button from '@/components/Button';
 import { FILE_OWNER_TYPE_ISSUE } from '@/api/fs';
 
@@ -75,10 +75,10 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
         ref_comment_id: "",
       },
     }));
-    if(res){
-      if(curPage != 0){
+    if (res) {
+      if (curPage != 0) {
         setCurPage(0);
-      }else{
+      } else {
         await loadComment();
       }
       editorRef.current?.clearContent();
@@ -100,7 +100,7 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
         {commentList.map((item) => {
           return (
             <div key={item.comment_id}>
-              <UserPhoto logoUri={item.sender_logo_uri} width="32px" height="32px" style={{ borderRadius: "20px" }} />
+              <UserPhoto logoUri={item.sender_logo_uri} width="24px" height="24px" style={{ borderRadius: "20px",marginRight:"10px" }} />
               <span>{item.sender_display_name}</span>
               <span>&nbsp;&nbsp;{moment(item.send_time).format('YYYY-MM-DD HH:mm:ss')}</span>
               <div style={{ width: '90%', paddingBottom: "10px", paddingTop: "5px", paddingLeft: "32px" }}>
@@ -109,12 +109,13 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
             </div>
           );
         })}
-        <Pagination
+        {totalCount == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+        {totalCount > 0 && <Pagination
           total={totalCount}
           pageSize={PAGE_SIZE}
           current={curPage + 1}
           onChange={(page: number) => setCurPage(page - 1)}
-        />
+        />}
       </div>
       {showAddModal && (
         <Modal
