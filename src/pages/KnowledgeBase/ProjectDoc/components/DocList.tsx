@@ -3,12 +3,13 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import * as prjDocApi from "@/api/project_doc";
 import { request } from '@/utils/request';
-import { Pagination, Card, Table, Form, Switch, Button } from 'antd';
+import { Pagination, Card, Table, Form, Switch } from 'antd';
 import { DeleteOutlined, FileTextOutlined } from "@ant-design/icons";
 import type { ColumnsType } from 'antd/es/table';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from 'moment';
 import s from './DocList.module.less';
+import Button from "@/components/Button";
 
 
 

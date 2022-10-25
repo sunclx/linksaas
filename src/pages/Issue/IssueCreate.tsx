@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from '@/components/CardWrap';
 import DetailsNav from '@/components/DetailsNav';
@@ -15,7 +15,7 @@ import { assign_check_user, assign_exec_user, BUG_LEVEL_MINOR, BUG_PRIORITY_LOW,
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, taskPrioritySelectItems } from "./components/constant";
 import { getMemberSelectItems } from "./components/utils";
-import { QuestionCircleOutlined, WarningOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { request } from "@/utils/request";
 
 
@@ -77,7 +77,6 @@ const IssueCreate = () => {
     const [checkUserId, setCheckUserId] = useState("");
     const [execAward, setExecAward] = useState(1);
     const [checkAward, setCheckAward] = useState(1);
-    const [showTitleError, setShowTitleError] = useState(false);
 
     const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 
@@ -158,6 +157,7 @@ const IssueCreate = () => {
                         history.goBack();
                     }}>取消</Button>
                     <Button
+                        title={title == "" ? "标题为空" : ""}
                         disabled={title == ""}
                         onClick={e => {
                             e.stopPropagation();
@@ -171,23 +171,14 @@ const IssueCreate = () => {
                     <Input
                         allowClear
                         bordered={false}
-                        placeholder={`请输入标题  标题为空将无法创建${getIssueText(location.pathname)}`}
+                        placeholder={`请输入${getIssueText(location.pathname)}标题`}
                         style={{ marginBottom: '12px', borderBottom: "1px solid #e4e4e8" }}
                         onChange={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setTitle(e.target.value);
-                            if (e.target.value == "") {
-                                setShowTitleError(true);
-                            } else {
-                                setShowTitleError(false);
-                            }
                         }}
                     />
-                    {showTitleError && (<div className={s.title_error_wrap}>
-                        <div className={s.title_error}><WarningOutlined />&nbsp;标题不能为空</div>
-                    </div>)
-                    }
                     {editor}
                 </div>
                 <div className={s.content_rigth}>

@@ -7,12 +7,13 @@ import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
 import * as docApi from '@/api/project_doc';
-import { Button, message, Popover } from 'antd';
+import { message, Popover } from 'antd';
 import DocHistory from './DocHistory';
 import DocComment from './DocComment';
 import { runInAction } from 'mobx';
 import { SwapOutlined } from '@ant-design/icons';
 import SwitchDocSpace from './SwitchDocSpace';
+import Button from '@/components/Button';
 
 
 

@@ -13,7 +13,7 @@ import RenderSelectOpt from '@/components/RenderSelectOpt';
 import { issueTypeIsTask } from '@/utils/utils';
 import { bugPriority, issueState, ISSUE_STATE_COLOR_ENUM, taskPriority } from '@/utils/constant';
 import type { ColumnsType } from 'antd/lib/table';
-import { Table } from 'antd';
+import { Table, message } from 'antd';
 import { useStores } from '@/hooks';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
 import s from './IssueRefWidget.module.less';
@@ -24,7 +24,7 @@ import { useHistory } from 'react-router-dom';
 import type LinkAuxStore from '@/stores/linkAux';
 import type { History } from 'history';
 import Button from '@/components/Button';
-import { PlusOutlined } from '@ant-design/icons';
+import { LinkOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
 import AddTaskOrBug from '../components/AddTaskOrBug';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -33,7 +33,6 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export interface WidgetData {
   issueType: ISSUE_TYPE;
-  title?: string; //标题，可选
   issueIdList: string[]; //工单ID列表
 }
 
@@ -85,7 +84,7 @@ const renderTitle = (
           }
         }}
       >
-        <span title={row.basic_info?.title}>{row.basic_info?.title}</span>
+        <span title={row.basic_info?.title}><LinkOutlined />{row.basic_info?.title}</span>
       </Button>
       {row.msg_count > 0 && (
         <span
@@ -346,6 +345,7 @@ const ViewIssueRef: React.FC<WidgetProps> = (props) => {
   const linkAuxStore = useStores('linkAuxStore');
   const history = useHistory();
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const columns: ColumnsType<IssueInfo> = [
     {
@@ -437,16 +437,25 @@ const ViewIssueRef: React.FC<WidgetProps> = (props) => {
   ];
 
   const loadData = async () => {
-    const res = await request(
-      list_by_id({
+    setLoading(true);
+    try {
+      const res = await list_by_id({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
         issue_id_list: data.issueIdList,
-      }),
-    );
-    if (res) {
-      setDataSource(res.info_list);
+      })
+      if (res.code == 0) {
+        setDataSource(res.info_list);
+        setLoading(false);
+      } else {
+        message.error(res.err_msg);
+        setLoading(false);
+      }
+    } catch (_) {
+      message.error("出错了");
+      setLoading(false);
     }
+
   };
 
   useMemo(() => {
@@ -456,8 +465,20 @@ const ViewIssueRef: React.FC<WidgetProps> = (props) => {
   return (
     <ErrorBoundary>
       <EditorWrap collapse={props.collapse}>
-        {data.title && <span>标题:${data.title}</span>}
+        <div className={s.sync_wrap}>
+          <Button 
+          className={s.sync} 
+          disabled={loading}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            loadData();
+          }} icon={<SyncOutlined />}>
+            &nbsp;&nbsp;刷新
+          </Button>
+        </div>
         <Table
+          loading={loading}
           style={{ marginTop: '8px' }}
           rowKey={'issue_id'}
           columns={columns}
