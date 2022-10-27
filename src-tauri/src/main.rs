@@ -32,6 +32,7 @@ mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
+mod robot_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -273,6 +274,7 @@ fn main() {
         .plugin(project_book_shelf_api_plugin::ProjectBookShelfApiPlugin::new())
         .plugin(project_award_api_plugin::ProjectAwardApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
+        .plugin(robot_api_plugin::RobotApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()
