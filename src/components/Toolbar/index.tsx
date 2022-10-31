@@ -80,6 +80,12 @@ const Toolbar: React.FC = observer(() => {
       />
       <Divider />
       <Item
+        id="robot"
+        pathname={pathname}
+        title="机器人列表"
+      />
+      <Divider />
+      <Item
         id="record"
         pathname={pathname}
         title="工作记录"

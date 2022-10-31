@@ -186,7 +186,7 @@ const CreateAppraise: React.FC<CreateAppraiseProps> = (props) => {
                   return (
                     <span className="ant-select-selection-item" title="test6">
                       {cprops.label}
-                      <span className="ant-select-selection-item-remove" unselectable="on" aria-hidden="true" style={{ userSelect: 'none' }}>
+                      <span className="ant-select-selection-item-remove" aria-hidden="true" style={{ userSelect: 'none' }}>
                         <span role="img" aria-label="close" className="anticon anticon-close" onClick={e => cprops.onClose(e)}>
                           <span className={styles.icon_tag_delete} />
                         </span>

@@ -3,8 +3,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 export type ACCESS_PERM_TYPE = number;
 
 export const ACCESS_PERM_METRIC: ACCESS_PERM_TYPE = 0;
-export const ACCESS_PERM_RUNNER_STAT: ACCESS_PERM_TYPE = 1;
-export const ACCESS_PERM_RUNNER_EXEC: ACCESS_PERM_TYPE = 2;
+export const ACCESS_PERM_RUNNER: ACCESS_PERM_TYPE = 1;
 
 export type BasicRobotInfo = {
     name: string;
@@ -18,8 +17,12 @@ export type RobotMember = {
 
 export type RobotAccessPerm = {
     metric_member_list: RobotMember[];
-    runner_stat_member_list: RobotMember[];
-    runner_exec_member_list: RobotMember[];
+    runner_member_list: RobotMember[];
+};
+
+export type UserPerm = {
+    can_metric: boolean;
+    can_exec: boolean;
 };
 
 export type RobotInfo = {
@@ -28,6 +31,8 @@ export type RobotInfo = {
     basic_info: BasicRobotInfo;
     access_perm: RobotAccessPerm;
     online: boolean;
+    metric_count: number;
+    runner_count: number;
     create_user_id: string;
     create_display_name: string;
     create_logo_uri: string;
@@ -36,6 +41,7 @@ export type RobotInfo = {
     update_display_name: string;
     update_logo_uri: string;
     update_time: number;
+    user_perm: UserPerm;
 };
 
 export type CreateRequest = {
@@ -43,8 +49,7 @@ export type CreateRequest = {
     project_id: string;
     basic_info: BasicRobotInfo;
     metric_user_id_list: string[],
-    runner_stat_user_id_list: string[],
-    runner_exec_user_id_list: string[],
+    runner_user_id_list: string[],
 };
 
 export type CreateResponse = {
@@ -131,6 +136,7 @@ export type GetTokenRequest = {
 export type GetTokenResponse = {
     code: number;
     err_msg: string;
+    server_addr: string;
     token: string;
 };
 
@@ -144,6 +150,7 @@ export type RenewTokenRequest = {
 export type RenewTokenResponse = {
     code: number;
     err_msg: string;
+    server_addr: string;
     token: string;
 };
 
