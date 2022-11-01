@@ -392,7 +392,19 @@ class LinkAuxStore {
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ROBOT_METRIC) {
       const robotLink = link as LinkRobotMetricInfo;
       if (remoteCheck) {
-        //TODO
+        const res = await request(
+          linkAuxApi.check_access_robot_metric(
+            this.rootStore.userStore.sessionId,
+            robotLink.projectId,
+            robotLink.robotId,
+          ));
+        if (!res) {
+          return;
+        }
+        if (res.can_access == false) {
+          message.warn('没有权限对应机器人监控');
+          return;
+        }
       }
       if (this.rootStore.projectStore.curProjectId != robotLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(robotLink.projectId);
