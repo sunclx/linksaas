@@ -187,7 +187,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         setShowAddSubIssue(true);
                     }}>新增子任务</Button>
             </div>
-            <Table dataSource={subIssueList} columns={subIssueColums} pagination={false} />
+            <Table rowKey={'sub_issue_id'} dataSource={subIssueList} columns={subIssueColums} pagination={false} />
             {showAddSubIssue == true && (
                 <Modal
                     open={showAddSubIssue}

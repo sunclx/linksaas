@@ -2990,7 +2990,6 @@ namespace robot {
     robot_name: string;
     member_user_id: string;
     member_display_name: string;
-    access_perm_type: number;
   };
 
   function get_add_access_simple_content(
@@ -3006,7 +3005,6 @@ namespace robot {
     robot_name: string;
     member_user_id: string;
     member_display_name: string;
-    access_perm_type: number;
   };
 
   function get_remove_access_simple_content(

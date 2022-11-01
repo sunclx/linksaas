@@ -154,7 +154,7 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                         setShowSelectLink(true);
                     }}>新增依赖工单</Button>
             </div>
-            <Table dataSource={issueList} columns={issueColums} pagination={false} />
+            <Table rowKey={'issue_id'} dataSource={issueList} columns={issueColums} pagination={false} />
             {showSelectLink == true && (
                 <LinkSelect
                     title="选择依赖任务/缺陷"

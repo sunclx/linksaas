@@ -45,6 +45,7 @@ const AppraiseScoreList: React.FC = () => {
 
   return (
     <Table
+      rowKey={'user_id'}
       dataSource={appraiseStore.userScoreList}
       columns={columns}
       rowClassName={styles.row}

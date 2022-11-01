@@ -6,7 +6,7 @@ import { message } from 'antd';
 import type { History } from 'history';
 import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, ROBOT_METRIC_SUFFIX, ROBOT_RUNNER_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, ROBOT_METRIC_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 
 /*
@@ -25,7 +25,6 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_APPRAISE,
   LINK_TARGET_USER_KB,
   LINK_TARGET_ROBOT_METRIC,
-  LINK_TARGET_ROBOT_RUNNER,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -197,18 +196,6 @@ export class LinkRobotMetricInfo {
   robotId: string;
 }
 
-export class LinkRobotRunnerInfo {
-  constructor(content: string, projectId: string, robotId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_ROBOT_RUNNER;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.robotId = robotId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  robotId: string;
-}
 
 export class LinkNoneInfo {
   constructor(content: string) {
@@ -411,17 +398,6 @@ class LinkAuxStore {
         await this.rootStore.projectStore.setCurProjectId(robotLink.projectId);
       }
       history.push(this.genUrl(pathname, ROBOT_METRIC_SUFFIX), {
-        robotId: robotLink.robotId,
-      } as LinkRobotState);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ROBOT_RUNNER) {
-      const robotLink = link as LinkRobotRunnerInfo;
-      if (remoteCheck) {
-        //TODO
-      }
-      if (this.rootStore.projectStore.curProjectId != robotLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(robotLink.projectId);
-      }
-      history.push(this.genUrl(pathname, ROBOT_RUNNER_SUFFIX), {
         robotId: robotLink.robotId,
       } as LinkRobotState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {

@@ -7,7 +7,7 @@ import Button from "@/components/Button";
 import { useStores } from "@/hooks";
 import AddRobotModal from "./components/AddRobotModal";
 import { Modal, Table, message } from "antd";
-import type { RobotInfo, ACCESS_PERM_TYPE } from '@/api/robot';
+import type { RobotInfo } from '@/api/robot';
 import {
     list as list_robot,
     get_token,
@@ -15,8 +15,6 @@ import {
     add_access_user,
     remove_access_user,
     update_basic_info,
-    ACCESS_PERM_METRIC,
-    ACCESS_PERM_RUNNER,
 } from '@/api/robot';
 import { request } from '@/utils/request';
 import type { ColumnsType } from "antd/lib/table";
@@ -66,41 +64,39 @@ const RobotList = () => {
         }
     };
 
-    const addMember = async (robotId: string, accessType: ACCESS_PERM_TYPE, memberUserId: string) => {
-        try{
+    const addMember = async (robotId: string, memberUserId: string) => {
+        try {
             const res = await add_access_user({
                 session_id: userStore.sessionId,
                 project_id: projectStore.curProjectId,
                 robot_id: robotId,
-                access_perm_type: accessType,
                 member_user_id: memberUserId,
             });
-            if(res.code != 0){
+            if (res.code != 0) {
                 message.error(res.err_msg);
                 return false;
             }
             return true;
-        }catch(e){
+        } catch (e) {
             console.log(e);
             return false;
         }
     };
 
-    const removeMember = async (robotId: string, accessType: ACCESS_PERM_TYPE, memberUserId: string) => {
-        try{
+    const removeMember = async (robotId: string, memberUserId: string) => {
+        try {
             const res = await remove_access_user({
                 session_id: userStore.sessionId,
                 project_id: projectStore.curProjectId,
                 robot_id: robotId,
-                access_perm_type: accessType,
                 member_user_id: memberUserId,
             });
-            if(res.code != 0){
+            if (res.code != 0) {
                 message.error(res.err_msg);
                 return false;
             }
             return true;
-        }catch(e){
+        } catch (e) {
             console.log(e);
             return false;
         }
@@ -156,7 +152,7 @@ const RobotList = () => {
             render: (_, record: RobotInfo) => {
                 return <span>
                     有{record.metric_count}个监控项&nbsp;&nbsp;
-                    {record.online && record.user_perm.can_metric && <a onClick={e => {
+                    {record.online && record.can_metric && <a onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         linkAuxStore.goToLink(new LinkRobotMetricInfo("", projectStore.curProjectId, record.robot_id), history);
@@ -165,38 +161,17 @@ const RobotList = () => {
             }
         },
         {
-            title: "命令",
-            width: 150,
-            render: (_, record: RobotInfo) => {
-                return <span>有{record.runner_count}条命令&nbsp;&nbsp;</span>
-            }
-        },
-        {
             title: "监控权限",
             width: 200,
             render: (_, record: RobotInfo) => (
                 <EditMemberList
                     editable={projectStore.isAdmin}
-                    memberIdList={record.access_perm.metric_member_list.map(item => item.member_user_id)}
+                    memberIdList={record.access_member_id_list}
                     showEditIcon={true}
                     onAddMember={async (memberId: string) => {
-                        return addMember(record.robot_id, ACCESS_PERM_METRIC, memberId);
+                        return addMember(record.robot_id, memberId);
                     }} onRemoveMember={async (memberId: string) => {
-                        return removeMember(record.robot_id, ACCESS_PERM_METRIC, memberId);
-                    }} />),
-        },
-        {
-            title: "执行权限",
-            width: 200,
-            render: (_, record: RobotInfo) => (
-                <EditMemberList
-                    editable={false}
-                    memberIdList={record.access_perm.runner_member_list.map(item => item.member_user_id)}
-                    showEditIcon={true}
-                    onAddMember={async (memberId: string) => {
-                        return addMember(record.robot_id, ACCESS_PERM_RUNNER, memberId);
-                    }} onRemoveMember={async (memberId: string) => {
-                        return removeMember(record.robot_id, ACCESS_PERM_RUNNER, memberId);
+                        return removeMember(record.robot_id, memberId);
                     }} />),
         },
         {
@@ -262,9 +237,12 @@ const RobotList = () => {
                         创建机器人
                     </Button>
                 </div>
-                <Table dataSource={robotList} columns={columns}
+                <Table
+                    rowKey={"robot_id"}
+                    dataSource={robotList}
+                    columns={columns}
                     pagination={false}
-                    scroll={{ x: 1300, y: 'calc(100vh - 260px)' }} />
+                    scroll={{ x: 700, y: 'calc(100vh - 260px)' }} />
                 <Pagination current={curPage + 1} total={totalCount} pageSize={PAGE_SIZE} onChange={page => setCurPage(page - 1)} />
             </div>
         </div>

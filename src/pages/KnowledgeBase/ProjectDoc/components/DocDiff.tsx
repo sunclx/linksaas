@@ -26,7 +26,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.get_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
         doc_id: docSpaceStore.curDocId,
       }),
     );
@@ -38,7 +38,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.get_doc_in_history({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
         doc_id: docSpaceStore.curDocId,
         history_id: props.historyId,
       }),
@@ -54,7 +54,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.recover_doc_in_history({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
         doc_id: docSpaceStore.curDocId,
         history_id: props.historyId,
       }),

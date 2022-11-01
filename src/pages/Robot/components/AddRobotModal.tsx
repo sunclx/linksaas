@@ -42,7 +42,6 @@ interface AddRobotModalProps {
 interface FormValue {
     name: string | undefined;
     metricUserId: string[] | undefined;
-    runnerUserId: string[] | undefined,
 }
 
 const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
@@ -59,9 +58,6 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
         if (formValue.metricUserId == undefined) {
             formValue.metricUserId = [];
         }
-        if (formValue.runnerUserId == undefined) {
-            formValue.runnerUserId = [];
-        }
 
         const res = await request(create_robot({
             session_id: userStore.sessionId,
@@ -69,8 +65,7 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
             basic_info: {
                 name: formValue.name,
             },
-            metric_user_id_list: formValue.metricUserId,
-            runner_user_id_list: formValue.runnerUserId,
+            access_user_id_list: formValue.metricUserId,
         }));
         if (res) {
             message.info("创建机器人成功");
@@ -102,9 +97,6 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
             </Form.Item>
             <Form.Item label="监控权限">
                 <MemberSelect name="metricUserId" />
-            </Form.Item>
-            <Form.Item label="命令权限">
-                <MemberSelect name="runnerUserId" />
             </Form.Item>
         </Form>
     </Modal>
