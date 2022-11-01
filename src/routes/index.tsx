@@ -21,11 +21,13 @@ import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
 import ChatLayout from '@/layouts/ChatLayout';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, ROBOT_METRIC_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
 import ContentBlock from '@/pages/KnowledgeBase/ContentBlock';
 import IssueCreate from '@/pages/Issue/IssueCreate';
+import RobotList from '@/pages/Robot/RobotList';
+import MetricList from '@/pages/Robot/MetricList';
 
 
 
@@ -102,6 +104,18 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + BUG_CREATE_SUFFIX,
       title: '创建缺陷',
       component: IssueCreate,
+      exact: true,
+    },
+    {
+      path: prefix + '/robot',
+      title: '机器人列表',
+      component: RobotList,
+      exact: true,
+    },
+    {
+      path: prefix + ROBOT_METRIC_SUFFIX,
+      title: '监控列表',
+      component: MetricList,
       exact: true,
     },
     {

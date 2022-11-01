@@ -168,6 +168,7 @@ const Coll: React.FC<CollProps> = (props) => {
   return (
     <div>
       <Table
+        rowKey={'block_id'}
         columns={columns}
         dataSource={blockList}
         style={{ border: '1px solid #eaeaef', padding: '10px 20px 0' }}

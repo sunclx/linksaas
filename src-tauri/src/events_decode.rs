@@ -351,34 +351,35 @@ pub mod issue {
                 return Some(Event::CancelEndTimeEvent(ev));
             }
         } else if data.type_url == events_issue::CancelEstimateMinutesEvent::type_url() {
-            if let Ok(ev) = events_issue::CancelEstimateMinutesEvent::decode(data.value.as_slice()) {
+            if let Ok(ev) = events_issue::CancelEstimateMinutesEvent::decode(data.value.as_slice())
+            {
                 return Some(Event::CancelEstimateMinutesEvent(ev));
             }
         } else if data.type_url == events_issue::CancelRemainMinutesEvent::type_url() {
             if let Ok(ev) = events_issue::CancelRemainMinutesEvent::decode(data.value.as_slice()) {
                 return Some(Event::CancelRemainMinutesEvent(ev));
             }
-        }else if data.type_url == events_issue::CreateSubIssueEvent::type_url() {
-            if let Ok(ev) = events_issue::CreateSubIssueEvent::decode(data.value.as_slice()){
+        } else if data.type_url == events_issue::CreateSubIssueEvent::type_url() {
+            if let Ok(ev) = events_issue::CreateSubIssueEvent::decode(data.value.as_slice()) {
                 return Some(Event::CreateSubIssueEvent(ev));
             }
-        }else if data.type_url == events_issue::UpdateSubIssueEvent::type_url(){
+        } else if data.type_url == events_issue::UpdateSubIssueEvent::type_url() {
             if let Ok(ev) = events_issue::UpdateSubIssueEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateSubIssueEvent(ev))
+                return Some(Event::UpdateSubIssueEvent(ev));
             }
-        }else if data.type_url == events_issue::UpdateSubIssueStateEvent::type_url() {
+        } else if data.type_url == events_issue::UpdateSubIssueStateEvent::type_url() {
             if let Ok(ev) = events_issue::UpdateSubIssueStateEvent::decode(data.value.as_slice()) {
                 return Some(Event::UpdateSubIssueStateEvent(ev));
             }
-        }else if data.type_url == events_issue::RemoveSubIssueEvent::type_url() {
-            if let Ok(ev) = events_issue::RemoveSubIssueEvent::decode(data.value.as_slice()){
+        } else if data.type_url == events_issue::RemoveSubIssueEvent::type_url() {
+            if let Ok(ev) = events_issue::RemoveSubIssueEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveSubIssueEvent(ev));
             }
-        }else if data.type_url == events_issue::AddDependenceEvent::type_url() {
+        } else if data.type_url == events_issue::AddDependenceEvent::type_url() {
             if let Ok(ev) = events_issue::AddDependenceEvent::decode(data.value.as_slice()) {
                 return Some(Event::AddDependenceEvent(ev));
             }
-        }else if data.type_url == events_issue::RemoveDependenceEvent::type_url() {
+        } else if data.type_url == events_issue::RemoveDependenceEvent::type_url() {
             if let Ok(ev) = events_issue::RemoveDependenceEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveDependenceEvent(ev));
             }
@@ -584,6 +585,51 @@ pub mod gitee {
     }
 }
 
+pub mod robot {
+    use prost::Message;
+    use proto_gen_rust::events_robot;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateEvent(events_robot::CreateEvent),
+        UpdateEvent(events_robot::UpdateEvent),
+        RemoveEvent(events_robot::RemoveEvent),
+        AddAccessUserEvent(events_robot::AddAccessUserEvent),
+        RemoveAccessUserEvent(events_robot::RemoveAccessUserEvent),
+        RenewTokenEvent(events_robot::RenewTokenEvent),
+    }
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_robot::CreateEvent::type_url() {
+            if let Ok(ev) = events_robot::CreateEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateEvent(ev));
+            }
+        } else if data.type_url == events_robot::UpdateEvent::type_url() {
+            if let Ok(ev) = events_robot::UpdateEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateEvent(ev));
+            }
+        } else if data.type_url == events_robot::RemoveEvent::type_url() {
+            if let Ok(ev) = events_robot::RemoveEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveEvent(ev));
+            }
+        } else if data.type_url == events_robot::AddAccessUserEvent::type_url() {
+            if let Ok(ev) = events_robot::AddAccessUserEvent::decode(data.value.as_slice()) {
+                return Some(Event::AddAccessUserEvent(ev));
+            }
+        } else if data.type_url == events_robot::RemoveAccessUserEvent::type_url() {
+            if let Ok(ev) = events_robot::RemoveAccessUserEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveAccessUserEvent(ev));
+            }
+        } else if data.type_url == events_robot::RenewTokenEvent::type_url() {
+            if let Ok(ev) = events_robot::RenewTokenEvent::decode(data.value.as_slice()) {
+                return Some(Event::RenewTokenEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -595,6 +641,7 @@ pub enum EventMessage {
     GitlabEvent(gitlab::Event),
     GogsEvent(gogs::Event),
     GiteeEvent(gitee::Event),
+    RobotEvent(robot::Event),
 
     NoopEvent(),
 }
@@ -628,6 +675,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = gitee::decode_event(data) {
         return Some(EventMessage::GiteeEvent(ret));
+    }
+    if let Some(ret) = robot::decode_event(data) {
+        return Some(EventMessage::RobotEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

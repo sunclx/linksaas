@@ -14,6 +14,9 @@ export const BUG_DETAIL_SUFFIX = '/bug/detail';
 export const TASK_CREATE_SUFFIX = '/task/create';
 export const BUG_CREATE_SUFFIX = '/bug/create';
 
+export const ROBOT_METRIC_SUFFIX = '/robot/metric';
+
+
 export const primaryColor = '#0078F7';
 
 export const statusText = {

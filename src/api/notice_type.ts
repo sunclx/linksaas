@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace project {
   export type UpdateProjectNotice = {
@@ -232,7 +231,7 @@ export namespace client {
   export type WrongSessionNotice = {
     name: string;
   };
-  
+
   export type UploadSnapShotNotice = {
     project_id: string;
   };
@@ -246,10 +245,20 @@ export namespace client {
   };
 }
 
+export namespace robot {
+  export type RespMetricDataNotice = {
+    req_id: string;
+  };
+
+  export type AllNotice = {
+    RespMetricDataNotice?: RespMetricDataNotice;
+  };
+}
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   ProjectDocNotice?: project_doc.AllNotice;
   IssueNotice?: issue.AllNotice;
   AppraiseNotice?: appraise.AllNotice;
+  RobotNotice?: robot.AllNotice;
   ClientNotice?: client.AllNotice;
 };

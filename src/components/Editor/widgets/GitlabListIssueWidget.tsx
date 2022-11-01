@@ -178,7 +178,7 @@ const EditGitlabListIssue: React.FC<WidgetProps> = (props) => {
           <Form.Item
             labelCol={{ span: 3 }}
             wrapperCol={{ span: 22 }}
-            label={<span>访问令牌<a href="https://docs.gitlab.cn/jh/user/profile/personal_access_tokens.html" target="_blank" rel="noreferrer"><QuestionCircleOutlined/></a></span>}
+            label={<span>访问令牌<a href="https://docs.gitlab.cn/jh/user/profile/personal_access_tokens.html" target="_blank" rel="noreferrer"><QuestionCircleOutlined /></a></span>}
             name="access_token"
             initialValue={data.access_token}
             rules={[{ type: 'string' }]}
@@ -216,6 +216,7 @@ const EditGitlabListIssue: React.FC<WidgetProps> = (props) => {
         </Form>
         {result.length > 0 && (
           <Table
+            rowKey={'id'}
             className={style.table}
             size="middle"
             dataSource={result}
@@ -272,6 +273,7 @@ const ViewGitlabListIssue: React.FC<WidgetProps> = (props) => {
         <h2 className={style.title}>Gitlab工单列表</h2>
         {result.length > 0 && (
           <Table
+            rowKey={'id'}
             className={style.table}
             size="middle"
             dataSource={result}

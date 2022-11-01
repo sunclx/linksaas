@@ -9,6 +9,7 @@
   background: #f6f6f8;
   border-left: 1px solid #eaeaef;
   border-radius: 0 0 6px 0;
+
   .menu,
   .menuCurrent {
     width: 28px;
@@ -16,23 +17,29 @@
     margin: 20px auto;
     cursor: pointer;
   }
+
   .menu:hover {
     opacity: 0.6;
   }
 
-  @menuItems: home, task, bug, setting, member, invite, record, access, appraise, appstore,award;
+  @menuItems: home, task, bug, setting, member, invite, record, access, appraise, appstore, award,robot;
+
   .for(@data, @i: 1) when(@i =< length(@data)) {
     @item: extract(@data, @i);
+
     .menu[data-menu-id='@{item}'] {
       background: url('@/assets/allIcon/icon-@{item}.png');
       background-size: 100%;
     }
+
     .menuCurrent[data-menu-id='@{item}'] {
       background: url('@/assets/allIcon/icon-@{item}-a.png');
       background-size: 100%;
     }
+
     .for(@data, (@i + 1));
   }
+
   .for(@menuItems);
 
   :global(.ant-divider) {

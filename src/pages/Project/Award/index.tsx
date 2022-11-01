@@ -166,7 +166,8 @@ const ProjectAward: React.FC = () => {
                                 {curMemberUserId == state.member_user_id && (
                                     <>
                                         {recordList.length > 0 &&
-                                            <Table
+                                            <Table<AwardRecord>
+                                                rowKey={e=>`${e.relate_id}${e.relate_type}`}
                                                 style={{ marginLeft: "30px" }}
                                                 dataSource={recordList}
                                                 columns={columns}

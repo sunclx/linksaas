@@ -17,6 +17,14 @@ export const MSG_LINK_TASK: MSG_LINK_TYPE = 1;
 export const MSG_LINK_BUG: MSG_LINK_TYPE = 2;
 export const MSG_LINK_CHANNEL: MSG_LINK_TYPE = 3;
 // export const MSG_LINK_DOC: MSG_LINK_TYPE = 4;//移除
+export const MSG_LINK_EXPERT_QA: MSG_LINK_TYPE = 5;
+export const MSG_LINK_ROBOT_METRIC: MSG_LINK_TYPE = 6;
+
+export type SENDER_TYPE = number;
+export const SENDER_TYPE_MEMBER: SENDER_TYPE = 0;
+export const SENDER_TYPE_ROBOT: SENDER_TYPE = 1;
+
+
 
 
 export type BasicChannelInfo = {
@@ -154,6 +162,7 @@ export type Msg = {
   send_time: number;
   has_update_time: boolean;
   update_time: number;
+  sender_type: SENDER_TYPE; 
   sender_logo_uri: string;
   sender_display_name: string;
   link_dest_title: string;

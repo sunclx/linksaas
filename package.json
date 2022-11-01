@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "repository": "git@gitee.com:waibaoxia/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@waibaoxia.com>",
@@ -62,6 +62,7 @@
     "react-markdown": "^8.0.3",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.2.0",
+    "recharts": "^2.1.16",
     "remark-gfm": "^3.0.1",
     "remirror": "^2.0.4",
     "swagger-ui-react": "4.14.0",

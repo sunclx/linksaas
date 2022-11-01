@@ -92,6 +92,6 @@ export const DependMePanel: React.FC<DependMePanelProps> = (props) => {
     }, [props.issueId])
 
     return (
-        <Table dataSource={issueList} columns={issueColums} pagination={false} />
+        <Table rowKey={'issue_id'} dataSource={issueList} columns={issueColums} pagination={false} />
     );
 };

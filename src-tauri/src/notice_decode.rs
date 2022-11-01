@@ -264,6 +264,27 @@ pub mod appraise {
     }
 }
 
+pub mod robot {
+    use prost::Message;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::notices_robot;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    pub enum Notice {
+        RespMetricDataNotice(notices_robot::RespMetricDataNotice),
+    }
+
+    pub fn decode_notice(data: &Any) -> Option<Notice> {
+        if data.type_url == notices_robot::RespMetricDataNotice::type_url() {
+            if let Ok(notice) = notices_robot::RespMetricDataNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RespMetricDataNotice(notice));
+            }
+        }
+        None
+    }
+}
+
 pub mod client {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
@@ -295,6 +316,7 @@ pub enum NoticeMessage {
     ProjectDocNotice(project_doc::Notice),
     IssueNotice(issue::Notice),
     AppraiseNotice(appraise::Notice),
+    RobotNotice(robot::Notice),
     ClientNotice(client::Notice),
 }
 
@@ -312,6 +334,9 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = appraise::decode_notice(data) {
         return Some(NoticeMessage::AppraiseNotice(ret));
+    }
+    if let Some(ret) = robot::decode_notice(data) {
+        return Some(NoticeMessage::RobotNotice(ret));
     }
     None
 }
@@ -332,6 +357,6 @@ pub fn new_upload_snap_shot_notice(project_id: String) -> NoticeMessage {
 
 pub fn new_switch_user_notice() -> NoticeMessage {
     return NoticeMessage::ClientNotice(client::Notice::SwitchUserNotice(
-        client::SwitchUserNotice{},
+        client::SwitchUserNotice {},
     ));
 }

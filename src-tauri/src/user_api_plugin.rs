@@ -1,6 +1,6 @@
 use crate::notice_decode::{
     decode_notice, new_upload_snap_shot_notice, new_wrong_session_notice,
-    project::Notice as ProjectNotice, NoticeMessage,
+    project::Notice as ProjectNotice, robot::Notice as RobotNotice, NoticeMessage,
 };
 use prost::Message;
 use proto_gen_rust::fs_api::{FileOwnerType, SetFileOwnerRequest};
@@ -405,7 +405,7 @@ async fn login<R: Runtime>(
                             loop {
                                 let notice = eventloop.poll().await;
                                 if notice.is_err() {
-                                    println!("disconnect mqtt");
+                                    println!("disconnect mqtt,error {:?}", notice.err().unwrap());
                                     break;
                                 }
                                 let float_notice_win = app_handle.get_window("float_notice");
@@ -479,6 +479,17 @@ fn emit_notice<R: Runtime>(
                                 if res.is_err() {
                                     println!("{:?}", res);
                                 }
+                            }
+                        }
+                        NoticeMessage::RobotNotice(RobotNotice::RespMetricDataNotice(n)) => {
+                            let m = n.clone();
+                            let event_name = format!("metric_data_{}", m.req_id);
+                            let res = window.emit(
+                                &event_name,
+                                NoticeMessage::RobotNotice(RobotNotice::RespMetricDataNotice(n)),
+                            );
+                            if res.is_err() {
+                                println!("{:?}", res);
                             }
                         }
                         _ => {
