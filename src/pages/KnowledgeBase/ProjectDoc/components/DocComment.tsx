@@ -45,7 +45,7 @@ const DocComment: React.FC = () => {
       prjDocApi.add_comment({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
         doc_id: docSpaceStore.curDocId,
         comment: {
           comment_data: JSON.stringify(content),
