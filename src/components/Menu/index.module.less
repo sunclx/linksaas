@@ -47,6 +47,15 @@
         left: 24px;
       }
     }
+
+    ul {
+      height: 300px;
+      overflow-y: scroll;
+
+      li:hover {
+        background-color: #777 !important;
+      }
+    }
   }
 
   .submenu_title {
@@ -115,16 +124,29 @@
             box-shadow: none;
           }
         }
-      }
 
-      .project_child_time {
-        padding-left: 18px;
-        font-weight: 400;
-        font-size: 12px;
-        opacity: 0.8;
+        .name {
+          line-height: 12px;
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 100px;
+        }
 
-        .time_text {
-          margin-left: 5px;
+        .more {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          vertical-align: text-top;
+          background-repeat: no-repeat;
+          background-size: contain;
+          position: absolute;
+          right: 10px;
+          top: 7px;
+          background-image: url('@/assets/allIcon/icon-more-channel.png');
+          background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
+              url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
         }
       }
     }
@@ -132,25 +154,8 @@
 }
 
 // 右键菜单
-.contextmenu_box {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity 250ms ease;
-  pointer-events: none;
-
-  &.show {
-    z-index: 9999;
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
 
 .contextmenu {
-  position: fixed;
   box-sizing: border-box;
   width: 116px;
   padding: 7px 6px;
@@ -160,8 +165,7 @@
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.12);
 
   .item {
-    padding: 0 7px;
-    color: #000;
+    padding: 5px 7px;
     color: red;
     font-weight: 400;
     font-size: 12px;

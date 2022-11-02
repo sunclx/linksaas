@@ -16,9 +16,6 @@ export const BUG_CREATE_SUFFIX = '/bug/create';
 
 export const ROBOT_METRIC_SUFFIX = '/robot/metric';
 
-
-export const primaryColor = '#0078F7';
-
 export const statusText = {
   [issueApi.ISSUE_STATE_PLAN]: '规划中阶段', //规划中
   [issueApi.ISSUE_STATE_PROCESS]: '处理阶段', //处理

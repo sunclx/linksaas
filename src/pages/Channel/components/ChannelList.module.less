@@ -1,8 +1,9 @@
-.list{
+.list {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
+
 .header {
   height: 50px;
   line-height: 50px;
@@ -10,6 +11,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .title {
   font-size: 13px;
   font-weight: 500;
@@ -17,6 +19,7 @@
   padding-left: 13px;
   flex: 1;
 }
+
 .add {
   display: block;
   padding: 3px;
@@ -26,6 +29,7 @@
   &:hover {
     background-color: #EAEAEF;
   }
+
   .icon {
     display: block;
     width: 14px;
@@ -34,12 +38,13 @@
     background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x, url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
     background-size: contain;
     background-repeat: no-repeat;
-    
+
   }
 }
 
 .more {
   composes: add;
+
   .icon {
     background-image: url('@/assets/allIcon/icon-more-channel.png');
     background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x, url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
@@ -80,6 +85,7 @@
   font-size: 12px;
   overflow: hidden;
   padding-left: 2px;
+
   &::after {
     content: '全员';
     transform: scale(.75);
@@ -94,19 +100,24 @@
 
 .icon_channel_task {
   composes: icon_channel_all;
+
   &::after {
     content: '任务'
   }
 }
+
 .icon_channel_bug {
   composes: icon_channel_all;
+
   &::after {
     content: '缺陷'
   }
 }
+
 .icon_channel_customize {
   composes: icon_channel_all;
   width: 32px;
+
   &::after {
     content: '自定义'
   }
@@ -133,7 +144,7 @@
     justify-content: space-between;
     color: #2C2D2E;
 
-    &:after{
+    &:after {
       content: "";
       position: absolute;
       bottom: 0;
@@ -141,31 +152,53 @@
       left: 10px;
       border-bottom: 1px solid #F0F0F5;
     }
+
     &:hover {
       background-color: #F1F1F5;
       cursor: pointer;
     }
+
     &.current {
       background-color: rgba(14, 131, 255, .1);
       color: @link_active_color;
       border-left: 3px solid #0E83FF;
       padding-left: 12px;
+
       .icon_channel_all,
       .icon_channel_bug,
-      .icon_channel_task{
+      .icon_channel_task {
         background-color: #0084FF;
       }
     }
+
     &.closed {
       color: #bbb;
     }
 
   }
 
-  .menu_box{
+  .menu_box {
     flex: 1;
     display: flex;
-    align-items:center;
+    align-items: center;
+    position: relative;
+
+    i {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      vertical-align: text-top;
+      background-repeat: no-repeat;
+      background-size: contain;
+      position: absolute;
+      right: 10px;
+    }
+
+    .more {
+      background-image: url('@/assets/allIcon/icon-more-channel.png');
+      background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
+          url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
+    }
   }
 
   .menu_title {
@@ -201,24 +234,9 @@
     box-sizing: border-box;
   }
 }
+
 // 右键菜单
-.contextmenu_box {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  transition: opacity 250ms ease;
-  opacity: 0;
-  pointer-events: none;
-  &.show {
-    opacity: 1;
-    pointer-events: auto;
-    z-index: 9999;
-  }
-}
 .contextmenu {
-  position: fixed;
   width: 90px;
   background: #FFFFFF;
   box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.12);
@@ -242,6 +260,7 @@
     text-align: inherit;
     white-space: nowrap;
     font-size: 12px;
+
     &:hover {
       background: #F1F1F5;
       border-radius: 4px;
@@ -258,13 +277,15 @@
 }
 
 // 更多菜单
-.moremenu{
+.moremenu {
   composes: contextmenu;
   position: static;
   width: 156px;
+
   .item {
     position: relative;
     padding-left: 20px;
+
     &.selected::before {
       content: '';
       position: absolute;
@@ -278,4 +299,3 @@
     }
   }
 }
-

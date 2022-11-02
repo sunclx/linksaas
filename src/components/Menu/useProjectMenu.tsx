@@ -16,6 +16,7 @@ import ActionModal from '../ActionModal';
 import Button from '../Button';
 import cls from './index.module.less';
 import { observer } from 'mobx-react';
+import type { WebProjectInfo } from '@/stores/project';
 
 // 创建项目
 const AddMenu: React.FC = observer(() => {
@@ -54,13 +55,8 @@ const useProjectMenu = () => {
   const projectStore = useStores('projectStore');
   const userStore = useStores('userStore');
   const history = useHistory();
-  const pjMenuItemH = 40;
   const docSpaceStore = useStores('docSpaceStore');
-  const [pjMenu, setPjMenu] = useSetState({
-    x: 0,
-    y: 0,
-    id: '',
-  });
+
 
   const [pjChangeObj, setPjChangeObj] = useSetState({
     visible: false,
@@ -72,11 +68,7 @@ const useProjectMenu = () => {
 
   const [disableBtn, setDisableBtn] = useState(false);
 
-  const hideContextMenu = (e: React.MouseEvent<Element, MouseEvent>) => {
-    e.stopPropagation();
-    if (!pjMenu.id) return;
-    setPjMenu({ id: '' });
-  };
+
 
   // 结束项目弹窗确定事件
   const submitPjItem = async () => {
@@ -216,99 +208,98 @@ const useProjectMenu = () => {
   const rendePjOpenOrClose = (obj: ProjectInfo) => {
     return (
       <div
-        key={obj.project_id}
-        className={cls.contextmenu_box + ' ' + (pjMenu.id === obj.project_id ? cls.show : '')}
-        onClick={hideContextMenu}
-        onContextMenu={hideContextMenu}
+        className={cls.contextmenu}
       >
-        <div
-          className={cls.contextmenu}
-          style={{ top: pjMenu.y, left: pjMenu.x }}
-          onMouseLeave={hideContextMenu}
-        >
-          {obj.user_project_perm.can_close && (
-            <div
-              className={cls.item}
-              onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.FINISH)}
-            >
-              结束项目
-            </div>
-          )}
-          {obj.user_project_perm.can_open && (
-            <div
-              className={cls.item}
-              onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.ACTIVATE)}
-            >
-              激活项目
-            </div>
-          )}
-          {obj.user_project_perm.can_leave && (
-            <div
-              className={cls.item}
-              onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.QUIT)}
-            >
-              退出项目
-            </div>
-          )}
-          {obj.user_project_perm.can_remove && (
-            <div
-              className={cls.item}
-              onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.REMOVE)}
-            >
-              删除项目
-            </div>
-          )}
-        </div>
+        {obj.user_project_perm.can_close && (
+          <div
+            className={cls.item}
+            onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.FINISH)}
+          >
+            结束项目
+          </div>
+        )}
+        {obj.user_project_perm.can_open && (
+          <div
+            className={cls.item}
+            style={{ color: "black" }}
+            onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.ACTIVATE)}
+          >
+            激活项目
+          </div>
+        )}
+        {obj.user_project_perm.can_leave && (
+          <div
+            className={cls.item}
+            onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.QUIT)}
+          >
+            退出项目
+          </div>
+        )}
+        {obj.user_project_perm.can_remove && (
+          <div
+            className={cls.item}
+            onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.REMOVE)}
+          >
+            删除项目
+          </div>
+        )}
       </div>
     );
   };
 
+
+  const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
+    const [hover, setHover] = useState(false);
+    return (
+      <div
+        key={item.project_id}
+        onClick={() => {
+          if (docSpaceStore.inEdit) {
+            docSpaceStore.showCheckLeave(() => {
+              history.push(APP_PROJECT_CHAT_PATH);
+              projectStore.setCurProjectId(item.project_id);
+            });
+            return;
+          }
+          history.push(APP_PROJECT_CHAT_PATH);
+          projectStore.setCurProjectId(item.project_id);
+        }}
+        className={cls.project_child_wrap}
+        onMouseOver={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          setHover(true);
+        }}
+        onMouseOut={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          setHover(false);
+        }}
+      >
+        <div className={`${cls.project_child_title} ${item.closed && cls.close}`}>
+          {item.project_id !== projectStore.curProjectId && (
+            <Badge count={item.project_status.total_count} className={cls.badge} />
+          )}
+          {item.project_id !== projectStore.curProjectId && <FolderFilled />}
+          {item.project_id == projectStore.curProjectId &&
+            item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
+          {item.project_id == projectStore.curProjectId &&
+            !item.project_status.work_snap_shot_enable && <FolderFilled />}
+          <span className={cls.name} >{item.basic_info.project_name}</span>
+          <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false}>
+            {hover && <i className={cls.more} />}
+          </Popover>
+        </div>
+      </div>
+    );
+  }
 
   // 项目列表目录
   const renderProjectItemsChilds = () => {
     return projectStore.filterProjectList.map((item) => {
       return {
         className: `${cls.project_child_menu}`,
-        label: (
-          <div
-            key={item.project_id}
-            onClick={() => {
-              if (docSpaceStore.inEdit) {
-                docSpaceStore.showCheckLeave(() => {
-                  history.push(APP_PROJECT_CHAT_PATH);
-                  projectStore.setCurProjectId(item.project_id);
-                });
-                return;
-              }
-              history.push(APP_PROJECT_CHAT_PATH);
-              projectStore.setCurProjectId(item.project_id);
-            }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const isH = e.clientY + pjMenuItemH > window.innerHeight;
-              setPjMenu({
-                x: e.clientX,
-                y: isH ? e.clientY - pjMenuItemH : e.clientY,
-                id: item.project_id,
-              });
-            }}
-            className={cls.project_child_wrap}
-          >
-            <div className={`${cls.project_child_title} ${item.closed && cls.close}`}>
-              {item.project_id !== projectStore.curProjectId && (
-                <Badge count={item.project_status.total_count} className={cls.badge} />
-              )}
-              {item.project_id !== projectStore.curProjectId && <FolderFilled />}
-              {item.project_id == projectStore.curProjectId &&
-                item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
-              {item.project_id == projectStore.curProjectId &&
-                !item.project_status.work_snap_shot_enable && <FolderFilled />}
-              <span>{item.basic_info.project_name}</span>
-            </div>
-            {rendePjOpenOrClose(item)}
-          </div>
-        ),
+        label: <ProjectItem item={item} />,
         key: item.project_id,
       };
     });
