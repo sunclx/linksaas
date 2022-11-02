@@ -104,9 +104,9 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
             onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                if(docSpaceStore.inEdit){
-                    docSpaceStore.showCheckLeave(()=>{
-                        docSpaceStore.showDocList(docSpace.doc_space_id, false); 
+                if (docSpaceStore.inEdit) {
+                    docSpaceStore.showCheckLeave(() => {
+                        docSpaceStore.showDocList(docSpace.doc_space_id, false);
                     });
                     return;
                 }
@@ -115,8 +115,8 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
         >
             {docSpace.base_info.title}
         </div>
-        {hover && !docSpace.system_doc_space && (<Popover
-            placement="leftBottom"
+        <Popover
+            placement="left"
             content={<RenderMoreMenu
                 docSpaceId={docSpace.doc_space_id}
                 canUpdate={docSpace.user_perm.can_update}
@@ -124,11 +124,12 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
                 title={docSpace.base_info.title} />}
             autoAdjustOverflow={false}
         >
-            <a className={s.more}>
-                <i className={s.icon} />
-            </a>
+            {hover && !docSpace.system_doc_space &&
+                <a className={s.more}>
+                    <i className={s.icon} />
+                </a>
+            }
         </Popover>
-        )}
     </li>);
 });
 
