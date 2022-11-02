@@ -221,6 +221,7 @@ const useProjectMenu = () => {
         {obj.user_project_perm.can_open && (
           <div
             className={cls.item}
+            style={{ color: "black" }}
             onClick={() => pjItemChange(obj, PROJECT_STATE_OPT_ENUM.ACTIVATE)}
           >
             激活项目

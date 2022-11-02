@@ -15,56 +15,25 @@ import {
 } from '@/api/project_channel';
 import { request } from '@/utils/request';
 import type { WebChannelInfo } from '@/stores/channel';
-import { Modal } from 'antd';
+import { Modal, Popover } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
 
-type ContextMenuConfig = {
-  x: number;
-  y: number;
-  isShow: boolean;
-  channelId: string;
-}
 
 const ChannelList = observer(() => {
   const channelStore = useStores('channelStore');
   const chatMsgStore = useStores('chatMsgStore');
   const { sessionId } = useStores('userStore');
   const { curProjectId } = useStores('projectStore');
-  const [contextMenuCfg, setContextMenuConfig] = useState({ x: 0, y: 0, isShow: false, channelId: '' } as ContextMenuConfig)
-  const [showModalClose, setShowModalClose] = useState(false);
-  const [showModalExit, setShowModalExit] = useState(false);
-  const [showModalUpdate, setShowModalUpdate] = useState(false);
-  const [showModalJoin, setShowModalJoin] = useState(false);
-  const [showModalRemove, setShowModalRemove] = useState(false);
+  const [closeChannelId, setCloseChannelId] = useState("");
+  const [exitChannelId, setExitChannelId] = useState("");
+  const [updateChannelId, setUpdateChannelId] = useState("");
+  const [joinChannelId, setJoinChannelId] = useState("");
+  const [removeChannelId, setRemoveChannelId] = useState("");
+  const [hoverChannelId, setHoverChannelId] = useState("");
 
   // 右键菜单
-  const handleContextMenu = (event: React.MouseEvent<Element, MouseEvent>, channelId: string) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const { clientX, clientY } = event;
-
-    setContextMenuConfig({
-      x: clientX,
-      y: clientY,
-      isShow: true,
-      channelId: channelId
-    })
-  }
-
-  // 关闭右键菜单
-  const hideContextMenu = () => {
-    if (contextMenuCfg.isShow) {
-      setContextMenuConfig({
-        ...contextMenuCfg,
-        isShow: false,
-      })
-    }
-  }
-
-  // 右键菜单
-  const ContextMenu = (): JSX.Element => {
-    const channelItem = channelStore.getChannel(contextMenuCfg.channelId);
+  const genMoreMenu = (channelId: string): JSX.Element => {
+    const channelItem = channelStore.getChannel(channelId);
     const permission = {
       canSetTop: channelItem?.channelInfo.user_channel_perm?.can_set_top,
       canUpdate: channelItem?.channelInfo.user_channel_perm?.can_update,
@@ -88,50 +57,44 @@ const ChannelList = observer(() => {
 
     //激活频道
     const openChannel = async () => {
-      const res = await request(open_channel(sessionId, curProjectId, contextMenuCfg.channelId));
+      const res = await request(open_channel(sessionId, curProjectId, channelId));
       if (res) {
-        channelStore.updateChannel(contextMenuCfg.channelId);
+        channelStore.updateChannel(channelId);
       }
     }
 
     // 退出频道
     const exitChannel = () => {
       if (!permission.canExit) return;
-      setShowModalExit(true);
+      setExitChannelId(channelId);
     }
 
     // 关闭频道
     const closeChannel = () => {
       if (!permission.canClose) return;
-      setShowModalClose(true);
+      setCloseChannelId(channelId);
     }
 
 
     //更新频道
     const updateChannel = () => {
       if (!permission.canUpdate) return;
-      setShowModalUpdate(true);
+      setUpdateChannelId(channelId);
     }
     const joinChannel = () => {
-      setShowModalJoin(true);
+      setJoinChannelId(channelId);
     }
 
     const removeChannel = () => {
-      setShowModalRemove(true);
+      setRemoveChannelId(channelId);
     }
 
     if (channelItem?.channelInfo.system_channel) {
       return (<div />);
     }
-    return (<div
-      className={styles.contextmenu_box + ' ' + (contextMenuCfg.isShow ? styles.show : '')}
-      onClick={hideContextMenu}
-      onContextMenu={hideContextMenu}
-    >
+    return (
       <div
         className={styles.contextmenu}
-        style={{ top: contextMenuCfg.y, left: contextMenuCfg.x }}
-        onMouseLeave={hideContextMenu}
       >
         {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (
           <>
@@ -196,12 +159,16 @@ const ChannelList = observer(() => {
         )}
 
 
-      </div>
-    </div>);
+
+      </div>);
   };
 
   return (
-    <div className={styles.menu}>
+    <div className={styles.menu} onMouseOut={e => {
+      e.stopPropagation();
+      e.preventDefault();
+      setHoverChannelId("");
+    }}>
       {channelStore.channelList.length > 0 && channelStore.filterChannelList.map((item: WebChannelInfo) => {
         return (
           <div
@@ -215,12 +182,19 @@ const ChannelList = observer(() => {
               chatMsgStore.replayRefMsgId = "";
               channelStore.curChannelId = item.channelInfo.channel_id;
             }}
-            onContextMenu={(e: React.MouseEvent<Element, MouseEvent>) => handleContextMenu(e, item.channelInfo.channel_id)}
             key={item.channelInfo.channel_id}
+            onMouseOver={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              setHoverChannelId(item.channelInfo.channel_id);
+            }}
           >
             <div className={styles.menu_box}>
               <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')}>{`#${item.channelInfo.basic_info.channel_name}`}</div>
-              {/* 逻辑待更新 */}
+              <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="left">
+                {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel &&<i className={styles.more} />}
+              </Popover>
+
             </div>
             {item.unreadMsgCount > 0 && (
               <div className={styles.menu_news}>
@@ -231,20 +205,19 @@ const ChannelList = observer(() => {
         )
       }
       )}
-      {/* 右键菜单 */}
-      {contextMenuCfg.isShow && <ContextMenu />}
-      {showModalClose && <Modal
+
+      {closeChannelId != "" && <Modal
         title='警告'
-        visible={showModalClose}
+        open={true}
         onOk={async (): Promise<void> => {
-          const res = await request(close_channel(sessionId, curProjectId, contextMenuCfg.channelId));
+          const res = await request(close_channel(sessionId, curProjectId, closeChannelId));
           if (res) {
-            channelStore.updateChannel(contextMenuCfg.channelId);
+            channelStore.updateChannel(closeChannelId);
           }
-          setShowModalClose(false);
+          setCloseChannelId("");
         }}
         onCancel={() => {
-          setShowModalClose(false)
+          setCloseChannelId("");
         }}
         okText='关闭频道'
       >
@@ -252,65 +225,69 @@ const ChannelList = observer(() => {
       </Modal>
       }
 
-      {showModalExit && <Modal
+      {exitChannelId != "" && <Modal
         title='警告'
-        open={showModalExit}
+        open={true}
         onOk={async (): Promise<void> => {
-          const res = await request(leave_channel(sessionId, curProjectId, contextMenuCfg.channelId));
+          const res = await request(leave_channel(sessionId, curProjectId, exitChannelId));
           if (res) {
-            channelStore.removeChannel(contextMenuCfg.channelId);
+            channelStore.removeChannel(exitChannelId);
           }
-          setShowModalExit(false);
+          setExitChannelId("");
         }}
         onCancel={() => {
-          setShowModalExit(false)
+          setExitChannelId("");
         }}
         okText='退出频道'
       >
         <p>是否确认退出当前频道？</p>
       </Modal>}
 
-      {showModalJoin && <Modal
+      {joinChannelId != "" && <Modal
         title='警告'
-        open={showModalJoin}
+        open={true}
         onOk={async (): Promise<void> => {
-          const res = await request(join_by_admin(sessionId, curProjectId, contextMenuCfg.channelId));
+          const res = await request(join_by_admin(sessionId, curProjectId, joinChannelId));
           if (res) {
-            channelStore.removeChannel(contextMenuCfg.channelId);
+            channelStore.removeChannel(joinChannelId);
           }
-          setShowModalJoin(false);
+          setJoinChannelId("");
         }}
         onCancel={() => {
-          setShowModalJoin(false);
+          setJoinChannelId("");
         }}
         okText='加入频道'
       >
         <p>是否确认加入当前频道？</p>
       </Modal>}
 
-      {showModalUpdate && <ActionMember
-        visible={showModalUpdate}
+      {updateChannelId != "" && <ActionMember
+        visible={true}
         type={ActionMemberType.UPDATE_CHANNEL}
-        channelId={contextMenuCfg.channelId}
-        onChange={(value: boolean) => setShowModalUpdate(value)}
+        channelId={updateChannelId}
+        onChange={(value: boolean) => {
+          if (!value) {
+            setUpdateChannelId("");
+          }
+        }}
         title="更新频道"
       />}
 
-      {showModalRemove && (
+      {removeChannelId != "" && (
         <Modal
           title="删除频道"
-          open={showModalRemove}
+          open={true}
           onCancel={() => {
-            setShowModalRemove(false);
+            setRemoveChannelId("");
           }}
           onOk={async (): Promise<void> => {
-            const res = await request(remove_by_admin(sessionId, curProjectId, contextMenuCfg.channelId));
+            const res = await request(remove_by_admin(sessionId, curProjectId, removeChannelId));
             if (res) {
-              channelStore.removeChannel(contextMenuCfg.channelId);
+              channelStore.removeChannel(removeChannelId);
             }
-            setShowModalRemove(false);
+            setRemoveChannelId("");
           }}>
-          <p>是否确认删除频道 {channelStore.getChannel(contextMenuCfg.channelId)?.channelInfo.basic_info.channel_name ?? ""}？</p>
+          <p>是否确认删除频道 {channelStore.getChannel(removeChannelId)?.channelInfo.basic_info.channel_name ?? ""}？</p>
           <p style={{ color: "red" }}>频道删除后将不能再恢复。</p>
         </Modal>
       )}
