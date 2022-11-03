@@ -13,6 +13,7 @@ import {
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import { CommentOutlined, FileDoneOutlined } from '@ant-design/icons';
+import SearchBar from '../SearchBar';
 
 const TopNav = () => {
   const history = useHistory();
@@ -60,10 +61,13 @@ const TopNav = () => {
       </div>
       <span />
       <div className={s.right}>
-        {pathname.includes(APP_PROJECT_CHAT_PATH) && <ChannelHeader />}
-        {pathname.includes(APP_PROJECT_KB_DOC_PATH) && <div className={s.doc_title}>知识库</div>}
+        {pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /></>)}
+        {pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /></>)}
         {pathname.includes(APP_PROJECT_KB_CB_PATH) && (
-          <div className={s.doc_title}>可变内容块管理</div>
+          <>
+            <div className={s.doc_title}>可变内容块管理</div>
+            <SearchBar />
+          </>
         )}
       </div>
     </div>

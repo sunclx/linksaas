@@ -49,6 +49,7 @@ export default ({ command, mode }: ConfigEnv) => {
           about: 'about.html',
           shortNote: "short_note.html",
           floatNotice: "float_notice.html",
+          searchResult: "search_result.html",
         },
       },
       terserOptions: {
