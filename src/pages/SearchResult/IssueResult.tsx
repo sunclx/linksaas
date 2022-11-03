@@ -1,7 +1,6 @@
 import type { IssueResultItem } from "@/api/search";
 import { search_project_issue } from "@/api/search";
 import React, { useEffect, useState } from "react";
-import s from "./common.module.less";
 import type { ColumnsType } from 'antd/lib/table';
 import { get_session } from "@/api/user";
 import { request } from "@/utils/request";
@@ -90,7 +89,7 @@ const IssueResult: React.FC<IssueResultProps> = (props) => {
         doSearch();
     }, [curPage]);
 
-    return (<div className={s.result_wrap}>
+    return (<div>
         <Table rowKey="issue_id" columns={columns} dataSource={resultItemList} pagination={false} />
         <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1}
             onChange={page => setCurPage(page - 1)} />

@@ -30,6 +30,10 @@ export const SearchResult = () => {
     }
 
     appWindow.setTitle("搜索结果");
+    appWindow.setAlwaysOnTop(true);
+    setTimeout(() => {
+        appWindow.setAlwaysOnTop(false);
+    }, 200);
 
     return (<Card
         title={<div style={{ fontSize: "16px", fontWeight: 500 }} data-tauri-drag-region={true}>搜索结果</div>}
@@ -38,14 +42,16 @@ export const SearchResult = () => {
             e.preventDefault();
             appWindow.close();
         }} title="关闭" />}>
-        {(scope == SEARCH_SCOPE_CUR_CHANNEL || scope == SEARCH_SCOPE_ALL_CHANNEL) && (
-            <ChannelResult projectId={projectId} keyword={keyword} channelId={scopeValue} fromTime={fromTime} toTime={toTime} />
-        )}
-        {(scope == SEARCH_SCOPE_CUR_DOC_SPACE || scope == SEARCH_SCOPE_ALL_DOC_SPACE) && (
-            <DocSpaceResult projectId={projectId} keyword={keyword} docSpaceId={scopeValue} fromTime={fromTime} toTime={toTime} />
-        )}
-        {(scope == SEARCH_SCOPE_TASK || scope == SEARCH_SCOPE_BUG) && (
-            <IssueResult projectId={projectId} keyword={keyword} issueType={scope == SEARCH_SCOPE_TASK ? ISSUE_TYPE_TASK : ISSUE_TYPE_BUG} fromTime={fromTime} toTime={toTime} />
-        )}
+        <div className={s.result_wrap}>
+            {(scope == SEARCH_SCOPE_CUR_CHANNEL || scope == SEARCH_SCOPE_ALL_CHANNEL) && (
+                <ChannelResult projectId={projectId} keyword={keyword} channelId={scopeValue} fromTime={fromTime} toTime={toTime} />
+            )}
+            {(scope == SEARCH_SCOPE_CUR_DOC_SPACE || scope == SEARCH_SCOPE_ALL_DOC_SPACE) && (
+                <DocSpaceResult projectId={projectId} keyword={keyword} docSpaceId={scopeValue} fromTime={fromTime} toTime={toTime} />
+            )}
+            {(scope == SEARCH_SCOPE_TASK || scope == SEARCH_SCOPE_BUG) && (
+                <IssueResult projectId={projectId} keyword={keyword} issueType={scope == SEARCH_SCOPE_TASK ? ISSUE_TYPE_TASK : ISSUE_TYPE_BUG} fromTime={fromTime} toTime={toTime} />
+            )}
+        </div>
     </Card>);
 }

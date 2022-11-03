@@ -5,7 +5,6 @@ import Pagination from "@/components/Pagination";
 import { request } from "@/utils/request";
 import { Table } from "antd";
 import React, { useEffect, useState } from "react";
-import s from "./common.module.less";
 import type { ColumnsType } from 'antd/lib/table';
 import type { ShortNoteEvent } from "@/utils/short_note";
 import { WebviewWindow } from "@tauri-apps/api/window";
@@ -80,7 +79,7 @@ const ChannelResult: React.FC<ChannelResultProps> = (props) => {
         doSearch();
     }, [curPage]);
 
-    return (<div className={s.result_wrap}>
+    return (<div>
         <Table rowKey="msg_id" columns={columns} dataSource={resultItemList} pagination={false} />
         <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1}
             onChange={page => setCurPage(page - 1)} />

@@ -99,7 +99,18 @@ const SearchBar = () => {
     const showSearchResult = async () => {
         const label = "search-result";
         const view = WebviewWindow.getByLabel(label);
+        let x: number | undefined = undefined;
+        let y: number | undefined = undefined;
+        let width: number | undefined = undefined;
+        let height: number | undefined = undefined;
+
         if (view != null) {
+            const pos = await view.outerPosition();
+            x = pos.x;
+            y = pos.y;
+            const size = await view.outerSize();
+            width = size.width;
+            height = size.height;
             await view.close();
         }
         let scopeValue = "";
@@ -115,27 +126,26 @@ const SearchBar = () => {
             toTime = dateRange[1].valueOf().toFixed(0);
         }
 
-        const webview = new WebviewWindow(label, {
+        new WebviewWindow(label, {
             url: `search_result.html?projectId=${projectStore.curProjectId}&keyword=${encodeURIComponent(keyword)}&scope=${curScope}&scopeValue=${scopeValue}&fromTime=${fromTime}&toTime=${toTime}`,
-            width: 800,
-            minWidth: 800,
-            height: 600,
-            minHeight: 600,
+            width: width ?? 800,
+            minWidth: 300,
+            height: height ?? 600,
+            minHeight: 200,
             decorations: false,
             alwaysOnTop: false,
             skipTaskbar: false,
             fileDropEnabled: false,
             transparent: false,
-        });
-        webview.once('tauri://created', () => {
-            setKeyword("");
-            setDateRange([]);
+            x: x,
+            y: y,
         });
     }
 
     useEffect(() => {
         calcScopeList();
         setKeyword("");
+        setDateRange([]);
     }, [location.pathname, docSpaceStore.curDocSpaceId, channelStore.curChannelId]);
 
     return (<div className={s.search_wrap}>

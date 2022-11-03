@@ -8,7 +8,6 @@ import type { ShortNoteEvent } from "@/utils/short_note";
 import { WebviewWindow } from "@tauri-apps/api/window";
 import { Table } from "antd";
 import React, { useEffect, useState } from "react";
-import s from "./common.module.less";
 import type { ColumnsType } from 'antd/lib/table';
 
 
@@ -91,7 +90,7 @@ const DocSpaceResult: React.FC<DocSpaceResultProps> = (props) => {
         doSearch();
     }, [curPage]);
 
-    return (<div className={s.result_wrap}>
+    return (<div>
         <Table rowKey="doc_id" columns={columns} dataSource={resultItemList} pagination={false} />
         <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1}
             onChange={page => setCurPage(page - 1)} />
