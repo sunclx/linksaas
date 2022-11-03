@@ -6,7 +6,7 @@ import type { RootStore } from '.';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL } from '@/api/short_note';
 import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
@@ -99,15 +99,15 @@ class NoticeStore {
 
   private processProjectDocNotice(notice: NoticeType.project_doc.AllNotice) {
     if (notice.NewDocSpaceNotice !== undefined) {
-      if(notice.NewDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId){
+      if (notice.NewDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.docSpaceStore.updateDocSpace(notice.NewDocSpaceNotice.doc_space_id);
       }
     } else if (notice.UpdateDocSpaceNotice !== undefined) {
-      if(notice.UpdateDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId){
+      if (notice.UpdateDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.docSpaceStore.updateDocSpace(notice.UpdateDocSpaceNotice.doc_space_id);
       }
     } else if (notice.RemoveDocSpaceNotice !== undefined) {
-      if(notice.RemoveDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId){
+      if (notice.RemoveDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.docSpaceStore.removeDocSpace(notice.RemoveDocSpaceNotice.doc_space_id);
       }
     } else if (notice.NewDocNotice !== undefined) {
@@ -336,6 +336,8 @@ class NoticeStore {
       this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
     } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
       this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.targetId), this.history);
+    } else if (ev.shortNoteType == SHORT_NOTE_CHANNEL) {
+      this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
     }
     await appWindow.show();
     await appWindow.setAlwaysOnTop(true);
