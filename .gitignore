@@ -16,3 +16,4 @@ yarn.lock
 **/.DS_Store
 .VSCodeCounter/
 .DS_Store
+.vscode

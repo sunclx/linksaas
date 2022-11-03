@@ -15,6 +15,7 @@ export interface ShortNoteEvent {
     projectId: string;
     shortNoteType: SHORT_NOTE_TYPE;
     targetId: string;
+    extraTargetValue: string;
 }
 
 function getShortNoteTypeStr(shortNoteType: SHORT_NOTE_TYPE): string {

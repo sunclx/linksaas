@@ -55,6 +55,7 @@ const Content = () => {
             projectId: projectId ?? "",
             shortNoteType: shortNoteType,
             targetId: id ?? "",
+            extraTargetValue: "",
         };
         const mainWindow = WebviewWindow.getByLabel("main");
         mainWindow?.emit("shortNote", ev);

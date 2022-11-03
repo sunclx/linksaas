@@ -7,6 +7,8 @@ import type { DocSpace as DocSpaceType } from '@/api/project_doc';
 import { remove_doc_space, update_doc_space } from '@/api/project_doc';
 import { request } from '@/utils/request';
 import { Popover, Modal, Input, message } from 'antd';
+import { APP_PROJECT_KB_DOC_PATH } from "@/utils/constant";
+import { useHistory } from "react-router-dom";
 
 
 const RenderMoreMenu: React.FC<{ docSpaceId: string, canUpdate: boolean, canRemove: boolean, title: string }> =
@@ -84,6 +86,7 @@ const RenderMoreMenu: React.FC<{ docSpaceId: string, canUpdate: boolean, canRemo
     };
 
 const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace }) => {
+    const history = useHistory();
     const docSpaceStore = useStores('docSpaceStore');
     const [hover, setHover] = useState(false);
 
@@ -104,19 +107,20 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
             onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                if(docSpaceStore.inEdit){
-                    docSpaceStore.showCheckLeave(()=>{
-                        docSpaceStore.showDocList(docSpace.doc_space_id, false); 
+                if (docSpaceStore.inEdit) {
+                    docSpaceStore.showCheckLeave(() => {
+                        docSpaceStore.showDocList(docSpace.doc_space_id, false);
                     });
                     return;
                 }
                 docSpaceStore.showDocList(docSpace.doc_space_id, false);
+                history.push(APP_PROJECT_KB_DOC_PATH);
             }}
         >
             {docSpace.base_info.title}
         </div>
-        {hover && !docSpace.system_doc_space && (<Popover
-            placement="leftBottom"
+        <Popover
+            placement="left"
             content={<RenderMoreMenu
                 docSpaceId={docSpace.doc_space_id}
                 canUpdate={docSpace.user_perm.can_update}
@@ -124,11 +128,12 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
                 title={docSpace.base_info.title} />}
             autoAdjustOverflow={false}
         >
-            <a className={s.more}>
-                <i className={s.icon} />
-            </a>
+            {hover && !docSpace.system_doc_space &&
+                <a className={s.more}>
+                    <i className={s.icon} />
+                </a>
+            }
         </Popover>
-        )}
     </li>);
 });
 

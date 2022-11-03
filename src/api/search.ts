@@ -15,6 +15,7 @@ export type ChannelResultItem = {
     project_id: string;
     channel_id: string;
     msg_id: string;
+    content: string;
 };
 
 export type IssueResultItem = {
@@ -29,6 +30,9 @@ export type SearchProjectChannelRequest = {
     keyword: string;
     filter_by_channel_id: boolean;
     channel_id: string;
+    filter_by_time_range: boolean;
+    from_time_stamp: number;
+    to_time_stamp: number;
     offset: number;
     limit: number;
 };
@@ -47,6 +51,9 @@ export type SearchProjectIssueRequest = {
     project_id: string;
     keyword: string;
     issue_type: ISSUE_TYPE;
+    filter_by_time_range: boolean;
+    from_time_stamp: number;
+    to_time_stamp: number;
     offset: number;
     limit: number;
 };
@@ -66,6 +73,9 @@ export type SearchProjectDocRequest = {
     keyword: string;
     filter_by_doc_space_id: boolean;
     doc_space_id: string;
+    filter_by_time_range: boolean;
+    from_time_stamp: number;
+    to_time_stamp: number;
     offset: number;
     limit: number;
 };
