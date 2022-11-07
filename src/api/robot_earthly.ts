@@ -195,7 +195,6 @@ export type UpdateActionResponse = {
 
 
 export type RemoveActionRequest = {
-    
     session_id: string;
     project_id: string;
     repo_id: string;  

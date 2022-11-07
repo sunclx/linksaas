@@ -28,6 +28,7 @@ import ContentBlock from '@/pages/KnowledgeBase/ContentBlock';
 import IssueCreate from '@/pages/Issue/IssueCreate';
 import RobotList from '@/pages/Robot/RobotList';
 import MetricList from '@/pages/Robot/MetricList';
+import RepoList from '@/pages/Earthly/RepoList';
 
 
 
@@ -110,6 +111,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/robot',
       title: '机器人列表',
       component: RobotList,
+      exact: true,
+    },
+    {
+      path: prefix + '/repo',
+      title: '代码仓库列表',
+      component: RepoList,
       exact: true,
     },
     {

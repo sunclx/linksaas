@@ -84,6 +84,11 @@ const Toolbar: React.FC = observer(() => {
         pathname={pathname}
         title="机器人列表"
       />
+      <Item
+        id="repo"
+        pathname={pathname}
+        title="代码仓库列表"
+      />
       <Divider />
       <Item
         id="record"
