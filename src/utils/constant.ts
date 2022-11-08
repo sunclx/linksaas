@@ -16,6 +16,8 @@ export const BUG_CREATE_SUFFIX = '/bug/create';
 
 export const ROBOT_METRIC_SUFFIX = '/robot/metric';
 
+export const REPO_ACTION_EXEC_RESULT_SUFFIX = '/repo/exec_result';
+
 export const statusText = {
   [issueApi.ISSUE_STATE_PLAN]: '规划中阶段', //规划中
   [issueApi.ISSUE_STATE_PROCESS]: '处理阶段', //处理

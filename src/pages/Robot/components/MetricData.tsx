@@ -8,7 +8,7 @@ import { uniqId } from '@/utils/utils';
 import { useStores } from "@/hooks";
 import moment from 'moment';
 import { listen } from '@tauri-apps/api/event';
-import type * as NoticeType from '@/api/notice_type'
+import type * as NoticeType from '@/api/notice_type';
 import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 import { useSize } from "ahooks";
 import Button from "@/components/Button";

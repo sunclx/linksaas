@@ -318,6 +318,146 @@ async fn remove_action<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn exec_action<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ExecActionRequest,
+) -> Result<ExecActionResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotEarthlyApiClient::new(chan.unwrap());
+    match client.exec_action(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == exec_action_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("exec_action".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_exec<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListExecRequest,
+) -> Result<ListExecResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotEarthlyApiClient::new(chan.unwrap());
+    match client.list_exec(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_exec_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_exec".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_exec<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetExecRequest,
+) -> Result<GetExecResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotEarthlyApiClient::new(chan.unwrap());
+    match client.get_exec(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_exec_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_exec".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn watch_exec<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: WatchExecRequest,
+) -> Result<WatchExecResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotEarthlyApiClient::new(chan.unwrap());
+    match client.watch_exec(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == watch_exec_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("watch_exec".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_exec_data<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListExecDataRequest,
+) -> Result<ListExecDataResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotEarthlyApiClient::new(chan.unwrap());
+    match client.list_exec_data(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_exec_data_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_exec_data".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct RobotEarthlyApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -337,6 +477,11 @@ impl<R: Runtime> RobotEarthlyApiPlugin<R> {
                 get_action,
                 update_action,
                 remove_action,
+                exec_action,
+                list_exec,
+                get_exec,
+                watch_exec,
+                list_exec_data,
             ]),
         }
     }

@@ -11,6 +11,9 @@ import ActionModal from "./ActionModal";
 import { OPT_TYPE } from "./ActionModal";
 import { request } from '@/utils/request';
 import type { ColumnsType } from 'antd/es/table';
+import ExecModal from "./ExecModal";
+import { LinkEarthlyExecInfo } from "@/stores/linkAux";
+import { useHistory } from "react-router-dom";
 
 
 interface ActionListProps {
@@ -21,11 +24,15 @@ interface ActionListProps {
 const ActionList: React.FC<ActionListProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const linkAuxStore = useStores('linkAuxStore');
+
+    const history = useHistory();
 
     const [actionList, setActionList] = useState<ActionInfo[]>([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [removeActionId, setRemoveActionId] = useState("");
     const [updateActionId, setUpdateActionId] = useState("");
+    const [execActionId, setExecActionId] = useState("");
 
     const loadAction = async () => {
         const res = await request(list_action({
@@ -46,6 +53,14 @@ const ActionList: React.FC<ActionListProps> = (props) => {
         return "";
     };
 
+    const getActionInfo = (actionId: string) => {
+        const index = actionList.findIndex(item => item.action_id == actionId);
+        if (index != -1) {
+            return actionList[index];
+        }
+        return null;
+    }
+
     const removeAction = async () => {
         const res = await request(remove_action({
             session_id: userStore.sessionId,
@@ -65,8 +80,8 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             dataIndex: ["basic_info", "action_name"],
         },
         {
-            title: "earthly文件",
-            dataIndex: ["basic_info", "earthly_file"],
+            title: "本地路径",
+            dataIndex: ["basic_info", "local_path"],
         },
         {
             title: "earthly目标",
@@ -79,7 +94,7 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                 <div>
                     {record.basic_info.param_def_list.map((pd, index) => (
                         <div key={index}>
-                            {index > 0 && <hr/>}
+                            {index > 0 && <hr />}
                             <div>参数名：{pd.name}</div>
                             <div>默认值：{pd.default_value}</div>
                             <div>参数说明: {pd.desc}</div>
@@ -93,7 +108,11 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             width: 300,
             render: (_, record: ActionInfo) => (
                 <div>
-                    <Button type="link">执行</Button>
+                    <Button type="link" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setExecActionId(record.action_id);
+                    }}>执行</Button>
                     <Button type="link" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -161,6 +180,14 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                     是否删除命令 {getActionName(removeActionId)}?
                 </Modal>
             )}
+            {execActionId != "" && <ExecModal
+                repoId={props.repoId}
+                actionInfo={getActionInfo(execActionId)!}
+                onCancel={() => setExecActionId("")}
+                onOk={(execId: string) => {
+                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, props.repoId, execActionId, execId), history);
+                    setExecActionId("");
+                }} />}
         </Card>
     );
 };

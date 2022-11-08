@@ -1,8 +1,8 @@
 import { Modal, Form, Input, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { ParamDef, update_action } from '@/api/robot_earthly';
-import { get_action, create_action } from '@/api/robot_earthly';
+import type { ParamDef } from '@/api/robot_earthly';
+import { get_action, create_action, update_action } from '@/api/robot_earthly';
 import { uniqId } from '@/utils/utils';
 import Button from "@/components/Button";
 import s from './ActionModal.module.less';
@@ -31,7 +31,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
     const projectStore = useStores('projectStore');
 
     const [actionName, setActionName] = useState("");
-    const [earthlyFile, setEarthlyFile] = useState("Earthfile");
+    const [localPath, setLocalPath] = useState("");
     const [target, setTarget] = useState("");
     const [paramDefList, setParamDefList] = useState<ParamDefEx[]>([]);
     const [dataReady, setDataReady] = useState(false);
@@ -39,10 +39,6 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
     const createAction = async () => {
         if (actionName == "") {
             message.error("请输入命令名称");
-            return;
-        }
-        if (earthlyFile == "") {
-            message.error("请输入earthly配置文件");
             return;
         }
         if (target == "") {
@@ -55,7 +51,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
             repo_id: props.repoId,
             basic_info: {
                 action_name: actionName,
-                earthly_file: earthlyFile,
+                local_path: localPath,
                 target: target,
                 param_def_list: paramDefList.filter(item => item.name != "").map(item => {
                     return {
@@ -76,10 +72,6 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
             message.error("请输入命令名称");
             return;
         }
-        if (earthlyFile == "") {
-            message.error("请输入earthly配置文件");
-            return;
-        }
         if (target == "") {
             message.error("请指定earthly目标");
             return;
@@ -91,7 +83,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
             action_id: props.actionId ?? "",
             basic_info: {
                 action_name: actionName,
-                earthly_file: earthlyFile,
+                local_path: localPath,
                 target: target,
                 param_def_list: paramDefList.filter(item => item.name != "").map(item => {
                     return {
@@ -162,7 +154,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
         }));
         if (res) {
             setActionName(res.info.basic_info.action_name);
-            setEarthlyFile(res.info.basic_info.earthly_file);
+            setLocalPath(res.info.basic_info.local_path);
             setTarget(res.info.basic_info.target);
             setParamDefList(res.info.basic_info.param_def_list.map(item => {
                 return {
@@ -203,7 +195,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
                 wrapperCol={{ span: 18 }}
                 initialValues={{
                     "action_name": actionName,
-                    "earthly_file": earthlyFile,
+                    "local_path": localPath,
                     "target": target,
                 }}>
                 <Form.Item label="名称" rules={[{ required: true, min: 2 }]} name="action_name">
@@ -213,11 +205,11 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
                         setActionName(e.target.value);
                     }} />
                 </Form.Item>
-                <Form.Item label="earthly文件" rules={[{ required: true, min: 2 }]} name="earthly_file">
+                <Form.Item label="本地路径" name="local_path">
                     <Input onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        setEarthlyFile(e.target.value);
+                        setLocalPath(e.target.value);
                     }} />
                 </Form.Item>
                 <Form.Item label="earthly目标" rules={[{ required: true, min: 2 }]} name="target">

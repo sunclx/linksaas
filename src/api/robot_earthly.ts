@@ -1,6 +1,13 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export type BasicRepoInfo ={  
+export type EXEC_STATE = number;
+
+export const EXEC_STATE_INIT: EXEC_STATE = 0;     //初始化
+export const EXEC_STATE_RUN: EXEC_STATE = 1;      //执行中
+export const EXEC_STATE_SUCCESS: EXEC_STATE = 2;  //执行成功
+export const EXEC_STATE_FAIL: EXEC_STATE = 3;     //执行失败
+
+export type BasicRepoInfo = {
     repo_url: string;
 };
 
@@ -30,7 +37,7 @@ export type ParamDef = {
 
 export type BasicActionInfo = {
     action_name: string;
-    earthly_file: string;
+    local_path: string;
     target: string;
     param_def_list: ParamDef[];
 };
@@ -52,7 +59,7 @@ export type ActionInfo = {
 };
 
 export type Param = {
-    name: string;  
+    name: string;
     value: string;
 };
 
@@ -69,7 +76,7 @@ export type AddRepoResponse = {
     repo_id: string;
 };
 
-export type ListRepoRequest = {  
+export type ListRepoRequest = {
     session_id: string;
     project_id: string;
     offset: number;
@@ -86,7 +93,7 @@ export type ListRepoResponse = {
 
 export type GetRepoRequest = {
     session_id: string;
-    project_id: string;  
+    project_id: string;
     repo_id: string;
 };
 
@@ -99,7 +106,7 @@ export type GetRepoResponse = {
 
 export type RemoveRepoRequest = {
     session_id: string;
-    project_id: string;  
+    project_id: string;
     repo_id: string;
 };
 
@@ -109,27 +116,23 @@ export type RemoveRepoResponse = {
 };
 
 
-export type LinkRobotRequest ={
+export type LinkRobotRequest = {
     session_id: string;
     project_id: string;
     repo_id: string;
     robot_id: string;
 };
 
-export type LinkRobotResponse ={
+export type LinkRobotResponse = {
     code: number;
     err_msg: string;
 };
 
 
 export type UnlinkRobotRequest = {
-    
     session_id: string;
-    
     project_id: string;
-    
     repo_id: string;
-    
     robot_id: string;
 };
 
@@ -146,16 +149,16 @@ export type CreateActionRequest = {
     basic_info: BasicActionInfo;
 };
 
-export type CreateActionResponse ={
+export type CreateActionResponse = {
     code: number;
-    err_msg: string;  
+    err_msg: string;
     action_id: string;
 };
 
 
 export type ListActionRequest = {
     session_id: string;
-    project_id: string;  
+    project_id: string;
     repo_id: string;
 };
 
@@ -168,8 +171,8 @@ export type ListActionResponse = {
 
 export type GetActionRequest = {
     session_id: string;
-    project_id: string; 
-    repo_id: string;    
+    project_id: string;
+    repo_id: string;
     action_id: string;
 };
 
@@ -180,7 +183,7 @@ export type GetActionResponse = {
 };
 
 
-export type UpdateActionRequest ={
+export type UpdateActionRequest = {
     session_id: string;
     project_id: string;
     repo_id: string;
@@ -197,13 +200,107 @@ export type UpdateActionResponse = {
 export type RemoveActionRequest = {
     session_id: string;
     project_id: string;
-    repo_id: string;  
+    repo_id: string;
     action_id: string;
 };
 
 export type RemoveActionResponse = {
     code: number;
     err_msg: string;
+};
+
+export type ExecActionRequest = {
+    session_id: string;
+    project_id: string;
+    repo_id: string;
+    action_id: string;
+    branch: string;
+    param_list: Param[];
+};
+
+export type ExecActionResponse = {
+    code: number;
+    err_msg: string;
+    exec_id: string;
+};
+
+export type ListExecRequest = {
+    session_id: string;
+    project_id: string;
+    repo_id: string;
+    action_id: string;
+    offset: number;
+    limit: number;
+};
+
+export type ExecInfo = {
+    exec_id: string;
+    project_id: string;
+    repo_id: string;
+    action_id: string;
+    exec_user_id: string;
+    exec_display_name: string;
+    exec_time: number;
+    exec_state: EXEC_STATE;
+};
+
+
+
+export type ListExecResponse = {
+    code: number;
+    err_msg: string;
+    total_count: number;
+    info_list: ExecInfo[];
+};
+
+
+export type GetExecRequest = {
+    session_id: string;
+    project_id: string;
+    repo_id: string;
+    action_id: string;
+    exec_id: string;
+};
+
+export type GetExecResponse = {
+    code: number;
+    err_msg: string;
+    info: ExecInfo;
+};
+
+export type WatchExecRequest = {
+    session_id: string;
+    project_id: string;
+    repo_id: string;
+    action_id: string;
+    exec_id: string;
+};
+
+export type WatchExecResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type ListExecDataRequest = {
+    session_id: string;
+    project_id: string;
+    repo_id: string;
+    action_id: string;
+    exec_id: string;
+    from_data_index: number;
+    to_data_index: number;
+};
+
+export type ExecData = {
+    time_offset: number;
+    data_index: number;
+    // data: ::prost::alloc::vec::Vec<u8>,
+};
+
+export type ListExecDataResponse = {
+    code: number;
+    err_msg: string;
+    data_list: ExecData[];
 };
 
 //增加仓库
@@ -304,4 +401,48 @@ export async function remove_action(request: RemoveActionRequest): Promise<Remov
         request,
     });
 }
-                
+
+//执行action
+export async function exec_action(request: ExecActionRequest): Promise<ExecActionResponse> {
+    const cmd = 'plugin:robot_earthly_api|exec_action';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ExecActionResponse>(cmd, {
+        request,
+    });
+}
+
+//列出执行记录
+export async function list_exec(request: ListExecRequest): Promise<ListExecResponse> {
+    const cmd = 'plugin:robot_earthly_api|list_exec';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListExecResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个执行记录
+export async function get_exec(request: GetExecRequest): Promise<GetExecResponse> {
+    const cmd = 'plugin:robot_earthly_api|get_exec';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetExecResponse>(cmd, {
+        request,
+    });
+}
+
+//watch执行
+export async function watch_exec(request: WatchExecRequest): Promise<WatchExecResponse> {
+    const cmd = 'plugin:robot_earthly_api|watch_exec';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<WatchExecResponse>(cmd, {
+        request,
+    });
+}
+
+//列出执行数据
+export async function list_exec_data(request: ListExecDataRequest): Promise<ListExecDataResponse> {
+    const cmd = 'plugin:robot_earthly_api|list_exec_data';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListExecDataResponse>(cmd, {
+        request,
+    });
+}
