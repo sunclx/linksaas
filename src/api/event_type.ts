@@ -3060,6 +3060,106 @@ namespace robot {
   }
 }
 
+namespace earthly {
+  export type AddRepoEvent = {
+    repo_id: string;
+    repo_url: string;
+  };
+
+  function get_add_repo_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AddRepoEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 添加仓库 ${inner.repo_url}`)];
+  }
+
+  export type RemoveRepoEvent = {
+    repo_id: string;
+    repo_url: string;
+  };
+
+  function get_remove_repo_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveRepoEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除仓库 ${inner.repo_url}`)];
+  }
+
+  export type CreateActionEvent = {
+    repo_id: string;
+    repo_url: string;
+    action_id: string;
+    action_name: string;
+  };
+
+  function get_create_action_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateActionEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在仓库 ${inner.repo_url} 创建命令 ${inner.action_name}`)];
+  }
+
+  export type UpdateActionEvent = {
+    repo_id: string;
+    repo_url: string;
+    action_id: string;
+    action_name: string;
+  };
+
+  function get_update_action_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateActionEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在仓库 ${inner.repo_url} 更新命令 ${inner.action_name}`)];
+  }
+
+  export type RemoveActionEvent = {
+    repo_id: string;
+    repo_url: string;
+    action_id: string;
+    action_name: string;
+  };
+
+  function get_remove_action_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveActionEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从仓库 ${inner.repo_url} 删除命令 ${inner.action_name}`)];
+  }
+
+  export class AllEarthlyEvent {
+    AddRepoEvent?: AddRepoEvent;
+    RemoveRepoEvent?: RemoveRepoEvent;
+    CreateActionEvent?: CreateActionEvent;
+    UpdateActionEvent?: UpdateActionEvent;
+    RemoveActionEvent?: RemoveActionEvent;
+  };
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllEarthlyEvent,
+  ): LinkInfo[] {
+    if (inner.AddRepoEvent !== undefined) {
+      return get_add_repo_simple_content(ev, skip_prj_name, inner.AddRepoEvent);
+    } else if (inner.RemoveRepoEvent !== undefined) {
+      return get_remove_repo_simple_content(ev, skip_prj_name, inner.RemoveRepoEvent);
+    } else if (inner.CreateActionEvent !== undefined) {
+      return get_create_action_simple_content(ev, skip_prj_name, inner.CreateActionEvent);
+    } else if (inner.UpdateActionEvent !== undefined) {
+      return get_update_action_simple_content(ev, skip_prj_name, inner.UpdateActionEvent);
+    } else if (inner.RemoveActionEvent !== undefined) {
+      return get_remove_action_simple_content(ev, skip_prj_name, inner.RemoveActionEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
 export class AllEvent {
   ProjectEvent?: project.AllProjectEvent;
   ProjectDocEvent?: project_doc.AllProjectDocEvent;
@@ -3071,6 +3171,7 @@ export class AllEvent {
   GogsEvent?: gogs.AllGogsEvent;
   GiteeEvent?: gitee.AllGiteeEvent;
   RobotEvent?: robot.AllRobotEvent;
+  EarthlyEvent?: earthly.AllEarthlyEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -3094,6 +3195,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return gitee.get_simple_content_inner(ev, skip_prj_name, ev.event_data.GiteeEvent);
   } else if (ev.event_data.RobotEvent !== undefined) {
     return robot.get_simple_content_inner(ev, skip_prj_name, ev.event_data.RobotEvent);
+  } else if (ev.event_data.EarthlyEvent !== undefined) {
+    return earthly.get_simple_content_inner(ev, skip_prj_name, ev.event_data.EarthlyEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

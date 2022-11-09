@@ -630,6 +630,47 @@ pub mod robot {
     }
 }
 
+pub mod earthly {
+    use prost::Message;
+    use proto_gen_rust::events_earthly;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        AddRepoEvent(events_earthly::AddRepoEvent),
+        RemoveRepoEvent(events_earthly::RemoveRepoEvent),
+        CreateActionEvent(events_earthly::CreateActionEvent),
+        UpdateActionEvent(events_earthly::UpdateActionEvent),
+        RemoveActionEvent(events_earthly::RemoveActionEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_earthly::AddRepoEvent::type_url() {
+            if let Ok(ev) = events_earthly::AddRepoEvent::decode(data.value.as_slice()) {
+                return Some(Event::AddRepoEvent(ev));
+            }
+        } else if data.type_url == events_earthly::RemoveRepoEvent::type_url() {
+            if let Ok(ev) = events_earthly::RemoveRepoEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveRepoEvent(ev));
+            }
+        } else if data.type_url == events_earthly::CreateActionEvent::type_url() {
+            if let Ok(ev) = events_earthly::CreateActionEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateActionEvent(ev));
+            }
+        } else if data.type_url == events_earthly::UpdateActionEvent::type_url() {
+            if let Ok(ev) = events_earthly::UpdateActionEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateActionEvent(ev));
+            }
+        } else if data.type_url == events_earthly::RemoveActionEvent::type_url() {
+            if let Ok(ev) = events_earthly::RemoveActionEvent::decode(data.value.as_slice()){
+                return Some(Event::RemoveActionEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -642,7 +683,7 @@ pub enum EventMessage {
     GogsEvent(gogs::Event),
     GiteeEvent(gitee::Event),
     RobotEvent(robot::Event),
-
+    EarthlyEvent(earthly::Event),
     NoopEvent(),
 }
 
@@ -678,6 +719,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = robot::decode_event(data) {
         return Some(EventMessage::RobotEvent(ret));
+    }
+    if let Some(ret) = earthly::decode_event(data) {
+        return Some(EventMessage::EarthlyEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

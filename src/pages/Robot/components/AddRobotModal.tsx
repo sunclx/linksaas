@@ -73,33 +73,35 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
         }
     }
 
-    return <Modal
-        title="添加机器人"
-        open={true}
-        mask={false}
-        onCancel={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            props.onCancel();
-        }}
-        onOk={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            createRobot();
-        }}>
-        <Form
-            form={form}
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 18 }}
-        >
-            <Form.Item label="机器人名称" name="name" rules={[{ min: 2, type: "string", whitespace: false, required: true }]}>
-                <Input />
-            </Form.Item>
-            <Form.Item label="监控权限">
-                <MemberSelect name="metricUserId" />
-            </Form.Item>
-        </Form>
-    </Modal>
+    return (
+        <Modal
+            title="添加机器人"
+            open={true}
+            mask={false}
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onCancel();
+            }}
+            onOk={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                createRobot();
+            }}>
+            <Form
+                form={form}
+                labelCol={{ span: 4 }}
+                wrapperCol={{ span: 18 }}
+            >
+                <Form.Item label="机器人名称" name="name" rules={[{ min: 2, type: "string", whitespace: false, required: true }]}>
+                    <Input />
+                </Form.Item>
+                <Form.Item label="监控权限">
+                    <MemberSelect name="metricUserId" />
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
 };
 
 export default observer(AddRobotModal);

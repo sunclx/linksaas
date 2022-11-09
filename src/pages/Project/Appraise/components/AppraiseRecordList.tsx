@@ -81,8 +81,11 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
   }];
 
   const loadApprasiseScore = (appraiseId: string) => {
-    localStore.setCurAppraiseId(appraiseId);
-    localStore.dataSource = [];
+    runInAction(() => {
+      localStore.setCurAppraiseId(appraiseId);
+      localStore.dataSource = [];
+    });
+
     (async () => {
       const res = await request(list_score({
         session_id: userStore.sessionId,
@@ -136,7 +139,7 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
                   }}
                 >
                   {hasVoted ? '已投票' : '去投票'}
-                </a> 
+                </a>
               )}
               <div className={styles.list_info}>
                 <div className={styles.list_info_item}>
@@ -152,7 +155,14 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
                 <a
                   className={styles.list_expand}
                   onClick={() => {
-                    loadApprasiseScore(item.appraise_id);
+                    if (isCurrent) {
+                      runInAction(() => {
+                        localStore.setCurAppraiseId("");
+                        localStore.dataSource = [];
+                      });
+                    } else {
+                      loadApprasiseScore(item.appraise_id);
+                    }
                   }}>
                   {isCurrent ? '收起' : '展开'}
                 </a>

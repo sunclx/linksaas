@@ -254,11 +254,29 @@ export namespace robot {
     RespMetricDataNotice?: RespMetricDataNotice;
   };
 }
+
+export namespace earthly {
+  export type ExecDataNotice = {
+    exec_id: string;
+    data_index: number;
+    data: number[];
+  };
+  export type ExecStateNotice = {
+    exec_id: string;
+    exec_state: number;
+  };
+  export type AllNotice = {
+    ExecDataNotice?: ExecDataNotice;
+    ExecStateNotice?: ExecStateNotice;
+  };
+}
+
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   ProjectDocNotice?: project_doc.AllNotice;
   IssueNotice?: issue.AllNotice;
   AppraiseNotice?: appraise.AllNotice;
   RobotNotice?: robot.AllNotice;
+  EarthlyNotice?: earthly.AllNotice;
   ClientNotice?: client.AllNotice;
 };

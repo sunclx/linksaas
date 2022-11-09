@@ -51,6 +51,12 @@ metric:
   swap:
     # support param: total,used,free,usedPercent
     alarm_rule: "usedPercent > 0.9"
+earthly:
+  cmd: /usr/local/bin/earthly
+  default_key_path: your_private_key_path
+  auth_info_path: /etc/linksaas/auth
+  env_home: your_home_path
+  env_path: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 agent:
   - project: ${props.projectId}
     robot: ${props.robotId}
@@ -59,11 +65,12 @@ agent:
     # debug:-1,info:0,warn:1,error:2
     logLv: 0        
     `;
-    
+
   const startStr = `systemctl daemon-reload
 systemctl enable linksaas_robot
 systemctl start linksaas_robot`;
 
+  const installEarthlyStr = `sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earthly-linux-amd64 -O /usr/local/bin/earthly && chmod +x /usr/local/bin/earthly && /usr/local/bin/earthly bootstrap --with-autocomplete'`;
   return (
     <Modal
       title="接入说明"
@@ -78,7 +85,7 @@ systemctl start linksaas_robot`;
           writeText(installStr).then(() => {
             message.info("复制成功");
           })
-        }}>复制</Button>
+        }}>复制命令</Button>
           <CodeEditor
             value={installStr}
             language="bash"
@@ -95,7 +102,7 @@ systemctl start linksaas_robot`;
           writeText(configStr).then(() => {
             message.info("复制成功");
           })
-        }}>复制</Button>
+        }}>复制配置</Button>
           <CodeEditor
             value={configStr}
             language="yaml"
@@ -103,19 +110,37 @@ systemctl start linksaas_robot`;
             style={{
               fontSize: 14,
               backgroundColor: '#f5f5f5',
-              height: "200px",
+              height: "100px",
               overflowY: "scroll",
             }}
           />
         </li>
-        <li>3.启动机器人<Button type="link" onClick={e => {
+        <li>3.安装<a target="_blank" href="https://earthly.dev/" rel="noreferrer" >eartyly</a>(可选,CI/CD)
+          <Button type="link" onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            writeText(installEarthlyStr).then(() => {
+              message.info("复制成功");
+            })
+          }}>复制命令</Button>
+          <CodeEditor
+            value={installEarthlyStr}
+            language="bash"
+            disabled
+            style={{
+              fontSize: 14,
+              backgroundColor: '#f5f5f5',
+            }}
+          />
+        </li>
+        <li>4.启动机器人<Button type="link" onClick={e => {
           e.stopPropagation();
           e.preventDefault();
           writeText(startStr).then(() => {
             message.info("复制成功");
           })
-        }}>复制</Button>
-        <CodeEditor
+        }}>复制命令</Button>
+          <CodeEditor
             value={startStr}
             language="bash"
             disabled

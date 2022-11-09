@@ -134,7 +134,7 @@ const RobotList = () => {
         {
             title: "是否在线",
             dataIndex: "online",
-            width: 150,
+            width: 100,
             render: (online: boolean, record: RobotInfo) => {
                 return (<span>
                     {online ? "在线" : "离线"}&nbsp;&nbsp;
@@ -147,16 +147,33 @@ const RobotList = () => {
             }
         },
         {
+            title: "机器人版本",
+            dataIndex: "robot_version",
+            width: 80,
+        },
+        {
+            title: "机器人能力",
+            width: 100,
+            render: (_, record: RobotInfo) => (<div>
+                <div>监控：有</div>
+                <div>执行earthly：{record.robot_cap.earthly ? "有" : "无"}</div>
+                <div>上传artifact：{record.robot_cap.artifact ? "有" : "无"}</div>
+            </div>)
+        },
+        {
             title: "监控",
-            width: 150,
+            width: 100,
             render: (_, record: RobotInfo) => {
                 return <span>
                     有{record.metric_count}个监控项&nbsp;&nbsp;
-                    {record.online && record.can_metric && <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        linkAuxStore.goToLink(new LinkRobotMetricInfo("", projectStore.curProjectId, record.robot_id), history);
-                    }}>查看详情</a>}
+                    {record.online && record.can_metric &&
+                        <div>
+                            <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                linkAuxStore.goToLink(new LinkRobotMetricInfo("", projectStore.curProjectId, record.robot_id), history);
+                            }}>查看详情</a>
+                        </div>}
                 </span>
             }
         },
@@ -242,7 +259,7 @@ const RobotList = () => {
                     dataSource={robotList}
                     columns={columns}
                     pagination={false}
-                    scroll={{ x: 700, y: 'calc(100vh - 260px)' }} />
+                    scroll={{ x: 800, y: 'calc(100vh - 260px)' }} />
                 <Pagination current={curPage + 1} total={totalCount} pageSize={PAGE_SIZE} onChange={page => setCurPage(page - 1)} />
             </div>
         </div>
