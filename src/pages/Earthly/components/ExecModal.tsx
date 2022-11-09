@@ -76,9 +76,9 @@ const ExecModal: React.FC<ExecModalProps> = (props) => {
                 <Form.Item label="仓库分支/标签" rules={[{ required: true }]} name="branch">
                     <Input />
                 </Form.Item>
-                {props.actionInfo.basic_info.param_def_list.map(pd => (
+                {props.actionInfo.basic_info.param_def_list.map((pd,index) => (
                     <>
-                        <Form.Item key={pd.name}
+                        <Form.Item key={index}
                             label={
                                 <span>参数{pd.name}&nbsp;
                                     <Tooltip title={pd.desc}>

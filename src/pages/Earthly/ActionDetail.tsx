@@ -16,7 +16,7 @@ import moment from 'moment';
 import Button from "@/components/Button";
 import Pagination from "@/components/Pagination";
 import s from './ActionDetail.module.less';
-
+import ExecModal from "./components/ExecModal";
 
 const PAGE_SIZE = 10;
 
@@ -34,6 +34,8 @@ const ActionDetail = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
     const [execInfoList, setExecInfoList] = useState<ExecInfo[]>([]);
+    const [showExecModal, setShowExecModal] = useState(false);
+
 
     const loadRepoInfo = async () => {
         const res = await request(get_repo({
@@ -41,7 +43,7 @@ const ActionDetail = () => {
             project_id: projectStore.curProjectId,
             repo_id: state.repoId,
         }));
-        if(res){
+        if (res) {
             setRepoInfo(res.info);
         }
     };
@@ -81,7 +83,7 @@ const ActionDetail = () => {
             title: "执行参数",
             render: (_, record: ExecInfo) => (
                 <div>
-                    {record.param_list.map((param,index)=>(
+                    {record.param_list.map((param, index) => (
                         <div key={index}>{param.name}={param.value}</div>
                     ))}
                 </div>
@@ -144,12 +146,29 @@ const ActionDetail = () => {
                     <div>{actionInfo?.basic_info.action_name ?? ""}</div>
                 </div>
             </div>
-            <h2 className={s.sub_title}>执行记录</h2>
+            <h2 className={s.sub_title}>
+                执行记录
+                <div className={s.exec_wrap}>
+                    <Button onClick={e=>{
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowExecModal(true);
+                    }}>执行命令</Button>
+                </div>
+            </h2>
             <div className={s.content_wrap}>
 
                 <Table rowKey="exec_id" dataSource={execInfoList} columns={columns} pagination={false} />
                 <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
             </div>
+            {showExecModal == true && <ExecModal
+                repoId={state.repoId}
+                actionInfo={actionInfo!}
+                onCancel={() => setShowExecModal(false)}
+                onOk={(execId: string) => {
+                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, state.repoId, state.actionId, execId), history);
+                    setShowExecModal(false);
+                }} />}
         </CardWrap>
     );
 };
