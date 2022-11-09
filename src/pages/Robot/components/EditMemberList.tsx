@@ -13,7 +13,7 @@ interface EditMemberListProps {
     onRemoveMember: (memberId: string) => Promise<boolean>;
 }
 
-export const EditMemberList: React.FC<EditMemberListProps> = (props) => {
+const EditMemberList: React.FC<EditMemberListProps> = (props) => {
     const memberStore = useStores('memberStore');
 
     const [inEdit, setInEdit] = useState(false);
@@ -21,7 +21,7 @@ export const EditMemberList: React.FC<EditMemberListProps> = (props) => {
 
     const changeMember = async (newMemberIdList: string[]) => {
         //检查是否是删除
-        let removeMemberId = ""
+        let removeMemberId = "";
         memberIdList.forEach(item => {
             if (!newMemberIdList.includes(item)) {
                 removeMemberId = item;
@@ -81,8 +81,8 @@ export const EditMemberList: React.FC<EditMemberListProps> = (props) => {
                     value={memberIdList}
                     open={true}
                     onChange={value => changeMember(value)}
-                    onBlur={()=>setInEdit(false)}
-                    style={{width:"100%"}}
+                    onBlur={() => setInEdit(false)}
+                    style={{ width: "100%" }}
                 >
                     {memberStore.memberList.map(item => (
                         <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>

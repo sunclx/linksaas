@@ -242,6 +242,8 @@ export type ExecInfo = {
     exec_display_name: string;
     exec_time: number;
     exec_state: EXEC_STATE;
+    branch: string;
+    param_list: Param[];
 };
 
 
@@ -294,7 +296,7 @@ export type ListExecDataRequest = {
 export type ExecData = {
     time_offset: number;
     data_index: number;
-    // data: ::prost::alloc::vec::Vec<u8>,
+    data: number[];
 };
 
 export type ListExecDataResponse = {

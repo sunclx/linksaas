@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { RobotInfo as RepoRobotInfo, ActionInfo } from '@/api/robot_earthly';
-import { list_action, remove_action } from '@/api/robot_earthly';
-import { Card, Modal, Table } from "antd";
+import { list_action, remove_action, link_robot, unlink_robot } from '@/api/robot_earthly';
+import { Card, Modal, Table, Tooltip } from "antd";
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
 import addIcon from '@/assets/image/addIcon.png';
@@ -12,14 +12,24 @@ import { OPT_TYPE } from "./ActionModal";
 import { request } from '@/utils/request';
 import type { ColumnsType } from 'antd/es/table';
 import ExecModal from "./ExecModal";
-import { LinkEarthlyExecInfo } from "@/stores/linkAux";
+import { LinkEarthlyActionInfo, LinkEarthlyExecInfo } from "@/stores/linkAux";
 import { useHistory } from "react-router-dom";
+import EditRobotList from "./EditRobotList";
+import CodeEditor from '@uiw/react-textarea-code-editor';
 
 
 interface ActionListProps {
     repoId: string;
+    repoUrl: string;
     robotList: RepoRobotInfo[];
 }
+
+const sshAuthStr = `auth_type: ssh
+key_path: your_private_ssh_key_path`;
+
+const passwordAuthStr = `auth_type: password
+username: your_git_username
+password: your_git_password`;
 
 const ActionList: React.FC<ActionListProps> = (props) => {
     const userStore = useStores('userStore');
@@ -33,6 +43,30 @@ const ActionList: React.FC<ActionListProps> = (props) => {
     const [removeActionId, setRemoveActionId] = useState("");
     const [updateActionId, setUpdateActionId] = useState("");
     const [execActionId, setExecActionId] = useState("");
+
+    const getRepoDomain = () => {
+        if (props.repoUrl.includes("@") && props.repoUrl.includes(":")) {
+            const pos1 = props.repoUrl.indexOf("@");
+            const pos2 = props.repoUrl.indexOf(":");
+            return props.repoUrl.substring(pos1 + 1, pos2);
+        } else if (props.repoUrl.startsWith("https://")) {
+            const pos = props.repoUrl.indexOf("/", 8);
+            if (pos == -1) {
+                return "";
+            }
+            return props.repoUrl.substring(8, pos);
+        } else if (props.repoUrl.startsWith("http://")) {
+            const pos = props.repoUrl.indexOf("/", 7);
+            if (pos == -1) {
+                return "";
+            }
+            return props.repoUrl.substring(7, pos);
+        }
+        return "";
+    };
+
+    const repoDomain = getRepoDomain();
+
 
     const loadAction = async () => {
         const res = await request(list_action({
@@ -104,6 +138,22 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             ),
         },
         {
+            title: "执行记录",
+            width: 150,
+            render: (_, record: ActionInfo) => (
+                <span>
+                    {record.exec_count}&nbsp;&nbsp;
+                    {record.exec_count > 0 && (
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
+                        }}>查看</Button>
+                    )}
+                </span>
+            )
+        },
+        {
             title: "操作",
             width: 300,
             render: (_, record: ActionInfo) => (
@@ -132,29 +182,88 @@ const ActionList: React.FC<ActionListProps> = (props) => {
         loadAction();
     }, [projectStore.curProjectId]);
     return (
-        <Card title="命令列表" extra={
-            <Button
-                icon={<img src={addIcon} alt="" />}
-                disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
-                onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowCreateModal(true);
-                }}>
-                添加命令
-            </Button>
-        }>
-            <div>
-                <div className={s.info}>
-                    <div className={s.info_label}>关联机器人列表</div>
-                    <div>1111</div>
-                </div>
-                <div className={s.info}>
-                    <div className={s.info_label}>仓库验证方式</div>
-                    <div>1111</div>
-                </div>
-                <Table rowKey="action_id" dataSource={actionList} columns={columns} pagination={false} />
+        <div>
+            <div className={s.info}>
+                <div className={s.info_label}>关联机器人列表：</div>
+                <EditRobotList
+                    editable={projectStore.isAdmin}
+                    robotInfoList={props.robotList}
+                    showEditIcon={true}
+                    onAddRobot={async (robotId: string) => {
+                        try {
+                            const res = await link_robot({
+                                session_id: userStore.sessionId,
+                                project_id: projectStore.curProjectId,
+                                repo_id: props.repoId,
+                                robot_id: robotId,
+                            });
+                            return res.code == 0;
+                        } catch (_) {
+                            return false;
+                        }
+                    }}
+                    onRemoveRobot={async (robotId: string) => {
+                        try {
+                            const res = await unlink_robot({
+                                session_id: userStore.sessionId,
+                                project_id: projectStore.curProjectId,
+                                repo_id: props.repoId,
+                                robot_id: robotId,
+                            });
+                            return res.code == 0;
+                        } catch (_) {
+                            return false;
+                        }
+                    }} />
             </div>
+            <div className={s.info}>
+                <div className={s.info_label}>仓库验证方式：</div>
+                <div>你可以配置/etc/linksaas/auth/{repoDomain}.yaml 。 目前支持
+                    <Tooltip
+                        color="white"
+                        style={{ width: "200px" }}
+                        title={<div>
+                            <CodeEditor
+                                value={sshAuthStr}
+                                language="yaml"
+                                disabled
+                                style={{
+                                    fontSize: 14,
+                                    backgroundColor: '#f5f5f5',
+                                }}
+                            />
+                        </div>}><a>&nbsp;SSH&nbsp;</a></Tooltip>
+                    和
+                    <Tooltip
+                        color="white"
+                        style={{ width: "200px" }}
+                        title={<div>
+                            <CodeEditor
+                                value={passwordAuthStr}
+                                language="yaml"
+                                disabled
+                                style={{
+                                    fontSize: 14,
+                                    backgroundColor: '#f5f5f5',
+                                }}
+                            />
+                        </div>}><a>&nbsp;密码&nbsp;</a></Tooltip>
+                    两种git验证模式</div>
+            </div>
+            <Card title="命令列表" extra={
+                <Button
+                    icon={<img src={addIcon} alt="" />}
+                    disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowCreateModal(true);
+                    }}>
+                    添加命令
+                </Button>
+            }>
+                <Table rowKey="action_id" dataSource={actionList} columns={columns} pagination={false} />
+            </Card>
             {showCreateModal && <ActionModal repoId={props.repoId} optType={OPT_TYPE.OPT_CREATE} onCancel={() => setShowCreateModal(false)} onOk={() => {
                 loadAction();
                 setShowCreateModal(false);
@@ -188,7 +297,7 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                     linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, props.repoId, execActionId, execId), history);
                     setExecActionId("");
                 }} />}
-        </Card>
+        </div>
     );
 };
 

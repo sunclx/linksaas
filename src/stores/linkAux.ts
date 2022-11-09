@@ -6,7 +6,18 @@ import { message } from 'antd';
 import type { History } from 'history';
 import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH, BUG_CREATE_SUFFIX, BUG_DETAIL_SUFFIX, REPO_ACTION_EXEC_RESULT_SUFFIX, ROBOT_METRIC_SUFFIX, TASK_CREATE_SUFFIX, TASK_DETAIL_SUFFIX } from '@/utils/constant';
+import {
+  APP_PROJECT_CHAT_PATH,
+  APP_PROJECT_KB_CB_PATH,
+  APP_PROJECT_KB_DOC_PATH,
+  BUG_CREATE_SUFFIX,
+  BUG_DETAIL_SUFFIX,
+  REPO_ACTION_ACTION_DETAIL_SUFFIX,
+  REPO_ACTION_EXEC_RESULT_SUFFIX,
+  ROBOT_METRIC_SUFFIX,
+  TASK_CREATE_SUFFIX,
+  TASK_DETAIL_SUFFIX,
+} from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 
 /*
@@ -459,7 +470,15 @@ class LinkAuxStore {
       };
       history.push(this.genUrl(pathname, ROBOT_METRIC_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_ACTION) {
-      //TODO
+      const actionLink = link as LinkEarthlyActionInfo;
+      if (this.rootStore.projectStore.curProjectId != actionLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(actionLink.projectId);
+      }
+      const state: LinkEarthlyActionState = {
+        repoId: actionLink.repoId,
+        actionId: actionLink.actionId,
+      };
+      history.push(this.genUrl(pathname, REPO_ACTION_ACTION_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_EXEC) {
       const execLink = link as LinkEarthlyExecInfo;
       if (this.rootStore.projectStore.curProjectId != execLink.projectId) {
@@ -510,6 +529,11 @@ class LinkAuxStore {
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState, history: History) {
     history.push(this.genUrl(history.location.pathname, "/bug"), state);
+  }
+
+  //跳转到机器人列表
+  goToRobotList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/robot"));
   }
 
   private genUrl(pathname: string, suffix: string): string {

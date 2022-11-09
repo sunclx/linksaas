@@ -6,12 +6,14 @@ import addIcon from '@/assets/image/addIcon.png';
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import type { RepoInfo } from '@/api/robot_earthly';
-import { list_repo } from '@/api/robot_earthly';
+import { list_repo, remove_repo } from '@/api/robot_earthly';
 import AddRepoModal from "./components/AddRepoModal";
 import { request } from '@/utils/request';
 import moment from 'moment';
 import Pagination from "@/components/Pagination";
 import ActionList from "./components/ActionList";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 
 
 const PAGE_SIZE = 10;
@@ -25,6 +27,7 @@ const RepoList = () => {
     const [curPage, setCurPage] = useState(0);
     const [showAddModal, setShowAddModal] = useState(false);
     const [curRepoId, setCurRepoId] = useState("");
+    const [removeRepoId, setRemoveRepoId] = useState("");
 
     const loadRepo = async () => {
         const res = await request(list_repo({
@@ -36,6 +39,26 @@ const RepoList = () => {
         if (res) {
             setTotalCount(res.total_count);
             setRepoList(res.info_list);
+        }
+    };
+
+    const getRepo = (repoId: string) => {
+        const index = repoList.findIndex(repo => repo.repo_id == repoId);
+        if (index != -1) {
+            return repoList[index];
+        }
+        return undefined;
+    }
+
+    const removeRepo = async () => {
+        const res = await request(remove_repo({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            repo_id: removeRepoId,
+        }));
+        if (res) {
+            loadRepo();
+            setRemoveRepoId("");
         }
     };
 
@@ -70,6 +93,20 @@ const RepoList = () => {
                                     <div className={s.list_title}>
                                         {repo.basic_info.repo_url ?? ""}
                                     </div>
+                                    {projectStore.isAdmin && repo.action_count == 0 && (
+                                        <Button
+                                            type="link"
+                                            title="删除仓库"
+                                            danger
+                                            icon={<DeleteOutlined />}
+                                            className={s.remove_btn}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setRemoveRepoId(repo.repo_id);
+                                            }}
+                                        />
+                                    )}
                                     <div className={s.list_info}>
                                         <div className={s.list_info_item}>
                                             关联机器人数量：{repo.robot_list.length}
@@ -96,7 +133,7 @@ const RepoList = () => {
                                         </a>
                                     </div>
                                 </div>
-                                {curRepoId == repo.repo_id && (<ActionList repoId={repo.repo_id} robotList={repo.robot_list}/>)}
+                                {curRepoId == repo.repo_id && (<ActionList repoId={repo.repo_id} repoUrl={repo.basic_info.repo_url} robotList={repo.robot_list} />)}
                             </div>
                         ))}
                     </div>
@@ -114,6 +151,24 @@ const RepoList = () => {
                 setShowAddModal(false);
             }}
             onCancel={() => setShowAddModal(false)} />}
+        {removeRepoId != "" && (
+            <Modal
+                title={`删除仓库 ${getRepo(removeRepoId)?.basic_info.repo_url ?? ""}`}
+                open
+                onCancel={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setRemoveRepoId("");
+                }}
+                onOk={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    removeRepo();
+                }}
+            >
+                是否删除仓库 {getRepo(removeRepoId)?.basic_info.repo_url ?? ""}?
+            </Modal>
+        )}
     </CardWrap>
 }
 
