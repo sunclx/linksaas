@@ -4,6 +4,11 @@ export type BasicRobotInfo = {
     name: string;
 };
 
+export type RobotCap = {
+    earthly: boolean;
+    artifact: boolean;
+};
+
 export type RobotInfo = {
     robot_id: string;
     project_id: string;
@@ -19,6 +24,8 @@ export type RobotInfo = {
     update_display_name: string;
     update_logo_uri: string;
     update_time: number;
+    robot_version: string;
+    robot_cap: RobotCap;
     can_metric: boolean;
 };
 

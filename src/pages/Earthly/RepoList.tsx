@@ -85,6 +85,9 @@ const RepoList = () => {
                         添加代码仓库
                     </Button>
                 </div>
+                <div>
+                    <p><b>使用前提：</b>机器人最低版本在0.1.1，并且在机器上安装了<a target="_blank" href="https://earthly.dev/" rel="noreferrer">earthly</a>。</p>
+                </div>
                 <div className={s.list}>
                     <div className={s.list_cont}>
                         {repoList.map(repo => (
