@@ -174,7 +174,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
 
     return (
         <Modal
-            title="创建命令"
+            title={props.optType == OPT_TYPE.OPT_CREATE ? "创建命令" : "修改命令"}
             open={true}
             onCancel={e => {
                 e.stopPropagation();

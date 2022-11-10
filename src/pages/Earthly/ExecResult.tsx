@@ -119,10 +119,6 @@ const ExecResult = () => {
                     <div>{repoInfo?.basic_info.repo_url ?? ""}</div>
                 </div>
                 <div className={s.info}>
-                    <div className={s.label}>命令名称:</div>
-                    <div>{actionInfo?.basic_info.action_name ?? ""}</div>
-                </div>
-                <div className={s.info}>
                     <div className={s.label}>执行分支/标签:</div>
                     <div>{execInfo?.branch ?? ""}</div>
                 </div>
