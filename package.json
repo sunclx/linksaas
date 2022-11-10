@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "repository": "git@gitee.com:waibaoxia/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@waibaoxia.com>",
@@ -67,7 +67,8 @@
     "remirror": "^2.0.4",
     "swagger-ui-react": "4.14.0",
     "swiper": "^8.1.4",
-    "vite-plugin-svgr": "^2.2.1"
+    "vite-plugin-svgr": "^2.2.1",
+    "xterm-for-react": "^1.0.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.16.7",

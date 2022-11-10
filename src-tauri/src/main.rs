@@ -34,6 +34,7 @@ mod user_api_plugin;
 mod user_kb_api_plugin;
 mod robot_api_plugin;
 mod robot_metric_api_plugin;
+mod robot_earthly_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -277,6 +278,7 @@ fn main() {
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(robot_api_plugin::RobotApiPlugin::new())
         .plugin(robot_metric_api_plugin::RobotMetricApiPlugin::new())
+        .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

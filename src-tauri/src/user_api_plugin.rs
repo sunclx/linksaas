@@ -1,6 +1,7 @@
 use crate::notice_decode::{
-    decode_notice, new_upload_snap_shot_notice, new_wrong_session_notice,
-    project::Notice as ProjectNotice, robot::Notice as RobotNotice, NoticeMessage,
+    decode_notice, earthly::Notice as EarthlyNotice, new_upload_snap_shot_notice,
+    new_wrong_session_notice, project::Notice as ProjectNotice, robot::Notice as RobotNotice,
+    NoticeMessage,
 };
 use prost::Message;
 use proto_gen_rust::fs_api::{FileOwnerType, SetFileOwnerRequest};
@@ -487,6 +488,28 @@ fn emit_notice<R: Runtime>(
                             let res = window.emit(
                                 &event_name,
                                 NoticeMessage::RobotNotice(RobotNotice::RespMetricDataNotice(n)),
+                            );
+                            if res.is_err() {
+                                println!("{:?}", res);
+                            }
+                        }
+                        NoticeMessage::EarthlyNotice(EarthlyNotice::ExecDataNotice(n)) => {
+                            let m = n.clone();
+                            let event_name = format!("exec_data_{}", m.exec_id);
+                            let res = window.emit(
+                                &event_name,
+                                NoticeMessage::EarthlyNotice(EarthlyNotice::ExecDataNotice(n)),
+                            );
+                            if res.is_err() {
+                                println!("{:?}", res);
+                            }
+                        }
+                        NoticeMessage::EarthlyNotice(EarthlyNotice::ExecStateNotice(n)) => {
+                            let m = n.clone();
+                            let event_name = format!("exec_state_{}", m.exec_id);
+                            let res = window.emit(
+                                &event_name,
+                                NoticeMessage::EarthlyNotice(EarthlyNotice::ExecStateNotice(n)),
                             );
                             if res.is_err() {
                                 println!("{:?}", res);
