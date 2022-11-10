@@ -19,7 +19,6 @@ mod project_app_api_plugin;
 mod project_appraise_api_plugin;
 mod project_award_api_plugin;
 mod project_book_shelf_api_plugin;
-mod project_book_store_api_plugin;
 mod project_channel_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
@@ -272,7 +271,6 @@ fn main() {
         .plugin(search_api_plugin::SearchApiPlugin::new())
         .plugin(restrict_api_plugin::RestrictApiPlugin::new())
         .plugin(project_app_api_plugin::ProjectAppApiPlugin::new())
-        .plugin(project_book_store_api_plugin::ProjectBookStoreApiPlugin::new())
         .plugin(project_book_shelf_api_plugin::ProjectBookShelfApiPlugin::new())
         .plugin(project_award_api_plugin::ProjectAwardApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
