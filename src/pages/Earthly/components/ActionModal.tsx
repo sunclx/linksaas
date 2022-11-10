@@ -52,7 +52,7 @@ const ActionModal: React.FC<ActionModalProps> = (props) => {
             basic_info: {
                 action_name: actionName,
                 local_path: localPath,
-                target: target,
+                target: target.replace("+", ""),
                 param_def_list: paramDefList.filter(item => item.name != "").map(item => {
                     return {
                         name: item.name,
