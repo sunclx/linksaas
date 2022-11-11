@@ -11,14 +11,21 @@ import { LinkEarthlyExecInfo } from "@/stores/linkAux";
 import { request } from '@/utils/request';
 import { useStores } from "@/hooks";
 import type { ColumnsType } from 'antd/es/table';
-import { Table } from "antd";
+import { message, Popover, Table } from "antd";
 import moment from 'moment';
 import Button from "@/components/Button";
 import Pagination from "@/components/Pagination";
 import s from './ActionDetail.module.less';
 import ExecModal from "./components/ExecModal";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import { writeText } from '@tauri-apps/api/clipboard';
+import DownladArtifact from "./components/DownladArtifact";
+import CodeEditor from '@uiw/react-textarea-code-editor';
+
 
 const PAGE_SIZE = 10;
+const TIPS_ARTIFACT_ARGS = `ARG LINKSAAS_ARTIFACT_TOKEN=""`;
+const TIPS_ARTIFACT_CURL = "RUN curl -s -F your_param=@your_file";
 
 const ActionDetail = () => {
     const location = useLocation();
@@ -101,6 +108,55 @@ const ActionDetail = () => {
             ),
         },
         {
+            title: (
+                <span>
+                    artifact&nbsp;&nbsp;
+                    <Popover content={<div className={s.artifact_tips}>
+                        <h3 style={{ fontSize: 16, fontWeight: 600 }}>你可以通过在构建过程中调用curl上传artifact</h3>
+                        <p>机器人的版本需要0.1.2版本以上，Earthfile可参考<a target="_blank" href="https://jihulab.com/linksaas/robot/-/blob/develop/Earthfile" rel="noreferrer">demo</a></p>
+                        <ul>
+                            <li><p>在构建目标中添加&nbsp;&nbsp;<a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                writeText(TIPS_ARTIFACT_ARGS).then(() => message.info("复制成功"));
+                            }}>复制</a></p>
+                                <CodeEditor
+                                    value={TIPS_ARTIFACT_ARGS}
+                                    language="bash"
+                                    disabled
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
+                            </li>
+                            <li><p>在构建目标中添加&nbsp;&nbsp;<a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                writeText(`${TIPS_ARTIFACT_CURL} ${actionInfo?.artifact_url ?? ""}`).then(() => message.info("复制成功"));
+                            }}>复制</a></p>
+                                <CodeEditor
+                                    value={`${TIPS_ARTIFACT_CURL} ${actionInfo?.artifact_url ?? ""}`}
+                                    language="bash"
+                                    disabled
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
+                            </li>
+                        </ul>
+                    </div>}>
+                        <a><QuestionCircleOutlined /></a>
+                    </Popover>
+                </span>),
+            render: (_, record: ExecInfo) => (<div>
+                {record.artifact_list.map(atrifact => (
+                    <DownladArtifact key={atrifact.file_id} fileId={atrifact.file_id} fileName={atrifact.file_name} />
+                ))}
+            </div>),
+        },
+        {
             title: "执行人",
             dataIndex: "exec_display_name",
         },
@@ -149,7 +205,7 @@ const ActionDetail = () => {
             <h2 className={s.sub_title}>
                 执行记录
                 <div className={s.exec_wrap}>
-                    <Button onClick={e=>{
+                    <Button onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowExecModal(true);

@@ -67,7 +67,7 @@ const StaticTerm: React.FC<LinkEarthlyExecState> = (props) => {
                     }}>重放执行过程</Button>
                 </div>
             </div>
-            <XTerm className={s.term} ref={termRef} options={{ cols: 80, rows: 24 }} />
+            <XTerm className={s.term} ref={termRef} options={{ cols: 80, rows: 24, disableStdin: true, scrollback: 10000 }} />
         </div>
     );
 }
