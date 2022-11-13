@@ -1,10 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export type FILE_LOC_TYPE = number;
-export const FILE_IN_STORE: FILE_LOC_TYPE = 0;
-export const FILE_IN_LOCAL: FILE_LOC_TYPE = 1;
-
-
 export type ANNO_TYPE = number;
 export const ANNO_HIGHLIGHT: ANNO_TYPE = 0;
 export const ANNO_UNDERLINE: ANNO_TYPE = 1;
@@ -15,7 +10,6 @@ export type BookInfo = {
     book_id: string;
     book_title: string;
     book_desc: string;
-    file_loc_type: FILE_LOC_TYPE;
     file_loc_id: string;
 };
 
@@ -39,19 +33,7 @@ export type AnnoInfo = {
     content: string;
 };
 
-export type AddStoreBookRequest = {
-    session_id: string;
-    project_id: string;
-    book_id_in_store: string;
-};
-
-export type AddStoreBookResponse = {
-    code: number;
-    err_msg: string;
-    book_id: string;
-};
-
-export type AddLocalBookRequest = {
+export type AddBookRequest = {
     session_id: string;
     project_id: string;
     book_title: string;
@@ -59,13 +41,13 @@ export type AddLocalBookRequest = {
     file_id: string;
 };
 
-export type AddLocalBookResponse = {
+export type AddBookResponse = {
     code: number;
     err_msg: string;
     book_id: string;
 };
 
-export type UpdateLocalBookRequest = {
+export type UpdateBookRequest = {
     session_id: string;
     project_id: string;
     book_id: string;
@@ -73,7 +55,7 @@ export type UpdateLocalBookRequest = {
     book_desc: string;
 };
 
-export type UpdateLocalBookResponse = {
+export type UpdateBookResponse = {
     code: number;
     err_msg: string;
 };
@@ -157,29 +139,21 @@ export type RemoveAnnoResponse = {
     err_msg: string;
 }
 
-//从书库添加书本
-export async function add_store_book(request: AddStoreBookRequest): Promise<AddStoreBookResponse> {
-    const cmd = 'plugin:project_book_shelf_api|add_store_book';
+
+//添加书本
+export async function add_book(request: AddBookRequest): Promise<AddBookResponse> {
+    const cmd = 'plugin:project_book_shelf_api|add_book';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<AddStoreBookResponse>(cmd, {
+    return invoke<AddBookResponse>(cmd, {
         request,
     });
 }
 
-//添加本地书本
-export async function add_local_book(request: AddLocalBookRequest): Promise<AddLocalBookResponse> {
-    const cmd = 'plugin:project_book_shelf_api|add_local_book';
+//更新书本
+export async function update_book(request: UpdateBookRequest): Promise<UpdateBookResponse> {
+    const cmd = 'plugin:project_book_shelf_api|update_book';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<AddLocalBookResponse>(cmd, {
-        request,
-    });
-}
-
-//更新本地书本
-export async function update_local_book(request: UpdateLocalBookRequest): Promise<UpdateLocalBookResponse> {
-    const cmd = 'plugin:project_book_shelf_api|update_local_book';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdateLocalBookResponse>(cmd, {
+    return invoke<UpdateBookResponse>(cmd, {
         request,
     });
 }

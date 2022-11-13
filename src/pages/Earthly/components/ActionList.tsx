@@ -143,13 +143,11 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             render: (_, record: ActionInfo) => (
                 <span>
                     {record.exec_count}&nbsp;&nbsp;
-                    {record.exec_count > 0 && (
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
-                        }}>查看</Button>
-                    )}
+                    <Button type="link" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
+                    }}>查看</Button>
                 </span>
             )
         },

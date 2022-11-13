@@ -54,7 +54,7 @@ const DynamicTerm: React.FC<LinkEarthlyExecState> = (props) => {
     return (
         <div>
             <h2 className={s.sub_title}>运行结果</h2>
-            <XTerm className={s.term} ref={termRef} options={{ cols: 80, rows: 24 }} />
+            <XTerm className={s.term} ref={termRef} options={{ cols: 80, rows: 24, disableStdin: true, scrollback: 10000 }} />
         </div>
     );
 }

@@ -56,6 +56,7 @@ export type ActionInfo = {
     update_display_name: string;
     update_logo_uri: string;
     update_time: number;
+    artifact_url: string; 
 };
 
 export type Param = {
@@ -233,6 +234,11 @@ export type ListExecRequest = {
     limit: number;
 };
 
+export type ArtifactInfo = {
+    file_id: string;
+    file_name: string;
+};
+
 export type ExecInfo = {
     exec_id: string;
     project_id: string;
@@ -244,6 +250,7 @@ export type ExecInfo = {
     exec_state: EXEC_STATE;
     branch: string;
     param_list: Param[];
+    artifact_list: ArtifactInfo[];
 };
 
 

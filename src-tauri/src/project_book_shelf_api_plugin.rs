@@ -7,23 +7,24 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+
 #[tauri::command]
-async fn add_store_book<R: Runtime>(
+async fn add_book<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: AddStoreBookRequest,
-) -> Result<AddStoreBookResponse, String> {
+    request: AddBookRequest,
+) -> Result<AddBookResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.add_store_book(request).await {
+    match client.add_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == add_store_book_response::Code::WrongSession as i32 {
+            if inner_resp.code == add_book_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("add_store_book".into()))
+                    window.emit("notice", new_wrong_session_notice("add_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -35,50 +36,23 @@ async fn add_store_book<R: Runtime>(
 }
 
 #[tauri::command]
-async fn add_local_book<R: Runtime>(
+async fn update_book<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: AddLocalBookRequest,
-) -> Result<AddLocalBookResponse, String> {
+    request: UpdateBookRequest,
+) -> Result<UpdateBookResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.add_local_book(request).await {
+    match client.update_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == add_local_book_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("add_local_book".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn update_local_book<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UpdateLocalBookRequest,
-) -> Result<UpdateLocalBookResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.update_local_book(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == update_local_book_response::Code::WrongSession as i32 {
+            if inner_resp.code == update_book_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit(
                     "notice",
-                    new_wrong_session_notice("update_local_book".into()),
+                    new_wrong_session_notice("update_book".into()),
                 ) {
                     println!("{:?}", err);
                 }
@@ -258,9 +232,8 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                add_store_book,
-                add_local_book,
-                update_local_book,
+                add_book,
+                update_book,
                 list_book,
                 remove_book,
                 add_anno,
