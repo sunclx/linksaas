@@ -34,6 +34,7 @@ mod user_kb_api_plugin;
 mod robot_api_plugin;
 mod robot_metric_api_plugin;
 mod robot_earthly_api_plugin;
+mod local_api;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -245,6 +246,7 @@ fn main() {
                     }
                 }
                 "exit_app" => {
+                    local_api::remove_info_file();
                     app.exit(0);
                 }
                 _ => {}
@@ -277,6 +279,7 @@ fn main() {
         .plugin(robot_api_plugin::RobotApiPlugin::new())
         .plugin(robot_metric_api_plugin::RobotMetricApiPlugin::new())
         .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
+        .plugin(local_api::LocalApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()
