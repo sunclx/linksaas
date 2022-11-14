@@ -3,6 +3,7 @@ use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, Manager, PageLoadPayload, Runtime, Window,
 };
+
 mod server;
 
 #[derive(Default)]

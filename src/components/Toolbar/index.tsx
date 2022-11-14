@@ -102,6 +102,7 @@ const Toolbar: React.FC = observer(() => {
       )}
       <Divider />
       <Item id="appstore" pathname={pathname} title="更多应用" />
+      <Item id="localapi" pathname={pathname} title="项目接口" />
     </div>
   );
 });

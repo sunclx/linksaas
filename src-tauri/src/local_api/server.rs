@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use local_api_rust::server::MakeService;
 use serde_json::json;
 use std::marker::PhantomData;
 use std::net::TcpListener;
@@ -65,7 +66,6 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::ErrInfo;
-use local_api_rust::server::MakeService;
 use local_api_rust::{
     Api, HelloGetResponse, ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse,
@@ -86,16 +86,22 @@ where
 {
     /// 握手协议
     async fn hello_get(&self, _context: &C) -> Result<HelloGetResponse, ApiError> {
-        Ok(HelloGetResponse::Status200("hello linksaas".into()))
+        Ok(HelloGetResponse::Status200 {
+            body: "hello linksaas".into(),
+            access_control_allow_origin: Some("*".into()),
+        })
     }
 
     /// 显示软件桌面
     async fn show_get(&self, _context: &C) -> Result<ShowGetResponse, ApiError> {
         let win = self.app.get_window("main");
         if win.is_none() {
-            return Ok(ShowGetResponse::Status500(ErrInfo {
-                err_msg: Some("无法找到主窗口".into()),
-            }));
+            return Ok(ShowGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("无法找到主窗口".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
         }
         let win = win.unwrap();
         if let Err(err) = win.set_always_on_top(true) {
@@ -104,7 +110,10 @@ where
         if let Err(err) = win.set_always_on_top(false) {
             println!("{}", err)
         }
-        return Ok(ShowGetResponse::Status200(json!({})));
+        return Ok(ShowGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
     }
 
     /// 所有缺陷
