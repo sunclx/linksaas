@@ -50,6 +50,7 @@ export default ({ command, mode }: ConfigEnv) => {
           shortNote: "short_note.html",
           floatNotice: "float_notice.html",
           searchResult: "search_result.html",
+          localApi: "local_api.html",
         },
       },
       terserOptions: {

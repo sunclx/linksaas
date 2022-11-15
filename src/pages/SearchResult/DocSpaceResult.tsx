@@ -77,7 +77,7 @@ const DocSpaceResult: React.FC<DocSpaceResultProps> = (props) => {
                         projectId: props.projectId ?? "",
                         shortNoteType: SHORT_NOTE_DOC,
                         targetId: record.doc_id,
-                        extraTargetValue: "",
+                        extraTargetValue: record.doc_space_id,
                     };
                     const mainWindow = WebviewWindow.getByLabel("main");
                     mainWindow?.emit("shortNote", ev);

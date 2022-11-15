@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>本地接口调试</title>
+    <script type="text/javascript">
+      window.global = window;
+      window.__APP_INFO__ = undefined;
+      window.__TAURI__ = undefined;
+      window.__TAURI_INVOKE__ = undefined;
+      window.__TAURI_IPC__ = undefined;
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/pages/LocalApi/main.tsx"></script>
+  </body>
+</html>

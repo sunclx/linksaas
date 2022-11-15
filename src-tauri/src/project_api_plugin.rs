@@ -181,6 +181,90 @@ async fn remove<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn get_local_api_token<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetLocalApiTokenRequest,
+) -> Result<GetLocalApiTokenResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.get_local_api_token(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_local_api_token_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_local_api_token".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_local_api_token<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveLocalApiTokenRequest,
+) -> Result<RemoveLocalApiTokenResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.remove_local_api_token(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_local_api_token_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_local_api_token".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn renew_local_api_token<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RenewLocalApiTokenRequest,
+) -> Result<RenewLocalApiTokenResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.renew_local_api_token(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == renew_local_api_token_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("renew_local_api_token".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -189,7 +273,16 @@ impl<R: Runtime> ProjectApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                create, update, list, get, open, close, remove
+                create,
+                update,
+                list,
+                get,
+                open,
+                close,
+                remove,
+                get_local_api_token,
+                remove_local_api_token,
+                renew_local_api_token,
             ]),
         }
     }

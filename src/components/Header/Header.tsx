@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
 import { BugOutlined } from '@ant-design/icons';
+import { remove_info_file } from '@/api/local_api';
 
 const { Header } = Layout;
 
@@ -22,6 +23,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     switch (type) {
       case 'close':
         if (userStore.sessionId === '') {
+          await remove_info_file();
           await exit(0);
         } else {
           await appWindow.hide();
