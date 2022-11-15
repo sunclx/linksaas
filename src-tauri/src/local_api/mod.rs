@@ -1,15 +1,17 @@
+use reqwest::blocking::ClientBuilder;
+use std::io::Read;
 use tauri::async_runtime::Mutex;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, Manager, PageLoadPayload, Runtime, Window,
 };
 
-mod server;
 mod access_check;
-mod issue_api;
 mod doc_space_api;
 mod event_api;
+mod issue_api;
 mod notice;
+mod server;
 
 #[derive(Default)]
 pub struct ServPort(Mutex<Option<i16>>);
@@ -31,6 +33,51 @@ async fn get_port<R: Runtime>(app_handle: AppHandle<R>) -> i16 {
         return value;
     }
     return 0;
+}
+
+pub fn is_instance_run() -> bool {
+    let home_dir = dirs::home_dir();
+    if home_dir.is_none() {
+        return false;
+    }
+    let home_dir = home_dir.unwrap();
+    let file_path = format!("{}/.linksaas/local_api", home_dir.to_str().unwrap());
+    let file = std::fs::OpenOptions::new().read(true).open(file_path);
+    if file.is_err() {
+        return false;
+    }
+    let mut file = file.unwrap();
+    let mut data: Vec<u8> = Vec::new();
+    if let Ok(_) = file.read_to_end(&mut data) {
+        if let Ok(addr) = String::from_utf8(data) {
+            let builder = ClientBuilder::new();
+            let client = builder.build();
+            if client.is_err() {
+                return false;
+            }
+            let client = client.unwrap();
+            let hello_res = client.get(format!("http://{}/hello", &addr)).send();
+            if hello_res.is_err() {
+                return false;
+            }
+            let hello_res = hello_res.unwrap();
+            let hello_res_str = hello_res.text_with_charset("utf8");
+            if hello_res_str.is_err() {
+                return false;
+            }
+            let hello_res_str = hello_res_str.unwrap();
+            if hello_res_str.eq("hello linksaas") == false {
+                return false;
+            }
+            //调用show
+            let show_res = client.get(format!("http://{}/show", &addr)).send();
+            if show_res.is_err() {
+                println!("{:?}", show_res.err().unwrap());
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 pub struct LocalApiPlugin {

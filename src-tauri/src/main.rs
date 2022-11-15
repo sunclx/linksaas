@@ -13,6 +13,7 @@ mod external_events_api_plugin;
 mod fs_api_plugin;
 mod image_utils;
 mod link_aux_api_plugin;
+mod local_api;
 mod notice_decode;
 mod project_api_plugin;
 mod project_app_api_plugin;
@@ -27,14 +28,13 @@ mod project_member_api_plugin;
 mod project_sprit_api_plugin;
 mod project_vc_api_plugin;
 mod restrict_api_plugin;
+mod robot_api_plugin;
+mod robot_earthly_api_plugin;
+mod robot_metric_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
-mod robot_api_plugin;
-mod robot_metric_api_plugin;
-mod robot_earthly_api_plugin;
-mod local_api;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -169,6 +169,9 @@ async fn capture_screen(
 }
 
 fn main() {
+    if local_api::is_instance_run() {
+        return;
+    }
     let tray_menu = SystemTrayMenu::new()
         .add_item(CustomMenuItem::new("switch_user", "切换用户").disabled())
         .add_native_item(SystemTrayMenuItem::Separator)
@@ -200,7 +203,7 @@ fn main() {
             SystemTrayEvent::LeftClick { .. } => {
                 let all_windows = app.windows();
                 for (_, win) in &all_windows {
-                    if win.label() == "float_notice"{
+                    if win.label() == "float_notice" {
                         continue;
                     }
                     win.show().unwrap();
@@ -220,7 +223,7 @@ fn main() {
                 "show_app" => {
                     let all_windows = app.windows();
                     for (_, win) in &all_windows {
-                        if win.label() == "float_notice"{
+                        if win.label() == "float_notice" {
                             continue;
                         }
                         win.show().unwrap();
