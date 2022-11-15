@@ -218,7 +218,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                props.onOk(new LinkDocInfo(item.title, item.project_id, item.doc_id));
+                props.onOk(new LinkDocInfo(item.title, item.project_id, "", item.doc_id));
               }}
             >
               <div>{item.title}</div>

@@ -28,6 +28,9 @@ use uuid::Uuid;
 pub struct CurSession(pub Mutex<Option<String>>);
 
 #[derive(Default)]
+pub struct CurUserId(pub Mutex<Option<String>>);
+
+#[derive(Default)]
 struct CurNoticeClient(Mutex<Option<MqttClient>>);
 
 #[derive(Default)]
@@ -374,8 +377,14 @@ async fn login<R: Runtime>(
     match client.login(request).await {
         Ok(response) => {
             let ret = response.into_inner();
-            let sess = (&app_handle).state::<CurSession>().inner();
+            let sess = app_handle.state::<CurSession>().inner();
             *sess.0.lock().await = Some(ret.session_id.clone());
+            let user_info = ret.user_info.clone();
+            if let Some(user_info) = user_info {
+                let user_id = app_handle.state::<CurUserId>().inner();
+                *user_id.0.lock().await = Some(user_info.user_id); 
+            }
+
             let mq_client = (&app_handle).state::<CurNoticeClient>().inner();
             if let Some(c) = mq_client.0.lock().await.clone() {
                 if let Err(err) = c.disconnect().await {
@@ -541,8 +550,11 @@ async fn logout<R: Runtime>(
     let mut client = UserApiClient::new(chan.unwrap());
     match client.logout(request).await {
         Ok(response) => {
-            let sess = (&app_handle).state::<CurSession>().inner();
+            let sess = app_handle.state::<CurSession>().inner();
             *sess.0.lock().await = None;
+            let user_id = app_handle.state::<CurUserId>().inner();
+            *user_id.0.lock().await = None;
+
             let mq_client = (&app_handle).state::<CurNoticeClient>().inner();
             if let Some(c) = mq_client.0.lock().await.clone() {
                 c.disconnect().await.unwrap();
@@ -663,6 +675,24 @@ async fn get_session<R: Runtime>(app_handle: AppHandle<R>) -> String {
     return "".into();
 }
 
+pub async fn get_session_inner(app_handle: &AppHandle) -> String {
+    let cur_value = app_handle.state::<CurSession>().inner();
+    let cur_session = cur_value.0.lock().await;
+    if let Some(cur_session) = cur_session.clone() {
+        return cur_session;
+    }
+    return "".into();
+}
+
+pub async fn get_user_id_inner(app_handle: &AppHandle) -> String {
+    let cur_value = app_handle.state::<CurUserId>().inner();
+    let cur_user_id = cur_value.0.lock().await;
+    if let Some(cur_user_id) = cur_user_id.clone() {
+        return cur_user_id;
+    }
+    return "".into();
+}
+
 #[tauri::command]
 async fn set_cur_work_snapshot<R: Runtime>(app_handle: AppHandle<R>, project_id: String) {
     println!("set cur work snapshot for project {}", &project_id);
@@ -709,6 +739,7 @@ impl<R: Runtime> Plugin<R> for UserApiPlugin<R> {
 
     fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
         app.manage(CurSession(Default::default()));
+        app.manage(CurUserId(Default::default()));
         app.manage(CurNoticeClient(Default::default()));
         app.manage(CurWorkSnapShotProject(Default::default()));
         tauri::async_runtime::block_on(async {

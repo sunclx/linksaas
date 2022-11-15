@@ -1,0 +1,15 @@
+pub enum ShortNoteType {
+    ShortNoteTask = 0,
+    ShortNoteBug = 1,
+    ShortNoteDoc = 2,
+}
+
+
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ShortNotetNotice {
+    pub project_id: String,
+    pub short_note_type: u32,
+    pub target_id: String,
+    pub extra_target_value: String,
+}

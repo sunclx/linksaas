@@ -335,7 +335,7 @@ class NoticeStore {
     } else if (ev.shortNoteType == SHORT_NOTE_BUG) {
       this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
     } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
-      this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.targetId), this.history);
+      this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
     } else if (ev.shortNoteType == SHORT_NOTE_CHANNEL) {
       this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
     }

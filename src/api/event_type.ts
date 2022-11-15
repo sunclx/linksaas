@@ -602,7 +602,7 @@ export namespace project_doc {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在文档空间 ${inner.doc_space_name} 创建文档`),
-      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
     ];
   }
 
@@ -622,7 +622,7 @@ export namespace project_doc {
   ): LinkInfo[] {
     const ret_list = [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在文档空间 ${inner.doc_space_name} 修改文档`),
-      new LinkDocInfo(inner.old_title, ev.project_id, inner.doc_id),
+      new LinkDocInfo(inner.old_title, ev.project_id, inner.doc_space_id, inner.doc_id),
     ];
     if (inner.new_title != inner.old_title) {
       ret_list.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
@@ -663,7 +663,7 @@ export namespace project_doc {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 移动文档`),
-      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+      new LinkDocInfo(inner.title, ev.project_id, "", inner.doc_id),
       new LinkNoneInfo(`从${inner.src_doc_space_name} 到 ${inner.dest_doc_space_name}`)
     ];
   }
@@ -699,7 +699,7 @@ export namespace project_doc {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 恢复 文档空间 ${inner.doc_space_name} 文档`),
-      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
     ];
   }
 
@@ -717,7 +717,7 @@ export namespace project_doc {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在 文档空间 ${inner.doc_space_name} 关注文档`),
-      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
     ];
   }
 
@@ -735,7 +735,7 @@ export namespace project_doc {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在 文档空间 ${inner.doc_space_name} 取消关注文档`),
-      new LinkDocInfo(inner.title, ev.project_id, inner.doc_id),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
     ];
   }
 

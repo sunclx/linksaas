@@ -41,7 +41,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
     } else if (shortNote.short_note_type == SHORT_NOTE_BUG) {
       linkAuxStore.goToLink(new LinkBugInfo(shortNote.title, shortNote.project_id, shortNote.target_id), history);
     } else if (shortNote.short_note_type == SHORT_NOTE_DOC) {
-      linkAuxStore.goToLink(new LinkDocInfo(shortNote.title, shortNote.project_id, shortNote.target_id), history);
+      linkAuxStore.goToLink(new LinkDocInfo(shortNote.title, shortNote.project_id, "", shortNote.target_id), history);
     }
   };
 
@@ -163,7 +163,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
           <div className={styles.cont}>{member?.issue_member_state ? member?.issue_member_state.bug_check_done_count : 0}</div>
         </li>
       </ul>
-      {(member?.short_note_list.length  ?? 0 )> 0 && (
+      {(member?.short_note_list.length ?? 0) > 0 && (
         <ul className={styles.task_list}>
           <li className={styles.item}>
             <div className={styles.title}>桌面便签</div>

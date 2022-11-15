@@ -43,6 +43,7 @@ import MetricList from '@/pages/Robot/MetricList';
 import RepoList from '@/pages/Earthly/RepoList';
 import ExecResult from '@/pages/Earthly/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
+import LocalApi from '@/pages/Project/LocalApi';
 
 
 
@@ -172,6 +173,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/appstore",
       title: "更多应用",
       component: AppStore,
+      exact: true,
+    },
+    {
+      path: prefix + "/localapi",
+      title: "项目接口",
+      component: LocalApi,
       exact: true,
     },
   ];
