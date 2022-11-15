@@ -100,15 +100,17 @@ export class LinkEventlInfo {
 }
 
 export class LinkDocInfo {
-  constructor(content: string, projectId: string, docId: string) {
+  constructor(content: string, projectId: string, docSpaceId: string, docId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_DOC;
     this.linkContent = content;
     this.projectId = projectId;
+    this.docSpaceId = docSpaceId;
     this.docId = docId;
   }
   linkTargeType: LINK_TARGET_TYPE;
   linkContent: string;
   projectId: string;
+  docSpaceId: string;
   docId: string;
 }
 
@@ -442,6 +444,9 @@ class LinkAuxStore {
       }
       if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
+      }
+      if (this.rootStore.docSpaceStore.curDocSpaceId != docLink.docSpaceId) {
+        await this.rootStore.docSpaceStore.showDocList(docLink.docSpaceId, false);
       }
       await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
       history.push(APP_PROJECT_KB_DOC_PATH);

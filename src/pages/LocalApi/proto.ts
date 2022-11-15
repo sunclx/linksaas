@@ -33,6 +33,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             text/plain:
               schema:
@@ -53,6 +58,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -67,6 +77,11 @@ paths:
                       $ref: '#/components/schemas/BugInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -95,6 +110,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -103,6 +123,11 @@ paths:
                   $ref: '#/components/schemas/BugInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -121,12 +146,22 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -144,6 +179,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -152,6 +192,11 @@ paths:
                   $ref: '#/components/schemas/DocSpaceInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -172,6 +217,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -186,6 +236,11 @@ paths:
                       $ref: '#/components/schemas/DocInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -205,12 +260,22 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -225,28 +290,54 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ProjectId'
         - $ref: '#/components/parameters/AccessToken'
-        - name: day
+        - name: from_time
           in: query
           required: true
           schema:
-            type: string
-            description: 事件发生的事件,格式YYYYMMDD
+            type: integer
+            format: int64
+            description: 开始时间，1970年以来的毫秒数
+        - name: to_time
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+            description: 结束时间，1970年以来的毫秒数
         - name: userId
           in: query
           schema:
             type: string
             description: 非空表示只显示对应用户事件，空表示所有用户
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/EventInfo'
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                    description: 事件总数量
+                  eventList:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -266,6 +357,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -280,6 +376,11 @@ paths:
                       $ref: '#/components/schemas/TaskInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -308,6 +409,11 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -316,6 +422,11 @@ paths:
                   $ref: '#/components/schemas/TaskInfo'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -334,12 +445,22 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -354,12 +475,22 @@ paths:
       responses:
         '200':
           description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
           content:
             application/json:
               schema:
@@ -471,9 +602,11 @@ components:
         createTime:
           type: integer
           description: 创建时间
+          format: int64
         updateTime:
           type: integer
           description: 更新时间
+          format: int64
         softwareVersion:
           type: string
           description: 软件版本
@@ -515,6 +648,7 @@ components:
         createTime:
           type: integer
           description: 创建时间
+          format: int64
         updateUserId:
           type: string
           description: 更新人ID
@@ -524,6 +658,7 @@ components:
         updateTime:
           type: integer
           description: 更新时间
+          format: int64
     DocSpaceInfo:
       type: object
       properties:
@@ -553,12 +688,6 @@ components:
         userDisplayName:
           type: string
           description: 用户名称
-        projectId:
-          type: string
-          description: 项目ID
-        projectName:
-          type: string
-          description: 项目名称
         eventType:
           type: string
           description: 事件类型
@@ -571,6 +700,10 @@ components:
             - doc
             - disk
             - workSnapshot
+            - app
+            - bookShelf
+            - robot
+            - earthly
             - gitlab
             - github
             - gitea
@@ -591,6 +724,9 @@ components:
             - task
             - bug
             - doc
+            - book
+            - robot
+            - repo
         refId:
           type: string
           description: 事件关联ID
@@ -643,9 +779,11 @@ components:
         createTime:
           type: integer
           description: 创建时间
+          format: int64
         updateTime:
           type: integer
           description: 更新时间
+          format: int64
         priority:
           type: string
           description: 优先级
