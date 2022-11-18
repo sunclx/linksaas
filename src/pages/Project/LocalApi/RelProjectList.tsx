@@ -20,11 +20,7 @@ const relProjectInfoList: RelInfo[] = [
 const columns: ColumnsType<RelInfo> = [
     {
         "title": "项目名称",
-        "dataIndex": "name"
-    },
-    {
-        "title": "项目站点",
-        render: (_, record: RelInfo) => (<a target="_blank" href={record.url}  rel="noreferrer">{record.url}</a>),
+        render:(_, record: RelInfo) => (<a target="_blank" href={record.url}  rel="noreferrer">{record.name}</a>),
     },
     {
         "title": "代码仓库",
