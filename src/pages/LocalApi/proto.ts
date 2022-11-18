@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.0
+  version: 0.1.1
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -121,6 +121,40 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/BugInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/bug/record/{bugId}/shortNote:
+    get:
+      tags:
+        - projectBug
+      summary: 便签方式显示缺陷
+      description: 便签方式显示缺陷
+      operationId: projectProjectIdBugRecordBugIdShortNoteGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/BugId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
           headers:
@@ -342,6 +376,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/member:
+    get:
+      tags:
+        - projectMember
+      summary: 项目成员列表
+      description: 列出项目成员列表
+      operationId: projectProjectIdMemberGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SimpleMemberInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/member/{memberUserId}/show:
+    get:
+      tags:
+        - projectMember
+      summary: 显示成员信息
+      description: 显示成员信息
+      operationId: projectProjectIdMemberMemberUserIdShowGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/MemberUserId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/task/all:
     get:
       tags:
@@ -420,6 +523,40 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TaskInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/task/record/{taskId}/shortNote:
+    get:
+      tags:
+        - projectTask
+      summary: 便签方式显示任务
+      description: 便签方式显示任务
+      operationId: projectProjectIdTaskRecordTaskIdShortNoteGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
           headers:
@@ -533,6 +670,13 @@ components:
         minimum: 1
       required: true
       description: 列表大小
+    MemberUserId:
+      in: path
+      name: memberUserId
+      schema:
+        type: string
+      required: true
+      description: 项目成员ID
     Offset:
       in: query
       name: offset
@@ -733,6 +877,15 @@ components:
         eventData:
           type: object
           description: 事件内容
+    SimpleMemberInfo:
+      type: object
+      properties:
+        memberUserId:
+          type: string
+          description: 项目成员ID
+        displayName:
+          type: string
+          description: 项目成员名称
     TaskInfo:
       type: object
       properties:

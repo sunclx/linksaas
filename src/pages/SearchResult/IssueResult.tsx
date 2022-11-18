@@ -6,7 +6,7 @@ import { get_session } from "@/api/user";
 import { request } from "@/utils/request";
 import { ISSUE_TYPE_TASK } from "@/api/project_issue";
 import type { ShortNoteEvent } from "@/utils/short_note";
-import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
+import { SHORT_NOTE_BUG, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_TASK } from "@/api/short_note";
 import { WebviewWindow } from "@tauri-apps/api/window";
 import {Table} from 'antd';
 import Pagination from "@/components/Pagination";
@@ -74,6 +74,7 @@ const IssueResult: React.FC<IssueResultProps> = (props) => {
                     e.preventDefault();
                     const ev: ShortNoteEvent = {
                         projectId: props.projectId ?? "",
+                        shortNoteModeType: SHORT_NOTE_MODE_DETAIL,
                         shortNoteType: props.issueType == ISSUE_TYPE_TASK ? SHORT_NOTE_TASK : SHORT_NOTE_BUG,
                         targetId: record.issue_id,
                         extraTargetValue: "",

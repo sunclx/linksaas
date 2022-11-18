@@ -266,7 +266,18 @@ class MemberStore {
     });
   }
 
+  //浮动显示项目成员信息
+  private _floatMemberUserId = "";
 
+  set floatMemberUserId(val: string) {
+    runInAction(() => {
+      this._floatMemberUserId = val;
+    });
+  }
+
+  get floatMemberUserId(): string {
+    return this._floatMemberUserId;
+  }
 }
 
 export default MemberStore;

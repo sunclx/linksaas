@@ -1,6 +1,6 @@
 import type { DocResultItem } from "@/api/search";
 import { search_project_doc } from "@/api/search";
-import { SHORT_NOTE_DOC } from "@/api/short_note";
+import { SHORT_NOTE_DOC, SHORT_NOTE_MODE_DETAIL } from "@/api/short_note";
 import { get_session } from "@/api/user";
 import Pagination from "@/components/Pagination";
 import { request } from "@/utils/request";
@@ -75,6 +75,7 @@ const DocSpaceResult: React.FC<DocSpaceResultProps> = (props) => {
                     e.preventDefault();
                     const ev: ShortNoteEvent = {
                         projectId: props.projectId ?? "",
+                        shortNoteModeType: SHORT_NOTE_MODE_DETAIL,
                         shortNoteType: SHORT_NOTE_DOC,
                         targetId: record.doc_id,
                         extraTargetValue: record.doc_space_id,
