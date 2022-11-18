@@ -1,5 +1,5 @@
 import { Table } from "antd";
-import { ColumnsType } from "antd/lib/table";
+import type { ColumnsType } from "antd/lib/table";
 import React from "react";
 
 
