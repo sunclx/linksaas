@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import type { ColumnsType } from 'antd/lib/table';
 import type { ShortNoteEvent } from "@/utils/short_note";
 import { WebviewWindow } from "@tauri-apps/api/window";
-import { SHORT_NOTE_CHANNEL } from "@/api/short_note";
+import { SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL } from "@/api/short_note";
 
 
 const PAGE_SIZE = 10;
@@ -65,6 +65,7 @@ const ChannelResult: React.FC<ChannelResultProps> = (props) => {
                     e.preventDefault();
                     const ev: ShortNoteEvent = {
                         projectId: props.projectId ?? "",
+                        shortNoteModeType: SHORT_NOTE_MODE_DETAIL,
                         shortNoteType: SHORT_NOTE_CHANNEL,
                         targetId: record.msg_id,
                         extraTargetValue: record.channel_id,

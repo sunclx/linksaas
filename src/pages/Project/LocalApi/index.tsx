@@ -11,6 +11,8 @@ import { WarningTwoTone } from "@ant-design/icons";
 import { Input, Modal, Space, message } from "antd";
 import { writeText } from '@tauri-apps/api/clipboard';
 import { WebviewWindow } from '@tauri-apps/api/window';
+import { PROTO } from "@/pages/LocalApi/proto";
+import { RelProjectList } from "./RelProjectList";
 
 
 const LocalApi = () => {
@@ -171,7 +173,21 @@ const LocalApi = () => {
                             )}
                         </div>
                     </div>
+                    {port != 0 && (
+                        <div className={s.info_wrap}>
+                            <div className={s.info_label}>通讯协议：</div>
+                            <div>
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    copyText(PROTO.replace("__PORT__", `${port}`));
+                                }}>复制</a>
+                            </div>
+                        </div>
+                    )}
                 </div>
+                <h2>相关项目</h2>
+                <RelProjectList/>
             </div>
             {showUpdateModal && (
                 <Modal

@@ -73,12 +73,14 @@ use local_api_rust::models::{
 };
 use local_api_rust::{
     Api, HelloGetResponse, ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
+    ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ProjectProjectIdDocSpaceGetResponse,
-    ProjectProjectIdEventGetResponse, ProjectProjectIdTaskAllGetResponse,
-    ProjectProjectIdTaskMyGetResponse, ProjectProjectIdTaskRecordTaskIdShowGetResponse,
-    ShowGetResponse,
+    ProjectProjectIdEventGetResponse, ProjectProjectIdMemberGetResponse,
+    ProjectProjectIdMemberMemberUserIdShowGetResponse, ProjectProjectIdTaskAllGetResponse,
+    ProjectProjectIdTaskMyGetResponse, ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse,
+    ProjectProjectIdTaskRecordTaskIdShowGetResponse, ShowGetResponse,
 };
 use swagger::ApiError;
 
@@ -109,11 +111,14 @@ where
             });
         }
         let win = win.unwrap();
+        if let Err(err) = win.show() {
+            println!("{}", err);
+        }
         if let Err(err) = win.set_always_on_top(true) {
-            println!("{}", err)
+            println!("{}", err);
         }
         if let Err(err) = win.set_always_on_top(false) {
-            println!("{}", err)
+            println!("{}", err);
         }
         return Ok(ShowGetResponse::Status200 {
             body: json!({}),
@@ -247,6 +252,7 @@ where
             "shortNote",
             super::notice::ShortNotetNotice {
                 project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
                 short_note_type: super::notice::ShortNoteType::ShortNoteBug as u32,
                 target_id: bug_id,
                 extra_target_value: "".into(),
@@ -301,6 +307,7 @@ where
             "shortNote",
             super::notice::ShortNotetNotice {
                 project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
                 short_note_type: super::notice::ShortNoteType::ShortNoteDoc as u32,
                 target_id: doc_id,
                 extra_target_value: "".into(),
@@ -615,6 +622,7 @@ where
             "shortNote",
             super::notice::ShortNotetNotice {
                 project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
                 short_note_type: super::notice::ShortNoteType::ShortNoteTask as u32,
                 target_id: task_id,
                 extra_target_value: "".into(),
@@ -631,5 +639,220 @@ where
             body: json!({}),
             access_control_allow_origin: Some("*".into()),
         });
+    }
+
+    /// 便签方式显示缺陷
+    async fn project_project_id_bug_record_bug_id_short_note_get(
+        &self,
+        project_id: String,
+        bug_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdBugRecordBugIdShortNoteGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdBugRecordBugIdShortNoteGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(
+                ProjectProjectIdBugRecordBugIdShortNoteGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("无法找到主窗口".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let win = win.unwrap();
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Show as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteBug as u32,
+                target_id: bug_id,
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(
+                ProjectProjectIdBugRecordBugIdShortNoteGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("发送消息失败".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        return Ok(
+            ProjectProjectIdBugRecordBugIdShortNoteGetResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+            },
+        );
+    }
+
+    /// 便签方式显示任务
+    async fn project_project_id_task_record_task_id_short_note_get(
+        &self,
+        project_id: String,
+        task_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(
+                ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("无法找到主窗口".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let win = win.unwrap();
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Show as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteTask as u32,
+                target_id: task_id,
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(
+                ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("发送消息失败".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        return Ok(
+            ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+            },
+        );
+    }
+
+    /// 项目成员列表
+    async fn project_project_id_member_get(
+        &self,
+        project_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdMemberGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdMemberGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+
+        let res = super::member_api::list_member(&self.app, &project_id).await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdMemberGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdMemberGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdMemberGetResponse::Status200 {
+                body: super::member_api::convert_member_list(res.member_list),
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 显示成员信息
+    async fn project_project_id_member_member_user_id_show_get(
+        &self,
+        project_id: String,
+        member_user_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdMemberMemberUserIdShowGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdMemberMemberUserIdShowGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(
+                ProjectProjectIdMemberMemberUserIdShowGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("无法找到主窗口".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let win = win.unwrap();
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteMember as u32,
+                target_id: member_user_id,
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(
+                ProjectProjectIdMemberMemberUserIdShowGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("发送消息失败".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        return Ok(
+            ProjectProjectIdMemberMemberUserIdShowGetResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+            },
+        );
     }
 }

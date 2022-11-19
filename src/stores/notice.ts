@@ -6,14 +6,16 @@ import type { RootStore } from '.';
 import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL } from '@/api/short_note';
+import { showShortNote } from '@/utils/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MEMBER } from '@/api/short_note';
 import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
 import type { FloatNoticeDetailEvent } from '@/utils/float_notice';
-
+import { request } from '@/utils/request';
+import { get as get_issue } from '@/api/project_issue';
 
 
 class NoticeStore {
@@ -331,13 +333,46 @@ class NoticeStore {
 
   private async processShortNoteEvent(ev: ShortNoteEvent) {
     if (ev.shortNoteType == SHORT_NOTE_TASK) {
-      this.rootStore.linkAuxStore.goToLink(new LinkTaskInfo("", ev.projectId, ev.targetId), this.history);
+      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
+        this.rootStore.linkAuxStore.goToLink(new LinkTaskInfo("", ev.projectId, ev.targetId), this.history);
+      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_SHOW) {
+        const res = await request(get_issue(this.rootStore.userStore.sessionId, ev.projectId, ev.targetId));
+        if (res) {
+          await showShortNote(this.rootStore.userStore.sessionId, {
+            shortNoteType: ev.shortNoteType,
+            data: res.info,
+          }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
+        }
+        return;
+      }
     } else if (ev.shortNoteType == SHORT_NOTE_BUG) {
-      this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
+      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
+        this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
+      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_SHOW) {
+        const res = await request(get_issue(this.rootStore.userStore.sessionId, ev.projectId, ev.targetId));
+        if (res) {
+          await showShortNote(this.rootStore.userStore.sessionId, {
+            shortNoteType: ev.shortNoteType,
+            data: res.info,
+          }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
+        }
+        return;
+      }
     } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
-      this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
+      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
+        this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
+      }
     } else if (ev.shortNoteType == SHORT_NOTE_CHANNEL) {
-      this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
+      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
+        this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
+      }
+    } else if (ev.shortNoteType == SHORT_NOTE_MEMBER) {
+      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
+        if (this.rootStore.projectStore.curProjectId != ev.projectId) {
+          await this.rootStore.projectStore.setCurProjectId(ev.projectId);
+        }
+        this.rootStore.memberStore.floatMemberUserId = ev.targetId;
+      }
     }
     await appWindow.show();
     await appWindow.setAlwaysOnTop(true);

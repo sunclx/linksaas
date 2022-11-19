@@ -7,7 +7,7 @@ import { appWindow, WebviewWindow } from '@tauri-apps/api/window';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { useLocation } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
-import type { SHORT_NOTE_TYPE } from '@/api/short_note';
+import { SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_TYPE } from '@/api/short_note';
 import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC } from '@/api/short_note';
 import { get_session } from '@/api/user';
 import { remove } from '@/api/short_note';
@@ -53,6 +53,7 @@ const Content = () => {
     const showDetail = () => {
         const ev: ShortNoteEvent = {
             projectId: projectId ?? "",
+            shortNoteModeType: SHORT_NOTE_MODE_DETAIL,
             shortNoteType: shortNoteType,
             targetId: id ?? "",
             extraTargetValue: "",

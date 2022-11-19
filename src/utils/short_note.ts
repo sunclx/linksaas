@@ -2,7 +2,7 @@
 import type { IssueInfo } from '@/api/project_issue';
 import type { Doc } from '@/api/project_doc';
 import { WebviewWindow } from '@tauri-apps/api/window';
-import type { SHORT_NOTE_TYPE } from '@/api/short_note';
+import type { SHORT_NOTE_TYPE, SHORT_NOTE_MODE_TYPE } from '@/api/short_note';
 import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, add, list_my } from '@/api/short_note';
 import { request } from '@/utils/request';
 
@@ -11,8 +11,10 @@ export type ShortNoteData = {
     data: IssueInfo | Doc;
 };
 
+
 export interface ShortNoteEvent {
     projectId: string;
+    shortNoteModeType: SHORT_NOTE_MODE_TYPE;
     shortNoteType: SHORT_NOTE_TYPE;
     targetId: string;
     extraTargetValue: string;
