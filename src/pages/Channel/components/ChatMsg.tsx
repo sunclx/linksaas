@@ -23,6 +23,7 @@ export type ChatMsgProp = {
 const ChatMsg: React.FC<ChatMsgProp> = (props) => {
   const { msg, readonly } = props;
   const userStore = useStores('userStore');
+  const projectStore = useStores('projectStore');
   const chatMsgStore = useStores('chatMsgStore');
   const linkAuxStore = useStores('linkAuxStore');
   const history = useHistory();
@@ -111,17 +112,17 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               <span
                 title="创建文档"
                 className={styles.docBtn}
-                onClick={() => linkAuxStore.goToCreateDoc(msg.msg.basic_msg.msg_data, history)}
+                onClick={() => linkAuxStore.goToCreateDoc(msg.msg.basic_msg.msg_data, projectStore.curProjectId, "", history)}
               />
               <span
                 title="创建任务"
                 className={styles.taskBtn}
-                onClick={() => linkAuxStore.goToCreateTask(msg.msg.basic_msg.msg_data, history)}
+                onClick={() => linkAuxStore.goToCreateTask(msg.msg.basic_msg.msg_data, projectStore.curProjectId, history)}
               />
               <span
                 title=" 创建缺陷"
                 className={styles.bugBtn}
-                onClick={() => linkAuxStore.goToCreateBug(msg.msg.basic_msg.msg_data, history)}
+                onClick={() => linkAuxStore.goToCreateBug(msg.msg.basic_msg.msg_data, projectStore.curProjectId, history)}
               />
             </span>
           )}

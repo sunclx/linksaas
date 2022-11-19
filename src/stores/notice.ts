@@ -7,7 +7,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { showShortNote } from '@/utils/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MEMBER } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MEMBER, SHORT_NOTE_MODE_CREATE } from '@/api/short_note';
 import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
@@ -16,6 +16,7 @@ import { appWindow } from '@tauri-apps/api/window';
 import type { FloatNoticeDetailEvent } from '@/utils/float_notice';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
+import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
 
 
 class NoticeStore {
@@ -344,6 +345,8 @@ class NoticeStore {
           }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
         }
         return;
+      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
+        await this.rootStore.linkAuxStore.goToCreateTask("", ev.projectId, this.history);
       }
     } else if (ev.shortNoteType == SHORT_NOTE_BUG) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
@@ -357,10 +360,14 @@ class NoticeStore {
           }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
         }
         return;
+      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
+        await this.rootStore.linkAuxStore.goToCreateBug("", ev.projectId, this.history);
       }
     } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
         this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
+      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
+        await this.rootStore.linkAuxStore.goToCreateDoc("", ev.projectId, ev.targetId, this.history);
       }
     } else if (ev.shortNoteType == SHORT_NOTE_CHANNEL) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
@@ -369,9 +376,17 @@ class NoticeStore {
     } else if (ev.shortNoteType == SHORT_NOTE_MEMBER) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
         if (this.rootStore.projectStore.curProjectId != ev.projectId) {
-          await this.rootStore.projectStore.setCurProjectId(ev.projectId);
+          if (this.rootStore.projectStore.curProjectId == "") {
+            await this.rootStore.projectStore.setCurProjectId(ev.projectId);
+            this.rootStore.memberStore.floatMemberUserId = ev.targetId;
+            this.history.push(APP_PROJECT_CHAT_PATH);
+          } else {
+            await this.rootStore.projectStore.setCurProjectId(ev.projectId);
+            this.rootStore.memberStore.floatMemberUserId = ev.targetId;
+          }
+        } else {
+          this.rootStore.memberStore.floatMemberUserId = ev.targetId;
         }
-        this.rootStore.memberStore.floatMemberUserId = ev.targetId;
       }
     }
     await appWindow.show();

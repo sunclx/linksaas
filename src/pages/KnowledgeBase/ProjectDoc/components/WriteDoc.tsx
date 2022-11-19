@@ -128,11 +128,18 @@ const WriteDoc: React.FC = () => {
       projectStore.curProjectId,
     );
     //创建文档
+    let docSpaceId = docSpaceStore.curDocSpaceId == "" ? (projectStore.curProject?.default_doc_space_id ?? "") : docSpaceStore.curDocSpaceId;
+    if (location.state !== undefined) {
+      const state = location.state as LinkDocState;
+      if (state.docSpaceId != "") {
+        docSpaceId = state.docSpaceId;
+      }
+    }
     const res = await request(
       docApi.create_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDocSpaceId == "" ? (projectStore.curProject?.default_doc_space_id ?? "") : docSpaceStore.curDocSpaceId,
+        doc_space_id: docSpaceId,
         base_info: {
           title: newTitle,
           content: JSON.stringify(content),

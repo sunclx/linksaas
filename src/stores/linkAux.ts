@@ -502,24 +502,38 @@ class LinkAuxStore {
   }
 
   //跳转到创建文档
-  goToCreateDoc(content: string, history: History) {
-    this.rootStore.docSpaceStore.showDoc("", true);
+  async goToCreateDoc(content: string, projectId: string, docSpaceId: string, history: History) {
+    if (projectId != this.rootStore.projectStore.curProjectId) {
+      await this.rootStore.projectStore.setCurProjectId(projectId);
+    }
+    if (docSpaceId != "") {
+      await this.rootStore.docSpaceStore.loadDocSpace();
+      this.rootStore.docSpaceStore.showDocList(docSpaceId, false);
+    }
+    await this.rootStore.docSpaceStore.showDoc("", true);
     history.push(APP_PROJECT_KB_DOC_PATH, {
       writeDoc: true,
       content: content,
+      docSpaceId: docSpaceId,
       docId: '',
     } as LinkDocState);
   }
 
   //跳转到创建任务
-  goToCreateTask(content: string, history: History) {
+  async goToCreateTask(content: string, projectId: string, history: History) {
+    if (projectId != this.rootStore.projectStore.curProjectId) {
+      await this.rootStore.projectStore.setCurProjectId(projectId);
+    }
     history.push(this.genUrl(history.location.pathname, TASK_CREATE_SUFFIX), {
       issueId: '',
       content: content,
     } as LinkIssueState);
   }
   //跳转到创建缺陷
-  goToCreateBug(content: string, history: History) {
+  async goToCreateBug(content: string, projectId: string, history: History) {
+    if (projectId != this.rootStore.projectStore.curProjectId) {
+      await this.rootStore.projectStore.setCurProjectId(projectId);
+    }
     history.push(this.genUrl(history.location.pathname, BUG_CREATE_SUFFIX), {
       issueId: '',
       content: content,

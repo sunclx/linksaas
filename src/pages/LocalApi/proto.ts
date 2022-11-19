@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.1
+  version: 0.1.2
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -12,6 +12,8 @@ servers:
 tags:
   - name: global
     description: 不属于项目范围的接口
+  - name: projectCreate
+    description: 项目中创建任务/缺陷和文档
   - name: projectTask
     description: 项目中任务相关接口
   - name: projectBug
@@ -132,6 +134,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/bug/record/{bugId}/events:
+    get:
+      tags:
+        - projectBug
+      summary: 缺陷相关事件
+      description: 列出缺陷相关事件
+      operationId: projectProjectIdBugRecordBugIdEventsGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/BugId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/bug/record/{bugId}/shortNote:
     get:
       tags:
@@ -176,6 +214,106 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ProjectId'
         - $ref: '#/components/parameters/BugId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/create/bug:
+    get:
+      tags:
+        - projectCreate
+      summary: 创建缺陷
+      description: 创建缺陷
+      operationId: projectProjectIdCreateBugGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/create/doc/{docSpaceId}:
+    get:
+      tags:
+        - projectCreate
+      summary: 创建文档
+      description: 创建文档
+      operationId: projectProjectIdCreateDocDocSpaceIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/DocSpaceId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/create/task:
+    get:
+      tags:
+        - projectCreate
+      summary: 创建任务
+      description: 创建任务
+      operationId: projectProjectIdCreateTaskGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
         - $ref: '#/components/parameters/AccessToken'
       responses:
         '200':
@@ -523,6 +661,42 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TaskInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/task/record/{taskId}/events:
+    get:
+      tags:
+        - projectTask
+      summary: 任务相关事件
+      description: 列出任务相关事件
+      operationId: projectProjectIdTaskRecordTaskIdEventsGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventInfo'
         '500':
           description: 失败
           headers:
