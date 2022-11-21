@@ -38,6 +38,34 @@ pub async fn list_project_event(
     }
 }
 
+pub async fn list_event_by_ref(
+    app: &AppHandle,
+    project_id: &String,
+    event_type: EventType,
+    ref_type: EventRefType,
+    ref_id: &String,
+) -> Result<ListEventByRefResponse, String> {
+    let chan = crate::get_grpc_chan(app).await;
+    if chan.is_none() {
+        return Err("grpc连接出错".into());
+    }
+    let mut client = EventsApiClient::new(chan.unwrap());
+    let res = client
+        .list_event_by_ref(ListEventByRefRequest {
+            session_id: get_session_inner(app).await,
+            project_id: project_id.clone(),
+            event_type: event_type as i32,
+            ref_type: ref_type as i32,
+            ref_id: ref_id.clone(),
+        })
+        .await;
+    if res.is_err() {
+        return Err("调用接口出错".into());
+    } else {
+        return Ok(res.unwrap().into_inner());
+    }
+}
+
 pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
     let mut ret_list = Vec::new();
     event_list.iter().for_each(|item| {

@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use local_api_rust::server::MakeService;
+use proto_gen_rust::events_api::{EventType, EventRefType};
 use proto_gen_rust::project_issue_api::IssueType;
 use serde_json::json;
 use std::marker::PhantomData;
@@ -73,13 +74,16 @@ use local_api_rust::models::{
 };
 use local_api_rust::{
     Api, HelloGetResponse, ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
+    ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
-    ProjectProjectIdBugRecordBugIdShowGetResponse,
+    ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdCreateBugGetResponse,
+    ProjectProjectIdCreateDocDocSpaceIdGetResponse, ProjectProjectIdCreateTaskGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ProjectProjectIdDocSpaceGetResponse,
     ProjectProjectIdEventGetResponse, ProjectProjectIdMemberGetResponse,
     ProjectProjectIdMemberMemberUserIdShowGetResponse, ProjectProjectIdTaskAllGetResponse,
-    ProjectProjectIdTaskMyGetResponse, ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse,
+    ProjectProjectIdTaskMyGetResponse, ProjectProjectIdTaskRecordTaskIdEventsGetResponse,
+    ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse,
     ProjectProjectIdTaskRecordTaskIdShowGetResponse, ShowGetResponse,
 };
 use swagger::ApiError;
@@ -854,5 +858,253 @@ where
                 access_control_allow_origin: Some("*".into()),
             },
         );
+    }
+
+    /// 创建缺陷
+    async fn project_project_id_create_bug_get(
+        &self,
+        project_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCreateBugGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("无法找到主窗口".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let win = win.unwrap();
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteBug as u32,
+                target_id: "".into(),
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("发送消息失败".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        return Ok(ProjectProjectIdCreateBugGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
+    }
+
+    /// 创建文档
+    async fn project_project_id_create_doc_doc_space_id_get(
+        &self,
+        project_id: String,
+        doc_space_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCreateDocDocSpaceIdGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("无法找到主窗口".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let win = win.unwrap();
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteDoc as u32,
+                target_id: doc_space_id.clone(),
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("发送消息失败".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
+    }
+
+    /// 创建任务
+    async fn project_project_id_create_task_get(
+        &self,
+        project_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCreateTaskGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("无法找到主窗口".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let win = win.unwrap();
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteTask as u32,
+                target_id: "".into(),
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("发送消息失败".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        return Ok(ProjectProjectIdCreateTaskGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
+    }
+
+    /// 任务相关事件
+    async fn project_project_id_task_record_task_id_events_get(
+        &self,
+        project_id: String,
+        task_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTaskRecordTaskIdEventsGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdTaskRecordTaskIdEventsGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res = super::event_api::list_event_by_ref(
+            &self.app,
+            &project_id,
+            EventType::Task,
+            EventRefType::Task,
+            &task_id,
+        )
+        .await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdTaskRecordTaskIdEventsGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdTaskRecordTaskIdEventsGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdTaskRecordTaskIdEventsGetResponse::Status200 {
+                body: super::event_api::convert_event_list(res.event_list),
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 缺陷相关事件
+    async fn project_project_id_bug_record_bug_id_events_get(
+        &self,
+        project_id: String,
+        bug_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdBugRecordBugIdEventsGetResponse, ApiError> {
+        if super::access_check::check(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdBugRecordBugIdEventsGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res = super::event_api::list_event_by_ref(
+            &self.app,
+            &project_id,
+            EventType::Bug,
+            EventRefType::Bug,
+            &bug_id,
+        )
+        .await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdBugRecordBugIdEventsGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdBugRecordBugIdEventsGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdBugRecordBugIdEventsGetResponse::Status200 {
+                body: super::event_api::convert_event_list(res.event_list),
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
     }
 }

@@ -15,6 +15,8 @@ export type SHORT_NOTE_MODE_TYPE = number;
 
 export const SHORT_NOTE_MODE_DETAIL: SHORT_NOTE_MODE_TYPE = 0; //显示详情
 export const SHORT_NOTE_MODE_SHOW: SHORT_NOTE_MODE_TYPE = 1; //显示便签
+export const SHORT_NOTE_MODE_CREATE: SHORT_NOTE_MODE_TYPE = 2; //创建任务/缺陷/文档等 
+
 
 export type ShortNote = {
     project_id: string;

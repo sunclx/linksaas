@@ -8,6 +8,7 @@ pub enum ShortNoteType {
 pub enum ShortNoteMode {
     Detail = 0,
     Show = 1,
+    Create = 2,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
