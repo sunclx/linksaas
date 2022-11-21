@@ -13,6 +13,7 @@ import { writeText } from '@tauri-apps/api/clipboard';
 import { WebviewWindow } from '@tauri-apps/api/window';
 import { PROTO } from "@/pages/LocalApi/proto";
 import { RelProjectList } from "./RelProjectList";
+import LocalApiPermInfo from "./LocalApiPermInfo";
 
 
 const LocalApi = () => {
@@ -186,8 +187,14 @@ const LocalApi = () => {
                         </div>
                     )}
                 </div>
-                <h2>相关项目</h2>
-                <RelProjectList/>
+                {projectStore.isAdmin && (
+                    <>
+                        <h2 className={s.head}>接口权限</h2>
+                        <LocalApiPermInfo/>
+                    </>
+                )}
+                <h2 className={s.head}>相关项目</h2>
+                <RelProjectList />
             </div>
             {showUpdateModal && (
                 <Modal

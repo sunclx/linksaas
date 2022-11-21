@@ -91,6 +91,22 @@ export type RenewLocalApiTokenResponse = {
   token: string;
 };
 
+export type LocalApiPerm = {
+  access_channel: boolean;
+}
+
+export type SetLocalApiPermResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type GetLocalApiPermResponse = {
+  code: number;
+  err_msg: string;
+  perm: LocalApiPerm;
+};
+
+
 //创建项目
 export async function create(
   session_id: string,
@@ -237,6 +253,35 @@ export async function renew_local_api_token(session_id: string, project_id: stri
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RenewLocalApiTokenResponse>(cmd, {
+    request,
+  });
+}
+
+//设置本地api 权限
+export async function set_local_api_perm(session_id: string, project_id: string, perm: LocalApiPerm): Promise<SetLocalApiPermResponse> {
+  const cmd = 'plugin:project_api|set_local_api_perm';
+  const request = {
+    session_id,
+    project_id,
+    perm,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<SetLocalApiPermResponse>(cmd, {
+    request,
+  });
+}
+
+//获取本地api 权限
+export async function get_local_api_perm(session_id: string, project_id: string): Promise<GetLocalApiPermResponse> {
+  const cmd = 'plugin:project_api|get_local_api_perm';
+  const request = {
+    session_id,
+    project_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<GetLocalApiPermResponse>(cmd, {
     request,
   });
 }
