@@ -2111,7 +2111,15 @@ namespace gitlab {
     inner: MergeRequestEvent,
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.user?.name}`),
+      new LinkNoneInfo(`${inner.object_attributes?.action == "open" ? "打开" : "关闭"} 合并需求`),
+      new LinkExterneInfo(inner.object_attributes?.source?.name ?? "", inner.object_attributes?.source?.homepage ?? ""),
+      new LinkNoneInfo(inner.object_attributes?.source_branch ?? ""),
+      new LinkNoneInfo("至"),
+      new LinkExterneInfo(inner.object_attributes?.target?.name ?? "", inner.object_attributes?.target?.homepage ?? ""),
+      new LinkNoneInfo(inner.object_attributes?.target_branch ?? ""),
+    ];
   }
   export type PipelineEvent = {
     object_kind: string;
