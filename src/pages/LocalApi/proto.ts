@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.2
+  version: 0.1.3
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -24,6 +24,10 @@ tags:
     description: 项目中成员相关接口
   - name: projectDoc
     description: 项目中文档相关接口
+  - name: projectChannel
+    description: 项目中的沟通频道
+  - name: projectContentBlock
+    description: 项目中的可变内容块
 paths:
   /hello:
     get:
@@ -45,6 +49,133 @@ paths:
               schema:
                 type: string
                 example: hello linksaas
+  /project/{projectId}/blockColl:
+    get:
+      tags:
+        - projectContentBlock
+      summary: 可变内容集合
+      description: 列出可变内容集合
+      operationId: projectProjectIdBlockCollGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                    description: 集合总数量
+                  blockCollList:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BlockCollInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/blockColl/{blockCollId}:
+    get:
+      tags:
+        - projectContentBlock
+      summary: 可变内容块
+      description: 列出可变内容块
+      operationId: projectProjectIdBlockCollBlockCollIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/BlockCollId'
+        - $ref: '#/components/parameters/AccessToken'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalCount:
+                    type: integer
+                    description: 内容块总数量
+                  blockList:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BlockInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/blockColl/{blockCollId}/{blockId}:
+    get:
+      tags:
+        - projectContentBlock
+      summary: 可变内容块内容
+      description: 获取可变内容块内容
+      operationId: projectProjectIdBlockCollBlockCollIdBlockIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/BlockCollId'
+        - $ref: '#/components/parameters/BlockId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contentList:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BlockContentInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/bug/all:
     get:
       tags:
@@ -227,6 +358,153 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmptyRes'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/channel/msg/{channelId}:
+    get:
+      tags:
+        - projectChannel
+      summary: 列出沟通内容
+      description: 列出沟通内容(从后往前)
+      operationId: projectProjectIdChannelMsgChannelIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/ChannelId'
+        - $ref: '#/components/parameters/AccessToken'
+        - $ref: '#/components/parameters/Limit'
+        - name: refMsgId
+          in: query
+          schema:
+            type: string
+            description: 相关消息ID，空表示最后一条消息
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MsgInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/channel/my:
+    get:
+      tags:
+        - projectChannel
+      summary: 我的沟通频道
+      description: 列出我的沟通频道
+      operationId: projectProjectIdChannelMyGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChannelInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/channel/notJoin:
+    get:
+      tags:
+        - projectChannel
+      summary: 我未加入的频道
+      description: 列出我未加入的频道(需要管理员权限)
+      operationId: projectProjectIdChannelNotJoinGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChannelInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/channel/orphan:
+    get:
+      tags:
+        - projectChannel
+      summary: 孤儿频道
+      description: 列出孤儿频道
+      operationId: projectProjectIdChannelOrphanGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChannelInfo'
         '500':
           description: 失败
           headers:
@@ -672,6 +950,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/task/record/{taskId}/depend:
+    get:
+      tags:
+        - projectTask
+      summary: 列出依赖工单
+      description: 列出依赖工单
+      operationId: projectProjectIdTaskRecordTaskIdDependGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  myDependList:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IssueInfo'
+                  dependMeList:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IssueInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/task/record/{taskId}/events:
     get:
       tags:
@@ -776,6 +1097,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/task/record/{taskId}/subTask:
+    get:
+      tags:
+        - projectTask
+      summary: 列出子任务
+      description: 列出子任务
+      operationId: projectProjectIdTaskRecordTaskIdSubTaskGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubTaskInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /show:
     get:
       tags:
@@ -815,6 +1172,20 @@ components:
         type: string
       required: true
       description: 访问令牌
+    BlockCollId:
+      in: path
+      name: blockCollId
+      schema:
+        type: string
+      required: true
+      description: 内容集合ID
+    BlockId:
+      in: path
+      name: blockId
+      schema:
+        type: string
+      required: true
+      description: 可变内容块ID
     BugId:
       in: path
       name: bugId
@@ -822,6 +1193,13 @@ components:
         type: string
       required: true
       description: 缺陷ID
+    ChannelId:
+      in: path
+      name: channelId
+      schema:
+        type: string
+      required: true
+      description: 频道ID
     DocId:
       in: path
       name: docId
@@ -874,6 +1252,75 @@ components:
       required: true
       description: 任务ID
   schemas:
+    BlockCollInfo:
+      type: object
+      properties:
+        blockCollId:
+          type: string
+          description: 可变内容集合ID
+        title:
+          type: string
+          description: 集合标题
+        createUserId:
+          type: string
+          description: 创建人ID
+        createDisplayName:
+          type: string
+          description: 创建人名称
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
+    BlockContentInfo:
+      type: object
+      properties:
+        blockId:
+          type: string
+          description: 可变内容块ID
+        contentType:
+          type: string
+          description: 内容类型
+          enum:
+            - text
+            - html
+            - markDown
+        content:
+          type: string
+          description: 内容
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+    BlockInfo:
+      type: object
+      properties:
+        blockId:
+          type: string
+          description: 可变内容块ID
+        blockCollId:
+          type: string
+          description: 可变内容集合ID
+        title:
+          type: string
+          description: 集合标题
+        createUserId:
+          type: string
+          description: 创建人ID
+        createDisplayName:
+          type: string
+          description: 创建人名称
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
     BugInfo:
       type: object
       properties:
@@ -945,6 +1392,38 @@ components:
             - high
             - urgent
             - immediate
+    ChannelInfo:
+      type: object
+      properties:
+        channelId:
+          type: string
+          description: 频道ID
+        name:
+          type: string
+          description: 频道名称
+        pubChannel:
+          type: boolean
+          description: 是否是公开频道
+        systemChannel:
+          type: boolean
+          description: 是否是系统频道
+        readonly:
+          type: boolean
+          description: 是否是只读状态
+        closed:
+          type: boolean
+          description: 是否是关闭状态
+        ownerUserId:
+          type: string
+          description: 创建者ID
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
     DocInfo:
       type: object
       properties:
@@ -1051,6 +1530,98 @@ components:
         eventData:
           type: object
           description: 事件内容
+    IssueInfo:
+      type: object
+      properties:
+        issueId:
+          type: string
+          description: 工单ID
+        issueType:
+          type: string
+          description: 工单类型
+          enum:
+            - task
+            - bug
+        title:
+          type: string
+          description: 标题
+        state:
+          type: string
+          description: 状态
+          enum:
+            - plan
+            - process
+            - check
+            - close
+        createUserId:
+          type: string
+          description: 创建人ID
+        createDisplayName:
+          type: string
+          description: 创建人名称
+        execUserId:
+          type: string
+          description: 执行人ID
+        execDisplayName:
+          type: string
+          description: 执行人名称
+        checkUserId:
+          type: string
+          description: 检查人ID
+        checkDisplayName:
+          type: string
+          description: 检查人名称
+        execAwardPoint:
+          type: integer
+          minimum: 0
+          description: 执行奖励
+        checkAwardPoint:
+          type: integer
+          minimum: 0
+          description: 检查奖励
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
+    MsgInfo:
+      type: object
+      properties:
+        msgId:
+          type: string
+          description: 消息ID
+        channelId:
+          type: string
+          description: 频道ID
+        content:
+          type: string
+          description: 消息内容(ProseMirror格式)
+        senderUserId:
+          type: string
+          description: 发送用户ID
+        senderDisplayName:
+          type: string
+          description: 发送者名称
+        senderType:
+          type: string
+          description: 发送者类型
+          enum:
+            - member
+            - robot
+        sendTime:
+          type: integer
+          description: 发送时间
+          format: int64
+        hasUpdateTime:
+          type: boolean
+          description: 是否有修改
+        updateTime:
+          type: integer
+          description: 修改时间
+          format: int64
     SimpleMemberInfo:
       type: object
       properties:
@@ -1060,6 +1631,35 @@ components:
         displayName:
           type: string
           description: 项目成员名称
+    SubTaskInfo:
+      type: object
+      properties:
+        subTaskId:
+          type: string
+          description: 子任务ID
+        taskId:
+          type: string
+          description: 任务ID
+        title:
+          type: string
+          description: 标题
+        createUserId:
+          type: string
+          description: 创建人ID
+        createDisplayName:
+          type: string
+          description: 创建人名称
+        done:
+          type: boolean
+          description: 是否完成
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
     TaskInfo:
       type: object
       properties:

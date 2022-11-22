@@ -1,5 +1,5 @@
 use crate::user_api_plugin::{get_session_inner, get_user_id_inner};
-use local_api_rust::models::{BugInfo, TaskInfo};
+use local_api_rust::models::{BugInfo, IssueInfo as ModelIssueInfo, SubTaskInfo, TaskInfo};
 use proto_gen_rust::project_issue_api::issue_info::ExtraInfo;
 use proto_gen_rust::project_issue_api::project_issue_api_client::ProjectIssueApiClient;
 use proto_gen_rust::project_issue_api::*;
@@ -126,6 +126,144 @@ pub async fn list_issue(
     } else {
         return Ok(res.unwrap().into_inner());
     }
+}
+
+pub async fn list_sub_task(
+    app: &AppHandle,
+    project_id: &String,
+    task_id: &String,
+) -> Result<ListSubIssueResponse, String> {
+    let chan = crate::get_grpc_chan(app).await;
+    if chan.is_none() {
+        return Err("grpc连接出错".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    let res = client
+        .list_sub_issue(ListSubIssueRequest {
+            session_id: get_session_inner(app).await,
+            project_id: project_id.clone(),
+            issue_id: task_id.clone(),
+        })
+        .await;
+    if res.is_err() {
+        return Err("调用接口出错".into());
+    } else {
+        return Ok(res.unwrap().into_inner());
+    }
+}
+
+pub async fn list_my_depend(
+    app: &AppHandle,
+    project_id: &String,
+    task_id: &String,
+) -> Result<ListMyDependResponse, String> {
+    let chan = crate::get_grpc_chan(app).await;
+    if chan.is_none() {
+        return Err("grpc连接出错".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    let res = client
+        .list_my_depend(ListMyDependRequest {
+            session_id: get_session_inner(app).await,
+            project_id: project_id.clone(),
+            issue_id: task_id.clone(),
+        })
+        .await;
+    if res.is_err() {
+        return Err("调用接口出错".into());
+    } else {
+        return Ok(res.unwrap().into_inner());
+    }
+}
+
+pub async fn list_depend_me(
+    app: &AppHandle,
+    project_id: &String,
+    task_id: &String,
+) -> Result<ListDependMeResponse, String> {
+    let chan = crate::get_grpc_chan(app).await;
+    if chan.is_none() {
+        return Err("grpc连接出错".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    let res = client
+        .list_depend_me(ListDependMeRequest {
+            session_id: get_session_inner(app).await,
+            project_id: project_id.clone(),
+            issue_id: task_id.clone(),
+        })
+        .await;
+    if res.is_err() {
+        return Err("调用接口出错".into());
+    } else {
+        return Ok(res.unwrap().into_inner());
+    }
+}
+
+pub fn convert_to_issue_list(issue_list: Vec<IssueInfo>) -> Vec<ModelIssueInfo> {
+    let mut ret_list = Vec::new();
+    issue_list.iter().for_each(|issue| {
+        let basic_info = issue.basic_info.clone().unwrap_or_else(|| {
+            return BasicIssueInfo {
+                title: "".into(),
+                content: "".into(),
+            };
+        });
+        let mut issue_type = "";
+        if issue.issue_type == IssueType::Bug as i32 {
+            issue_type = "bug"
+        } else if issue.issue_type == IssueType::Task as i32 {
+            issue_type = "task"
+        }
+        let mut state = "";
+        if issue.state == IssueState::Plan as i32 {
+            state = "plan";
+        } else if issue.state == IssueState::Process as i32 {
+            state = "process";
+        } else if issue.state == IssueState::Check as i32 {
+            state = "check";
+        } else if issue.state == IssueState::Close as i32 {
+            state = "close";
+        }
+        ret_list.push(ModelIssueInfo {
+            issue_id: Some(issue.issue_id.clone()),
+            issue_type: Some(issue_type.into()),
+            title: Some(basic_info.title.clone()),
+            state: Some(state.into()),
+            create_user_id: Some(issue.create_user_id.clone()),
+            create_display_name: Some(issue.create_display_name.clone()),
+            exec_user_id: Some(issue.exec_user_id.clone()),
+            exec_display_name: Some(issue.exec_display_name.clone()),
+            check_user_id: Some(issue.check_user_id.clone()),
+            check_display_name: Some(issue.check_display_name.clone()),
+            exec_award_point: Some(issue.exec_award_point),
+            check_award_point: Some(issue.check_award_point),
+            create_time: Some(issue.create_time),
+            update_time: Some(issue.update_time),
+        });
+    });
+    return ret_list;
+}
+
+pub fn convert_to_sub_task_list(sub_task_list: Vec<SubIssueInfo>) -> Vec<SubTaskInfo> {
+    let mut ret_list = Vec::new();
+    sub_task_list.iter().for_each(|sub_task| {
+        let basic_info = sub_task
+            .basic_info
+            .clone()
+            .unwrap_or_else(|| return BasicSubIssueInfo { title: "".into() });
+        ret_list.push(SubTaskInfo {
+            sub_task_id: Some(sub_task.sub_issue_id.clone()),
+            task_id: Some(sub_task.issue_id.clone()),
+            title: Some(basic_info.title.clone()),
+            create_user_id: Some(sub_task.create_user_id.clone()),
+            create_display_name: Some(sub_task.create_display_name.clone()),
+            done: Some(sub_task.done),
+            create_time: Some(sub_task.create_time),
+            update_time: Some(sub_task.update_time),
+        });
+    });
+    return ret_list;
 }
 
 //只转换类型是bug的类型
