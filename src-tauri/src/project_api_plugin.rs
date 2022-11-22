@@ -265,6 +265,62 @@ async fn renew_local_api_token<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn set_local_api_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetLocalApiPermRequest,
+) -> Result<SetLocalApiPermResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.set_local_api_perm(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_local_api_perm_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_local_api_perm".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_local_api_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetLocalApiPermRequest,
+) -> Result<GetLocalApiPermResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.get_local_api_perm(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_local_api_perm_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_local_api_perm".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -283,6 +339,8 @@ impl<R: Runtime> ProjectApiPlugin<R> {
                 get_local_api_token,
                 remove_local_api_token,
                 renew_local_api_token,
+                set_local_api_perm,
+                get_local_api_perm,
             ]),
         }
     }

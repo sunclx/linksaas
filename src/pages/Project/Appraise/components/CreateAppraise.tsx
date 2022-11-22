@@ -94,9 +94,8 @@ const CreateAppraise: React.FC<CreateAppraiseProps> = (props) => {
 
   // 确认事件
   const comfirm = async (values: Values) => {
-
     let userIdList = [] as string[];
-    if (values.group === AppraiseType.ALL) {
+    if (values.group == undefined || values.group === AppraiseType.ALL) {
       userIdList = localStore.allMemberIdList;
     } else if (values.group === AppraiseType.FILTER) {
       userIdList = localStore.filterMemberIdList;

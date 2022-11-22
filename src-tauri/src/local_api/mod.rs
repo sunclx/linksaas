@@ -11,6 +11,8 @@ mod doc_space_api;
 mod event_api;
 mod issue_api;
 mod member_api;
+mod channel_api;
+mod vc_api;
 mod notice;
 mod server;
 
