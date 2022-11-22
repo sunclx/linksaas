@@ -20,6 +20,7 @@ base64 = "0.13.0"
 dirs = "4.0.0"
 futures = "0.3"
 futures-util = "0.3.21"
+hard-xml = "1.15.0"
 hyper = {version = "0.14", features = ["full"] }
 image = "0.24.1"
 local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", branch = "main"}

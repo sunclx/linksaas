@@ -1,5 +1,5 @@
 import { useStores } from '@/hooks';
-import { APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 import { Popover, Modal, Input, message } from 'antd';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
@@ -10,7 +10,7 @@ import s from './index.module.less';
 import { ReactComponent as ContentMansvg } from '@/assets/svg/content_man.svg';
 import * as prjDocApi from '@/api/project_doc';
 import { request } from '@/utils/request';
-import { DeleteOutlined, FileTextOutlined } from '@ant-design/icons';
+import { BookOutlined, DeleteOutlined, FileTextOutlined } from '@ant-design/icons';
 
 
 const KnowledgeBaseMenu = () => {
@@ -110,6 +110,20 @@ const KnowledgeBaseMenu = () => {
         }}
       >
         <DeleteOutlined /> 文档回收站
+      </div>
+      <div
+        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_CB_PATH) && s.active)}
+        onClick={() => {
+          if (docSpaceStore.inEdit) {
+            docSpaceStore.showCheckLeave(() => {
+              history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
+            });
+            return;
+          }
+          history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
+        }}
+      >
+        <BookOutlined /> 电子书库
       </div>
       <div
         className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_CB_PATH) && s.active)}

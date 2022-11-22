@@ -8,6 +8,7 @@ import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
   APP_PROJECT_CHAT_PATH,
+  APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_CB_PATH,
   APP_PROJECT_KB_DOC_PATH,
   BUG_CREATE_SUFFIX,
@@ -562,6 +563,8 @@ class LinkAuxStore {
       return APP_PROJECT_KB_DOC_PATH + suffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
       return APP_PROJECT_KB_CB_PATH + suffix;
+    } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)){
+      return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
     }
     return APP_PROJECT_CHAT_PATH + suffix;
   }
