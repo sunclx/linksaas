@@ -120,7 +120,7 @@ const ActionMember: React.FC<ActionMemberProps> = (props) => {
   const addMember = async (chId: string) => {
     await Promise.all(
       localStore.selectList.map(async (item) => {
-        await fetchAddChannelMember(sessionId, curProjectId, chId, item.member.member_user_id);
+        await request(fetchAddChannelMember(sessionId, curProjectId, chId, item.member.member_user_id));
       }),
     );
     if (onComplete) {
@@ -135,7 +135,7 @@ const ActionMember: React.FC<ActionMemberProps> = (props) => {
   const deleteMember = async (channelid: string) => {
     await Promise.all(
       localStore.selectList.map(async (item) => {
-        await fetchDeleteChannelMember(sessionId, curProjectId, channelid, item.member.member_user_id);
+        await request(fetchDeleteChannelMember(sessionId, curProjectId, channelid, item.member.member_user_id));
       }),
     );
     if (onComplete) {
@@ -211,14 +211,14 @@ const ActionMember: React.FC<ActionMemberProps> = (props) => {
     await Promise.all(
       preMemberIdList.filter((preMemberId: string) => !curMemberIdList.includes(preMemberId))
         .map(async (memberId: string) => {
-          await fetchDeleteChannelMember(sessionId, curProjectId, channelId, memberId);
+          await request(fetchDeleteChannelMember(sessionId, curProjectId, channelId, memberId));
         })
     );
     //增加新增用户
     await Promise.all(
       curMemberIdList.filter((curMemberId) => !preMemberIdList.includes(curMemberId))
         .map(async (memberId) => {
-          await fetchAddChannelMember(sessionId, curProjectId, channelId, memberId)
+          await request(fetchAddChannelMember(sessionId, curProjectId, channelId, memberId));
         })
     );
     if (onComplete) {
