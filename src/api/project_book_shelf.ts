@@ -9,15 +9,11 @@ export const ANNO_MARK: ANNO_TYPE = 2;
 export type BookInfo = {
     book_id: string;
     book_title: string;
-    book_desc: string;
     file_loc_id: string;
-};
-
-export type AnnoStatusItem = {
-    anno_user_id: string;
-    anno_display_name: string;
-    anno_logo_uri: string;
-    anno_count: number;
+    create_user_id: string;
+    create_display_name: string;
+    create_logo_uri: string;
+    create_time: number;
 };
 
 export type AnnoInfo = {
@@ -52,7 +48,6 @@ export type UpdateBookRequest = {
     project_id: string;
     book_id: string;
     book_title: string;
-    book_desc: string;
 };
 
 export type UpdateBookResponse = {
@@ -100,24 +95,10 @@ export type AddAnnoResponse = {
     anno_id: string;
 };
 
-export type GetAnnoStatusRequest = {
-    session_id: string;
-    project_id: string;
-    book_id: string;
-};
-
-export type GetAnnoStatusResponse = {
-    code: number;
-    err_msg: string;
-    info_list: AnnoStatusItem[],
-};
-
-
 export type ListAnnoRequest = {
     session_id: string;
     project_id: string;
     book_id: string;
-    anno_user_id: string;
 };
 
 export type ListAnnoResponse = {
@@ -185,15 +166,6 @@ export async function add_anno(request: AddAnnoRequest): Promise<AddAnnoResponse
     });
 }
 
-//获取标注状态
-export async function get_anno_status(request: GetAnnoStatusRequest): Promise<GetAnnoStatusResponse> {
-    const cmd = 'plugin:project_book_shelf_api|get_anno_status';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetAnnoStatusResponse>(cmd, {
-        request,
-    });
-}
-
 //列出标注
 export async function list_anno(request: ListAnnoRequest): Promise<ListAnnoResponse> {
     const cmd = 'plugin:project_book_shelf_api|list_anno';
@@ -209,5 +181,14 @@ export async function remove_anno(request: RemoveAnnoRequest): Promise<RemoveAnn
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveAnnoResponse>(cmd, {
         request,
+    });
+}
+
+//解析epub文件获取标题
+export async function parse_book_title(filePath: string): Promise<string> {
+    const cmd = 'plugin:project_book_shelf_api|parse_book_title';
+    console.log(`%c${cmd}`, 'color:#0f0;', filePath);
+    return invoke<string>(cmd, {
+        filePath,
     });
 }

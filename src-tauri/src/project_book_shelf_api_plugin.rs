@@ -7,6 +7,7 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+use epub::doc::EpubDoc;
 
 #[tauri::command]
 async fn add_book<R: Runtime>(
@@ -23,8 +24,7 @@ async fn add_book<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_book_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("add_book".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -50,10 +50,9 @@ async fn update_book<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_book_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("update_book".into()),
-                ) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_book".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -144,33 +143,6 @@ async fn add_anno<R: Runtime>(
 }
 
 #[tauri::command]
-async fn get_anno_status<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: GetAnnoStatusRequest,
-) -> Result<GetAnnoStatusResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.get_anno_status(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == get_anno_status_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("get_anno_status".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn list_anno<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -224,6 +196,19 @@ async fn remove_anno<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn parse_book_title(file_path: String) -> Result<String, String> {
+    let book = EpubDoc::new(&file_path);
+    if book.is_err() {
+        return Err(book.err().unwrap().to_string());
+    }
+    let book = book.unwrap();
+    if let Some(title) = book.mdata("title") {
+        return Ok(title);
+    }
+    return Ok("未知书名".into());
+}
+
 pub struct ProjectBookShelfApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -237,9 +222,9 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
                 list_book,
                 remove_book,
                 add_anno,
-                get_anno_status,
                 list_anno,
                 remove_anno,
+                parse_book_title,
             ]),
         }
     }
