@@ -23,6 +23,7 @@ import Workbench from '@/pages/Workbench';
 import ChatLayout from '@/layouts/ChatLayout';
 import {
   APP_PROJECT_CHAT_PATH,
+  APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_CB_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
@@ -44,6 +45,7 @@ import RepoList from '@/pages/Earthly/RepoList';
 import ExecResult from '@/pages/Earthly/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import LocalApi from '@/pages/Project/LocalApi';
+import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 
 
 
@@ -226,6 +228,12 @@ const routesConfig: IRouteConfig[] = [
                 title: "文档空间",
                 component: ProjectDoc,
                 routes: getToolbarRoute(APP_PROJECT_KB_DOC_PATH),
+              },
+              {
+                path: APP_PROJECT_KB_BOOK_SHELF_PATH,
+                title: "电子书库",
+                component: BookShelf,
+                routes: getToolbarRoute(APP_PROJECT_KB_BOOK_SHELF_PATH),
               },
               {
                 path: APP_PROJECT_KB_CB_PATH,

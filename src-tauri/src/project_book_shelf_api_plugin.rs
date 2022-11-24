@@ -7,6 +7,7 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+use epub::doc::EpubDoc;
 
 #[tauri::command]
 async fn add_book<R: Runtime>(
@@ -23,8 +24,7 @@ async fn add_book<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_book_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("add_book".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -50,10 +50,9 @@ async fn update_book<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_book_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("update_book".into()),
-                ) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_book".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -80,6 +79,32 @@ async fn list_book<R: Runtime>(
             if inner_resp.code == list_book_response::Code::WrongSession as i32 {
                 if let Err(err) =
                     window.emit("notice", new_wrong_session_notice("list_book".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_book<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetBookRequest,
+) -> Result<GetBookResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    match client.get_book(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_book_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -118,21 +143,21 @@ async fn remove_book<R: Runtime>(
 }
 
 #[tauri::command]
-async fn add_anno<R: Runtime>(
+async fn add_mark<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: AddAnnoRequest,
-) -> Result<AddAnnoResponse, String> {
+    request: AddMarkRequest,
+) -> Result<AddMarkResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.add_anno(request).await {
+    match client.add_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == add_anno_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_anno".into()))
+            if inner_resp.code == add_mark_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_mark".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -144,22 +169,22 @@ async fn add_anno<R: Runtime>(
 }
 
 #[tauri::command]
-async fn get_anno_status<R: Runtime>(
+async fn list_mark<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: GetAnnoStatusRequest,
-) -> Result<GetAnnoStatusResponse, String> {
+    request: ListMarkRequest,
+) -> Result<ListMarkResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.get_anno_status(request).await {
+    match client.list_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == get_anno_status_response::Code::WrongSession as i32 {
+            if inner_resp.code == list_mark_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("get_anno_status".into()))
+                    window.emit("notice", new_wrong_session_notice("list_mark".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -171,22 +196,21 @@ async fn get_anno_status<R: Runtime>(
 }
 
 #[tauri::command]
-async fn list_anno<R: Runtime>(
+async fn get_mark<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: ListAnnoRequest,
-) -> Result<ListAnnoResponse, String> {
+    request: GetMarkRequest,
+) -> Result<GetMarkResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.list_anno(request).await {
+    match client.get_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == list_anno_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_anno".into()))
+            if inner_resp.code == get_mark_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_mark".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -198,22 +222,22 @@ async fn list_anno<R: Runtime>(
 }
 
 #[tauri::command]
-async fn remove_anno<R: Runtime>(
+async fn remove_mark<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: RemoveAnnoRequest,
-) -> Result<RemoveAnnoResponse, String> {
+    request: RemoveMarkRequest,
+) -> Result<RemoveMarkResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
-    match client.remove_anno(request).await {
+    match client.remove_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == remove_anno_response::Code::WrongSession as i32 {
+            if inner_resp.code == remove_mark_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("remove_anno".into()))
+                    window.emit("notice", new_wrong_session_notice("remove_mark".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -222,6 +246,73 @@ async fn remove_anno<R: Runtime>(
         }
         Err(status) => Err(status.message().into()),
     }
+}
+
+#[tauri::command]
+async fn set_read_loc<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetReadLocRequest,
+) -> Result<SetReadLocResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    match client.set_read_loc(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_read_loc_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_read_loc".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_read_loc<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetReadLocRequest,
+) -> Result<GetReadLocResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    match client.get_read_loc(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_read_loc_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_read_loc".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn parse_book_title(file_path: String) -> Result<String, String> {
+    let book = EpubDoc::new(&file_path);
+    if book.is_err() {
+        return Err(book.err().unwrap().to_string());
+    }
+    let book = book.unwrap();
+    if let Some(title) = book.mdata("title") {
+        return Ok(title);
+    }
+    return Ok("未知书名".into());
 }
 
 pub struct ProjectBookShelfApiPlugin<R: Runtime> {
@@ -235,11 +326,15 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
                 add_book,
                 update_book,
                 list_book,
+                get_book,
                 remove_book,
-                add_anno,
-                get_anno_status,
-                list_anno,
-                remove_anno,
+                add_mark,
+                list_mark,
+                get_mark,
+                remove_mark,
+                set_read_loc,
+                get_read_loc,
+                parse_book_title,
             ]),
         }
     }

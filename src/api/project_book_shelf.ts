@@ -1,36 +1,13 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export type ANNO_TYPE = number;
-export const ANNO_HIGHLIGHT: ANNO_TYPE = 0;
-export const ANNO_UNDERLINE: ANNO_TYPE = 1;
-export const ANNO_MARK: ANNO_TYPE = 2;
-
-
 export type BookInfo = {
     book_id: string;
     book_title: string;
-    book_desc: string;
     file_loc_id: string;
-};
-
-export type AnnoStatusItem = {
-    anno_user_id: string;
-    anno_display_name: string;
-    anno_logo_uri: string;
-    anno_count: number;
-};
-
-export type AnnoInfo = {
-    anno_id: string;
-    book_id: string;
-    project_id: string;
-    anno_user_id: string;
-    anno_display_name: string;
-    anno_logo_uri: string;
-    anno_type: ANNO_TYPE;
-    cfi_range: string;
-    time_stamp: number;
-    content: string;
+    create_user_id: string;
+    create_display_name: string;
+    create_logo_uri: string;
+    create_time: number;
 };
 
 export type AddBookRequest = {
@@ -52,7 +29,6 @@ export type UpdateBookRequest = {
     project_id: string;
     book_id: string;
     book_title: string;
-    book_desc: string;
 };
 
 export type UpdateBookResponse = {
@@ -74,6 +50,18 @@ export type ListBookResponse = {
     info_list: BookInfo[];
 };
 
+export type GetBookRequest = {
+    session_id: string;
+    project_id: string;
+    book_id: string;
+};
+
+export type GetBookResponse = {
+    code: number,
+    err_msg: string;
+    info: BookInfo;
+};
+
 export type RemoveBookRequest = {
     session_id: string;
     project_id: string;
@@ -85,60 +73,92 @@ export type RemoveBookResponse = {
     err_msg: string;
 };
 
-export type AddAnnoRequest = {
-    session_id: string;
-    project_id: string;
+export type MarkInfo = {
+    mark_id: string;
     book_id: string;
-    anno_type: ANNO_TYPE;
+    project_id: string;
+    mark_user_id: string;
+    mark_display_name: string;
+    mark_logo_uri: string;
+    mark_content: string;
     cfi_range: string;
-    content: string;
+    time_stamp: number;
 };
 
-export type AddAnnoResponse = {
+export type AddMarkRequest = {
+    session_id: string;
+    project_id: string;
+    book_id: string;
+    cfi_range: string;
+    mark_content: string;
+};
+
+export type AddMarkResponse = {
     code: number;
     err_msg: string;
-    anno_id: string;
+    mark_id: string;
 };
 
-export type GetAnnoStatusRequest = {
+export type ListMarkRequest = {
     session_id: string;
     project_id: string;
     book_id: string;
 };
 
-export type GetAnnoStatusResponse = {
+export type ListMarkResponse = {
     code: number;
     err_msg: string;
-    info_list: AnnoStatusItem[],
-};
-
-
-export type ListAnnoRequest = {
-    session_id: string;
-    project_id: string;
-    book_id: string;
-    anno_user_id: string;
-};
-
-export type ListAnnoResponse = {
-    code: number;
-    err_msg: string;
-    info_list: AnnoInfo[],
+    info_list: MarkInfo[];
 }
 
-
-export type RemoveAnnoRequest = {
+export type GetMarkRequest = {
     session_id: string;
     project_id: string;
     book_id: string;
-    anno_id: string;
+    mark_id: string;
 };
 
-export type RemoveAnnoResponse = {
+export type GetMarkResponse = {
     code: number;
     err_msg: string;
-}
+    info: MarkInfo;
+};
 
+export type RemoveMarkRequest = {
+    session_id: string;
+    project_id: string;
+    book_id: string;
+    mark_id: string;
+};
+
+export type RemoveMarkResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type SetReadLocRequest = {
+    session_id: string;
+    project_id: string;
+    book_id: string;
+    cfi_loc: string;
+};
+
+export type SetReadLocResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type GetReadLocRequest = {
+    session_id: string;
+    project_id: string;
+    book_id: string;
+};
+
+export type GetReadLocResponse = {
+    code: number;
+    err_msg: string;
+    cfi_loc: string;
+};
 
 //添加书本
 export async function add_book(request: AddBookRequest): Promise<AddBookResponse> {
@@ -167,6 +187,15 @@ export async function list_book(request: ListBookRequest): Promise<ListBookRespo
     });
 }
 
+//获取单个书本
+export async function get_book(request: GetBookRequest): Promise<GetBookResponse> {
+    const cmd = 'plugin:project_book_shelf_api|get_book';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetBookResponse>(cmd, {
+        request,
+    });
+}
+
 //删除书本
 export async function remove_book(request: RemoveBookRequest): Promise<RemoveBookResponse> {
     const cmd = 'plugin:project_book_shelf_api|remove_book';
@@ -176,38 +205,65 @@ export async function remove_book(request: RemoveBookRequest): Promise<RemoveBoo
     });
 }
 
+//解析epub文件获取标题
+export async function parse_book_title(filePath: string): Promise<string> {
+    const cmd = 'plugin:project_book_shelf_api|parse_book_title';
+    console.log(`%c${cmd}`, 'color:#0f0;', filePath);
+    return invoke<string>(cmd, {
+        filePath,
+    });
+}
+
 // 增加标注
-export async function add_anno(request: AddAnnoRequest): Promise<AddAnnoResponse> {
-    const cmd = 'plugin:project_book_shelf_api|add_anno';
+export async function add_mark(request: AddMarkRequest): Promise<AddMarkResponse> {
+    const cmd = 'plugin:project_book_shelf_api|add_mark';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<AddAnnoResponse>(cmd, {
+    return invoke<AddMarkResponse>(cmd, {
         request,
     });
 }
 
-//获取标注状态
-export async function get_anno_status(request: GetAnnoStatusRequest): Promise<GetAnnoStatusResponse> {
-    const cmd = 'plugin:project_book_shelf_api|get_anno_status';
+// 列出标注
+export async function list_mark(request: ListMarkRequest): Promise<ListMarkResponse> {
+    const cmd = 'plugin:project_book_shelf_api|list_mark';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetAnnoStatusResponse>(cmd, {
+    return invoke<ListMarkResponse>(cmd, {
         request,
     });
 }
 
-//列出标注
-export async function list_anno(request: ListAnnoRequest): Promise<ListAnnoResponse> {
-    const cmd = 'plugin:project_book_shelf_api|list_anno';
+// 获取单个标注
+export async function get_mark(request: GetMarkRequest): Promise<GetMarkResponse> {
+    const cmd = 'plugin:project_book_shelf_api|get_mark';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListAnnoResponse>(cmd, {
+    return invoke<GetMarkResponse>(cmd, {
         request,
     });
 }
 
-//删除标注
-export async function remove_anno(request: RemoveAnnoRequest): Promise<RemoveAnnoResponse> {
-    const cmd = 'plugin:project_book_shelf_api|remove_anno';
+// 删除标注
+export async function remove_mark(request: RemoveMarkRequest): Promise<RemoveMarkResponse> {
+    const cmd = 'plugin:project_book_shelf_api|remove_mark';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<RemoveAnnoResponse>(cmd, {
+    return invoke<RemoveMarkResponse>(cmd, {
+        request,
+    });
+}
+
+// 设置阅读位置
+export async function set_read_loc(request: SetReadLocRequest): Promise<SetReadLocResponse> {
+    const cmd = 'plugin:project_book_shelf_api|set_read_loc';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SetReadLocResponse>(cmd, {
+        request,
+    });
+}
+
+// 获取阅读位置
+export async function get_read_loc(request: GetReadLocRequest): Promise<GetReadLocResponse> {
+    const cmd = 'plugin:project_book_shelf_api|get_read_loc';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetReadLocResponse>(cmd, {
         request,
     });
 }

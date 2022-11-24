@@ -108,7 +108,7 @@ export const EditFile: React.FC<EditFileProps> = (props) => {
     return () => {
       unListenFn.then((unListen) => unListen());
     };
-  }, [progress, props]);
+  }, [props]);
 
   return (
     <ErrorBoundary>
