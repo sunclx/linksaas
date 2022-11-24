@@ -15,7 +15,7 @@ import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 interface UploadBookInfo {
     filePath: string;
@@ -134,7 +134,11 @@ const BookList = () => {
         <Card
             title={<h1 className={s.header}><BookOutlined /> 电子书库</h1>}
             bordered={false}
-            extra={<Button type="primary" style={{ height: "30px" }} onClick={e => {
+            extra={<Button 
+                type="primary" 
+                style={{ height: "30px" }} 
+                disabled={!projectStore.isAdmin}
+                onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 showUploadFile();

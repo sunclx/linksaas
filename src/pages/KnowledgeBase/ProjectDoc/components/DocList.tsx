@@ -13,7 +13,7 @@ import Button from "@/components/Button";
 
 
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 const DocList = () => {
     const docSpaceStore = useStores("docSpaceStore");

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import type { MarkInfo } from '@/api/project_book_shelf';
 import { Button, Empty } from "antd";
 import s from './MarkList.module.less';
 import { observer } from "mobx-react";
 import moment from 'moment';
 import { useStores } from "@/hooks";
+import ShareModal from "./ShareModal";
 
 
 interface MarkListProps {
@@ -14,8 +15,11 @@ interface MarkListProps {
 }
 
 const MarkList: React.FC<MarkListProps> = (props) => {
+    const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    
+
+    const [sendMarkId, setSendMarkId] = useState("");
+
     return (<div className={s.mark_list_wrap}>
         {props.markList.length == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         <ul>
@@ -28,14 +32,19 @@ const MarkList: React.FC<MarkListProps> = (props) => {
 
                     <div className={s.links_wrap}>
                         <div className={s.links}>
-                                <Button type="link" onClick={e=>{
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    props.onClick(mark.mark_id);
-                                }}>查看</Button>
-                                <Button type="link" danger 
-                                    disabled={!projectStore.isAdmin}
-                                onClick={e=>{
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSendMarkId(mark.mark_id);
+                            }}>分享给同事</Button>
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                props.onClick(mark.mark_id);
+                            }}>查看</Button>
+                            <Button type="link" danger
+                                disabled={!(projectStore.isAdmin || mark.mark_user_id == userStore.userInfo.userId)}
+                                onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
                                     props.onRemove(mark.mark_id);
@@ -45,6 +54,7 @@ const MarkList: React.FC<MarkListProps> = (props) => {
                 </li>
             ))}
         </ul>
+        {sendMarkId != "" && <ShareModal mark={props.markList.find(item => item.mark_id = sendMarkId)} onClose={() => setSendMarkId("")} />}
     </div>)
 };
 

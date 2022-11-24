@@ -115,18 +115,27 @@ const BookReader = () => {
         });
         //调整阅读位置
         let displayed = false;
-        try {
-            const locRes = await get_read_loc({
-                session_id: userStore.sessionId,
-                project_id: projectStore.curProjectId,
-                book_id: bookShelfStore.curBookId,
-            });
-            if (locRes.code == 0 && locRes.cfi_loc != "") {
-                await rend.display(locRes.cfi_loc);
+        if (bookShelfStore.markId != "") {
+            const index = initMarkList.findIndex(mark => mark.mark_id == bookShelfStore.markId);
+            if (index != -1) {
+                await rend.display(initMarkList[index].cfi_range);
                 displayed = true;
             }
-        } catch (e) {
-            console.log(e);
+        }
+        if (displayed == false) {
+            try {
+                const locRes = await get_read_loc({
+                    session_id: userStore.sessionId,
+                    project_id: projectStore.curProjectId,
+                    book_id: bookShelfStore.curBookId,
+                });
+                if (locRes.code == 0 && locRes.cfi_loc != "") {
+                    await rend.display(locRes.cfi_loc);
+                    displayed = true;
+                }
+            } catch (e) {
+                console.log(e);
+            }
         }
         if (displayed == false) {
             await rend.display();

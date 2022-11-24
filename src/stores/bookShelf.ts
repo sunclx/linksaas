@@ -14,6 +14,7 @@ export default class BookShelfStore {
     rootStore: RootStore;
     private _pageType = PAGE_TYPE.PAGE_BOOK_LIST;
     private _curBookId = "";
+    private _markId = ""
 
     get pageType(): PAGE_TYPE {
         return this._pageType;
@@ -23,6 +24,10 @@ export default class BookShelfStore {
         return this._curBookId;
     }
 
+    get markId(): string {
+        return this._markId;
+    }
+
     setShowBookList() {
         runInAction(() => {
             this._pageType = PAGE_TYPE.PAGE_BOOK_LIST;
@@ -30,10 +35,11 @@ export default class BookShelfStore {
         });
     }
 
-    setShowBook(bookId: string) {
+    setShowBook(bookId: string, markId: string = "") {
         runInAction(() => {
             this._pageType = PAGE_TYPE.PAGE_BOOK;
             this._curBookId = bookId;
+            this._markId = markId;
         });
     }
 }

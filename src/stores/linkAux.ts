@@ -39,6 +39,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_ROBOT_METRIC,
   LINK_TARGET_EARTHLY_ACTION,
   LINK_TARGET_EARTHLY_EXEC,
+  LINK_TARGET_BOOK_MARK,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -242,6 +243,21 @@ export class LinkEarthlyExecInfo {
   repoId: string;
   actionId: string;
   execId: string;
+}
+
+export class LinkBookMarkInfo {
+  constructor(content: string, projectId: string, bookId: string, markId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.bookId = bookId;
+    this.markId = markId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  bookId: string;
+  markId: string;
 }
 
 
@@ -496,6 +512,14 @@ class LinkAuxStore {
         execId: execLink.execId,
       };
       history.push(this.genUrl(pathname, REPO_ACTION_EXEC_RESULT_SUFFIX), state);
+
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
+      const bookMarkLink = link as LinkBookMarkInfo;
+      if (this.rootStore.projectStore.curProjectId != bookMarkLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(bookMarkLink.projectId);
+      }
+      this.rootStore.bookShelfStore.setShowBook(bookMarkLink.bookId, bookMarkLink.markId);
+      history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -563,7 +587,7 @@ class LinkAuxStore {
       return APP_PROJECT_KB_DOC_PATH + suffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
       return APP_PROJECT_KB_CB_PATH + suffix;
-    } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)){
+    } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
       return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
     }
     return APP_PROJECT_CHAT_PATH + suffix;
