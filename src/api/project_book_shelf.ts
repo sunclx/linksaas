@@ -10,8 +10,6 @@ export type BookInfo = {
     create_time: number;
 };
 
-
-
 export type AddBookRequest = {
     session_id: string;
     project_id: string;
