@@ -99,12 +99,14 @@ export async function download_file(
     session_id: string,
     fs_id: string,
     file_id: string,
-    track_id: string): Promise<DownloadResult> {
+    track_id: string,
+    as_name: string = ""): Promise<DownloadResult> {
     return invoke<DownloadResult>('plugin:fs_api|download_file', {
         sessionId: session_id,
         fsId: fs_id,
         fileId: file_id,
         trackId: track_id,
+        asName: as_name,
     });
 }
 export async function write_file_base64(

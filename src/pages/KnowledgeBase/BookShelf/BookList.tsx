@@ -140,7 +140,7 @@ const BookList = () => {
                 showUploadFile();
             }}>上传电子书</Button>}>
             <div className={s.contentWrap}>
-                <Table dataSource={bookList} columns={columns} pagination={false} rowKey="doc_id" />
+                <Table dataSource={bookList} columns={columns} pagination={false} rowKey="book_id" />
                 {bookCount > PAGE_SIZE && (<div className={s.pagingWrap}>
                     <div className={s.paging} >
                         <Pagination current={curPage + 1} total={bookCount} pageSize={PAGE_SIZE}

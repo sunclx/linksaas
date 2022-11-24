@@ -112,7 +112,7 @@ const KnowledgeBaseMenu = () => {
         <DeleteOutlined /> 文档回收站
       </div>
       <div
-        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_CB_PATH) && s.active)}
+        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH) && s.active)}
         onClick={() => {
           if (docSpaceStore.inEdit) {
             docSpaceStore.showCheckLeave(() => {

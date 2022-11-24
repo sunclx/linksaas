@@ -96,6 +96,10 @@
       },
       "clipboard": {
         "all": true
+      },
+      "fs": {
+        "readFile": true,
+        "scope": ["$HOME/.linksaas/**"]
       }
     },
     "windows": [

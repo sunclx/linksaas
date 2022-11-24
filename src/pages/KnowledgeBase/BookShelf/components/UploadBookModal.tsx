@@ -39,7 +39,6 @@ const UploadBookModal: React.FC<UploadBookModalProps> = (props) => {
                 book_desc: "",
                 file_id: uploadRes.file_id,
             });
-            console.log(addRes);
             if(addRes.code != 0){
                 props.onErr(addRes.err_msg);
                 return;

@@ -182,15 +182,12 @@ fn main() {
         .add_item(CustomMenuItem::new("exit_app", "退出"));
     tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
-        .setup(|app| {
+        .setup(|_app| {
             return tauri::async_runtime::block_on(async {
                 let init_res = init_local_storage().await;
                 if init_res.is_err() {
                     return init_res;
                 }
-                let fs_scope = app.fs_scope();
-                let base_path = get_base_dir().unwrap();
-                fs_scope.allow_directory(base_path.as_str(), true).unwrap();
                 Ok(())
             });
         })
