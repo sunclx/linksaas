@@ -19,6 +19,8 @@ import type { IssueInfo, ListRequest } from "@/api/project_issue";
 import { request } from '@/utils/request';
 import StageModel from "./components/StageModel";
 import Pagination from "@/components/Pagination";
+import Dropdown from "antd/lib/dropdown";
+import BatchCreate from "./components/BatchCreate";
 
 const tabList = [
     {
@@ -59,7 +61,7 @@ const IssueList = () => {
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [stageIssue, setStageIssue] = useState<IssueInfo | undefined>(undefined);
-
+    const [showBatchModal, setShowBatchModal] = useState(false);
 
     const updateIssue = async (issueId: string) => {
         const tmpList = issueList.slice();
@@ -145,7 +147,7 @@ const IssueList = () => {
 
     useEffect(() => {
         loadIssueList();
-    }, [curPage, activeVal, projectStore.curProjectId])
+    }, [curPage, activeVal, filterData, projectStore.curProjectId])
 
     return (
         <CardWrap>
@@ -153,7 +155,31 @@ const IssueList = () => {
                 <div style={{ marginRight: '20px' }}>
                     <div className={s.title}>
                         <h2>{getIssueText(location.pathname)}列表</h2>
-                        <Button
+                        {getIsTask(location.pathname) == true && <Dropdown.Button
+                            className={s.btn}
+                            type="primary"
+                            menu={{
+                                items: [
+                                    {
+                                        label: "批量创建",
+                                        key: "batch"
+                                    }
+                                ],
+                                onClick: (e) => {
+                                    if (e.key == "batch") {
+                                        setShowBatchModal(true);
+                                    }
+                                },
+                            }}
+                            onClick={() => push(getIssueCreateUrl(location.pathname))}
+                            disabled={projectStore.curProject?.closed}
+                        >
+                            <img src={addIcon} alt="" />
+                            创建{getIssueText(location.pathname)}
+                        </Dropdown.Button>
+                        }
+                        {getIsTask(location.pathname) == false && <Button
+                            className={s.btn}
                             type="primary"
                             onClick={() => push(getIssueCreateUrl(location.pathname))}
                             disabled={projectStore.curProject?.closed}
@@ -161,6 +187,8 @@ const IssueList = () => {
                             <img src={addIcon} alt="" />
                             创建{getIssueText(location.pathname)}
                         </Button>
+                        }
+
                     </div>
                     <Tabs
                         activeVal={activeVal}
@@ -187,6 +215,30 @@ const IssueList = () => {
                     updateIssue(stageIssue.issue_id).then(() => {
                         setStageIssue(undefined)
                     });
+                }}
+            />}
+            {showBatchModal == true && <BatchCreate
+                onCancel={() => setShowBatchModal(false)}
+                onOk={() => {
+                    setFilterData({
+                        priority_list: [],
+                        state_list: [],
+                        exec_user_id_list: [],
+                        check_user_id_list: [],
+                        software_version_list: [],
+                        level_list: [],
+                    });
+                    setIsFilter(false);
+                    if (activeVal != ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL) {
+                        setActiveVal(ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL);
+                    } else {
+                        if (curPage > 0) {
+                            setCurPage(0);
+                        } else {
+                            loadIssueList();
+                        }
+                    }
+                    setShowBatchModal(false);
                 }}
             />}
         </CardWrap >

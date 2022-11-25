@@ -5,7 +5,7 @@ import {
 
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask, getIssueDetailUrl } from '@/utils/utils';
-import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import { Table, Tooltip } from 'antd';
 
 import React from 'react';
@@ -226,7 +226,7 @@ const IssueEditList: React.FC<TableProps> = ({
             tabIndex={0}
             style={{
               background: `rgb(${getStateColor(val)} / 20%)`,
-              width: '50px',
+              width: '60px',
               borderRadius: '50px',
               textAlign: 'center',
               color: `rgb(${getStateColor(val)})`,
@@ -241,6 +241,7 @@ const IssueEditList: React.FC<TableProps> = ({
             }}
           >
             <Tooltip title={tips}>{v.label}</Tooltip>
+            {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
           </div>
         );
       },
