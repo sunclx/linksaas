@@ -15,7 +15,7 @@ import { request } from '@/utils/request';
 import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
 import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes } from "./utils";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
 import { EditDate } from "@/components/EditCell/EditDate";
@@ -67,7 +67,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                         tabIndex={0}
                         style={{
                             background: `rgb(${getStateColor(props.issue.state)} / 20%)`,
-                            width: '50px',
+                            width: '70px',
                             borderRadius: '50px',
                             textAlign: 'center',
                             color: `rgb(${getStateColor(props.issue.state)})`,
@@ -83,6 +83,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                         }}
                     >
                         <Tooltip title={`${props.issue.user_issue_perm.next_state_list.length > 0 ? "" : "请等待同事更新状态"}`}>{issueState[props.issue.state].label}</Tooltip>
+                        {props.issue.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
                     </div>
                 </div>
                 {!getIsTask(pathname) && (
