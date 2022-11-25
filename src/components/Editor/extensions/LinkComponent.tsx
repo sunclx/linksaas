@@ -73,6 +73,8 @@ const Link: React.FC<{
       if (res) {
         setTitle('文档:' + res.doc_key.title);
       }
+    }else if(link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK){
+      setTitle('书本标注');
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as unknown as LinkExterneInfo;
       setTitle('外部链接:' + externLink.destUrl);

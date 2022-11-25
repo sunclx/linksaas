@@ -70,6 +70,7 @@ async fn download_file<R: Runtime>(
     session_id: String,
     fs_id: String,
     file_id: String,
+    as_name: String,
 ) -> Result<DownloadResult, String> {
     let notice_name = format!("downloadFile_{}", track_id);
     let chan = super::get_grpc_chan(&app_handle).await;
@@ -87,7 +88,7 @@ async fn download_file<R: Runtime>(
     if stat_resp.is_err() {
         return Err(stat_resp.err().unwrap().message().into());
     }
-    
+
     let file_stat = stat_resp.unwrap().into_inner();
     if file_stat.code != 0 {
         return Err(file_stat.err_msg);
@@ -99,11 +100,19 @@ async fn download_file<R: Runtime>(
         (&fs_id).as_str(),
         (&file_id).as_str(),
     );
-    let cache_file = format!(
-        "{}/{}",
-        (&cache_dir).as_str(),
-        (file_stat.clone().file_info.unwrap().file_name).as_str(),
-    );
+    let cache_file = match as_name.is_empty() {
+        true => format!(
+            "{}/{}",
+            (&cache_dir).as_str(),
+            (file_stat.clone().file_info.unwrap().file_name).as_str(),
+        ) ,
+        false => format!(
+            "{}/{}",
+            (&cache_dir).as_str(),
+            as_name.as_str(),
+        ),
+    };
+
     let file_info = file_stat.file_info.unwrap();
     let file_size = (&file_info).file_size as u64;
     if let Ok(cache_file_stat) = fs::metadata(cache_file.as_str()).await {
@@ -214,6 +223,7 @@ pub async fn http_download_file(
         session_id.into(),
         url_parts[1].into(),
         url_parts[2].into(),
+        "".into(),
     )
     .await;
     match download_result {

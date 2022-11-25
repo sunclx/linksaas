@@ -9,6 +9,7 @@ import ChannelMemberStore from "./channelMember";
 import ChatMsgStore from "./chatMsg";
 import LinkAuxStore from './linkAux';
 import DocSpaceStore from './docSpace';
+import BookShelfStore from './bookShelf';
 
 export class RootStore {
   userStore: UserStore;
@@ -22,6 +23,7 @@ export class RootStore {
   chatMsgStore: ChatMsgStore;
   linkAuxStore: LinkAuxStore;
   docSpaceStore: DocSpaceStore;
+  bookShelfStore: BookShelfStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -35,6 +37,7 @@ export class RootStore {
     this.chatMsgStore = new ChatMsgStore(this);
     this.linkAuxStore = new LinkAuxStore(this);
     this.docSpaceStore = new DocSpaceStore(this);
+    this.bookShelfStore = new BookShelfStore(this);
   }
 }
 
@@ -51,6 +54,7 @@ const _store = {
   chatMsgStore: rootStore.chatMsgStore,
   linkAuxStore: rootStore.linkAuxStore,
   docSpaceStore: rootStore.docSpaceStore,
+  bookShelfStore: rootStore.bookShelfStore,
 };
 
 export type StoreType = typeof _store;

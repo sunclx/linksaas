@@ -4,12 +4,12 @@ import type { EditorRef } from './common';
 import { ImperativeHandle } from './common';
 import { ThemeProvider } from '@remirror/react';
 import { AllStyledComponent } from '@remirror/styles/emotion';
+import { LinkExtension } from './extensions/index';
 
-
-export const useSimpleEditor = (placeholder: string) => {
+export const useSimpleEditor = (placeholder: string, content: string = "") => {
     const { manager, state } = useRemirror({
-        extensions: () => [],
-        content: '',
+        extensions: () => [new LinkExtension()],
+        content: content,
         stringHandler: "html",
     });
 
