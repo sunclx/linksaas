@@ -15,6 +15,8 @@ export const BUG_DETAIL_SUFFIX = '/bug/detail';
 export const TASK_CREATE_SUFFIX = '/task/create';
 export const BUG_CREATE_SUFFIX = '/bug/create';
 
+export const SPRIT_DETAIL_SUFFIX = '/sprit/detail';
+
 export const ROBOT_METRIC_SUFFIX = '/robot/metric';
 
 export const REPO_ACTION_ACTION_DETAIL_SUFFIX = '/repo/action_detail';

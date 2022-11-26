@@ -1,24 +1,24 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-type BasicSpritInfo = {
+export type BasicSpritInfo = {
   title: string;
   start_time: number;
   end_time: number;
   non_work_day_list: number[],
 };
 
-type CreateResponse = {
+export type CreateResponse = {
   code: number;
   err_msg: string;
   sprit_id: string;
 };
 
-type UpdateResponse = {
+export type UpdateResponse = {
   code: number;
   err_msg: string;
 };
 
-type SpritInfo = {
+export type SpritInfo = {
   sprit_id: string;
   basic_info: BasicSpritInfo;
   project_id: string;
@@ -34,20 +34,20 @@ type SpritInfo = {
   update_logo_uri: string;
 };
 
-type ListResponse = {
+export type ListResponse = {
   code: number;
   err_msg: string;
   total_count: number;
   info_list: SpritInfo[];
 };
 
-type GetResponse = {
+export type GetResponse = {
   code: number;
   err_msg: string;
   info: SpritInfo;
 };
 
-type RemoveResponse = {
+export type RemoveResponse = {
   code: number;
   err_msg: string;
 };
