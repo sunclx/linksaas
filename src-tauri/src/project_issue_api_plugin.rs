@@ -121,7 +121,9 @@ async fn update_title<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_title".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_title".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -146,7 +148,9 @@ async fn update_content<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_content".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_content".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -171,7 +175,10 @@ async fn update_extra_info<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_extra_info".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_extra_info".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -398,6 +405,34 @@ async fn link_sprit<R: Runtime>(
 }
 
 #[tauri::command]
+async fn cancel_link_sprit<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelLinkSpritRequest,
+) -> Result<CancelLinkSpritResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.cancel_link_sprit(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_link_sprit_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("cancel_link_sprit".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn set_start_time<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -439,9 +474,10 @@ async fn cancel_start_time<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == cancel_start_time_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("cancel_start_time".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("cancel_start_time".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -504,7 +540,6 @@ async fn cancel_end_time<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
-
 
 #[tauri::command]
 async fn set_estimate_minutes<R: Runtime>(
@@ -1080,6 +1115,7 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 list_my_todo,
                 list_attr_value,
                 link_sprit,
+                cancel_link_sprit,
                 set_start_time,
                 set_end_time,
                 set_estimate_minutes,

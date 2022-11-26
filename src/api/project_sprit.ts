@@ -2,7 +2,9 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 type BasicSpritInfo = {
   title: string;
-  content: string;
+  start_time: number;
+  end_time: number;
+  non_work_day_list: number[],
 };
 
 type CreateResponse = {
@@ -22,7 +24,14 @@ type SpritInfo = {
   project_id: string;
   create_time: number;
   update_time: number;
+  task_count: number;
+  bug_count: number;
   create_user_id: string;
+  create_display_name: string;
+  create_logo_uri: string;
+  update_user_id: string;
+  update_display_name: string;
+  update_logo_uri: string;
 };
 
 type ListResponse = {
@@ -30,6 +39,17 @@ type ListResponse = {
   err_msg: string;
   total_count: number;
   info_list: SpritInfo[];
+};
+
+type GetResponse = {
+  code: number;
+  err_msg: string;
+  info: SpritInfo;
+};
+
+type RemoveResponse = {
+  code: number;
+  err_msg: string;
 };
 
 //创建迭代
@@ -88,6 +108,44 @@ export async function list(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ListResponse>(cmd, {
+    request,
+  });
+}
+
+//获取单个迭代信息
+export async function get(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+): Promise<GetResponse> {
+  const cmd = 'plugin:project_sprit_api|get';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<GetResponse>(cmd, {
+    request,
+  });
+}
+
+//删除迭代信息
+export async function remove(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+): Promise<RemoveResponse> {
+  const cmd = 'plugin:project_sprit_api|remove';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<RemoveResponse>(cmd, {
     request,
   });
 }

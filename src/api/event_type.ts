@@ -9,6 +9,7 @@ import {
   LinkSpritInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo,
   LinkAppInfo
 } from '@/stores/linkAux'
+import moment from 'moment';
 
 
 export function get_issue_type_str(issue_type: number): string {
@@ -791,6 +792,8 @@ namespace sprit {
   export type CreateEvent = {
     sprit_id: string;
     title: string;
+    start_time: number;
+    end_time: number;
   };
   function get_create_simple_content(
     ev: PluginEvent,
@@ -800,13 +803,19 @@ namespace sprit {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建迭代`),
       new LinkSpritInfo(inner.title, ev.project_id, inner.sprit_id),
+      new LinkNoneInfo(`迭代时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
     ];
   }
   export type UpdateEvent = {
     sprit_id: string;
     old_title: string;
     new_title: string;
+    old_start_time: number;
+    new_start_time: number;
+    old_end_time: number;
+    new_end_time: number;
   };
+
   function get_update_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -819,12 +828,43 @@ namespace sprit {
     if (inner.old_title != inner.new_title) {
       ret_list.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
     }
+    const oldStartTime = moment(inner.old_start_time).format("YYYY-MM-DD");
+    const newStartTime = moment(inner.new_start_time).format("YYYY-MM-DD");
+    if (oldStartTime != newStartTime) {
+      ret_list.push(new LinkNoneInfo(`开始时间从${oldStartTime}调整到${newStartTime}`));
+    }
+    const oldEndTime = moment(inner.old_end_time).format("YYYY-MM-DD");
+    const newEndTime = moment(inner.new_end_time).format("YYYY-MM-DD");
+    if (oldEndTime != newEndTime) {
+      ret_list.push(new LinkNoneInfo(`结束时间从${oldEndTime}调整到${newEndTime}`));
+    }
     return ret_list;
   }
+
+  export type RemoveEvent = {
+    sprit_id: string;
+    title: string;
+    start_time: number;
+    end_time: number;
+  }
+
+  function get_remove_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除迭代`),
+      new LinkNoneInfo(inner.title),
+      new LinkNoneInfo(`(${moment(inner.start_time).format("YYYY-MM-DD")}-${moment(inner.end_time).format("YYYY-MM-DD")})`),
+    ];
+  }
+
 
   export type AllSpritEvent = {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
+    RemoveEvent?: RemoveEvent;
   };
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -833,8 +873,10 @@ namespace sprit {
   ): LinkInfo[] {
     if (inner.CreateEvent !== undefined) {
       return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
-    } else if (inner.UpdateEvent != undefined) {
+    } else if (inner.UpdateEvent !== undefined) {
       return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
+    } else if (inner.RemoveEvent !== undefined) {
+      return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
     }
     return [new LinkNoneInfo('未知事件')];
   }
@@ -988,6 +1030,7 @@ namespace issue {
     ret_list.push(new LinkNoneInfo(`老状态 ${old_state_str} 新状态 ${new_state_str}`));
     return ret_list;
   }
+
   export type LinkSpritEvent = {
     issue_id: string;
     issue_type: number;
@@ -995,6 +1038,7 @@ namespace issue {
     sprit_id: string;
     sprit_title: string;
   };
+
   function get_link_sprit_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -1013,6 +1057,34 @@ namespace issue {
     ret_list.push(new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id))
     return ret_list;
   }
+
+  export type CancelLinkSpritEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    sprit_id: string;
+    sprit_title: string;
+  };
+
+  function get_cancel_link_sprit_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelLinkSpritEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消关联${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo('到迭代'));
+    ret_list.push(new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id))
+    return ret_list;
+  }
+
 
   export type SetStartTimeEvent = {
     issue_id: string;
@@ -1375,6 +1447,7 @@ namespace issue {
     AssignCheckUserEvent?: AssignCheckUserEvent;
     ChangeStateEvent?: ChangeStateEvent;
     LinkSpritEvent?: LinkSpritEvent;
+    CancelLinkSpritEvent?: CancelLinkSpritEvent;
     SetStartTimeEvent?: SetStartTimeEvent;
     SetEndTimeEvent?: SetEndTimeEvent;
     SetEstimateMinutesEvent?: SetEstimateMinutesEvent;
@@ -1409,6 +1482,8 @@ namespace issue {
       return get_change_state_simple_content(ev, skip_prj_name, inner.ChangeStateEvent);
     } else if (inner.LinkSpritEvent !== undefined) {
       return get_link_sprit_simple_content(ev, skip_prj_name, inner.LinkSpritEvent);
+    } else if (inner.CancelLinkSpritEvent !== undefined) {
+      return get_cancel_link_sprit_simple_content(ev, skip_prj_name, inner.CancelLinkSpritEvent);
     } else if (inner.SetStartTimeEvent !== undefined) {
       return get_set_start_simple_content(ev, skip_prj_name, inner.SetStartTimeEvent);
     } else if (inner.SetEndTimeEvent !== undefined) {
