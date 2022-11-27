@@ -16,6 +16,7 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
+  SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
 } from '@/utils/constant';
@@ -332,6 +333,9 @@ export type LinkEarthlyExecState = {
   execId: string;
 }
 
+export type LinkSpritState = {
+  spritId: string;
+}
 
 class LinkAuxStore {
   constructor(rootStore: RootStore) {
@@ -512,7 +516,6 @@ class LinkAuxStore {
         execId: execLink.execId,
       };
       history.push(this.genUrl(pathname, REPO_ACTION_EXEC_RESULT_SUFFIX), state);
-
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
       const bookMarkLink = link as LinkBookMarkInfo;
       if (this.rootStore.projectStore.curProjectId != bookMarkLink.projectId) {
@@ -520,6 +523,15 @@ class LinkAuxStore {
       }
       this.rootStore.bookShelfStore.setShowBook(bookMarkLink.bookId, bookMarkLink.markId);
       history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
+      const spritLink = link as LinkSpritInfo;
+      if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
+      }
+      const state: LinkSpritState = {
+        spritId: spritLink.spritId,
+      };
+      history.push(this.genUrl(pathname, SPRIT_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -554,6 +566,7 @@ class LinkAuxStore {
       content: content,
     } as LinkIssueState);
   }
+
   //跳转到创建缺陷
   async goToCreateBug(content: string, projectId: string, history: History) {
     if (projectId != this.rootStore.projectStore.curProjectId) {
@@ -578,6 +591,11 @@ class LinkAuxStore {
   //跳转到机器人列表
   goToRobotList(history: History) {
     history.push(this.genUrl(history.location.pathname, "/robot"));
+  }
+
+  //跳转到迭代列表
+  goToSpritList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/sprit"));
   }
 
   private genUrl(pathname: string, suffix: string): string {

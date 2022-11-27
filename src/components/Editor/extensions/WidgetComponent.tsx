@@ -36,6 +36,9 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_BUG_REF: {
       return <widgets.IssueRefWidget {...widgetProps} />;
     }
+    case widgets.WIDGET_TYPE_SPRIT_REF: {
+      return <widgets.SpritRefWidget {...widgetProps} />;
+    }
     case widgets.WIDGET_TYPE_5W2H: {
       return <widgets.L5w2hWidget {...widgetProps} />;
     }

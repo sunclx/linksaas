@@ -289,6 +289,11 @@ type LinkSpritResponse = {
   err_msg: string;
 };
 
+type CancelLinkSpritResponse = {
+  code: number;
+  err_msg: string;
+}
+
 type SetStartTimeResponse = {
   code: number;
   err_msg: string;
@@ -778,10 +783,30 @@ export async function link_sprit(
   };
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
-  return invoke<LinkSpritResponse>('plugin:project_issue_api|link_sprit', {
+  return invoke<LinkSpritResponse>(cmd, {
     request,
   });
 }
+
+//取消关联工单到某个迭代
+export async function cancel_link_sprit(
+  session_id: string,
+  project_id: string,
+  issue_id: string,
+): Promise<CancelLinkSpritResponse> {
+  const cmd = 'plugin:project_issue_api|cancel_link_sprit';
+  const request = {
+    session_id,
+    project_id,
+    issue_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<CancelLinkSpritResponse>(cmd, {
+    request,
+  });
+}
+
 
 //设置开始时间
 export async function set_start_time(

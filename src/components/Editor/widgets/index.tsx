@@ -1,6 +1,7 @@
 export type { WidgetProps } from './common';
 export { FunnelWidget } from './FunnelWidget';
 export { IssueRefWidget } from './IssueRefWidget';
+export { SpritRefWidget } from './SpritRefWidget';
 export { L5w2hWidget } from './L5w2hWidget';
 export { MemberDutyWidget } from './MemberDutyWidget';
 export { OtswWidget } from './OtswWidget';
@@ -21,9 +22,9 @@ export { GitlabListWikiWidget } from './GitlabListWikiWidget';
 export { SurveyChoiceWidget } from './SurveyChoiceWidget';
 export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
 
-
 import { funnelWidgetInitData } from './FunnelWidget';
 import { taskRefWidgetInitData, bugRefWidgetInitData } from './IssueRefWidget';
+import { spritRefWidgetInitData } from './SpritRefWidget';
 import { l5w2hWidgetInitData } from './L5w2hWidget';
 import { memberDutyWidgetInitData } from './MemberDutyWidget';
 import { otswWidgetInitData } from './OtswWidget';
@@ -48,6 +49,7 @@ export type WIDGET_TYPE = string;
 export const WIDGET_TYPE_FUNNEL: WIDGET_TYPE = "funnel";//漏斗分析法
 export const WIDGET_TYPE_TASK_REF: WIDGET_TYPE = "taskRef";//引用任务
 export const WIDGET_TYPE_BUG_REF: WIDGET_TYPE = "bugRef";//引用缺陷
+export const WIDGET_TYPE_SPRIT_REF: WIDGET_TYPE = "spritRef"; //引用迭代
 export const WIDGET_TYPE_5W2H: WIDGET_TYPE = "5w2h"; //七问分析法
 export const WIDGET_TYPE_MEMBER_DUTY: WIDGET_TYPE = "memberDuty"; //成员职责 
 export const WIDGET_TYPE_OTSW: WIDGET_TYPE = "otsw"; //OTSW分析法 
@@ -73,6 +75,7 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_FUNNEL,
     WIDGET_TYPE_TASK_REF,
     WIDGET_TYPE_BUG_REF,
+    WIDGET_TYPE_SPRIT_REF,
     WIDGET_TYPE_5W2H,
     WIDGET_TYPE_MEMBER_DUTY,
     WIDGET_TYPE_OTSW,
@@ -100,6 +103,7 @@ export const WidgetInitDataMap: Map<WIDGET_TYPE, unknown> = new Map();
 WidgetInitDataMap.set(WIDGET_TYPE_FUNNEL, funnelWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TASK_REF, taskRefWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_BUG_REF, bugRefWidgetInitData);
+WidgetInitDataMap.set(WIDGET_TYPE_SPRIT_REF, spritRefWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_5W2H, l5w2hWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_MEMBER_DUTY, memberDutyWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_OTSW, otswWidgetInitData);

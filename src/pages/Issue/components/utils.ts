@@ -1,7 +1,7 @@
 import type { MemberInfo } from "@/api/project_member";
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
 import * as issueApi from '@/api/project_issue';
-import {message} from 'antd';
+import { message } from 'antd';
 
 export function getStateColor(v: number) {
     switch (v) {
@@ -54,6 +54,34 @@ export async function updateContent(sessionId: string, projectId: string, issueI
             issue_id: issueId,
             content: content,
         });
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+
+export async function updateStartTime(sessionId: string, projectId: string, issueId: string, startTime: number): Promise<boolean> {
+    try {
+        const res = await issueApi.set_start_time(sessionId, projectId, issueId, startTime);
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+
+export async function cancelStartTime(sessionId: string, projectId: string, issueId: string): Promise<boolean> {
+    try {
+        const res = await issueApi.cancel_start_time(sessionId, projectId, issueId);
         if (res.code == 0) {
             return true
         }

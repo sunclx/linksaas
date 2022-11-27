@@ -32,6 +32,7 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
+  SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
 } from '@/utils/constant';
@@ -46,6 +47,8 @@ import ExecResult from '@/pages/Earthly/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import LocalApi from '@/pages/Project/LocalApi';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
+import SpritList from '@/pages/Project/Sprit/SpritList';
+import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
 
 
 
@@ -122,6 +125,18 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + BUG_CREATE_SUFFIX,
       title: '创建缺陷',
       component: IssueCreate,
+      exact: true,
+    },
+    {
+      path: prefix + "/sprit",
+      title: "迭代列表",
+      component: SpritList,
+      exact: true,
+    },
+    {
+      path: prefix + SPRIT_DETAIL_SUFFIX,
+      title: "迭代详情",
+      component: SpritDetail,
       exact: true,
     },
     {

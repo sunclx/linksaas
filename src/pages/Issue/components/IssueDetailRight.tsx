@@ -14,7 +14,7 @@ import type { ListEventByRefRequest } from '@/api/events';
 import { request } from '@/utils/request';
 import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
-import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes } from "./utils";
+import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime } from "./utils";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
@@ -230,22 +230,44 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     </div>
                 </div>
                 <div className={s.basic_info}>
-                    <span>剩余工时</span>
+                    <span>预估开始时间</span>
                     <div>
-                        <EditSelect
-                            allowClear={true}
+                        <EditDate
                             editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
-                            curValue={props.issue.has_remain_minutes ? props.issue.remain_minutes : ""}
-                            itemList={hourSelectItems}
+                            hasTimeStamp={props.issue.has_start_time}
+                            timeStamp={props.issue.start_time}
                             onChange={async (value) => {
                                 if (value === undefined) {
-                                    const res = await cancelRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id)
+                                    const res = await cancelStartTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
                                     if (res) {
                                         props.onUpdate();
                                     }
-                                    return res;
+                                    return true;
                                 }
-                                const res = await updateRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
+                                const res = await updateStartTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
+                    <span>预估完成时间</span>
+                    <div>
+                        <EditDate
+                            editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
+                            hasTimeStamp={props.issue.has_end_time}
+                            timeStamp={props.issue.end_time}
+                            onChange={async (value) => {
+                                if (value === undefined) {
+                                    const res = await cancelEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                    if (res) {
+                                        props.onUpdate();
+                                    }
+                                    return true;
+                                }
+                                const res = await updateEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
                                 if (res) {
                                     props.onUpdate();
                                 }
@@ -278,21 +300,22 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     </div>
                 </div>
                 <div className={s.basic_info}>
-                    <span>预估完成时间</span>
+                    <span>剩余工时</span>
                     <div>
-                        <EditDate
+                        <EditSelect
+                            allowClear={true}
                             editable={props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
-                            hasTimeStamp={props.issue.has_end_time}
-                            timeStamp={props.issue.end_time}
+                            curValue={props.issue.has_remain_minutes ? props.issue.remain_minutes : ""}
+                            itemList={hourSelectItems}
                             onChange={async (value) => {
-                                if(value === undefined){
-                                    const res = await cancelEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                if (value === undefined) {
+                                    const res = await cancelRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id)
                                     if (res) {
                                         props.onUpdate();
                                     }
-                                    return true;
+                                    return res;
                                 }
-                                const res = await updateEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                const res = await updateRemainMinutes(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
                                 if (res) {
                                     props.onUpdate();
                                 }
@@ -305,7 +328,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
             <div
                 className={s.time_line_wrap}
                 style={{
-                    height: `${getIsTask(pathname) ? 'calc(100% - 290px)' : 'calc(100% - 350px)'}`,
+                    height: `${getIsTask(pathname) ? 'calc(100% - 320px)' : 'calc(100% - 380px)'}`,
                 }}
             >
                 <h2>动态</h2>
