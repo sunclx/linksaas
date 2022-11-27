@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, Popover, Space, Table } from "antd";
+import { Card, Popover, Space, Table, Tooltip } from "antd";
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
-import { ExclamationCircleOutlined, InfoCircleOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, ExclamationCircleOutlined, InfoCircleOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
 import type { ISSUE_TYPE, IssueInfo } from "@/api/project_issue";
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from "@/api/project_issue";
 import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
@@ -19,10 +19,11 @@ import type { History } from 'history';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { useHistory } from "react-router-dom";
 import { EditDate } from "@/components/EditCell/EditDate";
-import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, updateEndTime, updateEstimateMinutes, updateRemainMinutes, updateStartTime } from "@/pages/Issue/components/utils";
+import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecUser, updateRemainMinutes, updateStartTime } from "@/pages/Issue/components/utils";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { hourSelectItems } from "@/pages/Issue/components/constant";
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
+import StageModel from "@/pages/Issue/components/StageModel";
 
 
 const getColor = (v: number) => {
@@ -85,30 +86,6 @@ const renderTitle = (
     );
 };
 
-const renderState = (val: number) => {
-    const v = issueState[val];
-    return (
-        <div
-            style={{
-                background: `rgb(${getColor(val)} / 20%)`,
-                width: '50px',
-                margin: '0 auto',
-                borderRadius: '50px',
-                textAlign: 'center',
-                color: `rgb(${getColor(val)})`,
-            }}
-        >
-            {v?.label}
-        </div>
-    );
-};
-
-const renderName = (id: string, name: string, userId: string) => {
-    if (!id) return '-';
-    const isCurrentUser = id === userId;
-    return isCurrentUser ? <span style={{ color: 'red' }}>{name}</span> : <span>{name}</span>;
-};
-
 interface SpritDetailProps {
     spritId: string;
     startTime: number;
@@ -121,10 +98,12 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
     const linkAuxStore = useStores('linkAuxStore');
+    const memberStore = useStores('memberStore');
 
     const history = useHistory();
 
     const [addIssueType, setAddIssueType] = useState<ISSUE_TYPE | null>(null);
+    const [stageIssue, setStageIssue] = useState<IssueInfo | null>(null);
 
     const linkSprit = async (links: LinkInfo[]) => {
         let issueIdList: string[] = [];
@@ -162,6 +141,22 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
         await request(cancel_link_sprit(userStore.sessionId, projectStore.curProjectId, issueId));
         spritStore.removeIssue(issueId);
     }
+
+    const showStage = (issueId: string) => {
+        const bug = spritStore.bugList.find(item => item.issue_id == issueId);
+        if (bug !== undefined) {
+            setStageIssue(bug);
+            return;
+        }
+        const task = spritStore.taskList.find(item => item.issue_id == issueId);
+        if (task !== undefined) {
+            setStageIssue(task);
+            return;
+        }
+    };
+
+    const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
+
 
     const columns: ColumnsType<IssueInfo> = [
         {
@@ -219,23 +214,79 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
             },
             width: 100,
             align: 'center',
-            render: (val: number) => renderState(val),
+            render: (val: number, row: IssueInfo) => {
+                const v = issueState[val];
+                let cursor = "auto";
+                let tips = "";
+                if (row.user_issue_perm.next_state_list.length > 0) {
+                    cursor = "pointer";
+                } else {
+                    if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
+                        (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
+                    )) {
+                        tips = "请等待同事更新状态"
+                    }
+                }
+                return (
+                    <div
+                        tabIndex={0}
+                        style={{
+                            background: `rgb(${getColor(val)} / 20%)`,
+                            width: '60px',
+                            borderRadius: '50px',
+                            textAlign: 'center',
+                            color: `rgb(${getColor(val)})`,
+                            cursor: `${cursor}`,
+                            margin: '0 auto',
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (row.user_issue_perm.next_state_list.length > 0) {
+                                showStage(row.issue_id);
+                            }
+                        }}
+                    >
+                        <Tooltip title={tips}>{v.label}</Tooltip>
+                        {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
+                    </div>
+                );
+            },
         },
         {
             title: '处理人',
             dataIndex: 'exec_display_name',
             width: 100,
             align: 'center',
-            render: (v: string, row: IssueInfo) =>
-                renderName(row.exec_user_id, v, userStore.userInfo.userId),
+            render: (_, row: IssueInfo) => <EditSelect
+                allowClear={false}
+                editable={row.user_issue_perm.can_assign_exec_user}
+                curValue={row.exec_user_id}
+                itemList={memberSelectItems}
+                onChange={async (value) => {
+                    const res = await updateExecUser(userStore.sessionId, row.project_id, row.issue_id, value as string);
+                    if (res) {
+                        spritStore.updateIssue(row.issue_id);
+                    }
+                    return res;
+                }} showEditIcon={true} />,
         },
         {
             title: '验收人',
             dataIndex: 'check_display_name',
             width: 100,
             align: 'center',
-            render: (v: string, row: IssueInfo) =>
-                renderName(row.check_user_id, v, userStore.userInfo.userId),
+            render: (_, row: IssueInfo) => <EditSelect
+                allowClear={false}
+                editable={row.user_issue_perm.can_assign_check_user}
+                curValue={row.check_user_id}
+                itemList={memberSelectItems}
+                onChange={async (value) => {
+                    const res = await updateCheckUser(userStore.sessionId, row.project_id, row.issue_id, value as string);
+                    if (res) {
+                        spritStore.updateIssue(row.issue_id);
+                    }
+                    return res;
+                }} showEditIcon={true} />,
         },
         {
             title: '预估开始成时间',
@@ -385,6 +436,15 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                     type={addIssueType == ISSUE_TYPE_TASK ? "task" : "bug"}
                 />
             )}
+            {stageIssue !== null && <StageModel
+                issue={stageIssue}
+                onCancel={() => setStageIssue(null)}
+                onOk={() => {
+                    spritStore.updateIssue(stageIssue.issue_id).then(() => {
+                        setStageIssue(null);
+                    });
+                }}
+            />}
         </div>
     );
 }
