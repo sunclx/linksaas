@@ -67,6 +67,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
                 unit="day"
                 showBackToday={true}
                 data={taskList}
+                tableCollapseAble={false}
                 columns={[
                     {
                         name: 'name',

@@ -42,6 +42,7 @@ import {
   WIDGET_TYPE_SURVEY_CHOICE,
   WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
+  WIDGET_TYPE_SPRIT_REF,
 } from '../widgets/index';
 import type { HeadingExtensionAttributes } from '@remirror/extension-heading';
 import { redoDepth, undoDepth } from '@remirror/pm/history';
@@ -348,6 +349,10 @@ const ContentWidget = () => {
               key: WIDGET_TYPE_BUG_REF,
               label: '引用缺陷',
             },
+            {
+              key: WIDGET_TYPE_SPRIT_REF,
+              label: '引用迭代'
+            }
           ],
         },
         {
