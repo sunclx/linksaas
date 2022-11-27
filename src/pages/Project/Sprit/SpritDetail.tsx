@@ -15,6 +15,7 @@ import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
 import StatPanel from "./components/StatPanel";
+import GanttPanel from "./components/GanttPanel";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -85,7 +86,7 @@ const SpritDetail = () => {
                         {spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="甘特图" key="gantt" disabled={!spritStore.allTimeReady}>
-                        Content of Tab Pane 2
+                    {spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time}/>}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="统计信息" key="statistics" disabled={!spritStore.allTimeReady}>
                         <StatPanel/>

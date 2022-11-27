@@ -55,6 +55,7 @@
     "mobx-react": "^7.3.0",
     "moment": "^2.29.3",
     "randomcolor": "^0.6.2",
+    "rc-gantt": "^0.1.10",
     "react": "^18.1.0",
     "react-color": "^2.19.3",
     "react-cropper": "^2.1.8",
