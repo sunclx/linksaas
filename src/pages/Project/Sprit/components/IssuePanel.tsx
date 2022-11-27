@@ -168,7 +168,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
             title: `ID`,
             width: 80,
             render: (_, row: IssueInfo) => {
-                const notComplete = row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
+                const notComplete = row.exec_user_id == "" || row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Deliconsvg
@@ -183,6 +183,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                         {notComplete && (<Popover content={
                             <div style={{ padding: "10px 10px", color: "red" }}>
                                 <ul>
+                                    {row.exec_user_id == "" && <li>未设置执行人</li>}
                                     {row.has_start_time == false && <li>未设置开始时间</li>}
                                     {row.has_end_time == false && <li>未设置完成时间</li>}
                                     {row.has_estimate_minutes == false && <li>未设置预估时间</li>}
@@ -346,7 +347,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
 
     return (
         <div className={s.panel_wrap}>
-            {spritStore.allTimeReady == false && <Space className={s.tip}><InfoCircleOutlined />所有任务/缺陷设置好开始时间，结束时间，预估工时和剩余工时后才能访问 甘特图 和 燃尽图。</Space>}
+            {spritStore.allTimeReady == false && <Space className={s.tip}><InfoCircleOutlined />所有任务/缺陷设置好执行人,开始时间，结束时间，预估工时和剩余工时后才能访问 甘特图 和 统计信息。</Space>}
             <Card title="任务列表" bordered={false} extra={
                 <Button type="primary" onClick={e => {
                     e.stopPropagation();

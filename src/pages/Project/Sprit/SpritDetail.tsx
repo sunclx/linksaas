@@ -14,6 +14,7 @@ import { message, Modal, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
+import StatPanel from "./components/StatPanel";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -86,8 +87,8 @@ const SpritDetail = () => {
                     <Tabs.TabPane tab="甘特图" key="gantt" disabled={!spritStore.allTimeReady}>
                         Content of Tab Pane 2
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="燃尽图" key="burnDown" disabled={!spritStore.allTimeReady}>
-                        Content of Tab Pane 2
+                    <Tabs.TabPane tab="统计信息" key="statistics" disabled={!spritStore.allTimeReady}>
+                        <StatPanel/>
                     </Tabs.TabPane>
                 </Tabs>
             </div>

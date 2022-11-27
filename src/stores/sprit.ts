@@ -150,12 +150,12 @@ export default class SpritStore {
             return false;
         }
         for (const bug of this._bugList) {
-            if (bug.has_start_time == false || bug.has_end_time == false || bug.has_estimate_minutes == false || bug.has_remain_minutes == false) {
+            if (bug.exec_user_id == "" || bug.has_start_time == false || bug.has_end_time == false || bug.has_estimate_minutes == false || bug.has_remain_minutes == false) {
                 return false;
             }
         }
         for (const task of this._taskList) {
-            if (task.has_start_time == false || task.has_end_time == false || task.has_estimate_minutes == false || task.has_remain_minutes == false) {
+            if (task.exec_user_id == "" || task.has_start_time == false || task.has_end_time == false || task.has_estimate_minutes == false || task.has_remain_minutes == false) {
                 return false;
             }
         }
