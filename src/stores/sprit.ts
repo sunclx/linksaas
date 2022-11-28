@@ -153,9 +153,21 @@ export default class SpritStore {
             if (bug.exec_user_id == "" || bug.has_start_time == false || bug.has_end_time == false || bug.has_estimate_minutes == false || bug.has_remain_minutes == false) {
                 return false;
             }
+            if(bug.has_start_time && bug.has_end_time && bug.start_time > bug.end_time){
+                return false;
+            }
+            if(bug.has_estimate_minutes && bug.has_remain_minutes && bug.remain_minutes > bug.estimate_minutes) {
+                return false;
+            }
         }
         for (const task of this._taskList) {
             if (task.exec_user_id == "" || task.has_start_time == false || task.has_end_time == false || task.has_estimate_minutes == false || task.has_remain_minutes == false) {
+                return false;
+            }
+            if(task.has_start_time && task.has_end_time && task.start_time > task.end_time){
+                return false;
+            }
+            if(task.has_estimate_minutes && task.has_remain_minutes && task.remain_minutes > task.estimate_minutes) {
                 return false;
             }
         }

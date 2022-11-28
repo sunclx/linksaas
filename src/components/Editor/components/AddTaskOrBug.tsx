@@ -297,11 +297,10 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         />
       </div>
       <Table
-        style={{ marginTop: '8px' }}
+        style={{ marginTop: '8px',height:"calc(100vh - 400px)",overflowY:"scroll" }}
         rowKey={'issue_id'}
         columns={columns}
-        // className={s.EditIssueRef_table}
-        scroll={{ x: 100 }}
+        scroll={{ x: 800}}
         dataSource={dataSource}
         pagination={false}
         rowSelection={{
