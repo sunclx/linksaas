@@ -223,6 +223,7 @@ pub mod sprit {
     pub enum Event {
         CreateEvent(events_sprit::CreateEvent),
         UpdateEvent(events_sprit::UpdateEvent),
+        RemoveEvent(events_sprit::RemoveEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -233,6 +234,10 @@ pub mod sprit {
         } else if data.type_url == events_sprit::UpdateEvent::type_url() {
             if let Ok(ev) = events_sprit::UpdateEvent::decode(data.value.as_slice()) {
                 return Some(Event::UpdateEvent(ev));
+            }
+        } else if data.type_url == events_sprit::RemoveEvent::type_url(){
+            if let Ok(ev) = events_sprit::RemoveEvent::decode(data.value.as_slice()){
+                return Some(Event::RemoveEvent(ev));
             }
         }
         None
@@ -280,6 +285,7 @@ pub mod issue {
         AssignCheckUserEvent(events_issue::AssignCheckUserEvent),
         ChangeStateEvent(events_issue::ChangeStateEvent),
         LinkSpritEvent(events_issue::LinkSpritEvent),
+        CancelLinkSpritEvent(events_issue::CancelLinkSpritEvent),
         SetStartTimeEvent(events_issue::SetStartTimeEvent),
         SetEndTimeEvent(events_issue::SetEndTimeEvent),
         SetEstimateMinutesEvent(events_issue::SetEstimateMinutesEvent),
@@ -325,6 +331,10 @@ pub mod issue {
         } else if data.type_url == events_issue::LinkSpritEvent::type_url() {
             if let Ok(ev) = events_issue::LinkSpritEvent::decode(data.value.as_slice()) {
                 return Some(Event::LinkSpritEvent(ev));
+            }
+        } else if data.type_url == events_issue::CancelLinkSpritEvent::type_url() {
+            if let Ok(ev) = events_issue::CancelLinkSpritEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelLinkSpritEvent(ev));
             }
         } else if data.type_url == events_issue::SetStartTimeEvent::type_url() {
             if let Ok(ev) = events_issue::SetStartTimeEvent::decode(data.value.as_slice()) {
@@ -663,7 +673,7 @@ pub mod earthly {
                 return Some(Event::UpdateActionEvent(ev));
             }
         } else if data.type_url == events_earthly::RemoveActionEvent::type_url() {
-            if let Ok(ev) = events_earthly::RemoveActionEvent::decode(data.value.as_slice()){
+            if let Ok(ev) = events_earthly::RemoveActionEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveActionEvent(ev));
             }
         }

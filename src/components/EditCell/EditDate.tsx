@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import moment from 'moment';
+import type { Moment } from 'moment';
 import { CloseCircleOutlined, EditOutlined } from "@ant-design/icons";
 import { DatePicker, Space } from "antd";
 
@@ -9,6 +10,7 @@ export interface EditDateProps {
     timeStamp: number;
     onChange: (t: number | undefined) => Promise<boolean>;
     showEditIcon: boolean;
+    disabledDate?: (data: Moment) => boolean;
 }
 
 export const EditDate: React.FC<EditDateProps> = (props) => {
@@ -34,6 +36,7 @@ export const EditDate: React.FC<EditDateProps> = (props) => {
             {inEdit && (
                 <Space>
                     <DatePicker
+                        disabledDate={props.disabledDate}
                         autoFocus
                         allowClear={false}
                         open={true}

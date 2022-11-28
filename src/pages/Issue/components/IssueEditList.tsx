@@ -5,7 +5,7 @@ import {
 
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask, getIssueDetailUrl } from '@/utils/utils';
-import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import { Table, Tooltip } from 'antd';
 
 import React from 'react';
@@ -19,7 +19,7 @@ import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { EditSelect } from '../../../components/EditCell/EditSelect';
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
 import { EditText } from '@/components/EditCell/EditText';
-import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateTitle } from './utils';
+import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime, updateTitle } from './utils';
 import { EditDate } from '@/components/EditCell/EditDate';
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
@@ -140,19 +140,19 @@ const IssueEditList: React.FC<TableProps> = ({
       width: 100,
       align: 'center',
       dataIndex: ['extra_info', 'ExtraBugInfo', 'level'],
-      render: (v: number, record: IssueInfo) => <EditSelect 
-      allowClear={false}
-      editable={true} 
-      curValue={v} 
-      itemList={bugLvSelectItems} 
-      onChange={async (value) => {
-        return await updateExtraInfo(userStore.sessionId, record.project_id, record.issue_id, {
-          ExtraBugInfo: {
-            ...record.extra_info.ExtraBugInfo!,
-            level: value as number,
-          },
-        });
-      }} showEditIcon={true} />,
+      render: (v: number, record: IssueInfo) => <EditSelect
+        allowClear={false}
+        editable={true}
+        curValue={v}
+        itemList={bugLvSelectItems}
+        onChange={async (value) => {
+          return await updateExtraInfo(userStore.sessionId, record.project_id, record.issue_id, {
+            ExtraBugInfo: {
+              ...record.extra_info.ExtraBugInfo!,
+              level: value as number,
+            },
+          });
+        }} showEditIcon={true} />,
       hideInTable: getIsTask(pathname),
     },
     {
@@ -164,10 +164,10 @@ const IssueEditList: React.FC<TableProps> = ({
       ],
       width: 120,
       align: 'center',
-      render: (val: number, record: IssueInfo) => <EditSelect 
-      allowClear={false}
-      editable={true} 
-      curValue={val}
+      render: (val: number, record: IssueInfo) => <EditSelect
+        allowClear={false}
+        editable={true}
+        curValue={val}
         itemList={getIsTask(pathname) ? taskPrioritySelectItems : bugPrioritySelectItems}
         onChange={async (value) => {
           if (getIsTask(pathname)) {
@@ -226,7 +226,7 @@ const IssueEditList: React.FC<TableProps> = ({
             tabIndex={0}
             style={{
               background: `rgb(${getStateColor(val)} / 20%)`,
-              width: '50px',
+              width: '60px',
               borderRadius: '50px',
               textAlign: 'center',
               color: `rgb(${getStateColor(val)})`,
@@ -241,6 +241,7 @@ const IssueEditList: React.FC<TableProps> = ({
             }}
           >
             <Tooltip title={tips}>{v.label}</Tooltip>
+            {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
           </div>
         );
       },
@@ -251,7 +252,7 @@ const IssueEditList: React.FC<TableProps> = ({
       width: 100,
       align: 'center',
       render: (_, row: IssueInfo) => <EditSelect
-      allowClear={false}
+        allowClear={false}
         editable={row.user_issue_perm.can_assign_exec_user}
         curValue={row.exec_user_id}
         itemList={memberSelectItems}
@@ -269,7 +270,7 @@ const IssueEditList: React.FC<TableProps> = ({
       width: 100,
       align: 'center',
       render: (_, row: IssueInfo) => <EditSelect
-      allowClear={false}
+        allowClear={false}
         editable={row.user_issue_perm.can_assign_check_user}
         curValue={row.check_user_id}
         itemList={memberSelectItems}
@@ -292,7 +293,7 @@ const IssueEditList: React.FC<TableProps> = ({
       width: 100,
       align: 'center',
       render: (v: number, row: IssueInfo) => <EditSelect
-      allowClear={false}
+        allowClear={false}
         editable={row.user_issue_perm.can_set_award}
         curValue={v}
         itemList={awardSelectItems}
@@ -311,7 +312,7 @@ const IssueEditList: React.FC<TableProps> = ({
       width: 100,
       align: 'center',
       render: (v: number, row: IssueInfo) => <EditSelect
-      allowClear={false}
+        allowClear={false}
         editable={row.user_issue_perm.can_set_award}
         curValue={v}
         itemList={awardSelectItems}
@@ -320,38 +321,20 @@ const IssueEditList: React.FC<TableProps> = ({
         }} showEditIcon={true} />
     },
     {
-      title: '剩余工时',
-      dataIndex: 'remain_minutes',
-      width: 100,
+      title: '预估开始时间',
+      dataIndex: 'start_time',
+      width: 120,
       align: 'center',
-      render: (_, record: IssueInfo) => <EditSelect
-      allowClear={true}
+      render: (_, record) => <EditDate
         editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
-        curValue={record.has_remain_minutes ? record.remain_minutes : -1}
-        itemList={hourSelectItems}
+        hasTimeStamp={record.has_start_time}
+        timeStamp={record.start_time}
         onChange={async (value) => {
-          if(value === undefined){
-            return await cancelRemainMinutes(userStore.sessionId, record.project_id, record.issue_id);
+          if (value === undefined) {
+            return await cancelStartTime(userStore.sessionId, record.project_id, record.issue_id);
           }
-          return await updateRemainMinutes(userStore.sessionId, record.project_id, record.issue_id, value as number);
-        }} showEditIcon={true} />
-    },
-    {
-      title: '预估工时',
-      dataIndex: 'estimate_minutes',
-      width: 100,
-      align: 'center',
-      render: (_, record: IssueInfo) => <EditSelect
-      allowClear={false}
-        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
-        curValue={record.has_estimate_minutes ? record.estimate_minutes : -1}
-        itemList={hourSelectItems}
-        onChange={async (value) => {
-          if(value === undefined){
-            return await cancelEstimateMinutes(userStore.sessionId, record.project_id, record.issue_id);
-          }
-          return await updateEstimateMinutes(userStore.sessionId, record.project_id, record.issue_id, value as number);
-        }} showEditIcon={true} />
+          return await updateStartTime(userStore.sessionId, record.project_id, record.issue_id, value);
+        }} showEditIcon={true} />,
     },
     {
       title: '预估完成时间',
@@ -363,11 +346,45 @@ const IssueEditList: React.FC<TableProps> = ({
         hasTimeStamp={record.has_end_time}
         timeStamp={record.end_time}
         onChange={async (value) => {
-          if(value === undefined){
+          if (value === undefined) {
             return await cancelEndTime(userStore.sessionId, record.project_id, record.issue_id);
           }
           return await updateEndTime(userStore.sessionId, record.project_id, record.issue_id, value);
         }} showEditIcon={true} />,
+    },
+    {
+      title: '预估工时',
+      dataIndex: 'estimate_minutes',
+      width: 100,
+      align: 'center',
+      render: (_, record: IssueInfo) => <EditSelect
+        allowClear={false}
+        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
+        curValue={record.has_estimate_minutes ? record.estimate_minutes : -1}
+        itemList={hourSelectItems}
+        onChange={async (value) => {
+          if (value === undefined) {
+            return await cancelEstimateMinutes(userStore.sessionId, record.project_id, record.issue_id);
+          }
+          return await updateEstimateMinutes(userStore.sessionId, record.project_id, record.issue_id, value as number);
+        }} showEditIcon={true} />
+    },
+    {
+      title: '剩余工时',
+      dataIndex: 'remain_minutes',
+      width: 100,
+      align: 'center',
+      render: (_, record: IssueInfo) => <EditSelect
+        allowClear={true}
+        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
+        curValue={record.has_remain_minutes ? record.remain_minutes : -1}
+        itemList={hourSelectItems}
+        onChange={async (value) => {
+          if (value === undefined) {
+            return await cancelRemainMinutes(userStore.sessionId, record.project_id, record.issue_id);
+          }
+          return await updateRemainMinutes(userStore.sessionId, record.project_id, record.issue_id, value as number);
+        }} showEditIcon={true} />
     },
     {
       title: `${getIssueText(pathname)}创建者`,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from '@/components/CardWrap';
 import type { LinkIssueState } from '@/stores/linkAux';
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { remove as remove_issue, get as get_issue } from "@/api/project_issue";
 import type { IssueInfo } from "@/api/project_issue";
 import { request } from '@/utils/request';
@@ -16,13 +16,17 @@ import IssueDetailRight from "./components/IssueDetailRight";
 import StageModel from "./components/StageModel";
 import { EditText } from "@/components/EditCell/EditText";
 import { updateTitle } from "./components/utils";
+import { getIssueText, getIsTask } from "@/utils/utils";
 
 const IssueDetail = () => {
     const location = useLocation();
+    const history = useHistory();
+
     const state: LinkIssueState = location.state as LinkIssueState;
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [issue, setIssue] = useState<IssueInfo | undefined>(undefined);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -70,7 +74,7 @@ const IssueDetail = () => {
         </div>
         {showRemoveModal && (
             <Modal
-                title={`删除XXXX`}
+                title={`删除${getIssueText(location.pathname)}`}
                 open={showRemoveModal}
                 onCancel={() => setShowRemoveModal(false)}
                 onOk={async (e): Promise<void> => {
@@ -80,17 +84,26 @@ const IssueDetail = () => {
                         return;
                     }
                     await request(remove_issue(userStore.sessionId, issue.project_id, issue.issue_id));
-                    message.info(`删除XXXX成功`);
+                    message.info(`删除${getIssueText(location.pathname)} ${issue.basic_info.title}成功`);
                     setShowRemoveModal(false);
-                    // if (getIsTask(pathname)) {
-                    //     history.push("/app/project/task");
-                    // } else {
-                    //     history.push("/app/project/bug");
-                    // }
+                    if (getIsTask(location.pathname)) {
+                        linkAuxStore.goToTaskList({
+                            stateList: [],
+                            execUserIdList: [],
+                            checkUserIdList: [],
+                        }, history);
+                    } else {
+                        linkAuxStore.goToBugList({
+                            stateList: [],
+                            execUserIdList: [],
+                            checkUserIdList: [],
+                        }, history);
+                    }
+
                 }}
             >
-                <p>是否删除当前XXXX?</p>
-                <p style={{ color: "red" }}>删除后将无法恢复当前XXX</p>
+                <p>是否删除当前{getIssueText(location.pathname)} {issue?.basic_info.title}?</p>
+                <p style={{ color: "red" }}>删除后将无法恢复当前{getIssueText(location.pathname)}</p>
             </Modal>)
         }
         {showStageModal && issue != undefined && (

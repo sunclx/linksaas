@@ -35,7 +35,7 @@ const DownloadBookModal: React.FC<DownloadBookModalProps> = (props) => {
     };
 
     useEffect(() => {
-        const unListenFn = listen('uploadFile_' + trackId, (ev) => {
+        const unListenFn = listen('downloadFile_' + trackId, (ev) => {
             const payload = ev.payload as FsProgressEvent;
             if (payload.total_step <= 0) {
                 payload.total_step = 1;

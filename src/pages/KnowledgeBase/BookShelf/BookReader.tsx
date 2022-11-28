@@ -40,6 +40,11 @@ const BookReader = () => {
 
     const addMark = async (rend: Rendition, cfiRange: string) => {
         const content = rend.getRange(cfiRange).toString();
+        //检查是否包含在现有标记内
+        const index = localStore.markList.findIndex(mark=>mark.mark_content.includes(content));
+        if(index != -1){
+            return;
+        }
         const addRes = await request(add_mark({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,

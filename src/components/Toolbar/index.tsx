@@ -80,6 +80,13 @@ const Toolbar: React.FC = observer(() => {
         title="缺陷列表"
         badge={projectStore.curProject?.project_status.undone_bug_count || 0}
       />
+
+      <Item
+        id="sprit"
+        pathname={pathname}
+        title="迭代列表"
+      />
+
       <Divider />
       <Item
         id="robot"
