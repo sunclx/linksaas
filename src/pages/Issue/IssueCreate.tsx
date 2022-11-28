@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from '@/components/CardWrap';
 import DetailsNav from '@/components/DetailsNav';
-import { getIssueDetailUrl, getIssueText, getIsTask } from "@/utils/utils";
+import { getIssueText, getIsTask } from "@/utils/utils";
 import { useHistory, useLocation } from "react-router-dom";
 import s from './IssueCreate.module.less';
 import { Input, Select, Space, Tooltip, message } from "antd";
@@ -55,6 +55,7 @@ const IssueCreate = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const memberStore = useStores("memberStore");
+    const linkAuxStore = useStores("linkAuxStore");
 
     const { editor, editorRef } = useCommonEditor({
         content: state?.content ?? "",
@@ -141,10 +142,20 @@ const IssueCreate = () => {
             }));
         }
         message.info(`创建${getIssueText(location.pathname)}成功`);
-        history.push(getIssueDetailUrl(location.pathname), {
-            issueId: createRes.issue_id,
-            content: "",
-        } as LinkIssueState);
+        if (getIsTask(location.pathname)) {
+            linkAuxStore.goToTaskList({
+                stateList: [],
+                execUserIdList: [],
+                checkUserIdList: [],
+            }, history);
+        } else {
+            linkAuxStore.goToBugList({
+                stateList: [],
+                execUserIdList: [],
+                checkUserIdList: [],
+            }, history);
+        }
+
     }
 
     return (

@@ -162,8 +162,15 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
         {
             title: `ID`,
             width: 80,
+            fixed: true,
             render: (_, row: IssueInfo) => {
-                const notComplete = row.exec_user_id == "" || row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
+                let notComplete = row.exec_user_id == "" || row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
+                if(row.has_start_time && row.has_end_time && row.start_time > row.end_time) {
+                    notComplete = true;
+                } 
+                if(row.has_estimate_minutes && row.has_remain_minutes && row.remain_minutes > row.estimate_minutes) {
+                    notComplete = true;
+                }
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Deliconsvg
@@ -183,6 +190,8 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                                     {row.has_end_time == false && <li>未设置完成时间</li>}
                                     {row.has_estimate_minutes == false && <li>未设置预估时间</li>}
                                     {row.has_remain_minutes == false && <li>未设置剩余时间</li>}
+                                    {row.has_start_time && row.has_end_time && (row.start_time > row.end_time) && <li>结束时间早于开始时间</li>}
+                                    {row.has_estimate_minutes && row.has_remain_minutes && row.remain_minutes > row.estimate_minutes && <li>剩余工时大于预估工时</li>}
                                 </ul>
                             </div>}>
                             <Space style={{ color: "red" }}>
@@ -201,6 +210,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
             ellipsis: true,
             dataIndex: ['basic_info', 'title'],
             width: 200,
+            fixed: true,
             render: (v: string, row: IssueInfo) =>
                 renderTitle(row, projectStore.curProjectId, linkAuxStore, history),
         },
@@ -412,7 +422,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                     dataSource={spritStore.taskList}
                     columns={columns}
                     pagination={false}
-                    scroll={{ x: 1300 }}
+                    scroll={{ x: 1100 }}
                 />
             </Card>
             <Card title="缺陷列表" bordered={false} extra={
@@ -423,7 +433,12 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                 }}>
                     <PlusOutlined />添加缺陷
                 </Button>}>
-                <Table rowKey="issue_id" dataSource={spritStore.bugList} columns={columns} pagination={false} />
+                <Table 
+                rowKey="issue_id" 
+                dataSource={spritStore.bugList} 
+                columns={columns} 
+                pagination={false} 
+                scroll={{ x: 1100 }}/>
             </Card>
             {addIssueType != null && (
                 <AddTaskOrBug
