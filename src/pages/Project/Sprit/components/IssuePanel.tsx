@@ -173,14 +173,14 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                 }
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Deliconsvg
+                        {projectStore.isAdmin && <Deliconsvg
                             style={{ marginRight: '10px', cursor: 'pointer', color: '#0E83FF' }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 cancellinkSprit(row.issue_id);
                             }}
-                        />
+                        />}
                         {notComplete == false && <span>{row.issue_index}</span>}
                         {notComplete && (<Popover content={
                             <div style={{ padding: "10px 10px", color: "red" }}>
@@ -414,7 +414,9 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                     e.stopPropagation();
                     e.preventDefault();
                     setAddIssueType(ISSUE_TYPE_TASK);
-                }}>
+                }} 
+                title={projectStore.isAdmin?"":"只有管理员可以添加任务"}
+                disabled={!projectStore.isAdmin}>
                     <PlusOutlined />添加任务
                 </Button>}>
                 <Table
@@ -430,7 +432,9 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                     e.stopPropagation();
                     e.preventDefault();
                     setAddIssueType(ISSUE_TYPE_BUG);
-                }}>
+                }}
+                title={projectStore.isAdmin?"":"只有管理员可以添加缺陷"}
+                disabled={!projectStore.isAdmin}>
                     <PlusOutlined />添加缺陷
                 </Button>}>
                 <Table 
