@@ -154,6 +154,18 @@ export namespace project_doc {
     doc_id: string;
   };
 
+  export type LinkSpritNotice = {
+    project_id: string;
+    doc_id: string;
+    sprit_id: string;
+  };
+
+  export type CancelLinkSpritNotice = {
+    project_id: string;
+    doc_id: string;
+    sprit_id: string;
+  };
+
   export type AllNotice = {
     NewDocSpaceNotice?: NewDocSpaceNotice;
     UpdateDocSpaceNotice?: UpdateDocSpaceNotice;
@@ -163,6 +175,8 @@ export namespace project_doc {
     RemoveDocNotice?: RemoveDocNotice;
     RecoverDocInRecycleNotice?: RecoverDocInRecycleNotice;
     RemoveDocInRecycleNotice?: RemoveDocInRecycleNotice;
+    LinkSpritNotice?: LinkSpritNotice;
+    CancelLinkSpritNotice?: CancelLinkSpritNotice;
   }
 }
 
@@ -202,6 +216,13 @@ export namespace issue {
     check_user_id: string;
   };
 
+  export type SetSpritNotice = {
+    project_id: string;
+    issue_id: string;
+    old_sprit_id: string;
+    new_sprit_id: string;
+  };
+
   export type AllNotice = {
     NewIssueNotice?: NewIssueNotice;
     RemoveIssueNotice?: RemoveIssueNotice;
@@ -209,6 +230,7 @@ export namespace issue {
     SetCheckUserNotice?: SetCheckUserNotice;
     UpdateIssueNotice?: UpdateIssueNotice;
     UpdateIssueStateNotice?: UpdateIssueStateNotice;
+    SetSpritNotice?: SetSpritNotice;
   };
 }
 

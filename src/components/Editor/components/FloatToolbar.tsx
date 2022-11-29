@@ -55,6 +55,7 @@ const LinkBtn = () => {
 
 const headAndLinkItem = (
   <ToolbarGroup
+    key="headAndLink"
     items={[<LinkBtn key="link" />]}
     separator={true}
   />
@@ -205,6 +206,7 @@ const FontHightLight = () => {
 
 const fontItem = (
   <ToolbarGroup
+    key="font"
     items={[<FontSize key="fontSize" />, <FontColor key="fontColor" />, <FontHightLight key="fontHightLight" />]}
     separator={true}
   />
@@ -338,6 +340,7 @@ const Superscript = () => {
 
 const formatItem = (
   <ToolbarGroup
+    key="format"
     items={[
       <BoldBtn key="bold" />,
       <ItalicBtn key="italic" />,

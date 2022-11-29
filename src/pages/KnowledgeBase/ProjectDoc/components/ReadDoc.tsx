@@ -9,13 +9,15 @@ import RenderDocBtns from './RenderDocBtns';
 import { Button, message } from 'antd';
 import RemoveModal from './RemoveModal';
 import leftArrow from '@/assets/image/leftArrow.png';
-
+import { useHistory } from 'react-router-dom';
 
 const ReadDoc: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
 
   const userStore = useStores('userStore');
   const docSpaceStore = useStores('docSpaceStore');
+
+  const history = useHistory();
 
   const recoverDoc = async () => {
     const res = await request(
@@ -78,13 +80,17 @@ const ReadDoc: React.FC = () => {
           <a onClick={e => {
             e.stopPropagation();
             e.preventDefault();
+            if (docSpaceStore.fromLink) {
+              docSpaceStore.fromLink = false;
+              history.goBack();
+            }
             docSpaceStore.showDocList(docSpaceStore.curDocSpaceId, docSpaceStore.recycleBin);
           }}>
             <img src={leftArrow} />
           </a>
           {docSpaceStore.curDoc?.base_info.title ?? ""}
         </h1>
-        <RenderDocBtns/>
+        <RenderDocBtns />
       </div>
 
       {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} />}

@@ -137,7 +137,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
         setAddIssueType(null);
     }
 
-    const cancellinkSprit = async (issueId: string) => {
+    const cancelLinkSprit = async (issueId: string) => {
         await request(cancel_link_sprit(userStore.sessionId, projectStore.curProjectId, issueId));
         spritStore.removeIssue(issueId);
     }
@@ -178,7 +178,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                cancellinkSprit(row.issue_id);
+                                cancelLinkSprit(row.issue_id);
                             }}
                         />}
                         {notComplete == false && <span>{row.issue_index}</span>}

@@ -170,7 +170,6 @@ const ProjectRecord: React.FC = () => {
             });
           }}
           label={'操作用户'}
-          allowClear={false}
         />
         <Button
           className={style.btn}

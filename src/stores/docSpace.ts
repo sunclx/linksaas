@@ -23,7 +23,16 @@ export default class DocSpaceStore {
     private _curDoc: prjDocApi.Doc | undefined = undefined;
     private _recycleBin = false;
     private _inEdit = false;
+    private _fromLink = false;
 
+    get fromLink(): boolean {
+        return this._fromLink;
+    }
+    set fromLink(val: boolean) {
+        runInAction(() => {
+            this._fromLink = val;
+        });
+    }
     get docSpaceList(): prjDocApi.DocSpace[] {
         return this._docSpaceList;
     }
