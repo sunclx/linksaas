@@ -860,12 +860,55 @@ namespace sprit {
     ];
   }
 
+  export type LinkDocEvent = {
+    sprit_id: string;
+    sprit_title: string;
+    doc_id: string;
+    doc_title: string;
+  };
+
+  function get_link_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: LinkDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联迭代`),
+      new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
+      new LinkNoneInfo("和文档"),
+      new LinkDocInfo(inner.doc_title, ev.project_id, "", inner.doc_id),
+    ];
+  }
+
+  export type CancelLinkDocEvent = {
+    sprit_id: string;
+    sprit_title: string;
+    doc_id: string;
+    doc_title: string;
+  }
+
+  function get_cancel_link_doc_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelLinkDocEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消迭代`),
+      new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
+      new LinkNoneInfo("和文档"),
+      new LinkDocInfo(inner.doc_title, ev.project_id, "", inner.doc_id),
+      new LinkNoneInfo("关联"),
+    ];
+  }
 
   export type AllSpritEvent = {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
     RemoveEvent?: RemoveEvent;
+    LinkDocEvent?: LinkDocEvent;
+    CancelLinkDocEvent?: CancelLinkDocEvent;
   };
+
   export function get_simple_content_inner(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -877,6 +920,10 @@ namespace sprit {
       return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
     } else if (inner.RemoveEvent !== undefined) {
       return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
+    } else if (inner.LinkDocEvent !== undefined) {
+      return get_link_doc_simple_content(ev, skip_prj_name, inner.LinkDocEvent)
+    } else if (inner.CancelLinkDocEvent !== undefined) {
+      return get_cancel_link_doc_simple_content(ev, skip_prj_name, inner.CancelLinkDocEvent)
     }
     return [new LinkNoneInfo('未知事件')];
   }

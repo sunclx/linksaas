@@ -52,6 +52,33 @@ export type RemoveResponse = {
   err_msg: string;
 };
 
+export type LinkDocResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type CancelLinkDocResponse = {
+  code: number;
+  err_msg: string;
+};
+
+//对应grpc生成代码的LinkDocInfo，为了和linuxAuxStore里面定义的类型区分开发
+export type SpritDocInfo = {
+  doc_id: string;
+  project_id: string;
+  title: string;
+  link_user_id: string;
+  link_display_name: string;
+  link_logo_uri: string;
+  link_time: number;
+};
+
+export type ListLinkDocResponse = {
+  code: number;
+  err_msg: string;
+  info_list: SpritDocInfo[]
+}
+
 //创建迭代
 export async function create(
   session_id: string,
@@ -146,6 +173,66 @@ export async function remove(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RemoveResponse>(cmd, {
+    request,
+  });
+}
+
+
+export async function link_doc(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+  doc_id: string,
+): Promise<LinkDocResponse> {
+  const cmd = 'plugin:project_sprit_api|link_doc';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+    doc_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<LinkDocResponse>(cmd, {
+    request,
+  });
+}
+
+
+export async function cancel_link_doc(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+  doc_id: string,
+): Promise<CancelLinkDocResponse> {
+  const cmd = 'plugin:project_sprit_api|cancel_link_doc';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+    doc_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<CancelLinkDocResponse>(cmd, {
+    request,
+  });
+}
+
+export async function list_link_doc(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+): Promise<ListLinkDocResponse> {
+  const cmd = 'plugin:project_sprit_api|list_link_doc';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<ListLinkDocResponse>(cmd, {
     request,
   });
 }
