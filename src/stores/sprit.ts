@@ -4,6 +4,8 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC } from '@/api/project_issue';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, list as list_issue, get as get_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
+import type { SpritDocInfo } from '@/api/project_sprit';
+import { list_link_doc, get_link_doc } from '@/api/project_sprit';
 
 export default class SpritStore {
     constructor(rootStore: RootStore) {
@@ -15,6 +17,7 @@ export default class SpritStore {
     private _curSpritId: string = "";
     private _taskList: IssueInfo[] = [];
     private _bugList: IssueInfo[] = [];
+    private _spritDocList: SpritDocInfo[] = [];
 
     get curSpritId(): string {
         return this._curSpritId;
@@ -28,6 +31,10 @@ export default class SpritStore {
         return this._bugList;
     }
 
+    get spritDocList(): SpritDocInfo[] {
+        return this._spritDocList;
+    }
+
     async setcurSpritId(val: string) {
         if (val == this._curSpritId) {
             return;
@@ -39,9 +46,17 @@ export default class SpritStore {
         if (val != "") {
             await this.loadIssue(val, ISSUE_TYPE_TASK);
             await this.loadIssue(val, ISSUE_TYPE_BUG);
+            await this.loadSpritDoc(val);
         }
         runInAction(() => {
             this._curSpritId = val;
+        });
+    }
+
+    private async loadSpritDoc(spritId: string) {
+        const res = await request(list_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, spritId));
+        runInAction(() => {
+            this._spritDocList = res.info_list;
         });
     }
 
@@ -123,6 +138,32 @@ export default class SpritStore {
             this._bugList = tmpBugList;
         });
     }
+    async onNewIssue(issueId: string) {
+        const res = await request(get_issue(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, issueId));
+        if (res.info.issue_type == ISSUE_TYPE_TASK) {
+            const tmpList = this._taskList.slice();
+            const index = tmpList.findIndex(item => item.issue_id == issueId);
+            if (index != -1) {
+                tmpList[index] = res.info;
+            } else {
+                tmpList.unshift(res.info);
+            }
+            runInAction(() => {
+                this._taskList = tmpList;
+            });
+        } else if (res.info.issue_type == ISSUE_TYPE_BUG) {
+            const tmpList = this._bugList.slice();
+            const index = tmpList.findIndex(item => item.issue_id == issueId);
+            if (index != -1) {
+                tmpList[index] = res.info;
+            } else {
+                tmpList.unshift(res.info);
+            }
+            runInAction(() => {
+                this._bugList = tmpList;
+            })
+        }
+    }
 
     async updateIssue(issueId: string) {
         const taskIndex = this._taskList.findIndex(item => item.issue_id == issueId);
@@ -145,6 +186,27 @@ export default class SpritStore {
         });
     }
 
+    async onLinkDoc(docId: string) {
+        const res = await request(get_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this._curSpritId, docId));
+        const tmpList = this._spritDocList.slice();
+        const index = tmpList.findIndex(item => item.doc_id == docId);
+        if (index != -1) {
+            tmpList[index] = res.info;
+        } else {
+            tmpList.unshift(res.info);
+        }
+        runInAction(() => {
+            this._spritDocList = tmpList;
+        });
+    }
+
+    onCancelLinkDoc(docId: string) {
+        const tmpList = this._spritDocList.filter(item => item.doc_id != docId);
+        runInAction(() => {
+            this._spritDocList = tmpList;
+        });
+    }
+
     get allTimeReady(): boolean {
         if (this._bugList.length == 0 && this._taskList.length == 0) {
             return false;
@@ -153,10 +215,10 @@ export default class SpritStore {
             if (bug.exec_user_id == "" || bug.has_start_time == false || bug.has_end_time == false || bug.has_estimate_minutes == false || bug.has_remain_minutes == false) {
                 return false;
             }
-            if(bug.has_start_time && bug.has_end_time && bug.start_time > bug.end_time){
+            if (bug.has_start_time && bug.has_end_time && bug.start_time > bug.end_time) {
                 return false;
             }
-            if(bug.has_estimate_minutes && bug.has_remain_minutes && bug.remain_minutes > bug.estimate_minutes) {
+            if (bug.has_estimate_minutes && bug.has_remain_minutes && bug.remain_minutes > bug.estimate_minutes) {
                 return false;
             }
         }
@@ -164,10 +226,10 @@ export default class SpritStore {
             if (task.exec_user_id == "" || task.has_start_time == false || task.has_end_time == false || task.has_estimate_minutes == false || task.has_remain_minutes == false) {
                 return false;
             }
-            if(task.has_start_time && task.has_end_time && task.start_time > task.end_time){
+            if (task.has_start_time && task.has_end_time && task.start_time > task.end_time) {
                 return false;
             }
-            if(task.has_estimate_minutes && task.has_remain_minutes && task.remain_minutes > task.estimate_minutes) {
+            if (task.has_estimate_minutes && task.has_remain_minutes && task.remain_minutes > task.estimate_minutes) {
                 return false;
             }
         }

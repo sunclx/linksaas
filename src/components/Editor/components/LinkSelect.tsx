@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import type { ModalProps } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Card, ModalProps, Select } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
 import type { LinkInfo } from '@/stores/linkAux';
@@ -14,8 +14,8 @@ import {
   ASSGIN_USER_ALL,
 } from '@/api/project_issue';
 import type { IssueInfo, ListParam as ListIssueParam } from '@/api/project_issue';
-import type { DocKey } from '@/api/project_doc';
-import { list_doc_key } from '@/api/project_doc';
+import type { DocKey, DocSpace } from '@/api/project_doc';
+import { list_doc_key, list_doc_space } from '@/api/project_doc';
 import { request } from '@/utils/request';
 import { observer } from 'mobx-react';
 import s from './LinkSelect.module.less';
@@ -24,6 +24,23 @@ import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
 
 const PAGE_SIZE = 10;
+
+const ALL_DOC_SPACE: DocSpace = {
+  doc_space_id: "",
+  base_info: {
+    title: "全部文档"
+  },
+  project_id: "",
+  create_time: 0,
+  update_time: 0,
+  create_user_id: "",
+  doc_count: 0,
+  system_doc_space: false,
+  user_perm: {
+    can_update: false,
+    can_remove: false,
+  },
+};
 
 export interface LinkSelectProps {
   title: string;
@@ -37,6 +54,10 @@ export interface LinkSelectProps {
 }
 
 export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
+  const channelStore = useStores('channelStore');
+  const userStore = useStores('userStore');
+  const projectStore = useStores('projectStore');
+
   const modalProps: ModalProps = {};
   modalProps.footer = null;
   let defaultTab = '';
@@ -55,14 +76,14 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [bugPage] = useState(0);
   const [taskList, setTaskList] = useState([] as IssueInfo[]);
   const [bugList, setBugList] = useState([] as IssueInfo[]);
+  const [docSpaceList, setDocSpaceList] = useState([ALL_DOC_SPACE] as DocSpace[]);
+  const [curDocSpaceId, setCurDocSpaceId] = useState("");
   const [docList, setDocList] = useState([] as DocKey[]);
   const [tab, setTab] = useState(defaultTab);
   const [keyword, setKeyword] = useState('');
   const [externeUrl, setExterneUrl] = useState('');
 
-  const channelStore = useStores('channelStore');
-  const userStore = useStores('userStore');
-  const projectStore = useStores('projectStore');
+
   const tabList = [];
   if (props.showChannel) {
     tabList.push({
@@ -161,28 +182,43 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
         setTotalCount(res.total_count);
       });
     } else if (tab == 'doc') {
-      request(list_doc_key({
+      request(list_doc_space({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        filter_by_doc_space_id: false,
-        doc_space_id: "",
-        list_param: {
-          filter_by_tag: false,
-          tag_list: [],
-          filter_by_watch: false,
-          watch: false,
-        },
-        offset: curPage * PAGE_SIZE,
-        limit: PAGE_SIZE,
-      })).then((res) => {
-        setDocList(res.doc_key_list);
-        setTotalCount(res.total_count);
-      });
+      })).then(res => {
+        const tmpList = res.doc_space_list.slice();
+        tmpList.unshift(ALL_DOC_SPACE);
+        setDocSpaceList(tmpList);
+      })
+
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskPage, bugPage, tab, keyword, curPage]);
 
-  // =====
+  useEffect(() => {
+    if (tab != "doc") {
+      return;
+    }
+    request(list_doc_key({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      filter_by_doc_space_id: curDocSpaceId != "",
+      doc_space_id: curDocSpaceId,
+      list_param: {
+        filter_by_tag: false,
+        tag_list: [],
+        filter_by_watch: false,
+        watch: false,
+      },
+      offset: curPage * PAGE_SIZE,
+      limit: PAGE_SIZE,
+    })).then((res) => {
+      setDocList(res.doc_key_list);
+      setTotalCount(res.total_count);
+    });
+  }, [tab, curPage, curDocSpaceId])
+
+
   const renderItemContent = () => {
     if (props.showChannel && tab === 'channel') {
       return (
@@ -210,34 +246,43 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       );
     } else if (props.showDoc && tab === 'doc') {
       return (
-        <div className={s.con_item_wrap}>
-          {docList.map((item) => (
-            <div
-              className={s.con_item}
-              key={item.doc_id}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onOk(new LinkDocInfo(item.title, item.project_id, "", item.doc_id));
-              }}
-            >
-              <div>{item.title}</div>
-            </div>
-          ))}
-          <Pagination
-            total={totalCount}
-            pageSize={PAGE_SIZE}
-            current={curPage + 1}
-            onChange={(page: number) => setCurPage(page - 1)}
-          />
-        </div>
+        <Card bordered={false} extra={
+          <Select value={curDocSpaceId} onChange={value => setCurDocSpaceId(value)}>
+            {docSpaceList.map(item => (
+              <Select.Option key={item.doc_space_id} value={item.doc_space_id}>{item.base_info.title}</Select.Option>
+            ))}
+          </Select>
+        }>
+          <div className={s.con_item_wrap}>
+            {docList.map((item) => (
+              <div
+                className={s.con_item}
+                key={item.doc_id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  props.onOk(new LinkDocInfo(item.title, item.project_id, "", item.doc_id));
+                }}
+              >
+                <div>{item.title}</div>
+              </div>
+            ))}
+            <Pagination
+              total={totalCount}
+              pageSize={PAGE_SIZE}
+              current={curPage + 1}
+              onChange={(page: number) => setCurPage(page - 1)}
+            />
+          </div>
+        </Card>
       );
     } else if (props.showTask && tab === 'task') {
       return (
         <div className={s.con_item_wrap}>
           <Input
-            style={{ background: '#FAFAFA' }}
+            style={{ background: '#FAFAFA',padding:"10px 10px" }}
             prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
+            addonBefore="过滤任务标题:"
             placeholder="输入关键词"
             onChange={(e) => {
               e.stopPropagation();
@@ -272,8 +317,9 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       return (
         <div className={s.con_item_wrap}>
           <Input
-            style={{ background: '#FAFAFA' }}
+            style={{ background: '#FAFAFA',padding:"10px 10px" }}
             prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
+            addonBefore="过滤缺陷标题:"
             placeholder="输入关键词"
             onChange={(e) => {
               e.stopPropagation();

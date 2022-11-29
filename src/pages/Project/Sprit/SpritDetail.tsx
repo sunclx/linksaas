@@ -16,6 +16,7 @@ import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
 import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
+import LinkDocPanel from "./components/LinkDocPanel";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -25,6 +26,9 @@ const SpritDetail = () => {
 
     const location = useLocation();
     const state = location.state as LinkSpritState;
+    const tabStr = new URLSearchParams(location.search).get('tab');
+    const activeKey = tabStr == null || tabStr == "" ? "issue" : tabStr;
+
     const history = useHistory();
 
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
@@ -80,16 +84,22 @@ const SpritDetail = () => {
             </div>
             <div className={s.content_wrap}>
                 <Tabs
-                    defaultActiveKey="issue"
-                    type="card">
+                    activeKey={activeKey}
+                    type="card"
+                    onChange={value => {
+                        history.push(`${location.pathname}?tab=${value}`, state);
+                    }}>
                     <Tabs.TabPane tab="任务/缺陷" key="issue">
-                        {spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                        {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="相关文档" key="linkDoc">
+                        {activeKey == "linkDoc" && <LinkDocPanel />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="甘特图" key="gantt" disabled={!spritStore.allTimeReady}>
-                    {spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time}/>}
+                        {activeKey == "gantt" && spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="统计信息" key="statistics" disabled={!spritStore.allTimeReady}>
-                        <StatPanel/>
+                        {activeKey == "statistics" && <StatPanel />}
                     </Tabs.TabPane>
                 </Tabs>
             </div>

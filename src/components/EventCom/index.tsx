@@ -35,7 +35,7 @@ const EventCom: FC<EventComProps> = ({
 
   const getTypeLink = (v: LinkInfo, index: number) => {
     if (skipLink) {
-      return <span>{v.linkContent + ' '}</span>;
+      return <span key={index}>{v.linkContent + ' '}</span>;
     }
     switch (v.linkTargeType) {
       case LINK_TARGET_TYPE.LINK_TARGET_IMAGE: // 查看图片

@@ -77,7 +77,13 @@ export type ListLinkDocResponse = {
   code: number;
   err_msg: string;
   info_list: SpritDocInfo[]
-}
+};
+
+export type GetLinkDocResponse = {
+  code: number;
+  err_msg: string;
+  info: SpritDocInfo;
+};
 
 //创建迭代
 export async function create(
@@ -233,6 +239,26 @@ export async function list_link_doc(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ListLinkDocResponse>(cmd, {
+    request,
+  });
+}
+
+export async function get_link_doc(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+  doc_id: string,
+): Promise<GetLinkDocResponse> {
+  const cmd = 'plugin:project_sprit_api|get_link_doc';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+    doc_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<GetLinkDocResponse>(cmd, {
     request,
   });
 }

@@ -11,7 +11,7 @@ const ToolbarGroup: React.FC<ToolbarGroupProps> = (props) => {
         <div role="group" className="remirror-role remirror-group">
             {props.items.map(item => item)}
         </div>
-        {props.separator == true && <hr role="separator" aria-orientation="vertical" className="remirror-role remirror-separator"/>}
+        {props.separator == true && <hr role="separator" aria-orientation="vertical" className="remirror-role remirror-separator" />}
     </>);
 };
 
