@@ -152,6 +152,7 @@ pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
             user_id: Some(item.user_id.clone()),
             user_display_name: Some(item.user_display_name.clone()),
             event_type: Some(event_type.into()),
+            event_time: Some(item.event_time),
             ref_type: Some(ref_type.into()),
             ref_id: Some(item.ref_id.clone()),
             event_data: Some(event_data),

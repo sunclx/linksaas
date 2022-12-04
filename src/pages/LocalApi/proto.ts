@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.3
+  version: 0.1.4
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -8,7 +8,7 @@ info:
     email: panleiming@linksaas.pro
     url: https://jihulab.com/linksaas/local-api
 servers:
-  - url: http://127.0.0.1:__PORT__
+  - url: http://localhost:__PORT__
 tags:
   - name: global
     description: 不属于项目范围的接口
@@ -159,12 +159,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  contentList:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/BlockContentInfo'
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlockContentInfo'
         '500':
           description: 失败
           headers:
@@ -699,8 +696,8 @@ paths:
     get:
       tags:
         - projectDoc
-      summary: 文档列表
-      description: 列出文档列表
+      summary: 查看文档
+      description: 查看文档
       operationId: projectProjectIdDocSpaceDocSpaceIdDocIdShowGet
       parameters:
         - $ref: '#/components/parameters/ProjectId'
@@ -740,14 +737,14 @@ paths:
       parameters:
         - $ref: '#/components/parameters/ProjectId'
         - $ref: '#/components/parameters/AccessToken'
-        - name: from_time
+        - name: fromTime
           in: query
           required: true
           schema:
             type: integer
             format: int64
             description: 开始时间，1970年以来的毫秒数
-        - name: to_time
+        - name: toTime
           in: query
           required: true
           schema:
@@ -889,7 +886,7 @@ paths:
                   totalCount:
                     type: integer
                     description: 任务总数量
-                  bugList:
+                  taskList:
                     type: array
                     items:
                       $ref: '#/components/schemas/TaskInfo'
@@ -1527,6 +1524,10 @@ components:
         refId:
           type: string
           description: 事件关联ID
+        eventTime:
+          type: integer
+          description: 事件事件
+          format: int64
         eventData:
           type: object
           description: 事件内容
