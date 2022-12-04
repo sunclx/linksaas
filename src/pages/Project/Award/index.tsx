@@ -123,7 +123,7 @@ const ProjectAward: React.FC = () => {
     ];
 
     return (
-        <CardWrap title="项目贡献" halfContent>
+        <CardWrap title="项目成员贡献" halfContent>
             <div className={styles.wrap}>
                 <div className={styles.list}>
                     <div className={styles.list_cont}>
