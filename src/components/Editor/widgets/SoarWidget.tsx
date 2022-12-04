@@ -97,7 +97,7 @@ const EditSoar: React.FC<WidgetProps> = (props) => {
             />
           </div>
           <div className={s.swot_item}>
-            <div className={classNames(s.swot_tit, s.swot_tit_w)}>A 志向</div>
+            <div className={classNames(s.swot_tit, s.swot_tit_w)}>A 渴望</div>
             <Input.TextArea
               className={s.textarea}
               defaultValue={aspirations}
@@ -159,7 +159,7 @@ const ViewSoar: React.FC<WidgetProps> = (props) => {
             </div>
           </div>
           <div className={s.swot_item}>
-            <div className={classNames(s.swot_tit, s.swot_tit_w, s.round)}>A 志向</div>
+            <div className={classNames(s.swot_tit, s.swot_tit_w, s.round)}>A 渴望</div>
             <div className={classNames(s.textarea, s.text)}>
               <pre>{defaultAspiration}</pre>
             </div>
