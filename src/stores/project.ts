@@ -286,11 +286,13 @@ export default class ProjectStore {
   }
 
   updateSnapShot(projectId: string, enable: boolean) {
+    const tmpList = this._projectList.slice();
+    const index = tmpList.findIndex((item) => item.project_id == projectId);
+    if (index != -1) {
+      tmpList[index].project_status.work_snap_shot_enable = enable;
+    }
     runInAction(() => {
-      const index = this._projectList.findIndex((item) => item.project_id == projectId);
-      if (index != -1) {
-        this._projectList[index].project_status.work_snap_shot_enable = enable;
-      }
+      this._projectList = tmpList;
       const prj = this._projectMap.get(projectId);
       if (prj !== undefined) {
         prj.project_status.work_snap_shot_enable = enable;
