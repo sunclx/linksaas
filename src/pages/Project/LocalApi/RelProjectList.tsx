@@ -41,7 +41,7 @@ const columns: ColumnsType<RelInfo> = [
 export const RelProjectList = () => {
     return (
         <div>
-            <Table columns={columns} dataSource={relProjectInfoList} pagination={false} />
+            <Table rowKey="name" columns={columns} dataSource={relProjectInfoList} pagination={false} />
         </div>
     );
 };

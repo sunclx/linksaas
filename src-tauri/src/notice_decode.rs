@@ -149,6 +149,8 @@ pub mod project_doc {
         RemoveDocNotice(notices_doc::RemoveDocNotice),
         RecoverDocInRecycleNotice(notices_doc::RecoverDocInRecycleNotice),
         RemoveDocInRecycleNotice(notices_doc::RemoveDocInRecycleNotice),
+        LinkSpritNotice(notices_doc::LinkSpritNotice),
+        CancelLinkSpritNotice(notices_doc::CancelLinkSpritNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -187,6 +189,14 @@ pub mod project_doc {
             {
                 return Some(Notice::RemoveDocInRecycleNotice(notice));
             }
+        } else if data.type_url == notices_doc::LinkSpritNotice::type_url() {
+            if let Ok(notice) = notices_doc::LinkSpritNotice::decode(data.value.as_slice()) {
+                return Some(Notice::LinkSpritNotice(notice));
+            }
+        } else if data.type_url == notices_doc::CancelLinkSpritNotice::type_url() {
+            if let Ok(notice) = notices_doc::CancelLinkSpritNotice::decode(data.value.as_slice()) {
+                return Some(Notice::CancelLinkSpritNotice(notice));
+            }
         }
         None
     }
@@ -206,6 +216,7 @@ pub mod issue {
         SetCheckUserNotice(notices_issue::SetCheckUserNotice),
         UpdateIssueNotice(notices_issue::UpdateIssueNotice),
         UpdateIssueStateNotice(notices_issue::UpdateIssueStateNotice),
+        SetSpritNotice(notices_issue::SetSpritNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -233,6 +244,10 @@ pub mod issue {
             if let Ok(notice) = notices_issue::UpdateIssueStateNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::UpdateIssueStateNotice(notice));
+            }
+        } else if data.type_url == notices_issue::SetSpritNotice::type_url() {
+            if let Ok(notice) = notices_issue::SetSpritNotice::decode(data.value.as_slice()) {
+                return Some(Notice::SetSpritNotice(notice));
             }
         }
         None

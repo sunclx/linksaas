@@ -469,6 +469,7 @@ class LinkAuxStore {
       if (this.rootStore.docSpaceStore.curDocSpaceId != docLink.docSpaceId) {
         await this.rootStore.docSpaceStore.showDocList(docLink.docSpaceId, false);
       }
+      this.rootStore.docSpaceStore.fromLink = true;
       await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
       history.push(APP_PROJECT_KB_DOC_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ROBOT_METRIC) {

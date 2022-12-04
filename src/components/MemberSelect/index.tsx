@@ -32,7 +32,6 @@ const MemberSelect: React.FC<MemberSelectProps> = observer(({ all, memberUserId,
         {...props}
         placeholder={props.placeholder ?? "请选择"}
         defaultValue={defaultValue}
-        allowClear
         style={{ width: "100px" }}
       >
         {all && <Option value={''}>全部</Option>}

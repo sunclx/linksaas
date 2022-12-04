@@ -94,6 +94,7 @@ const RedoBtn = () => {
 
 export const historyItem = (
   <ToolbarGroup
+    key="history"
     items={[<UndoBtn key="undo" />, <RedoBtn key="redo" />]}
     separator={true} />
 );
@@ -166,6 +167,7 @@ const PasteBtn = () => {
 
 export const clipboardItem = (
   <ToolbarGroup
+    key="clipboard"
     items={[<CopyBtn key="copy" />, <CutBtn key="cut" />, <PasteBtn key="paste" />]}
     separator={true} />
 );
@@ -252,6 +254,7 @@ const HeadBtn = () => {
 
 export const headItem = (
   <ToolbarGroup
+    key="head"
     items={[<HeadBtn key="head" />]}
     separator={true} />
 );
@@ -312,7 +315,8 @@ const TaskListBtn = () => {
 
 export const listItem = (
   <ToolbarGroup
-    items={[<BulletListBtn key="bulletList" />, <OrderedListBtn key="orderList" />, <TaskListBtn key="testList" />]}
+    key="list"
+    items={[<BulletListBtn key="bulletList" />, <OrderedListBtn key="orderList" />, <TaskListBtn key="taskList" />]}
     separator={true} />
 );
 
@@ -465,6 +469,7 @@ const ContentWidget = () => {
 
 export const contentWidgetItem = (
   <ToolbarGroup
+    key="widget"
     items={[<ContentWidget key="widget" />]}
     separator={false} />
 );
@@ -534,6 +539,7 @@ const VcWidget = () => {
 
 export const vcWidgetItem = (
   <ToolbarGroup
+    key="vc"
     items={[<VcWidget key="vc" />]}
     separator={false} />
 );
@@ -749,6 +755,7 @@ export interface NewCommItemParam {
 export const newCommItem = (param: NewCommItemParam) => {
   return (
     <ToolbarGroup
+      key="common"
       items={[
         <AddUploadImage
           key="image"
