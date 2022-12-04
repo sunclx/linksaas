@@ -92,8 +92,9 @@ const ReadDoc: React.FC = () => {
         </h1>
         <RenderDocBtns />
       </div>
-
-      {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} />}
+      <div className={s.read_doc}>
+        {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} />}
+      </div>
     </div>
   );
 };

@@ -70,7 +70,6 @@ const EditFunnel: React.FC<WidgetProps> = (props) => {
   };
 
   useEffect(() => {
-    console.log("xxxxxxxxxxx", data);
     props.writeData(data);
   }, [data]);
 
