@@ -263,16 +263,35 @@ pub mod appraise {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         NewAppraiseNotice(notices_appraise::NewAppraiseNotice),
+        UpdateAppraiseNotice(notices_appraise::UpdateAppraiseNotice),
+        RemoveAppraiseNotice(notices_appraise::RemoveAppraiseNotice),
         NewVoteNotice(notices_appraise::NewVoteNotice),
+        RevokeVoteNotice(notices_appraise::RevokeVoteNotice),
     }
     pub fn decode_notice(data: &Any) -> Option<Notice> {
         if data.type_url == notices_appraise::NewAppraiseNotice::type_url() {
             if let Ok(notice) = notices_appraise::NewAppraiseNotice::decode(data.value.as_slice()) {
                 return Some(Notice::NewAppraiseNotice(notice));
             }
+        } else if data.type_url == notices_appraise::UpdateAppraiseNotice::type_url() {
+            if let Ok(notice) =
+                notices_appraise::UpdateAppraiseNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::UpdateAppraiseNotice(notice));
+            }
+        } else if data.type_url == notices_appraise::RemoveAppraiseNotice::type_url() {
+            if let Ok(notice) =
+                notices_appraise::RemoveAppraiseNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::RemoveAppraiseNotice(notice));
+            }
         } else if data.type_url == notices_appraise::NewVoteNotice::type_url() {
             if let Ok(notice) = notices_appraise::NewVoteNotice::decode(data.value.as_slice()) {
                 return Some(Notice::NewVoteNotice(notice));
+            }
+        } else if data.type_url == notices_appraise::RevokeVoteNotice::type_url() {
+            if let Ok(notice) = notices_appraise::RevokeVoteNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RevokeVoteNotice(notice));
             }
         }
         None

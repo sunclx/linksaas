@@ -129,6 +129,18 @@ export type VoteResponse = {
     err_msg: string;
 };
 
+export type RevokeVoteRequest = {
+    session_id: string;
+    project_id: string;
+    appraise_id: string;
+};
+
+export type RevokeVoteResponse = {
+    code: number;
+    err_msg: string;
+};
+
+
 export type GetMyVoteResponse = {
     code: number;
     err_msg: string;
@@ -185,14 +197,18 @@ export type GetMemberStateResponse = {
 
 //创建评估
 export async function create(request: CreateRequest): Promise<CreateResponse> {
-    return invoke<CreateResponse>("plugin:project_appraise_api|create", {
+    const cmd = "plugin:project_appraise_api|create";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<CreateResponse>(cmd, {
         request: request,
     });
 }
 
 //更新评估
 export async function update(request: UpdateRequest): Promise<UpdateResponse> {
-    return invoke<UpdateResponse>("plugin:project_appraise_api|update", {
+    const cmd = "plugin:project_appraise_api|update";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateResponse>(cmd, {
         request: request,
     });
 }
@@ -201,45 +217,58 @@ export async function get(
     session_id: string,
     project_id: string,
     appraise_id: string): Promise<GetResponse> {
-    return invoke<GetResponse>("plugin:project_appraise_api|get", {
-        request: {
-            session_id: session_id,
-            project_id: project_id,
-            appraise_id: appraise_id,
-        },
+    const cmd = "plugin:project_appraise_api|get";
+    const request = {
+        session_id: session_id,
+        project_id: project_id,
+        appraise_id: appraise_id,
+    };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetResponse>(cmd, {
+        request: request,
     });
 }
 
 //列出评估
 export async function list(request: ListRequest): Promise<ListResponse> {
-    return invoke<ListResponse>("plugin:project_appraise_api|list", {
+    const cmd = "plugin:project_appraise_api|list";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListResponse>(cmd, {
         request: request,
     });
 }
 
 //根据我的投票状态列出评估
 export async function list_by_vote_state(request: ListByVoteStateRequest): Promise<ListByVoteStateResponse> {
-    return invoke<ListByVoteStateResponse>("plugin:project_appraise_api|list_by_vote_state", {
+    const cmd = "plugin:project_appraise_api|list_by_vote_state";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListByVoteStateResponse>(cmd, {
         request: request,
     });
 }
+
 //删除评估
 export async function remove(
     session_id: string,
     project_id: string,
     appraise_id: string): Promise<RemoveResponse> {
-    return invoke<RemoveResponse>("plugin:project_appraise_api|remove", {
-        request: {
-            session_id: session_id,
-            project_id: project_id,
-            appraise_id: appraise_id,
-        },
+    const request = {
+        session_id: session_id,
+        project_id: project_id,
+        appraise_id: appraise_id,
+    };
+    const cmd = "plugin:project_appraise_api|remove";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemoveResponse>(cmd, {
+        request: request,
     });
 }
 
 //保存投票草稿
 export async function set_vote_draft(request: SetVoteDraftRequest): Promise<SetVoteDraftResponse> {
-    return invoke<SetVoteDraftResponse>("plugin:project_appraise_api|set_vote_draft", {
+    const cmd = "plugin:project_appraise_api|set_vote_draft";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SetVoteDraftResponse>(cmd, {
         request: request,
     });
 }
@@ -249,49 +278,73 @@ export async function get_vote_draft(
     session_id: string,
     project_id: string,
     appraise_id: string): Promise<GetVoteDraftResponse> {
-    return invoke<GetVoteDraftResponse>("plugin:project_appraise_api|get_vote_draft", {
-        request: {
-            session_id: session_id,
-            project_id: project_id,
-            appraise_id: appraise_id,
-        },
+    const request = {
+        session_id: session_id,
+        project_id: project_id,
+        appraise_id: appraise_id,
+    };
+    const cmd = "plugin:project_appraise_api|get_vote_draft";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetVoteDraftResponse>(cmd, {
+        request: request,
     });
 }
 
 //投票
 export async function vote(request: VoteRequest): Promise<VoteResponse> {
-    return invoke<VoteResponse>("plugin:project_appraise_api|vote", {
+    const cmd = "plugin:project_appraise_api|vote";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<VoteResponse>(cmd, {
         request: request,
     });
 }
+
+//撤回投票
+export async function revoke_vote(request: RevokeVoteRequest): Promise<RevokeVoteResponse> {
+    const cmd = "plugin:project_appraise_api|revoke_vote";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RevokeVoteResponse>(cmd, {
+        request: request,
+    });
+}
+
+
 
 //查看我的投票
 export async function get_my_vote(
     session_id: string,
     project_id: string,
     appraise_id: string): Promise<GetMyVoteResponse> {
-    return invoke<GetMyVoteResponse>("plugin:project_appraise_api|get_my_vote", {
-        request: {
-            session_id: session_id,
-            project_id: project_id,
-            appraise_id: appraise_id,
-        },
+    const cmd = "plugin:project_appraise_api|get_my_vote";
+    const request = {
+        session_id: session_id,
+        project_id: project_id,
+        appraise_id: appraise_id,
+    };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetMyVoteResponse>(cmd, {
+        request: request,
     });
 }
 
 //查看项目成员或评估得分
 export async function list_score(request: ListScoreRequest): Promise<ListScoreResponse> {
-    return invoke<ListScoreResponse>("plugin:project_appraise_api|list_score", {
+    const cmd = "plugin:project_appraise_api|list_score";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListScoreResponse>(cmd, {
         request: request,
     });
 }
 
 //获取成员状态
-export async function get_member_state(session_id: string,project_id: string): Promise<GetMemberStateResponse> {
-    return invoke<GetMemberStateResponse>("plugin:project_appraise_api|get_member_state", {
-        request: {
-            session_id:session_id,
-            project_id:project_id,
-        },
+export async function get_member_state(session_id: string, project_id: string): Promise<GetMemberStateResponse> {
+    const request = {
+        session_id: session_id,
+        project_id: project_id,
+    };
+    const cmd = "plugin:project_appraise_api|get_member_state";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetMemberStateResponse>(cmd, {
+        request: request,
     });
 }
