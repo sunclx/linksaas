@@ -239,13 +239,33 @@ export namespace appraise {
     project_id: string;
     appraise_id: string;
   };
+
+  export type UpdateAppraiseNotice = {
+    project_id: string;
+    appraise_id: string;
+  };
+
+  export type RemoveAppraiseNotice = {
+    project_id: string;
+    appraise_id: string;
+  };
+
   export type NewVoteNotice = {
     project_id: string;
     appraise_id: string;
   };
+
+  export type RevokeVoteNotice = {
+    project_id: string;
+    appraise_id: string;
+  };
+
   export type AllNotice = {
     NewAppraiseNotice?: NewAppraiseNotice;
+    UpdateAppraiseNotice?: UpdateAppraiseNotice;
+    RemoveAppraiseNotice?: RemoveAppraiseNotice;
     NewVoteNotice?: NewVoteNotice;
+    RevokeVoteNotice?: RevokeVoteNotice;
   };
 }
 

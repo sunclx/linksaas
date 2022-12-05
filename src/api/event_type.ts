@@ -403,6 +403,42 @@ export namespace project {
     ];
   }
 
+  export type UpdateAppraiseEvent = {
+    appraise_id: string;
+    old_title: string;
+    new_title: string;
+  };
+
+  function get_update_appraise_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateAppraiseEvent
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新评估`),
+      new LinkAppraiseInfo(inner.new_title, ev.project_id, inner.appraise_id),
+    ];
+    if (inner.old_title != inner.new_title) {
+      ret_list.push(new LinkNoneInfo(`旧标题 ${inner.old_title}`));
+    }
+    return ret_list;
+  }
+
+  export type RemoveAppraiseEvent = {
+    appraise_id: string;
+    title: string;
+  };
+
+  function get_remove_appraise_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveAppraiseEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除评估 ${inner.title}`),
+    ];
+  }
+
   export type AddProjectAppEvent = {
     app_id: string;
     app_name: string;
@@ -462,6 +498,8 @@ export namespace project {
     RemoveChannelMemberEvent?: RemoveChannelMemberEvent;
     UploadWorkSnapShotEvent?: UploadWorkSnapShotEvent;
     CreateAppraiseEvent?: CreateAppraiseEvent;
+    UpdateAppraiseEvent?: UpdateAppraiseEvent;
+    RemoveAppraiseEvent?: RemoveAppraiseEvent;
     AddProjectAppEvent?: AddProjectAppEvent;
     RemoveProjectAppEvent?: RemoveProjectAppEvent;
   };
@@ -528,6 +566,10 @@ export namespace project {
       return get_upload_work_snap_simple_content(ev, skip_prj_name, inner.UploadWorkSnapShotEvent);
     } else if (inner.CreateAppraiseEvent !== undefined) {
       return get_create_appraise_simple_content(ev, skip_prj_name, inner.CreateAppraiseEvent);
+    } else if (inner.UpdateAppraiseEvent !== undefined) {
+      return get_update_appraise_simple_content(ev, skip_prj_name, inner.UpdateAppraiseEvent);
+    } else if (inner.RemoveAppraiseEvent !== undefined) {
+      return get_remove_appraise_simple_content(ev, skip_prj_name, inner.RemoveAppraiseEvent);
     } else if (inner.AddProjectAppEvent !== undefined) {
       return get_add_project_app_simple_content(ev, skip_prj_name, inner.AddProjectAppEvent);
     } else if (inner.RemoveProjectAppEvent !== undefined) {

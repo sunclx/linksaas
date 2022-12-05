@@ -1,11 +1,10 @@
+use crate::notice_decode::new_wrong_session_notice;
 use proto_gen_rust::project_appraise_api::project_appraise_api_client::ProjectAppraiseApiClient;
 use proto_gen_rust::project_appraise_api::*;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
-use crate::notice_decode::new_wrong_session_notice;
-
 
 #[tauri::command]
 async fn create<R: Runtime>(
@@ -27,7 +26,7 @@ async fn create<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -43,7 +42,7 @@ async fn update<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.update(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("update".into())) {
@@ -51,7 +50,7 @@ async fn update<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -68,7 +67,7 @@ async fn get<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.get(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("get".into())) {
@@ -76,7 +75,7 @@ async fn get<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -93,7 +92,7 @@ async fn list<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.list(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("list".into())) {
@@ -101,7 +100,7 @@ async fn list<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -118,15 +117,18 @@ async fn list_by_vote_state<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.list_by_vote_state(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_by_vote_state_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_by_vote_state".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_by_vote_state".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -143,7 +145,7 @@ async fn remove<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.remove(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("remove".into())) {
@@ -151,7 +153,7 @@ async fn remove<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -168,15 +170,17 @@ async fn set_vote_draft<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.set_vote_draft(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_vote_draft_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_vote_draft".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_vote_draft".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -193,15 +197,17 @@ async fn get_vote_draft<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.get_vote_draft(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_vote_draft_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_vote_draft".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_vote_draft".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -218,7 +224,7 @@ async fn vote<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.vote(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == vote_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("vote".into())) {
@@ -226,10 +232,38 @@ async fn vote<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
+
+#[tauri::command]
+async fn revoke_vote<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RevokeVoteRequest,
+) -> Result<RevokeVoteResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
+    match client.revoke_vote(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == revoke_vote_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("revoke_vote".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 #[tauri::command]
 async fn get_my_vote<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -242,15 +276,17 @@ async fn get_my_vote<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.get_my_vote(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_my_vote_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_my_vote".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_my_vote".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -267,15 +303,17 @@ async fn list_score<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.list_score(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_score_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_score".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_score".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -292,15 +330,18 @@ async fn get_member_state<R: Runtime>(
     }
     let mut client = ProjectAppraiseApiClient::new(chan.unwrap());
     match client.get_member_state(request).await {
-        Ok(response) =>  {
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_member_state_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_member_state".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_member_state".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -322,6 +363,7 @@ impl<R: Runtime> ProjectAppraiseApiPlugin<R> {
                 set_vote_draft,
                 get_vote_draft,
                 vote,
+                revoke_vote,
                 get_my_vote,
                 list_score,
                 get_member_state,
