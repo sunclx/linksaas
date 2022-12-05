@@ -1,15 +1,17 @@
-import React from 'react';
-import { Table, Pagination, Empty } from 'antd';
+import React, { useState } from 'react';
+import { Table, Pagination, Empty, Modal } from 'antd';
 import { useStores } from '@/hooks';
 import moment from 'moment';
 import type { WebUserScoreInfo } from '@/stores/appraise';
 import { observer, useLocalObservable } from 'mobx-react';
 import { request } from '@/utils/request';
-import { list_score, MY_VOTE_STATE_DONE } from '@/api/project_appraise';
+import { list_score, MY_VOTE_STATE_DONE, remove as remove_appraise, update as update_appraise } from '@/api/project_appraise';
 import styles from './AppraiseRecordList.module.less';
 import SetAppraise from "./SetAppraise";
 import { runInAction } from "mobx";
 import UserPhoto from '@/components/Portrait/UserPhoto';
+import Button from '@/components/Button';
+import { EditText } from '@/components/EditCell/EditText';
 
 
 type AppraiseRecordListProps = {
@@ -34,8 +36,40 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
       this.voteAppraiseId = id;
       this.hasVoted = hasVoted;
       this.showVote = true;
+    },
+  }));
+
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+
+  const getCurAppraise = () => {
+    const recordList = props.adminMode ? appraiseStore.allrecordList : appraiseStore.myRecordList;
+    return recordList.find(item => item.appraise_id == localStore.curAppraiseId);
+  };
+
+  const removeAppraise = async () => {
+    if (localStore.curAppraiseId == "") {
+      return;
     }
-  }))
+    await request(remove_appraise(userStore.sessionId, projectStore.curProjectId, localStore.curAppraiseId));
+    appraiseStore.removeAppraise(localStore.curAppraiseId);
+    localStore.setCurAppraiseId("");
+  }
+
+  const updateTitle = async (appraiseId: string, title: string) => {
+    try {
+      const res = await update_appraise({
+        session_id: userStore.sessionId,
+        appraise_id: appraiseId,
+        basic_info: {
+          project_id: projectStore.curProjectId,
+          title: title,
+        },
+      });
+      return res.code == 0;
+    } catch (_) {
+      return false;
+    }
+  }
 
   // 表
   const columns = [{
@@ -129,7 +163,9 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
           return <div className={styles.list_item} key={item.appraise_id}>
             <div className={styles.list_hd}>
               <div className={styles.list_title}>
-                {item.basic_info?.title || ' '}
+                <EditText editable={projectStore.isAdmin} content={item.basic_info?.title || ' '} showEditIcon={true} onChange={async (value) => {
+                  return await updateTitle(item.appraise_id, value);
+                }} />
               </div>
               {item.has_my_vote_state && (
                 <a
@@ -171,14 +207,29 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
             </div>
 
             {/* 数据 */}
-            {isCurrent && !!localStore.dataSource.length && <Table
-              dataSource={localStore.dataSource}
-              columns={columns}
-              pagination={false}
-              rowClassName={styles.row}
-              className={styles.table}
-              rowKey="user_id"
-            />}
+            {isCurrent && !!localStore.dataSource.length && (
+              <div>
+                {projectStore.isAdmin && (
+                  <div className={styles.action_bar}>
+                    <div className={styles.remove_btn_wrap}>
+                      <Button danger onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowRemoveModal(true);
+                      }}>删除互评</Button>
+                    </div>
+                  </div>
+                )}
+                <Table
+                  dataSource={localStore.dataSource}
+                  columns={columns}
+                  pagination={false}
+                  rowClassName={styles.row}
+                  className={styles.table}
+                  rowKey="user_id"
+                />
+              </div>
+            )}
           </div>
         })
         }
@@ -205,6 +256,25 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
           appraiseStore.updateAppraise(appraiseId);
           localStore.showVote = false;
         }} />)}
+
+      {showRemoveModal == true && localStore.curAppraiseId != "" && (
+        <Modal
+          title={`删除评估 ${getCurAppraise()?.basic_info.title ?? ""}`}
+          open
+          onCancel={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            setShowRemoveModal(false);
+          }}
+          onOk={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            removeAppraise();
+          }}>
+          是否删除评估 {getCurAppraise()?.basic_info.title ?? ""}?<br />
+          删除后当前评估将不可访问,并且相关投票会撤回。
+        </Modal>
+      )}
     </div>
   );
 };

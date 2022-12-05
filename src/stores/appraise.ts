@@ -153,6 +153,13 @@ class AppraiseStore {
     }
   }
 
+  removeAppraise(appraiseId: string) {
+    runInAction(() => {
+      this._allRecordList = this._allRecordList.filter(item => item.appraise_id != appraiseId);
+      this._myRecordList = this._myRecordList.filter(item => item.appraise_id != appraiseId);
+    });
+  }
+
   clearData() {
     this._myTotalCount = 0
     this._myRecordList = [];
