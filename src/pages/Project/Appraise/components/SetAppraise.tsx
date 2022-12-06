@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './SetAppraise.module.less';
 import ActionModal from '@/components/ActionModal';
 import Button from '@/components/Button';
@@ -8,6 +8,7 @@ import {
   get_vote_draft,
   set_vote_draft,
   vote as save_vote,
+  revoke_vote,
 } from '@/api/project_appraise';
 import type { VoteItem } from '@/api/project_appraise';
 import { Rate, message } from 'antd';
@@ -25,7 +26,7 @@ type SetAppraiseProps = {
 
 // 发起互评
 const SetAppraise: React.FC<SetAppraiseProps> = (props) => {
-  const { appraiseId, hasVote, onCancel, onVote } = props;
+  const { appraiseId, onCancel, onVote } = props;
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
 
@@ -33,6 +34,8 @@ const SetAppraise: React.FC<SetAppraiseProps> = (props) => {
     voteCount: 0,
     voteItemList: [] as VoteItem[],
   }));
+
+  const [hasVote, setHasVote] = useState(props.hasVote);
 
   const loadVote = async () => {
     const res = await request(
@@ -56,6 +59,15 @@ const SetAppraise: React.FC<SetAppraiseProps> = (props) => {
         localStore.voteCount = res.vote_info.item_list.map((item) => item.score > 0).length;
       });
     }
+  };
+
+  const revokeVote = async () => {
+    await request(revoke_vote({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      appraise_id: appraiseId,
+    }));
+    setHasVote(false);
   };
 
   useEffect(() => {
@@ -181,6 +193,9 @@ const SetAppraise: React.FC<SetAppraiseProps> = (props) => {
           </div>
         ) : (
           <div className={styles.actions}>
+            <Button key="revoke" ghost onClick={() => revokeVote()} className={styles.btn}>
+              撤回投票
+            </Button>
             <Button key="cancel" className={styles.btn} onClick={() => onCancel()}>
               关闭
             </Button>

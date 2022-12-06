@@ -29,6 +29,8 @@ pub mod project {
         RemoveChannelMemberEvent(events_project::RemoveChannelMemberEvent),
         UploadWorkSnapShotEvent(events_project::UploadWorkSnapShotEvent),
         CreateAppraiseEvent(events_project::CreateAppraiseEvent),
+        UpdateAppraiseEvent(events_project::UpdateAppraiseEvent),
+        RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
         AddProjectAppEvent(events_project::AddProjectAppEvent),
         RemoveProjectAppEvent(events_project::RemoveProjectAppEvent),
     }
@@ -129,6 +131,14 @@ pub mod project {
         } else if data.type_url == events_project::CreateAppraiseEvent::type_url() {
             if let Ok(ev) = events_project::CreateAppraiseEvent::decode(data.value.as_slice()) {
                 return Some(Event::CreateAppraiseEvent(ev));
+            }
+        } else if data.type_url == events_project::UpdateAppraiseEvent::type_url() {
+            if let Ok(ev) = events_project::UpdateAppraiseEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateAppraiseEvent(ev));
+            }
+        } else if data.type_url == events_project::RemoveAppraiseEvent::type_url() {
+            if let Ok(ev) = events_project::RemoveAppraiseEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveAppraiseEvent(ev));
             }
         } else if data.type_url == events_project::AddProjectAppEvent::type_url() {
             if let Ok(ev) = events_project::AddProjectAppEvent::decode(data.value.as_slice()) {

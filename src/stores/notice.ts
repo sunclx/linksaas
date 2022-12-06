@@ -145,12 +145,30 @@ class NoticeStore {
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
         this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewAppraiseNotice.project_id);
       }
+    }else if(notice.UpdateAppraiseNotice !== undefined){
+      if (this.rootStore.projectStore.curProjectId === notice.UpdateAppraiseNotice.project_id) {
+        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
+        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
+      }
+    }else if(notice.RemoveAppraiseNotice !== undefined){
+      if (this.rootStore.projectStore.curProjectId === notice.RemoveAppraiseNotice.project_id) {
+        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
+        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
+        this.rootStore.appraiseStore.loadUserScore();
+        this.rootStore.projectStore.updateProjectAppraiseCount(notice.RemoveAppraiseNotice.project_id);
+      }
     } else if (notice.NewVoteNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.NewVoteNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
         this.rootStore.appraiseStore.loadUserScore();
         this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewVoteNotice.project_id);
+      }
+    } else if(notice.RevokeVoteNotice !== undefined){
+      if (this.rootStore.projectStore.curProjectId === notice.RevokeVoteNotice.project_id) {
+        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
+        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
+        this.rootStore.appraiseStore.loadUserScore();
       }
     }
   }

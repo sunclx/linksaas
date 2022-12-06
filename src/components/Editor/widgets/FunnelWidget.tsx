@@ -7,10 +7,12 @@ import s from './FunnelWidget.module.less';
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
 import { ReactComponent as Addsvg } from '@/assets/svg/add.svg';
 import classNames from 'classnames';
+import { uniqId } from '@/utils/utils';
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
 
 interface FunnelStep {
+  id: string;
   name: string;
   ratio: number; //转化率，取值范围 0.0到1.0
 }
@@ -28,8 +30,20 @@ export const funnelWidgetInitData: WidgetData = {
 
 const EditFunnel: React.FC<WidgetProps> = (props) => {
   const initData = props.initData as WidgetData;
+  initData.stepList = initData.stepList.map(item => {
+    if (item.id !== undefined && item.id != null && item.id != "") {
+      return item;
+    } else {
+      return {
+        id: uniqId(),
+        name: item.name,
+        ratio: item.ratio,
+      }
+    }
+  })
   while (initData.stepList.length < 2) {
     initData.stepList.push({
+      id: uniqId(),
       name: '',
       ratio: 0.0,
     });
@@ -40,11 +54,12 @@ const EditFunnel: React.FC<WidgetProps> = (props) => {
     const stepList = data.stepList.slice();
     if (step == initData.stepList.length) {
       stepList.push({
+        id: uniqId(),
         name: '',
         ratio: 0.0,
       });
     } else {
-      stepList.splice(step, 0, { name: '', ratio: 0.0 });
+      stepList.splice(step, 0, { id: uniqId(), name: '', ratio: 0.0 });
     }
     setData({ ...data, stepList });
   };
@@ -84,7 +99,7 @@ const EditFunnel: React.FC<WidgetProps> = (props) => {
             </thead>
             <tbody>
               {data.stepList.map((item, i) => (
-                <tr key={i}>
+                <tr key={item.id}>
                   <td>
                     <Form.Item label={`步骤${i + 1}`} className={s.form_item}>
                       <Input
@@ -227,7 +242,7 @@ const ViewFunnel: React.FC<WidgetProps> = (props) => {
               const itemWidth = 500 - (300 / itemLength) * index;
               const itemDiff = Math.round(150 / itemLength);
               return (
-                <li key={index} style={{ width: itemWidth, height: itemHeight }}>
+                <li key={item.id} style={{ width: itemWidth, height: itemHeight }}>
                   <div className={s.item_ratio}>{item.ratio * 100.0}%</div>
                   <svg
                     className={s.item_bg}

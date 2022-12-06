@@ -8,6 +8,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
 import { useSetState } from 'ahooks';
+import { uniqId } from '@/utils/utils';
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 const { TextArea } = Input;
 
@@ -32,15 +33,9 @@ export const techCompareWidgetInitData: WidgetData = {
 const EditTechCompare: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;
 
-  let nextId = 0;
-  const getnextId = () => {
-    nextId = nextId + 1;
-    return nextId;
-  };
-
   while (data.list.length < 2) {
     data.list.push({
-      id: getnextId(),
+      id: parseInt(uniqId()),
       technology: '',
       merit: '',
       defect: '',
@@ -57,9 +52,7 @@ const EditTechCompare: React.FC<WidgetProps> = (props) => {
   };
 
   const addrow = () => {
-    console.log(trData);
-
-    trData.list.push({ id: getnextId(), technology: '', merit: '', defect: '' });
+    trData.list.push({ id: parseInt(uniqId()), technology: '', merit: '', defect: '' });
     setTrData({
       list: trData.list,
     });
@@ -81,7 +74,7 @@ const EditTechCompare: React.FC<WidgetProps> = (props) => {
         }}
       >
         <div>
-          <Input placeholder="请输入标题" className={s.input_title} />
+          <Input placeholder="请输入标题" className={s.input_title} addonBefore="标题:" />
           <table className={s.table_wrap}>
             <thead>
               <tr>
@@ -171,7 +164,7 @@ const ViewTechCompare: React.FC<WidgetProps> = (props) => {
             </thead>
             <tbody>
               {data.list?.map((item, i) => (
-                <tr key={i}>
+                <tr key={item.id}>
                   <td>
                     <div className={s.text}>{item.technology}</div>
                   </td>

@@ -15,6 +15,15 @@
 }
 .list_item {
     margin-bottom: 11px;
+    .action_bar {
+        position: relative;
+        height: 40px;
+        .remove_btn_wrap {
+            position: absolute;
+            right: 60px;
+            top: 10px;
+        }
+    }
 }
 .list_hd {
     height: 32px;
@@ -24,12 +33,13 @@
     align-items: center;
 }
 .list_title {
-    height: 12px;
+    height: 18px;
     font-size: 12px;
     font-weight: 500;
     color: #000000;
     line-height: 12px;
     padding-left: 11px;
+    margin-right: 20px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

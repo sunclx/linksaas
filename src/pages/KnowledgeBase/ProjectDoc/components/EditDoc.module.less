@@ -1,5 +1,7 @@
 .editdoc_wrap {
   position: relative;
+  overflow: hidden;
+  height: calc(100vh - 130px);
   .docInRecycle {
     display: flex;
     justify-content: space-between;
@@ -81,6 +83,10 @@
     position: absolute;
     right: 10px;
     margin: 10px 0;
+  }
+  .read_doc {
+    height: calc(100vh - 190px);
+    overflow: scroll;
   }
 }
 

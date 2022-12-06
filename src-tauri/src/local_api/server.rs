@@ -69,11 +69,10 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::{
-    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBlockCollBlockCollIdBlockIdGet200Response,
-    ProjectProjectIdBlockCollBlockCollIdGet200Response, ProjectProjectIdBlockCollGet200Response,
-    ProjectProjectIdBugAllGet200Response, ProjectProjectIdDocSpaceDocSpaceIdGet200Response,
-    ProjectProjectIdEventGet200Response, ProjectProjectIdTaskAllGet200Response,
-    ProjectProjectIdTaskRecordTaskIdDependGet200Response,
+    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBlockCollBlockCollIdGet200Response,
+    ProjectProjectIdBlockCollGet200Response, ProjectProjectIdBugAllGet200Response,
+    ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
+    ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
 };
 use local_api_rust::{
     Api, HelloGetResponse, ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse,
@@ -554,7 +553,7 @@ where
             return Ok(ProjectProjectIdTaskAllGetResponse::Status200 {
                 body: ProjectProjectIdTaskAllGet200Response {
                     total_count: Some(res.total_count as i32),
-                    bug_list: Some(super::issue_api::convert_to_task_list(res.info_list)),
+                    task_list: Some(super::issue_api::convert_to_task_list(res.info_list)),
                 },
                 access_control_allow_origin: Some("*".into()),
             });
@@ -1551,9 +1550,7 @@ where
             }
             return Ok(
                 ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse::Status200 {
-                    body: ProjectProjectIdBlockCollBlockCollIdBlockIdGet200Response {
-                        content_list: Some(super::vc_api::convert_content_list(res.content_list)),
-                    },
+                    body: super::vc_api::convert_content_list(res.content_list),
                     access_control_allow_origin: Some("*".into()),
                 },
             );

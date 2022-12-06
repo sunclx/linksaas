@@ -83,12 +83,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     },
     {
       path: prefix + '/appraise',
-      title: '项目互评',
+      title: '项目成员互评',
       component: ProjectAppraise,
     },
     {
       path: prefix + '/award',
-      title: '项目贡献',
+      title: '项目成员贡献',
       component: ProjectAward,
     },
     {
