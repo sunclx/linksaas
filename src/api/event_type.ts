@@ -473,6 +473,48 @@ export namespace project {
     ];
   }
 
+  export type CreateGoalEvent = {
+    goal_id: string;
+    member_user_id: string;
+    member_display_name: string;
+  };
+
+  function get_create_goal_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateGoalEvent
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name}`),
+    ];
+    if (ev.user_id != inner.member_user_id) {
+      ret_list.push(new LinkNoneInfo(`为成员 ${inner.member_display_name}`));
+    }
+    ret_list.push(new LinkNoneInfo("创建目标"));
+    return ret_list;
+  }
+
+  export type UpdateGoalEvent = {
+    goal_id: string;
+    member_user_id: string;
+    member_display_name: string;
+  };
+
+  function get_update_goal_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateGoalEvent
+  ): LinkInfo[] {
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name}`),
+    ];
+    if (ev.user_id != inner.member_user_id) {
+      ret_list.push(new LinkNoneInfo(`为成员 ${inner.member_display_name}`));
+    }
+    ret_list.push(new LinkNoneInfo("更新目标"));
+    return ret_list;
+  }
+
 
   export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
@@ -502,6 +544,8 @@ export namespace project {
     RemoveAppraiseEvent?: RemoveAppraiseEvent;
     AddProjectAppEvent?: AddProjectAppEvent;
     RemoveProjectAppEvent?: RemoveProjectAppEvent;
+    CreateGoalEvent?: CreateGoalEvent;
+    UpdateGoalEvent?: UpdateGoalEvent;
   };
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -574,6 +618,10 @@ export namespace project {
       return get_add_project_app_simple_content(ev, skip_prj_name, inner.AddProjectAppEvent);
     } else if (inner.RemoveProjectAppEvent !== undefined) {
       return get_remove_project_app_simple_content(ev, skip_prj_name, inner.RemoveProjectAppEvent);
+    } else if (inner.CreateGoalEvent !== undefined) {
+      return get_create_goal_simple_content(ev, skip_prj_name, inner.CreateGoalEvent);
+    } else if (inner.UpdateGoalEvent !== undefined) {
+      return get_update_goal_simple_content(ev, skip_prj_name, inner.UpdateGoalEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }
