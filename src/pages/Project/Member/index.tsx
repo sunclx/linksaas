@@ -1,73 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CardWrap from '@/components/CardWrap';
-import { Table } from 'antd';
-import useColums from './components/useColums';
-import { useStores } from '@/hooks';
-import type { WebMemberInfo } from '@/stores/member';
-import Button from '@/components/Button';
+import { Tabs } from 'antd';
 import s from './index.module.less';
-import { observer } from 'mobx-react';
-import { UserAddOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/lib/table';
-import RemoveMember from './components/RemoveMember';
-import useVisible from '@/hooks/useVisible';
-import AddMember from './components/AddMember';
+import MemberList from './components/MemberList';
+import { useLocation } from 'react-router-dom';
+import GoalList from './components/GoalList';
 
 const ProjectMember: React.FC = () => {
-  const [removeObj, setRemoveObj] = useVisible<WebMemberInfo>();
-  const [addObj, setAddObj] = useVisible<WebMemberInfo>();
-  const projectStore = useStores('projectStore');
-  const appStore = useStores('appStore');
-  const memberStore = useStores('memberStore');
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  let defaultTab = urlParams.get("tab");
+  if (defaultTab == null || defaultTab == "") {
+    defaultTab = "member";
+  }
 
-  const { columns } = useColums({
-    setRemoveObj,
-  });
-
-
+  const [tab, setTab] = useState(defaultTab);
 
   return (
     <CardWrap title="项目成员列表" halfContent>
       <div className={s.member_wrap}>
-        <div className={s.top}>
-          <h2>
-            成员列表 <span>({memberStore.memberList.length})</span>
-          </h2>
-          {!(projectStore.curProject?.closed) && projectStore.isAdmin && appStore.clientCfg?.can_invite && (
-            <Button type="link" onClick={() => setAddObj(true)}>
-              <UserAddOutlined />
-              添加成员
-            </Button>
-          )}
-        </div>
-        <div className={s.table_wrap}>
-          {projectStore.isAdmin && (
-            <Table<WebMemberInfo>
-              rowKey={(e) => e?.member?.member_user_id}
-              scroll={{ y: 'calc(100vh - 260px)' }}
-              columns={columns as ColumnsType<WebMemberInfo>}
-              dataSource={memberStore.memberList}
-              pagination={false}
-            />
-          )}
-          {!projectStore.isAdmin && (
-            <Table<WebMemberInfo>
-              rowKey={(e) => e?.member?.member_user_id}
-              scroll={{ y: 'calc(100vh - 260px)' }}
-              columns={columns as ColumnsType<WebMemberInfo>}
-              dataSource={memberStore.memberList}
-              pagination={false}
-            />
-          )}
-        </div>
-        <RemoveMember
-          visible={removeObj.visible}
-          params={removeObj.param}
-          onChange={setRemoveObj}
-        />
-        {addObj.visible && <AddMember visible={addObj.visible} onChange={setAddObj} />}
+        <Tabs
+          activeKey={tab}
+          type="card"
+          tabPosition="left"
+          onChange={key => {
+            setTab(key);
+          }} items={[
+            {
+              label: <div className={s.tab}>成员列表</div>,
+              key: "member",
+              children: <MemberList />
+            },
+            {
+              label: <div className={s.tab}>成员目标</div>,
+              key: "goal",
+              children: <GoalList />
+            },
+          ]} />
+
       </div>
     </CardWrap>
   );
 };
-export default observer(ProjectMember);
+
+export default ProjectMember;

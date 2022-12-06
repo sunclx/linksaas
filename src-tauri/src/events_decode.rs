@@ -33,6 +33,8 @@ pub mod project {
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
         AddProjectAppEvent(events_project::AddProjectAppEvent),
         RemoveProjectAppEvent(events_project::RemoveProjectAppEvent),
+        CreateGoalEvent(events_project::CreateGoalEvent),
+        UpdateGoalEvent(events_project::UpdateGoalEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -147,6 +149,14 @@ pub mod project {
         } else if data.type_url == events_project::RemoveProjectAppEvent::type_url() {
             if let Ok(ev) = events_project::RemoveProjectAppEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveProjectAppEvent(ev));
+            }
+        } else if data.type_url == events_project::CreateGoalEvent::type_url() {
+            if let Ok(ev) = events_project::CreateGoalEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateGoalEvent(ev));
+            }
+        } else if data.type_url == events_project::UpdateGoalEvent::type_url() {
+            if let Ok(ev) = events_project::UpdateGoalEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateGoalEvent(ev));
             }
         }
         None
