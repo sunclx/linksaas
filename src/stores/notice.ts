@@ -46,17 +46,21 @@ class NoticeStore {
       });
     }
     const unlistenFn = await listen<NoticeType.AllNotice>('notice', (ev) => {
-      const notice = ev.payload
-      if (notice.ProjectNotice !== undefined) {
-        this.processProjectNotice(notice.ProjectNotice);
-      } else if (notice.ProjectDocNotice !== undefined) {
-        this.processProjectDocNotice(notice.ProjectDocNotice);
-      } else if (notice.IssueNotice !== undefined) {
-        this.processIssueNotice(notice.IssueNotice);
-      } else if (notice.AppraiseNotice !== undefined) {
-        this.processAppraiseNotice(notice.AppraiseNotice)
-      } else if (notice.ClientNotice !== undefined) {
-        this.processClientNotice(notice.ClientNotice);
+      try {
+        const notice = ev.payload
+        if (notice.ProjectNotice !== undefined) {
+          this.processProjectNotice(notice.ProjectNotice);
+        } else if (notice.ProjectDocNotice !== undefined) {
+          this.processProjectDocNotice(notice.ProjectDocNotice);
+        } else if (notice.IssueNotice !== undefined) {
+          this.processIssueNotice(notice.IssueNotice);
+        } else if (notice.AppraiseNotice !== undefined) {
+          this.processAppraiseNotice(notice.AppraiseNotice)
+        } else if (notice.ClientNotice !== undefined) {
+          this.processClientNotice(notice.ClientNotice);
+        }
+      } catch (e) {
+        console.log(e);
       }
     });
     runInAction(() => {
@@ -71,10 +75,14 @@ class NoticeStore {
       });
     }
     const unlistenShortNoteFn = await listen<ShortNoteEvent | string>("shortNote", (ev) => {
-      if (isString(ev.payload)) {
-        this.processShortNoteEvent(JSON.parse(ev.payload));
-      } else {
-        this.processShortNoteEvent(ev.payload);
+      try {
+        if (isString(ev.payload)) {
+          this.processShortNoteEvent(JSON.parse(ev.payload));
+        } else {
+          this.processShortNoteEvent(ev.payload);
+        }
+      } catch (e) {
+        console.log(e);
       }
 
     });
@@ -145,12 +153,12 @@ class NoticeStore {
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
         this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewAppraiseNotice.project_id);
       }
-    }else if(notice.UpdateAppraiseNotice !== undefined){
+    } else if (notice.UpdateAppraiseNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.UpdateAppraiseNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
       }
-    }else if(notice.RemoveAppraiseNotice !== undefined){
+    } else if (notice.RemoveAppraiseNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.RemoveAppraiseNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
@@ -164,7 +172,7 @@ class NoticeStore {
         this.rootStore.appraiseStore.loadUserScore();
         this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewVoteNotice.project_id);
       }
-    } else if(notice.RevokeVoteNotice !== undefined){
+    } else if (notice.RevokeVoteNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.RevokeVoteNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);

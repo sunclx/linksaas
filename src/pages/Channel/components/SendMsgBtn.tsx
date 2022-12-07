@@ -92,7 +92,11 @@ const SendMsgBtn: React.FC<SendMsgBtnProps> = (props) => {
                 <Button type="primary" style={{ height: "36px", width: "60px" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    props.onSend(floatMinutes);
+                    if(enable){
+                        props.onSend(floatMinutes);
+                    }else{
+                        props.onSend(0);
+                    }
                 }}>
                     发送
                 </Button>
