@@ -13,6 +13,8 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 import { request } from "@/utils/request";
 import Pagination from "@/components/Pagination";
+import UserPhoto from '@/components/Portrait/UserPhoto';
+
 
 interface KeyResultWrap {
     id: string;
@@ -231,7 +233,16 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
 
     return (
         <Card
-            title={item.member.display_name}
+            title={
+                <div>
+
+                    <UserPhoto logoUri={item.member.logo_uri ?? ""} width="30px" style={{
+                        marginRight: '5px',
+                        borderRadius: '50px',
+                        border: '1px solid #ddd',
+                    }} />
+                    &nbsp;&nbsp;{item.member.display_name}
+                </div>}
             extra={
                 <>
                     {editGoal == null && (projectStore.isAdmin || userStore.userInfo.userId == item.member.member_user_id) && <Button
@@ -254,7 +265,9 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
                                 ],
                             });
                         }}>创建目标</Button>}
-                </>}>
+                </>}
+            bordered={true}
+            style={{ marginTop: "10px" }}>
             <div className={s.goal_wrap}>
                 {editGoal == null && (
                     <div>
@@ -287,11 +300,13 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
                                                 e.preventDefault();
                                                 onShowHistory(item.member.member_user_id);
                                             }}>查看历史</Button>
-                                            <Button onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                genEditGoal();
-                                            }}>修改</Button>
+                                            {(projectStore.isAdmin || userStore.userInfo.userId == item.member.member_user_id) && (
+                                                <Button onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    genEditGoal();
+                                                }}>修改</Button>
+                                            )}
                                         </Space>
                                     </div>
                                 </div>
@@ -380,7 +395,8 @@ const HistoryItem: React.FC<{ item: GoalInfo }> = ({ item }) => {
     return (
         <Card extra={
             <span>{item.update_display_name}&nbsp;&nbsp;{moment(item.update_time).format("YYYY-MM-DD HH:mm:ss")}&nbsp;&nbsp;更新</span>
-        }>
+        }
+            style={{ marginBottom: "10px" }}>
             <div className={s.goal_wrap}>
                 <div className={s.info_wrap}>
                     <div className={s.info_label}>日期区间</div>

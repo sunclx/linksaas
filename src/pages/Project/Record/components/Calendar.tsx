@@ -144,7 +144,9 @@ const Calendar: React.FC<{
               key={updater}
               value={localStore.currentDate}
               disabledDate={(date) => {
-                return date.isAfter(Date.now());
+                const day = date.format("YYYY-MM-DD");
+                const curDay = moment().format("YYYY-MM-DD");
+                return day > curDay;
               }}
               onPanelChange={(date) => {
                 localStore.listProjectEvent(date);
