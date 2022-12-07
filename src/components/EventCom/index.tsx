@@ -53,7 +53,7 @@ const EventCom: FC<EventComProps> = ({
                 src: imgUrl,
                 mask: false,
                 wrapStyle: {
-                  margin: "60px 60px 60px 60px"
+                  margin: "60px 60px 60px 60px",
                 },
               }}
               src={thumbImgUrl}

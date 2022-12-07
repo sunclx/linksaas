@@ -54,7 +54,7 @@ const Toolbar: React.FC = observer(() => {
     <div className={style.toolbar}>
       <Item id="home" pathname={pathname} title="项目详情" />
       <Divider />
-      <Item id="member" pathname={pathname} title="项目成员列表" />
+      <Item id="member" pathname={pathname} title="项目成员" />
       <Item
         id="appraise"
         pathname={pathname}
