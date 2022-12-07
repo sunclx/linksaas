@@ -17,7 +17,7 @@ const ProjectMember: React.FC = () => {
   const [tab, setTab] = useState(defaultTab);
 
   return (
-    <CardWrap title="项目成员列表" halfContent>
+    <CardWrap title="项目成员" halfContent>
       <div className={s.member_wrap}>
         <Tabs
           activeKey={tab}

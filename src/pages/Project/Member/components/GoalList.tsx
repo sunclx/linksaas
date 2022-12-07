@@ -235,7 +235,7 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
         <Card
             title={
                 <div>
-                    
+
                     <UserPhoto logoUri={item.member.logo_uri ?? ""} width="30px" style={{
                         marginRight: '5px',
                         borderRadius: '50px',
@@ -265,7 +265,9 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
                                 ],
                             });
                         }}>创建目标</Button>}
-                </>}>
+                </>}
+            bordered={true}
+            style={{ marginTop: "10px" }}>
             <div className={s.goal_wrap}>
                 {editGoal == null && (
                     <div>
@@ -393,7 +395,8 @@ const HistoryItem: React.FC<{ item: GoalInfo }> = ({ item }) => {
     return (
         <Card extra={
             <span>{item.update_display_name}&nbsp;&nbsp;{moment(item.update_time).format("YYYY-MM-DD HH:mm:ss")}&nbsp;&nbsp;更新</span>
-        }>
+        }
+            style={{ marginBottom: "10px" }}>
             <div className={s.goal_wrap}>
                 <div className={s.info_wrap}>
                     <div className={s.info_label}>日期区间</div>
