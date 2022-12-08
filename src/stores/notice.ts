@@ -13,7 +13,6 @@ import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
-import type { FloatNoticeDetailEvent } from '@/utils/float_notice';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
@@ -27,7 +26,6 @@ class NoticeStore {
   private rootStore: RootStore;
   private unlistenFn: UnlistenFn | null = null;
   private unlistenShortNoteFn: UnlistenFn | null = null;
-  private unlistenFloatNoticeFn: UnlistenFn | null = null;
 
   private history: History = createBrowserHistory();
 
@@ -90,22 +88,6 @@ class NoticeStore {
       this.unlistenShortNoteFn = unlistenShortNoteFn;
     });
 
-    if (this.unlistenFloatNoticeFn != null) {
-      this.unlistenFloatNoticeFn();
-      runInAction(() => {
-        this.unlistenFloatNoticeFn = null;
-      });
-    }
-    const unlistenFloatNoticeFn = await listen<FloatNoticeDetailEvent | string>("floatNoticeDetail", (ev) => {
-      if (isString(ev.payload)) {
-        this.processFloatNoticeDetailEvent(JSON.parse(ev.payload));
-      } else {
-        this.processFloatNoticeDetailEvent(ev.payload);
-      }
-    });
-    runInAction(() => {
-      this.unlistenFloatNoticeFn = unlistenFloatNoticeFn;
-    });
   }
 
   private async processProjectDocNotice(notice: NoticeType.project_doc.AllNotice) {
@@ -284,10 +266,6 @@ class NoticeStore {
       if (notice.SetMemberRoleNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.updateMemberRole(notice.SetMemberRoleNotice.member_user_id, notice.SetMemberRoleNotice.role_id);
       }
-    } else if (notice.SetMemberFloatNotice !== undefined) {
-      if (notice.SetMemberFloatNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.memberStore.updateFloatNoticeCount(notice.SetMemberFloatNotice.member_user_id, notice.SetMemberFloatNotice.float_notice_per_day);
-      }
     } else if (notice.ReminderNotice !== undefined) {
       let permissionGranted = await isPermissionGranted();
       if (!permissionGranted) {
@@ -445,9 +423,6 @@ class NoticeStore {
     }, 500);
   }
 
-  private async processFloatNoticeDetailEvent(ev: FloatNoticeDetailEvent) {
-    this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.channelId, ev.msgId), this.history);
-  }
 }
 
 

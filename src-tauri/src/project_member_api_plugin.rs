@@ -352,56 +352,6 @@ pub async fn upload_work_snap_shot<R: Runtime>(
 }
 
 #[tauri::command]
-pub async fn set_float_notice_per_day<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: SetFloatNoticePerDayRequest,
-) -> Result<SetFloatNoticePerDayResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.set_float_notice_per_day(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == set_float_notice_per_day_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_float_notice_per_day".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        },
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-pub async fn get_float_notice_per_day<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: GetFloatNoticePerDayRequest,
-) -> Result<GetFloatNoticePerDayResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.get_float_notice_per_day(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == get_float_notice_per_day_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_float_notice_per_day".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        },
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 pub async fn create_goal<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -498,8 +448,6 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
                 get_member,
                 set_work_snap_shot,
                 get_work_snap_shot_status,
-                set_float_notice_per_day,
-                get_float_notice_per_day,
                 create_goal,
                 update_goal,
                 list_goal,

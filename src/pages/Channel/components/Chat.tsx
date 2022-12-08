@@ -53,7 +53,7 @@ const ChannelHeader = observer(() => {
     }, 200);
   }, [chatMsgStore.getEditMsg()]);
 
-  const sendContent = async (floatNoticeMinute: number) => {
+  const sendContent = async () => {
     const chatJson = sendEditor.editorRef.current?.getContent() || {
       type: 'doc',
     };
@@ -69,7 +69,6 @@ const ChannelHeader = observer(() => {
       channelStore.curChannelId,
     );
     const remindInfo = get_reminder_info(chatJson);
-    remindInfo.float_notice_minute = floatNoticeMinute;
 
     await request(
       send_msg(userStore.sessionId, projectStore.curProjectId, channelStore.curChannelId, {
@@ -118,7 +117,7 @@ const ChannelHeader = observer(() => {
         channelStore.curChannel?.channelInfo.closed == false && (
           <div className={styles.chatInput + ' _chatContext'}>
             {sendEditor.editor}
-            <SendMsgBtn editorRef={sendEditor.editorRef} onSend={(floatNoticeMinute: number) => sendContent(floatNoticeMinute)} />
+            <SendMsgBtn editorRef={sendEditor.editorRef} onSend={() => sendContent()} />
           </div>
         )}
       {chatMsgStore.getEditMsg() != undefined && (

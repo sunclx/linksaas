@@ -73,20 +73,6 @@ const useColums = (props: UseColumsType) => {
     }
   };
 
-  //修改浮动通知次数
-  const onChangeFloatNoticeCount = async (count: number, row: WebMemberInfo) => {
-    const res = await request(API.set_float_notice_per_day({
-      session_id: userStore.sessionId,
-      project_id: projectStore.curProjectId,
-      member_user_id: row.member.member_user_id,
-      float_notice_per_day: count,
-    }));
-    if (res) {
-      memberStore.updateFloatNoticeCount(row.member.member_user_id, count);
-      message.success('修改浮动通知次数成功');
-    }
-  };
-
   const columns: (ColumnType<WebMemberInfo> & { isShow?: boolean })[] = [
     {
       title: '成员',
@@ -145,33 +131,6 @@ const useColums = (props: UseColumsType) => {
       isShow: projectStore.isAdmin,
       render: (v: boolean, row: WebMemberInfo) => {
         return <Switch checked={v} onChange={(e) => { onChangeSwitch(e, row) }} />;
-      },
-    },
-    {
-      title: "浮动通知",
-      dataIndex: ['member', 'float_notice_per_day'],
-      width: 70,
-      align: 'center',
-      isShow: projectStore.isAdmin,
-      render: (count: number, row: WebMemberInfo) => {
-        return <Select
-          value={count}
-          style={{ width: 60 }}
-          bordered={false}
-          dropdownMatchSelectWidth={false}
-          placement={'bottomRight'}
-          onChange={(value: number) => onChangeFloatNoticeCount(value, row)}
-          suffixIcon={<img src={iconUnfold} style={{ width: '18px' }} />}
-        >
-          {
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(item => {
-              return (
-                <Option value={item} key={item}>
-                  {item}
-                </Option>);
-            })
-          }
-        </Select>;
       },
     },
     {
