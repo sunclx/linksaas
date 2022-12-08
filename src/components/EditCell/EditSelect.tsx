@@ -15,6 +15,7 @@ export interface EditSelectProps {
     onChange: (curValue: string | number | undefined) => Promise<boolean>;
     showEditIcon: boolean;
     allowClear: boolean;
+    width?: string;
 }
 
 export const EditSelect: React.FC<EditSelectProps> = (props) => {
@@ -51,7 +52,7 @@ export const EditSelect: React.FC<EditSelectProps> = (props) => {
                 allowClear={props.allowClear}
                 open={true}
                 showArrow={false}
-                style={{ width: "80px" }}
+                style={{ width: props.width ??"80px" }}
                 autoFocus
                 defaultValue={curValue}
                 onBlur={e => {
@@ -70,7 +71,7 @@ export const EditSelect: React.FC<EditSelectProps> = (props) => {
                 }}>
                 {props.itemList.map(item => (
                     <Select.Option key={item.value} value={item.value}>
-                        <span style={{ color: item.color, display: "inline-block", width: "60px", textAlign: "center" }}>{item.label}</span>
+                        <span style={{ color: item.color, display: "inline-block", width: props.width ??"60px", textAlign: "center" }}>{item.label}</span>
                     </Select.Option>
                 ))}
             </Select>)}

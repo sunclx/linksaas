@@ -246,6 +246,8 @@ pub mod sprit {
         RemoveEvent(events_sprit::RemoveEvent),
         LinkDocEvent(events_sprit::LinkDocEvent),
         CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
+        LinkChannelEvent(events_sprit::LinkChannelEvent),
+        CancelLinkChannelEvent(events_sprit::CancelLinkChannelEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -268,6 +270,14 @@ pub mod sprit {
         } else if data.type_url == events_sprit::CancelLinkDocEvent::type_url() {
             if let Ok(ev) = events_sprit::CancelLinkDocEvent::decode(data.value.as_slice()) {
                 return Some(Event::CancelLinkDocEvent(ev));
+            }
+        } else if data.type_url == events_sprit::LinkChannelEvent::type_url() {
+            if let Ok(ev) = events_sprit::LinkChannelEvent::decode(data.value.as_slice()) {
+                return Some(Event::LinkChannelEvent(ev));
+            }
+        } else if data.type_url == events_sprit::CancelLinkChannelEvent::type_url() {
+            if let Ok(ev) = events_sprit::CancelLinkChannelEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelLinkChannelEvent(ev));
             }
         }
         None
