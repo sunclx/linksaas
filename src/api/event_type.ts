@@ -991,12 +991,56 @@ namespace sprit {
     ];
   }
 
+
+  export type LinkChannelEvent = {
+    sprit_id: string;
+    sprit_title: string;
+    channel_id: string;
+    channel_title: string;
+  };
+
+  function get_link_channel_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: LinkChannelEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联迭代`),
+      new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
+      new LinkNoneInfo("和频道"),
+      new LinkChannelInfo(inner.channel_title, ev.project_id, inner.channel_id),
+    ];
+  }
+
+  export type CancelLinkChannelEvent = {
+    sprit_id: string;
+    sprit_title: string;
+    channel_id: string;
+    channel_title: string;
+  };
+
+  function get_cancel_link_channel_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelLinkChannelEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消迭代`),
+      new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
+      new LinkNoneInfo("和频道"),
+      new LinkChannelInfo(inner.channel_title, ev.project_id, inner.channel_id),
+      new LinkNoneInfo("关联"),
+    ];
+  }
+
   export type AllSpritEvent = {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
     RemoveEvent?: RemoveEvent;
     LinkDocEvent?: LinkDocEvent;
     CancelLinkDocEvent?: CancelLinkDocEvent;
+    LinkChannelEvent?: LinkChannelEvent;
+    CancelLinkChannelEvent?: CancelLinkChannelEvent;
   };
 
   export function get_simple_content_inner(
@@ -1013,7 +1057,11 @@ namespace sprit {
     } else if (inner.LinkDocEvent !== undefined) {
       return get_link_doc_simple_content(ev, skip_prj_name, inner.LinkDocEvent)
     } else if (inner.CancelLinkDocEvent !== undefined) {
-      return get_cancel_link_doc_simple_content(ev, skip_prj_name, inner.CancelLinkDocEvent)
+      return get_cancel_link_doc_simple_content(ev, skip_prj_name, inner.CancelLinkDocEvent);
+    } else if (inner.LinkChannelEvent !== undefined) {
+      return get_link_channel_simple_content(ev, skip_prj_name, inner.LinkChannelEvent);
+    } else if (inner.CancelLinkChannelEvent !== undefined) {
+      return get_cancel_link_channel_simple_content(ev, skip_prj_name, inner.CancelLinkChannelEvent);
     }
     return [new LinkNoneInfo('未知事件')];
   }
