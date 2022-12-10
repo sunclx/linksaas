@@ -170,22 +170,6 @@ class MemberStore {
     });
   }
 
-  updateFloatNoticeCount(userId: string, count: number) {
-    runInAction(() => {
-      const memberList = this._memberList.slice();
-      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
-      if (index != -1) {
-        memberList[index].member.float_notice_per_day = count;
-      }
-      this._memberList = memberList;
-      const member = this._memberMap.get(userId);
-      if (member !== undefined) {
-        member.member.float_notice_per_day = count;
-        this._memberMap.set(userId, member);
-      }
-    });
-  }
-
   async updateLastEvent(projectId: string, memberUserId: string, lastEventId: string) {
     const res = await request(get_event(this.rootStore.userStore.sessionId, projectId, lastEventId));
     if (!res) {

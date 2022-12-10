@@ -38,7 +38,6 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
             remind_info: {
                 reminder_all: false,
                 extra_reminder_list: [],
-                float_notice_minute: 0,
             },
             link_type: MSG_LINK_NONE,
             link_dest_id: "",

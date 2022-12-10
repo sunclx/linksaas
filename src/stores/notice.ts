@@ -13,7 +13,6 @@ import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
-import type { FloatNoticeDetailEvent } from '@/utils/float_notice';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
@@ -27,7 +26,6 @@ class NoticeStore {
   private rootStore: RootStore;
   private unlistenFn: UnlistenFn | null = null;
   private unlistenShortNoteFn: UnlistenFn | null = null;
-  private unlistenFloatNoticeFn: UnlistenFn | null = null;
 
   private history: History = createBrowserHistory();
 
@@ -46,17 +44,21 @@ class NoticeStore {
       });
     }
     const unlistenFn = await listen<NoticeType.AllNotice>('notice', (ev) => {
-      const notice = ev.payload
-      if (notice.ProjectNotice !== undefined) {
-        this.processProjectNotice(notice.ProjectNotice);
-      } else if (notice.ProjectDocNotice !== undefined) {
-        this.processProjectDocNotice(notice.ProjectDocNotice);
-      } else if (notice.IssueNotice !== undefined) {
-        this.processIssueNotice(notice.IssueNotice);
-      } else if (notice.AppraiseNotice !== undefined) {
-        this.processAppraiseNotice(notice.AppraiseNotice)
-      } else if (notice.ClientNotice !== undefined) {
-        this.processClientNotice(notice.ClientNotice);
+      try {
+        const notice = ev.payload
+        if (notice.ProjectNotice !== undefined) {
+          this.processProjectNotice(notice.ProjectNotice);
+        } else if (notice.ProjectDocNotice !== undefined) {
+          this.processProjectDocNotice(notice.ProjectDocNotice);
+        } else if (notice.IssueNotice !== undefined) {
+          this.processIssueNotice(notice.IssueNotice);
+        } else if (notice.AppraiseNotice !== undefined) {
+          this.processAppraiseNotice(notice.AppraiseNotice)
+        } else if (notice.ClientNotice !== undefined) {
+          this.processClientNotice(notice.ClientNotice);
+        }
+      } catch (e) {
+        console.log(e);
       }
     });
     runInAction(() => {
@@ -71,10 +73,14 @@ class NoticeStore {
       });
     }
     const unlistenShortNoteFn = await listen<ShortNoteEvent | string>("shortNote", (ev) => {
-      if (isString(ev.payload)) {
-        this.processShortNoteEvent(JSON.parse(ev.payload));
-      } else {
-        this.processShortNoteEvent(ev.payload);
+      try {
+        if (isString(ev.payload)) {
+          this.processShortNoteEvent(JSON.parse(ev.payload));
+        } else {
+          this.processShortNoteEvent(ev.payload);
+        }
+      } catch (e) {
+        console.log(e);
       }
 
     });
@@ -82,22 +88,6 @@ class NoticeStore {
       this.unlistenShortNoteFn = unlistenShortNoteFn;
     });
 
-    if (this.unlistenFloatNoticeFn != null) {
-      this.unlistenFloatNoticeFn();
-      runInAction(() => {
-        this.unlistenFloatNoticeFn = null;
-      });
-    }
-    const unlistenFloatNoticeFn = await listen<FloatNoticeDetailEvent | string>("floatNoticeDetail", (ev) => {
-      if (isString(ev.payload)) {
-        this.processFloatNoticeDetailEvent(JSON.parse(ev.payload));
-      } else {
-        this.processFloatNoticeDetailEvent(ev.payload);
-      }
-    });
-    runInAction(() => {
-      this.unlistenFloatNoticeFn = unlistenFloatNoticeFn;
-    });
   }
 
   private async processProjectDocNotice(notice: NoticeType.project_doc.AllNotice) {
@@ -145,12 +135,12 @@ class NoticeStore {
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
         this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewAppraiseNotice.project_id);
       }
-    }else if(notice.UpdateAppraiseNotice !== undefined){
+    } else if (notice.UpdateAppraiseNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.UpdateAppraiseNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
       }
-    }else if(notice.RemoveAppraiseNotice !== undefined){
+    } else if (notice.RemoveAppraiseNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.RemoveAppraiseNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
@@ -164,7 +154,7 @@ class NoticeStore {
         this.rootStore.appraiseStore.loadUserScore();
         this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewVoteNotice.project_id);
       }
-    } else if(notice.RevokeVoteNotice !== undefined){
+    } else if (notice.RevokeVoteNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.RevokeVoteNotice.project_id) {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
@@ -275,10 +265,6 @@ class NoticeStore {
     } else if (notice.SetMemberRoleNotice !== undefined) {
       if (notice.SetMemberRoleNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.updateMemberRole(notice.SetMemberRoleNotice.member_user_id, notice.SetMemberRoleNotice.role_id);
-      }
-    } else if (notice.SetMemberFloatNotice !== undefined) {
-      if (notice.SetMemberFloatNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.memberStore.updateFloatNoticeCount(notice.SetMemberFloatNotice.member_user_id, notice.SetMemberFloatNotice.float_notice_per_day);
       }
     } else if (notice.ReminderNotice !== undefined) {
       let permissionGranted = await isPermissionGranted();
@@ -437,9 +423,6 @@ class NoticeStore {
     }, 500);
   }
 
-  private async processFloatNoticeDetailEvent(ev: FloatNoticeDetailEvent) {
-    this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.channelId, ev.msgId), this.history);
-  }
 }
 
 

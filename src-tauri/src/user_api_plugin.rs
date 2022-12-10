@@ -1,7 +1,6 @@
 use crate::notice_decode::{
     decode_notice, earthly::Notice as EarthlyNotice, new_upload_snap_shot_notice,
-    new_wrong_session_notice, project::Notice as ProjectNotice, robot::Notice as RobotNotice,
-    NoticeMessage,
+    new_wrong_session_notice, robot::Notice as RobotNotice, NoticeMessage,
 };
 use prost::Message;
 use proto_gen_rust::fs_api::{FileOwnerType, SetFileOwnerRequest};
@@ -15,11 +14,11 @@ use rumqttc::AsyncClient as MqttClient;
 use rumqttc::{MqttOptions, QoS};
 use std::time::Duration;
 use tauri::async_runtime::Mutex;
+use tauri::Manager;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
-use tauri::{Manager, WindowBuilder, WindowUrl};
 use tokio::time::sleep;
 use url::Url;
 use uuid::Uuid;
@@ -373,7 +372,6 @@ async fn login<R: Runtime>(
     }
     let mut client = UserApiClient::new(chan.unwrap());
     let app_for_float = app_handle.clone();
-    let monitor = window.clone().current_monitor();
     match client.login(request).await {
         Ok(response) => {
             let ret = response.into_inner();
@@ -382,7 +380,7 @@ async fn login<R: Runtime>(
             let user_info = ret.user_info.clone();
             if let Some(user_info) = user_info {
                 let user_id = app_handle.state::<CurUserId>().inner();
-                *user_id.0.lock().await = Some(user_info.user_id); 
+                *user_id.0.lock().await = Some(user_info.user_id);
             }
 
             let mq_client = (&app_handle).state::<CurNoticeClient>().inner();
@@ -418,8 +416,7 @@ async fn login<R: Runtime>(
                                     println!("disconnect mqtt,error {:?}", notice.err().unwrap());
                                     break;
                                 }
-                                let float_notice_win = app_handle.get_window("float_notice");
-                                emit_notice(&window, float_notice_win, notice.unwrap());
+                                emit_notice(&window, notice.unwrap());
                             }
                         } else {
                             println!("{:?}", sub_res.err().unwrap());
@@ -435,33 +432,6 @@ async fn login<R: Runtime>(
             } else {
                 println!("xxxxxxxxx");
             }
-            //创建浮动通知页面
-            let mut monitor_width = 0.0 as f64;
-            let mut monitor_height = 0.0 as f64;
-            if monitor.is_ok() {
-                if let Some(monitor) = monitor.unwrap() {
-                    monitor_width = monitor.size().width as f64;
-                    monitor_height = monitor.size().height as f64;
-                }
-            }
-
-            let res = WindowBuilder::new(
-                &app_for_float,
-                "float_notice",
-                WindowUrl::App("float_notice.html".into()),
-            )
-            .always_on_top(true)
-            .visible(false)
-            .skip_taskbar(true)
-            .resizable(false)
-            .disable_file_drop_handler()
-            .decorations(false)
-            .position(monitor_width * 0.8, monitor_height * 0.05)
-            .transparent(true)
-            .build();
-            if res.is_err() {
-                println!("{:?}", res.err().unwrap());
-            }
             //设置切换用户菜单
             let munu_item = app_for_float.tray_handle().get_item("switch_user");
             if let Err(err) = munu_item.set_enabled(true) {
@@ -473,24 +443,12 @@ async fn login<R: Runtime>(
     }
 }
 
-fn emit_notice<R: Runtime>(
-    window: &Window<R>,
-    float_notice_win: Option<Window<R>>,
-    event: rumqttc::Event,
-) {
+fn emit_notice<R: Runtime>(window: &Window<R>, event: rumqttc::Event) {
     if let rumqttc::Event::Incoming(income_event) = event {
         if let rumqttc::Packet::Publish(pub_event) = income_event {
             if let Ok(any) = Any::decode(pub_event.payload) {
                 if let Some(notice) = decode_notice(&any) {
                     match notice {
-                        NoticeMessage::ProjectNotice(ProjectNotice::NewFloatMsgNotice(_)) => {
-                            if let Some(float_win) = float_notice_win {
-                                let res = float_win.emit("notice", notice);
-                                if res.is_err() {
-                                    println!("{:?}", res);
-                                }
-                            }
-                        }
                         NoticeMessage::RobotNotice(RobotNotice::RespMetricDataNotice(n)) => {
                             let m = n.clone();
                             let event_name = format!("metric_data_{}", m.req_id);

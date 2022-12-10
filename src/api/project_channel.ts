@@ -121,7 +121,6 @@ export type ChannelMemberInfo = {
 export type MsgReminderInfo = {
   reminder_all: boolean;
   extra_reminder_list: string[];
-  float_notice_minute: number;
 };
 
 export type BasicMsg = {
@@ -255,23 +254,6 @@ export type RemoveByAdminResponse = {
   err_msg: string;
 };
 
-export type FloatMsg = {
-  msg_id: string;
-  project_id: string;
-  channel_id: string;
-  title: string;
-  sender_user_id: string;
-  sender_logo_uri: string;
-  sender_display_name: string;
-  send_time_stamp: number;
-  end_time_stamp: number;
-};
-
-export type ListFloatMsgResponse = {
-  code: number;
-  err_msg: string;
-  float_msg_list: FloatMsg[],
-};
 
 //创建频道
 export async function create(request: CreateRequest): Promise<CreateResponse> {
@@ -630,15 +612,6 @@ export async function remove_by_admin(
       session_id: session_id,
       project_id: project_id,
       channel_id: channel_id,
-    },
-  });
-}
-
-//列出浮动消息
-export async function list_float_msg(session_id: string): Promise<ListFloatMsgResponse> {
-  return invoke<ListFloatMsgResponse>('plugin:project_channel_api|list_float_msg', {
-    request: {
-      session_id,
     },
   });
 }

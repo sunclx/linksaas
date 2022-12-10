@@ -200,9 +200,6 @@ fn main() {
             SystemTrayEvent::LeftClick { .. } => {
                 let all_windows = app.windows();
                 for (_, win) in &all_windows {
-                    if win.label() == "float_notice" {
-                        continue;
-                    }
                     win.show().unwrap();
                 }
             }
@@ -220,9 +217,6 @@ fn main() {
                 "show_app" => {
                     let all_windows = app.windows();
                     for (_, win) in &all_windows {
-                        if win.label() == "float_notice" {
-                            continue;
-                        }
                         win.show().unwrap();
                         if let Err(_) = win.set_always_on_top(true) {}
                         if let Err(_) = win.set_always_on_top(false) {}

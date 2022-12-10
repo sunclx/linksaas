@@ -48,7 +48,6 @@ export default ({ command, mode }: ConfigEnv) => {
           vc: 'vc.html',
           about: 'about.html',
           shortNote: "short_note.html",
-          floatNotice: "float_notice.html",
           searchResult: "search_result.html",
           localApi: "local_api.html",
         },

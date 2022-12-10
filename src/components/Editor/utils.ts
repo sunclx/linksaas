@@ -120,7 +120,6 @@ export function get_reminder_info(state: RemirrorJSON): MsgReminderInfo {
     const retInfo: MsgReminderInfo = {
         reminder_all: false,
         extra_reminder_list: [],
-        float_notice_minute: 0,
     }
     process_get_reminder_info(retInfo, state);
     if (retInfo.reminder_all) {
