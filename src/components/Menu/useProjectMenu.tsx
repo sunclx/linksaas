@@ -17,6 +17,7 @@ import Button from '../Button';
 import cls from './index.module.less';
 import { observer } from 'mobx-react';
 import type { WebProjectInfo } from '@/stores/project';
+import AddMember from '@/pages/Project/Member/components/AddMember';
 
 // 创建项目
 const AddMenu: React.FC = observer(() => {
@@ -67,7 +68,7 @@ const useProjectMenu = () => {
   });
 
   const [disableBtn, setDisableBtn] = useState(false);
-
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
 
   // 结束项目弹窗确定事件
@@ -117,44 +118,56 @@ const useProjectMenu = () => {
       width = 430;
     }
     return (
-      <ActionModal
-        open={pjChangeObj.visible}
-        title={`${pjChangeObj.text}项目`}
-        width={width}
-        mask={false}
-        onCancel={() => setPjChangeObj({ visible: false })}
-      >
-        <div className={cls.pj_change_model}>
-          <h1>
-            是否要{pjChangeObj.text} {pjChangeObj.name} 项目?
-          </h1>
-          {pjChangeObj.type === PROJECT_STATE_OPT_ENUM.FINISH && (
-            <p>结束后项目将会封存，无法创建新的聊天/任务/缺陷</p>
-          )}
-          {pjChangeObj.type === PROJECT_STATE_OPT_ENUM.REMOVE && (
-            <>
-              <p style={{ color: "red" }}>项目被删除后，将无法再访问该项目的任何内容</p>
-              <Input addonBefore="请输入要删除的项目名称" onChange={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (e.target.value == pjChangeObj.name) {
-                  setDisableBtn(false);
-                } else {
-                  setDisableBtn(true);
-                }
-              }} />
-            </>
-          )}
-          <div className={cls.btn_wrap}>
-            <Button ghost onClick={() => setPjChangeObj({ visible: false })}>
-              取消
-            </Button>
-            <Button onClick={submitPjItem} disabled={disableBtn}>确定</Button>
-          </div>
-        </div>
-      </ActionModal>
+      <div>
+        {pjChangeObj.visible && (
+          <ActionModal
+            open={pjChangeObj.visible}
+            title={`${pjChangeObj.text}项目`}
+            width={width}
+            mask={false}
+            onCancel={() => setPjChangeObj({ visible: false })}
+          >
+            <div className={cls.pj_change_model}>
+              <h1>
+                是否要{pjChangeObj.text} {pjChangeObj.name} 项目?
+              </h1>
+              {pjChangeObj.type === PROJECT_STATE_OPT_ENUM.FINISH && (
+                <p>结束后项目将会封存，无法创建新的聊天/任务/缺陷</p>
+              )}
+              {pjChangeObj.type === PROJECT_STATE_OPT_ENUM.REMOVE && (
+                <>
+                  <p style={{ color: "red" }}>项目被删除后，将无法再访问该项目的任何内容</p>
+                  <Input addonBefore="请输入要删除的项目名称" onChange={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (e.target.value == pjChangeObj.name) {
+                      setDisableBtn(false);
+                    } else {
+                      setDisableBtn(true);
+                    }
+                  }} />
+                </>
+              )}
+              <div className={cls.btn_wrap}>
+                <Button ghost onClick={() => setPjChangeObj({ visible: false })}>
+                  取消
+                </Button>
+                <Button onClick={submitPjItem} disabled={disableBtn}>确定</Button>
+              </div>
+            </div>
+          </ActionModal>
+        )}
+      </div>
     );
   };
+
+  const renderInviteModal = () => {
+    return (
+      <div>
+        {showInviteModal && <AddMember visible={true} onChange={value => setShowInviteModal(value)} />}
+      </div>
+    );
+  }
 
   // 结束项目事件
   const pjItemChange = (obj: ProjectInfo, type: PROJECT_STATE_OPT_ENUM) => {
@@ -210,6 +223,15 @@ const useProjectMenu = () => {
       <div
         className={cls.contextmenu}
       >
+        {obj.closed == false && obj.user_project_perm.can_admin && obj.project_id == projectStore.curProjectId && (
+          <div
+            className={cls.item}
+            style={{ color: "black" }}
+            onClick={() => setShowInviteModal(true)}
+          >
+            邀请成员
+          </div>
+        )}
         {obj.user_project_perm.can_close && (
           <div
             className={cls.item}
@@ -370,6 +392,7 @@ const useProjectMenu = () => {
   return {
     menuList,
     renderPjItemChange,
+    renderInviteModal,
   };
 };
 

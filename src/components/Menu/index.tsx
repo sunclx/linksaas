@@ -23,7 +23,7 @@ const Header: React.FC = () => {
   const history = useHistory();
   const { pathname } = useLocation();
   const [selectedKeys, setSelectedKeys] = useState(projectStore.curProjectId);
-  const { menuList, renderPjItemChange } = useProjectMenu();
+  const { menuList, renderPjItemChange, renderInviteModal } = useProjectMenu();
   const [openKeys, setOpenKeys] = useState(['sub2']);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const Header: React.FC = () => {
         }}
       />
       {projectStore.projectList.length == 0 && (<div className={cls.zero_project_tips}>
-        您还没有加入项目，你可以通过上方的<i className={cls.add} />加入或创建新项目。
+        您的项目列表为空，您可以通过上方的<i className={cls.add} />加入或创建新项目。
       </div>)}
       {appStore.showJoinProject && <JoinProject
         visible={appStore.showJoinProject}
@@ -99,6 +99,7 @@ const Header: React.FC = () => {
         onChange={(val) => (appStore.showCreateProject = val)}
       />}
       {renderPjItemChange()}
+      {renderInviteModal()}
 
       <div className={cls.adArea}>
         <Carousel autoplay>
