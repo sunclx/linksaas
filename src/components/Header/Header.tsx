@@ -6,7 +6,7 @@ import { Layout } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { BugOutlined } from '@ant-design/icons';
+import { BugOutlined, BulbOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 
 const { Header } = Layout;
@@ -55,6 +55,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
         <h1 />
       </div>
       <div className={style.r}>
+        <a href="https://doc.linksaas.pro/" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="使用文档"><BulbOutlined /></a>
         <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
         {userStore.sessionId != "" && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
         {userStore.sessionId != "" && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
