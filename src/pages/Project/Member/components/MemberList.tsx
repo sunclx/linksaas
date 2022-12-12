@@ -29,7 +29,7 @@ const MemberList = () => {
                 <div className={s.head_wrap}>
                     <Button onClick={() => setAddObj(true)} className={s.add_btn}>
                         <UserAddOutlined />
-                        添加成员
+                        邀请成员
                     </Button>
                 </div>
             )}

@@ -14,7 +14,7 @@ type ActionModalProps = ModalProps & {
 
 const ActionModal: FC<ActionModalProps> = ({
   title,
-  visible,
+  open,
   footer,
   onOK,
   onCancel,
@@ -26,7 +26,7 @@ const ActionModal: FC<ActionModalProps> = ({
   return (
     <Modal
       wrapClassName={s.modal_wrap}
-      visible={visible}
+      open={open}
       title={false}
       footer={false}
       {...props}
