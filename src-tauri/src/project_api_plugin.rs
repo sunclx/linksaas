@@ -182,6 +182,33 @@ async fn remove<R: Runtime>(
 }
 
 #[tauri::command]
+async fn change_owner<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ChangeOwnerRequest,
+) -> Result<ChangeOwnerResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.change_owner(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == change_owner_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("change_owner".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
+
+#[tauri::command]
 async fn get_local_api_token<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -336,6 +363,7 @@ impl<R: Runtime> ProjectApiPlugin<R> {
                 open,
                 close,
                 remove,
+                change_owner,
                 get_local_api_token,
                 remove_local_api_token,
                 renew_local_api_token,

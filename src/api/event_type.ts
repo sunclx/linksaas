@@ -515,6 +515,18 @@ export namespace project {
     return ret_list;
   }
 
+  export type ChangeOwnerEvent = {
+    member_user_id: string;
+    member_display_name: string;
+  };
+
+  function get_change_owner_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: ChangeOwnerEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 转移超级管理员给 ${inner.member_display_name}`)];
+  }
 
   export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
@@ -546,6 +558,7 @@ export namespace project {
     RemoveProjectAppEvent?: RemoveProjectAppEvent;
     CreateGoalEvent?: CreateGoalEvent;
     UpdateGoalEvent?: UpdateGoalEvent;
+    ChangeOwnerEvent?: ChangeOwnerEvent;
   };
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -622,6 +635,8 @@ export namespace project {
       return get_create_goal_simple_content(ev, skip_prj_name, inner.CreateGoalEvent);
     } else if (inner.UpdateGoalEvent !== undefined) {
       return get_update_goal_simple_content(ev, skip_prj_name, inner.UpdateGoalEvent);
+    } else if (inner.ChangeOwnerEvent !== undefined) {
+      return get_change_owner_simple_content(ev, skip_prj_name, inner.ChangeOwnerEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }
