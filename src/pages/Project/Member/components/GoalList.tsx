@@ -216,7 +216,6 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
             await request(create_goal({
                 session_id: userStore.sessionId,
                 project_id: projectStore.curProjectId,
-                member_user_id: item.member.member_user_id,
                 basic_info: basicInfo,
             }));
         } else {
@@ -300,7 +299,7 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
                                                 e.preventDefault();
                                                 onShowHistory(item.member.member_user_id);
                                             }}>查看历史</Button>
-                                            {(projectStore.isAdmin || userStore.userInfo.userId == item.member.member_user_id) && (
+                                            {userStore.userInfo.userId == item.member.member_user_id && (
                                                 <Button onClick={e => {
                                                     e.stopPropagation();
                                                     e.preventDefault();
@@ -394,7 +393,7 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
 const HistoryItem: React.FC<{ item: GoalInfo }> = ({ item }) => {
     return (
         <Card extra={
-            <span>{item.update_display_name}&nbsp;&nbsp;{moment(item.update_time).format("YYYY-MM-DD HH:mm:ss")}&nbsp;&nbsp;更新</span>
+            <span>{moment(item.update_time).format("YYYY-MM-DD HH:mm:ss")}&nbsp;&nbsp;更新</span>
         }
             style={{ marginBottom: "10px" }}>
             <div className={s.goal_wrap}>
