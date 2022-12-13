@@ -134,7 +134,7 @@ const Header: React.FC = () => {
           </a>
           {appStore.clientCfg && appStore.clientCfg.ad_list.map(
             item => (
-              <a key={item.img_url} href={item.url} target="_blank" rel="noreferrer" aria-disabled={item.url == ""}>
+              <a key={item.ad_id} href={item.url} target="_blank" rel="noreferrer" aria-disabled={item.url == ""}>
                 <img src={item.img_url} />
               </a>
             ))}
