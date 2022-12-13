@@ -2,6 +2,7 @@ import * as issueApi from '@/api/project_issue';
 
 export const USER_LOGIN_PATH = '/user/login';
 export const WORKBENCH_PATH = '/app/workbench';
+export const EXTRA_MENU_PATH = '/app/extra_menu';
 export const RESET_TEXT = 'resetPassword';
 export const APP_PROJECT_CHAT_PATH = '/app/project/chat';
 export const APP_PROJECT_KB_PATH = '/app/project/kb';
