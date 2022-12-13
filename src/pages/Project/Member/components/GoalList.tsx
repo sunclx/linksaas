@@ -245,7 +245,7 @@ const GoalItem: React.FC<{ item: WebMemberInfo, onShowHistory: (memberUserId: st
                 </div>}
             extra={
                 <>
-                    {editGoal == null && (projectStore.isAdmin || userStore.userInfo.userId == item.member.member_user_id) && <Button
+                    {editGoal == null && userStore.userInfo.userId == item.member.member_user_id && <Button
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
