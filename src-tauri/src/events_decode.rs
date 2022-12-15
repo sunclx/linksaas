@@ -35,6 +35,7 @@ pub mod project {
         RemoveProjectAppEvent(events_project::RemoveProjectAppEvent),
         CreateGoalEvent(events_project::CreateGoalEvent),
         UpdateGoalEvent(events_project::UpdateGoalEvent),
+        ChangeOwnerEvent(events_project::ChangeOwnerEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -157,6 +158,10 @@ pub mod project {
         } else if data.type_url == events_project::UpdateGoalEvent::type_url() {
             if let Ok(ev) = events_project::UpdateGoalEvent::decode(data.value.as_slice()) {
                 return Some(Event::UpdateGoalEvent(ev));
+            }
+        } else if data.type_url == events_project::ChangeOwnerEvent::type_url() {
+            if let Ok(ev) = events_project::ChangeOwnerEvent::decode(data.value.as_slice()) {
+                return Some(Event::ChangeOwnerEvent(ev));
             }
         }
         None

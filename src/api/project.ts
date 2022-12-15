@@ -74,6 +74,11 @@ export type RemoveResponse = {
   err_msg: string;
 };
 
+export type ChangeOwnerResponse = {
+  code: number;
+  err_msg: string;
+};
+
 export type GetLocalApiTokenResponse = {
   code: number;
   err_msg: string;
@@ -211,6 +216,21 @@ export async function remove(session_id: string, project_id: string): Promise<Re
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RemoveResponse>(cmd, {
+    request,
+  });
+}
+
+//转移超级管理员权限
+export async function change_owner(session_id: string, project_id: string, member_user_id: string): Promise<ChangeOwnerResponse> {
+  const cmd = 'plugin:project_api|change_owner';
+  const request = {
+    session_id,
+    project_id,
+    member_user_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<ChangeOwnerResponse>(cmd, {
     request,
   });
 }

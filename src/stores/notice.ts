@@ -46,6 +46,7 @@ class NoticeStore {
     const unlistenFn = await listen<NoticeType.AllNotice>('notice', (ev) => {
       try {
         const notice = ev.payload
+        console.log(notice);
         if (notice.ProjectNotice !== undefined) {
           this.processProjectNotice(notice.ProjectNotice);
         } else if (notice.ProjectDocNotice !== undefined) {
@@ -189,6 +190,12 @@ class NoticeStore {
           await this.rootStore.memberStore.updateLastEvent(notice.AddMemberNotice.project_id, notice.AddMemberNotice.member_user_id, member.member.last_event_id);
         }
         await this.rootStore.memberStore.updateIssueState(notice.AddMemberNotice.project_id, notice.AddMemberNotice.member_user_id);
+      } else {
+        const projectId = notice.AddMemberNotice.project_id;
+        const index = this.rootStore.projectStore.projectList.findIndex(item => item.project_id == projectId);
+        if (index == -1) {
+          await this.rootStore.projectStore.updateProject(projectId);
+        }
       }
     } else if (notice.UpdateMemberNotice !== undefined) {
       if (notice.UpdateMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {

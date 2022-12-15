@@ -1,6 +1,6 @@
 import workbench_icon from '@/assets/allIcon/workbench_icon.png';
 import { useStores } from '@/hooks';
-import { WORKBENCH_PATH } from '@/utils/constant';
+import { EXTRA_MENU_PATH, WORKBENCH_PATH } from '@/utils/constant';
 import { Layout, Menu, Carousel } from 'antd';
 import { observer } from 'mobx-react';
 import React, { useEffect, useState } from 'react';
@@ -34,6 +34,29 @@ const Header: React.FC = () => {
     }
   }, [pathname, projectStore.curProjectId]);
 
+  const extraMenuList = appStore.clientCfg?.item_list.map(item => {
+    return {
+      label: (
+        <div key={item.menu_id} className={cls.extra_item}
+          onClick={() => {
+            if (docSpaceStore.inEdit) {
+              docSpaceStore.showCheckLeave(() => {
+                history.push(WORKBENCH_PATH);
+                setSelectedKeys(WORKBENCH_PATH);
+              });
+              return;
+            }
+            projectStore.setCurProjectId("");
+            history.push(EXTRA_MENU_PATH, { url: item.url });
+            setSelectedKeys(item.menu_id);
+          }}>
+          {item.name}
+        </div>
+      ),
+      key: item.menu_id,
+    };
+  }) ?? [];
+
   const items = [
     {
       label: (
@@ -58,6 +81,7 @@ const Header: React.FC = () => {
       key: WORKBENCH_PATH,
     },
     ...menuList,
+    ...extraMenuList,
   ];
 
   return (
@@ -110,7 +134,7 @@ const Header: React.FC = () => {
           </a>
           {appStore.clientCfg && appStore.clientCfg.ad_list.map(
             item => (
-              <a key={item.img_url} href={item.url} target="_blank" rel="noreferrer" aria-disabled={item.url == ""}>
+              <a key={item.ad_id} href={item.url} target="_blank" rel="noreferrer" aria-disabled={item.url == ""}>
                 <img src={item.img_url} />
               </a>
             ))}

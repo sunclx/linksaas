@@ -107,9 +107,6 @@ export type GoalInfo = {
   basic_info: BasicGoalInfo;
   create_time: number;
   update_time: number;
-  update_user_id: string;
-  update_display_name: string;
-  update_logo_uri: string;
   member_display_name: string;
   member_logo_uri: string;
 };
@@ -150,7 +147,6 @@ export type GetWorkSnapShotStatusResponse = {
 export type CreateGoalRequest = {
   session_id: string;
   project_id: string;
-  member_user_id: string;
   basic_info: BasicGoalInfo;
 };
 

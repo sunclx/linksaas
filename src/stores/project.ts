@@ -275,12 +275,14 @@ export default class ProjectStore {
       const prj = { ...res.info, project_status: status };
       runInAction(() => {
         this._projectMap.set(prj.project_id, prj);
-        const index = this._projectList.findIndex((item) => item.project_id == prj.project_id);
+        const tmpList = this._projectList.slice()
+        const index = tmpList.findIndex((item) => item.project_id == prj.project_id);
         if (index == -1) {
-          this._projectList.unshift(prj);
+          tmpList.unshift(prj);
         } else {
-          this._projectList[index] = prj;
+          tmpList[index] = prj;
         }
+        this._projectList = tmpList;
       });
     }
   }

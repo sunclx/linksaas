@@ -3,11 +3,13 @@ import { invoke } from '@tauri-apps/api/tauri';
 export type ExtraMenuItem = {
   name: string;
   url: string;
+  menu_id: string;
 };
 
 export type AdItem = {
   url: string;
   img_url: string;
+  ad_id: string;
 };
 
 export type ServerCap = {

@@ -15,10 +15,11 @@ const { Option } = Select;
 
 type UseColumsType = {
   setRemoveObj: (boo: boolean, params: WebMemberInfo) => void;
+  onChangeOwner: (memberUserId: string) => void;
 };
 
 const useColums = (props: UseColumsType) => {
-  const { setRemoveObj } = props;
+  const { setRemoveObj, onChangeOwner } = props;
   const [roleList, setRoleList] = useState<API.RoleInfo[]>();
 
   const projectStore = useStores("projectStore");
@@ -64,6 +65,10 @@ const useColums = (props: UseColumsType) => {
   // 修改角色
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onChangeRole = async (id: string, row: WebMemberInfo) => {
+    if (id == "") {
+      onChangeOwner(row.member.member_user_id);
+      return;
+    }
     const res = await request(
       API.set_member_role(userStore.sessionId, projectStore.curProjectId, id, row.member.member_user_id),
     );
@@ -108,6 +113,11 @@ const useColums = (props: UseColumsType) => {
             onChange={(e) => onChangeRole(e, row)}
             suffixIcon={<img src={iconUnfold} style={{ width: '18px' }} />}
           >
+            {projectStore.curProject?.owner_user_id == userStore.userInfo.userId && (
+              <Option value="">
+                超级管理员
+              </Option>
+            )}
             {roleList?.map((item) => {
               return (
                 <Option value={item.role_id} key={item.role_id}>

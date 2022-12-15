@@ -49,6 +49,7 @@ import LocalApi from '@/pages/Project/LocalApi';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import SpritList from '@/pages/Project/Sprit/SpritList';
 import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
+import ExtraMenuPage from '@/pages/ExtraMenuPage';
 
 
 
@@ -221,6 +222,11 @@ const routesConfig: IRouteConfig[] = [
         path: '/app/workbench',
         title: '工作台',
         component: Workbench,
+      },
+      {
+        path: '/app/extra_menu',
+        title: '额外菜单内容',
+        component: ExtraMenuPage,
       },
       {
         path: '/app/project',
