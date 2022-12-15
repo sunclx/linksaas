@@ -77,12 +77,12 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
         onFieldsChange={() => {
           const { priority, stage, exec_user, check_user, version, level } = form.getFieldsValue();
           setFilterData({
-            priority_list: priority ? [priority] : [],
-            state_list: stage ? [stage] : [],
+            priority_list: priority != null ? [priority] : [],
+            state_list: stage != null ? [stage] : [],
             exec_user_id_list: exec_user ? [exec_user] : [],
             check_user_id_list: check_user ? [check_user] : [],
             software_version_list: version ? [version] : [],
-            level_list: level ? [level] : [],
+            level_list: level != null ? [level] : [],
           });
         }}
       >
