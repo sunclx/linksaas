@@ -45,6 +45,8 @@ const renderTitle = (
     row: IssueInfo,
     projectId: string,
     linkAuxStore: LinkAuxStore | undefined,
+    taskIdList: string[],
+    bugIdList: string[],
     history: History | undefined,
 ) => {
     return (
@@ -57,9 +59,9 @@ const renderTitle = (
                     e.preventDefault();
                     if (linkAuxStore !== undefined && history != undefined) {
                         if (row.issue_type == ISSUE_TYPE_TASK) {
-                            linkAuxStore.goToLink(new LinkTaskInfo('', projectId, row.issue_id), history);
+                            linkAuxStore.goToLink(new LinkTaskInfo('', projectId, row.issue_id, taskIdList), history);
                         } else if (row.issue_type == ISSUE_TYPE_BUG) {
-                            linkAuxStore.goToLink(new LinkBugInfo('', projectId, row.issue_id), history);
+                            linkAuxStore.goToLink(new LinkBugInfo('', projectId, row.issue_id, bugIdList), history);
                         }
                     }
                 }}
@@ -165,10 +167,10 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
             fixed: true,
             render: (_, row: IssueInfo) => {
                 let notComplete = row.exec_user_id == "" || row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
-                if(row.has_start_time && row.has_end_time && row.start_time > row.end_time) {
+                if (row.has_start_time && row.has_end_time && row.start_time > row.end_time) {
                     notComplete = true;
-                } 
-                if(row.has_estimate_minutes && row.has_remain_minutes && row.remain_minutes > row.estimate_minutes) {
+                }
+                if (row.has_estimate_minutes && row.has_remain_minutes && row.remain_minutes > row.estimate_minutes) {
                     notComplete = true;
                 }
                 return (
@@ -212,7 +214,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
             width: 200,
             fixed: true,
             render: (v: string, row: IssueInfo) =>
-                renderTitle(row, projectStore.curProjectId, linkAuxStore, history),
+                renderTitle(row, projectStore.curProjectId, linkAuxStore, spritStore.taskList.map(task => task.issue_id), spritStore.bugList.map(bug => bug.issue_id), history),
         },
         {
             title: `阶段`,
@@ -414,9 +416,9 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                     e.stopPropagation();
                     e.preventDefault();
                     setAddIssueType(ISSUE_TYPE_TASK);
-                }} 
-                title={projectStore.isAdmin?"":"只有管理员可以添加任务"}
-                disabled={!projectStore.isAdmin}>
+                }}
+                    title={projectStore.isAdmin ? "" : "只有管理员可以添加任务"}
+                    disabled={!projectStore.isAdmin}>
                     <PlusOutlined />添加任务
                 </Button>}>
                 <Table
@@ -433,16 +435,16 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                     e.preventDefault();
                     setAddIssueType(ISSUE_TYPE_BUG);
                 }}
-                title={projectStore.isAdmin?"":"只有管理员可以添加缺陷"}
-                disabled={!projectStore.isAdmin}>
+                    title={projectStore.isAdmin ? "" : "只有管理员可以添加缺陷"}
+                    disabled={!projectStore.isAdmin}>
                     <PlusOutlined />添加缺陷
                 </Button>}>
-                <Table 
-                rowKey="issue_id" 
-                dataSource={spritStore.bugList} 
-                columns={columns} 
-                pagination={false} 
-                scroll={{ x: 1100 }}/>
+                <Table
+                    rowKey="issue_id"
+                    dataSource={spritStore.bugList}
+                    columns={columns}
+                    pagination={false}
+                    scroll={{ x: 1100 }} />
             </Card>
             {addIssueType != null && (
                 <AddTaskOrBug

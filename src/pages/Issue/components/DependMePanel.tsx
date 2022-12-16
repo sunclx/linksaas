@@ -54,6 +54,7 @@ export const DependMePanel: React.FC<DependMePanelProps> = (props) => {
                                 getIssueDetailUrl(pathname), {
                                     issueId: record.issue_id,
                                     content: "",
+                                    contextIssueIdList: issueList.map(item=>item.issue_id),
                                 } as LinkIssueState
                             );
                         }}
