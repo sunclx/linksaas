@@ -28,16 +28,18 @@ type ColumnsTypes = ColumnType<IssueInfo> & {
 };
 
 
-type TableProps = {
+type IssueEditListProps = {
   isFilter: boolean;
   dataSource: IssueInfo[];
+  issueIdList: string[];
   onChange: (issueId: string) => void;
   showStage: (issueId: string) => void;
 };
 
-const IssueEditList: React.FC<TableProps> = ({
+const IssueEditList: React.FC<IssueEditListProps> = ({
   isFilter,
   dataSource,
+  issueIdList,
   onChange,
   showStage,
 }) => {
@@ -48,6 +50,7 @@ const IssueEditList: React.FC<TableProps> = ({
   const { push } = useHistory();
 
   const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
+
 
   const columnsList: ColumnsTypes[] = [
     {
@@ -62,10 +65,12 @@ const IssueEditList: React.FC<TableProps> = ({
             style={{ cursor: 'pointer', display: "inline-block", paddingTop: "5px", paddingBottom: "5px" }}
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               push(
                 getIssueDetailUrl(pathname), {
                   issueId: record.issue_id,
                   content: "",
+                  contextIssueIdList: issueIdList,
                 } as LinkIssueState
               );
             }}
@@ -103,6 +108,7 @@ const IssueEditList: React.FC<TableProps> = ({
                   getIssueDetailUrl(pathname), {
                     issueId: record.issue_id,
                     content: "",
+                    contextIssueIdList: issueIdList,
                   } as LinkIssueState
                 );
               }}

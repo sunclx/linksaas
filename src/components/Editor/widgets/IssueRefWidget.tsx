@@ -65,6 +65,8 @@ const renderTitle = (
   row: IssueInfo,
   projectId: string,
   linkAuxStore: LinkAuxStore | undefined,
+  taskIdList: string[],
+  bugIdList: string[],
   history: History | undefined,
 ) => {
   return (
@@ -77,9 +79,9 @@ const renderTitle = (
           e.preventDefault();
           if (linkAuxStore !== undefined && history != undefined) {
             if (row.issue_type == ISSUE_TYPE_TASK) {
-              linkAuxStore.goToLink(new LinkTaskInfo('', projectId, row.issue_id), history);
+              linkAuxStore.goToLink(new LinkTaskInfo('', projectId, row.issue_id, taskIdList), history);
             } else if (row.issue_type == ISSUE_TYPE_BUG) {
-              linkAuxStore.goToLink(new LinkBugInfo('', projectId, row.issue_id), history);
+              linkAuxStore.goToLink(new LinkBugInfo('', projectId, row.issue_id, bugIdList), history);
             }
           }
         }}
@@ -209,7 +211,7 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
       dataIndex: ['basic_info', 'title'],
       width: 200,
       render: (v: string, row: IssueInfo) =>
-        renderTitle(row, projectStore.curProjectId, undefined, undefined),
+        renderTitle(row, projectStore.curProjectId, undefined, [], [], undefined),
     },
     {
       title: '优先级',
@@ -362,7 +364,7 @@ const ViewIssueRef: React.FC<WidgetProps> = (props) => {
       dataIndex: ['basic_info', 'title'],
       width: 150,
       render: (v: string, row: IssueInfo) =>
-        renderTitle(row, projectStore.curProjectId, linkAuxStore, history),
+        renderTitle(row, projectStore.curProjectId, linkAuxStore, data.issueIdList, data.issueIdList, history),
     },
     {
       title: '优先级',
@@ -466,14 +468,14 @@ const ViewIssueRef: React.FC<WidgetProps> = (props) => {
     <ErrorBoundary>
       <EditorWrap collapse={props.collapse}>
         <div className={s.sync_wrap}>
-          <Button 
-          className={s.sync} 
-          disabled={loading}
-          onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            loadData();
-          }} icon={<SyncOutlined />}>
+          <Button
+            className={s.sync}
+            disabled={loading}
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              loadData();
+            }} icon={<SyncOutlined />}>
             &nbsp;&nbsp;刷新
           </Button>
         </div>
