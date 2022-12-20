@@ -41,6 +41,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_EARTHLY_ACTION,
   LINK_TARGET_EARTHLY_EXEC,
   LINK_TARGET_BOOK_MARK,
+  LINK_TARGET_TEST_CASE_ENTRY,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -275,6 +276,19 @@ export class LinkNoneInfo {
   linkContent: string;
 }
 
+export class TestCaseEntryInfo {
+  constructor(content: string, projectId: string, entryId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.entryId = entryId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  entryId: string;
+}
+
 export class LinkImageInfo {
   constructor(content: string, imgUrl: string, thumbImgUrl: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_IMAGE;
@@ -451,7 +465,7 @@ class LinkAuxStore {
       history.push(this.genUrl(pathname, BUG_DETAIL_SUFFIX), {
         issueId: bugLink.issueId,
         content: '',
-        contextIssueIdList:bugLink.contextIssueIdList,
+        contextIssueIdList: bugLink.contextIssueIdList,
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
@@ -572,7 +586,7 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, TASK_CREATE_SUFFIX), {
       issueId: '',
       content: content,
-      contextIssueIdList:[],
+      contextIssueIdList: [],
     } as LinkIssueState);
   }
 
@@ -584,7 +598,7 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, BUG_CREATE_SUFFIX), {
       issueId: '',
       content: content,
-      contextIssueIdList:[],
+      contextIssueIdList: [],
     } as LinkIssueState);
   }
 

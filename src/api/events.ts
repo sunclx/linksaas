@@ -14,6 +14,9 @@ export const EVENT_TYPE_DISK: EVENT_TYPE = 6; //网盘事件
 export const EVENT_TYPE_WORK_SNAPSHOT: EVENT_TYPE = 7; //快照
 export const EVENT_TYPE_APP: EVENT_TYPE = 8; //项目应用
 export const EVENT_TYPE_BOOK_SHELF: EVENT_TYPE = 9; //电子书
+export const EVENT_TYPE_ROBOT: EVENT_TYPE = 10;         //机器人
+export const EVENT_TYPE_EARTHLY: EVENT_TYPE = 11;       // ci/cd
+export const EVENT_TYPE_TEST_CASE: EVENT_TYPE = 12;     //测试用例
 export const EVENT_TYPE_GITLAB: EVENT_TYPE = 100; //gitlab事件
 export const EVENT_TYPE_GITHUB: EVENT_TYPE = 101; //github事件
 export const EVENT_TYPE_GITEA: EVENT_TYPE = 102; //gitea事件
@@ -32,6 +35,11 @@ export const EVENT_REF_TYPE_CHANNEL: EVENT_REF_TYPE = 3; //频道事件引用
 export const EVENT_REF_TYPE_SPRIT: EVENT_REF_TYPE = 4; //迭代事件引用
 export const EVENT_REF_TYPE_TASK: EVENT_REF_TYPE = 5; //任务事件引用
 export const EVENT_REF_TYPE_BUG: EVENT_REF_TYPE = 6; //缺陷事件引用
+export const EVENT_REF_TYPE_DOC: EVENT_REF_TYPE = 7;
+export const EVENT_REF_TYPE_BOOK: EVENT_REF_TYPE = 8;
+export const EVENT_REF_TYPE_ROBOT: EVENT_REF_TYPE = 9;
+export const EVENT_REF_TYPE_REPO: EVENT_REF_TYPE = 10;
+export const EVENT_REF_TYPE_TEST_CASE: EVENT_REF_TYPE = 11;
 
 export type DayEventStatusItem = {
   day: number;
