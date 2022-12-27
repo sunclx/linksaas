@@ -117,6 +117,12 @@ export type ListResultParam = {
     result_type: RESULT_TYPE;
 };
 
+export type PathElement = {
+    entry_id: string;
+    title: string;
+};
+
+
 export type CreateEntryRequest = {
     session_id: string;
     project_id: string;
@@ -140,9 +146,23 @@ export type ListEntryRequest = {
 export type ListEntryResponse = {
     code: number;
     err_msg: string;
-    path_entry_id_list: string[];
     entry_list: Entry[];
 }
+
+export type GetEntryRequest = {
+    session_id: string;
+    project_id: string;
+    entry_id: string;
+};
+
+export type GetEntryResponse = {
+    code: number;
+    err_msg: string;
+    path_element_list: PathElement[];
+    entry: Entry;
+    child_count: number;
+};
+
 
 export type SetParentEntryRequest = {
     session_id: string;
@@ -403,6 +423,15 @@ export async function list_entry(request: ListEntryRequest): Promise<ListEntryRe
     const cmd = 'plugin:project_test_case_api|list_entry';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListEntryResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个节点信息
+export async function get_entry(request: GetEntryRequest): Promise<GetEntryResponse> {
+    const cmd = 'plugin:project_test_case_api|get_entry';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetEntryResponse>(cmd, {
         request,
     });
 }

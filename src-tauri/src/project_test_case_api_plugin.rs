@@ -60,6 +60,34 @@ async fn list_entry<R: Runtime>(
     }
 }
 
+
+#[tauri::command]
+async fn get_entry<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: api::GetEntryRequest,
+) -> Result<api::GetEntryResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectTestCaseApiClient::new(chan.unwrap());
+    match client.get_entry(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == api::get_entry_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_entry".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 #[tauri::command]
 async fn set_parent_entry<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -568,6 +596,7 @@ impl<R: Runtime> ProjectTestCaseApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 create_entry,
                 list_entry,
+                get_entry,
                 set_parent_entry,
                 update_entry_title,
                 remove_entry,

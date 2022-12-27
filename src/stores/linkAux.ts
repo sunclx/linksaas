@@ -276,7 +276,7 @@ export class LinkNoneInfo {
   linkContent: string;
 }
 
-export class TestCaseEntryInfo {
+export class LinkTestCaseEntryInfo {
   constructor(content: string, projectId: string, entryId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY;
     this.linkContent = content;
@@ -354,6 +354,10 @@ export type LinkEarthlyExecState = {
 
 export type LinkSpritState = {
   spritId: string;
+}
+
+export type LinkTestCaseEntryState = {
+  entryId: string;
 }
 
 class LinkAuxStore {
@@ -554,6 +558,15 @@ class LinkAuxStore {
         spritId: spritLink.spritId,
       };
       history.push(this.genUrl(pathname, SPRIT_DETAIL_SUFFIX), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY) {
+      const entryLink = link as LinkTestCaseEntryInfo;
+      if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(entryLink.projectId);
+      }
+      const state: LinkTestCaseEntryState = {
+        entryId: entryLink.entryId,
+      };
+      history.push(this.genUrl(pathname, "/testcase"), state)
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -620,6 +633,16 @@ class LinkAuxStore {
   //跳转到迭代列表
   goToSpritList(history: History) {
     history.push(this.genUrl(history.location.pathname, "/sprit"));
+  }
+
+  //跳转到测试用例列表页
+  goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
+    history.push(this.genUrl(history.location.pathname, "/testcase"), state);
+  }
+
+  //跳转到测试结果列表页
+  goToTestCaseResultList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/testcase/result"));
   }
 
   private genUrl(pathname: string, suffix: string): string {

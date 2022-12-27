@@ -7,7 +7,7 @@ import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
   LinkImageInfo, LinkExterneInfo, LinkAppraiseInfo,
   LinkSpritInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo,
-  LinkAppInfo, TestCaseEntryInfo
+  LinkAppInfo, LinkTestCaseEntryInfo
 } from '@/stores/linkAux'
 import * as tc from '@/api/project_test_case';
 
@@ -1089,9 +1089,9 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 ${inner.entry_type == tc.ENTRY_TYPE_DIR ? "目录" : "测试用例"}`),
-      new TestCaseEntryInfo(inner.title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.title, ev.project_id, inner.entry_id),
       new LinkNoneInfo("  父目录"),
-      new TestCaseEntryInfo(inner.parent_title, ev.project_id, inner.parent_entry_id),
+      new LinkTestCaseEntryInfo(inner.parent_title, ev.project_id, inner.parent_entry_id),
     ];
   }
 
@@ -1111,9 +1111,9 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 移动 ${inner.entry_type == tc.ENTRY_TYPE_DIR ? "目录" : "测试用例"}`),
-      new TestCaseEntryInfo(inner.title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.title, ev.project_id, inner.entry_id),
       new LinkNoneInfo("到"),
-      new TestCaseEntryInfo(inner.parent_title, ev.project_id, inner.parent_entry_id),
+      new LinkTestCaseEntryInfo(inner.parent_title, ev.project_id, inner.parent_entry_id),
     ];
   }
 
@@ -1132,7 +1132,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 ${inner.entry_type == tc.ENTRY_TYPE_DIR ? "目录" : "测试用例"}`),
-      new TestCaseEntryInfo(inner.new_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.new_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(` 原标题 ${inner.old_title}`),
     ];
   }
@@ -1175,7 +1175,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(`新增验证规则[描述:${inner.rule_info.desc}  前置条件:${inner.rule_info.pre_condition}  预期结果:${inner.rule_info.expect_result}]`),
     ];
   }
@@ -1196,7 +1196,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(`更新验证规则`),
       new LinkNoneInfo(`新规则[描述:${inner.new_rule_info.desc}  前置条件:${inner.new_rule_info.pre_condition}  预期结果:${inner.new_rule_info.expect_result}]`),
       new LinkNoneInfo(`旧规则[描述:${inner.old_rule_info.desc}  前置条件:${inner.old_rule_info.pre_condition}  预期结果:${inner.old_rule_info.expect_result}]`),
@@ -1218,7 +1218,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(`删除验证规则[描述:${inner.rule_info.desc}  前置条件:${inner.rule_info.pre_condition}  预期结果:${inner.rule_info.expect_result}]`),
     ];
   }
@@ -1243,7 +1243,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(`新增测试指标[描述:${inner.metric_info.desc}  阈值:${inner.metric_info.value.toFixed(2)}]`),
     ];
   }
@@ -1264,7 +1264,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(`更新测试指标`),
       new LinkNoneInfo(`新测试指标[描述:${inner.new_metric_info.desc}  阈值:${inner.new_metric_info.value.toFixed(2)}]`),
       new LinkNoneInfo(`旧测试指标[描述:${inner.old_metric_info.desc}  阈值:${inner.old_metric_info.value.toFixed(2)}]`),
@@ -1286,7 +1286,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo(`删除测试指标[描述:${inner.metric_info.desc}  阈值:${inner.metric_info.value.toFixed(2)}]`),
     ];
   }
@@ -1304,7 +1304,7 @@ namespace test_case {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新测试用例`),
-      new TestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
+      new LinkTestCaseEntryInfo(inner.entry_title, ev.project_id, inner.entry_id),
       new LinkNoneInfo("测试方案"),
     ]
   }
