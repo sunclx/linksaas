@@ -27,6 +27,7 @@ mod project_issue_api_plugin;
 mod project_member_api_plugin;
 mod project_sprit_api_plugin;
 mod project_vc_api_plugin;
+mod project_test_case_api_plugin;
 mod restrict_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
@@ -274,6 +275,7 @@ fn main() {
         .plugin(robot_metric_api_plugin::RobotMetricApiPlugin::new())
         .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
+        .plugin(project_test_case_api_plugin::ProjectTestCaseApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

@@ -289,6 +289,77 @@ pub mod sprit {
     }
 }
 
+pub mod test_case {
+    use prost::Message;
+    use proto_gen_rust::events_test_case;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateEntryEvent(events_test_case::CreateEntryEvent),
+        MoveEntryEvent(events_test_case::MoveEntryEvent),
+        UpdateEntryTitleEvent(events_test_case::UpdateEntryTitleEvent),
+        RemoveEntryEvent(events_test_case::RemoveEntryEvent),
+        AddRuleEvent(events_test_case::AddRuleEvent),
+        UpdateRuleEvent(events_test_case::UpdateRuleEvent),
+        RemoveRuleEvent(events_test_case::RemoveRuleEvent),
+        AddMetricEvent(events_test_case::AddMetricEvent),
+        UpdateMetricEvent(events_test_case::UpdateMetricEvent),
+        RemoveMetricEvent(events_test_case::RemoveMetricEvent),
+        UpdateContentEvent(events_test_case::UpdateContentEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_test_case::CreateEntryEvent::type_url() {
+            if let Ok(ev) = events_test_case::CreateEntryEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateEntryEvent(ev));
+            }
+        } else if data.type_url == events_test_case::MoveEntryEvent::type_url() {
+            if let Ok(ev) = events_test_case::MoveEntryEvent::decode(data.value.as_slice()) {
+                return Some(Event::MoveEntryEvent(ev));
+            }
+        } else if data.type_url == events_test_case::UpdateEntryTitleEvent::type_url() {
+            if let Ok(ev) = events_test_case::UpdateEntryTitleEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateEntryTitleEvent(ev));
+            }
+        } else if data.type_url == events_test_case::RemoveEntryEvent::type_url() {
+            if let Ok(ev) = events_test_case::RemoveEntryEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveEntryEvent(ev));
+            }
+        } else if data.type_url == events_test_case::AddRuleEvent::type_url() {
+            if let Ok(ev) = events_test_case::AddRuleEvent::decode(data.value.as_slice()) {
+                return Some(Event::AddRuleEvent(ev));
+            }
+        } else if data.type_url == events_test_case::UpdateRuleEvent::type_url() {
+            if let Ok(ev) = events_test_case::UpdateRuleEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateRuleEvent(ev));
+            }
+        } else if data.type_url == events_test_case::RemoveRuleEvent::type_url() {
+            if let Ok(ev) = events_test_case::RemoveRuleEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveRuleEvent(ev));
+            }
+        } else if data.type_url == events_test_case::AddMetricEvent::type_url() {
+            if let Ok(ev) = events_test_case::AddMetricEvent::decode(data.value.as_slice()) {
+                return Some(Event::AddMetricEvent(ev));
+            }
+        } else if data.type_url == events_test_case::UpdateMetricEvent::type_url() {
+            if let Ok(ev) = events_test_case::UpdateMetricEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateMetricEvent(ev));
+            }
+        } else if data.type_url == events_test_case::RemoveMetricEvent::type_url() {
+            if let Ok(ev) = events_test_case::RemoveMetricEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveMetricEvent(ev));
+            }
+        } else if data.type_url == events_test_case::UpdateContentEvent::type_url() {
+            if let Ok(ev) = events_test_case::UpdateContentEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateContentEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 pub mod book_shelf {
     use prost::Message;
     use proto_gen_rust::events_book_shelf;
@@ -731,6 +802,7 @@ pub enum EventMessage {
     ProjectEvent(project::Event),
     ProjectDocEvent(project_doc::Event),
     SpritEvent(sprit::Event),
+    TestCaseEvent(test_case::Event),
     IssueEvent(issue::Event),
     BookShelfEvent(book_shelf::Event),
     ExtEvEvent(ext_event::Event),
@@ -753,6 +825,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = sprit::decode_event(data) {
         return Some(EventMessage::SpritEvent(ret));
+    }
+    if let Some(ret) = test_case::decode_event(data) {
+        return Some(EventMessage::TestCaseEvent(ret));
     }
     if let Some(ret) = issue::decode_event(data) {
         return Some(EventMessage::IssueEvent(ret));

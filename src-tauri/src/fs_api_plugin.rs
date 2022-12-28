@@ -32,6 +32,15 @@ pub struct FsProgressEvent {
 }
 
 #[tauri::command]
+async fn stat_local_file(file_path:String)->Result<u64,String> {
+    if let Ok(stat) = fs::metadata(file_path.as_str()).await {
+        return Ok(stat.len());
+    }else{
+        return Err("stat file failed".into());
+    }
+}
+
+#[tauri::command]
 async fn get_cache_file<R: Runtime>(
     _app_handle: AppHandle<R>,
     _window: Window<R>,
@@ -548,6 +557,7 @@ impl<R: Runtime> FsApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
+                stat_local_file,
                 get_cache_file,
                 download_file,
                 write_file_base64,

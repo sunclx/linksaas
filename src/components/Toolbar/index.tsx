@@ -82,6 +82,12 @@ const Toolbar: React.FC = observer(() => {
       />
 
       <Item
+        id="testcase"
+        pathname={pathname}
+        title="测试用例"
+      />
+
+      <Item
         id="sprit"
         pathname={pathname}
         title="迭代列表"
@@ -91,7 +97,7 @@ const Toolbar: React.FC = observer(() => {
       <Item
         id="robot"
         pathname={pathname}
-        title="机器人列表"
+        title="服务器列表"
       />
       <Item
         id="repo"

@@ -17,6 +17,9 @@ export const FILE_OWNER_TYPE_WORK_SNAPSHOT: FILE_OWNER_TYPE = 5; //工作快照
 export const FILE_OWNER_TYPE_PROJECT_DOC: FILE_OWNER_TYPE = 6; //文档
 export const FILE_OWNER_TYPE_PROJECT_EBOOK: FILE_OWNER_TYPE = 7; //电子书
 export const FILE_OWNER_TYPE_PROJECT: FILE_OWNER_TYPE = 99; //项目范围 
+export const FILE_OWNER_TYPE_PROJECT_ARTIFACT: FILE_OWNER_TYPE = 8;   //自动化构建结果
+export const FILE_OWNER_TYPE_TEST_CASE: FILE_OWNER_TYPE = 9;          //测试用例
+export const FILE_OWNER_TYPE_TEST_CASE_RESULT: FILE_OWNER_TYPE = 10;  //测试用例结果
 
 
 
@@ -86,6 +89,10 @@ export type GetFsStatusResponse = {
     err_msg: string;
     fs_status: FsStatus;
 };
+
+export async function stat_local_file(file_path: string): Promise<number> {
+    return invoke<number>('plugin:fs_api|stat_local_file', { filePath: file_path });
+}
 
 export async function get_cache_file(fs_id: string, file_id: string, file_name: string): Promise<DownloadResult> {
     return invoke<DownloadResult>('plugin:fs_api|get_cache_file', {

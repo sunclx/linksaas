@@ -120,7 +120,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
                 onClick={() => linkAuxStore.goToCreateTask(msg.msg.basic_msg.msg_data, projectStore.curProjectId, history)}
               />
               <span
-                title=" 创建缺陷"
+                title="创建缺陷"
                 className={styles.bugBtn}
                 onClick={() => linkAuxStore.goToCreateBug(msg.msg.basic_msg.msg_data, projectStore.curProjectId, history)}
               />

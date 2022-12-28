@@ -50,6 +50,8 @@ import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import SpritList from '@/pages/Project/Sprit/SpritList';
 import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
+import EntryList from '@/pages/TestCase/EntryList';
+import ResultList from '@/pages/TestCase/ResultList';
 
 
 
@@ -126,6 +128,18 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + BUG_CREATE_SUFFIX,
       title: '创建缺陷',
       component: IssueCreate,
+      exact: true,
+    },
+    {
+      path: prefix + "/testcase",
+      title: "测试用例",
+      component: EntryList,
+      exact: true,
+    },
+    {
+      path: prefix + "/testcase/result",
+      title: "测试用例结果列表",
+      component: ResultList,
       exact: true,
     },
     {

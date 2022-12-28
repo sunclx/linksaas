@@ -43,6 +43,7 @@ export type ProjectInfo = {
   doc_fs_id: string;
   ebook_fs_id: string;
   artifact_fs_id: string;
+  test_case_fs_id: string;
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
 };
