@@ -108,7 +108,7 @@ const RulePanel: React.FC<RulePanelProps> = (props) => {
         {
             title: "规则描述",
             width: 260,
-            render: (_, record: Rule) => <EditTextArea editable={true} content={record.basic_rule.desc} onChange={async (content: string) => {
+            render: (_, record: Rule) => <EditTextArea editable={record.user_perm.can_update} content={record.basic_rule.desc} onChange={async (content: string) => {
                 if (content == "") {
                     message.warn("规则描述不能为空");
                     return false;
@@ -123,7 +123,7 @@ const RulePanel: React.FC<RulePanelProps> = (props) => {
         {
             title: "前置条件",
             width: 260,
-            render: (_, record: Rule) => <EditTextArea editable={true} content={record.basic_rule.pre_condition} onChange={async (content: string) => {
+            render: (_, record: Rule) => <EditTextArea editable={record.user_perm.can_update} content={record.basic_rule.pre_condition} onChange={async (content: string) => {
                 return updateRule(record.rule_id, {
                     desc: record.basic_rule.desc,
                     pre_condition: content,
@@ -134,7 +134,7 @@ const RulePanel: React.FC<RulePanelProps> = (props) => {
         {
             title: "预期结果",
             width: 260,
-            render: (_, record: Rule) => <EditTextArea editable={true} content={record.basic_rule.expect_result} onChange={async (content: string) => {
+            render: (_, record: Rule) => <EditTextArea editable={record.user_perm.can_update} content={record.basic_rule.expect_result} onChange={async (content: string) => {
                 if (content == "") {
                     message.warn("预期结果不能为空");
                     return false;
@@ -150,11 +150,13 @@ const RulePanel: React.FC<RulePanelProps> = (props) => {
             title: "操作",
             width: 60,
             render: (_, record: Rule) => (
-                <Button type="link" danger style={{ minWidth: "10px", padding: "0px 0px" }} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setRemoveRuleId(record.rule_id);
-                }}>删除</Button>
+                <Button type="link" danger style={{ minWidth: "10px", padding: "0px 0px" }}
+                    disabled={record.user_perm.can_remove == false}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveRuleId(record.rule_id);
+                    }}>删除</Button>
             ),
         },
         {
@@ -181,7 +183,7 @@ const RulePanel: React.FC<RulePanelProps> = (props) => {
 
     return (
         <Card
-            title="验证规则"
+            title={<h2>验证规则</h2>}
             bordered={false}
             extra={
                 <Button onClick={e => {

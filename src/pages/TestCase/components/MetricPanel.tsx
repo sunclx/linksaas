@@ -103,7 +103,7 @@ const MetricPanel: React.FC<MetricPanelProps> = (props) => {
         {
             title: "指标描述",
             width: 270,
-            render: (_, record: Metric) => <EditTextArea editable={true} content={record.basic_metric.desc} onChange={async (content: string) => {
+            render: (_, record: Metric) => <EditTextArea editable={record.user_perm.can_update} content={record.basic_metric.desc} onChange={async (content: string) => {
                 if (content == "") {
                     message.warn("指标描述不能为空");
                     return false;
@@ -117,7 +117,7 @@ const MetricPanel: React.FC<MetricPanelProps> = (props) => {
         {
             title: "指标数值",
             width: 200,
-            render: (_, record: Metric) => <EditNumber editable={true} value={record.basic_metric.value} onChange={async (value: number) => {
+            render: (_, record: Metric) => <EditNumber editable={record.user_perm.can_update} value={record.basic_metric.value} onChange={async (value: number) => {
                 return updateMetric(record.metric_id, {
                     desc: record.basic_metric.desc,
                     value: value,
@@ -128,11 +128,13 @@ const MetricPanel: React.FC<MetricPanelProps> = (props) => {
             title: "操作",
             width: 60,
             render: (_, record: Metric) => (
-                <Button type="link" danger style={{ minWidth: "10px", padding: "0px 0px" }} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setRemoveMetricId(record.metric_id);
-                }}>删除</Button>
+                <Button type="link" danger style={{ minWidth: "10px", padding: "0px 0px" }}
+                    disabled={record.user_perm.can_remove == false}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveMetricId(record.metric_id);
+                    }}>删除</Button>
             ),
         },
         {
@@ -159,7 +161,7 @@ const MetricPanel: React.FC<MetricPanelProps> = (props) => {
 
     return (
         <Card
-            title="测试指标"
+            title={<h2>测试指标</h2>}
             bordered={false}
             extra={
                 <Button onClick={e => {

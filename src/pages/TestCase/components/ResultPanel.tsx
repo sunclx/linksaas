@@ -49,16 +49,18 @@ const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     }, [props.entryId, curPage]);
 
     return (
-        <Card title="测试结果" bordered={false} extra={
-            <Button onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                setShowAddModal(true);
-            }}>新增测试结果</Button>
-        }>
+        <Card title={<h2>测试结果</h2>}
+            bordered={false}
+            extra={
+                <Button onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowAddModal(true);
+                }}>新增测试结果</Button>
+            }>
             <div>
                 {resultList.length == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-                {resultList.map(item => <TestCaseResult key={item.result_id} result={item} onRemove={() => loadResultList()} showEntry={false}/>)}
+                {resultList.map(item => <TestCaseResult key={item.result_id} result={item} onRemove={() => loadResultList()} showEntry={false} />)}
                 <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
             </div>
             {showAddModal == true && <AddResultModal entryId={props.entryId} onCancel={() => setShowAddModal(false)} onOk={() => {

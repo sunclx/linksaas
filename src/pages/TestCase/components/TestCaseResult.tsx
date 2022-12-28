@@ -1,5 +1,5 @@
 import type { Result, RESULT_TYPE } from "@/api/project_test_case";
-import { RESULT_TYPE_SUCCESS, RESULT_TYPE_WARN, RESULT_TYPE_FAIL,remove_result } from "@/api/project_test_case";
+import { RESULT_TYPE_SUCCESS, RESULT_TYPE_WARN, RESULT_TYPE_FAIL, remove_result } from "@/api/project_test_case";
 import FsFile from "@/components/Fs/FsFile";
 import FsImage from "@/components/Fs/FsImage";
 import { useStores } from "@/hooks";
@@ -86,15 +86,16 @@ const TestCaseResult: React.FC<TestCaseResultProps> = (props) => {
                 {props.showEntry == true && <span>&nbsp;|&nbsp;</span>}
                 {props.result.create_display_name} {moment(props.result.create_time).format("YYYY-MM-DD HH:mm:ss")}
             </span>}
-            // `${props.showEntry ? "测试用例:"+props.result.entry_title+" | " : ""} ${props.result.create_display_name} ${moment(props.result.create_time).format("YYYY-MM-DD HH:mm:ss")}`}
             className={s.content_wrap}
             extra={
                 <Popover content={<div>
-                    <Button type="link" danger onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        removeResult();
-                    }}>删除</Button>
+                    <Button type="link" danger
+                        disabled={props.result.user_perm.can_remove == false}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            removeResult();
+                        }}>删除</Button>
                 </div>} trigger="click" placement="bottom">
                     <a><MoreOutlined /></a>
                 </Popover>

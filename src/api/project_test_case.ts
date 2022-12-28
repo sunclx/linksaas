@@ -16,6 +16,10 @@ export type RESULT_FROM = number;
 export const RESULT_FROM_UI = 0;         //通过UI界面提交结果
 export const RESULT_FROM_LOCAL_API = 1;  //通过本地API提交结果
 
+export type UserPerm = {
+    can_update: boolean;
+    can_remove: boolean;
+};
 
 
 export type Entry = {
@@ -32,6 +36,7 @@ export type Entry = {
     update_user_id: string;
     update_display_name: string;
     update_logo_uri: string;
+    user_perm: UserPerm;
 };
 
 export type BasicRule = {
@@ -53,6 +58,7 @@ export type Rule = {
     update_user_id: string;
     update_display_name: string;
     update_logo_uri: string;
+    user_perm: UserPerm;
 };
 
 export type BasicMetric = {
@@ -73,6 +79,7 @@ export type Metric = {
     update_user_id: string;
     update_display_name: string;
     update_logo_uri: string;
+    user_perm: UserPerm;
 };
 
 export type EntryContent = {
@@ -129,6 +136,7 @@ export type Result = {
     create_display_name: string;
     create_logo_uri: string;
     entry_title: string;
+    user_perm: UserPerm;
 };
 
 export type ListResultParam = {

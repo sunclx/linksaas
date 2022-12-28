@@ -67,7 +67,7 @@ const ContentPanel: React.FC<ContentPanelProps> = (props) => {
 
     return (
         <Card
-            title="测试步骤"
+            title={<h2>测试步骤</h2>}
             bordered={false}
             extra={
                 <>

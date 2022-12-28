@@ -47,7 +47,7 @@ const EventModal: React.FC<EventModalProps> = (props) => {
                 <Timeline className={s.timeLine} reverse={true}>
                     {eventList.map((item) => (
                         <Timeline.Item color="gray" key={item.event_id}>
-                            <p>{timeToDateString(item.event_time)}</p>
+                            <p>{item.user_display_name} {timeToDateString(item.event_time)}</p>
                             <EventCom key={item.event_id} item={item} skipProjectName={true} skipLink={true} showMoreLink={false} />
                         </Timeline.Item>
                     ))}

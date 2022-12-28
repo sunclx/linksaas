@@ -7,7 +7,7 @@ import type { LinkTestCaseEntryState } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import type { GetEntryResponse, ENTRY_TYPE } from '@/api/project_test_case';
-import { get_entry, ENTRY_TYPE_DIR, ENTRY_TYPE_TC, create_entry } from '@/api/project_test_case';
+import { get_entry, ENTRY_TYPE_DIR, ENTRY_TYPE_TC, create_entry, remove_entry } from '@/api/project_test_case';
 import { Breadcrumb, Form, Input, Modal, Popover, Space, message } from 'antd';
 import s from './common.module.less';
 import Button from "@/components/Button";
@@ -61,6 +61,18 @@ const EntryList = () => {
         await loadCurEntry();
     };
 
+    const removeEntry = async () => {
+        await request(remove_entry({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            entry_id: state!.entryId,
+        }));
+        if (curEntryRes != null) {
+            const pos = curEntryRes.path_element_list.length - 1;
+            linkAuxStore.goToTestCaseList({ entryId: curEntryRes.path_element_list[pos].entry_id }, history);
+        }
+    }
+
     useEffect(() => {
         loadCurEntry();
     }, [state.entryId]);
@@ -96,7 +108,14 @@ const EntryList = () => {
                                         setShowCreateEntry(ENTRY_TYPE_TC);
                                     }}>新建测试用例</Button>
                                     <Popover
-                                        content={<Button type="link" danger>删除</Button>}
+                                        content={
+                                            <Button type="link" danger
+                                                disabled={curEntryRes.entry.user_perm.can_remove == false || curEntryRes.child_count > 0}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    removeEntry();
+                                                }}>删除</Button>}
                                         placement="bottom"
                                         trigger="click">
                                         <a><MoreOutlined /></a>
@@ -111,7 +130,14 @@ const EntryList = () => {
                                             e.preventDefault();
                                             setShowEventModal(true);
                                         }}>查看事件</Button></li>
-                                        <li><Button type="link" danger>删除</Button></li>
+                                        <li>
+                                            <Button type="link" danger
+                                                disabled={curEntryRes.entry.user_perm.can_remove == false}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    removeEntry();
+                                                }}>删除</Button></li>
                                     </ul>}
                                     placement="bottom"
                                     trigger="click">
