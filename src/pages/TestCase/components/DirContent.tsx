@@ -12,6 +12,7 @@ import { FileOutlined, FolderOutlined } from "@ant-design/icons";
 import { EditText } from "@/components/EditCell/EditText";
 import { Space } from "antd";
 import moment from 'moment';
+import MoveEntryModal from "./MoveEntryModal";
 
 interface DirContentProps {
     entryId: string;
@@ -26,6 +27,7 @@ const DirContent: React.FC<DirContentProps> = (props) => {
     const history = useHistory();
 
     const [entryList, setEntryList] = useState<Entry[]>([]);
+    const [moveEntryId, setMoveEntryId] = useState("");
 
     const loadEntryList = async () => {
         const res = await request(list_entry({
@@ -70,17 +72,24 @@ const DirContent: React.FC<DirContentProps> = (props) => {
         },
         {
             title: "操作",
-            width: 100,
+            width: 150,
             render: (_, record: Entry) => (
-                <Button type="link"
-                    style={{ minWidth: "10px", padding: "0px 0px" }}
-                    onClick={e => {
+                <>
+                    <Button type="link"
+                        style={{ minWidth: "10px", padding: "0px 0px" }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            linkAuxStore.goToTestCaseList({ entryId: record.entry_id }, history);
+                        }}>
+                        查看{record.entry_type == ENTRY_TYPE_DIR ? "目录" : "用例"}
+                    </Button>
+                    <Button type="link" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        linkAuxStore.goToTestCaseList({ entryId: record.entry_id }, history);
-                    }}>
-                    查看{record.entry_type == ENTRY_TYPE_DIR ? "目录" : "用例"}
-                </Button>
+                        setMoveEntryId(record.entry_id);
+                    }}>移动到</Button>
+                </>
             ),
         },
         {
@@ -102,7 +111,13 @@ const DirContent: React.FC<DirContentProps> = (props) => {
     ]
 
     return (
-        <Table rowKey="entry_id" columns={columns} dataSource={entryList} pagination={false} />
+        <>
+            <Table rowKey="entry_id" columns={columns} dataSource={entryList} pagination={false} />
+            {moveEntryId != "" && <MoveEntryModal entryId={moveEntryId} onMove={() => {
+                loadEntryList();
+                setMoveEntryId("");
+            }} onCancel={() => setMoveEntryId("")} />}
+        </>
     );
 };
 

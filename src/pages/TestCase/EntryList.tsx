@@ -8,11 +8,13 @@ import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import type { GetEntryResponse, ENTRY_TYPE } from '@/api/project_test_case';
 import { get_entry, ENTRY_TYPE_DIR, ENTRY_TYPE_TC, create_entry } from '@/api/project_test_case';
-import { Breadcrumb, Form, Input, Modal, Space, message } from 'antd';
+import { Breadcrumb, Form, Input, Modal, Popover, Space, message } from 'antd';
 import s from './common.module.less';
 import Button from "@/components/Button";
 import DirContent from "./components/DirContent";
 import TcDetail from "./components/TcDetail";
+import { MoreOutlined } from "@ant-design/icons";
+import EventModal from "./components/EventModal";
 
 const EntryList = () => {
     const userStore = useStores('userStore');
@@ -30,6 +32,7 @@ const EntryList = () => {
 
     const [curEntryRes, setCurEntryRes] = useState<GetEntryResponse | null>(null);
     const [showCreateEntry, setShowCreateEntry] = useState<ENTRY_TYPE | null>(null);
+    const [showEventModal, setShowEventModal] = useState(false);
     const [newTitle, setNewTitle] = useState("");
 
     const loadCurEntry = async () => {
@@ -92,12 +95,33 @@ const EntryList = () => {
                                         e.preventDefault();
                                         setShowCreateEntry(ENTRY_TYPE_TC);
                                     }}>新建测试用例</Button>
+                                    <Popover
+                                        content={<Button type="link" danger>删除</Button>}
+                                        placement="bottom"
+                                        trigger="click">
+                                        <a><MoreOutlined /></a>
+                                    </Popover>
                                 </Space>
+                            )}
+                            {curEntryRes.entry.entry_type == ENTRY_TYPE_TC && (
+                                <Popover
+                                    content={<ul>
+                                        <li><Button type="link" onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowEventModal(true);
+                                        }}>查看事件</Button></li>
+                                        <li><Button type="link" danger>删除</Button></li>
+                                    </ul>}
+                                    placement="bottom"
+                                    trigger="click">
+                                    <a><MoreOutlined /></a>
+                                </Popover>
                             )}
                         </div>
                     </div>
                     {curEntryRes.entry.entry_type == ENTRY_TYPE_DIR && curEntryRes.entry.entry_id == state!.entryId && <DirContent entryId={state!.entryId} childCount={curEntryRes.child_count} />}
-                    {curEntryRes.entry.entry_type == ENTRY_TYPE_TC && curEntryRes.entry.entry_id == state!.entryId && <TcDetail entryId={state!.entryId}/>}
+                    {curEntryRes.entry.entry_type == ENTRY_TYPE_TC && curEntryRes.entry.entry_id == state!.entryId && <TcDetail entryId={state!.entryId} />}
                 </div>
             )}
         </MenuTab>
@@ -122,6 +146,7 @@ const EntryList = () => {
                 </Form>
             </Modal>
         )}
+        {showEventModal == true && <EventModal entryId={state!.entryId} onCancel={() => setShowEventModal(false)} />}
     </CardWrap>);
 };
 
