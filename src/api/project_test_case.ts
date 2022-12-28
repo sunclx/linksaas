@@ -10,6 +10,7 @@ export const RESULT_TYPE_SUCCESS: RESULT_TYPE = 0;  //成功
 export const RESULT_TYPE_WARN: RESULT_TYPE = 1;     //警告
 export const RESULT_TYPE_FAIL: RESULT_TYPE = 2;     //失败
 
+export const RESULT_TYPE_ALL: RESULT_TYPE = 99; //全部
 
 export type RESULT_FROM = number;
 export const RESULT_FROM_UI = 0;         //通过UI界面提交结果
@@ -88,19 +89,41 @@ export type EntryContent = {
     update_logo_uri: string;
 };
 
+export type BasicResultImage = {
+    thumb_file_id: string;
+    file_id: string;
+};
+
 export type BasicResult = {
     desc: string;
     result_type: RESULT_TYPE;
     result_from: RESULT_FROM;
-    image_file_id_list: string[];
+    image_list: BasicResultImage[];
     extra_file_id_list: string[];
 };
+
+export type ResultImage = {
+    thumb_file_id: string;
+    file_id: string;
+    file_name: string;
+};
+
+export type ResultFile = {
+    file_id: string;
+    file_name: string;
+    file_size: number;
+};
+
 
 export type Result = {
     result_id: string;
     entry_id: string;
     project_id: string;
-    basic_result: BasicResult;
+    desc: string;
+    result_type: RESULT_TYPE;
+    result_from: RESULT_FROM;
+    image_list: ResultImage[];
+    extra_file_list: ResultFile[];
     create_time: number;
     create_user_id: string;
     create_display_name: string;

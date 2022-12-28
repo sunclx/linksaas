@@ -90,6 +90,10 @@ export type GetFsStatusResponse = {
     fs_status: FsStatus;
 };
 
+export async function stat_local_file(file_path: string): Promise<number> {
+    return invoke<number>('plugin:fs_api|stat_local_file', { filePath: file_path });
+}
+
 export async function get_cache_file(fs_id: string, file_id: string, file_name: string): Promise<DownloadResult> {
     return invoke<DownloadResult>('plugin:fs_api|get_cache_file', {
         fsId: fs_id,
