@@ -251,6 +251,21 @@ export type ListResponse = {
   info_list: IssueInfo[];
 };
 
+export type ListIdRequest = {
+  session_id: string;
+  project_id: string;
+  list_param: ListParam;
+  sort_type: SORT_TYPE;
+  sort_key: SORT_KEY;
+  max_count: number;
+};
+
+export type ListIdResponse = {
+  code: number;
+  err_msg: string;
+  issue_id_list: string[];
+};
+
 export type ListByIdRequest = {
   session_id: string;
   project_id: string;
@@ -724,6 +739,16 @@ export async function list(request: ListRequest): Promise<ListResponse> {
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ListResponse>(cmd, {
+    request,
+  });
+}
+
+//只列出工单ID
+export async function list_id(request: ListIdRequest): Promise<ListIdResponse> {
+  const cmd = 'plugin:project_issue_api|list_id';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<ListIdResponse>(cmd, {
     request,
   });
 }

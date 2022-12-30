@@ -41,6 +41,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_EARTHLY_ACTION,
   LINK_TARGET_EARTHLY_EXEC,
   LINK_TARGET_BOOK_MARK,
+  LINK_TARGET_TEST_CASE_ENTRY,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -131,29 +132,33 @@ export class LinkSpritInfo {
 }
 
 export class LinkTaskInfo {
-  constructor(content: string, projectId: string, issueId: string) {
+  constructor(content: string, projectId: string, issueId: string, contextIssueIdList: string[] = []) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_TASK;
     this.linkContent = content;
     this.projectId = projectId;
     this.issueId = issueId;
+    this.contextIssueIdList = contextIssueIdList;
   }
   linkTargeType: LINK_TARGET_TYPE;
   linkContent: string;
   projectId: string;
   issueId: string;
+  contextIssueIdList: string[];
 }
 
 export class LinkBugInfo {
-  constructor(content: string, projectId: string, issueId: string) {
+  constructor(content: string, projectId: string, issueId: string, contextIssueIdList: string[] = []) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BUG;
     this.linkContent = content;
     this.projectId = projectId;
     this.issueId = issueId;
+    this.contextIssueIdList = contextIssueIdList;
   }
   linkTargeType: LINK_TARGET_TYPE;
   linkContent: string;
   projectId: string;
   issueId: string;
+  contextIssueIdList: string[];
 }
 
 export class LinkAppraiseInfo {
@@ -271,6 +276,19 @@ export class LinkNoneInfo {
   linkContent: string;
 }
 
+export class LinkTestCaseEntryInfo {
+  constructor(content: string, projectId: string, entryId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.entryId = entryId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  entryId: string;
+}
+
 export class LinkImageInfo {
   constructor(content: string, imgUrl: string, thumbImgUrl: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_IMAGE;
@@ -303,6 +321,7 @@ export type LinkEventState = {
 export type LinkIssueState = {
   issueId: string;
   content: string;
+  contextIssueIdList?: string[];
 };
 
 export type LinkIssueListState = {
@@ -335,6 +354,10 @@ export type LinkEarthlyExecState = {
 
 export type LinkSpritState = {
   spritId: string;
+}
+
+export type LinkTestCaseEntryState = {
+  entryId: string;
 }
 
 class LinkAuxStore {
@@ -420,15 +443,16 @@ class LinkAuxStore {
       history.push(this.genUrl(pathname, TASK_DETAIL_SUFFIX), {
         issueId: taskLink.issueId,
         content: '',
+        contextIssueIdList: taskLink.contextIssueIdList,
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BUG) {
-      const taskLink = link as LinkBugInfo;
+      const bugLink = link as LinkBugInfo;
       if (remoteCheck) {
         const res = await request(
           linkAuxApi.check_access_issue(
             this.rootStore.userStore.sessionId,
-            taskLink.projectId,
-            taskLink.issueId,
+            bugLink.projectId,
+            bugLink.issueId,
           ),
         );
         if (!res) {
@@ -439,12 +463,13 @@ class LinkAuxStore {
           return;
         }
       }
-      if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
+      if (this.rootStore.projectStore.curProjectId != bugLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(bugLink.projectId);
       }
       history.push(this.genUrl(pathname, BUG_DETAIL_SUFFIX), {
-        issueId: taskLink.issueId,
+        issueId: bugLink.issueId,
         content: '',
+        contextIssueIdList: bugLink.contextIssueIdList,
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
@@ -533,6 +558,15 @@ class LinkAuxStore {
         spritId: spritLink.spritId,
       };
       history.push(this.genUrl(pathname, SPRIT_DETAIL_SUFFIX), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY) {
+      const entryLink = link as LinkTestCaseEntryInfo;
+      if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(entryLink.projectId);
+      }
+      const state: LinkTestCaseEntryState = {
+        entryId: entryLink.entryId,
+      };
+      history.push(this.genUrl(pathname, "/testcase"), state)
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -565,6 +599,7 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, TASK_CREATE_SUFFIX), {
       issueId: '',
       content: content,
+      contextIssueIdList: [],
     } as LinkIssueState);
   }
 
@@ -576,6 +611,7 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, BUG_CREATE_SUFFIX), {
       issueId: '',
       content: content,
+      contextIssueIdList: [],
     } as LinkIssueState);
   }
 
@@ -597,6 +633,16 @@ class LinkAuxStore {
   //跳转到迭代列表
   goToSpritList(history: History) {
     history.push(this.genUrl(history.location.pathname, "/sprit"));
+  }
+
+  //跳转到测试用例列表页
+  goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
+    history.push(this.genUrl(history.location.pathname, "/testcase"), state);
+  }
+
+  //跳转到测试结果列表页
+  goToTestCaseResultList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/testcase/result"));
   }
 
   private genUrl(pathname: string, suffix: string): string {

@@ -14,6 +14,7 @@ export const EditText: React.FC<EditTextProps> = (props) => {
     const [inEdit, setInEdit] = useState(false);
     const [content, setContent] = useState(props.content);
 
+
     return (
         <span onClick={e => {
             e.stopPropagation();
@@ -23,7 +24,7 @@ export const EditText: React.FC<EditTextProps> = (props) => {
             }
         }}>
             {!inEdit && (
-                <span title={content} style={{cursor: props.editable ? "pointer" : "default"}}>{content == "" ? "-" : content}
+                <span title={content} style={{ cursor: props.editable ? "pointer" : "default" }}>{content == "" ? "-" : content}
                     {props.editable && props.showEditIcon &&
                         <a><EditOutlined /></a>
                     }

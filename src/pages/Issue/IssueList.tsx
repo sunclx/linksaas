@@ -14,8 +14,8 @@ import Filtration from "./components/Filtration";
 import type { FilterDataType } from "./components/Filtration";
 import { useSetState } from 'ahooks';
 import IssueEditList from "./components/IssueEditList";
-import { ASSGIN_USER_ALL, ASSGIN_USER_CHECK, ASSGIN_USER_EXEC, SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC, list as list_issue, get as get_issue } from "@/api/project_issue";
-import type { IssueInfo, ListRequest } from "@/api/project_issue";
+import { ASSGIN_USER_ALL, ASSGIN_USER_CHECK, ASSGIN_USER_EXEC, SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC, list as list_issue, get as get_issue, list_id as list_issue_id } from "@/api/project_issue";
+import type { IssueInfo, ListRequest, ListParam } from "@/api/project_issue";
 import { request } from '@/utils/request';
 import StageModel from "./components/StageModel";
 import Pagination from "@/components/Pagination";
@@ -58,6 +58,7 @@ const IssueList = () => {
         level_list: [],
     });
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
+    const [issueIdList, setIssueIdList] = useState<string[]>([]);
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [stageIssue, setStageIssue] = useState<IssueInfo | undefined>(undefined);
@@ -84,6 +85,52 @@ const IssueList = () => {
     };
 
     const loadIssueList = async () => {
+        const listParam: ListParam = {
+            filter_by_issue_type: true,
+            issue_type: getIssue_type(location.pathname),
+            filter_by_state: !!filterData.state_list?.length,
+            state_list: filterData.state_list!, //阶段
+            filter_by_create_user_id: activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_CREATE,
+            create_user_id_list: [userStore.userInfo.userId],
+            filter_by_assgin_user_id:
+                activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME
+                    ? true
+                    : filterData.exec_user_id_list?.length || filterData.check_user_id_list?.length
+                        ? true
+                        : false,
+            assgin_user_id_list:
+                activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME
+                    ? [userStore.userInfo.userId]
+                    : [...filterData.exec_user_id_list!, ...filterData.check_user_id_list!],
+            assgin_user_type:
+                activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME ||
+                    (filterData.exec_user_id_list?.length && filterData.check_user_id_list?.length)
+                    ? ASSGIN_USER_ALL
+                    : filterData.exec_user_id_list?.length
+                        ? ASSGIN_USER_EXEC
+                        : filterData.check_user_id_list?.length
+                            ? ASSGIN_USER_CHECK
+                            : ASSGIN_USER_ALL,
+            filter_by_sprit_id: false,
+            sprit_id_list: [],
+            filter_by_create_time: false,
+            from_create_time: 0,
+            to_create_time: 0,
+            filter_by_update_time: false,
+            from_update_time: 0,
+            to_update_time: 0,
+            filter_by_task_priority: getIsTask(location.pathname) && !!filterData.priority_list?.length,
+            task_priority_list: getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级
+            filter_by_software_version:
+                !getIsTask(location.pathname) && !!filterData.software_version_list?.length,
+            software_version_list: !getIsTask(location.pathname) ? filterData.software_version_list! : [],
+            filter_by_bug_level: !getIsTask(location.pathname) && !!filterData.level_list?.length,
+            bug_level_list: !getIsTask(location.pathname) ? filterData.level_list! : [],
+            filter_by_bug_priority: !getIsTask(location.pathname) && !!filterData.priority_list?.length,
+            bug_priority_list: !getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级,
+            filter_by_title_keyword: false,
+            title_keyword: "",
+        };
         const req: ListRequest = {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
@@ -91,57 +138,23 @@ const IssueList = () => {
             sort_key: SORT_KEY_UPDATE_TIME,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
-            list_param: {
-                filter_by_issue_type: true,
-                issue_type: getIssue_type(location.pathname),
-                filter_by_state: !!filterData.state_list?.length,
-                state_list: filterData.state_list!, //阶段
-                filter_by_create_user_id: activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_CREATE,
-                create_user_id_list: [userStore.userInfo.userId],
-                filter_by_assgin_user_id:
-                    activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME
-                        ? true
-                        : filterData.exec_user_id_list?.length || filterData.check_user_id_list?.length
-                            ? true
-                            : false,
-                assgin_user_id_list:
-                    activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME
-                        ? [userStore.userInfo.userId]
-                        : [...filterData.exec_user_id_list!, ...filterData.check_user_id_list!],
-                assgin_user_type:
-                    activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME ||
-                        (filterData.exec_user_id_list?.length && filterData.check_user_id_list?.length)
-                        ? ASSGIN_USER_ALL
-                        : filterData.exec_user_id_list?.length
-                            ? ASSGIN_USER_EXEC
-                            : filterData.check_user_id_list?.length
-                                ? ASSGIN_USER_CHECK
-                                : ASSGIN_USER_ALL,
-                filter_by_sprit_id: false,
-                sprit_id_list: [],
-                filter_by_create_time: false,
-                from_create_time: 0,
-                to_create_time: 0,
-                filter_by_update_time: false,
-                from_update_time: 0,
-                to_update_time: 0,
-                filter_by_task_priority: getIsTask(location.pathname) && !!filterData.priority_list?.length,
-                task_priority_list: getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级
-                filter_by_software_version:
-                    !getIsTask(location.pathname) && !!filterData.software_version_list?.length,
-                software_version_list: !getIsTask(location.pathname) ? filterData.software_version_list! : [],
-                filter_by_bug_level: !getIsTask(location.pathname) && !!filterData.level_list?.length,
-                bug_level_list: !getIsTask(location.pathname) ? filterData.level_list! : [],
-                filter_by_bug_priority: !getIsTask(location.pathname) && !!filterData.priority_list?.length,
-                bug_priority_list: !getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级,
-                filter_by_title_keyword: false,
-                title_keyword: "",
-            },
+            list_param: listParam,
         };
         const res = await request(list_issue(req));
         if (res) {
             setIssueList(res.info_list);
             setTotalCount(res.total_count);
+        }
+        const idRes = await request(list_issue_id({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            list_param: listParam,
+            sort_type: SORT_TYPE_DSC,
+            sort_key: SORT_KEY_UPDATE_TIME,
+            max_count: 999,
+        }));
+        if (idRes) {
+            setIssueIdList(idRes.issue_id_list);
         }
     };
 
@@ -199,7 +212,7 @@ const IssueList = () => {
                     />
                     {isFilter && <Filtration setFilterData={setFilterData} activeVal={activeVal} filterData={filterData} />}
                 </div>
-                <IssueEditList isFilter={isFilter} dataSource={issueList} onChange={issueId => updateIssue(issueId)} showStage={issueId => showStage(issueId)} />
+                <IssueEditList isFilter={isFilter} dataSource={issueList} issueIdList={issueIdList} onChange={issueId => updateIssue(issueId)} showStage={issueId => showStage(issueId)} />
                 <Pagination
                     total={totalCount}
                     pageSize={PAGE_SIZE}

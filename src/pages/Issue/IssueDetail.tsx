@@ -9,7 +9,7 @@ import { request } from '@/utils/request';
 import { useStores } from "@/hooks";
 import DetailsNav from "@/components/DetailsNav";
 import { Button, Modal, message } from 'antd';
-import { DeleteOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, ArrowRightOutlined, DeleteOutlined } from "@ant-design/icons";
 import s from './IssueDetail.module.less';
 import IssueDetailLeft from "./components/IssueDetailLeft";
 import IssueDetailRight from "./components/IssueDetailRight";
@@ -28,26 +28,44 @@ const IssueDetail = () => {
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
 
-    const [issue, setIssue] = useState<IssueInfo | undefined>(undefined);
+    const [issueId, setIssueId] = useState(state.issueId);
+    const [issue, setIssue] = useState<IssueInfo | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showStageModal, setShowStageModal] = useState(false);
     const [dataVersion, setDataVersion] = useState(0);
+    const [preIssueId, setPreIssueId] = useState("");
+    const [nextIssueId, setNextIssueId] = useState("");
 
     const loadIssue = async () => {
-        const res = await request(get_issue(userStore.sessionId, projectStore.curProjectId, state.issueId));
+        const res = await request(get_issue(userStore.sessionId, projectStore.curProjectId, issueId));
         if (res) {
             setIssue(res.info);
             setDataVersion((preVersion) => preVersion + 1);
         }
     }
 
+    const calcPreAndNext = () => {
+        const issueIdList = state.contextIssueIdList ?? [];
+        const index = issueIdList.indexOf(issueId);
+        if (index == -1) {
+            return;
+        }
+        if (index > 0) {
+            setPreIssueId(issueIdList[index - 1]);
+        }
+        if (index < issueIdList.length - 1) {
+            setNextIssueId(issueIdList[index + 1])
+        }
+    }
+
     useEffect(() => {
+        calcPreAndNext();
         loadIssue();
-    }, [state.issueId]);
+    }, [issueId]);
 
     return (<CardWrap>
-        {issue != undefined && (<DetailsNav title={
-            <EditText editable={true} content={issue?.basic_info.title ?? "xxx"} onChange={async (value: string) => {
+        {issue != null && (<DetailsNav title={
+            <EditText editable={true} content={issue?.basic_info.title ?? ""} onChange={async (value: string) => {
                 return await updateTitle(userStore.sessionId, issue.project_id, issue.issue_id, value);
             }} showEditIcon={true} />
         }>
@@ -62,14 +80,49 @@ const IssueDetail = () => {
                     </Button>)
                 )
             }
+            {(state.contextIssueIdList ?? []).length > 0 &&
+                <span style={{ display: "inline-block", width: "80px" }} />
+            }
+            {(state.contextIssueIdList ?? []).length > 0 && (
+                <Button
+                    type="link"
+                    title="上一个"
+                    style={{ fontSize: "18px" }}
+                    disabled={preIssueId == ""}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpIssueId = preIssueId;
+                        setIssue(null);
+                        setPreIssueId("");
+                        setNextIssueId("");
+                        setIssueId(tmpIssueId);
+                    }}><ArrowLeftOutlined /></Button>
+            )}
+            {(state.contextIssueIdList ?? []).length > 0 && (
+                <Button
+                    type="link"
+                    title="下一个"
+                    style={{ fontSize: "18px" }}
+                    disabled={nextIssueId == ""}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpIssueId = nextIssueId;
+                        setIssue(null);
+                        setPreIssueId("");
+                        setNextIssueId("");
+                        setIssueId(tmpIssueId);
+                    }}><ArrowRightOutlined /></Button>
+            )}
         </DetailsNav>)
         }
         <div className={s.content_wrap}>
             <div className={s.content_left}>
-                {issue != undefined && <IssueDetailLeft issue={issue} />}
+                {issue != null && <IssueDetailLeft issue={issue} />}
             </div>
             <div className={s.content_rigth}>
-                {issue != undefined && <IssueDetailRight issue={issue} onUpdate={() => { loadIssue() }} dataVersion={dataVersion} setShowStageModal={() => setShowStageModal(true)} />}
+                {issue != null && <IssueDetailRight issue={issue} onUpdate={() => { loadIssue() }} dataVersion={dataVersion} setShowStageModal={() => setShowStageModal(true)} />}
             </div>
         </div>
         {showRemoveModal && (
@@ -80,7 +133,7 @@ const IssueDetail = () => {
                 onOk={async (e): Promise<void> => {
                     e.stopPropagation();
                     e.preventDefault();
-                    if (issue == undefined) {
+                    if (issue == null) {
                         return;
                     }
                     await request(remove_issue(userStore.sessionId, issue.project_id, issue.issue_id));
@@ -106,7 +159,7 @@ const IssueDetail = () => {
                 <p style={{ color: "red" }}>删除后将无法恢复当前{getIssueText(location.pathname)}</p>
             </Modal>)
         }
-        {showStageModal && issue != undefined && (
+        {showStageModal && issue != null && (
             <StageModel
                 issue={issue}
                 onCancel={() => setShowStageModal(false)}
