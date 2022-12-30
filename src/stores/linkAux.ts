@@ -645,6 +645,11 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, "/testcase/result"));
   }
 
+  //跳转到研发行为订阅页面
+  goToEventSubscribeList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/record/subscribe"));
+  }
+
   private genUrl(pathname: string, suffix: string): string {
     if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       return APP_PROJECT_CHAT_PATH + suffix;

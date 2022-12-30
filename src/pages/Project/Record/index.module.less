@@ -1,14 +1,22 @@
 .record {
   position: relative;
 }
+
 .header {
   display: flex;
   padding: 26px;
+
   .btn {
     margin: 0 0 0 35px;
     border-radius: 6px;
   }
+  .subscribe_btn {
+    position: absolute;
+    right: 20px;
+    font-size: 14px;
+  }
 }
+
 .recordList {
   padding: 0 26px;
   background: #fff;
@@ -16,33 +24,39 @@
   :global(.ant-collapse-item) {
     border: none !important;
   }
+
   :global(.ant-collapse-header) {
     align-items: center !important;
-    > div {
+
+    >div {
       cursor: default;
     }
   }
 
   .userInfo {
-    > img {
+    >img {
       width: 30px;
       height: 30px;
       margin: 0 10px 0 0;
       border-radius: 50%;
     }
+
     .name {
       margin: 0 15px 0 0;
       color: #2c2d2e;
       font-weight: 400;
       font-size: 14px;
     }
+
     .countList {
       color: #2c2d2e;
       font-weight: 400;
       font-size: 14px;
-      > span {
+
+      >span {
         margin: 0 10px 0 0;
       }
+
       img {
         width: 16px;
         height: 16px;
@@ -51,16 +65,20 @@
       }
     }
   }
+
   .record {
     margin: 0 0 0 50px;
+
     .recordItem {
       line-height: 32px;
+
       .icon {
         width: 16px;
         height: 16px;
         margin: 0 5px 0 0;
         vertical-align: -3px;
       }
+
       .time {
         margin: 0 12px 0 0;
         color: #8a8a8a;
@@ -76,6 +94,7 @@
     line-height: 30px;
     font-size: 20px;
   }
+
   .content {
     color: #666;
     font-size: 12px;
