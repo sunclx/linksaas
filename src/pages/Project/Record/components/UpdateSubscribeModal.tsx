@@ -1,21 +1,21 @@
-import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
-import { observer } from 'mobx-react';
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
-import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
-import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
-import { request } from "@/utils/request";
+import type { SubscribeInfo } from '@/api/events_subscribe';
+import { update as update_subscribe } from '@/api/events_subscribe';
+import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRobotEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { observer } from 'mobx-react';
+import { request } from "@/utils/request";
 
-interface CreateSubscribeModalProps {
+
+interface UpdateSubscribeModalProps {
+    subscribe: SubscribeInfo;
     onCancel: () => void;
     onOk: () => void;
 }
 
 interface FormValue {
     chatBotName: string | undefined;
-    chatBotAddr: string | undefined;
-    chatBotSignCode: string | undefined;
     bookShelfEvCfg: string[] | undefined;
     docEvCfg: string[] | undefined;
     earthlyEvCfg: string[] | undefined;
@@ -29,70 +29,65 @@ interface FormValue {
     testCaseEvCfg: string[] | undefined;
 }
 
-
-const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
+const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const userStore = useStores('userStore');
-    const projectStore = useStores('projectStore');
 
     const [form] = Form.useForm();
 
-    const [chatBotType, setChatBotType] = useState<CHAT_BOT_TYPE>(CHAT_BOT_QYWX);
+    const projectEvCfgValues = genProjectEvCfgValues(props.subscribe.event_cfg.project_ev_cfg);
+    const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(projectEvCfgValues.length == projectEvOptionList.length);
+    const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(projectEvCfgValues.length > 0 && projectEvCfgValues.length < projectEvOptionList.length);
 
-    const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(false);
-    const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(false);
+    const bookShelfEvCfgValues = genBookShelfEvCfgValues(props.subscribe.event_cfg.book_shelf_ev_cfg);
+    const [bookShelfEvCfgCheckAll, setBookShelfEvCfgCheckAll] = useState(bookShelfEvCfgValues.length == bookShelfEvOptionList.length);
+    const [bookShelfEvCfgIndeterminate, setBookShelfEvCfgIndeterminate] = useState(bookShelfEvCfgValues.length > 0 && bookShelfEvCfgValues.length < bookShelfEvOptionList.length);
 
-    const [bookShelfEvCfgCheckAll, setBookShelfEvCfgCheckAll] = useState(false);
-    const [bookShelfEvCfgIndeterminate, setBookShelfEvCfgIndeterminate] = useState(false);
+    const docEvCfgValues = genDocEvCfgValues(props.subscribe.event_cfg.doc_ev_cfg);
+    const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(docEvCfgValues.length == docEvOptionList.length);
+    const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(docEvCfgValues.length > 0 && docEvCfgValues.length < docEvOptionList.length);
 
-    const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(false);
-    const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(false);
+    const earthlyEvCfgValues = genEarthlyEvCfgValues(props.subscribe.event_cfg.earthly_ev_cfg);
+    const [earthlyEvCfgCheckAll, setEarthlyEvCfgCheckAll] = useState(earthlyEvCfgValues.length == earthlyEvOptionList.length);
+    const [earthlyEvCfgIndeterminate, setEarthlyEvCfgIndeterminate] = useState(earthlyEvCfgValues.length > 0 && earthlyEvCfgValues.length < earthlyEvOptionList.length);
 
-    const [earthlyEvCfgCheckAll, setEarthlyEvCfgCheckAll] = useState(false);
-    const [earthlyEvCfgIndeterminate, setEarthlyEvCfgIndeterminate] = useState(false);
+    const extEvCfgValues = genExtEvCfgValues(props.subscribe.event_cfg.ext_ev_cfg);
+    const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(extEvCfgValues.length == extEvOptionList.length);
+    const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(extEvCfgValues.length > 0 && extEvCfgValues.length < extEvOptionList.length);
 
-    const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(false);
-    const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(false);
+    const giteeEvCfgValues = genGiteeEvCfgValues(props.subscribe.event_cfg.gitee_ev_cfg);
+    const [giteeEvCfgCheckAll, setGiteeEvCfgCheckAll] = useState(giteeEvCfgValues.length == giteeEvOptionList.length);
+    const [giteeEvCfgIndeterminate, setGiteeEvCfgIndeterminate] = useState(giteeEvCfgValues.length > 0 && giteeEvCfgValues.length < giteeEvOptionList.length);
 
-    const [giteeEvCfgCheckAll, setGiteeEvCfgCheckAll] = useState(false);
-    const [giteeEvCfgIndeterminate, setGiteeEvCfgIndeterminate] = useState(false);
+    const gitlabEvCfgValues = genGitlabEvCfgValues(props.subscribe.event_cfg.gitlab_ev_cfg);
+    const [gitlabEvCfgCheckAll, setGitlabEvCfgCheckAll] = useState(gitlabEvCfgValues.length == gitlabEvOptionList.length);
+    const [gitlabEvCfgIndeterminate, setGitlabEvCfgIndeterminate] = useState(gitlabEvCfgValues.length > 0 && gitlabEvCfgValues.length < gitlabEvOptionList.length);
 
-    const [gitlabEvCfgCheckAll, setGitlabEvCfgCheckAll] = useState(false);
-    const [gitlabEvCfgIndeterminate, setGitlabEvCfgIndeterminate] = useState(false);
+    const issueEvCfgValues = genIssueEvCfgValues(props.subscribe.event_cfg.issue_ev_cfg);
+    const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(issueEvCfgValues.length == issueEvOptionList.length);
+    const [issueEvCfgIndeterminate, setIssueEvCfgIndeterminate] = useState(issueEvCfgValues.length > 0 && issueEvCfgValues.length < issueEvOptionList.length);
 
-    const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(false);
-    const [issueEvCfgIndeterminate, setIssueEvCfgIndeterminate] = useState(false);
+    const robotEvCfgValues = genRobotEvCfgValues(props.subscribe.event_cfg.robot_ev_cfg);
+    const [robotEvCfgCheckAll, setRobotEvCfgCheckAll] = useState(robotEvCfgValues.length == robotEvOptionList.length);
+    const [robotEvCfgIndeterminate, setRobotEvCfgIndeterminate] = useState(robotEvCfgValues.length > 0 && robotEvCfgValues.length < robotEvOptionList.length);
 
-    const [robotEvCfgCheckAll, setRobotEvCfgCheckAll] = useState(false);
-    const [robotEvCfgIndeterminate, setRobotEvCfgIndeterminate] = useState(false);
+    const spritEvCfgValues = genSpritEvCfgValues(props.subscribe.event_cfg.sprit_ev_cfg);
+    const [spritEvCfgCheckAll, setSpritEvCfgCheckAll] = useState(spritEvCfgValues.length == spritEvOptionList.length);
+    const [spritEvCfgIndeterminate, setSpritEvCfgIndeterminate] = useState(spritEvCfgValues.length > 0 && spritEvCfgValues.length < spritEvOptionList.length);
 
-    const [spritEvCfgCheckAll, setSpritEvCfgCheckAll] = useState(false);
-    const [spritEvCfgIndeterminate, setSpritEvCfgIndeterminate] = useState(false);
+    const testCaseEvCfgValues = genTestCaseEvCfgValues(props.subscribe.event_cfg.test_case_ev_cfg);
+    const [testCaseEvCfgCheckAll, setTestCaseEvCfgCheckAll] = useState(testCaseEvCfgValues.length == testCaseEvOptionList.length);
+    const [testCaseEvCfgIndeterminate, setTestCaseEvCfgIndeterminate] = useState(testCaseEvCfgValues.length > 0 && testCaseEvCfgValues.length < testCaseEvOptionList.length);
 
-    const [testCaseEvCfgCheckAll, setTestCaseEvCfgCheckAll] = useState(false);
-    const [testCaseEvCfgIndeterminate, setTestCaseEvCfgIndeterminate] = useState(false);
-
-    const createSubscribe = async () => {
+    const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
-            message.error("订阅名称不能为空");
-            return;
+            formValue.chatBotName = props.subscribe.chat_bot_name;
         }
-        if (formValue.chatBotAddr == undefined || formValue.chatBotAddr == "") {
-            message.error("webhook地址不能为空")
-            return;
-        }
-        if (chatBotType == CHAT_BOT_DING || chatBotType == CHAT_BOT_FS) {
-            if (formValue.chatBotSignCode == undefined || formValue.chatBotSignCode == "") {
-                message.error("签名密钥不能为空");
-            }
-        }
-        await request(create_subscribe({
+        await request(update_subscribe({
             session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
+            project_id: props.subscribe.project_id,
+            subscribe_id: props.subscribe.subscribe_id,
             chat_bot_name: formValue.chatBotName,
-            chat_bot_type: chatBotType,
-            chat_bot_addr: formValue.chatBotAddr,
-            chat_bot_sign_code: formValue.chatBotSignCode ?? "",
             event_cfg: {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
                 book_shelf_ev_cfg: calcBookShelfEvCfg(formValue.bookShelfEvCfg),
@@ -111,35 +106,32 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     };
 
     return (
-        <Modal open title="新增研发事件订阅" onCancel={e => {
+        <Modal open title="修改研发事件订阅" onCancel={e => {
             e.stopPropagation();
             e.preventDefault();
             props.onCancel();
         }} onOk={e => {
             e.stopPropagation();
             e.preventDefault();
-            createSubscribe();
+            updateSubscribe();
         }}>
             <div style={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}>
-                <Form form={form} labelCol={{ span: 7 }}>
-                    <Form.Item label="订阅目标" rules={[{ required: true }]}>
-                        <Select value={chatBotType} onChange={value => setChatBotType(value)}>
-                            <Select.Option value={CHAT_BOT_QYWX}>企业微信</Select.Option>
-                            <Select.Option value={CHAT_BOT_DING}>钉钉</Select.Option>
-                            <Select.Option value={CHAT_BOT_FS}>飞书</Select.Option>
-                        </Select>
-                    </Form.Item>
+                <Form form={form} labelCol={{ span: 7 }} initialValues={{
+                    "projectEvCfg": projectEvCfgValues,
+                    "bookShelfEvCfg": bookShelfEvCfgValues,
+                    "docEvCfg": docEvCfgValues,
+                    "earthlyEvCfg": earthlyEvCfgValues,
+                    "extEvCfg": extEvCfgValues,
+                    "giteeEvCfg": giteeEvCfgValues,
+                    "gitlabEvCfg": gitlabEvCfgValues,
+                    "issueEvCfg": issueEvCfgValues,
+                    "robotEvCfg": robotEvCfgValues,
+                    "spritEvCfg": spritEvCfgValues,
+                    "testCaseEvCfg": testCaseEvCfgValues,
+                }}>
                     <Form.Item label="订阅名称" name="chatBotName" rules={[{ required: true }]}>
-                        <Input />
+                        <Input defaultValue={props.subscribe.chat_bot_name} />
                     </Form.Item>
-                    <Form.Item label="webhook地址" name="chatBotAddr" rules={[{ required: true }]}>
-                        <Input.TextArea rows={4} />
-                    </Form.Item>
-                    {(chatBotType == CHAT_BOT_DING || chatBotType == CHAT_BOT_FS) && (
-                        <Form.Item label="签名密钥" name="chatBotSignCode" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                    )}
                     <Form.Item label={<Checkbox indeterminate={projectEvCfgIndeterminate} checked={projectEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -420,5 +412,4 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
         </Modal>
     );
 }
-
-export default observer(CreateSubscribeModal);
+export default observer(UpdateSubscribeModal);
