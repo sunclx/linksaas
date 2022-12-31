@@ -8,6 +8,7 @@ use tonic::transport::{Channel, Endpoint};
 
 mod client_cfg_api_plugin;
 mod events_api_plugin;
+mod events_subscribe_api_plugin;
 mod events_decode;
 mod external_events_api_plugin;
 mod fs_api_plugin;
@@ -276,6 +277,7 @@ fn main() {
         .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(project_test_case_api_plugin::ProjectTestCaseApiPlugin::new())
+        .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

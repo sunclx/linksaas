@@ -14,7 +14,7 @@ import { CaretRightOutlined } from '@ant-design/icons';
 import { PLATFORM } from './common';
 import { useStores } from '@/hooks';
 import { runInAction } from 'mobx';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import type { LinkEventState } from '@/stores/linkAux';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 
@@ -36,6 +36,9 @@ type RecordType = RecordListItem & {
 const ProjectRecord: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+  const linkAuxStore = useStores('linkAuxStore');
+
+  const history = useHistory();
   const location = useLocation();
   const state: LinkEventState | undefined = location.state as LinkEventState | undefined;
 
@@ -192,6 +195,11 @@ const ProjectRecord: React.FC = () => {
         >
           补充工作记录
         </Button>
+        <Button className={style.subscribe_btn} type="link" onClick={e=>{
+          e.stopPropagation();
+          e.preventDefault();
+          linkAuxStore.goToEventSubscribeList(history);
+        }}>研发事件订阅</Button>
       </div>
 
       <Collapse

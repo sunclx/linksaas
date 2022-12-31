@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 import type { AllEvent } from './event_type';
 
-type EVENT_TYPE = number;
+export type EVENT_TYPE = number;
 
 export const EVENT_TYPE_USER: EVENT_TYPE = 0; //用户相关事件
 export const EVENT_TYPE_PROJECT: EVENT_TYPE = 1; //除任务，缺陷，项目计划，文档，网盘外的项目事件

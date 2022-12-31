@@ -52,6 +52,7 @@ import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import EntryList from '@/pages/TestCase/EntryList';
 import ResultList from '@/pages/TestCase/ResultList';
+import SubscribeList from '@/pages/Project/Record/SubscribeList';
 
 
 
@@ -188,6 +189,13 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/record',
       title: '工作记录',
       component: ProjectRecord,
+      exact: true,
+    },
+    {
+      path: prefix + "/record/subscribe",
+      title: "工作记录订阅",
+      component: SubscribeList,
+      exact: true,
     },
     {
       path: prefix + '/access',
