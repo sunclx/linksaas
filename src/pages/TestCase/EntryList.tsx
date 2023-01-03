@@ -15,6 +15,7 @@ import DirContent from "./components/DirContent";
 import TcDetail from "./components/TcDetail";
 import { MoreOutlined } from "@ant-design/icons";
 import EventModal from "./components/EventModal";
+import GenCodeModal from "./components/GenCodeModal";
 
 const EntryList = () => {
     const userStore = useStores('userStore');
@@ -34,6 +35,7 @@ const EntryList = () => {
     const [showCreateEntry, setShowCreateEntry] = useState<ENTRY_TYPE | null>(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [newTitle, setNewTitle] = useState("");
+    const [showGenCodeModal, setShowGenCodeModal] = useState(false);
 
     const loadCurEntry = async () => {
         const res = await request(get_entry({
@@ -123,26 +125,33 @@ const EntryList = () => {
                                 </Space>
                             )}
                             {curEntryRes.entry.entry_type == ENTRY_TYPE_TC && (
-                                <Popover
-                                    content={<ul>
-                                        <li><Button type="link" onClick={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            setShowEventModal(true);
-                                        }}>查看事件</Button></li>
-                                        <li>
-                                            <Button type="link" danger
-                                                disabled={curEntryRes.entry.user_perm.can_remove == false}
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    removeEntry();
-                                                }}>删除</Button></li>
-                                    </ul>}
-                                    placement="bottom"
-                                    trigger="click">
-                                    <a><MoreOutlined /></a>
-                                </Popover>
+                                <Space size="middle">
+                                    <Button onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowGenCodeModal(true);
+                                    }}>生成代码</Button>
+                                    <Popover
+                                        content={<ul>
+                                            <li><Button type="link" onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setShowEventModal(true);
+                                            }}>查看事件</Button></li>
+                                            <li>
+                                                <Button type="link" danger
+                                                    disabled={curEntryRes.entry.user_perm.can_remove == false}
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        removeEntry();
+                                                    }}>删除</Button></li>
+                                        </ul>}
+                                        placement="bottom"
+                                        trigger="click">
+                                        <a><MoreOutlined /></a>
+                                    </Popover>
+                                </Space>
                             )}
                         </div>
                     </div>
@@ -173,6 +182,7 @@ const EntryList = () => {
             </Modal>
         )}
         {showEventModal == true && <EventModal entryId={state!.entryId} onCancel={() => setShowEventModal(false)} />}
+        {showGenCodeModal == true && <GenCodeModal entryId={state!.entryId} onCancel={() => setShowGenCodeModal(false)} />}
     </CardWrap>);
 };
 
