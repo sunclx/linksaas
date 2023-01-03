@@ -2,6 +2,7 @@
 import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
+import * as es from './events_subscribe';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -46,6 +47,17 @@ function get_issue_state_str(issue_state: number): string {
 }
 
 export namespace project {
+  function get_chat_bot_type_str(chat_bot_type: number): string {
+    if (chat_bot_type == es.CHAT_BOT_QYWX) {
+      return "企业微信";
+    } else if (chat_bot_type == es.CHAT_BOT_DING) {
+      return "钉钉";
+    } else if (chat_bot_type == es.CHAT_BOT_FS) {
+      return "飞书";
+    }
+    return "";
+  }
+
   /*
    *  项目相关的事件定义
    */
@@ -99,7 +111,7 @@ export namespace project {
     skip_prj_name: boolean,
     // inner: CloseProjectEvent,
   ): LinkInfo[] {
-    const ret_list: LinkInfo[] = [new LinkNoneInfo('激活项目')];
+    const ret_list: LinkInfo[] = [new LinkNoneInfo('关闭项目')];
     if (!skip_prj_name) {
       ret_list.push(new LinkProjectInfo(ev.project_name, ev.project_id));
     }
@@ -518,6 +530,49 @@ export namespace project {
     return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 转移超级管理员给 ${inner.member_display_name}`)];
   }
 
+  export type CreateEventSubscribeEvent = {
+    subscribe_id: string;
+    chat_bot_type: number;
+    chat_bot_name: string;
+  }
+
+  function get_create_subscribe_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateEventSubscribeEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建事件订阅 ${get_chat_bot_type_str(inner.chat_bot_type)} ${inner.chat_bot_name}`)];
+  }
+
+  export type UpdateEventSubscribeEvent = {
+    subscribe_id: string;
+    chat_bot_type: number;
+    old_chat_bot_name: string;
+    new_chat_bot_name: string;
+  };
+
+  function get_update_subscribe_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateEventSubscribeEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新事件订阅 ${get_chat_bot_type_str(inner.chat_bot_type)} ${inner.new_chat_bot_name} 原标题 ${inner.old_chat_bot_name}`)];
+  }
+
+  export type RemoveEventSubscribeEvent = {
+    subscribe_id: string;
+    chat_bot_type: number;
+    chat_bot_name: string;
+  };
+
+  function get_remove_subscribe_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveEventSubscribeEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除事件订阅 ${get_chat_bot_type_str(inner.chat_bot_type)} ${inner.chat_bot_name}`)];
+  }
+
   export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
     UpdateProjectEvent?: UpdateProjectEvent;
@@ -549,6 +604,9 @@ export namespace project {
     CreateGoalEvent?: CreateGoalEvent;
     UpdateGoalEvent?: UpdateGoalEvent;
     ChangeOwnerEvent?: ChangeOwnerEvent;
+    CreateEventSubscribeEvent?: CreateEventSubscribeEvent;
+    UpdateEventSubscribeEvent?: UpdateEventSubscribeEvent;
+    RemoveEventSubscribeEvent?: RemoveEventSubscribeEvent;
   };
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -627,6 +685,12 @@ export namespace project {
       return get_update_goal_simple_content(ev, skip_prj_name, inner.UpdateGoalEvent);
     } else if (inner.ChangeOwnerEvent !== undefined) {
       return get_change_owner_simple_content(ev, skip_prj_name, inner.ChangeOwnerEvent);
+    } else if (inner.CreateEventSubscribeEvent !== undefined) {
+      return get_create_subscribe_simple_content(ev, skip_prj_name, inner.CreateEventSubscribeEvent);
+    } else if (inner.UpdateEventSubscribeEvent !== undefined) {
+      return get_update_subscribe_simple_content(ev, skip_prj_name, inner.UpdateEventSubscribeEvent);
+    } else if (inner.RemoveEventSubscribeEvent !== undefined) {
+      return get_remove_subscribe_simple_content(ev, skip_prj_name, inner.RemoveEventSubscribeEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }
@@ -921,7 +985,7 @@ namespace sprit {
       new LinkSpritInfo(inner.new_title, ev.project_id, inner.sprit_id),
     ];
     if (inner.old_title != inner.new_title) {
-      ret_list.push(new LinkNoneInfo(`新标题 ${inner.new_title}`));
+      ret_list.push(new LinkNoneInfo(`老标题 ${inner.old_title}`));
     }
     const oldStartTime = moment(inner.old_start_time).format("YYYY-MM-DD");
     const newStartTime = moment(inner.new_start_time).format("YYYY-MM-DD");
@@ -1150,7 +1214,7 @@ namespace test_case {
     inner: RemoveEntryEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 ${inner.entry_type == tc.ENTRY_TYPE_DIR ? "目录" : "测试用例"} ${inner.title}`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 ${inner.entry_type == tc.ENTRY_TYPE_DIR ? "目录" : "测试用例"} ${inner.title}`),
     ];
   }
 
@@ -1871,7 +1935,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
     }
-    ret_list.push(new LinkNoneInfo(`依赖${get_issue_type_str(inner.depend_issue_type)}`));
+    ret_list.push(new LinkNoneInfo(`和 ${get_issue_type_str(inner.depend_issue_type)}`));
     if (inner.depend_issue_type == pi.ISSUE_TYPE_TASK) {
       ret_list.push(new LinkTaskInfo(inner.depend_issue_title, ev.project_id, inner.depend_issue_id));
     } else if (inner.depend_issue_type == pi.ISSUE_TYPE_BUG) {
@@ -1902,7 +1966,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       ret_list.push(new LinkBugInfo(inner.issue_title, ev.project_id, inner.issue_id));
     }
-    ret_list.push(new LinkNoneInfo(`依赖${get_issue_type_str(inner.depend_issue_type)}`));
+    ret_list.push(new LinkNoneInfo(`和 ${get_issue_type_str(inner.depend_issue_type)}`));
     if (inner.depend_issue_type == pi.ISSUE_TYPE_TASK) {
       ret_list.push(new LinkTaskInfo(inner.depend_issue_title, ev.project_id, inner.depend_issue_id));
     } else if (inner.depend_issue_type == pi.ISSUE_TYPE_BUG) {
@@ -2138,7 +2202,7 @@ namespace ext_event {
   ): LinkInfo[] {
     const event_source_str = get_event_source_str(inner.event_source);
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 获取密钥 ${event_source_str} ${inner.title}`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 获取 ${event_source_str} ${inner.title} 密钥`),
     ];
   }
   export type RemoveEvent = {

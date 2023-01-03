@@ -36,6 +36,9 @@ pub mod project {
         CreateGoalEvent(events_project::CreateGoalEvent),
         UpdateGoalEvent(events_project::UpdateGoalEvent),
         ChangeOwnerEvent(events_project::ChangeOwnerEvent),
+        CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
+        UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
+        RemoveEventSubscribeEvent(events_project::RemoveEventSubscribeEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -162,6 +165,21 @@ pub mod project {
         } else if data.type_url == events_project::ChangeOwnerEvent::type_url() {
             if let Ok(ev) = events_project::ChangeOwnerEvent::decode(data.value.as_slice()) {
                 return Some(Event::ChangeOwnerEvent(ev));
+            }
+        } else if data.type_url == events_project::CreateEventSubscribeEvent::type_url() {
+            if let Ok(ev) = events_project::CreateEventSubscribeEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::CreateEventSubscribeEvent(ev));
+            }
+        } else if data.type_url == events_project::UpdateEventSubscribeEvent::type_url() {
+            if let Ok(ev) = events_project::UpdateEventSubscribeEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::UpdateEventSubscribeEvent(ev));
+            }
+        } else if data.type_url == events_project::RemoveEventSubscribeEvent::type_url() {
+            if let Ok(ev) = events_project::RemoveEventSubscribeEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::RemoveEventSubscribeEvent(ev));
             }
         }
         None
