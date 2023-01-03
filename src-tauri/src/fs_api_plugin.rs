@@ -424,7 +424,7 @@ pub async fn write_file_data<R: Runtime>(
 }
 
 #[tauri::command]
-async fn write_file<R: Runtime>(
+pub async fn write_file<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
     track_id: String,
@@ -462,7 +462,7 @@ async fn write_file<R: Runtime>(
 }
 
 #[tauri::command]
-async fn write_thumb_image_file<R: Runtime>(
+pub async fn write_thumb_image_file<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
     track_id: String,
