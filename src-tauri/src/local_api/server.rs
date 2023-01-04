@@ -1,8 +1,12 @@
+use crate::fs_api_plugin::{set_file_owner, write_file, write_thumb_image_file};
+use crate::user_api_plugin::get_session_inner;
 use async_trait::async_trait;
 use local_api_rust::server::MakeService;
 use proto_gen_rust::events_api::{EventRefType, EventType};
+use proto_gen_rust::fs_api::{FileOwnerType, SetFileOwnerRequest};
 use proto_gen_rust::project_channel_api::ListChanScope;
 use proto_gen_rust::project_issue_api::IssueType;
+use proto_gen_rust::project_test_case_api::{BasicResultImage, ResultType};
 use serde_json::json;
 use std::marker::PhantomData;
 use std::net::TcpListener;
@@ -73,6 +77,8 @@ use local_api_rust::models::{
     ProjectProjectIdBlockCollGet200Response, ProjectProjectIdBugAllGet200Response,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
+    ProjectProjectIdTestCaseReportEntryIdPost200Response,
+    ProjectProjectIdTestCaseReportEntryIdPostRequest,
 };
 use local_api_rust::{
     Api, HelloGetResponse, ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse,
@@ -92,7 +98,10 @@ use local_api_rust::{
     ProjectProjectIdTaskRecordTaskIdEventsGetResponse,
     ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse,
     ProjectProjectIdTaskRecordTaskIdShowGetResponse,
-    ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse, ShowGetResponse,
+    ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse, ProjectProjectIdTestCaseLangGetResponse,
+    ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse,
+    ProjectProjectIdTestCaseLangLangGetResponse, ProjectProjectIdTestCaseListEntryIdGetResponse,
+    ProjectProjectIdTestCaseReportEntryIdPostResponse, ShowGetResponse,
 };
 use swagger::ApiError;
 
@@ -1649,5 +1658,461 @@ where
                 access_control_allow_origin: Some("*".into()),
             });
         }
+    }
+
+    /// 列出生成测试代码支持的语言
+    async fn project_project_id_test_case_lang_get(
+        &self,
+        project_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseLangGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdTestCaseLangGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let res = super::testcase_api::list_lang(&self.app).await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdTestCaseLangGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdTestCaseLangGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdTestCaseLangGetResponse::Status200 {
+                body: res.lang_list,
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 生成测试用例代码
+    async fn project_project_id_test_case_lang_lang_framework_entry_id_get(
+        &self,
+        project_id: String,
+        lang: String,
+        framework: String,
+        entry_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res = super::testcase_api::gen_test_code(
+            &self.app,
+            &project_id,
+            &lang,
+            &framework,
+            &entry_id,
+        )
+        .await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            return Ok(
+                ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse::Status200 {
+                    body: res.gen_code,
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+    }
+
+    /// 列出生成测试代码支持的框架
+    async fn project_project_id_test_case_lang_lang_get(
+        &self,
+        project_id: String,
+        lang: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseLangLangGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdTestCaseLangLangGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let res = super::testcase_api::list_frame_work(&self.app, &lang).await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdTestCaseLangLangGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdTestCaseLangLangGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdTestCaseLangLangGetResponse::Status200 {
+                body: res.frame_work_list,
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 列出测试用例
+    async fn project_project_id_test_case_list_entry_id_get(
+        &self,
+        project_id: String,
+        entry_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseListEntryIdGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdTestCaseListEntryIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let mut real_entry_id = entry_id;
+        if &real_entry_id == "__ROOT__" {
+            real_entry_id = "".into();
+        }
+        let res = super::testcase_api::list_entry(&self.app, &project_id, &real_entry_id).await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdTestCaseListEntryIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdTestCaseListEntryIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdTestCaseListEntryIdGetResponse::Status200 {
+                body: super::testcase_api::convert_to_entry_list(res.entry_list),
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 上报测试结果
+    async fn project_project_id_test_case_report_entry_id_post(
+        &self,
+        project_id: String,
+        entry_id: String,
+        access_token: String,
+        request: Option<ProjectProjectIdTestCaseReportEntryIdPostRequest>,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseReportEntryIdPostResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        if request.is_none() {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("错误的请求数据".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let request = request.unwrap();
+        //获取项目信息
+        let project_res = super::project_api::get_project(&self.app, &project_id).await;
+        if project_res.is_err() {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(project_res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let project_res = project_res.unwrap();
+        if &project_res.err_msg != "" {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(project_res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let test_case_fs_id = project_res.info.unwrap().test_case_fs_id;
+        //上传文件
+        let window = self.app.get_window("main");
+        if window.is_none() {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("无法获取窗口句柄".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let window = window.unwrap();
+        let session_id = get_session_inner(&self.app).await;
+        let mut dest_image_list: Vec<BasicResultImage> = Vec::new();
+        if let Some(image_list) = request.image_list {
+            for file_name in &image_list {
+                let thumb_res = write_thumb_image_file(
+                    self.app.clone(),
+                    window.clone(),
+                    "".into(),
+                    session_id.clone(),
+                    test_case_fs_id.clone(),
+                    file_name.clone(),
+                    200,
+                    150,
+                )
+                .await;
+                if thumb_res.is_err() {
+                    return Ok(
+                        ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                            body: ErrInfo {
+                                err_msg: Some(thumb_res.err().unwrap()),
+                            },
+                            access_control_allow_origin: Some("*".into()),
+                        },
+                    );
+                }
+                let thumb_res = thumb_res.unwrap();
+                if &thumb_res.err_msg != "" {
+                    return Ok(
+                        ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                            body: ErrInfo {
+                                err_msg: Some(thumb_res.err_msg),
+                            },
+                            access_control_allow_origin: Some("*".into()),
+                        },
+                    );
+                }
+
+                let res = write_file(
+                    self.app.clone(),
+                    window.clone(),
+                    "".into(),
+                    session_id.clone(),
+                    test_case_fs_id.clone(),
+                    file_name.clone(),
+                )
+                .await;
+                if res.is_err() {
+                    return Ok(
+                        ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                            body: ErrInfo {
+                                err_msg: Some(res.err().unwrap()),
+                            },
+                            access_control_allow_origin: Some("*".into()),
+                        },
+                    );
+                } else {
+                    let res = res.unwrap();
+                    if &res.err_msg != "" {
+                        return Ok(
+                            ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                                body: ErrInfo {
+                                    err_msg: Some(res.err_msg),
+                                },
+                                access_control_allow_origin: Some("*".into()),
+                            },
+                        );
+                    }
+                    dest_image_list.push(BasicResultImage {
+                        thumb_file_id: thumb_res.file_id,
+                        file_id: res.file_id,
+                    });
+                }
+            }
+        }
+        let mut extra_file_id_list: Vec<String> = Vec::new();
+        if let Some(extra_file_list) = request.extra_file_list {
+            for file_name in &extra_file_list {
+                let res = write_file(
+                    self.app.clone(),
+                    window.clone(),
+                    "".into(),
+                    session_id.clone(),
+                    test_case_fs_id.clone(),
+                    file_name.clone(),
+                )
+                .await;
+                if res.is_err() {
+                    return Ok(
+                        ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                            body: ErrInfo {
+                                err_msg: Some(res.err().unwrap()),
+                            },
+                            access_control_allow_origin: Some("*".into()),
+                        },
+                    );
+                } else {
+                    let res = res.unwrap();
+                    if &res.err_msg != "" {
+                        return Ok(
+                            ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                                body: ErrInfo {
+                                    err_msg: Some(res.err_msg),
+                                },
+                                access_control_allow_origin: Some("*".into()),
+                            },
+                        );
+                    }
+                    extra_file_id_list.push(res.file_id);
+                }
+            }
+        }
+        //上传结果
+        let mut result_type = ResultType::Success as i32;
+        let req_result_type = request.result_type.unwrap();
+        if &req_result_type == "warn" {
+            result_type = ResultType::Warn as i32;
+        } else if &req_result_type == "fail" {
+            result_type = ResultType::Fail as i32;
+        }
+        let res = super::testcase_api::add_result(
+            &self.app,
+            &project_id,
+            &entry_id,
+            &request.desc.unwrap(),
+            result_type,
+            dest_image_list.clone(),
+            extra_file_id_list.clone(),
+        )
+        .await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res = res.unwrap();
+        if &res.err_msg != "" {
+            return Ok(
+                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let result_id = res.result_id;
+        //调整文件owner
+        let mut file_id_list: Vec<String> = Vec::new();
+        for img_file in dest_image_list {
+            file_id_list.push(img_file.thumb_file_id);
+            file_id_list.push(img_file.file_id);
+        }
+        for file_id in extra_file_id_list {
+            file_id_list.push(file_id);
+        }
+        for file_id in file_id_list {
+            let res = set_file_owner(
+                self.app.clone(),
+                window.clone(),
+                SetFileOwnerRequest {
+                    session_id: session_id.clone(),
+                    fs_id: test_case_fs_id.clone(),
+                    file_id: file_id,
+                    owner_type: FileOwnerType::TestCaseResult as i32,
+                    owner_id: result_id.clone(),
+                },
+            )
+            .await;
+            if res.is_err() {
+                return Ok(
+                    ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err().unwrap()),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+        }
+        return Ok(
+            ProjectProjectIdTestCaseReportEntryIdPostResponse::Status200 {
+                body: ProjectProjectIdTestCaseReportEntryIdPost200Response {
+                    result_id: Some(result_id),
+                },
+                access_control_allow_origin: Some("*".into()),
+            },
+        );
     }
 }

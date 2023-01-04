@@ -12,7 +12,9 @@ mod event_api;
 mod issue_api;
 mod member_api;
 mod channel_api;
+mod project_api;
 mod vc_api;
+mod testcase_api;
 mod notice;
 mod server;
 

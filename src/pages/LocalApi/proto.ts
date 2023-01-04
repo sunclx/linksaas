@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.4
+  version: 0.1.5
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -28,6 +28,8 @@ tags:
     description: 项目中的沟通频道
   - name: projectContentBlock
     description: 项目中的可变内容块
+  - name: projectTestCase
+    description: 项目中的测试用例
 paths:
   /hello:
     get:
@@ -1130,6 +1132,211 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/testCase/lang:
+    get:
+      tags:
+        - projectTestCase
+      summary: 列出生成测试代码支持的语言
+      description: 列出生成测试代码支持的语言
+      operationId: projectProjectIdTestCaseLangGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/testCase/lang/{lang}:
+    get:
+      tags:
+        - projectTestCase
+      summary: 列出生成测试代码支持的框架
+      description: 列出生成测试代码支持的框架
+      operationId: projectProjectIdTestCaseLangLangGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/Lang'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/testCase/lang/{lang}/{framework}/{entryId}:
+    get:
+      tags:
+        - projectTestCase
+      summary: 生成测试用例代码
+      description: 生成测试用例代码
+      operationId: projectProjectIdTestCaseLangLangFrameworkEntryIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/Lang'
+        - $ref: '#/components/parameters/Framework'
+        - $ref: '#/components/parameters/EntryId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/testCase/list/{entryId}:
+    get:
+      tags:
+        - projectTestCase
+      summary: 列出测试用例
+      description: 列出测试用例
+      operationId: projectProjectIdTestCaseListEntryIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/EntryId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EntryInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/testCase/report/{entryId}:
+    post:
+      tags:
+        - projectTestCase
+      summary: 上报测试结果
+      description: 上报测试结果
+      operationId: projectProjectIdTestCaseReportEntryIdPost
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/EntryId'
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resultType:
+                  type: string
+                  description: 测试结果
+                  enum:
+                    - success
+                    - warn
+                    - fail
+                desc:
+                  type: string
+                  description: 测试结果描述
+                imageList:
+                  type: array
+                  items:
+                    type: string
+                extraFileList:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resultId:
+                    type: string
+                    description: 结果ID
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /show:
     get:
       tags:
@@ -1211,6 +1418,27 @@ components:
         type: string
       required: true
       description: 文档空间ID
+    EntryId:
+      in: path
+      name: entryId
+      schema:
+        type: string
+      required: true
+      description: 测试用例节点Id
+    Framework:
+      in: path
+      name: framework
+      schema:
+        type: string
+      required: true
+      description: 代码框架
+    Lang:
+      in: path
+      name: lang
+      schema:
+        type: string
+      required: true
+      description: 编程语言
     Limit:
       in: query
       name: limit
@@ -1464,6 +1692,41 @@ components:
           description: 文档空间标题
     EmptyRes:
       type: object
+    EntryInfo:
+      type: object
+      properties:
+        entryId:
+          type: string
+          description: 测试用例节点ID
+        entryType:
+          type: string
+          description: 测试用例节点类型
+          enum:
+            - dir
+            - testcase
+        title:
+          type: string
+          description: 节点标题
+        createUserId:
+          type: string
+          description: 创建人ID
+        createDisplayName:
+          type: string
+          description: 创建人名称
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateUserId:
+          type: string
+          description: 更新人ID
+        updateDisplayName:
+          type: string
+          description: 更新人名称
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
     ErrInfo:
       type: object
       properties:
