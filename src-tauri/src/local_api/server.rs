@@ -102,6 +102,7 @@ use local_api_rust::{
     ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse,
     ProjectProjectIdTestCaseLangLangGetResponse, ProjectProjectIdTestCaseListEntryIdGetResponse,
     ProjectProjectIdTestCaseReportEntryIdPostResponse, ShowGetResponse,
+    ProjectProjectIdTestCaseShowEntryIdGetResponse
 };
 use swagger::ApiError;
 
@@ -2115,4 +2116,58 @@ where
             },
         );
     }
+
+    /// 显示测试用例或目录
+    async fn project_project_id_test_case_show_entry_id_get(
+        &self,
+        project_id: String,
+        entry_id: String,
+        access_token: String,
+        _context: &C) -> Result<ProjectProjectIdTestCaseShowEntryIdGetResponse, ApiError>
+    {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let win = self.app.get_window("main");
+        if win.is_none() {
+            return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("无法找到主窗口".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let win = win.unwrap();
+        let mut target_id = entry_id;
+        if &target_id == "__ROOT__" {
+            target_id = "".into();
+        }
+        if let Err(_) = win.emit(
+            "shortNote",
+            super::notice::ShortNotetNotice {
+                project_id: project_id,
+                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
+                short_note_type: super::notice::ShortNoteType::ShortNoteTestCase as u32,
+                target_id: target_id,
+                extra_target_value: "".into(),
+            },
+        ) {
+            return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("发送消息失败".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
+    }
+
 }
