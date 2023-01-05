@@ -261,6 +261,17 @@ class ChannelStore {
     });
   }
 
+  //显示创建频道界面
+  private _showCreateChannel = false;
+
+  get showCreateChannel(): boolean {
+    return this._showCreateChannel;
+  }
+  set showCreateChannel(val: boolean) {
+    runInAction(() => {
+      this._showCreateChannel = val;
+    });
+  }
 }
 
 export default ChannelStore;

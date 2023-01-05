@@ -8,6 +8,7 @@ import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
 import { BugOutlined, BulbOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
+import ProjectQuickAccess from './ProjectQuickAccess';
 
 const { Header } = Layout;
 
@@ -18,6 +19,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   ...props
 }) => {
   const userStore = useStores('userStore');
+  const projectStore = useStores('projectStore');
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
@@ -51,8 +53,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   };
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
-      <div className={style.l}>
-        <h1 />
+      <div className={style.l} >
+        {projectStore.curProjectId != "" && <ProjectQuickAccess/>}
       </div>
       <div className={style.r}>
         <a href="https://doc.linksaas.pro/" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="使用文档"><BulbOutlined /></a>

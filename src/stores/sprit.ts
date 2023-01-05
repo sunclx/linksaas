@@ -235,4 +235,16 @@ export default class SpritStore {
         }
         return true;
     }
+
+    //创建迭代标记
+    private _showCreateSprit = false;
+
+    get showCreateSprit(): boolean {
+        return this._showCreateSprit;
+    }
+    set showCreateSprit(val: boolean) {
+        runInAction(() => {
+            this._showCreateSprit = val;
+        });
+    }
 }

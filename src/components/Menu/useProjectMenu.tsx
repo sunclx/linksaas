@@ -307,7 +307,7 @@ const useProjectMenu = () => {
             item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
           {item.project_id == projectStore.curProjectId &&
             !item.project_status.work_snap_shot_enable && <FolderFilled />}
-          <span className={cls.name} >{item.basic_info.project_name}</span>
+          <span className={cls.name} >{item.basic_info.project_name} </span>
           <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false}>
             {hover && <i className={cls.more} />}
           </Popover>
