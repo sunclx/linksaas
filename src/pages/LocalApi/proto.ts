@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.5
+  version: 0.1.6
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -1326,6 +1326,40 @@ paths:
                   resultId:
                     type: string
                     description: 结果ID
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/testCase/show/{entryId}:
+    get:
+      tags:
+        - projectTestCase
+      summary: 显示测试用例或目录
+      description: 显示测试用例或目录
+      operationId: projectProjectIdTestCaseShowEntryIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/EntryId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
           headers:

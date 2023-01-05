@@ -7,7 +7,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from '@tauri
 import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { showShortNote } from '@/utils/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MEMBER, SHORT_NOTE_MODE_CREATE } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MEMBER, SHORT_NOTE_MODE_CREATE, SHORT_NOTE_TEST_CASE } from '@/api/short_note';
 import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
@@ -421,6 +421,13 @@ class NoticeStore {
         } else {
           this.rootStore.memberStore.floatMemberUserId = ev.targetId;
         }
+      }
+    } else if (ev.shortNoteType == SHORT_NOTE_TEST_CASE) {
+      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
+        if (ev.projectId != this.rootStore.projectStore.curProjectId) {
+          await this.rootStore.projectStore.setCurProjectId(ev.projectId);
+        }
+        this.rootStore.linkAuxStore.goToTestCaseList({ entryId: ev.targetId }, this.history);
       }
     }
     await appWindow.show();
