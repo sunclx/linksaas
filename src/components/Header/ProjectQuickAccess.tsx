@@ -12,6 +12,7 @@ import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
 
 const MENU_KEY_SHOW_TOOL_PROJECT_INFO = "toolbar.prjInfo.show"; //查看右侧工具栏项目信息
+const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_MEMBER = "toolbar.member.show"; //查看右侧工具栏项目成员
 const MENU_KEY_SHOW_TOOL_BAR_GOAL = "toolbar.goal.show"; //查看右侧工具栏成员目标
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
@@ -52,6 +53,7 @@ const ProjectQuickAccess = () => {
     const projectStore = useStores('projectStore');
     const docSpaceStore = useStores('docSpaceStore');
     const spritStore = useStores('spritStore');
+    const appStore = useStores('appStore');
 
     const history = useHistory();
 
@@ -64,6 +66,11 @@ const ProjectQuickAccess = () => {
             key: "member",
             label: "成员",
             children: [
+                {
+                    key: MENU_KEY_SHOW_INVITE_MEMBER,
+                    label: "邀请成员",
+                    disabled: projectStore.curProject?.closed || appStore.clientCfg?.can_invite == false || projectStore.isAdmin == false,
+                },
                 {
                     key: MENU_KEY_SHOW_TOOL_BAR_MEMBER,
                     label: "查看项目成员",
@@ -263,6 +270,9 @@ const ProjectQuickAccess = () => {
         switch (info.key) {
             case MENU_KEY_SHOW_TOOL_PROJECT_INFO:
                 linkAuxStore.goToProjectInfo(history);
+                break;
+            case MENU_KEY_SHOW_INVITE_MEMBER:
+                memberStore.showInviteMember = true;
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_MEMBER:
                 linkAuxStore.goToMemberList("member", history);
