@@ -279,7 +279,7 @@ const ProjectRecord: React.FC = () => {
       {localStore.showAddon && (
         <Modal
           title={`补充${localStore.date.format('YYYY年MM月DD日')}工作记录`}
-          visible
+          open
           onOk={(e) => {
             e.stopPropagation();
             e.preventDefault();

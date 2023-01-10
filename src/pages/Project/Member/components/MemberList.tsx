@@ -7,7 +7,6 @@ import useColums from './useColums';
 import useVisible from '@/hooks/useVisible';
 import type { ColumnsType } from 'antd/lib/table';
 import RemoveMember from "./RemoveMember";
-import AddMember from "./AddMember";
 import Button from "@/components/Button";
 import { UserAddOutlined } from '@ant-design/icons';
 import s from './MemberList.module.less';
@@ -16,7 +15,6 @@ import { request } from "@/utils/request";
 
 const MemberList = () => {
     const [removeObj, setRemoveObj] = useVisible<WebMemberInfo>();
-    const [addObj, setAddObj] = useVisible<WebMemberInfo>();
 
     const userStore = useStores('userStore');
     const appStore = useStores('appStore');
@@ -50,7 +48,7 @@ const MemberList = () => {
         <div>
             {!(projectStore.curProject?.closed) && projectStore.isAdmin && appStore.clientCfg?.can_invite && (
                 <div className={s.head_wrap}>
-                    <Button onClick={() => setAddObj(true)} className={s.add_btn}>
+                    <Button onClick={() => memberStore.showInviteMember=true} className={s.add_btn}>
                         <UserAddOutlined />
                         邀请成员
                     </Button>
@@ -79,7 +77,6 @@ const MemberList = () => {
                 params={removeObj.param}
                 onChange={setRemoveObj}
             />
-            {addObj.visible && <AddMember visible={addObj.visible} onChange={setAddObj} />}
             {newOwnerUserId != "" && (
                 <Modal
                     title="转移超级管理员"
