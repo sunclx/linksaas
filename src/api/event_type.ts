@@ -3751,12 +3751,37 @@ namespace earthly {
     return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从仓库 ${inner.repo_url} 删除命令 ${inner.action_name}`)];
   }
 
+  export type Param = {
+    name: string;
+    value: string;
+  }
+
+  export type ExecEvent = {
+    exec_id: string;
+    repo_id: string;
+    repo_url: string;
+    action_id: string;
+    action_name: string;
+    branch: string;
+    param_list: Param[];
+  };
+
+  function get_exec_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: ExecEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
   export class AllEarthlyEvent {
     AddRepoEvent?: AddRepoEvent;
     RemoveRepoEvent?: RemoveRepoEvent;
     CreateActionEvent?: CreateActionEvent;
     UpdateActionEvent?: UpdateActionEvent;
     RemoveActionEvent?: RemoveActionEvent;
+    ExecEvent?: ExecEvent;
   };
 
   export function get_simple_content_inner(
@@ -3774,6 +3799,335 @@ namespace earthly {
       return get_update_action_simple_content(ev, skip_prj_name, inner.UpdateActionEvent);
     } else if (inner.RemoveActionEvent !== undefined) {
       return get_remove_action_simple_content(ev, skip_prj_name, inner.RemoveActionEvent);
+    } else if (inner.ExecEvent !== undefined) {
+      return get_exec_simple_content(ev, skip_prj_name, inner.ExecEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
+namespace script {
+  export type CreateScriptSuiteEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+  };
+
+  function get_create_script_suite_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateScriptSuiteEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type RemoveScriptSuiteEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+  };
+
+  function get_remove_script_suite_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveScriptSuiteEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type EnvPermission = {
+    allow_all: boolean;
+    env_list: string[];
+  };
+
+  export type UpdateEnvPermEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_perm: EnvPermission[];
+    new_perm: EnvPermission[];
+  };
+
+  function get_update_env_perm_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateEnvPermEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type SysPermission = {
+    allow_hostname: boolean;
+    allow_network_interfaces: boolean;
+    allow_loadavg: boolean;
+    allow_get_uid: boolean;
+    allow_get_gid: boolean;
+    allow_os_release: boolean;
+    allow_system_memory_info: boolean;
+  };
+
+  export type UpdateSysPermEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_perm: SysPermission;
+    new_perm: SysPermission;
+  };
+
+  function get_update_sys_perm_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateSysPermEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type NetPermission = {
+    allow_all: boolean;
+    addr_list: string[];
+    allow_vc_update: boolean;
+  }
+
+  export type UpdateNetPermEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_perm: NetPermission;
+    new_perm: NetPermission;
+  };
+
+  function get_update_net_perm_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateNetPermEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type ReadPermission = {
+    allow_all: boolean;
+    path_list: string[];
+  }
+
+  export type UpdateReadPermEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_perm: ReadPermission;
+    new_perm: ReadPermission;
+  };
+
+  function get_update_read_perm_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateReadPermEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type WritePermission = {
+    allow_all: boolean;
+    path_list: string[];
+  };
+
+  export type UpdateWritePermEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_perm: WritePermission;
+    new_perm: WritePermission;
+  };
+
+  function get_update_write_perm_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateWritePermEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type RunPermission = {
+    allow_all: boolean;
+    file_list: string[];
+  };
+
+  export type UpdateRunPermEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_perm: RunPermission;
+    new_perm: RunPermission;
+  };
+
+  function get_update_run_perm_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateRunPermEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UpdateScriptEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+  };
+
+  function get_update_script_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateScriptEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UpdateExecUserEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_exec_user: string;
+    new_exec_user: string;
+  };
+
+  function get_update_exec_user_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateExecUserEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type EnvParamDef = {
+    env_name: string;
+    desc: string;
+    default_value: string;
+  };
+
+  export type UpdateEnvParamDefEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_env_param_def_list: EnvParamDef[];
+    new_env_param_def_list: EnvParamDef[];
+  };
+
+  function get_update_env_param_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateEnvParamDefEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type ArgParamDef = {
+    desc: string;
+    default_value: string;
+  };
+
+  export type UpdateArgParamDefEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_arg_param_def_list: ArgParamDef[];
+    new_arg_param_def_list: ArgParamDef[];
+  };
+
+  function get_update_arg_param_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateArgParamDefEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type RecoverScriptEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    script_time: number;
+  };
+
+  function get_recover_script_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RecoverScriptEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type EnvParam = {
+    env_name: string;
+    env_value: string;
+  };
+
+  export type ExecEvent = {
+    exec_id: string;
+    script_suite_id: string;
+    script_suite_name: string;
+    script_time: number;
+    env_param_list: EnvParam[];
+    arg_param_list: string[];
+  };
+
+  function get_exec_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: ExecEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export class AllScriptEvent {
+    CreateScriptSuiteEvent?: CreateScriptSuiteEvent;
+    RemoveScriptSuiteEvent?: RemoveScriptSuiteEvent;
+    UpdateEnvPermEvent?: UpdateEnvPermEvent;
+    UpdateSysPermEvent?: UpdateSysPermEvent;
+    UpdateNetPermEvent?: UpdateNetPermEvent;
+    UpdateReadPermEvent?: UpdateReadPermEvent;
+    UpdateWritePermEvent?: UpdateWritePermEvent;
+    UpdateRunPermEvent?: UpdateRunPermEvent;
+    UpdateScriptEvent?: UpdateScriptEvent;
+    UpdateExecUserEvent?: UpdateExecUserEvent;
+    UpdateEnvParamDefEvent?: UpdateEnvParamDefEvent;
+    UpdateArgParamDefEvent?: UpdateArgParamDefEvent;
+    RecoverScriptEvent?: RecoverScriptEvent;
+    ExecEvent?: ExecEvent;
+  };
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllScriptEvent,
+  ): LinkInfo[] {
+    if (inner.CreateScriptSuiteEvent !== undefined) {
+      return get_create_script_suite_simple_content(ev, skip_prj_name, inner.CreateScriptSuiteEvent);
+    } else if (inner.RemoveScriptSuiteEvent !== undefined) {
+      return get_remove_script_suite_simple_content(ev, skip_prj_name, inner.RemoveScriptSuiteEvent);
+    } else if (inner.UpdateEnvPermEvent !== undefined) {
+      return get_update_env_perm_simple_content(ev, skip_prj_name, inner.UpdateEnvPermEvent);
+    } else if (inner.UpdateSysPermEvent !== undefined) {
+      return get_update_sys_perm_simple_content(ev, skip_prj_name, inner.UpdateSysPermEvent);
+    } else if (inner.UpdateNetPermEvent !== undefined) {
+      return get_update_net_perm_simple_content(ev, skip_prj_name, inner.UpdateNetPermEvent);
+    } else if (inner.UpdateReadPermEvent !== undefined) {
+      return get_update_read_perm_simple_content(ev, skip_prj_name, inner.UpdateReadPermEvent);
+    } else if (inner.UpdateWritePermEvent !== undefined) {
+      return get_update_write_perm_simple_content(ev, skip_prj_name, inner.UpdateWritePermEvent);
+    } else if (inner.UpdateRunPermEvent !== undefined) {
+      return get_update_run_perm_simple_content(ev, skip_prj_name, inner.UpdateRunPermEvent);
+    } else if (inner.UpdateScriptEvent !== undefined) {
+      return get_update_script_simple_content(ev, skip_prj_name, inner.UpdateScriptEvent);
+    } else if (inner.UpdateExecUserEvent !== undefined) {
+      return get_update_exec_user_simple_content(ev, skip_prj_name, inner.UpdateExecUserEvent);
+    } else if (inner.UpdateEnvParamDefEvent !== undefined) {
+      return get_update_env_param_simple_content(ev, skip_prj_name, inner.UpdateEnvParamDefEvent);
+    } else if (inner.UpdateArgParamDefEvent !== undefined) {
+      return get_update_arg_param_simple_content(ev, skip_prj_name, inner.UpdateArgParamDefEvent);
+    } else if (inner.RecoverScriptEvent !== undefined) {
+      return get_recover_script_simple_content(ev, skip_prj_name, inner.RecoverScriptEvent);
+    } else if (inner.ExecEvent !== undefined) {
+      return get_exec_simple_content(ev, skip_prj_name, inner.ExecEvent);
     }
     return [new LinkNoneInfo('未知事件')];
   }
@@ -3792,6 +4146,7 @@ export class AllEvent {
   GiteeEvent?: gitee.AllGiteeEvent;
   RobotEvent?: robot.AllRobotEvent;
   EarthlyEvent?: earthly.AllEarthlyEvent;
+  ScriptEvent?: script.AllScriptEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -3819,6 +4174,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return robot.get_simple_content_inner(ev, skip_prj_name, ev.event_data.RobotEvent);
   } else if (ev.event_data.EarthlyEvent !== undefined) {
     return earthly.get_simple_content_inner(ev, skip_prj_name, ev.event_data.EarthlyEvent);
+  } else if (ev.event_data.ScriptEvent !== undefined) {
+    return script.get_simple_content_inner(ev, skip_prj_name, ev.event_data.ScriptEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

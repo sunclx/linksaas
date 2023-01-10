@@ -334,6 +334,32 @@ pub mod earthly {
     }
 }
 
+pub mod script {
+    use prost::Message;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::notices_script;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    pub enum Notice {
+        ExecDataNotice(notices_script::ExecDataNotice),
+        ExecStateNotice(notices_script::ExecStateNotice),
+    }
+
+    pub fn decode_notice(data: &Any) -> Option<Notice> {
+        if data.type_url == notices_script::ExecDataNotice::type_url() {
+            if let Ok(notice) = notices_script::ExecDataNotice::decode(data.value.as_slice()) {
+                return Some(Notice::ExecDataNotice(notice));
+            }
+        } else if data.type_url == notices_script::ExecStateNotice::type_url() {
+            if let Ok(notice) = notices_script::ExecStateNotice::decode(data.value.as_slice()) {
+                return Some(Notice::ExecStateNotice(notice));
+            }
+        }
+        None
+    }
+}
+
 pub mod client {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
@@ -367,6 +393,7 @@ pub enum NoticeMessage {
     AppraiseNotice(appraise::Notice),
     RobotNotice(robot::Notice),
     EarthlyNotice(earthly::Notice),
+    ScriptNotice(script::Notice),
     ClientNotice(client::Notice),
 }
 
@@ -390,6 +417,9 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = earthly::decode_notice(data) {
         return Some(NoticeMessage::EarthlyNotice(ret));
+    }
+    if let Some(ret) = script::decode_notice(data) {
+        return Some(NoticeMessage::ScriptNotice(ret));
     }
     None
 }

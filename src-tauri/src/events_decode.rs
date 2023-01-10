@@ -787,6 +787,7 @@ pub mod earthly {
         CreateActionEvent(events_earthly::CreateActionEvent),
         UpdateActionEvent(events_earthly::UpdateActionEvent),
         RemoveActionEvent(events_earthly::RemoveActionEvent),
+        ExecEvent(events_earthly::ExecEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -810,6 +811,97 @@ pub mod earthly {
             if let Ok(ev) = events_earthly::RemoveActionEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveActionEvent(ev));
             }
+        } else if data.type_url == events_earthly::ExecEvent::type_url() {
+            if let Ok(ev) = events_earthly::ExecEvent::decode(data.value.as_slice()) {
+                return Some(Event::ExecEvent(ev));
+            }
+        }
+
+        None
+    }
+}
+
+pub mod script {
+    use prost::Message;
+    use proto_gen_rust::events_script;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateScriptSuiteEvent(events_script::CreateScriptSuiteEvent),
+        RemoveScriptSuiteEvent(events_script::RemoveScriptSuiteEvent),
+        UpdateEnvPermEvent(events_script::UpdateEnvPermEvent),
+        UpdateSysPermEvent(events_script::UpdateSysPermEvent),
+        UpdateNetPermEvent(events_script::UpdateNetPermEvent),
+        UpdateReadPermEvent(events_script::UpdateReadPermEvent),
+        UpdateWritePermEvent(events_script::UpdateWritePermEvent),
+        UpdateRunPermEvent(events_script::UpdateRunPermEvent),
+        UpdateScriptEvent(events_script::UpdateScriptEvent),
+        UpdateExecUserEvent(events_script::UpdateExecUserEvent),
+        UpdateEnvParamDefEvent(events_script::UpdateEnvParamDefEvent),
+        UpdateArgParamDefEvent(events_script::UpdateArgParamDefEvent),
+        RecoverScriptEvent(events_script::RecoverScriptEvent),
+        ExecEvent(events_script::ExecEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_script::CreateScriptSuiteEvent::type_url() {
+            if let Ok(ev) = events_script::CreateScriptSuiteEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateScriptSuiteEvent(ev));
+            }
+        } else if data.type_url == events_script::RemoveScriptSuiteEvent::type_url() {
+            if let Ok(ev) = events_script::RemoveScriptSuiteEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveScriptSuiteEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateEnvPermEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateEnvPermEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateEnvPermEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateSysPermEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateSysPermEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateSysPermEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateNetPermEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateNetPermEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateNetPermEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateReadPermEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateReadPermEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateReadPermEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateWritePermEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateWritePermEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateWritePermEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateRunPermEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateRunPermEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateRunPermEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateScriptEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateScriptEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateScriptEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateExecUserEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateExecUserEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateExecUserEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateEnvParamDefEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateEnvParamDefEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateEnvParamDefEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateArgParamDefEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateArgParamDefEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateArgParamDefEvent(ev));
+            }
+        } else if data.type_url == events_script::RecoverScriptEvent::type_url() {
+            if let Ok(ev) = events_script::RecoverScriptEvent::decode(data.value.as_slice()) {
+                return Some(Event::RecoverScriptEvent(ev));
+            }
+        } else if data.type_url == events_script::ExecEvent::type_url() {
+            if let Ok(ev) = events_script::ExecEvent::decode(data.value.as_slice()) {
+                return Some(Event::ExecEvent(ev));
+            }
         }
         None
     }
@@ -829,6 +921,7 @@ pub enum EventMessage {
     GiteeEvent(gitee::Event),
     RobotEvent(robot::Event),
     EarthlyEvent(earthly::Event),
+    ScriptEvent(script::Event),
     NoopEvent(),
 }
 
@@ -870,6 +963,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = earthly::decode_event(data) {
         return Some(EventMessage::EarthlyEvent(ret));
+    }
+    if let Some(ret) = script::decode_event(data) {
+        return Some(EventMessage::ScriptEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }
