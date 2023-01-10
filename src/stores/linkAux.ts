@@ -16,6 +16,7 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
+  SCRIPT_CREATE_SUFFIX,
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
@@ -694,6 +695,11 @@ class LinkAuxStore {
   goToLocalApi(history: History) {
     history.push(this.genUrl(history.location.pathname, "/localapi"));
 
+  }
+
+  //跳转到创建服务端脚本页面
+  async goToCreateScript(history: History) {
+    history.push(this.genUrl(history.location.pathname, SCRIPT_CREATE_SUFFIX));
   }
 
   private genUrl(pathname: string, suffix: string): string {

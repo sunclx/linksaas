@@ -32,6 +32,7 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
+  SCRIPT_CREATE_SUFFIX,
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
@@ -53,6 +54,8 @@ import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import EntryList from '@/pages/TestCase/EntryList';
 import ResultList from '@/pages/TestCase/ResultList';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
+import ScriptList from '@/pages/Script/ScriptList';
+import CreateScript from '@/pages/Script/CreateScript';
 
 
 
@@ -165,6 +168,18 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + ROBOT_METRIC_SUFFIX,
       title: '监控列表',
       component: MetricList,
+      exact: true,
+    },
+    {
+      path: prefix + "/script",
+      title: "服务端脚本",
+      component: ScriptList,
+      exact: true,
+    },
+    {
+      path: prefix + SCRIPT_CREATE_SUFFIX,
+      title: "创建服务端脚本",
+      component: CreateScript,
       exact: true,
     },
     {

@@ -100,6 +100,11 @@ const Toolbar: React.FC = observer(() => {
         title="服务器列表"
       />
       <Item
+        id="script"
+        pathname={pathname}
+        title="服务端脚本"
+      />
+      <Item
         id="repo"
         pathname={pathname}
         title="代码仓库列表"

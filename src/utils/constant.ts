@@ -15,6 +15,7 @@ export const BUG_DETAIL_SUFFIX = '/bug/detail';
 
 export const TASK_CREATE_SUFFIX = '/task/create';
 export const BUG_CREATE_SUFFIX = '/bug/create';
+export const SCRIPT_CREATE_SUFFIX = '/script/create';
 
 export const SPRIT_DETAIL_SUFFIX = '/sprit/detail';
 
