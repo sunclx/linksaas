@@ -57,6 +57,8 @@ const useProjectMenu = () => {
   const userStore = useStores('userStore');
   const history = useHistory();
   const docSpaceStore = useStores('docSpaceStore');
+  const appStore = useStores('appStore');
+  const memberStore = useStores('memberStore');
 
 
   const [pjChangeObj, setPjChangeObj] = useSetState({
@@ -68,7 +70,6 @@ const useProjectMenu = () => {
   });
 
   const [disableBtn, setDisableBtn] = useState(false);
-  const [showInviteModal, setShowInviteModal] = useState(false);
 
 
   // 结束项目弹窗确定事件
@@ -164,7 +165,7 @@ const useProjectMenu = () => {
   const renderInviteModal = () => {
     return (
       <div>
-        {showInviteModal && <AddMember visible={true} onChange={value => setShowInviteModal(value)} />}
+        {memberStore.showInviteMember && <AddMember visible={true} onChange={value => memberStore.showInviteMember = value} />}
       </div>
     );
   }
@@ -223,11 +224,11 @@ const useProjectMenu = () => {
       <div
         className={cls.contextmenu}
       >
-        {obj.closed == false && obj.user_project_perm.can_admin && obj.project_id == projectStore.curProjectId && (
+        {obj.closed == false && obj.user_project_perm.can_admin && obj.project_id == projectStore.curProjectId && appStore.clientCfg?.can_invite && (
           <div
             className={cls.item}
             style={{ color: "black" }}
-            onClick={() => setShowInviteModal(true)}
+            onClick={() => memberStore.showInviteMember = true}
           >
             邀请成员
           </div>
@@ -307,7 +308,7 @@ const useProjectMenu = () => {
             item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
           {item.project_id == projectStore.curProjectId &&
             !item.project_status.work_snap_shot_enable && <FolderFilled />}
-          <span className={cls.name} >{item.basic_info.project_name}</span>
+          <span className={cls.name} >{item.basic_info.project_name} </span>
           <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false}>
             {hover && <i className={cls.more} />}
           </Popover>

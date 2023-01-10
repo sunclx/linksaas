@@ -31,7 +31,6 @@ const SpritList = () => {
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
 
-    const [showCreateModal, setShowCreateModal] = useState(false);
     const [updateSpritId, setUpdateSpritId] = useState("");
 
     const loadSprit = async () => {
@@ -138,7 +137,7 @@ const SpritList = () => {
                         <Button onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setShowCreateModal(true);
+                            spritStore.showCreateSprit = true;
                         }} disabled={!projectStore.isAdmin}>
                             <img src={addIcon} alt="" />
                             创建迭代
@@ -153,15 +152,15 @@ const SpritList = () => {
                     <Pagination current={curPage + 1} total={totalCount} pageSize={PAGE_SIZE} onChange={page => setCurPage(page - 1)} />
                 </div>
             </div>
-            {showCreateModal == true && <ModifySpritModal
-                onCancel={() => setShowCreateModal(false)}
+            {spritStore.showCreateSprit == true && <ModifySpritModal
+                onCancel={() => spritStore.showCreateSprit=false}
                 onOk={() => {
                     if (curPage != 0) {
                         setCurPage(0);
                     } else {
                         loadSprit();
                     }
-                    setShowCreateModal(false);
+                    spritStore.showCreateSprit = false;
                 }} />
             }
             {updateSpritId != "" && <ModifySpritModal

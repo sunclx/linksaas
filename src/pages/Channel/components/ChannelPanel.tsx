@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './ChannelPanel.module.less';
 import * as channelApi from '@/api/project_channel';
 import { Popover, Divider } from 'antd';
@@ -142,8 +142,6 @@ const RenderMoreMenu = observer(() => {
 });
 
 const RenderHeader = observer(() => {
-  const [showAddChannel, setShowAddChannel] = useState(false);
-
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
 
@@ -152,7 +150,7 @@ const RenderHeader = observer(() => {
       <h3 className={styles.title}>频道列表</h3>
       {projectStore.curProject?.closed == false &&
         channelStore.channelScope == channelApi.LIST_CHAN_SCOPE_INCLUDE_ME && (
-          <a className={styles.add} onClick={() => setShowAddChannel(true)}>
+          <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
             <i className={styles.icon} />
           </a>
         )}
@@ -166,12 +164,12 @@ const RenderHeader = observer(() => {
           <i className={styles.icon} />
         </a>
       </Popover>
-      {showAddChannel && (
+      {channelStore.showCreateChannel && (
         <ActionMember
-          visible={showAddChannel}
+          visible
           type={ActionMemberType.CREATE_CHANNEL}
           channelId=""
-          onChange={(value: boolean) => setShowAddChannel(value)}
+          onChange={(value: boolean) => channelStore.showCreateChannel = value}
           title="创建自定义频道"
         />
       )}

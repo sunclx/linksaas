@@ -262,6 +262,19 @@ class MemberStore {
   get floatMemberUserId(): string {
     return this._floatMemberUserId;
   }
+
+  //显示邀请成员modal
+  private _showInviteMember = false;
+
+  get showInviteMember(): boolean {
+    return this._showInviteMember;
+  }
+
+  set showInviteMember(val: boolean) {
+    runInAction(() => {
+      this._showInviteMember = val;
+    });
+  }
 }
 
 export default MemberStore;

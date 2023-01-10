@@ -616,12 +616,12 @@ class LinkAuxStore {
   }
 
   //跳转到任务列表
-  goToTaskList(state: LinkIssueListState, history: History) {
+  goToTaskList(state: LinkIssueListState | undefined, history: History) {
     history.push(this.genUrl(history.location.pathname, "/task"), state);
   }
 
   //跳转到缺陷列表
-  goToBugList(state: LinkIssueListState, history: History) {
+  goToBugList(state: LinkIssueListState | undefined, history: History) {
     history.push(this.genUrl(history.location.pathname, "/bug"), state);
   }
 
@@ -645,9 +645,55 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, "/testcase/result"));
   }
 
+  //跳转到研发行为列表页
+  goToEventList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/record"));
+  }
+
   //跳转到研发行为订阅页面
   goToEventSubscribeList(history: History) {
     history.push(this.genUrl(history.location.pathname, "/record/subscribe"));
+  }
+
+  //跳转到项目信息页面
+  goToProjectInfo(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/home"));
+  }
+
+  //跳转到项目成员页面
+  goToMemberList(tab: string, history: History) {
+    history.push(this.genUrl(history.location.pathname, `/member?tab=${tab}`));
+  }
+
+  //跳转到成员互评页面
+  goToAppriaseList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/appraise"));
+  }
+
+  //跳转到项目贡献页面
+  goToAwardList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/award"));
+  }
+
+  //跳转到代码仓库列表
+  goToRepoList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/repo"));
+  }
+
+  //跳转到第三方接入列表
+  goToExtEventList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/access"));
+  }
+
+  //跳转到项目应用
+  goToAppList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/appstore"));
+  }
+
+  //跳转到本地接口页面
+  goToLocalApi(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/localapi"));
+
   }
 
   private genUrl(pathname: string, suffix: string): string {

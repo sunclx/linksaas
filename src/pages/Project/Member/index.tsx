@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState } from 'react';
 import CardWrap from '@/components/CardWrap';
 import { Tabs } from 'antd';
 import s from './index.module.less';

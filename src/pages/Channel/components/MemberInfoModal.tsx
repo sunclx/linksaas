@@ -15,7 +15,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = (props) => {
     return (
         <Modal
             title="成员信息"
-            width={250}
+            width={270}
             open
             footer={null}
             onCancel={e => {
@@ -24,7 +24,13 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = (props) => {
                 memberStore.floatMemberUserId = "";
             }}
         >
-            <MemberInfo memberId={props.memberId} showLink={true} hideMemberInfo={() => memberStore.floatMemberUserId = ""} />
+            <div style={{
+                maxHeight: "calc(100vh - 240px)",
+                overflowY: "scroll",
+                overflowX: "hidden",
+            }}>
+                <MemberInfo memberId={props.memberId} showLink={true} hideMemberInfo={() => memberStore.floatMemberUserId = ""} />
+            </div>
         </Modal>
     );
 }
