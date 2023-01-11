@@ -56,6 +56,7 @@ import ResultList from '@/pages/TestCase/ResultList';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
 import ScriptList from '@/pages/Script/ScriptList';
 import CreateScript from '@/pages/Script/CreateScript';
+import ScriptDetail from '@/pages/Script/ScriptDetail';
 
 
 
@@ -180,6 +181,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + SCRIPT_CREATE_SUFFIX,
       title: "创建服务端脚本",
       component: CreateScript,
+      exact: true,
+    },
+    {
+      path: prefix + "/script/detail",
+      title: "服务端脚本详情",
+      component: ScriptDetail,
       exact: true,
     },
     {

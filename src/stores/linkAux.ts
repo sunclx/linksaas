@@ -43,6 +43,8 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_EARTHLY_EXEC,
   LINK_TARGET_BOOK_MARK,
   LINK_TARGET_TEST_CASE_ENTRY,
+  LINK_TARGET_SCRIPT_SUITE,
+  LINK_TARGET_SCRIPT_EXEC,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -252,6 +254,25 @@ export class LinkEarthlyExecInfo {
   execId: string;
 }
 
+export class LinkScriptSuiteInfo {
+  constructor(content: string, projectId: string, scriptSuiteId: string, useHistoryScript: boolean, scriptTime: number, tab: string | undefined = undefined) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.scriptSuiteId = scriptSuiteId;
+    this.useHistoryScript = useHistoryScript;
+    this.scriptTime = scriptTime;
+    this.tab = tab;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  scriptSuiteId: string;
+  useHistoryScript: boolean;
+  scriptTime: number;
+  tab?: string;
+}
+
 export class LinkBookMarkInfo {
   constructor(content: string, projectId: string, bookId: string, markId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK;
@@ -359,6 +380,13 @@ export type LinkSpritState = {
 
 export type LinkTestCaseEntryState = {
   entryId: string;
+}
+
+export type LinkScriptSuiteSate = {
+  scriptSuiteId: string;
+  useHistoryScript: boolean;
+  scriptTime: number;
+  tab?: string;
 }
 
 class LinkAuxStore {
@@ -567,7 +595,19 @@ class LinkAuxStore {
       const state: LinkTestCaseEntryState = {
         entryId: entryLink.entryId,
       };
-      history.push(this.genUrl(pathname, "/testcase"), state)
+      history.push(this.genUrl(pathname, "/testcase"), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
+      const scriptSuiteLink = link as LinkScriptSuiteInfo;
+      if (this.rootStore.projectStore.curProjectId != scriptSuiteLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(scriptSuiteLink.projectId);
+      }
+      const state: LinkScriptSuiteSate = {
+        scriptSuiteId: scriptSuiteLink.scriptSuiteId,
+        useHistoryScript: scriptSuiteLink.useHistoryScript,
+        scriptTime: scriptSuiteLink.scriptTime,
+        tab: scriptSuiteLink.tab,
+      };
+      history.push(this.genUrl(pathname, "/script/detail"), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -698,8 +738,13 @@ class LinkAuxStore {
   }
 
   //跳转到创建服务端脚本页面
-  async goToCreateScript(history: History) {
+  goToCreateScript(history: History) {
     history.push(this.genUrl(history.location.pathname, SCRIPT_CREATE_SUFFIX));
+  }
+
+  //跳转到服务端脚本列表页面
+  goToScriptList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/script"));
   }
 
   private genUrl(pathname: string, suffix: string): string {

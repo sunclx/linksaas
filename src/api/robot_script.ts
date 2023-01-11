@@ -201,6 +201,18 @@ export type RemoveScriptSuiteResponse = {
     err_msg: string;
 };
 
+export type UpdateScriptSuiteNameRequest = {
+    session_id: string;
+    project_id: string;
+    script_suite_id: string;
+    name: string;
+};
+
+export type UpdateScriptSuiteNameResponse = {
+    code: number;
+    err_msg: string;
+};
+
 export type UpdateEnvPermRequest = {
     session_id: string;
     project_id: string;
@@ -465,6 +477,15 @@ export async function remove_script_suite(request: RemoveScriptSuiteRequest): Pr
     const cmd = 'plugin:robot_script_api|remove_script_suite';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveScriptSuiteResponse>(cmd, {
+        request,
+    });
+}
+
+//更新脚本套件名称
+export async function update_script_suite_name(request: UpdateScriptSuiteNameRequest): Promise<UpdateScriptSuiteNameResponse> {
+    const cmd = 'plugin:robot_script_api|update_script_suite_name';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateScriptSuiteNameResponse>(cmd, {
         request,
     });
 }

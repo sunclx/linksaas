@@ -40,7 +40,7 @@ const DocHistory: React.FC = () => {
   }, [docSpaceStore.showDocHistory, docSpaceStore.curDocSpaceId, docSpaceStore.curDocId]);
 
   return (
-    <div className={s.DocHistory_wrap}>
+    <div className={s.history_wrap}>
       <div className={s.title}>历史版本</div>
       <ul>
         {historyList.map((item, index) => (
@@ -49,7 +49,7 @@ const DocHistory: React.FC = () => {
               <UserPhoto logoUri={item.doc_key?.update_logo_uri} width="20px" height="20px" />
               {item.doc_key?.update_display_name}
             </div>
-            <div className={s.time}>{moment(item.time_stamp).format('YYYY-MM-DD hh:mm:ss')}</div>
+            <div className={s.time}>{moment(item.time_stamp).format('YYYY-MM-DD HH:mm:ss')}</div>
             <div className={s.des}>更新了此文档</div>
             {index > 0 && (
               <div

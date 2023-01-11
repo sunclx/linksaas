@@ -101,7 +101,7 @@ const DocComment: React.FC = () => {
 
                 <span className={s.name}>{item.sender_display_name} </span>
                 <span className={s.time}>
-                  {moment(item.send_time).format('YYYY-MM-DD hh:mm:ss')}{' '}
+                  {moment(item.send_time).format('YYYY-MM-DD HH:mm:ss')}{' '}
                 </span>
               </div>
               <div className={s.des}>

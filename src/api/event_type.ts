@@ -3835,6 +3835,22 @@ namespace script {
     return [new LinkNoneInfo('TODO')];
   }
 
+  export type UpdateScriptSuiteNameEvent = {
+    script_suite_id: string;
+    script_suite_name: string;
+    old_name: string;
+    new_name: string;
+  };
+
+  function get_update_script_suite_name_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateScriptSuiteNameEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
   export type EnvPermission = {
     allow_all: boolean;
     env_list: string[];
@@ -4081,6 +4097,7 @@ namespace script {
   export class AllScriptEvent {
     CreateScriptSuiteEvent?: CreateScriptSuiteEvent;
     RemoveScriptSuiteEvent?: RemoveScriptSuiteEvent;
+    UpdateScriptSuiteNameEvent?: UpdateScriptSuiteNameEvent;
     UpdateEnvPermEvent?: UpdateEnvPermEvent;
     UpdateSysPermEvent?: UpdateSysPermEvent;
     UpdateNetPermEvent?: UpdateNetPermEvent;
@@ -4104,6 +4121,8 @@ namespace script {
       return get_create_script_suite_simple_content(ev, skip_prj_name, inner.CreateScriptSuiteEvent);
     } else if (inner.RemoveScriptSuiteEvent !== undefined) {
       return get_remove_script_suite_simple_content(ev, skip_prj_name, inner.RemoveScriptSuiteEvent);
+    } else if (inner.UpdateScriptSuiteNameEvent !== undefined) {
+      return get_update_script_suite_name_simple_content(ev, skip_prj_name, inner.UpdateScriptSuiteNameEvent);
     } else if (inner.UpdateEnvPermEvent !== undefined) {
       return get_update_env_perm_simple_content(ev, skip_prj_name, inner.UpdateEnvPermEvent);
     } else if (inner.UpdateSysPermEvent !== undefined) {

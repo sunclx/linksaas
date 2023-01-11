@@ -120,6 +120,34 @@ async fn remove_script_suite<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_script_suite_name<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateScriptSuiteNameRequest,
+) -> Result<UpdateScriptSuiteNameResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotScriptApiClient::new(chan.unwrap());
+    match client.update_script_suite_name(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_script_suite_name_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_script_suite_name".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn update_env_perm<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -625,6 +653,7 @@ impl<R: Runtime> RobotScriptApiPlugin<R> {
                 list_script_suite_key,
                 get_script_suite,
                 remove_script_suite,
+                update_script_suite_name,
                 update_env_perm,
                 update_sys_perm,
                 update_net_perm,

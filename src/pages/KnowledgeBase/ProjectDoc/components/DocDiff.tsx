@@ -6,6 +6,7 @@ import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
 import * as docApi from '@/api/project_doc';
 import s from './DocHistory.module.less';
+import moment from 'moment';
 
 interface DocDiffProps {
   historyId: string;
@@ -20,6 +21,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
 
   const [oldData, setOldData] = useState('');
   const [newData, setNewData] = useState('');
+  const [oldUpdateTime, setOldUpdateTime] = useState<number | null>(null);
 
   const loadData = async () => {
     const docRes = await request(
@@ -46,6 +48,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
     if (historyRes) {
       const obj = JSON.parse(historyRes.doc.base_info.content);
       setOldData(JSON.stringify(obj, null, 2));
+      setOldUpdateTime(historyRes.doc.update_time);
     }
   };
 
@@ -72,7 +75,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
 
   return (
     <Modal
-      visible
+      open
       title="历史版本对比"
       onCancel={() => props.onCancel()}
       width="80%"
@@ -83,7 +86,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
         <div>当前版本</div>
         <div>
           历史版本
-          <div className={s.title}>2022/08/03 14:22:33</div>
+          <div className={s.title}>{oldUpdateTime != null && moment(oldUpdateTime).format("YYYY-MM-DD HH:mm:ss")}</div>
           <div
             className={s.btn}
             onClick={(e) => {

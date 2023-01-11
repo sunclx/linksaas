@@ -831,6 +831,7 @@ pub mod script {
     pub enum Event {
         CreateScriptSuiteEvent(events_script::CreateScriptSuiteEvent),
         RemoveScriptSuiteEvent(events_script::RemoveScriptSuiteEvent),
+        UpdateScriptSuiteNameEvent(events_script::UpdateScriptSuiteNameEvent),
         UpdateEnvPermEvent(events_script::UpdateEnvPermEvent),
         UpdateSysPermEvent(events_script::UpdateSysPermEvent),
         UpdateNetPermEvent(events_script::UpdateNetPermEvent),
@@ -853,6 +854,11 @@ pub mod script {
         } else if data.type_url == events_script::RemoveScriptSuiteEvent::type_url() {
             if let Ok(ev) = events_script::RemoveScriptSuiteEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveScriptSuiteEvent(ev));
+            }
+        } else if data.type_url == events_script::UpdateScriptSuiteNameEvent::type_url() {
+            if let Ok(ev) = events_script::UpdateScriptSuiteNameEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::UpdateScriptSuiteNameEvent(ev));
             }
         } else if data.type_url == events_script::UpdateEnvPermEvent::type_url() {
             if let Ok(ev) = events_script::UpdateEnvPermEvent::decode(data.value.as_slice()) {
