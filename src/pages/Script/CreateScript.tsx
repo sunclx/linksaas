@@ -424,7 +424,7 @@ const CreateScript = () => {
         }
         for (const argDef of localStore.argDefList) {
             if(argDef.value.default_value.trim() == ""){
-                message.error("脚本运行参数缺少默认值");
+                message.error("命令行参数缺少默认值");
                 return;
             }
         }
@@ -567,12 +567,12 @@ const CreateScript = () => {
                     }>
                         <Table rowKey="id" columns={envDefColumns} dataSource={localStore.envDefList} pagination={false} />
                     </Card>
-                    <Card title={<h2>脚本运行参数定义(comand [args...])</h2>} bordered={false} extra={
+                    <Card title={<h2>命令行参数定义(comand [args...])</h2>} bordered={false} extra={
                         <Button onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setShowArgDefModal(true);
-                        }}>新建脚本运行参数定义</Button>
+                        }}>新建命令行参数定义</Button>
                     }>
                         <Table rowKey="id" columns={argDefColumns} dataSource={localStore.argDefList} pagination={false} />
                     </Card>

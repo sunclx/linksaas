@@ -439,17 +439,19 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
     return (
         <div style={{ height: "calc(100vh - 240px)", overflowY: "scroll" }}>
             <Card title={<h2 className={s.head}>访问系统变量权限</h2>} bordered={false} extra={
-                <Checkbox checked={localStore.envAllowAll} onChange={e => {
-                    e.stopPropagation();
-                    updateEnvPerm(e.target.checked, localStore.envPermPathList.map(item => item.value)).then(() => {
-                        localStore.setEnvAllowAll(e.target.checked);
-                    });
-                }}>访问全部环境变量</Checkbox>
+                <Checkbox checked={localStore.envAllowAll}
+                    disabled={!projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        updateEnvPerm(e.target.checked, localStore.envPermPathList.map(item => item.value)).then(() => {
+                            localStore.setEnvAllowAll(e.target.checked);
+                        });
+                    }}>访问全部环境变量</Checkbox>
             }>
                 {localStore.envAllowAll == false && (
                     <div className={s.tag_list}>
                         {localStore.envPermPathList.map(item => (
-                            <Tag key={item.id} closable className={s.tag} onClose={e => {
+                            <Tag key={item.id} closable={projectStore.isAdmin} className={s.tag} onClose={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 removeEnvPermPath(item.id);
@@ -457,32 +459,36 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                                 {item.value}
                             </Tag>
                         ))}
-                        {localStore.envPermPathEdit == true && (
-                            <Input type="text" className={s.tag_input}
-                                onBlur={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addEnvPermPath();
-                                }}
-                                onPressEnter={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addEnvPermPath();
-                                }}
-                                onChange={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    localStore.setEnvPermPathValue(e.target.value.trim());
-                                }} />
-                        )}
-                        {localStore.envPermPathEdit == false && (
-                            <Tag className={s.tag_plus} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                localStore.setEnvPermPathEdit(true);
-                            }}>
-                                <PlusOutlined /> 新增环境变量权限
-                            </Tag>
+                        {projectStore.isAdmin && (
+                            <>
+                                {localStore.envPermPathEdit == true && (
+                                    <Input type="text" className={s.tag_input}
+                                        onBlur={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addEnvPermPath();
+                                        }}
+                                        onPressEnter={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addEnvPermPath();
+                                        }}
+                                        onChange={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            localStore.setEnvPermPathValue(e.target.value.trim());
+                                        }} />
+                                )}
+                                {localStore.envPermPathEdit == false && (
+                                    <Tag className={s.tag_plus} onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        localStore.setEnvPermPathEdit(true);
+                                    }}>
+                                        <PlusOutlined /> 新增环境变量权限
+                                    </Tag>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
@@ -490,119 +496,135 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
 
             <Card title={<h2 className={s.head}>系统信息访问权限</h2>} bordered={false}>
                 <div>
-                    <Checkbox checked={localStore.sysPermHostname} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: e.target.checked,
-                            allow_network_interfaces: localStore.sysPermNetworkInterfaces,
-                            allow_loadavg: localStore.sysPermLoadavg,
-                            allow_get_uid: localStore.sysPermGetUid,
-                            allow_get_gid: localStore.sysPermGetGid,
-                            allow_os_release: localStore.sysPermOsRelease,
-                            allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
-                        }).then(() => {
-                            localStore.setSysPermHostname(e.target.checked);
-                        });
+                    <Checkbox checked={localStore.sysPermHostname}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: e.target.checked,
+                                allow_network_interfaces: localStore.sysPermNetworkInterfaces,
+                                allow_loadavg: localStore.sysPermLoadavg,
+                                allow_get_uid: localStore.sysPermGetUid,
+                                allow_get_gid: localStore.sysPermGetGid,
+                                allow_os_release: localStore.sysPermOsRelease,
+                                allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
+                            }).then(() => {
+                                localStore.setSysPermHostname(e.target.checked);
+                            });
 
-                    }}>Deno.hostname</Checkbox>
-                    <Checkbox checked={localStore.sysPermNetworkInterfaces} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: localStore.sysPermHostname,
-                            allow_network_interfaces: e.target.checked,
-                            allow_loadavg: localStore.sysPermLoadavg,
-                            allow_get_uid: localStore.sysPermGetUid,
-                            allow_get_gid: localStore.sysPermGetGid,
-                            allow_os_release: localStore.sysPermOsRelease,
-                            allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
-                        }).then(() => {
-                            localStore.setSysPermNetworkInterfaces(e.target.checked);
-                        });
-                    }}>Deno.networkInterfaces</Checkbox>
-                    <Checkbox checked={localStore.sysPermLoadavg} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: localStore.sysPermHostname,
-                            allow_network_interfaces: localStore.sysPermNetworkInterfaces,
-                            allow_loadavg: e.target.checked,
-                            allow_get_uid: localStore.sysPermGetUid,
-                            allow_get_gid: localStore.sysPermGetGid,
-                            allow_os_release: localStore.sysPermOsRelease,
-                            allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
-                        }).then(() => {
-                            localStore.setSysPermLoadavg(e.target.checked);
-                        });
-                    }}>Deno.loadavg</Checkbox>
-                    <Checkbox checked={localStore.sysPermGetUid} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: localStore.sysPermHostname,
-                            allow_network_interfaces: localStore.sysPermNetworkInterfaces,
-                            allow_loadavg: localStore.sysPermLoadavg,
-                            allow_get_uid: e.target.checked,
-                            allow_get_gid: localStore.sysPermGetGid,
-                            allow_os_release: localStore.sysPermOsRelease,
-                            allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
-                        }).then(() => {
-                            localStore.setSysPermGetUid(e.target.checked);
-                        });
-                    }}>Deno.uid</Checkbox>
-                    <Checkbox checked={localStore.sysPermGetGid} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: localStore.sysPermHostname,
-                            allow_network_interfaces: localStore.sysPermNetworkInterfaces,
-                            allow_loadavg: localStore.sysPermLoadavg,
-                            allow_get_uid: localStore.sysPermGetUid,
-                            allow_get_gid: e.target.checked,
-                            allow_os_release: localStore.sysPermOsRelease,
-                            allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
-                        }).then(() => {
-                            localStore.setSysPermGetGid(e.target.checked);
-                        });
+                        }}>Deno.hostname</Checkbox>
+                    <Checkbox checked={localStore.sysPermNetworkInterfaces}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: localStore.sysPermHostname,
+                                allow_network_interfaces: e.target.checked,
+                                allow_loadavg: localStore.sysPermLoadavg,
+                                allow_get_uid: localStore.sysPermGetUid,
+                                allow_get_gid: localStore.sysPermGetGid,
+                                allow_os_release: localStore.sysPermOsRelease,
+                                allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
+                            }).then(() => {
+                                localStore.setSysPermNetworkInterfaces(e.target.checked);
+                            });
+                        }}>Deno.networkInterfaces</Checkbox>
+                    <Checkbox checked={localStore.sysPermLoadavg}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: localStore.sysPermHostname,
+                                allow_network_interfaces: localStore.sysPermNetworkInterfaces,
+                                allow_loadavg: e.target.checked,
+                                allow_get_uid: localStore.sysPermGetUid,
+                                allow_get_gid: localStore.sysPermGetGid,
+                                allow_os_release: localStore.sysPermOsRelease,
+                                allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
+                            }).then(() => {
+                                localStore.setSysPermLoadavg(e.target.checked);
+                            });
+                        }}>Deno.loadavg</Checkbox>
+                    <Checkbox checked={localStore.sysPermGetUid}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: localStore.sysPermHostname,
+                                allow_network_interfaces: localStore.sysPermNetworkInterfaces,
+                                allow_loadavg: localStore.sysPermLoadavg,
+                                allow_get_uid: e.target.checked,
+                                allow_get_gid: localStore.sysPermGetGid,
+                                allow_os_release: localStore.sysPermOsRelease,
+                                allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
+                            }).then(() => {
+                                localStore.setSysPermGetUid(e.target.checked);
+                            });
+                        }}>Deno.uid</Checkbox>
+                    <Checkbox checked={localStore.sysPermGetGid}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: localStore.sysPermHostname,
+                                allow_network_interfaces: localStore.sysPermNetworkInterfaces,
+                                allow_loadavg: localStore.sysPermLoadavg,
+                                allow_get_uid: localStore.sysPermGetUid,
+                                allow_get_gid: e.target.checked,
+                                allow_os_release: localStore.sysPermOsRelease,
+                                allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
+                            }).then(() => {
+                                localStore.setSysPermGetGid(e.target.checked);
+                            });
 
-                    }}>Deno.gid</Checkbox>
-                    <Checkbox checked={localStore.sysPermOsRelease} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: localStore.sysPermHostname,
-                            allow_network_interfaces: localStore.sysPermNetworkInterfaces,
-                            allow_loadavg: localStore.sysPermLoadavg,
-                            allow_get_uid: localStore.sysPermGetUid,
-                            allow_get_gid: localStore.sysPermGetGid,
-                            allow_os_release: e.target.checked,
-                            allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
-                        }).then(() => {
-                            localStore.setSysPermOsRelease(e.target.checked);
-                        });
-                    }}>Deno.osRelease</Checkbox>
-                    <Checkbox checked={localStore.sysPermSystemMemoryInfo} onChange={e => {
-                        e.stopPropagation();
-                        updateSysPerm({
-                            allow_hostname: localStore.sysPermHostname,
-                            allow_network_interfaces: localStore.sysPermNetworkInterfaces,
-                            allow_loadavg: localStore.sysPermLoadavg,
-                            allow_get_uid: localStore.sysPermGetUid,
-                            allow_get_gid: localStore.sysPermGetGid,
-                            allow_os_release: localStore.sysPermOsRelease,
-                            allow_system_memory_info: e.target.checked,
-                        }).then(() => {
-                            localStore.setSysPermSystemMemoryInfo(e.target.checked);
-                        });
-                    }}>Deno.systemMemoryInfo</Checkbox>
+                        }}>Deno.gid</Checkbox>
+                    <Checkbox checked={localStore.sysPermOsRelease}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: localStore.sysPermHostname,
+                                allow_network_interfaces: localStore.sysPermNetworkInterfaces,
+                                allow_loadavg: localStore.sysPermLoadavg,
+                                allow_get_uid: localStore.sysPermGetUid,
+                                allow_get_gid: localStore.sysPermGetGid,
+                                allow_os_release: e.target.checked,
+                                allow_system_memory_info: localStore.sysPermSystemMemoryInfo,
+                            }).then(() => {
+                                localStore.setSysPermOsRelease(e.target.checked);
+                            });
+                        }}>Deno.osRelease</Checkbox>
+                    <Checkbox checked={localStore.sysPermSystemMemoryInfo}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateSysPerm({
+                                allow_hostname: localStore.sysPermHostname,
+                                allow_network_interfaces: localStore.sysPermNetworkInterfaces,
+                                allow_loadavg: localStore.sysPermLoadavg,
+                                allow_get_uid: localStore.sysPermGetUid,
+                                allow_get_gid: localStore.sysPermGetGid,
+                                allow_os_release: localStore.sysPermOsRelease,
+                                allow_system_memory_info: e.target.checked,
+                            }).then(() => {
+                                localStore.setSysPermSystemMemoryInfo(e.target.checked);
+                            });
+                        }}>Deno.systemMemoryInfo</Checkbox>
                 </div>
             </Card>
             <Card title={<h2 className={s.head}>网络访问权限</h2>} bordered={false} extra={
                 <Space>
-                    <Checkbox checked={localStore.netAllowAll} onChange={e => {
-                        e.stopPropagation();
-                        updateNetPerm(e.target.checked, localStore.netPermAddrList.map(item => item.value), localStore.netPermVcUpdate).then(() => {
-                            localStore.setNetAllowAll(e.target.checked);
-                        });
+                    <Checkbox checked={localStore.netAllowAll}
+                        disabled={!projectStore.isAdmin}
+                        onChange={e => {
+                            e.stopPropagation();
+                            updateNetPerm(e.target.checked, localStore.netPermAddrList.map(item => item.value), localStore.netPermVcUpdate).then(() => {
+                                localStore.setNetAllowAll(e.target.checked);
+                            });
 
-                    }}>访问全部网络</Checkbox>
+                        }}>访问全部网络</Checkbox>
                     <Checkbox checked={localStore.netAllowAll || localStore.netPermVcUpdate}
-                        disabled={localStore.netAllowAll} onChange={e => {
+                        disabled={!projectStore.isAdmin || localStore.netAllowAll} onChange={e => {
                             e.stopPropagation();
                             updateNetPerm(localStore.netAllowAll, localStore.netPermAddrList.map(item => item.value), e.target.checked).then(() => {
                                 localStore.setNetPermVcUpdate(e.target.checked);
@@ -613,7 +635,7 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                 {localStore.netAllowAll == false && (
                     <div className={s.tag_list}>
                         {localStore.netPermAddrList.map(item => (
-                            <Tag key={item.id} closable className={s.tag} onClose={e => {
+                            <Tag key={item.id} closable={projectStore.isAdmin} className={s.tag} onClose={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 removeNetPermAddr(item.id);
@@ -621,48 +643,54 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                                 {item.value}
                             </Tag>
                         ))}
-                        {localStore.netPermAddrEdit == true && (
-                            <Input type="text" className={s.tag_input}
-                                onBlur={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addNetPermAddr();
-                                }}
-                                onPressEnter={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addNetPermAddr();
-                                }}
-                                onChange={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    localStore.setNetPermAddrValue(e.target.value.trim());
-                                }} />
-                        )}
-                        {localStore.netPermAddrEdit == false && (
-                            <Tag className={s.tag_plus} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                localStore.setNetPermAddrEdit(true);
-                            }}>
-                                <PlusOutlined /> 新增网络地址
-                            </Tag>
+                        {projectStore.isAdmin && (
+                            <>
+                                {localStore.netPermAddrEdit == true && (
+                                    <Input type="text" className={s.tag_input}
+                                        onBlur={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addNetPermAddr();
+                                        }}
+                                        onPressEnter={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addNetPermAddr();
+                                        }}
+                                        onChange={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            localStore.setNetPermAddrValue(e.target.value.trim());
+                                        }} />
+                                )}
+                                {localStore.netPermAddrEdit == false && (
+                                    <Tag className={s.tag_plus} onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        localStore.setNetPermAddrEdit(true);
+                                    }}>
+                                        <PlusOutlined /> 新增网络地址
+                                    </Tag>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
             </Card>
             <Card title={<h2 className={s.head}>文件/目录读权限</h2>} bordered={false} extra={
-                <Checkbox checked={localStore.readAllowAll} onChange={e => {
-                    e.stopPropagation();
-                    updateReadPerm(e.target.checked, localStore.readPermPathList.map(item => item.value)).then(() => {
-                        localStore.setReadAllowAll(e.target.checked);
-                    });
-                }}>所有文件目录可读</Checkbox>
+                <Checkbox checked={localStore.readAllowAll}
+                    disabled={!projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        updateReadPerm(e.target.checked, localStore.readPermPathList.map(item => item.value)).then(() => {
+                            localStore.setReadAllowAll(e.target.checked);
+                        });
+                    }}>所有文件目录可读</Checkbox>
             }>
                 {localStore.readAllowAll == false && (
                     <div className={s.tag_list}>
                         {localStore.readPermPathList.map(item => (
-                            <Tag key={item.id} closable className={s.tag} onClose={e => {
+                            <Tag key={item.id} closable={projectStore.isAdmin} className={s.tag} onClose={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 removeReadPermPath(item.id);
@@ -670,48 +698,54 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                                 {item.value}
                             </Tag>
                         ))}
-                        {localStore.readPermPathEdit == true && (
-                            <Input type="text" className={s.tag_input}
-                                onBlur={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addReadPermPath();
-                                }}
-                                onPressEnter={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addReadPermPath();
-                                }}
-                                onChange={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    localStore.setReadPermPathValue(e.target.value.trim());
-                                }} />
-                        )}
-                        {localStore.readPermPathEdit == false && (
-                            <Tag className={s.tag_plus} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                localStore.setReadPermPathEdit(true);
-                            }}>
-                                <PlusOutlined /> 新增文件/目录
-                            </Tag>
+                        {projectStore.isAdmin && (
+                            <>
+                                {localStore.readPermPathEdit == true && (
+                                    <Input type="text" className={s.tag_input}
+                                        onBlur={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addReadPermPath();
+                                        }}
+                                        onPressEnter={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addReadPermPath();
+                                        }}
+                                        onChange={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            localStore.setReadPermPathValue(e.target.value.trim());
+                                        }} />
+                                )}
+                                {localStore.readPermPathEdit == false && (
+                                    <Tag className={s.tag_plus} onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        localStore.setReadPermPathEdit(true);
+                                    }}>
+                                        <PlusOutlined /> 新增文件/目录
+                                    </Tag>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
             </Card>
             <Card title={<h2 className={s.head}>文件/目录写权限</h2>} bordered={false} extra={
-                <Checkbox checked={localStore.writeAllowAll} onChange={e => {
-                    e.stopPropagation();
-                    updateWritePerm(e.target.checked, localStore.writePermPathList.map(item => item.value)).then(() => {
-                        localStore.setWriteAllowAll(e.target.checked);
-                    });
-                }}>所有文件目录可写</Checkbox>
+                <Checkbox checked={localStore.writeAllowAll}
+                    disabled={!projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        updateWritePerm(e.target.checked, localStore.writePermPathList.map(item => item.value)).then(() => {
+                            localStore.setWriteAllowAll(e.target.checked);
+                        });
+                    }}>所有文件目录可写</Checkbox>
             }>
                 {localStore.writeAllowAll == false && (
                     <div className={s.tag_list}>
                         {localStore.writePermPathList.map(item => (
-                            <Tag key={item.id} closable className={s.tag} onClose={e => {
+                            <Tag key={item.id} closable={projectStore.isAdmin} className={s.tag} onClose={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 removeWritePermPath(item.id);
@@ -719,32 +753,36 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                                 {item.value}
                             </Tag>
                         ))}
-                        {localStore.writePermPathEdit == true && (
-                            <Input type="text" className={s.tag_input}
-                                onBlur={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addWritePermPath();
-                                }}
-                                onPressEnter={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    addWritePermPath();
-                                }}
-                                onChange={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    localStore.setWritePermPathValue(e.target.value.trim());
-                                }} />
-                        )}
-                        {localStore.writePermPathEdit == false && (
-                            <Tag className={s.tag_plus} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                localStore.setWritePermPathEdit(true);
-                            }}>
-                                <PlusOutlined /> 新增文件/目录
-                            </Tag>
+                        {projectStore.isAdmin && (
+                            <>
+                                {localStore.writePermPathEdit == true && (
+                                    <Input type="text" className={s.tag_input}
+                                        onBlur={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addWritePermPath();
+                                        }}
+                                        onPressEnter={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            addWritePermPath();
+                                        }}
+                                        onChange={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            localStore.setWritePermPathValue(e.target.value.trim());
+                                        }} />
+                                )}
+                                {localStore.writePermPathEdit == false && (
+                                    <Tag className={s.tag_plus} onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        localStore.setWritePermPathEdit(true);
+                                    }}>
+                                        <PlusOutlined /> 新增文件/目录
+                                    </Tag>
+                                )}
+                            </>
                         )}
                     </div>
                 )}

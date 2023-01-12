@@ -17,6 +17,7 @@ import {
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
+  SCRIPT_EXEC_RESULT_SUFFIX,
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
@@ -273,6 +274,21 @@ export class LinkScriptSuiteInfo {
   tab?: string;
 }
 
+export class LinkScriptExecInfo {
+  constructor(content: string, projectId: string, scriptSuiteId: string, execId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.scriptSuiteId = scriptSuiteId;
+    this.execId = execId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  scriptSuiteId: string;
+  execId: string;
+}
+
 export class LinkBookMarkInfo {
   constructor(content: string, projectId: string, bookId: string, markId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK;
@@ -387,6 +403,11 @@ export type LinkScriptSuiteSate = {
   useHistoryScript: boolean;
   scriptTime: number;
   tab?: string;
+}
+
+export type LinkScriptExecState = {
+  scriptSuiteId: string;
+  execId: string;
 }
 
 class LinkAuxStore {
@@ -608,6 +629,16 @@ class LinkAuxStore {
         tab: scriptSuiteLink.tab,
       };
       history.push(this.genUrl(pathname, "/script/detail"), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC) {
+      const scriptExecLink = link as LinkScriptExecInfo;
+      if (this.rootStore.projectStore.curProjectId != scriptExecLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(scriptExecLink.projectId);
+      }
+      const state: LinkScriptExecState = {
+        scriptSuiteId: scriptExecLink.scriptSuiteId,
+        execId: scriptExecLink.execId,
+      };
+      history.push(this.genUrl(pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);

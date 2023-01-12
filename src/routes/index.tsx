@@ -33,6 +33,7 @@ import {
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
+  SCRIPT_EXEC_RESULT_SUFFIX,
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
@@ -44,7 +45,8 @@ import IssueCreate from '@/pages/Issue/IssueCreate';
 import RobotList from '@/pages/Robot/RobotList';
 import MetricList from '@/pages/Robot/MetricList';
 import RepoList from '@/pages/Earthly/RepoList';
-import ExecResult from '@/pages/Earthly/ExecResult';
+import EarthlyExecResult from '@/pages/Earthly/ExecResult';
+import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import LocalApi from '@/pages/Project/LocalApi';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
@@ -190,6 +192,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
+      path: prefix + SCRIPT_EXEC_RESULT_SUFFIX,
+      title: "服务端脚本执行结果",
+      component: ScriptExecResult,
+      exact: true,
+    },
+    {
       path: prefix + '/repo',
       title: '代码仓库列表',
       component: RepoList,
@@ -204,7 +212,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     {
       path: prefix + REPO_ACTION_EXEC_RESULT_SUFFIX,
       title: '命令执行结果',
-      component: ExecResult,
+      component: EarthlyExecResult,
       exact: true,
     },
     {

@@ -45,7 +45,7 @@ const ScriptContentPanel: React.FC<ScriptContentPanelProps> = (props) => {
         <Card bordered={false}
             extra={
                 <Space>
-                    {state.useHistoryScript == false && (
+                    {state.useHistoryScript == false && projectStore.isAdmin && (
                         <>
                             <Popover
                                 content={<ContentHistory scriptSuiteId={state.scriptSuiteId} onRecover={(value) => {

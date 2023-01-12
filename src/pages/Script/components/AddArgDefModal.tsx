@@ -28,7 +28,7 @@ const AddArgDefModal: React.FC<AddArgDefModalProps> = (props) => {
     };
 
     return (
-        <Modal title="增加脚本运行参数定义" open
+        <Modal title="增加命令行参数定义" open
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();

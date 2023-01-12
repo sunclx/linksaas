@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from '@/components/CardWrap';
 import DetailsNav from "@/components/DetailsNav";
-import { Tabs, Space } from "antd";
+import { Tabs, Space, Popover, Modal } from "antd";
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkScriptSuiteSate } from "@/stores/linkAux";
 import { LinkScriptSuiteInfo } from "@/stores/linkAux";
@@ -17,6 +17,8 @@ import ScriptContentPanel from "./components/ScriptContentPanel";
 import ParamDefPanel from "./components/ParamDefPanel";
 import PermDefPanel from "./components/PermDefPanel";
 import ExecListPanel from "./components/ExecListPanel";
+import { MoreOutlined } from "@ant-design/icons";
+import ExecModal from "./components/ExecModal";
 
 
 const ScriptDetail = () => {
@@ -31,6 +33,8 @@ const ScriptDetail = () => {
     const activeKey = state.tab ?? "scriptContent";
 
     const [scriptSuiteInfo, setScriptSuiteInfo] = useState<ScriptSuiteInfo | null>(null);
+    const [showExecModal, setShowExecModal] = useState(false);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
 
     const loadScriptSuite = async () => {
         const res = await request(get_script_suite({
@@ -77,7 +81,22 @@ const ScriptDetail = () => {
                 )}
             </div>} >
                 <Space>
-                    <Button>22</Button>
+                    <Button disabled={!projectStore.isAdmin} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowExecModal(true);
+                    }}>执行脚本</Button>
+                    <Popover content={
+                        <div className={s.more}>
+                            <Button type="link" danger disabled={!projectStore.isAdmin} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setShowRemoveModal(true);
+                            }}>删除脚本</Button>
+                        </div>
+                    } placement="bottom">
+                        <MoreOutlined />
+                    </Popover>
                 </Space>
             </DetailsNav>
             <div className={s.content_wrap}>
@@ -219,6 +238,28 @@ const ScriptDetail = () => {
                         {activeKey == "execList" && scriptSuiteInfo != null && <ExecListPanel />}
                     </Tabs.TabPane>
                 </Tabs>
+                {showExecModal == true && scriptSuiteInfo != null && (
+                    <ExecModal
+                        scriptSuiteId={scriptSuiteInfo.script_suite_id}
+                        scriptSuiteName={scriptSuiteInfo.script_suite_name}
+                        execParamDef={scriptSuiteInfo.exec_param_def}
+                        onCancel={() => setShowExecModal(false)} />
+                )}
+                {showRemoveModal == true && scriptSuiteInfo != null && (
+                    <Modal open title="删除脚本"
+                        onCancel={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowRemoveModal(false);
+                        }}
+                        onOk={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            //TODO
+                        }}>
+                        是否删除服务端脚本 {scriptSuiteInfo.script_suite_name} ?
+                    </Modal>
+                )}
             </div>
         </CardWrap>
     );

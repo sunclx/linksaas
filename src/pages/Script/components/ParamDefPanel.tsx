@@ -152,13 +152,15 @@ const ParamDefPanel: React.FC<ParamDefPanelProps> = (props) => {
             title: "操作",
             width: 100,
             render: (_, record: EnvParamDefItem) => (
-                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const tmpList = localStore.envParamDefList.filter(item => item.id != record.id);
-                    localStore.setEnvParamDefList(tmpList);
-                    saveEnvParamDef(tmpList);
-                }}>删除</Button>
+                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                    disabled={!projectStore.isAdmin}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpList = localStore.envParamDefList.filter(item => item.id != record.id);
+                        localStore.setEnvParamDefList(tmpList);
+                        saveEnvParamDef(tmpList);
+                    }}>删除</Button>
             ),
         }
     ];
@@ -214,13 +216,15 @@ const ParamDefPanel: React.FC<ParamDefPanelProps> = (props) => {
             title: "操作",
             width: 100,
             render: (_, record: ArgParamDefItem) => (
-                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const tmpList = localStore.argParamDefList.filter(item => item.id != record.id);
-                    localStore.setArgParamDefList(tmpList);
-                    saveArgParamDef(tmpList);
-                }}>删除</Button>
+                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                    disabled={!projectStore.isAdmin}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpList = localStore.argParamDefList.filter(item => item.id != record.id);
+                        localStore.setArgParamDefList(tmpList);
+                        saveArgParamDef(tmpList);
+                    }}>删除</Button>
             ),
         }
     ];
@@ -238,12 +242,14 @@ const ParamDefPanel: React.FC<ParamDefPanelProps> = (props) => {
             }>
                 <Table rowKey="id" columns={envDefColumns} dataSource={localStore.envParamDefList} pagination={false} />
             </Card>
-            <Card title={<h2>脚本运行参数定义(comand [args...])</h2>} bordered={false} extra={
-                <Button onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowArgDefModal(true);
-                }}>新建脚本运行参数定义</Button>
+            <Card title={<h2>命令行参数定义(comand [args...])</h2>} bordered={false} extra={
+                <Button
+                    disabled={!projectStore.isAdmin}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowArgDefModal(true);
+                    }}>新建命令行参数定义</Button>
             }>
                 <Table rowKey="id" columns={argDefColumns} dataSource={localStore.argParamDefList} pagination={false} />
             </Card>

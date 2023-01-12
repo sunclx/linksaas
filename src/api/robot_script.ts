@@ -176,6 +176,17 @@ export type ListScriptSuiteKeyResponse = {
     script_suite_key_list: ScriptSuiteKey[];
 };
 
+export type GetScriptSuiteKeyRequest = {
+    session_id: string;
+    project_id: string;
+    script_suite_id: string;
+};
+export type GetScriptSuiteKeyResponse = {
+    code: number;
+    err_msg: string;
+    script_suite_key: ScriptSuiteKey;
+};
+
 export type GetScriptSuiteRequest = {
     session_id: string;
     project_id: string;
@@ -445,6 +456,17 @@ export type ListExecDataResponse = {
     data_list: ExecData[],
 };
 
+export type GetLastExecParamRequest = {
+    session_id: string;
+    project_id: string;
+    script_suite_id: string;
+};
+export type GetLastExecParamResponse = {
+    code: number;
+    err_msg: string;
+    exec_param: ExecParam;
+};
+
 //创建脚本套件
 export async function create_script_suite(request: CreateScriptSuiteRequest): Promise<CreateScriptSuiteResponse> {
     const cmd = 'plugin:robot_script_api|create_script_suite';
@@ -459,6 +481,15 @@ export async function list_script_suite_key(request: ListScriptSuiteKeyRequest):
     const cmd = 'plugin:robot_script_api|list_script_suite_key';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListScriptSuiteKeyResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个脚本套件简单信息
+export async function get_script_suite_key(request: GetScriptSuiteKeyRequest): Promise<GetScriptSuiteKeyResponse> {
+    const cmd = 'plugin:robot_script_api|get_script_suite_key';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetScriptSuiteKeyResponse>(cmd, {
         request,
     });
 }
@@ -648,6 +679,15 @@ export async function list_exec_data(request: ListExecDataRequest): Promise<List
     const cmd = 'plugin:robot_script_api|list_exec_data';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListExecDataResponse>(cmd, {
+        request,
+    });
+}
+
+//
+export async function get_last_exec_param(request: GetLastExecParamRequest): Promise<GetLastExecParamResponse> {
+    const cmd = 'plugin:robot_script_api|get_last_exec_param';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetLastExecParamResponse>(cmd, {
         request,
     });
 }

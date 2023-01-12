@@ -64,6 +64,34 @@ async fn list_script_suite_key<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_script_suite_key<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetScriptSuiteKeyRequest,
+) -> Result<GetScriptSuiteKeyResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotScriptApiClient::new(chan.unwrap());
+    match client.get_script_suite_key(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_script_suite_key_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_script_suite_key".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn get_script_suite<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -615,6 +643,33 @@ async fn watch_exec<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_last_exec_param<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetLastExecParamRequest,
+) -> Result<GetLastExecParamResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = RobotScriptApiClient::new(chan.unwrap());
+    match client.get_last_exec_param(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_last_exec_param_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_last_exec_param".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_exec_data<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -651,6 +706,7 @@ impl<R: Runtime> RobotScriptApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 create_script_suite,
                 list_script_suite_key,
+                get_script_suite_key,
                 get_script_suite,
                 remove_script_suite,
                 update_script_suite_name,
@@ -671,6 +727,7 @@ impl<R: Runtime> RobotScriptApiPlugin<R> {
                 list_exec,
                 get_exec,
                 watch_exec,
+                get_last_exec_param,
                 list_exec_data,
             ]),
         }
