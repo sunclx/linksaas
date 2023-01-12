@@ -9,7 +9,7 @@ import { LinkScriptSuiteInfo } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import s from './ScriptDetail.module.less';
 import { request } from "@/utils/request";
-import type { ScriptSuiteInfo } from "@/api/robot_script";
+import type { ScriptSuiteInfo, EnvParamDef, ArgParamDef } from "@/api/robot_script";
 import { get_script_suite, update_script_suite_name } from "@/api/robot_script";
 import { EditText } from "@/components/EditCell/EditText";
 import Button from "@/components/Button";
@@ -94,10 +94,126 @@ const ScriptDetail = () => {
                         )}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="参数定义" key="paramDef">
-                        {activeKey == "paramDef" && scriptSuiteInfo != null && <ParamDefPanel />}
+                        {activeKey == "paramDef" && scriptSuiteInfo != null && (
+                            <ParamDefPanel execParamDef={scriptSuiteInfo.exec_param_def}
+                                onUpdateEnvDef={(envDefList: EnvParamDef[]) => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            exec_param_def: {
+                                                env_param_def_list: envDefList,
+                                                arg_param_def_list: scriptSuiteInfo.exec_param_def.arg_param_def_list,
+                                            },
+                                        });
+                                    }
+                                }}
+                                onUpdateArgDef={(argDefList: ArgParamDef[]) => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            exec_param_def: {
+                                                env_param_def_list: scriptSuiteInfo.exec_param_def.env_param_def_list,
+                                                arg_param_def_list: argDefList,
+                                            },
+                                        });
+                                    }
+                                }} />
+                        )}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="运行缺陷" key="permDef">
-                        {activeKey == "permDef" && scriptSuiteInfo != null && <PermDefPanel />}
+                    <Tabs.TabPane tab="运行权限" key="permDef">
+                        {activeKey == "permDef" && scriptSuiteInfo != null && (
+                            <PermDefPanel permission={scriptSuiteInfo.permission}
+                                onUpdateEnvPerm={perm => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            permission: {
+                                                env_perm: perm,
+                                                sys_perm: scriptSuiteInfo.permission.sys_perm,
+                                                net_perm: scriptSuiteInfo.permission.net_perm,
+                                                read_perm: scriptSuiteInfo.permission.read_perm,
+                                                write_perm: scriptSuiteInfo.permission.write_perm,
+                                                run_perm: scriptSuiteInfo.permission.run_perm,
+                                            },
+                                        });
+                                    }
+                                }}
+                                onUpdateSysPerm={perm => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            permission: {
+                                                env_perm: scriptSuiteInfo.permission.env_perm,
+                                                sys_perm: perm,
+                                                net_perm: scriptSuiteInfo.permission.net_perm,
+                                                read_perm: scriptSuiteInfo.permission.read_perm,
+                                                write_perm: scriptSuiteInfo.permission.write_perm,
+                                                run_perm: scriptSuiteInfo.permission.run_perm,
+                                            },
+                                        });
+                                    }
+                                }}
+                                onUpdateNetPerm={perm => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            permission: {
+                                                env_perm: scriptSuiteInfo.permission.env_perm,
+                                                sys_perm: scriptSuiteInfo.permission.sys_perm,
+                                                net_perm: perm,
+                                                read_perm: scriptSuiteInfo.permission.read_perm,
+                                                write_perm: scriptSuiteInfo.permission.write_perm,
+                                                run_perm: scriptSuiteInfo.permission.run_perm,
+                                            },
+                                        });
+                                    }
+                                }}
+                                onUpdateReadPerm={perm => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            permission: {
+                                                env_perm: scriptSuiteInfo.permission.env_perm,
+                                                sys_perm: scriptSuiteInfo.permission.sys_perm,
+                                                net_perm: scriptSuiteInfo.permission.net_perm,
+                                                read_perm: perm,
+                                                write_perm: scriptSuiteInfo.permission.write_perm,
+                                                run_perm: scriptSuiteInfo.permission.run_perm,
+                                            },
+                                        });
+                                    }
+                                }}
+                                onUpdateWritePerm={perm => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            permission: {
+                                                env_perm: scriptSuiteInfo.permission.env_perm,
+                                                sys_perm: scriptSuiteInfo.permission.sys_perm,
+                                                net_perm: scriptSuiteInfo.permission.net_perm,
+                                                read_perm: scriptSuiteInfo.permission.read_perm,
+                                                write_perm: perm,
+                                                run_perm: scriptSuiteInfo.permission.run_perm,
+                                            },
+                                        });
+                                    }
+                                }}
+                                onUpdateRunPerm={perm => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            permission: {
+                                                env_perm: scriptSuiteInfo.permission.env_perm,
+                                                sys_perm: scriptSuiteInfo.permission.sys_perm,
+                                                net_perm: scriptSuiteInfo.permission.net_perm,
+                                                read_perm: scriptSuiteInfo.permission.read_perm,
+                                                write_perm: scriptSuiteInfo.permission.write_perm,
+                                                run_perm: perm,
+                                            },
+                                        });
+                                    }
+                                }} />
+                        )}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="执行记录" key="execList">
                         {activeKey == "execList" && scriptSuiteInfo != null && <ExecListPanel />}

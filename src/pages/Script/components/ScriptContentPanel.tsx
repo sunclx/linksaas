@@ -42,64 +42,67 @@ const ScriptContentPanel: React.FC<ScriptContentPanelProps> = (props) => {
         setInEdit(false);
     };
     return (
-        <Card bordered={false} extra={
-            <Space>
-                {state.useHistoryScript == false && (
-                    <>
-                        <Popover
-                            content={<ContentHistory scriptSuiteId={state.scriptSuiteId} onRecover={(value) => {
-                                setContent(value);
-                                props.onUpdate();
-                            }} />}
-                            placement="bottomLeft"
-                            trigger="click"
-                            destroyTooltipOnHide={true}>
-                            <a onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                            }}><HistoryOutlined style={{ marginRight: "40px", fontSize: "16px" }} /></a>
-                        </Popover>
-                        {inEdit == true && (
-                            <>
+        <Card bordered={false}
+            extra={
+                <Space>
+                    {state.useHistoryScript == false && (
+                        <>
+                            <Popover
+                                content={<ContentHistory scriptSuiteId={state.scriptSuiteId} onRecover={(value) => {
+                                    setContent(value);
+                                    props.onUpdate();
+                                }} />}
+                                placement="bottomLeft"
+                                trigger="click"
+                                destroyTooltipOnHide={true}>
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                }}><HistoryOutlined style={{ marginRight: "40px", fontSize: "16px" }} /></a>
+                            </Popover>
+                            {inEdit == true && (
+                                <>
+                                    <Button onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setInEdit(false);
+                                        setContent(props.content);
+                                    }}>取消</Button>
+                                    <Button onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        updateScriptContent();
+                                    }}>更新脚本内容</Button>
+                                </>
+                            )}
+                            {inEdit == false && (
                                 <Button onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    setInEdit(false);
-                                    setContent(props.content);
-                                }}>取消</Button>
-                                <Button onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    updateScriptContent();
-                                }}>更新脚本内容</Button>
-                            </>
-                        )}
-                        {inEdit == false && (
-                            <Button onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setInEdit(true);
-                            }}>修改</Button>
-                        )}
-                    </>
-                )}
-            </Space>}>
-            <CodeEditor
-                value={content}
-                language="typescript"
-                minHeight={200}
-                placeholder="请输入代码"
-                disabled={state.useHistoryScript || inEdit == false}
-                onChange={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setContent(e.target.value);
-                }}
-                style={{
-                    fontSize: 14,
-                    backgroundColor: '#f5f5f5',
-                }}
-            />
+                                    setInEdit(true);
+                                }}>修改</Button>
+                            )}
+                        </>
+                    )}
+                </Space>}>
+            <div style={{ height: "calc(100vh - 290px)",overflowY: "scroll" }}>
+                <CodeEditor
+                    value={content}
+                    language="typescript"
+                    minHeight={200}
+                    placeholder="请输入代码"
+                    disabled={state.useHistoryScript || inEdit == false}
+                    onChange={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setContent(e.target.value);
+                    }}
+                    style={{
+                        fontSize: 14,
+                        backgroundColor: '#f5f5f5',
+                    }}
+                />
+            </div>
         </Card>
     );
 };
