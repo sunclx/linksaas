@@ -230,7 +230,7 @@ const ParamDefPanel: React.FC<ParamDefPanelProps> = (props) => {
     ];
 
     return (
-        <div style={{ height: "calc(100vh - 240px)", overflowY: "scroll" }}>
+        <div style={{ height: "calc(100vh - 270px)", overflowY: "scroll" }}>
             <Card title={<h2>环境参数定义(通过环境变量传递参数)</h2>} bordered={false} extra={
                 <Button
                     disabled={!projectStore.isAdmin}

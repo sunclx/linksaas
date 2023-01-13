@@ -10,6 +10,8 @@ import { update_script } from "@/api/robot_script";
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
 import ContentHistory from "./ContentHistory";
+import moment from 'moment';
+
 
 interface ScriptContentPanelProps {
     content: string;
@@ -49,6 +51,7 @@ const ScriptContentPanel: React.FC<ScriptContentPanelProps> = (props) => {
             bordered={false}
             extra={
                 <Space>
+                    {state.useHistoryScript == true && <span>历史版本({moment(state.scriptTime).format("YYYY-MM-DD HH:mm:ss")})</span>}
                     {state.useHistoryScript == false && projectStore.isAdmin && (
                         <>
                             <Popover
@@ -89,7 +92,7 @@ const ScriptContentPanel: React.FC<ScriptContentPanelProps> = (props) => {
                         </>
                     )}
                 </Space>}>
-            <div style={{ height: "calc(100vh - 290px)", overflowY: "scroll" }}>
+            <div style={{ height: "calc(100vh - 320px)", overflowY: "scroll" }}>
                 <CodeEditor
                     value={content}
                     language="typescript"

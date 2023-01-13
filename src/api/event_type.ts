@@ -3,6 +3,7 @@ import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
 import * as es from './events_subscribe';
+import { LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -3771,8 +3772,16 @@ namespace earthly {
     skip_prj_name: boolean,
     inner: ExecEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let paramStr = "";
+    if (inner.param_list.length > 0){
+      paramStr = `执行参数: ${inner.param_list.map(item=>item.name+"+"+item.value).join(" ,")}`;
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从仓库 ${inner.repo_url} 执行命令`),
+      new LinkEarthlyActionInfo(inner.action_name, ev.project_id, inner.repo_id, inner.action_id),
+      new LinkEarthlyExecInfo("执行结果", ev.project_id, inner.repo_id, inner.action_id, inner.exec_id),
+      new LinkNoneInfo(`${paramStr}`),
+    ];
   }
 
   export class AllEarthlyEvent {
@@ -3817,8 +3826,10 @@ namespace script {
     skip_prj_name: boolean,
     inner: CreateScriptSuiteEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+    ];
   }
 
   export type RemoveScriptSuiteEvent = {
@@ -3831,13 +3842,11 @@ namespace script {
     skip_prj_name: boolean,
     inner: RemoveScriptSuiteEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建脚本套件 ${inner.script_suite_name}`)];
   }
 
   export type UpdateScriptSuiteNameEvent = {
     script_suite_id: string;
-    script_suite_name: string;
     old_name: string;
     new_name: string;
   };
@@ -3847,8 +3856,11 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateScriptSuiteNameEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建脚本套件`),
+      new LinkScriptSuiteInfo(inner.new_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo(`原名称 ${inner.old_name}`)
+    ];
   }
 
   export type EnvPermission = {
@@ -3859,8 +3871,8 @@ namespace script {
   export type UpdateEnvPermEvent = {
     script_suite_id: string;
     script_suite_name: string;
-    old_perm: EnvPermission[];
-    new_perm: EnvPermission[];
+    old_perm: EnvPermission;
+    new_perm: EnvPermission;
   };
 
   function get_update_env_perm_simple_content(
@@ -3868,8 +3880,21 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateEnvPermEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let oldPerm = `访问全部环境变量：${inner.old_perm.allow_all ? "是" : "否"}`;
+    if (inner.old_perm.allow_all == false && inner.old_perm.env_list.length > 0) {
+      oldPerm = oldPerm + `,可访问环境变量:` + inner.old_perm.env_list.join(",");
+    }
+    let newPerm = `访问全部环境变量：${inner.new_perm.allow_all ? "是" : "否"}`;
+    if (inner.new_perm.allow_all == false && inner.new_perm.env_list.length > 0) {
+      newPerm = newPerm + `,可访问环境变量:` + inner.new_perm.env_list.join(",");
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("环境变量访问权限"),
+      new LinkNoneInfo(`旧权限 ${oldPerm}。`),
+      new LinkNoneInfo(`新权限 ${newPerm}。`),
+    ];
   }
 
   export type SysPermission = {
@@ -3881,6 +3906,35 @@ namespace script {
     allow_os_release: boolean;
     allow_system_memory_info: boolean;
   };
+
+  function get_sys_perm_str(p: SysPermission): string {
+    const tmpList: string[] = [];
+    if (p.allow_hostname) {
+      tmpList.push("hostname");
+    }
+    if (p.allow_network_interfaces) {
+      tmpList.push("networkInterfaces");
+    }
+    if (p.allow_loadavg) {
+      tmpList.push("loadavg");
+    }
+    if (p.allow_get_uid) {
+      tmpList.push("uid");
+    }
+    if (p.allow_get_gid) {
+      tmpList.push("gid");
+    }
+    if (p.allow_os_release) {
+      tmpList.push("osRelease");
+    }
+    if (p.allow_system_memory_info) {
+      tmpList.push("systemMemoryInfo");
+    }
+    if (tmpList.length == 0) {
+      return "无"
+    }
+    return tmpList.join(",")
+  }
 
   export type UpdateSysPermEvent = {
     script_suite_id: string;
@@ -3894,8 +3948,13 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateSysPermEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("系统信息访问权限"),
+      new LinkNoneInfo(`旧权限 ${get_sys_perm_str(inner.old_perm)}。`),
+      new LinkNoneInfo(`新权限 ${get_sys_perm_str(inner.new_perm)}。`),
+    ];
   }
 
   export type NetPermission = {
@@ -3916,8 +3975,27 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateNetPermEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let oldPerm = `访问全部网络：${inner.old_perm.allow_all ? "是" : "否"}`;
+    if (inner.old_perm.allow_all == false && inner.old_perm.addr_list.length > 0) {
+      oldPerm = oldPerm + `,可访问网络:` + inner.old_perm.addr_list.join(",");
+    }
+    if (inner.old_perm.allow_all == false) {
+      oldPerm = oldPerm + `,更新可变内容块:${inner.old_perm.allow_vc_update ? "是" : "否"}`
+    }
+    let newPerm = `访问全部网络：${inner.new_perm.allow_all ? "是" : "否"}`;
+    if (inner.new_perm.allow_all == false && inner.new_perm.addr_list.length > 0) {
+      newPerm = newPerm + `,可访问网络:` + inner.new_perm.addr_list.join(",");
+    }
+    if (inner.new_perm.allow_all == false) {
+      newPerm = newPerm + `,更新可变内容块:${inner.new_perm.allow_vc_update ? "是" : "否"}`
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("网络访问权限"),
+      new LinkNoneInfo(`旧权限 ${oldPerm}。`),
+      new LinkNoneInfo(`新权限 ${newPerm}。`),
+    ];
   }
 
   export type ReadPermission = {
@@ -3937,8 +4015,21 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateReadPermEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let oldPerm = `读全部文件/目录：${inner.old_perm.allow_all ? "是" : "否"}`;
+    if (inner.old_perm.allow_all == false && inner.old_perm.path_list.length > 0) {
+      oldPerm = oldPerm + `,可读文件/目录:` + inner.old_perm.path_list.join(",");
+    }
+    let newPerm = `读全部文件/目录：${inner.new_perm.allow_all ? "是" : "否"}`;
+    if (inner.new_perm.allow_all == false && inner.new_perm.path_list.length > 0) {
+      newPerm = newPerm + `,可读文件/目录:` + inner.new_perm.path_list.join(",");
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("文件/目录读权限"),
+      new LinkNoneInfo(`旧权限 ${oldPerm}。`),
+      new LinkNoneInfo(`新权限 ${newPerm}。`),
+    ];
   }
 
   export type WritePermission = {
@@ -3958,8 +4049,21 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateWritePermEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let oldPerm = `写全部文件/目录：${inner.old_perm.allow_all ? "是" : "否"}`;
+    if (inner.old_perm.allow_all == false && inner.old_perm.path_list.length > 0) {
+      oldPerm = oldPerm + `,可写文件/目录:` + inner.old_perm.path_list.join(",");
+    }
+    let newPerm = `写全部文件/目录：${inner.new_perm.allow_all ? "是" : "否"}`;
+    if (inner.new_perm.allow_all == false && inner.new_perm.path_list.length > 0) {
+      newPerm = newPerm + `,可写文件/目录:` + inner.new_perm.path_list.join(",");
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("文件/目录写权限"),
+      new LinkNoneInfo(`旧权限 ${oldPerm}。`),
+      new LinkNoneInfo(`新权限 ${newPerm}。`),
+    ];
   }
 
   export type RunPermission = {
@@ -3979,8 +4083,21 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateRunPermEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let oldPerm = `运行所有外部程序：${inner.old_perm.allow_all ? "是" : "否"}`;
+    if (inner.old_perm.allow_all == false && inner.old_perm.file_list.length > 0) {
+      oldPerm = oldPerm + `,可运行外部程序:` + inner.old_perm.file_list.join(",");
+    }
+    let newPerm = `运行所有外部程序：${inner.new_perm.allow_all ? "是" : "否"}`;
+    if (inner.new_perm.allow_all == false && inner.new_perm.file_list.length > 0) {
+      newPerm = newPerm + `,可运行外部程序:` + inner.new_perm.file_list.join(",");
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("外部程序运行权限"),
+      new LinkNoneInfo(`旧权限 ${oldPerm}。`),
+      new LinkNoneInfo(`新权限 ${newPerm}。`),
+    ];
   }
 
   export type UpdateScriptEvent = {
@@ -3993,8 +4110,10 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateScriptEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件脚本`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, true, ev.event_time),
+    ];
   }
 
   export type UpdateExecUserEvent = {
@@ -4009,8 +4128,11 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateExecUserEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo(`执行用户。旧执行用户：${inner.old_exec_user == "" ? "root" : inner.old_exec_user}，新执行用户：${inner.new_exec_user == "" ? "root" : inner.new_exec_user}`),
+    ];
   }
 
   export type EnvParamDef = {
@@ -4031,8 +4153,11 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateEnvParamDefEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo(`环境参数定义。旧环境参数定义：${inner.old_env_param_def_list.map(item => item.env_name).join(",")},新环境参数定义：${inner.new_env_param_def_list.map(item => item.env_name).join(",")}`),
+    ];
   }
 
   export type ArgParamDef = {
@@ -4052,8 +4177,11 @@ namespace script {
     skip_prj_name: boolean,
     inner: UpdateArgParamDefEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo("命令行参数定义。"),
+    ];
   }
 
   export type RecoverScriptEvent = {
@@ -4067,8 +4195,11 @@ namespace script {
     skip_prj_name: boolean,
     inner: RecoverScriptEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 恢复脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, false, 0),
+      new LinkNoneInfo(`脚本内容到历史(${moment(inner.script_time).format("YYYY-MM-DD HH:mm:ss")})。`),
+    ];
   }
 
   export type EnvParam = {
@@ -4090,8 +4221,20 @@ namespace script {
     skip_prj_name: boolean,
     inner: ExecEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    let envParamStr = "";
+    if (inner.env_param_list.length > 0) {
+      envParamStr = `环境参数：${inner.env_param_list.map(item => item.env_name + "=" + item.env_value).join(" , ")}`;
+    }
+    let argParamStr = "";
+    if (inner.arg_param_list.length > 0) {
+      argParamStr = `命令行参数：${inner.arg_param_list.join(" ")}`;
+    }
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 执行脚本套件`),
+      new LinkScriptSuiteInfo(inner.script_suite_name, ev.project_id, inner.script_suite_id, true, inner.script_time),
+      new LinkScriptExecInfo("执行结果", ev.project_id, inner.script_suite_id, inner.exec_id),
+      new LinkNoneInfo(`${envParamStr} ${argParamStr}`),
+    ];
   }
 
   export class AllScriptEvent {

@@ -108,7 +108,7 @@ const ExecListPanel = () => {
         loadExecList();
     }, [state.scriptSuiteId, curPage]);
     return (
-        <div style={{ height: "calc(100vh - 240px)", overflowY: "scroll" }}>
+        <div style={{ height: "calc(100vh - 270px)", overflowY: "scroll" }}>
             <Table rowKey="exec_id" columns={columns} dataSource={execInfoList} pagination={false} />
             <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
         </div>

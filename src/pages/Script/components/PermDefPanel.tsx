@@ -446,7 +446,7 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
     }
 
     return (
-        <div style={{ height: "calc(100vh - 240px)", overflowY: "scroll" }}>
+        <div style={{ height: "calc(100vh - 270px)", overflowY: "scroll" }}>
             <div style={{ display: "flex", paddingLeft: "12px" }}>
                 <h2 className={s.head} style={{ width: "220px", marginBottom: "0px", alignSelf: "center" }}>执行用户(可选，默认为root): </h2>
                 <EditText editable={projectStore.isAdmin} content={localStore.execUser} onChange={async (value) => {
