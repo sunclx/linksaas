@@ -408,22 +408,22 @@ const CreateScript = () => {
             message.error("脚本标题不能为空");
             return;
         }
-        if (localStore.scriptContent.trim() == ""){
+        if (localStore.scriptContent.trim() == "") {
             message.error("脚本内容不能为空");
             return;
         }
         for (const envDef of localStore.envDefList) {
-            if (envDef.value.env_name.startsWith("ARG_") == false){
+            if (envDef.value.env_name.startsWith("ARG_") == false) {
                 message.error("环境参数名必须以ARG_开始");
                 return;
             }
-            if(envDef.value.default_value.trim() == "") {
+            if (envDef.value.default_value.trim() == "") {
                 message.error("环境参数缺少默认值");
                 return;
             }
         }
         for (const argDef of localStore.argDefList) {
-            if(argDef.value.default_value.trim() == ""){
+            if (argDef.value.default_value.trim() == "") {
                 message.error("命令行参数缺少默认值");
                 return;
             }
@@ -438,15 +438,15 @@ const CreateScript = () => {
         }
         if (localStore.readAllowAll == false) {
             for (const p of localStore.readPermPathList) {
-                if(p.value.startsWith("/") == false){
+                if (p.value.startsWith("/") == false) {
                     message.error(`文件/目录读权限中${p.value}不是绝对路径`);
                     return;
                 }
             }
         }
-        if (localStore.writeAllowAll == false){
+        if (localStore.writeAllowAll == false) {
             for (const p of localStore.writePermPathList) {
-                if(p.value.startsWith("/") == false){
+                if (p.value.startsWith("/") == false) {
                     message.error(`文件/目录写权限中${p.value}不是绝对路径`);
                     return;
                 }
@@ -530,7 +530,9 @@ const CreateScript = () => {
                         localStore.setTitle(e.target.value.trim());
                     }}
                 />
-                <Card bordered={false}>
+                <Card title={
+                    <span>基于<a href="https://deno.land/" target="_blank" rel="noreferrer">deno</a>的脚本,支持javascript和typescript。</span>
+                } bordered={false}>
                     <CodeEditor
                         language="typescript"
                         minHeight={200}

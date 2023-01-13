@@ -52,7 +52,7 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
     const createRobot = async () => {
         const formValue = form.getFieldsValue() as FormValue;
         if (formValue.name == undefined || formValue.name.length == 0) {
-            message.error("请输入机器人名称");
+            message.error("请输入服务器代理名称");
             return;
         }
         if (formValue.metricUserId == undefined) {
@@ -68,14 +68,14 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
             access_user_id_list: formValue.metricUserId,
         }));
         if (res) {
-            message.info("创建机器人成功");
+            message.info("创建服务器代理成功");
             props.onOk();
         }
     }
 
     return (
         <Modal
-            title="添加机器人"
+            title="添加服务器代理"
             open={true}
             mask={false}
             onCancel={e => {
@@ -93,7 +93,7 @@ const AddRobotModal: React.FC<AddRobotModalProps> = (props) => {
                 labelCol={{ span: 4 }}
                 wrapperCol={{ span: 18 }}
             >
-                <Form.Item label="机器人名称" name="name" rules={[{ min: 2, type: "string", whitespace: false, required: true }]}>
+                <Form.Item label="服务器代理名称" name="name" rules={[{ min: 2, type: "string", whitespace: false, required: true }]}>
                     <Input />
                 </Form.Item>
                 <Form.Item label="监控权限">

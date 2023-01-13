@@ -42,7 +42,11 @@ const ScriptContentPanel: React.FC<ScriptContentPanelProps> = (props) => {
         setInEdit(false);
     };
     return (
-        <Card bordered={false}
+        <Card
+            title={
+                <span>基于<a href="https://deno.land/" target="_blank" rel="noreferrer">deno</a>的脚本,支持javascript和typescript。</span>
+            }
+            bordered={false}
             extra={
                 <Space>
                     {state.useHistoryScript == false && projectStore.isAdmin && (
@@ -85,7 +89,7 @@ const ScriptContentPanel: React.FC<ScriptContentPanelProps> = (props) => {
                         </>
                     )}
                 </Space>}>
-            <div style={{ height: "calc(100vh - 290px)",overflowY: "scroll" }}>
+            <div style={{ height: "calc(100vh - 290px)", overflowY: "scroll" }}>
                 <CodeEditor
                     value={content}
                     language="typescript"

@@ -147,17 +147,18 @@ const RobotList = () => {
             }
         },
         {
-            title: "机器人版本",
+            title: "服务器代理版本",
             dataIndex: "robot_version",
             width: 80,
         },
         {
-            title: "机器人能力",
+            title: "服务器代理能力",
             width: 100,
             render: (_, record: RobotInfo) => (<div>
                 <div>监控：有</div>
                 <div>执行earthly：{record.robot_cap.earthly ? "有" : "无"}</div>
                 <div>上传artifact：{record.robot_cap.artifact ? "有" : "无"}</div>
+                <div>运行deno脚本：{record.robot_cap.deno_script ? "有" : "无"}</div>
             </div>)
         },
         {
@@ -240,7 +241,7 @@ const RobotList = () => {
         <div className={s.robot_wrap}>
             <div style={{ marginRight: '20px' }}>
                 <div className={s.title}>
-                    <h2>机器人列表</h2>
+                    <h2>服务器代理列表</h2>
                     <Button
                         type="primary"
                         onClick={e => {
@@ -251,7 +252,7 @@ const RobotList = () => {
                         disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
                     >
                         <img src={addIcon} alt="" />
-                        创建机器人
+                        创建服务器代理
                     </Button>
                 </div>
                 <Table
@@ -281,7 +282,7 @@ const RobotList = () => {
             }} />}
         {removeRobotInfo != null && (
             <Modal
-                title={`删除机器人${removeRobotInfo.basic_info.name}`}
+                title={`删除服务器代理${removeRobotInfo.basic_info.name}`}
                 open={true}
                 onCancel={e => {
                     e.stopPropagation();
@@ -294,7 +295,7 @@ const RobotList = () => {
                     removeRobot();
                 }}
             >
-                是否删除机器人{removeRobotInfo.basic_info.name}?
+                是否删除服务器代理{removeRobotInfo.basic_info.name}?
             </Modal>)}
     </CardWrap>)
 };

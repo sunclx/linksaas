@@ -9,12 +9,15 @@ import type { Permission, EnvPermission, SysPermission, NetPermission, ReadPermi
 import { runInAction } from "mobx";
 import { uniqId } from "@/utils/utils";
 import { PlusOutlined } from "@ant-design/icons";
-import { update_env_perm, update_sys_perm, update_net_perm, update_read_perm, update_write_perm, update_run_perm } from "@/api/robot_script";
+import { update_env_perm, update_sys_perm, update_net_perm, update_read_perm, update_write_perm, update_run_perm, update_exec_user } from "@/api/robot_script";
 import { request } from "@/utils/request";
+import { EditText } from "@/components/EditCell/EditText";
 
 
 interface PermDefPanelProps {
+    execUser: string;
     permission: Permission;
+    onUpdateExecUser: (execUser: string) => void;
     onUpdateEnvPerm: (perm: EnvPermission) => void;
     onUpdateSysPerm: (perm: SysPermission) => void;
     onUpdateNetPerm: (perm: NetPermission) => void;
@@ -40,6 +43,12 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
     const state = location.state as LinkScriptSuiteSate;
 
     const localStore = useLocalObservable(() => ({
+        execUser: props.execUser,
+        setExecUser(value: string) {
+            runInAction(() => {
+                this.execUser = value;
+            });
+        },
         //环境变量访问权限
         envAllowAll: props.permission.env_perm.allow_all,
         setEnvAllowAll(value: boolean) {
@@ -438,6 +447,25 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
 
     return (
         <div style={{ height: "calc(100vh - 240px)", overflowY: "scroll" }}>
+            <div style={{ display: "flex", paddingLeft: "12px" }}>
+                <h2 className={s.head} style={{ width: "220px", marginBottom: "0px", alignSelf: "center" }}>执行用户(可选，默认为root): </h2>
+                <EditText editable={projectStore.isAdmin} content={localStore.execUser} onChange={async (value) => {
+                    try {
+                        await request(update_exec_user({
+                            session_id: userStore.sessionId,
+                            project_id: projectStore.curProjectId,
+                            script_suite_id: state.scriptSuiteId,
+                            exec_user: value,
+                        }));
+                        localStore.setExecUser(value);
+                        props.onUpdateExecUser(value);
+                        return true;
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    return false;
+                }} showEditIcon={true} />
+            </div>
             <Card title={<h2 className={s.head}>访问系统变量权限</h2>} bordered={false} extra={
                 <Checkbox checked={localStore.envAllowAll}
                     disabled={!projectStore.isAdmin}

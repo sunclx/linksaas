@@ -10,7 +10,7 @@ import { useStores } from "@/hooks";
 import s from './ScriptDetail.module.less';
 import { request } from "@/utils/request";
 import type { ScriptSuiteInfo, EnvParamDef, ArgParamDef } from "@/api/robot_script";
-import { get_script_suite, update_script_suite_name } from "@/api/robot_script";
+import { get_script_suite, update_script_suite_name, remove_script_suite } from "@/api/robot_script";
 import { EditText } from "@/components/EditCell/EditText";
 import Button from "@/components/Button";
 import ScriptContentPanel from "./components/ScriptContentPanel";
@@ -45,8 +45,16 @@ const ScriptDetail = () => {
             script_time: state.scriptTime,
         }));
         setScriptSuiteInfo(res.script_suite_info);
-        console.log(res.script_suite_info);
     }
+
+    const removeScript = async () => {
+        await request(remove_script_suite({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            script_suite_id: state.scriptSuiteId,
+        }));
+        linkAuxStore.goToScriptList(history);
+    };
 
     useEffect(() => {
         loadScriptSuite();
@@ -81,7 +89,7 @@ const ScriptDetail = () => {
                 )}
             </div>} >
                 <Space>
-                    <Button disabled={!projectStore.isAdmin} onClick={e => {
+                    <Button onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowExecModal(true);
@@ -100,6 +108,9 @@ const ScriptDetail = () => {
                 </Space>
             </DetailsNav>
             <div className={s.content_wrap}>
+                <div style={{ paddingTop: "5px" }}>
+                    <p><b>使用前提：</b>服务器代理最低版本在0.1.3，并且在机器上安装了<a target="_blank" href="https://deno.land/" rel="noreferrer">deno</a>。</p>
+                </div>
                 <Tabs
                     activeKey={activeKey}
                     type="card"
@@ -141,7 +152,17 @@ const ScriptDetail = () => {
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="运行权限" key="permDef">
                         {activeKey == "permDef" && scriptSuiteInfo != null && (
-                            <PermDefPanel permission={scriptSuiteInfo.permission}
+                            <PermDefPanel
+                                execUser={scriptSuiteInfo.exec_user}
+                                permission={scriptSuiteInfo.permission}
+                                onUpdateExecUser={execUser => {
+                                    if (scriptSuiteInfo != null) {
+                                        setScriptSuiteInfo({
+                                            ...scriptSuiteInfo,
+                                            exec_user: execUser,
+                                        });
+                                    }
+                                }}
                                 onUpdateEnvPerm={perm => {
                                     if (scriptSuiteInfo != null) {
                                         setScriptSuiteInfo({
@@ -255,7 +276,7 @@ const ScriptDetail = () => {
                         onOk={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            //TODO
+                            removeScript();
                         }}>
                         是否删除服务端脚本 {scriptSuiteInfo.script_suite_name} ?
                     </Modal>

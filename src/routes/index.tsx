@@ -163,7 +163,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     },
     {
       path: prefix + '/robot',
-      title: '机器人列表',
+      title: '服务器代理列表',
       component: RobotList,
       exact: true,
     },

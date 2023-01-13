@@ -560,7 +560,7 @@ class LinkAuxStore {
           return;
         }
         if (res.can_access == false) {
-          message.warn('没有权限对应机器人监控');
+          message.warn('没有权限对应服务器代理监控');
           return;
         }
       }
@@ -697,7 +697,7 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, "/bug"), state);
   }
 
-  //跳转到机器人列表
+  //跳转到服务器代理列表
   goToRobotList(history: History) {
     history.push(this.genUrl(history.location.pathname, "/robot"));
   }

@@ -113,7 +113,7 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
                     <Input />
                 </Form.Item>
                 <Form.Item label={<span>
-                    关联机器人&nbsp;
+                    关联服务器代理&nbsp;
                     <Popover content={<div className={s.tips}>
                         你可以去<a onClick={e => {
                             e.stopPropagation();
@@ -121,14 +121,14 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
                             props.onCancel();
                             const pos = location.pathname.lastIndexOf("/")
                             history.push(location.pathname.substring(0, pos) + "/robot")
-                        }}>这里</a>添加机器人
+                        }}>这里</a>添加服务器代理
                     </div>}>
                         <a><QuestionCircleOutlined /></a>
                     </Popover>
                 </span>} name="robotIdList">
                     <Select
                         mode="multiple"
-                        placeholder="关联机器人"
+                        placeholder="关联服务器代理"
                         showSearch={false}
                         allowClear
                     >

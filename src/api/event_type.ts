@@ -3574,7 +3574,7 @@ namespace robot {
     skip_prj_name: boolean,
     inner: CreateEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建机器人 ${inner.robot_name}`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建服务器代理 ${inner.robot_name}`)];
   }
 
   export type UpdateEvent = {
@@ -3588,7 +3588,7 @@ namespace robot {
     skip_prj_name: boolean,
     inner: UpdateEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新机器人 ${inner.old_robot_name}`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新服务器代理 ${inner.old_robot_name}`)];
   }
 
   export type RemoveEvent = {
@@ -3601,7 +3601,7 @@ namespace robot {
     skip_prj_name: boolean,
     inner: RemoveEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除机器人 ${inner.robot_name}`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除服务器代理 ${inner.robot_name}`)];
   }
 
   export type AddAccessUserEvent = {
@@ -3616,7 +3616,7 @@ namespace robot {
     skip_prj_name: boolean,
     inner: AddAccessUserEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在机器人 ${inner.robot_name} 增加用户 ${inner.member_display_name} 访问权限`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在服务器代理 ${inner.robot_name} 增加用户 ${inner.member_display_name} 访问权限`)];
   }
 
   export type RemoveAccessUserEvent = {
@@ -3631,7 +3631,7 @@ namespace robot {
     skip_prj_name: boolean,
     inner: RemoveAccessUserEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在机器人 ${inner.robot_name} 移除用户 ${inner.member_display_name} 访问权限`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在服务器代理 ${inner.robot_name} 移除用户 ${inner.member_display_name} 访问权限`)];
   }
 
   export type RenewTokenEvent = {
@@ -3644,7 +3644,7 @@ namespace robot {
     skip_prj_name: boolean,
     inner: RenewTokenEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新机器人 ${inner.robot_name} 访问令牌`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新服务器代理 ${inner.robot_name} 访问令牌`)];
   }
 
   export class AllRobotEvent {

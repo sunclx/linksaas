@@ -57,6 +57,9 @@ earthly:
   auth_info_path: /etc/linksaas/auth
   env_home: your_home_path
   env_path: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+script:
+  deno_install_dir: your_deno_install_path
+  env_path: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 agent:
   - project: ${props.projectId}
     robot: ${props.robotId}
@@ -71,6 +74,9 @@ systemctl enable linksaas_robot
 systemctl start linksaas_robot`;
 
   const installEarthlyStr = `sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/download/earthly-linux-amd64 -O /usr/local/bin/earthly && chmod +x /usr/local/bin/earthly && /usr/local/bin/earthly bootstrap --with-autocomplete'`;
+
+  const installDenoStr = `curl -fsSL https://deno.land/x/install/install.sh | sh`
+
   return (
     <Modal
       title="接入说明"
@@ -78,8 +84,8 @@ systemctl start linksaas_robot`;
       footer={null}
       mask={false}
       onCancel={() => props.onCancel()}>
-      <ol>
-        <li>1. 安装机器人<Button type="link" onClick={e => {
+      <ol style={{ height: "calc(100vh - 300px)", overflowY: "scroll",paddingRight:"20px" }}>
+        <li>1. 安装服务器代理<Button type="link" onClick={e => {
           e.stopPropagation();
           e.preventDefault();
           writeText(installStr).then(() => {
@@ -133,7 +139,25 @@ systemctl start linksaas_robot`;
             }}
           />
         </li>
-        <li>4.启动机器人<Button type="link" onClick={e => {
+        <li>4.安装<a target="_blank" href="https://deno.land/" rel="noreferrer" >deno</a>(可选,服务端脚本功能)
+          <Button type="link" onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            writeText(installDenoStr).then(() => {
+              message.info("复制成功");
+            })
+          }}>复制命令</Button>
+          <CodeEditor
+            value={installDenoStr}
+            language="bash"
+            disabled
+            style={{
+              fontSize: 14,
+              backgroundColor: '#f5f5f5',
+            }}
+          />
+        </li>
+        <li>5.启动服务器代理<Button type="link" onClick={e => {
           e.stopPropagation();
           e.preventDefault();
           writeText(startStr).then(() => {
