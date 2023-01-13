@@ -38,7 +38,7 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
   };
 
   return (
-    <ActionModal visible={visible} title="创建项目" width={800} onCancel={() => onChange(false)}>
+    <ActionModal open={visible} title="创建项目" width={800} onCancel={() => onChange(false)}>
       <Form form={form} onFinish={submit} labelCol={{ span: 3 }}>
         <Form.Item
           name="project_name"

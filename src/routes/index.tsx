@@ -32,6 +32,8 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
+  SCRIPT_CREATE_SUFFIX,
+  SCRIPT_EXEC_RESULT_SUFFIX,
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
@@ -43,7 +45,8 @@ import IssueCreate from '@/pages/Issue/IssueCreate';
 import RobotList from '@/pages/Robot/RobotList';
 import MetricList from '@/pages/Robot/MetricList';
 import RepoList from '@/pages/Earthly/RepoList';
-import ExecResult from '@/pages/Earthly/ExecResult';
+import EarthlyExecResult from '@/pages/Earthly/ExecResult';
+import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import LocalApi from '@/pages/Project/LocalApi';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
@@ -53,6 +56,9 @@ import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import EntryList from '@/pages/TestCase/EntryList';
 import ResultList from '@/pages/TestCase/ResultList';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
+import ScriptList from '@/pages/Script/ScriptList';
+import CreateScript from '@/pages/Script/CreateScript';
+import ScriptDetail from '@/pages/Script/ScriptDetail';
 
 
 
@@ -157,7 +163,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     },
     {
       path: prefix + '/robot',
-      title: '机器人列表',
+      title: '服务器代理列表',
       component: RobotList,
       exact: true,
     },
@@ -165,6 +171,30 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + ROBOT_METRIC_SUFFIX,
       title: '监控列表',
       component: MetricList,
+      exact: true,
+    },
+    {
+      path: prefix + "/script",
+      title: "服务端脚本",
+      component: ScriptList,
+      exact: true,
+    },
+    {
+      path: prefix + SCRIPT_CREATE_SUFFIX,
+      title: "创建服务端脚本",
+      component: CreateScript,
+      exact: true,
+    },
+    {
+      path: prefix + "/script/detail",
+      title: "服务端脚本详情",
+      component: ScriptDetail,
+      exact: true,
+    },
+    {
+      path: prefix + SCRIPT_EXEC_RESULT_SUFFIX,
+      title: "服务端脚本执行结果",
+      component: ScriptExecResult,
       exact: true,
     },
     {
@@ -182,7 +212,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     {
       path: prefix + REPO_ACTION_EXEC_RESULT_SUFFIX,
       title: '命令执行结果',
-      component: ExecResult,
+      component: EarthlyExecResult,
       exact: true,
     },
     {

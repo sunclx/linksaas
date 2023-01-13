@@ -52,7 +52,7 @@ const SpritDetail = () => {
 
     useEffect(() => {
         loadSpritInfo();
-    }, []);
+    }, [activeKey]);
 
     return (
         <CardWrap>

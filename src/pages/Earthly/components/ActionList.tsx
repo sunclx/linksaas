@@ -182,7 +182,7 @@ const ActionList: React.FC<ActionListProps> = (props) => {
     return (
         <div>
             <div className={s.info}>
-                <div className={s.info_label}>关联机器人列表：</div>
+                <div className={s.info_label}>关联服务器代理列表：</div>
                 <EditRobotList
                     editable={projectStore.isAdmin}
                     robotInfoList={props.robotList}

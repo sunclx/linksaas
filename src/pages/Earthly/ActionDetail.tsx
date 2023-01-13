@@ -113,7 +113,7 @@ const ActionDetail = () => {
                     artifact&nbsp;&nbsp;
                     <Popover content={<div className={s.artifact_tips}>
                         <h3 style={{ fontSize: 16, fontWeight: 600 }}>你可以通过在构建过程中调用curl上传artifact</h3>
-                        <p>机器人的版本需要0.1.2版本以上，Earthfile可参考<a target="_blank" href="https://jihulab.com/linksaas/robot/-/blob/develop/Earthfile" rel="noreferrer">demo</a></p>
+                        <p>服务器代理的版本需要0.1.2版本以上，Earthfile可参考<a target="_blank" href="https://jihulab.com/linksaas/robot/-/blob/develop/Earthfile" rel="noreferrer">demo</a></p>
                         <ul>
                             <li><p>在构建目标中添加&nbsp;&nbsp;<a onClick={e => {
                                 e.stopPropagation();

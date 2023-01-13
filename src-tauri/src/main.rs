@@ -33,6 +33,7 @@ mod restrict_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
 mod robot_metric_api_plugin;
+mod robot_script_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_api_plugin;
@@ -275,6 +276,7 @@ fn main() {
         .plugin(robot_api_plugin::RobotApiPlugin::new())
         .plugin(robot_metric_api_plugin::RobotMetricApiPlugin::new())
         .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
+        .plugin(robot_script_api_plugin::RobotScriptApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(project_test_case_api_plugin::ProjectTestCaseApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())

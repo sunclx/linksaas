@@ -82,7 +82,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               top: '10px',
             }}
           />
-          <span className={styles.chatName}>{msg.msg.sender_type == SENDER_TYPE_ROBOT ? "机器人" : msg.msg.sender_display_name}</span>
+          <span className={styles.chatName}>{msg.msg.sender_type == SENDER_TYPE_ROBOT ? "服务器代理" : msg.msg.sender_display_name}</span>
           <span className={styles.chatTime}>{moment(msg.msg.send_time).format("YYYY-MM-DD HH:mm:ss")}</span>
           {msg.msg.has_update_time && (
             <>
