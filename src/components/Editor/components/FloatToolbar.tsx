@@ -39,6 +39,7 @@ const LinkBtn = () => {
           showTask={true}
           showBug={true}
           showDoc={true}
+          showScript={true}
           showExterne={true}
           onOk={(link) => {
             setShowModal(false);

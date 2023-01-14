@@ -111,14 +111,17 @@ const ActionList: React.FC<ActionListProps> = (props) => {
     const columns: ColumnsType<ActionInfo> = [
         {
             title: "命令名称",
+            width: 80,
             dataIndex: ["basic_info", "action_name"],
         },
         {
             title: "本地路径",
+            width: 100,
             dataIndex: ["basic_info", "local_path"],
         },
         {
             title: "earthly目标",
+            width: 100,
             dataIndex: ["basic_info", "target"],
         },
         {
@@ -142,26 +145,28 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             width: 150,
             render: (_, record: ActionInfo) => (
                 <span>
-                    {record.exec_count}&nbsp;&nbsp;
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
-                    }}>查看</Button>
+                    {record.exec_count}
+                    <Button type="link"
+                        style={{ minWidth: "0px" }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
+                        }}>查看</Button>
                 </span>
             )
         },
         {
             title: "操作",
-            width: 300,
+            width: 200,
             render: (_, record: ActionInfo) => (
                 <div>
-                    <Button type="link" onClick={e => {
+                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setExecActionId(record.action_id);
                     }}>执行</Button>
-                    <Button type="link" onClick={e => {
+                    <Button type="link" style={{ minWidth: "0px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setUpdateActionId(record.action_id);

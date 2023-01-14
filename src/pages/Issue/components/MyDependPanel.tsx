@@ -162,6 +162,7 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                     showDoc={false}
                     showTask={true}
                     showBug={true}
+                    showScript={false}
                     showExterne={false}
                     onOk={(link: LinkInfo) => {
                         let dependIssueId = "";
