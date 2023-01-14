@@ -246,6 +246,7 @@ const ProjectRecord: React.FC = () => {
                     skipProjectName={true}
                     skipLink={false}
                     showMoreLink={false}
+                    showSource={true}
                   >
                     <img
                       className={style.icon}
