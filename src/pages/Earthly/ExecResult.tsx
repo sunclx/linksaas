@@ -16,6 +16,7 @@ import type * as NoticeType from '@/api/notice_type';
 import DynamicTerm from "./components/DynamicTerm";
 import s from './ExecResult.module.less';
 import StaticTerm from "./components/StaticTerm";
+import moment from 'moment';
 
 
 const ExecResult = () => {
@@ -89,7 +90,7 @@ const ExecResult = () => {
         loadExecInfo();
         loadActionInfo();
         loadRepoInfo();
-    }, [state]);
+    }, [state.execId]);
 
     useEffect(() => {
         const unlisten = listen<NoticeType.AllNotice>(`exec_state_${state.execId}`, () => {
@@ -103,32 +104,46 @@ const ExecResult = () => {
     return (
         <CardWrap>
             <DetailsNav title={`命令${actionInfo?.basic_info.action_name ?? ""}执行结果`} />
-            <h2 className={s.sub_title}>基本信息</h2>
-            <div className={s.info_wrap}>
-                <div className={s.info}>
-                    <div className={s.label}>执行状态:</div>
-                    <div>
-                        {execInfo?.exec_state == EXEC_STATE_INIT && <span>准备执行</span>}
-                        {execInfo?.exec_state == EXEC_STATE_RUN && <span>执行中</span>}
-                        {execInfo?.exec_state == EXEC_STATE_SUCCESS && <span style={{ color: "green" }}>执行成功</span>}
-                        {execInfo?.exec_state == EXEC_STATE_FAIL && <span style={{ color: "red" }}>执行失败</span>}
+            <div className={s.result_wrap}>
+                <h2 className={s.sub_title}>基本信息</h2>
+                <div className={s.info_wrap}>
+                    <div className={s.info}>
+                        <div className={s.label}>执行状态:</div>
+                        <div>
+                            {execInfo?.exec_state == EXEC_STATE_INIT && <span>准备执行</span>}
+                            {execInfo?.exec_state == EXEC_STATE_RUN && <span>执行中</span>}
+                            {execInfo?.exec_state == EXEC_STATE_SUCCESS && <span style={{ color: "green" }}>执行成功</span>}
+                            {execInfo?.exec_state == EXEC_STATE_FAIL && <span style={{ color: "red" }}>执行失败</span>}
+                        </div>
+                    </div>
+                    <div className={s.info}>
+                        <div className={s.label}>仓库地址:</div>
+                        <div>{repoInfo?.basic_info.repo_url ?? ""}</div>
+                    </div>
+                    <div className={s.info}>
+                        <div className={s.label}>执行分支/标签:</div>
+                        <div>{execInfo?.branch ?? ""}</div>
+                    </div>
+                    <div className={s.info}>
+                        <div className={s.label}>其他参数:</div>
+                        <div>{execInfo != null && getParamStr()}</div>
+                    </div>
+                    <div className={s.info}>
+                        <div className={s.label}>执行人:</div>
+                        <div>
+                            {execInfo?.exec_display_name ?? ""}
+                            &nbsp;&nbsp;
+                            {execInfo != null && (
+                                <span>{moment(execInfo.exec_time).format("YYYY-MM-DD HH:mm:ss")}</span>
+                            )}
+                        </div>
                     </div>
                 </div>
-                <div className={s.info}>
-                    <div className={s.label}>仓库地址:</div>
-                    <div>{repoInfo?.basic_info.repo_url ?? ""}</div>
-                </div>
-                <div className={s.info}>
-                    <div className={s.label}>执行分支/标签:</div>
-                    <div>{execInfo?.branch ?? ""}</div>
-                </div>
-                <div className={s.info}>
-                    <div className={s.label}>其他参数:</div>
-                    <div>{execInfo != null && getParamStr()}</div>
+                <div className={s.term_wrap}>
+                    {execInfo?.exec_state == EXEC_STATE_RUN && <DynamicTerm repoId={state.repoId} actionId={state.actionId} execId={state.execId} />}
+                    {(execInfo?.exec_state == EXEC_STATE_SUCCESS || execInfo?.exec_state == EXEC_STATE_FAIL) && <StaticTerm repoId={state.repoId} actionId={state.actionId} execId={state.execId} />}
                 </div>
             </div>
-            {execInfo?.exec_state == EXEC_STATE_RUN && <DynamicTerm repoId={state.repoId} actionId={state.actionId} execId={state.execId}/>}
-            {(execInfo?.exec_state == EXEC_STATE_SUCCESS || execInfo?.exec_state == EXEC_STATE_FAIL) && <StaticTerm repoId={state.repoId} actionId={state.actionId} execId={state.execId}/>}
         </CardWrap>
     );
 };

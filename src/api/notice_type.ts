@@ -305,6 +305,22 @@ export namespace earthly {
   };
 }
 
+export namespace script {
+  export type ExecDataNotice = {
+    exec_id: string;
+    data_index: number;
+    data: number[];
+  };
+  export type ExecStateNotice = {
+    exec_id: string;
+    exec_state: number;
+  };
+  export type AllNotice = {
+    ExecDataNotice?: ExecDataNotice;
+    ExecStateNotice?: ExecStateNotice;
+  };
+}
+
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   ProjectDocNotice?: project_doc.AllNotice;
@@ -312,5 +328,6 @@ export type AllNotice = {
   AppraiseNotice?: appraise.AllNotice;
   RobotNotice?: robot.AllNotice;
   EarthlyNotice?: earthly.AllNotice;
+  ScriptNotice?: script.AllNotice;
   ClientNotice?: client.AllNotice;
 };

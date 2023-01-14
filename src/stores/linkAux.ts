@@ -16,6 +16,8 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   ROBOT_METRIC_SUFFIX,
+  SCRIPT_CREATE_SUFFIX,
+  SCRIPT_EXEC_RESULT_SUFFIX,
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
@@ -42,6 +44,8 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_EARTHLY_EXEC,
   LINK_TARGET_BOOK_MARK,
   LINK_TARGET_TEST_CASE_ENTRY,
+  LINK_TARGET_SCRIPT_SUITE,
+  LINK_TARGET_SCRIPT_EXEC,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -251,6 +255,40 @@ export class LinkEarthlyExecInfo {
   execId: string;
 }
 
+export class LinkScriptSuiteInfo {
+  constructor(content: string, projectId: string, scriptSuiteId: string, useHistoryScript: boolean, scriptTime: number, tab: string | undefined = undefined) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.scriptSuiteId = scriptSuiteId;
+    this.useHistoryScript = useHistoryScript;
+    this.scriptTime = scriptTime;
+    this.tab = tab;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  scriptSuiteId: string;
+  useHistoryScript: boolean;
+  scriptTime: number;
+  tab?: string;
+}
+
+export class LinkScriptExecInfo {
+  constructor(content: string, projectId: string, scriptSuiteId: string, execId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.scriptSuiteId = scriptSuiteId;
+    this.execId = execId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  scriptSuiteId: string;
+  execId: string;
+}
+
 export class LinkBookMarkInfo {
   constructor(content: string, projectId: string, bookId: string, markId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK;
@@ -358,6 +396,18 @@ export type LinkSpritState = {
 
 export type LinkTestCaseEntryState = {
   entryId: string;
+}
+
+export type LinkScriptSuiteSate = {
+  scriptSuiteId: string;
+  useHistoryScript: boolean;
+  scriptTime: number;
+  tab?: string;
+}
+
+export type LinkScriptExecState = {
+  scriptSuiteId: string;
+  execId: string;
 }
 
 class LinkAuxStore {
@@ -510,7 +560,7 @@ class LinkAuxStore {
           return;
         }
         if (res.can_access == false) {
-          message.warn('没有权限对应机器人监控');
+          message.warn('没有权限对应服务器代理监控');
           return;
         }
       }
@@ -566,7 +616,29 @@ class LinkAuxStore {
       const state: LinkTestCaseEntryState = {
         entryId: entryLink.entryId,
       };
-      history.push(this.genUrl(pathname, "/testcase"), state)
+      history.push(this.genUrl(pathname, "/testcase"), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
+      const scriptSuiteLink = link as LinkScriptSuiteInfo;
+      if (this.rootStore.projectStore.curProjectId != scriptSuiteLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(scriptSuiteLink.projectId);
+      }
+      const state: LinkScriptSuiteSate = {
+        scriptSuiteId: scriptSuiteLink.scriptSuiteId,
+        useHistoryScript: scriptSuiteLink.useHistoryScript,
+        scriptTime: scriptSuiteLink.scriptTime,
+        tab: scriptSuiteLink.tab,
+      };
+      history.push(this.genUrl(pathname, "/script/detail"), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC) {
+      const scriptExecLink = link as LinkScriptExecInfo;
+      if (this.rootStore.projectStore.curProjectId != scriptExecLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(scriptExecLink.projectId);
+      }
+      const state: LinkScriptExecState = {
+        scriptSuiteId: scriptExecLink.scriptSuiteId,
+        execId: scriptExecLink.execId,
+      };
+      history.push(this.genUrl(pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -625,7 +697,7 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, "/bug"), state);
   }
 
-  //跳转到机器人列表
+  //跳转到服务器代理列表
   goToRobotList(history: History) {
     history.push(this.genUrl(history.location.pathname, "/robot"));
   }
@@ -694,6 +766,16 @@ class LinkAuxStore {
   goToLocalApi(history: History) {
     history.push(this.genUrl(history.location.pathname, "/localapi"));
 
+  }
+
+  //跳转到创建服务端脚本页面
+  goToCreateScript(history: History) {
+    history.push(this.genUrl(history.location.pathname, SCRIPT_CREATE_SUFFIX));
+  }
+
+  //跳转到服务端脚本列表页面
+  goToScriptList(history: History) {
+    history.push(this.genUrl(history.location.pathname, "/script"));
   }
 
   private genUrl(pathname: string, suffix: string): string {

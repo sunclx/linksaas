@@ -86,7 +86,7 @@ const RepoList = () => {
                     </Button>
                 </div>
                 <div>
-                    <p><b>使用前提：</b>机器人最低版本在0.1.1，并且在机器上安装了<a target="_blank" href="https://earthly.dev/" rel="noreferrer">earthly</a>。</p>
+                    <p><b>使用前提：</b>服务器代理最低版本在0.1.1，并且在机器上安装了<a target="_blank" href="https://earthly.dev/" rel="noreferrer">earthly</a>。</p>
                 </div>
                 <div className={s.list}>
                     <div className={s.list_cont}>
@@ -112,7 +112,7 @@ const RepoList = () => {
                                     )}
                                     <div className={s.list_info}>
                                         <div className={s.list_info_item}>
-                                            关联机器人数量：{repo.robot_list.length}
+                                            关联服务器代理数量：{repo.robot_list.length}
                                         </div>
                                         <div className={s.list_info_item}>
                                             命令数量：{repo.action_count}

@@ -7,6 +7,7 @@ export type BasicRobotInfo = {
 export type RobotCap = {
     earthly: boolean;
     artifact: boolean;
+    deno_script: boolean;
 };
 
 export type RobotInfo = {
