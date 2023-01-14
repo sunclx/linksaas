@@ -3,7 +3,7 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRobotEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -27,6 +27,7 @@ interface FormValue {
     robotEvCfg: string[] | undefined;
     spritEvCfg: string[] | undefined;
     testCaseEvCfg: string[] | undefined;
+    scriptEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -49,6 +50,10 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const earthlyEvCfgValues = genEarthlyEvCfgValues(props.subscribe.event_cfg.earthly_ev_cfg);
     const [earthlyEvCfgCheckAll, setEarthlyEvCfgCheckAll] = useState(earthlyEvCfgValues.length == earthlyEvOptionList.length);
     const [earthlyEvCfgIndeterminate, setEarthlyEvCfgIndeterminate] = useState(earthlyEvCfgValues.length > 0 && earthlyEvCfgValues.length < earthlyEvOptionList.length);
+
+    const scriptEvCfgValues = genScriptEvCfgValues(props.subscribe.event_cfg.script_ev_cfg);
+    const [scriptEvCfgCheckAll, setScriptEvCfgCheckAll] = useState(scriptEvCfgValues.length == scriptEvOptionList.length);
+    const [scriptEvCfgIndeterminate, setScriptEvCfgIndeterminate] = useState(scriptEvCfgValues.length > 0 && scriptEvCfgValues.length < scriptEvOptionList.length);
 
     const extEvCfgValues = genExtEvCfgValues(props.subscribe.event_cfg.ext_ev_cfg);
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(extEvCfgValues.length == extEvOptionList.length);
@@ -100,6 +105,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 robot_ev_cfg: calcRobotEvCfg(formValue.robotEvCfg),
                 sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 test_case_ev_cfg: calcTestCaseEvCfg(formValue.testCaseEvCfg),
+                script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
             },
         }));
         props.onOk();
@@ -121,6 +127,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "bookShelfEvCfg": bookShelfEvCfgValues,
                     "docEvCfg": docEvCfgValues,
                     "earthlyEvCfg": earthlyEvCfgValues,
+                    "scriptEvCfg": scriptEvCfgValues,
                     "extEvCfg": extEvCfgValues,
                     "giteeEvCfg": giteeEvCfgValues,
                     "gitlabEvCfg": gitlabEvCfgValues,
@@ -229,6 +236,31 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setEarthlyEvCfgCheckAll(false);
                                 setEarthlyEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={scriptEvCfgIndeterminate} checked={scriptEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setScriptEvCfgIndeterminate(false);
+                        if (scriptEvCfgCheckAll) {
+                            setScriptEvCfgCheckAll(false);
+                            form.setFieldValue("scriptEvCfg", []);
+                        } else {
+                            setScriptEvCfgCheckAll(true);
+                            form.setFieldValue("scriptEvCfg", scriptEvOptionList.map(item => item.value));
+                        }
+                    }}>服务端脚本事件</Checkbox>} name="scriptEvCfg">
+                        <Checkbox.Group options={scriptEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setScriptEvCfgCheckAll(false);
+                                setScriptEvCfgIndeterminate(false);
+                            } else if (values.length == scriptEvOptionList.length) {
+                                setScriptEvCfgCheckAll(true);
+                                setScriptEvCfgIndeterminate(false);
+                            } else {
+                                setScriptEvCfgCheckAll(false);
+                                setScriptEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

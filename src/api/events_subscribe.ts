@@ -66,6 +66,7 @@ export type EarthlyEvCfg = {
     create_action: boolean;
     update_action: boolean;
     remove_action: boolean;
+    exec: boolean;
 };
 
 export type ExtEvCfg = {
@@ -153,6 +154,24 @@ export type TestCaseEvCfg = {
     update_content: boolean;
 }
 
+export type ScriptEvCfg = {
+    create_script_suite: boolean;
+    remove_script_suite: boolean;
+    update_script_suite_name: boolean;
+    update_env_perm: boolean;
+    update_sys_perm: boolean;
+    update_net_perm: boolean;
+    update_read_perm: boolean;
+    update_write_perm: boolean;
+    update_run_perm: boolean;
+    update_script: boolean;
+    update_exec_user: boolean;
+    update_env_param_def: boolean;
+    update_arg_param_def: boolean;
+    recover_script: boolean;
+    exec: boolean;
+};
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     book_shelf_ev_cfg: BookShelfEvCfg;
@@ -165,6 +184,7 @@ export type EventCfg = {
     robot_ev_cfg: RobotEvCfg;
     sprit_ev_cfg: SpritEvCfg;
     test_case_ev_cfg: TestCaseEvCfg;
+    script_ev_cfg: ScriptEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -233,6 +253,29 @@ export type RemoveResponse = {
     code: number;
     err_msg: string;
 };
+
+export function adjust_event_cfg(cfg: EventCfg): EventCfg {
+    if (cfg.script_ev_cfg == undefined) {
+        cfg.script_ev_cfg = {
+            create_script_suite: false,
+            remove_script_suite: false,
+            update_script_suite_name: false,
+            update_env_perm: false,
+            update_sys_perm: false,
+            update_net_perm: false,
+            update_read_perm: false,
+            update_write_perm: false,
+            update_run_perm: false,
+            update_script: false,
+            update_exec_user: false,
+            update_env_param_def: false,
+            update_arg_param_def: false,
+            recover_script: false,
+            exec: false,
+        };
+    }
+    return cfg;
+}
 
 //增加订阅
 export async function create(request: CreateRequest): Promise<CreateResponse> {
