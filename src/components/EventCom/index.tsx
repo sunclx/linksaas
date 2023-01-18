@@ -1,29 +1,31 @@
 import type { PluginEvent } from '@/api/events';
 import * as API from '@/api/event_type';
 import { useStores } from '@/hooks';
-// import { runInAction } from 'mobx';
-import type { FC } from 'react';
+import { useState } from 'react';
 import React from 'react';
-import { Image } from 'antd';
+import { Image, Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
 import type { LinkInfo, LinkImageInfo, LinkExterneInfo } from '@/stores/linkAux';
 import { LINK_TARGET_TYPE, LinkEventlInfo } from '@/stores/linkAux';
+import CodeEditor from '@uiw/react-textarea-code-editor';
 
 type EventComProps = {
   item: PluginEvent;
   skipProjectName: boolean;
   skipLink: boolean;
   showMoreLink: boolean;
+  showSource?: boolean;
   className?: string;
   children?: React.ReactNode;
   onLinkClick?: () => void;
 };
 
-const EventCom: FC<EventComProps> = ({
+const EventCom: React.FC<EventComProps> = ({
   item,
   skipProjectName,
   skipLink,
   showMoreLink,
+  showSource,
   className,
   children,
   onLinkClick,
@@ -32,6 +34,8 @@ const EventCom: FC<EventComProps> = ({
   const appStore = useStores('appStore');
   const linkAuxStore = useStores('linkAuxStore');
   const history = useHistory();
+
+  const [showSourceModal, setShowSourceModal] = useState(false);
 
   const getTypeLink = (v: LinkInfo, index: number) => {
     if (skipLink) {
@@ -106,6 +110,35 @@ const EventCom: FC<EventComProps> = ({
         >
           查看更多
         </a>
+      )}
+      {showSource == true && (
+        <a onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowSourceModal(true);
+        }}>查看源信息</a>
+      )}
+      {showSourceModal == true && (
+        <Modal title="事件源信息"
+          open
+          footer={null}
+          onCancel={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            setShowSourceModal(false);
+          }}>
+          <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "scroll", paddingRight: "10px" }}>
+            <CodeEditor
+              value={JSON.stringify(item, null, 2)}
+              language="json"
+              disabled
+              style={{
+                fontSize: 14,
+                backgroundColor: '#f5f5f5',
+              }}
+            />
+          </div>
+        </Modal>
       )}
     </div>
   );

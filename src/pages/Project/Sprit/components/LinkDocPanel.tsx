@@ -92,7 +92,13 @@ const LinkDocPanel = () => {
                     pagination={false} />
             </Card>
             {showAddModal == true && (
-                <LinkSelect title="关联文档" showChannel={false} showDoc={true} showTask={false} showBug={false} showExterne={false}
+                <LinkSelect title="关联文档"
+                    showChannel={false}
+                    showDoc={true}
+                    showTask={false}
+                    showBug={false}
+                    showScript={false}
+                    showExterne={false}
                     onCancel={() => setShowAddModal(false)}
                     onOk={link => linkDoc(link)} />
             )}

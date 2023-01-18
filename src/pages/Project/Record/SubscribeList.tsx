@@ -6,14 +6,13 @@ import Button from "@/components/Button";
 import CreateSubscribeModal from "./components/CreateSubscribeModal";
 import { useStores } from "@/hooks";
 import type { SubscribeInfo } from '@/api/events_subscribe';
-import { list as list_subscribe } from '@/api/events_subscribe';
+import { list as list_subscribe, adjust_event_cfg } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
 import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Checkbox, Form } from "antd";
-import { bookShelfEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRobotEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./components/constants";
+import { bookShelfEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
-
 
 const SubscribeList = () => {
     const userStore = useStores("userStore");
@@ -29,7 +28,12 @@ const SubscribeList = () => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
         }));
-        setSubscribeList(res.info_list);
+        setSubscribeList(res.info_list.map(item => {
+            return {
+                ...item,
+                event_cfg: adjust_event_cfg(item.event_cfg)
+            };
+        }));
     };
 
     useEffect(() => {
@@ -52,7 +56,7 @@ const SubscribeList = () => {
                         <div className={s.list_item} key={item.subscribe_id}>
                             <div className={s.list_hd}>
                                 <div className={s.list_title}>{item.chat_bot_name}</div>
-                                <Button type="link" disabled={projectStore.isAdmin == false} onClick={e=>{
+                                <Button type="link" disabled={projectStore.isAdmin == false} onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
                                     setUpdateSubscribe(item);
@@ -97,6 +101,9 @@ const SubscribeList = () => {
                                     <Form.Item label="自动化事件">
                                         <Checkbox.Group options={earthlyEvOptionList} defaultValue={genEarthlyEvCfgValues(item.event_cfg.earthly_ev_cfg)} disabled={true} />
                                     </Form.Item>
+                                    <Form.Item label="服务端脚本事件">
+                                        <Checkbox.Group options={scriptEvOptionList} defaultValue={genScriptEvCfgValues(item.event_cfg.script_ev_cfg)} disabled={true} />
+                                    </Form.Item>
                                     <Form.Item label="第三方接入事件">
                                         <Checkbox.Group options={extEvOptionList} defaultValue={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />
                                     </Form.Item>
@@ -128,10 +135,10 @@ const SubscribeList = () => {
                 loadSubscribe();
                 setShowAddModal(false);
             }} />}
-            {updateSubscribe != null && <UpdateSubscribeModal subscribe={updateSubscribe} onCancel={()=>setUpdateSubscribe(null)} onOk={()=>{
+            {updateSubscribe != null && <UpdateSubscribeModal subscribe={updateSubscribe} onCancel={() => setUpdateSubscribe(null)} onOk={() => {
                 loadSubscribe();
                 setUpdateSubscribe(null);
-            }}/>}
+            }} />}
         </CardWrap>
     );
 }

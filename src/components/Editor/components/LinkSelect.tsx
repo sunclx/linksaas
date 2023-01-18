@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Card, ModalProps, Select } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
-import type { LinkInfo } from '@/stores/linkAux';
+import { LinkInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import {
@@ -22,6 +22,8 @@ import s from './LinkSelect.module.less';
 import classNames from 'classnames';
 import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
+import type { ScriptSuiteKey } from '@/api/robot_script';
+import { list_script_suite_key } from '@/api/robot_script';
 
 const PAGE_SIZE = 10;
 
@@ -48,6 +50,7 @@ export interface LinkSelectProps {
   showDoc: boolean;
   showTask: boolean;
   showBug: boolean;
+  showScript: boolean;
   showExterne: boolean;
   onOk: (link: LinkInfo) => void;
   onCancel: () => void;
@@ -69,13 +72,15 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     defaultTab = 'task';
   } else if (props.showBug) {
     defaultTab = 'bug';
+  } else if (props.showScript) {
+    defaultTab = "script";
   } else if (props.showExterne) {
     defaultTab = 'externe';
   }
-  const [taskPage] = useState(0);
-  const [bugPage] = useState(0);
+
   const [taskList, setTaskList] = useState([] as IssueInfo[]);
   const [bugList, setBugList] = useState([] as IssueInfo[]);
+  const [scriptList, setscriptList] = useState([] as ScriptSuiteKey[]);
   const [docSpaceList, setDocSpaceList] = useState([ALL_DOC_SPACE] as DocSpace[]);
   const [curDocSpaceId, setCurDocSpaceId] = useState("");
   const [docList, setDocList] = useState([] as DocKey[]);
@@ -107,6 +112,12 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     tabList.push({
       label: '缺陷',
       value: 'bug',
+    });
+  }
+  if (props.showScript) {
+    tabList.push({
+      label: '服务端脚本',
+      value: 'script',
     });
   }
   if (props.showExterne) {
@@ -193,7 +204,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskPage, bugPage, tab, keyword, curPage]);
+  }, [tab, keyword, curPage]);
 
   useEffect(() => {
     if (tab != "doc") {
@@ -218,6 +229,20 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     });
   }, [tab, curPage, curDocSpaceId])
 
+  useEffect(() => {
+    if (tab != "script") {
+      return;
+    }
+    request(list_script_suite_key({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      offset: curPage * PAGE_SIZE,
+      limit: PAGE_SIZE,
+    })).then((res) => {
+      setscriptList(res.script_suite_key_list);
+      setTotalCount(res.total_count);
+    });
+  }, [tab, curPage])
 
   const renderItemContent = () => {
     if (props.showChannel && tab === 'channel') {
@@ -280,7 +305,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       return (
         <div className={s.con_item_wrap}>
           <Input
-            style={{ background: '#FAFAFA',padding:"10px 10px" }}
+            style={{ background: '#FAFAFA', padding: "10px 10px" }}
             prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
             addonBefore="过滤任务标题:"
             placeholder="输入关键词"
@@ -317,7 +342,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       return (
         <div className={s.con_item_wrap}>
           <Input
-            style={{ background: '#FAFAFA',padding:"10px 10px" }}
+            style={{ background: '#FAFAFA', padding: "10px 10px" }}
             prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
             addonBefore="过滤缺陷标题:"
             placeholder="输入关键词"
@@ -339,6 +364,32 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             >
               <div>
                 {item.issue_index}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {item.basic_info.title}
+              </div>
+            </div>
+          ))}
+          <Pagination
+            total={totalCount}
+            pageSize={PAGE_SIZE}
+            current={curPage + 1}
+            onChange={(page: number) => setCurPage(page - 1)}
+          />
+        </div>
+      );
+    } else if (props.showScript && tab === "script") {
+      return (
+        <div className={s.con_item_wrap}>
+          {scriptList.map(item => (
+            <div
+              className={s.con_item}
+              key={item.script_suite_id}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onOk(new LinkScriptSuiteInfo(item.script_suite_name, projectStore.curProjectId, item.script_suite_id, false, 0));
+              }}
+            >
+              <div>
+                {item.script_suite_name}
               </div>
             </div>
           ))}
@@ -379,7 +430,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   return (
     <Modal
       {...modalProps}
-      visible={true}
+      open={true}
       title={null}
       onCancel={() => {
         props.onCancel();
@@ -400,7 +451,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
                 key={item.value}
                 onClick={() => {
                   setTab(item.value);
-                  if (item.value === 'task' || item.value === 'bug') {
+                  if (item.value === 'task' || item.value === 'bug' || item.value === "script") {
                     setTotalCount(0);
                     setCurPage(0);
                   }

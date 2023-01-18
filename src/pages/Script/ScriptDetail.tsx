@@ -19,6 +19,7 @@ import PermDefPanel from "./components/PermDefPanel";
 import ExecListPanel from "./components/ExecListPanel";
 import { MoreOutlined } from "@ant-design/icons";
 import ExecModal from "./components/ExecModal";
+import EventModal from "./components/EventModal";
 
 
 const ScriptDetail = () => {
@@ -35,6 +36,8 @@ const ScriptDetail = () => {
     const [scriptSuiteInfo, setScriptSuiteInfo] = useState<ScriptSuiteInfo | null>(null);
     const [showExecModal, setShowExecModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showEventModal, setShowEventModal] = useState(false);
+
 
     const loadScriptSuite = async () => {
         const res = await request(get_script_suite({
@@ -96,11 +99,20 @@ const ScriptDetail = () => {
                     }}>执行脚本</Button>
                     <Popover content={
                         <div className={s.more}>
-                            <Button type="link" danger disabled={!projectStore.isAdmin} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setShowRemoveModal(true);
-                            }}>删除脚本</Button>
+                            <div>
+                                <Button type="link" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowEventModal(true);
+                                }}>查看事件</Button>
+                            </div>
+                            <div>
+                                <Button type="link" danger disabled={!projectStore.isAdmin} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowRemoveModal(true);
+                                }}>删除脚本</Button>
+                            </div>
                         </div>
                     } placement="bottom">
                         <MoreOutlined />
@@ -282,6 +294,7 @@ const ScriptDetail = () => {
                     </Modal>
                 )}
             </div>
+            {showEventModal == true && <EventModal scriptSuiteId={state!.scriptSuiteId} onCancel={() => setShowEventModal(false)} />}
         </CardWrap>
     );
 }

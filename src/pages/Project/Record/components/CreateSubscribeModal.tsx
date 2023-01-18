@@ -1,7 +1,7 @@
 import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
@@ -27,6 +27,7 @@ interface FormValue {
     robotEvCfg: string[] | undefined;
     spritEvCfg: string[] | undefined;
     testCaseEvCfg: string[] | undefined;
+    scriptEvCfg: string[] | undefined;
 }
 
 
@@ -49,6 +50,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [earthlyEvCfgCheckAll, setEarthlyEvCfgCheckAll] = useState(false);
     const [earthlyEvCfgIndeterminate, setEarthlyEvCfgIndeterminate] = useState(false);
+
+    const [scriptEvCfgCheckAll, setScriptEvCfgCheckAll] = useState(false);
+    const [scriptEvCfgIndeterminate, setScriptEvCfgIndeterminate] = useState(false);
 
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(false);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(false);
@@ -105,6 +109,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 robot_ev_cfg: calcRobotEvCfg(formValue.robotEvCfg),
                 sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 test_case_ev_cfg: calcTestCaseEvCfg(formValue.testCaseEvCfg),
+                script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
             },
         }));
         props.onOk();
@@ -237,6 +242,31 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setEarthlyEvCfgCheckAll(false);
                                 setEarthlyEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={scriptEvCfgIndeterminate} checked={scriptEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setScriptEvCfgIndeterminate(false);
+                        if (scriptEvCfgCheckAll) {
+                            setScriptEvCfgCheckAll(false);
+                            form.setFieldValue("scriptEvCfg", []);
+                        } else {
+                            setScriptEvCfgCheckAll(true);
+                            form.setFieldValue("scriptEvCfg", scriptEvOptionList.map(item => item.value));
+                        }
+                    }}>服务端脚本事件</Checkbox>} name="scriptEvCfg">
+                        <Checkbox.Group options={scriptEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setScriptEvCfgCheckAll(false);
+                                setScriptEvCfgIndeterminate(false);
+                            } else if (values.length == scriptEvOptionList.length) {
+                                setScriptEvCfgCheckAll(true);
+                                setScriptEvCfgIndeterminate(false);
+                            } else {
+                                setScriptEvCfgCheckAll(false);
+                                setScriptEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

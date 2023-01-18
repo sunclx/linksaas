@@ -1,5 +1,5 @@
 import type { CheckboxOptionType } from 'antd';
-import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg } from '@/api/events_subscribe';
+import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg, ScriptEvCfg } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
     {
@@ -532,6 +532,10 @@ export const earthlyEvOptionList: CheckboxOptionType[] = [
         label: "删除指令",
         value: "removeAction",
     },
+    {
+        label: "执行指令",
+        value: "exec",
+    },
 ];
 
 export const calcEarthlyEvCfg = (values: string[] | undefined): EarthlyEvCfg => {
@@ -541,6 +545,7 @@ export const calcEarthlyEvCfg = (values: string[] | undefined): EarthlyEvCfg => 
         create_action: false,
         update_action: false,
         remove_action: false,
+        exec: false,
     };
     if (values == undefined) {
         return ret;
@@ -556,6 +561,8 @@ export const calcEarthlyEvCfg = (values: string[] | undefined): EarthlyEvCfg => 
             ret.update_action = true;
         } else if (value == "removeAction") {
             ret.remove_action = true;
+        } else if (value == "exec") {
+            ret.exec = true;
         }
     });
     return ret;
@@ -578,7 +585,194 @@ export const genEarthlyEvCfgValues = (cfg: EarthlyEvCfg): string[] => {
     if (cfg.remove_action) {
         retList.push("removeAction");
     }
+    if (cfg.exec) {
+        retList.push("exec");
+    }
     return retList
+};
+
+export const scriptEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建脚本套件",
+        value: "createScriptSuite",
+    },
+    {
+        label: "删除脚本套件",
+        value: "removeScriptSuite",
+    },
+    {
+        label: "更新脚本套件名称",
+        value: "updateScriptSuiteName",
+    },
+    {
+        label: "更新环境变量访问权限",
+        value: "updateEnvPerm",
+    },
+    {
+        label: "更新系统信息访问权限",
+        value: "updateSysPerm",
+    },
+    {
+        label: "更新网络访问权限",
+        value: "updateNetPerm",
+    },
+    {
+        label: "更新文件/目录读权限",
+        value: "updateReadPerm",
+    },
+    {
+        label: "更新文件/目录写权限",
+        value: "updateWritePerm",
+    },
+    {
+        label: "更新外部程序执行权限",
+        value: "updateRunPerm",
+    },
+    {
+        label: "更新脚本内容",
+        value: "updateScript",
+    },
+    {
+        label: "更新执行用户(服务端)",
+        value: "updateExecUser",
+    },
+    {
+        label: "更新环境参数定义",
+        value: "updateEnvParamDef",
+    },
+    {
+        label: "更新命令行参数定义",
+        value: "updateArgParamDef",
+    },
+    {
+        label: "恢复脚本内容到历史版本",
+        value: "recoverScript",
+    },
+    {
+        label: "执行脚本套件",
+        value: "exec",
+    },
+];
+
+export const calcScriptEvCfg = (values: string[] | undefined): ScriptEvCfg => {
+    const ret: ScriptEvCfg = {
+        create_script_suite: false,
+        remove_script_suite: false,
+        update_script_suite_name: false,
+        update_env_perm: false,
+        update_sys_perm: false,
+        update_net_perm: false,
+        update_read_perm: false,
+        update_write_perm: false,
+        update_run_perm: false,
+        update_script: false,
+        update_exec_user: false,
+        update_env_param_def: false,
+        update_arg_param_def: false,
+        recover_script: false,
+        exec: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "createScriptSuite") {
+            ret.create_script_suite = true;
+        }
+        if (value == "removeScriptSuite") {
+            ret.remove_script_suite = true;
+        }
+        if (value == "updateScriptSuiteName") {
+            ret.update_script_suite_name = true;
+        }
+        if (value == "updateEnvPerm") {
+            ret.update_env_perm = true;
+        }
+        if (value == "updateSysPerm") {
+            ret.update_sys_perm = true;
+        }
+        if (value == "updateNetPerm") {
+            ret.update_net_perm = true;
+        }
+        if (value == "updateReadPerm") {
+            ret.update_read_perm = true;
+        }
+        if (value == "updateWritePerm") {
+            ret.update_write_perm = true;
+        }
+        if (value == "updateRunPerm") {
+            ret.update_run_perm = true;
+        }
+        if (value == "updateScript") {
+            ret.update_script = true;
+        }
+        if (value == "updateExecUser") {
+            ret.update_exec_user = true;
+        }
+        if (value == "updateEnvParamDef") {
+            ret.update_env_param_def = true;
+        }
+        if (value == "updateArgParamDef") {
+            ret.update_arg_param_def = true;
+        }
+        if (value == "recoverScript") {
+            ret.recover_script = true;
+        }
+        if (value == "exec") {
+            ret.exec = true;
+        }
+    });
+    return ret;
+};
+
+export const genScriptEvCfgValues = (cfg: ScriptEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create_script_suite) {
+        retList.push("createScriptSuite");
+    }
+    if (cfg.remove_script_suite) {
+        retList.push("removeScriptSuite");
+    }
+    if (cfg.update_script_suite_name) {
+        retList.push("updateScriptSuiteName");
+    }
+    if (cfg.update_env_perm) {
+        retList.push("updateEnvPerm");
+    }
+    if (cfg.update_sys_perm) {
+        retList.push("updateSysPerm");
+    }
+    if (cfg.update_net_perm) {
+        retList.push("updateNetPerm");
+    }
+    if (cfg.update_read_perm) {
+        retList.push("updateReadPerm");
+    }
+    if (cfg.update_write_perm) {
+        retList.push("updateWritePerm");
+    }
+    if (cfg.update_run_perm) {
+        retList.push("updateRunPerm");
+    }
+    if (cfg.update_script) {
+        retList.push("updateScript");
+    }
+    if (cfg.update_exec_user) {
+        retList.push("updateExecUser");
+    }
+    if (cfg.update_env_param_def) {
+        retList.push("updateEnvParamDef");
+    }
+    if (cfg.update_arg_param_def) {
+        retList.push("updateArgParamDef");
+    }
+    if (cfg.recover_script) {
+        retList.push("recoverScript");
+    }
+    if (cfg.exec) {
+        retList.push("exec");
+    }
+    return retList;
 };
 
 export const extEvOptionList: CheckboxOptionType[] = [

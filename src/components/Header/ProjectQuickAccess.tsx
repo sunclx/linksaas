@@ -35,6 +35,7 @@ const MENU_KEY_SHOW_TOOL_BAR_TEST_CASE = "toolbar.testcase.show";
 const MENU_KEY_SHOW_TOOL_BAR_SPRIT = "toolbar.sprit.show";
 const MENU_KEY_CREATE_SPRIT = "create.sprit";
 const MENU_KEY_SHOW_TOOL_BAR_ROBOT = "toolbar.robot.show";
+const MENU_KEY_SHOW_TOOL_BAR_SCRIPT = "toolbar.script.show";
 const MENU_KEY_SHOW_TOOL_BAR_EARTHLY = "toolbar.earthly.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS = "toolbar.events.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
@@ -206,6 +207,10 @@ const ProjectQuickAccess = () => {
             label: "服务器代理列表",
         },
         {
+            key: MENU_KEY_SHOW_TOOL_BAR_SCRIPT,
+            label: "服务端脚本列表",
+        },
+        {
             key: MENU_KEY_SHOW_TOOL_BAR_EARTHLY,
             label: "代码仓库列表",
         },
@@ -345,6 +350,9 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_ROBOT:
                 linkAuxStore.goToRobotList(history);
+                break;
+            case MENU_KEY_SHOW_TOOL_BAR_SCRIPT:
+                linkAuxStore.goToScriptList(history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_EARTHLY:
                 linkAuxStore.goToRepoList(history);

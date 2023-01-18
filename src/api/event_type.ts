@@ -3774,7 +3774,7 @@ namespace earthly {
   ): LinkInfo[] {
     let paramStr = "";
     if (inner.param_list.length > 0){
-      paramStr = `执行参数: ${inner.param_list.map(item=>item.name+"+"+item.value).join(" ,")}`;
+      paramStr = `执行参数: ${inner.param_list.map(item=>item.name+"="+item.value).join(" ,")}`;
     }
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从仓库 ${inner.repo_url} 执行命令`),
