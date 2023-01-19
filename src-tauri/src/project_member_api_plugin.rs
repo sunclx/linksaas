@@ -31,6 +31,7 @@ async fn gen_invite<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
+
 #[tauri::command]
 async fn join<R: Runtime>(
     app_handle: AppHandle<R>,
