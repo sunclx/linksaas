@@ -42,6 +42,7 @@ mod user_api_plugin;
 mod user_admin_api_plugin;
 mod user_kb_api_plugin;
 mod admin_auth_api_plugin;
+mod org_admin_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -288,6 +289,7 @@ fn main() {
         .plugin(project_admin_api_plugin::ProjectAdminApiPlugin::new())
         .plugin(project_member_admin_api_plugin::ProjectMemberAdminApiPlugin::new())
         .plugin(user_admin_api_plugin::UserAdminApiPlugin::new())
+        .plugin(org_admin_api_plugin::OrgAdminApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

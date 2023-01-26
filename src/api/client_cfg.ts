@@ -32,6 +32,7 @@ export type GetCfgResponse = {
   server_cap: ServerCap;
   pay_center_url: string;
   can_invite: boolean;
+  can_register: boolean;
 };
 
 export type ServerInfo = {

@@ -9,7 +9,7 @@ import PasswordModal from '../PasswordModal';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import { request } from '@/utils/request';
-import { update } from '@/api/user';
+import { USER_STATE_NORMAL, update } from '@/api/user';
 import { ReactComponent as Quitsvg } from '@/assets/svg/quit.svg';
 
 import { useHistory } from 'react-router-dom';
@@ -33,6 +33,7 @@ const Portrait = ({ ...props }) => {
         update(userStore.sessionId, {
           display_name: name,
           logo_uri: userStore.userInfo.logoUri,
+          user_state: USER_STATE_NORMAL,
         }),
       );
       userStore.updateDisplayName(name);
@@ -67,6 +68,7 @@ const Portrait = ({ ...props }) => {
     const updateRes = await request(update(userStore.sessionId, {
       display_name: userStore.userInfo.displayName,
       logo_uri: logoUri,
+      user_state: USER_STATE_NORMAL,
     }));
     if (updateRes) {
       setPictrueListVisible(false);
