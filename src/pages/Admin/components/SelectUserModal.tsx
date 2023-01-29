@@ -1,4 +1,4 @@
-import { Card, Checkbox, Form, Input, List, Modal, Select, Space, Tabs } from "antd";
+import { Card, Checkbox, Form, Input, List, Modal, Select, Space, Tabs, Tree } from "antd";
 import React, { useEffect, useState } from "react";
 import type { USER_STATE, UserInfo } from '@/api/user';
 import { get_admin_session } from '@/api/admin_auth';
@@ -6,8 +6,14 @@ import { list as list_user } from '@/api/user_admin';
 import { request } from "@/utils/request";
 import { USER_STATE_NORMAL, USER_STATE_FORBIDDEN } from '@/api/user';
 import Pagination from "@/components/Pagination";
+import type { DataNode } from "antd/lib/tree";
+import { list_depart_ment, list_depart_ment_user } from "@/api/org_admin";
+import { UserOutlined } from "@ant-design/icons";
 
 const PAGE_SIZE = 10;
+
+const KEY_PERFIX_DEPARTMNET = "departMent:"
+const KEY_PERFIX_USER = "user:"
 
 export interface SelectUserModalProps {
     title: string;
@@ -51,6 +57,79 @@ const SelectUserModal: React.FC<SelectUserModalProps> = (props) => {
     const removeSelectUserId = (userId: string) => {
         const tmpList = selectUserIdList.filter(item => item != userId);
         setSelectUserIdList(tmpList);
+    };
+
+    const [treeData, setTreeData] = useState<DataNode[]>([
+        {
+            key: `${KEY_PERFIX_DEPARTMNET}`,
+            title: "组织结构",
+            children: [],
+            checkable: false,
+            selectable: false,
+        },
+    ]);
+
+    const updateTreeData = (list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] =>
+        list.map((node) => {
+            if (node.key === key) {
+                return {
+                    ...node,
+                    children,
+                };
+            }
+            if (node.children) {
+                return {
+                    ...node,
+                    children: updateTreeData(node.children, key, children),
+                };
+            }
+            return node;
+        });
+
+    const loadData = async (node: DataNode) => {
+        let nodeKey = node.key as string;
+        if (!nodeKey.startsWith(KEY_PERFIX_DEPARTMNET)) {
+            return;
+        }
+        nodeKey = nodeKey.substring(KEY_PERFIX_DEPARTMNET.length);
+        const sessionId = await get_admin_session();
+        const departMentRes = await request(list_depart_ment({
+            admin_session_id: sessionId,
+            parent_depart_ment_id: nodeKey,
+        }));
+        if (departMentRes.depart_ment_list.length > 0) {
+            setTreeData((origin) =>
+                updateTreeData(origin, node.key, departMentRes.depart_ment_list.map(item => ({
+                    key: `${KEY_PERFIX_DEPARTMNET}${item.depart_ment_id}`,
+                    title: item.name,
+                    children: [],
+                    checkable: false,
+                    selectable: false,
+                })))
+            );
+        }
+        if (nodeKey == "") {
+            return;
+        }
+        const memberRes = await request(list_depart_ment_user({
+            admin_session_id: sessionId,
+            depart_ment_id: nodeKey,
+            offset: 0,
+            limit: 999,
+        }));
+        if (memberRes.user_info_list.length > 0) {
+            setTreeData((origin) =>
+                updateTreeData(origin, node.key, memberRes.user_info_list.map(item => ({
+                    key: `${KEY_PERFIX_USER}${item.user_id}`,
+                    title: () => (
+                        <Space>
+                            <UserOutlined />{item.user_display_name}
+                        </Space>),
+                    children: [],
+                    isLeaf: true,
+                })))
+            );
+        }
     };
 
     useEffect(() => {
@@ -115,7 +194,19 @@ const SelectUserModal: React.FC<SelectUserModalProps> = (props) => {
                 )}
                 {props.showOrg && (
                     <Tabs.TabPane tab="组织结构" key="org">
-                        <div>yy</div>
+                        <Tree treeData={treeData} loadData={loadData} showLine={true}
+                            checkable checkedKeys={selectUserIdList.map(item => `${KEY_PERFIX_USER}${item}`)}
+                            style={{ height: "calc(100vh - 330px)", overflowY: "scroll" }}
+                            onCheck={checked => {
+                                if (Array.isArray(checked)) {
+                                    const tmpList = checked.map(item => item.toString().substring(KEY_PERFIX_USER.length));
+                                    setSelectUserIdList(tmpList);
+                                } else {
+                                    const tmpList = checked.checked.map(item => item.toString().substring(KEY_PERFIX_USER.length));
+                                    setSelectUserIdList(tmpList);
+                                }
+                            }}
+                        />
                     </Tabs.TabPane>
                 )}
             </Tabs>

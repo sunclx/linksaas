@@ -7,7 +7,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { get as get_project } from '@/api/project_admin';
 import type { ProjectInfo } from '@/api/project';
 import { request } from '@/utils/request';
-import { list as list_member, remove as remove_member } from '@/api/project_member_admin';
+import { list as list_member, remove as remove_member, add as add_member } from '@/api/project_member_admin';
 import type { MemberInfo } from '@/api/project_member';
 import type { ColumnsType } from 'antd/es/table';
 import Button from '@/components/Button';
@@ -16,6 +16,7 @@ import { ADMIN_PATH_USER_DETAIL_SUFFIX } from '@/utils/constant';
 import { LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { EditText } from '@/components/EditCell/EditText';
+import SelectUserModal from '../components/SelectUserModal';
 
 export interface ProjectDetailState {
     projectId: string;
@@ -28,7 +29,9 @@ const ProjectDetail = () => {
 
     const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
     const [projectInfo, setProjectInfo] = useState<ProjectInfo | null>(null);
-    const [memberInfoList, setMemberInfoList] = useState<MemberInfo[]>();
+    const [memberInfoList, setMemberInfoList] = useState<MemberInfo[]>([]);
+
+    const [showSelectUserModal, setShowSelectUserModal] = useState(false);
 
     const loadProjectInfo = async () => {
         const sessionId = await get_admin_session();
@@ -60,6 +63,29 @@ const ProjectDetail = () => {
         await loadMemberList();
     };
 
+    const addMember = async (userIdList: string[]) => {
+        if (projectInfo == null) {
+            return;
+        }
+        const sessionId = await get_admin_session();
+        for (const userId of userIdList) {
+            if (memberInfoList.map(item => item.member_user_id).includes(userId)) {
+                continue;
+            }
+            try {
+                await request(add_member({
+                    admin_session_id: sessionId,
+                    project_id: state.projectId,
+                    user_id: userId,
+                    role_id: projectInfo.default_role_id,
+                }));
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        await loadMemberList();
+        setShowSelectUserModal(false);
+    }
     const memberColumns: ColumnsType<MemberInfo> = [
         {
             title: "成员昵称",
@@ -102,7 +128,7 @@ const ProjectDetail = () => {
             title: "操作",
             width: 100,
             render: (_, row: MemberInfo) => (
-                <Button type="link" style={{ minWidth: 0, paddingLeft: 0 }}
+                <Button type="link" danger style={{ minWidth: 0, paddingLeft: 0 }}
                     disabled={!((permInfo?.project_member_perm.remove ?? false) && row.is_project_owner == false)}
                     onClick={e => {
                         e.stopPropagation();
@@ -139,14 +165,22 @@ const ProjectDetail = () => {
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                //TODO
+                                setShowSelectUserModal(true);
                             }}>
-                            <PlusOutlined />&nbsp;&nbsp;添加项目</Button>
+                            <PlusOutlined />&nbsp;&nbsp;添加成员</Button>
                     }>
                         <Table rowKey="member_user_id" columns={memberColumns} dataSource={memberInfoList} pagination={false} />
                     </Card>
                 </Descriptions.Item>
             </Descriptions>
+            {showSelectUserModal == true && (
+                <SelectUserModal title='添加成员' showUser={permInfo?.user_perm.read ?? false} showOrg={permInfo?.org_perm.read ?? false}
+                    selectUserIdList={memberInfoList.map(item => item.member_user_id)}
+                    onCancel={() => setShowSelectUserModal(false)}
+                    onOk={(userIdList) => {
+                        addMember(userIdList);
+                    }} />
+            )}
         </div>
     );
 };
