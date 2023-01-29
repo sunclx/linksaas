@@ -22,6 +22,13 @@ import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
 import ChatLayout from '@/layouts/ChatLayout';
 import {
+  ADMIN_PATH,
+  ADMIN_PATH_ORG_LIST_SUFFIX,
+  ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
+  ADMIN_PATH_PROJECT_LIST_SUFFIX,
+  ADMIN_PATH_USER_CREATE_SUFFIX,
+  ADMIN_PATH_USER_DETAIL_SUFFIX,
+  ADMIN_PATH_USER_LIST_SUFFIX,
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_CB_PATH,
@@ -59,6 +66,13 @@ import SubscribeList from '@/pages/Project/Record/SubscribeList';
 import ScriptList from '@/pages/Script/ScriptList';
 import CreateScript from '@/pages/Script/CreateScript';
 import ScriptDetail from '@/pages/Script/ScriptDetail';
+import AdminLayout from '@/layouts/AdminLayout';
+import UserList from '@/pages/Admin/UserAdmin/UserList';
+import UserDetail from '@/pages/Admin/UserAdmin/UserDetail';
+import CreateUser from '@/pages/Admin/UserAdmin/CreateUser';
+import ProjectList from '@/pages/Admin/ProjectAdmin/ProjectList';
+import ProjectDetail from '@/pages/Admin/ProjectAdmin/ProjectDetail';
+import DepartMentList from '@/pages/Admin/OrgAdmin/DepartMentList';
 
 
 
@@ -337,6 +351,49 @@ const routesConfig: IRouteConfig[] = [
         title: '注册',
       },
     ],
+  },
+  {
+    path: ADMIN_PATH,
+    title: "管理界面",
+    component: AdminLayout,
+    routes: [
+      {
+        path: ADMIN_PATH_USER_LIST_SUFFIX,
+        title: "用户列表",
+        component: UserList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_USER_DETAIL_SUFFIX,
+        title: "用户详情",
+        component: UserDetail,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_USER_CREATE_SUFFIX,
+        title: "创建用户",
+        component: CreateUser,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_PROJECT_LIST_SUFFIX,
+        title: "项目列表",
+        component: ProjectList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
+        title: "项目详情",
+        component: ProjectDetail,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_ORG_LIST_SUFFIX,
+        title: "部门列表",
+        component: DepartMentList,
+        exact: true,
+      },
+    ]
   },
 
   {

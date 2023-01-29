@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card, ModalProps, Select } from 'antd';
+import { Card, Select } from 'antd';
+import type { ModalProps } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
-import { LinkInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
-import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo } from '@/stores/linkAux';
+import type { LinkInfo } from '@/stores/linkAux';
+import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import {
   list as list_issue,

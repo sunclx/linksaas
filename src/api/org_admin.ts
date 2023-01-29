@@ -11,6 +11,7 @@ export type DepartMentInfo = {
     name: string;
     parent_depart_ment_id: string;
     user_count: number;
+    sub_depart_ment_count: number;
 };
 
 export type DepartMentUserInfo = {

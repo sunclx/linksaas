@@ -21,7 +21,6 @@ export type PreRegisterResponse = {
 export type BasicUserInfo = {
   display_name: string;
   logo_uri: string;
-  user_state: USER_STATE;
 };
 
 export type RegisterRequest = {
@@ -44,6 +43,7 @@ export type UserInfo = {
   update_time: number;
   user_fs_id: string;
   default_kb_space_id: string;
+  user_state: USER_STATE;
 };
 
 export type LoginResponse = {

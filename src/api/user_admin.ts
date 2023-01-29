@@ -18,6 +18,16 @@ export type AdminListResponse = {
     user_info_list: UserInfo[];
 };
 
+export type AdminExistRequest = {
+    admin_session_id: string;
+    user_name: string;
+};
+
+export type AdminExistResponse = {
+    code: number;
+    err_msg: string;
+    exist: boolean;
+};
 
 export type AdminGetRequest = {
     admin_session_id: string;
@@ -47,7 +57,7 @@ export type AdminCreateRequest = {
     admin_session_id: string;
     user_name: string;
     basic_info: BasicUserInfo;
-    user_state: number;
+    user_state: USER_STATE;
     password: string;
 };
 
@@ -74,6 +84,15 @@ export async function list(request: AdminListRequest): Promise<AdminListResponse
     const cmd = 'plugin:user_admin_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminListResponse>(cmd, {
+        request,
+    });
+}
+
+//检查用户是否存在
+export async function exist(request: AdminExistRequest): Promise<AdminExistResponse> {
+    const cmd = 'plugin:user_admin_api|exist';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AdminExistResponse>(cmd, {
         request,
     });
 }

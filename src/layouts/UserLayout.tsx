@@ -38,7 +38,7 @@ const UserLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   return (
     <Layout className="_bg">
       {/* <Header type='login' /> */}
-      <Content style={{ height: 'calc(100vh - 60px)' }}>{renderRoutes(route.routes)}</Content>
+      <Content style={{ height: 'calc(100vh - 60px)'}}>{renderRoutes(route.routes)}</Content>
     </Layout>
   );
 };

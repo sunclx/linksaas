@@ -1,5 +1,5 @@
-import { Button, Checkbox, Col, Form, Input, Row } from 'antd';
-import React, { useState } from 'react';
+import { Button, Checkbox, Col, Form, Input, Row, Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useStores } from '@/hooks';
 import cls from './index.module.less';
 import { useHistory } from 'react-router-dom';
@@ -9,12 +9,16 @@ import logoPng from '@/assets/allIcon/logo.png';
 import Header from '@/components/Header';
 import Swiper from './components/Swiper';
 import Reset from './components/Reset';
+import { AdminLoginModal } from './components/AdminLoginModal';
 
 const Login: React.FC = () => {
   const appStore = useStores('appStore');
   const userStore = useStores('userStore');
+
   const history = useHistory();
+
   const [loginTab, setLoginTab] = useState(true);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
 
   when(
     () => !!userStore.sessionId,
@@ -32,7 +36,11 @@ const Login: React.FC = () => {
   if (localUserStr != null) {
     localUser = JSON.parse(localUserStr);
   }
-  console.log(localUser);
+
+  useEffect(() => {
+    appStore.loadClientCfg();
+  }, []);
+
   return (
     <div className={cls.loginBox}>
       <Row>
@@ -75,7 +83,6 @@ const Login: React.FC = () => {
                         password,
                       }),
                     );
-                    appStore.loadClientCfg();
                     userStore.callLogin(username, password);
                   }}
                   autoComplete="off"
@@ -103,14 +110,31 @@ const Login: React.FC = () => {
                     <Button type="primary" htmlType="submit" className={cls.button}>
                       登录
                     </Button>
+
                     <div className={cls.login_form_forgot}>
-                      <a onClick={() => setLoginTab(false)}>
-                        忘记密码
-                      </a>
-                      &nbsp;|&nbsp;
-                      <a href="https://www.linksaas.pro/register" target="_blank" rel="noreferrer">
-                        注册新账号
-                      </a>
+                      <Space size="large">
+                        {appStore.clientCfg?.can_register == true && (
+                          <a onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setLoginTab(false);
+                          }}>
+                            忘记密码
+                          </a>
+                        )}
+                        {appStore.clientCfg?.can_register == true && (
+                          <a href="https://www.linksaas.pro/register" target="_blank" rel="noreferrer">
+                            注册新账号
+                          </a>
+                        )}
+                        {appStore.clientCfg?.enable_admin == true && (
+                          <a onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowAdminLogin(true);
+                          }}>管理系统</a>
+                        )}
+                      </Space>
                     </div>
                   </Form.Item>
                 </Form>
@@ -121,6 +145,9 @@ const Login: React.FC = () => {
           )}
         </Col>
       </Row>
+      {showAdminLogin == true && (
+        <AdminLoginModal onClose={() => setShowAdminLogin(false)} />
+      )}
     </div>
   );
 };

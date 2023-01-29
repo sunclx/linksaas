@@ -7,6 +7,11 @@ export type AdminListRequest = {
     closed: boolean;
     filter_by_user_id: boolean;
     user_id: string;
+    filter_by_keyword: boolean;
+    keyword: string;
+    filter_by_remove: boolean,
+    remove: boolean,
+
     offset: number;
     limit: number;
 };

@@ -12,7 +12,7 @@ export type OrgPerm = {
     create: boolean;
     update: boolean;
     remove: boolean;
-    rmove: boolean;
+    move: boolean;
     add_user: boolean;
     remove_user: boolean;
 };
@@ -98,8 +98,8 @@ export async function get_admin_perm(): Promise<AdminPermInfo> {
 export async function sign(privateKeyFile: string, toSignStr: string): Promise<Signature> {
     const cmd = 'plugin:admin_auth_api|sign';
     const request = {
-        private_key_file: privateKeyFile,
-        to_sign_str: toSignStr,
+        privateKeyFile,
+        toSignStr,
     };
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<Signature>(cmd, request);
