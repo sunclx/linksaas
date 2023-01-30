@@ -9,7 +9,7 @@ import PasswordModal from '../PasswordModal';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import { request } from '@/utils/request';
-import { USER_STATE_NORMAL, update } from '@/api/user';
+import { update } from '@/api/user';
 import { ReactComponent as Quitsvg } from '@/assets/svg/quit.svg';
 
 import { useHistory } from 'react-router-dom';

@@ -18,6 +18,17 @@ export type AdminListResponse = {
     user_info_list: UserInfo[];
 };
 
+export type AdminListByIdRequest = {
+    admin_session_id: string;
+    user_id_list: string[];
+};
+
+export type AdminListByIdResponse = {
+    code: number;
+    err_msg: string;
+    user_info_list: UserInfo[];
+};
+
 export type AdminExistRequest = {
     admin_session_id: string;
     user_name: string;
@@ -44,7 +55,7 @@ export type AdminGetResponse = {
 export type AdminSetStateRequest = {
     admin_session_id: string;
     user_id: string;
-    user_state: USER_STATE,
+    user_state: USER_STATE;
 };
 
 export type AdminSetStateResponse = {
@@ -84,6 +95,15 @@ export async function list(request: AdminListRequest): Promise<AdminListResponse
     const cmd = 'plugin:user_admin_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminListResponse>(cmd, {
+        request,
+    });
+}
+
+//按ID列出用户
+export async function list_by_id(request: AdminListByIdRequest): Promise<AdminListByIdResponse> {
+    const cmd = 'plugin:user_admin_api|list_by_id';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AdminListByIdResponse>(cmd, {
         request,
     });
 }

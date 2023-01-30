@@ -24,6 +24,7 @@ import ChatLayout from '@/layouts/ChatLayout';
 import {
   ADMIN_PATH,
   ADMIN_PATH_ORG_LIST_SUFFIX,
+  ADMIN_PATH_PROJECT_CREATE_SUFFIX,
   ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
   ADMIN_PATH_PROJECT_LIST_SUFFIX,
   ADMIN_PATH_USER_CREATE_SUFFIX,
@@ -73,6 +74,7 @@ import CreateUser from '@/pages/Admin/UserAdmin/CreateUser';
 import ProjectList from '@/pages/Admin/ProjectAdmin/ProjectList';
 import ProjectDetail from '@/pages/Admin/ProjectAdmin/ProjectDetail';
 import DepartMentList from '@/pages/Admin/OrgAdmin/DepartMentList';
+import CreateProject from '@/pages/Admin/ProjectAdmin/CrateProject';
 
 
 
@@ -385,6 +387,12 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
         title: "项目详情",
         component: ProjectDetail,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_PROJECT_CREATE_SUFFIX,
+        title: "创建项目",
+        component: CreateProject,
         exact: true,
       },
       {

@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import { uniqId } from "@/utils/utils";
 import { WarningOutlined } from "@ant-design/icons";
-import { Card, Form, Input, Space, message } from "antd";
+import { Card, Empty, Form, Input, Space, message } from "antd";
 import React, { useState } from "react";
 import { create as create_user, exist as exist_user } from '@/api/user_admin';
 import { request } from "@/utils/request";
@@ -136,29 +136,32 @@ const CreateUser = () => {
     };
 
     return (
-        <Card title="新增用户" extra={
-            <Space>
-                <Button type="default" onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const tmpList = newUserList.slice();
-                    tmpList.push({
-                        id: uniqId(),
-                        userName: "",
-                        displayName: "",
-                        password: "",
-                        userExist: false,
-                    });
-                    setNewUserList(tmpList);
-                }}>新增用户</Button>
-                <Button disabled={!canSave} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    saveNewUser();
-                }}>保存</Button>
-            </Space>
-        }>
+        <Card title="新增用户"
+            style={{ height: "calc(100vh - 40px)", overflowY: "scroll" }}
+            extra={
+                <Space>
+                    <Button type="default" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpList = newUserList.slice();
+                        tmpList.push({
+                            id: uniqId(),
+                            userName: "",
+                            displayName: "",
+                            password: "",
+                            userExist: false,
+                        });
+                        setNewUserList(tmpList);
+                    }}>新增用户</Button>
+                    <Button disabled={!canSave} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        saveNewUser();
+                    }}>保存</Button>
+                </Space>
+            }>
             <div>
+                {newUserList.length == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                 {newUserList.map((item, index) => (
                     <div key={item.id} style={{ marginBottom: "5px" }}>
                         <Space >

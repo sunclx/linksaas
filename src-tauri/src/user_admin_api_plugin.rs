@@ -34,6 +34,35 @@ async fn list<R: Runtime>(
     }
 }
 
+
+#[tauri::command]
+async fn list_by_id<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: AdminListByIdRequest,
+) -> Result<AdminListByIdResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = UserAdminApiClient::new(chan.unwrap());
+    match client.list_by_id(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == admin_list_by_id_response::Code::WrongSession as i32
+                || inner_resp.code == admin_list_by_id_response::Code::NotAuth as i32
+            {
+                crate::admin_auth_api_plugin::logout(app_handle).await;
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_by_id".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 #[tauri::command]
 async fn exist<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -187,6 +216,7 @@ impl<R: Runtime> UserAdminApiPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 list,
+                list_by_id,
                 exist,
                 get,
                 create,

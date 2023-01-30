@@ -1,10 +1,10 @@
-import { Card, Descriptions, Table } from 'antd';
+import { Card, Descriptions, Modal, Space, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { get_admin_session, get_admin_perm } from '@/api/admin_auth';
 import type { AdminPermInfo } from '@/api/admin_auth';
 import s from './ProjectDetail.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import { get as get_project } from '@/api/project_admin';
+import { get as get_project, update as update_project } from '@/api/project_admin';
 import type { ProjectInfo } from '@/api/project';
 import { request } from '@/utils/request';
 import { list as list_member, remove as remove_member, add as add_member } from '@/api/project_member_admin';
@@ -13,7 +13,7 @@ import type { ColumnsType } from 'antd/es/table';
 import Button from '@/components/Button';
 import type { UserDetailState } from "../UserAdmin/UserDetail";
 import { ADMIN_PATH_USER_DETAIL_SUFFIX } from '@/utils/constant';
-import { LinkOutlined, PlusOutlined } from '@ant-design/icons';
+import { LeftOutlined, LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { EditText } from '@/components/EditCell/EditText';
 import SelectUserModal from '../components/SelectUserModal';
@@ -32,6 +32,7 @@ const ProjectDetail = () => {
     const [memberInfoList, setMemberInfoList] = useState<MemberInfo[]>([]);
 
     const [showSelectUserModal, setShowSelectUserModal] = useState(false);
+    const [removeMemberInfo, setRemoveMemberInfo] = useState<MemberInfo | null>(null);
 
     const loadProjectInfo = async () => {
         const sessionId = await get_admin_session();
@@ -61,6 +62,7 @@ const ProjectDetail = () => {
             user_id: memberUserId,
         }));
         await loadMemberList();
+        setRemoveMemberInfo(null);
     };
 
     const addMember = async (userIdList: string[]) => {
@@ -107,7 +109,12 @@ const ProjectDetail = () => {
         {
             title: "成员角色",
             width: 100,
-            dataIndex: "role_name",
+            render: (_, row: MemberInfo) => (
+                <>
+                    {row.member_user_id == projectInfo?.owner_user_id && "超级管理员"}
+                    {row.member_user_id != projectInfo?.owner_user_id && row.role_name}
+                </>
+            ),
         },
         {
             title: "加入时间",
@@ -133,7 +140,7 @@ const ProjectDetail = () => {
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        removeMember(row.member_user_id);
+                        setRemoveMemberInfo(row);
                     }}>移除成员</Button>
             ),
         }
@@ -150,10 +157,40 @@ const ProjectDetail = () => {
 
     return (
         <div className={s.content_wrap}>
-            <Descriptions title="项目详情" bordered>
+            <Descriptions title={
+                <Space>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        history.goBack();
+                    }}><LeftOutlined /></a>
+                    <span>项目详情</span>
+                </Space>
+            } bordered>
                 <Descriptions.Item label="项目名称">{projectInfo != null && (
                     <EditText editable={projectInfo.closed == false && permInfo?.project_perm.update == true} content={projectInfo.basic_info.project_name} onChange={async (value) => {
-                        //TODO
+                        const prjName = value.trim();
+                        if (prjName == "") {
+                            return false;
+                        }
+                        if (projectInfo == null) {
+                            return false;
+                        }
+                        try {
+                            const sessionId = await get_admin_session();
+                            await request(update_project({
+                                admin_session_id: sessionId,
+                                project_id: state.projectId,
+                                basic_info: {
+                                    project_name: prjName,
+                                    project_desc: projectInfo.basic_info.project_desc,
+                                },
+                                owner_user_id: projectInfo.owner_user_id,
+                            }));
+                            return true;
+                        } catch (e) {
+                            console.log(e);
+                        }
                         return false;
                     }} showEditIcon={true} />
                 )}</Descriptions.Item>
@@ -180,6 +217,23 @@ const ProjectDetail = () => {
                     onOk={(userIdList) => {
                         addMember(userIdList);
                     }} />
+            )}
+            {removeMemberInfo != null && (
+                <Modal open title="移除成员"
+                    okText="移除成员"
+                    okButtonProps={{ danger: true }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveMemberInfo(null);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeMember(removeMemberInfo.member_user_id);
+                    }}>
+                    是否移除成员&nbsp;{removeMemberInfo.display_name}&nbsp;?
+                </Modal>
             )}
         </div>
     );

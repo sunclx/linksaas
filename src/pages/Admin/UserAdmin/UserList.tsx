@@ -1,4 +1,4 @@
-import { Card, Form, Input, Select, Table } from "antd";
+import { Card, Form, Input, Select, Space, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import type { USER_STATE, UserInfo } from '@/api/user';
 import { USER_STATE_NORMAL, USER_STATE_FORBIDDEN } from '@/api/user';
@@ -89,22 +89,25 @@ const UserList = () => {
 
     return (
         <Card title="用户列表" extra={
-            <Form layout="inline">
-                <Form.Item label="昵称">
-                    <Input value={keyword} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setKeyword(e.target.value);
-                    }} />
-                </Form.Item>
-                <Form.Item label="用户状态">
-                    <Select value={userState} style={{ width: 100 }} onChange={value => setUserState(value)}>
-                        <Select.Option value={null}>全部</Select.Option>
-                        <Select.Option value={USER_STATE_NORMAL}>正常</Select.Option>
-                        <Select.Option value={USER_STATE_FORBIDDEN}>禁用</Select.Option>
-                    </Select>
-                </Form.Item>
-            </Form>
+            <Space>
+                <span className={s.filter_head}>过滤条件</span>
+                <Form layout="inline">
+                    <Form.Item label="昵称">
+                        <Input value={keyword} onChange={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setKeyword(e.target.value);
+                        }} />
+                    </Form.Item>
+                    <Form.Item label="用户状态">
+                        <Select value={userState} style={{ width: 100 }} onChange={value => setUserState(value)}>
+                            <Select.Option value={null}>全部</Select.Option>
+                            <Select.Option value={USER_STATE_NORMAL}>正常</Select.Option>
+                            <Select.Option value={USER_STATE_FORBIDDEN}>禁用</Select.Option>
+                        </Select>
+                    </Form.Item>
+                </Form>
+            </Space>
         }>
             <div className={s.content_wrap}>
                 <Table rowKey="user_id" columns={columns} dataSource={userList} pagination={false} />
