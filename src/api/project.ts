@@ -34,6 +34,8 @@ export type ProjectInfo = {
   update_time: number;
   closed: boolean;
   owner_user_id: string;
+  owner_display_name: string;
+  owner_logo_uri: string;
   default_channel_id: string;
   default_role_id: string;
   channel_fs_id: string;

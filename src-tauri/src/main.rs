@@ -17,6 +17,7 @@ mod link_aux_api_plugin;
 mod local_api;
 mod notice_decode;
 mod project_api_plugin;
+mod project_admin_api_plugin;
 mod project_app_api_plugin;
 mod project_appraise_api_plugin;
 mod project_award_api_plugin;
@@ -26,6 +27,7 @@ mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_api_plugin;
+mod project_member_admin_api_plugin;
 mod project_sprit_api_plugin;
 mod project_vc_api_plugin;
 mod project_test_case_api_plugin;
@@ -37,7 +39,10 @@ mod robot_script_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_api_plugin;
+mod user_admin_api_plugin;
 mod user_kb_api_plugin;
+mod admin_auth_api_plugin;
+mod org_admin_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -280,6 +285,11 @@ fn main() {
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(project_test_case_api_plugin::ProjectTestCaseApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())
+        .plugin(admin_auth_api_plugin::AdminAuthApiPlugin::new())
+        .plugin(project_admin_api_plugin::ProjectAdminApiPlugin::new())
+        .plugin(project_member_admin_api_plugin::ProjectMemberAdminApiPlugin::new())
+        .plugin(user_admin_api_plugin::UserAdminApiPlugin::new())
+        .plugin(org_admin_api_plugin::OrgAdminApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()
