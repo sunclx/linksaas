@@ -7,7 +7,9 @@ use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
 
 mod client_cfg_api_plugin;
+mod client_cfg_admin_api_plugin;
 mod events_api_plugin;
+mod events_admin_api_plugin;
 mod events_subscribe_api_plugin;
 mod events_decode;
 mod external_events_api_plugin;
@@ -290,6 +292,8 @@ fn main() {
         .plugin(project_member_admin_api_plugin::ProjectMemberAdminApiPlugin::new())
         .plugin(user_admin_api_plugin::UserAdminApiPlugin::new())
         .plugin(org_admin_api_plugin::OrgAdminApiPlugin::new())
+        .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
+        .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

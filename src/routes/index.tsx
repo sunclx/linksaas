@@ -23,6 +23,8 @@ import Workbench from '@/pages/Workbench';
 import ChatLayout from '@/layouts/ChatLayout';
 import {
   ADMIN_PATH,
+  ADMIN_PATH_CLIENT_AD_SUFFIX,
+  ADMIN_PATH_CLIENT_MENU_SUFFIX,
   ADMIN_PATH_ORG_LIST_SUFFIX,
   ADMIN_PATH_PROJECT_CREATE_SUFFIX,
   ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
@@ -75,6 +77,8 @@ import ProjectList from '@/pages/Admin/ProjectAdmin/ProjectList';
 import ProjectDetail from '@/pages/Admin/ProjectAdmin/ProjectDetail';
 import DepartMentList from '@/pages/Admin/OrgAdmin/DepartMentList';
 import CreateProject from '@/pages/Admin/ProjectAdmin/CrateProject';
+import MenuAdmin from '@/pages/Admin/ClientAdmin/MenuAdmin';
+import AdAdmin from '@/pages/Admin/ClientAdmin/AdAdmin';
 
 
 
@@ -399,6 +403,18 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_ORG_LIST_SUFFIX,
         title: "部门列表",
         component: DepartMentList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_CLIENT_MENU_SUFFIX,
+        title: "额外菜单管理",
+        component: MenuAdmin,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_CLIENT_AD_SUFFIX,
+        title: "广告管理",
+        component: AdAdmin,
         exact: true,
       },
     ]

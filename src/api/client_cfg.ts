@@ -4,12 +4,14 @@ export type ExtraMenuItem = {
   name: string;
   url: string;
   menu_id: string;
+  weight: number;
 };
 
 export type AdItem = {
   url: string;
   img_url: string;
   ad_id: string;
+  weight: number;
 };
 
 export type ServerCap = {
