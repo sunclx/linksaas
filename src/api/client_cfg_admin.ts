@@ -2,7 +2,6 @@ import { invoke } from '@tauri-apps/api/tauri';
 import type { ExtraMenuItem, AdItem } from "./client_cfg";
 
 export type AdminListExtraMenuRequest = {
-
     admin_session_id: string;
 };
 

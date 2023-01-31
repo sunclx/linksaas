@@ -38,6 +38,10 @@ export const ADMIN_PATH_PROJECT_CREATE_SUFFIX = '/admin/project/create';
 
 export const ADMIN_PATH_ORG_LIST_SUFFIX = '/admin/org/list';
 
+export const ADMIN_PATH_CLIENT_MENU_SUFFIX = '/admin/client/menu';
+export const ADMIN_PATH_CLIENT_AD_SUFFIX = '/admin/client/ad';
+
+
 
 export const statusText = {
   [issueApi.ISSUE_STATE_PLAN]: '规划中阶段', //规划中
