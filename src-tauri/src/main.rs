@@ -6,20 +6,22 @@
 use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
 
-mod client_cfg_api_plugin;
+mod admin_auth_api_plugin;
 mod client_cfg_admin_api_plugin;
-mod events_api_plugin;
+mod client_cfg_api_plugin;
 mod events_admin_api_plugin;
-mod events_subscribe_api_plugin;
+mod events_api_plugin;
 mod events_decode;
+mod events_subscribe_api_plugin;
 mod external_events_api_plugin;
 mod fs_api_plugin;
 mod image_utils;
 mod link_aux_api_plugin;
 mod local_api;
 mod notice_decode;
-mod project_api_plugin;
+mod org_admin_api_plugin;
 mod project_admin_api_plugin;
+mod project_api_plugin;
 mod project_app_api_plugin;
 mod project_appraise_api_plugin;
 mod project_award_api_plugin;
@@ -28,11 +30,11 @@ mod project_channel_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
 mod project_issue_api_plugin;
-mod project_member_api_plugin;
 mod project_member_admin_api_plugin;
+mod project_member_api_plugin;
 mod project_sprit_api_plugin;
-mod project_vc_api_plugin;
 mod project_test_case_api_plugin;
+mod project_vc_api_plugin;
 mod restrict_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
@@ -40,11 +42,11 @@ mod robot_metric_api_plugin;
 mod robot_script_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
-mod user_api_plugin;
 mod user_admin_api_plugin;
+mod user_api_plugin;
 mod user_kb_api_plugin;
-mod admin_auth_api_plugin;
-mod org_admin_api_plugin;
+
+mod my_updater;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -189,6 +191,8 @@ fn main() {
         .add_item(CustomMenuItem::new("show_app", "显示界面"))
         .add_item(CustomMenuItem::new("about", "关于"))
         .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(CustomMenuItem::new("check_update", "检查更新"))
+        .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("exit_app", "退出"));
     tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
@@ -252,6 +256,12 @@ fn main() {
                 "exit_app" => {
                     local_api::remove_info_file();
                     app.exit(0);
+                }
+                "check_update" => {
+                    let handle = app.clone();
+                    tauri::async_runtime::spawn(async move {
+                        my_updater::check_update_with_dialog(handle).await;
+                    });
                 }
                 _ => {}
             },

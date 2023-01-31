@@ -34,7 +34,7 @@
     "@remirror/react": "^2.0.4",
     "@remirror/styles": "^2.0.0",
     "@tauri-apps/api": "^1.2.0",
-    "@tauri-apps/cli": "^1.2.2",
+    "@tauri-apps/cli": "^1.2.3",
     "@types/mermaid": "^8.2.9",
     "@types/swagger-ui-react": "^4.11.0",
     "@uiw/react-textarea-code-editor": "^2.0.3",
