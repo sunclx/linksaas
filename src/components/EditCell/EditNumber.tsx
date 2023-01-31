@@ -8,6 +8,7 @@ export interface EditNumberProps {
     value: number;
     onChange: (value: number) => Promise<boolean>;
     showEditIcon: boolean;
+    fixedLen?: number;
 }
 
 export const EditNumber: React.FC<EditNumberProps> = (props) => {
@@ -24,7 +25,7 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
             }
         }}>
             {!inEdit && (
-                <span title={value.toString()} style={{ cursor: props.editable ? "pointer" : "default" }}>{value.toFixed(2)}
+                <span title={value.toString()} style={{ cursor: props.editable ? "pointer" : "default" }}>{value.toFixed(props.fixedLen ?? 2)}
                     {props.editable && props.showEditIcon &&
                         <a><EditOutlined /></a>
                     }
@@ -33,7 +34,7 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
                 <InputNumber value={value}
                     controls={false}
                     autoFocus={true}
-                    precision={2}
+                    precision={props.fixedLen ?? 2}
                     style={{ width: "calc(100% - 50px)" }} addonAfter={
                         <Space>
                             <a onClick={e => {

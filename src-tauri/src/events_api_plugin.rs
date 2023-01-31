@@ -129,7 +129,7 @@ fn convert_list_user_event_response(
     };
 }
 
-fn convert_event(ev_list: vec::Vec<Event>) -> vec::Vec<PluginEvent> {
+pub fn convert_event(ev_list: vec::Vec<Event>) -> vec::Vec<PluginEvent> {
     let mut ret_list = vec::Vec::new();
     for ev in &ev_list {
         let ev_decode = match &ev.event_data {

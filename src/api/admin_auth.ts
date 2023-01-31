@@ -22,12 +22,14 @@ export type UserPerm = {
     create: boolean;
     set_state: boolean;
     reset_password: boolean;
+    access_event: boolean;
 };
 
 export type ProjectPerm = {
     read: boolean;
     create: boolean;
     update: boolean;
+    access_event: boolean;
 };
 
 export type ProjectMemberPerm = {
@@ -36,11 +38,27 @@ export type ProjectMemberPerm = {
     remove: boolean;
 };
 
+export type MenuPerm = {
+    read: boolean;
+    add: boolean;
+    remove: boolean;
+    set_weight: boolean;
+};
+
+export type AdPerm = {
+    read: boolean;
+    add: boolean;
+    remove: boolean;
+    set_weight: boolean;
+};
+
 export type AdminPermInfo = {
     org_perm: OrgPerm;
     user_perm: UserPerm;
     project_perm: ProjectPerm;
     project_member_perm: ProjectMemberPerm;
+    menu_perm: MenuPerm;
+    ad_perm: AdPerm;
 };
 
 export type PreAuthRequest = {

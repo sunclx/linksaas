@@ -17,6 +17,9 @@ import { LeftOutlined, LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { EditText } from '@/components/EditCell/EditText';
 import SelectUserModal from '../components/SelectUserModal';
+import { useLocalObservable, observer } from 'mobx-react';
+import { runInAction } from 'mobx';
+import ProjectEvList from './components/ProjectEvList';
 
 export interface ProjectDetailState {
     projectId: string;
@@ -29,10 +32,18 @@ const ProjectDetail = () => {
 
     const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
     const [projectInfo, setProjectInfo] = useState<ProjectInfo | null>(null);
-    const [memberInfoList, setMemberInfoList] = useState<MemberInfo[]>([]);
 
     const [showSelectUserModal, setShowSelectUserModal] = useState(false);
     const [removeMemberInfo, setRemoveMemberInfo] = useState<MemberInfo | null>(null);
+
+    const localStore = useLocalObservable(() => ({
+        memberInfoList: [] as MemberInfo[],
+        setMemberInfoList(infoList: MemberInfo[]) {
+            runInAction(() => {
+                this.memberInfoList = infoList;
+            });
+        },
+    }));
 
     const loadProjectInfo = async () => {
         const sessionId = await get_admin_session();
@@ -51,7 +62,7 @@ const ProjectDetail = () => {
             admin_session_id: sessionId,
             project_id: state.projectId,
         }));
-        setMemberInfoList(res.member_info_list);
+        localStore.setMemberInfoList(res.member_info_list);
     };
 
     const removeMember = async (memberUserId: string) => {
@@ -71,7 +82,7 @@ const ProjectDetail = () => {
         }
         const sessionId = await get_admin_session();
         for (const userId of userIdList) {
-            if (memberInfoList.map(item => item.member_user_id).includes(userId)) {
+            if (localStore.memberInfoList.map(item => item.member_user_id).includes(userId)) {
                 continue;
             }
             try {
@@ -196,7 +207,7 @@ const ProjectDetail = () => {
                 )}</Descriptions.Item>
                 <Descriptions.Item label="项目状态">{projectInfo != null && (projectInfo.closed ? "关闭" : "打开")}</Descriptions.Item>
                 <Descriptions.Item label="超级管理员">{projectInfo?.owner_display_name ?? ""}</Descriptions.Item>
-                <Descriptions.Item label="项目成员">
+                <Descriptions.Item label="项目成员" span={3}>
                     <Card extra={
                         <Button disabled={!((permInfo?.project_member_perm.add ?? false) && (projectInfo?.closed ?? true) == false)}
                             onClick={e => {
@@ -206,13 +217,18 @@ const ProjectDetail = () => {
                             }}>
                             <PlusOutlined />&nbsp;&nbsp;添加成员</Button>
                     }>
-                        <Table rowKey="member_user_id" columns={memberColumns} dataSource={memberInfoList} pagination={false} />
+                        <Table rowKey="member_user_id" columns={memberColumns} dataSource={localStore.memberInfoList} pagination={false} />
                     </Card>
                 </Descriptions.Item>
+                {permInfo?.project_perm.access_event == true && (
+                    <Descriptions.Item label="项目事件" span={3}>
+                        <ProjectEvList projectId={state.projectId} memberList={localStore.memberInfoList} />
+                    </Descriptions.Item>
+                )}
             </Descriptions>
             {showSelectUserModal == true && (
                 <SelectUserModal title='添加成员' showUser={permInfo?.user_perm.read ?? false} showOrg={permInfo?.org_perm.read ?? false}
-                    selectUserIdList={memberInfoList.map(item => item.member_user_id)}
+                    selectUserIdList={localStore.memberInfoList.map(item => item.member_user_id)}
                     onCancel={() => setShowSelectUserModal(false)}
                     onOk={(userIdList) => {
                         addMember(userIdList);
@@ -239,4 +255,4 @@ const ProjectDetail = () => {
     );
 };
 
-export default ProjectDetail;
+export default observer(ProjectDetail);
