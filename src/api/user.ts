@@ -1,5 +1,10 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type USER_STATE = number;
+
+export const USER_STATE_NORMAL: USER_STATE = 0;     //正常状态
+export const USER_STATE_FORBIDDEN: USER_STATE = 1;  //冻结账户
+
 export type GenCaptchaResponse = {
   code: number;
   err_msg: string;
@@ -8,29 +13,29 @@ export type GenCaptchaResponse = {
   base64_image: string;
 };
 
-type PreRegisterResponse = {
+export type PreRegisterResponse = {
   code: number;
   err_msg: string;
 };
 
-type BasicUserInfo = {
+export type BasicUserInfo = {
   display_name: string;
   logo_uri: string;
 };
 
-type RegisterRequest = {
+export type RegisterRequest = {
   user_name: string;
   basic_info: BasicUserInfo;
   auth_code: string;
   passwd: string;
 };
 
-type RegisterResponse = {
+export type RegisterResponse = {
   code: number;
   err_msg: string;
 };
 
-type UserInfo = {
+export type UserInfo = {
   user_id: string;
   user_name: string;
   basic_info: BasicUserInfo;
@@ -38,9 +43,10 @@ type UserInfo = {
   update_time: number;
   user_fs_id: string;
   default_kb_space_id: string;
+  user_state: USER_STATE;
 };
 
-type LoginResponse = {
+export type LoginResponse = {
   code: number;
   err_msg: string;
   session_id: string;
@@ -49,12 +55,12 @@ type LoginResponse = {
   notice_key: string;
 };
 
-type LogoutResponse = {
+export type LogoutResponse = {
   code: number;
   err_msg: string;
 };
 
-type UpdateResponse = {
+export type UpdateResponse = {
   code: number;
   err_msg: string;
 };

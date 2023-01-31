@@ -15,7 +15,7 @@ import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
-import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, USER_LOGIN_PATH } from '@/utils/constant';
 
 
 class NoticeStore {
@@ -169,7 +169,14 @@ class NoticeStore {
       //TODO
     } else if (notice.WrongSessionNotice !== undefined) {
       if (notice.WrongSessionNotice.name.indexOf("snap") == -1) { //忽略快照相关接口报错
-        this.rootStore.userStore.logout();
+        if (this.rootStore.userStore.adminSessionId != "") {
+          runInAction(() => {
+            this.rootStore.userStore.adminSessionId = "";
+          });
+          this.history.push(USER_LOGIN_PATH);
+        } else {
+          this.rootStore.userStore.logout();
+        }
       }
     } else if (notice.SwitchUserNotice !== undefined) {
       this.rootStore.userStore.logout();

@@ -24,7 +24,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const handleClick = async function handleClick(type: string) {
     switch (type) {
       case 'close':
-        if (userStore.sessionId === '') {
+        if (userStore.sessionId == "" || userStore.adminSessionId == "") {
           await remove_info_file();
           await exit(0);
         } else {
@@ -54,13 +54,13 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
       <div className={style.l} >
-        {projectStore.curProjectId != "" && <ProjectQuickAccess/>}
+        {projectStore.curProjectId != "" && <ProjectQuickAccess />}
       </div>
       <div className={style.r}>
         <a href="https://doc.linksaas.pro/" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="使用文档"><BulbOutlined /></a>
         <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
-        {userStore.sessionId != "" && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
-        {userStore.sessionId != "" && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+        {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
+        {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
         <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
       </div>
     </Header>

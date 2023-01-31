@@ -26,6 +26,7 @@ class UserStore {
   connectServerSuccess = false;
   rootStore: RootStore;
   sessionId: string;
+  adminSessionId = "";
   userInfo: UserInfo = {
     userId: '',
     userName: '',
