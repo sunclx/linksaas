@@ -36,6 +36,7 @@ export type GetCfgResponse = {
   can_invite: boolean;
   can_register: boolean;
   enable_admin: boolean;
+  enable_search: boolean;
 };
 
 export type ServerInfo = {

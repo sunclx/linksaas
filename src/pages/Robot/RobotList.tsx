@@ -159,6 +159,7 @@ const RobotList = () => {
                 <div>执行earthly：{record.robot_cap.earthly ? "有" : "无"}</div>
                 <div>上传artifact：{record.robot_cap.artifact ? "有" : "无"}</div>
                 <div>运行deno脚本：{record.robot_cap.deno_script ? "有" : "无"}</div>
+                <div>推送镜像：{record.robot_cap.push_image ? "有" : "无"}</div>
             </div>)
         },
         {

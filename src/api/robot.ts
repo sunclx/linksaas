@@ -8,6 +8,7 @@ export type RobotCap = {
     earthly: boolean;
     artifact: boolean;
     deno_script: boolean;
+    push_image: boolean;
 };
 
 export type RobotInfo = {

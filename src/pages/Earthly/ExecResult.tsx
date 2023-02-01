@@ -125,6 +125,10 @@ const ExecResult = () => {
                         <div>{execInfo?.branch ?? ""}</div>
                     </div>
                     <div className={s.info}>
+                        <div className={s.label}>运行权限:</div>
+                        <div>{execInfo?.push_image == true ? "推送镜像&nbsp;&nbsp;":""}</div>
+                    </div>
+                    <div className={s.info}>
                         <div className={s.label}>其他参数:</div>
                         <div>{execInfo != null && getParamStr()}</div>
                     </div>

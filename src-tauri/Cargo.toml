@@ -7,12 +7,12 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.1.36"
+version = "0.1.37"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.0.0-rc.7", features = [] }
+tauri-build = {version = "1.0.4", features = [] }
 
 [dependencies]
 async-trait = "0.1.26"
@@ -35,7 +35,7 @@ serde_json = "1.0"
 signature = "1.6.4"
 ssh-key = {version = "0.5.1", features = ["alloc", "rsa", "dsa", "p256", "p384"] }
 swagger = {version = "6.1", features = ["serdejson", "server", "client", "tls", "tcp"] }
-tauri = {version = "1.0.5", features = ["clipboard-all", "devtools", "dialog-all", "fs-read-file", "macos-private-api", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all", "windows7-compat"] }
+tauri = {version = "1.2.0", features = ["clipboard-all", "devtools", "dialog-all", "fs-read-file", "macos-private-api", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all", "windows7-compat"] }
 tokio = {version = "1.17.0", feature = ["time", "macros"] }
 tokio-stream = "0.1.6"
 tonic = "0.6.2"

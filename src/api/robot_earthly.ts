@@ -217,6 +217,7 @@ export type ExecActionRequest = {
     action_id: string;
     branch: string;
     param_list: Param[];
+    push_image: boolean;
 };
 
 export type ExecActionResponse = {
@@ -251,9 +252,8 @@ export type ExecInfo = {
     branch: string;
     param_list: Param[];
     artifact_list: ArtifactInfo[];
+    push_image: boolean;
 };
-
-
 
 export type ListExecResponse = {
     code: number;
