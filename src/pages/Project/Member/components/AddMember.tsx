@@ -20,18 +20,24 @@ type AddMemberProps = {
 const AddMember: FC<AddMemberProps> = (props) => {
   const { visible, onChange } = props;
   const [linkText, setLinkText] = useState('');
+
+  const appStore = useStores('appStore');
   const userStore = useStores("userStore");
   const projectStore = useStores("projectStore");
 
-  const getgen_invite = async () => {
+  const genInvite = async () => {
     const res = await request(gen_invite(userStore.sessionId, projectStore.curProjectId, 0));
     if (res) {
-      setLinkText(`${userStore.userInfo.displayName} 邀请您加入 ${projectStore.curProject?.basic_info.project_name ?? ""} 项目，您的邀请码 ${res.invite_code} (有效期24小时),请在软件内输入邀请码加入项目。如您尚未安装【凌鲨】，可直接点击链接下载 https://www.linksaas.pro`);
+      if (appStore.clientCfg?.can_register == true) {
+        setLinkText(`${userStore.userInfo.displayName} 邀请您加入 ${projectStore.curProject?.basic_info.project_name ?? ""} 项目，您的邀请码 ${res.invite_code} (有效期24小时),请在软件内输入邀请码加入项目。如您尚未安装【凌鲨】，可直接点击链接下载 https://www.linksaas.pro`);
+      }else{
+        setLinkText(`${userStore.userInfo.displayName} 邀请您加入 ${projectStore.curProject?.basic_info.project_name ?? ""} 项目，您的邀请码 ${res.invite_code} (有效期24小时),请在软件内输入邀请码加入项目。`);
+      }
     }
   };
 
   useEffect(() => {
-    getgen_invite();
+    genInvite();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -50,7 +56,7 @@ const AddMember: FC<AddMemberProps> = (props) => {
       width={600}
       okText="复制并关闭"
       onCancel={() => onChange(false)}
-      onOk={()=>submitText()}
+      onOk={() => submitText()}
     >
       <div
         style={{
@@ -64,7 +70,7 @@ const AddMember: FC<AddMemberProps> = (props) => {
       </div>
 
       <div style={{ margin: '10px 0' }}>
-        <TextArea placeholder="请输入" value={linkText} autoSize={{ minRows: 2, maxRows: 5 }} readOnly/>
+        <TextArea placeholder="请输入" value={linkText} autoSize={{ minRows: 2, maxRows: 5 }} readOnly />
       </div>
     </Modal>
   );
