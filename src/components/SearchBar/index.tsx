@@ -29,6 +29,8 @@ interface SearchScopeItem {
 
 const SearchBar = () => {
     const location = useLocation();
+
+    const appStore = useStores('appStore');
     const docSpaceStore = useStores('docSpaceStore');
     const channelStore = useStores('channelStore');
     const projectStore = useStores('projectStore');
@@ -148,37 +150,40 @@ const SearchBar = () => {
         setDateRange([]);
     }, [location.pathname, docSpaceStore.curDocSpaceId, channelStore.curChannelId]);
 
-    return (<div className={s.search_wrap}>
-        <Input onChange={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            setKeyword(e.target.value);
-        }}
-            value={keyword}
-            className={s.keyword}
-            placeholder="搜索......" />
-        {scopeList.length > 0 && keyword != "" && (
-            <Select className={s.scope} value={curScope} onChange={value => setCurScope(value)}>
-                {scopeList.map(item => (<Select.Option key={item.value} value={item.value}>{item.label}</Select.Option>))}
-            </Select>
-        )}
-        {keyword != "" && (
-            <DatePicker.RangePicker className={s.date_range} onChange={values => {
-                if ((values != null) && (values.length == 2)) {
-                    if ((values[0] != null) && (values[1] != null)) {
-                        setDateRange([values[0], values[1]]);
-                    }
-                }
-            }} />
-        )}
-        {keyword != "" && (
-            <Button className={s.btn} icon={<SearchOutlined />} onClick={e => {
+    if (appStore.clientCfg?.enable_search == true) {
+        return (<div className={s.search_wrap}>
+            <Input onChange={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                showSearchResult();
-            }}>搜索</Button>
-        )}
-    </div>);
+                setKeyword(e.target.value);
+            }}
+                value={keyword}
+                className={s.keyword}
+                placeholder="搜索......" />
+            {scopeList.length > 0 && keyword != "" && (
+                <Select className={s.scope} value={curScope} onChange={value => setCurScope(value)}>
+                    {scopeList.map(item => (<Select.Option key={item.value} value={item.value}>{item.label}</Select.Option>))}
+                </Select>
+            )}
+            {keyword != "" && (
+                <DatePicker.RangePicker className={s.date_range} onChange={values => {
+                    if ((values != null) && (values.length == 2)) {
+                        if ((values[0] != null) && (values[1] != null)) {
+                            setDateRange([values[0], values[1]]);
+                        }
+                    }
+                }} />
+            )}
+            {keyword != "" && (
+                <Button className={s.btn} icon={<SearchOutlined />} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    showSearchResult();
+                }}>搜索</Button>
+            )}
+        </div>);
+    }
+    return (<></>);
 }
 
 export default observer(SearchBar);
