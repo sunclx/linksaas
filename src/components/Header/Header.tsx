@@ -24,7 +24,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const handleClick = async function handleClick(type: string) {
     switch (type) {
       case 'close':
-        if (userStore.sessionId == "" || userStore.adminSessionId == "") {
+        if (userStore.sessionId == "" && userStore.adminSessionId == "") {
           await remove_info_file();
           await exit(0);
         } else {
