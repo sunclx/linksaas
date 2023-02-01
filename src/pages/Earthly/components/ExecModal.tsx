@@ -1,4 +1,4 @@
-import { Modal, Form, Input, Tooltip, message } from "antd";
+import { Modal, Form, Input, Tooltip, message, Checkbox } from "antd";
 import React from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
@@ -6,7 +6,6 @@ import type { ActionInfo, ExecActionRequest } from '@/api/robot_earthly';
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { exec_action } from '@/api/robot_earthly';
 import { request } from '@/utils/request';
-
 
 interface ExecModalProps {
     repoId: string;
@@ -30,12 +29,16 @@ const ExecModal: React.FC<ExecModalProps> = (props) => {
             action_id: props.actionInfo.action_id,
             branch: "",
             param_list: [],
+            push_image: false,
         };
         for (const k in formValue) {
             if (k == "branch") {
                 const branch = formValue[k] ?? "";
                 req.branch = branch;
-
+            } else if (k == "perm") {
+                if (((formValue[k] ?? []) as string[]).includes("pushImage")) {
+                    req.push_image = true;
+                }
             } else if (k.startsWith("param_")) {
                 const value = formValue[k] ?? "";
                 req.param_list.push({
@@ -76,7 +79,15 @@ const ExecModal: React.FC<ExecModalProps> = (props) => {
                 <Form.Item label="仓库分支/标签" rules={[{ required: true }]} name="branch">
                     <Input />
                 </Form.Item>
-                {props.actionInfo.basic_info.param_def_list.map((pd,index) => (
+                <Form.Item label="运行权限" name="perm">
+                    <Checkbox.Group options={[
+                        {
+                            label: "推送镜像",
+                            value: "pushImage"
+                        }
+                    ]} />
+                </Form.Item>
+                {props.actionInfo.basic_info.param_def_list.map((pd, index) => (
                     <>
                         <Form.Item key={index}
                             label={
