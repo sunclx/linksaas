@@ -1,14 +1,16 @@
 import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
 import { Layout } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { BugOutlined, BulbOutlined } from '@ant-design/icons';
+import { BugOutlined, BulbOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import ProjectQuickAccess from './ProjectQuickAccess';
+import { checkUpdate } from '@tauri-apps/api/updater';
+import { check_update } from '@/api/main';
 
 const { Header } = Layout;
 
@@ -20,6 +22,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 }) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+
+  const [hasNewVersion, setHasNewVersion] = useState(false);
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
@@ -51,12 +55,29 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
         break;
     }
   };
+
+  useEffect(() => {
+    if (props.type == "login") {
+      checkUpdate().then(res => {
+        setHasNewVersion(res.shouldUpdate);
+      });
+    }
+  }, [])
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
       <div className={style.l} >
         {projectStore.curProjectId != "" && <ProjectQuickAccess />}
       </div>
       <div className={style.r}>
+        {props.type == "login" && hasNewVersion == true && (
+          <a style={{ marginRight: "20px" }} onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            check_update();
+          }}>
+            <InfoCircleOutlined />&nbsp;有新版本
+          </a>
+        )}
         <a href="https://doc.linksaas.pro/" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="使用文档"><BulbOutlined /></a>
         <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
         {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}

@@ -11,3 +11,8 @@ export async function conn_grpc_server(addr: string): Promise<boolean> {
 export async function is_conn_server(): Promise<boolean> {
   return invoke<boolean>('is_conn_server', {});
 }
+
+//检查更新
+export async function check_update(): Promise<void> {
+  return invoke<void>("check_update", {});
+}
