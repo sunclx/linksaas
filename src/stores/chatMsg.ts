@@ -36,6 +36,9 @@ class ChatMsgStore {
     private _listRefMsgId = "";
     skipNewMsgByUi = false;
 
+    get lastMsgId(): string {
+        return this._lastMsgId;
+    }
     get msgList(): WebMsg[] {
         return this._msgList;
     }

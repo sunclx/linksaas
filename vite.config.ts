@@ -55,7 +55,7 @@ export default ({ command, mode }: ConfigEnv) => {
       terserOptions: {
         compress: {
           keep_infinity: true,
-          drop_console: true,
+          drop_console: false,
           drop_debugger: true,
         },
       },

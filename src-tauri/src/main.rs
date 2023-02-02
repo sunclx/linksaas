@@ -155,6 +155,11 @@ async fn init_local_storage() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[tauri::command]
+async fn check_update(app_handle: AppHandle) {
+    my_updater::check_update_with_dialog(app_handle).await;
+}
+
+#[tauri::command]
 async fn capture_screen(
     _app_handle: AppHandle,
     _window: Window,
@@ -208,7 +213,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             conn_grpc_server,
             capture_screen,
-            is_conn_server
+            is_conn_server,
+            check_update
         ])
         .on_system_tray_event(move |app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
