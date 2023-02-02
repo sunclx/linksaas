@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import ChatMsg from './ChatMsg';
@@ -11,12 +11,10 @@ const ChatMsgList = () => {
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
   const chatListElRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
-  const [lastChannelId, setLastChannelId] = useState('');
 
   const readonly = channelStore.curChannel?.channelInfo.closed || channelStore.curChannel?.channelInfo.readonly;
 
   useEffect(() => {
-    console.log(`lastChannelId ${lastChannelId}`);
     setTimeout(() => {
       if (chatListElRef.current != null) {
         const bottomDis =
@@ -24,17 +22,17 @@ const ChatMsgList = () => {
           chatListElRef.current.clientHeight -
           chatListElRef.current.scrollTop;
         if (
-          lastChannelId != channelStore.curChannelId ||
-          bottomDis < 200 ||
-          chatMsgStore.listRefMsgId !== ''
+          chatMsgStore.msgList.map(item => item.msg.msg_id).includes(chatMsgStore.lastMsgId) && (
+            bottomDis < 200 ||
+            chatMsgStore.listRefMsgId == ''
+          )
         ) {
-          setLastChannelId(channelStore.curChannelId);
           chatListElRef.current.scrollTop =
             chatListElRef.current.scrollHeight - chatListElRef.current.clientHeight;
         }
       }
     }, 200);
-  });
+  }, [chatMsgStore.lastMsgId]);
 
   const onScroll = () => {
     if (chatListElRef.current != null) {
