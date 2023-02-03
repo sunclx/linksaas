@@ -8,16 +8,33 @@
   padding-left: 15px;
 }
 
-.workbench_icon {
-  width: 15px;
-  margin-top: -4px;
-  margin-right: 3px;
+.active_menu {
+  background-color: #0078f7;
+}
+
+.workbench_menu {
+  color: white;
+  margin-left: 4px;
+  margin-right: 20px;
+  padding-left: 20px;
+  border-radius: 20px;
+
+  &:hover {
+    background-color: #666;
+  }
+
+  .workbench_icon {
+    width: 15px;
+    margin-top: -4px;
+    margin-right: 3px;
+  }
 }
 
 .user {
   display: flex;
   align-items: center;
   padding: 20px 0;
+  position: relative;
 
   .avatar {
     margin: 0 10px 0 8px;
@@ -38,36 +55,27 @@
     font-size: 12px;
     line-height: 30px;
   }
+
+  .expand {
+    position: absolute;
+    right: 15px;
+    font-size: 20px;
+    color: white;
+    top: 5px;
+    cursor: pointer;
+  }
 }
 
-.project_submenu {
-  :global {
-    .ant-menu-submenu-title {
-      padding-right: 10px;
-      padding-left: 40px !important;
-
-      .ant-menu-submenu-arrow {
-        position: absolute;
-        left: 24px;
-      }
-    }
-
-    ul {
-      max-height: 300px;
-      overflow-y: scroll !important;
-
-      li:hover {
-        background-color: #777 !important;
-      }
-    }
-  }
-
-  .submenu_title {
+.project_menu {
+  .menu_title {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    color: white;
+    padding-left: 24px;
+    padding-top: 5px;
 
-    .submenu_icon_wrap {
+    .menu_icon_wrap {
       .icon_wrap {
         margin-right: 1px;
         padding: 3px;
@@ -103,17 +111,18 @@
 
   .project_child_menu {
     position: relative;
-    height: 32px !important;
     margin: 5px 0;
-    padding-left: 30px !important;
-    line-height: 20px !important;
 
     .project_child_wrap {
-      height: 22px;
-
       .project_child_title {
         color: #fff;
         opacity: 1;
+        padding-left: 40px;
+        border-radius: 20px;
+
+        &:hover {
+          background-color: #666;
+        }
 
         &.close {
           opacity: 0.6;
@@ -121,7 +130,7 @@
 
         .badge {
           position: absolute;
-          left: 4px;
+          left: 14px;
 
           >sup {
             padding: 0 2px;

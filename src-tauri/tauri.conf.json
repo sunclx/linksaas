@@ -108,7 +108,7 @@
         "title": "",
         "width": 1000,
         "height": 640,
-        "minHeight": 300,
+        "minHeight": 500,
         "minWidth": 600,
         "resizable": true,
         "fullscreen": false,
