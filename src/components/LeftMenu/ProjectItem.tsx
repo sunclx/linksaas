@@ -177,10 +177,16 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
             onClick={() => {
                 if (docSpaceStore.inEdit) {
                     docSpaceStore.showCheckLeave(() => {
+                        if (appStore.simpleMode) {
+                            appStore.simpleMode = false;
+                        }
                         history.push(APP_PROJECT_CHAT_PATH);
                         projectStore.setCurProjectId(item.project_id);
                     });
                     return;
+                }
+                if (appStore.simpleMode) {
+                    appStore.simpleMode = false;
                 }
                 history.push(APP_PROJECT_CHAT_PATH);
                 projectStore.setCurProjectId(item.project_id);
