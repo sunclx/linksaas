@@ -21,13 +21,13 @@ export default class IssueStore {
         return this._prjTodoBugList;
     }
 
-    async loadPrjTodoIssue(projectId: string) {
+    async loadPrjTodoIssue(projectId: string, issueType: issueApi.ISSUE_TYPE) {
         const req: issueApi.ListRequest = {
             session_id: this.rootStore.userStore.sessionId,
             project_id: projectId,
             list_param: {
                 filter_by_issue_type: true,
-                issue_type: issueApi.ISSUE_TYPE_TASK,
+                issue_type: issueType,
                 filter_by_state: true,
                 state_list: [issueApi.ISSUE_STATE_PROCESS, issueApi.ISSUE_STATE_CHECK],
                 filter_by_create_user_id: false,
@@ -61,14 +61,13 @@ export default class IssueStore {
             offset: 0,
             limit: 99,
         };
-        const taskRes = await request(issueApi.list(req));
+        const res = await request(issueApi.list(req));
         runInAction(() => {
-            this._prjTodoTaskList = taskRes.info_list;
-        });
-        req.list_param.issue_type = issueApi.ISSUE_TYPE_BUG;
-        const bugRes = await request(issueApi.list(req));
-        runInAction(() => {
-            this._prjTodoBugList = bugRes.info_list;
+            if(issueType == issueApi.ISSUE_TYPE_TASK){
+                this._prjTodoTaskList = res.info_list;
+            }else if (issueType == issueApi.ISSUE_TYPE_BUG) {
+                this._prjTodoBugList = res.info_list;
+            }
         });
     }
 }
