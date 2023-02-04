@@ -54,6 +54,18 @@ class AppStore {
       this._showCreateProject = val;
     });
   }
+
+  private _simpleMode: boolean = false;
+
+  get simpleMode(): boolean {
+    return this._simpleMode;
+  }
+
+  set simpleMode(val: boolean) {
+    runInAction(() => {
+      this._simpleMode = val;
+    });
+  }
 }
 
 export default AppStore;

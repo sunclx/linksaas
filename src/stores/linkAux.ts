@@ -489,7 +489,9 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
-
+      if(this.rootStore.appStore.simpleMode){
+        this.rootStore.appStore.simpleMode = false;
+      }
       history.push(this.genUrl(pathname, TASK_DETAIL_SUFFIX), {
         issueId: taskLink.issueId,
         content: '',
@@ -515,6 +517,9 @@ class LinkAuxStore {
       }
       if (this.rootStore.projectStore.curProjectId != bugLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(bugLink.projectId);
+      }
+      if(this.rootStore.appStore.simpleMode){
+        this.rootStore.appStore.simpleMode = false;
       }
       history.push(this.genUrl(pathname, BUG_DETAIL_SUFFIX), {
         issueId: bugLink.issueId,
