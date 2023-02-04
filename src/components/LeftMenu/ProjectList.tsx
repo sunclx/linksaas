@@ -9,6 +9,7 @@ import ProjectItem from "./ProjectItem";
 import { runInAction } from "mobx";
 import JoinProject from "./JoinProject";
 import CreatedProject from "./CreatedProject";
+import AddMember from "./AddMember";
 
 
 const AddMenu: React.FC = observer(() => {
@@ -72,6 +73,7 @@ const FilterMenu = () => {
 const ProjectList = () => {
     const appStore = useStores('appStore');
     const projectStore = useStores('projectStore');
+    const memberStore = useStores('memberStore');
 
     return (
         <div className={cls.project_menu} data-tauri-drag-region={true}>
@@ -112,7 +114,7 @@ const ProjectList = () => {
                     </div>
                 ))}
             </div>
-            {projectStore.projectList.length == 0 && (<div className={cls.zero_project_tips}>
+            {projectStore.projectList.length == 0 && appStore.simpleMode == false && (<div className={cls.zero_project_tips}>
                 您的项目列表为空，您可以通过上方的<i className={cls.add} />加入或创建新项目。
             </div>)}
             {appStore.showJoinProject && <JoinProject
@@ -123,7 +125,11 @@ const ProjectList = () => {
                 visible={appStore.showCreateProject}
                 onChange={(val) => (appStore.showCreateProject = val)}
             />}
-
+            {
+                memberStore.showInviteMember && <AddMember
+                    visible={memberStore.showInviteMember}
+                    onChange={(val) => memberStore.showInviteMember = val} />
+            }
         </div>
     )
 };

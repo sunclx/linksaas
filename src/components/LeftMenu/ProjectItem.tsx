@@ -14,6 +14,8 @@ import Button from '../Button';
 import { request } from "@/utils/request";
 import { close, open, remove } from '@/api/project';
 import { leave } from '@/api/project_member';
+import PrjTodoIssueList from "./PrjTodoIssueList";
+import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 
 const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
     const [hover, setHover] = useState(false);
@@ -196,7 +198,11 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
             }}
         >
             <div className={`${cls.project_child_title} ${item.closed && cls.close} ${item.project_id == projectStore.curProjectId ? cls.active_menu : ""}`}>
-                <Badge count={item.project_status.total_count} className={cls.badge} />
+                {item.project_id !== projectStore.curProjectId &&
+                    <Badge count={item.project_status.total_count} className={cls.badge} dot={appStore.simpleMode}
+                        style={{ top: appStore.simpleMode ? "12px" : undefined, left: appStore.simpleMode ? "10px" : undefined }} />
+                }
+
                 {item.project_id !== projectStore.curProjectId && <FolderFilled />}
                 {item.project_id == projectStore.curProjectId &&
                     item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
@@ -209,9 +215,10 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                     </Popover>
                 )}
             </div>
-            {projectStore.curProjectId == item.project_id && (
-                <div>
-                    xx
+            {projectStore.curProjectId == item.project_id && appStore.simpleMode && (
+                <div className={cls.project_info_wrap}>
+                    <PrjTodoIssueList issueType={ISSUE_TYPE_TASK} />
+                    <PrjTodoIssueList issueType={ISSUE_TYPE_BUG} />
                 </div>
             )}
             {pjChangeObj.visible && (
