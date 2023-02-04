@@ -465,8 +465,10 @@ class NoticeStore {
     }
     await appWindow.show();
     await appWindow.setAlwaysOnTop(true);
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
+    if (ev.shortNoteModeType != SHORT_NOTE_MODE_SHOW) {
+      if (this.rootStore.appStore.simpleMode) {
+        this.rootStore.appStore.simpleMode = false;
+      }
     }
     setTimeout(() => {
       appWindow.setAlwaysOnTop(false);

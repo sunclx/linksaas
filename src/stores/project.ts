@@ -7,7 +7,7 @@ import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
 import { set_cur_work_snapshot } from '@/api/user';
 import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
-import { get_member_state as get_my_issue_state } from '@/api/project_issue';
+import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
 import { get_work_snap_shot_status } from '@/api/project_member';
 import type { History } from 'history';
 
@@ -61,6 +61,10 @@ export default class ProjectStore {
     if (val !== '' && val != oldProjectId) {
       await this.rootStore.memberStore.loadMemberList(val);
       await this.rootStore.channelStore.loadChannelList(val);
+      if (this.rootStore.appStore.simpleMode) {
+        this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_TASK);
+        this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_BUG);
+      }
       this.rootStore.appraiseStore.clearData();
     }
   }
