@@ -1,10 +1,27 @@
+use std::path::PathBuf;
 use std::{fs, io::Read};
+use tauri::http::{status::StatusCode, Response};
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window, WindowBuilder, WindowUrl,
 };
-use tauri::http::{status::StatusCode, Response};
-use std::path::PathBuf;
+
+const INIT_SCRIPT: &str = r#"
+window.minApp = {
+    projectId: "__PROJECT_ID__",
+};
+var _reduceTauriCap = setInterval(
+    function() {
+        if(window.__TAURI__ != undefined){
+            window.__TAURI__ = {
+                invoke: window.__TAURI__.invoke,
+            };
+
+            clearInterval(_reduceTauriCap);
+            _reduceTauriCap = undefined;
+        }
+    }, 100);
+"#;
 
 fn get_file_type(url_path: &String) -> &str {
     if url_path.ends_with(".abs") {
@@ -409,6 +426,13 @@ fn get_file_type(url_path: &String) -> &str {
     return "text/html";
 }
 
+fn send_error(code: u16, msg: String, response: &mut Response) {
+    response.set_status(StatusCode::from_u16(code).unwrap());
+    response.body_mut().clear();
+    let content = Vec::from(msg);
+    response.body_mut().extend_from_slice(&content);
+}
+
 fn send_file_data(data_path: String, url_path: String, response: &mut Response) {
     let mut file_path = PathBuf::from(data_path);
     for sub_path in url_path.split("/") {
@@ -420,17 +444,17 @@ fn send_file_data(data_path: String, url_path: String, response: &mut Response) 
 
     let file = fs::File::open(file_path);
     if file.is_err() {
-        //TODO
+        send_error(500, file.err().unwrap().to_string(), response);
         return;
     }
     let mut file = file.unwrap();
     let mut content = vec![];
     let read_res = file.read_to_end(&mut content);
     if read_res.is_err() {
-        //TODO
+        send_error(404, read_res.err().unwrap().to_string(), response);
         return;
     }
-    
+
     response.set_status(StatusCode::from_u16(200).unwrap());
     response.set_mimetype(Some(String::from(get_file_type(&url_path))));
     response.body_mut().clear();
@@ -441,6 +465,7 @@ fn send_file_data(data_path: String, url_path: String, response: &mut Response) 
 async fn start<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
+    project_id: String,
     label: String,
     title: String,
     path: String,
@@ -448,13 +473,22 @@ async fn start<R: Runtime>(
     if window.label() != "main" {
         return Err("no permission".into());
     }
-    let res = WindowBuilder::new(&app_handle, label, WindowUrl::App("index.html".into()))
+    let script = INIT_SCRIPT.replace("__PROJECT_ID__", &project_id);
+    let init_url = if path.starts_with("http://") || path.starts_with("https://") {
+        match url::Url::parse(&path) {
+            Ok(res_url) => WindowUrl::External(res_url),
+            Err(_) => WindowUrl::App("index.html".into()),
+        }
+    }else {
+        WindowUrl::App("index.html".into())
+    };
+    let res = WindowBuilder::new(&app_handle, label, init_url)
         .title(title)
         .visible(true)
         .on_web_resource_request(move |request, response| {
             let req_url = url::Url::parse(request.uri());
             if req_url.is_err() {
-                //TODO send error
+                send_error(500, req_url.err().unwrap().to_string(), response);
                 return;
             }
             let req_url = req_url.unwrap();
@@ -462,7 +496,7 @@ async fn start<R: Runtime>(
                 return;
             }
             send_file_data(path.clone(), String::from(req_url.path()), response);
-        })
+        }).initialization_script(&script)
         .build();
     if res.is_err() {
         return Err(res.err().unwrap().to_string());

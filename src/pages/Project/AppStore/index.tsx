@@ -99,7 +99,7 @@ const AppStore: React.FC = () => {
     } else if (selected === null) {
       return;
     }
-    await start_min_app("minApp_" + uniqId(), "调试微应用", selected);
+    await start_min_app("minApp_" + uniqId(), "调试微应用", projectStore.curProjectId, selected);
   }
 
   useEffect(() => {
