@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import CardWrap from '@/components/CardWrap';
-import { Button, Modal, Form, Input, message, Image } from 'antd';
+import { Button, Modal, Form, Input, message, Image, Space, Popover } from 'antd';
 import * as appApi from '@/api/project_app';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
-import { open } from '@tauri-apps/api/shell';
+import { open as open_shell } from '@tauri-apps/api/shell';
 import s from './index.module.less';
 import { ReactComponent as Deletesvg } from '@/assets/svg/delete.svg';
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
+import { MoreOutlined } from '@ant-design/icons';
+import { open as open_dialog } from '@tauri-apps/api/dialog';
+import { start as start_min_app } from '@/api/min_app';
+import { uniqId } from '@/utils/utils';
 
 interface AddFormData {
   appName: string;
@@ -82,8 +86,21 @@ const AppStore: React.FC = () => {
     );
     const url = new URL(appUrl);
     url.searchParams.append('_tokenurl', tokenRes.url);
-    await open(url.toString());
+    await open_shell(url.toString());
   };
+
+  const debugMinApp = async () => {
+    const selected = await open_dialog({
+      title: "选择程序目录",
+      directory: true,
+    });
+    if (Array.isArray(selected)) {
+      return;
+    } else if (selected === null) {
+      return;
+    }
+    await start_min_app("minApp_" + uniqId(), "调试微应用", projectStore.curProjectId, selected);
+  }
 
   useEffect(() => {
     loadAppList();
@@ -94,18 +111,30 @@ const AppStore: React.FC = () => {
       <div className={s.appStore}>
         <div className={s.appStoreHd}>
           <h2>应用列表</h2>
-          {projectStore.isAdmin && (
-            <Button
-              type="primary"
-              onClick={(e) => {
+          <Space size="middle">
+            {projectStore.isAdmin && (
+              <Button
+                type="primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowAdd(true);
+                }}
+              >
+                新增应用
+              </Button>
+            )}
+            <Popover placement='bottom' trigger="click" content={
+              <Button type="link" style={{ margin: "10px 10px" }} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                setShowAdd(true);
-              }}
-            >
-              新增应用
-            </Button>
-          )}
+                debugMinApp();
+              }}>调试微应用</Button>
+            }>
+              <MoreOutlined />
+            </Popover>
+
+          </Space>
         </div>
         <div className={s.appStoreBd}>
           <div className={s.appList}>
