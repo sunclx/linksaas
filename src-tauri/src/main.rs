@@ -46,6 +46,8 @@ mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
 
+mod min_app_plugin;
+
 mod my_updater;
 
 use std::time::Duration;
@@ -214,7 +216,7 @@ fn main() {
             conn_grpc_server,
             capture_screen,
             is_conn_server,
-            check_update
+            check_update,
         ])
         .on_system_tray_event(move |app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
@@ -310,6 +312,7 @@ fn main() {
         .plugin(org_admin_api_plugin::OrgAdminApiPlugin::new())
         .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
+        .plugin(min_app_plugin::MinAppPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()
