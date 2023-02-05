@@ -9,9 +9,11 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { useHistory, useLocation } from 'react-router-dom';
+import { appWindow } from '@tauri-apps/api/window';
+
 
 import Header from '../components/Header';
-import Menu from '../components/Menu';
+import LeftMenu from '../components/LeftMenu';
 import Toolbar from '../components/Toolbar';
 import style from './style.module.less';
 
@@ -20,6 +22,8 @@ const { Content } = Layout;
 const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   const history = useHistory();
   const { pathname } = useLocation();
+
+  const appStore = useStores('appStore')
   const { sessionId } = useStores('userStore');
   const userStore = useStores('userStore');
   const { curProjectId } = useStores('projectStore');
@@ -44,25 +48,56 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
     },
   );
 
+  const adjustSize = async () =>{
+    const winSize = await appWindow.outerSize();
+    if(appStore.simpleMode){
+      if(winSize.width > 300){
+        winSize.width = 200;
+        appWindow.setSize(winSize);
+      }
+    }else {
+      if(winSize.width < 300 ){
+        winSize.width = 1300;
+        appWindow.setSize(winSize);
+      }
+    }
+  };
+
+  useEffect(()=>{
+    if(userStore.sessionId == ""){
+      return;
+    }
+    adjustSize();
+  },[appStore.simpleMode]);
+
   if (!sessionId && !userStore.isResetPassword) return <div />;
 
   return (
-    <Layout className="basicLayout">
-      <Menu />
-      <Layout>
-        <Header />
-        {curProjectId != '' && <TopNav />}
-        <Content
-          className={classNames(
-            style.basicContent,
-            pathname !== WORKBENCH_PATH && style.showtopnav,
-          )}
-        >
-          {renderRoutes(route.routes, { sessionId, projectId: curProjectId })}
-        </Content>
-        {curProjectId && <Toolbar />}
-      </Layout>
-    </Layout>
+    <>
+      {appStore.simpleMode == true && (
+        <div className={style.basicLayout} data-tauri-drag-region={true}>
+          <LeftMenu />
+        </div>
+      )}
+      {appStore.simpleMode == false && (
+        <Layout className="basicLayout">
+          <LeftMenu />
+          <Layout>
+            <Header />
+            {curProjectId != '' && <TopNav />}
+            <Content
+              className={classNames(
+                style.basicContent,
+                pathname !== WORKBENCH_PATH && style.showtopnav,
+              )}
+            >
+              {renderRoutes(route.routes, { sessionId, projectId: curProjectId })}
+            </Content>
+            {curProjectId && <Toolbar />}
+          </Layout>
+        </Layout>
+      )}
+    </>
   );
 };
 

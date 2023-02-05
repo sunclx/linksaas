@@ -1,10 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { platform } from '@tauri-apps/api/os';
 import * as clientCfgApi from '@/api/client_cfg';
+import type { RootStore } from '.';
+import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 
 class AppStore {
 
-  constructor() {
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
     makeAutoObservable(this);
     platform().then((platName: string) => {
       if (platName.includes("win32")) {
@@ -12,7 +15,7 @@ class AppStore {
       }
     })
   }
-
+  rootStore: RootStore;
   private _isOsWindows = false;
 
   get isOsWindows(): boolean {
@@ -52,6 +55,22 @@ class AppStore {
   set showCreateProject(val: boolean) {
     runInAction(() => {
       this._showCreateProject = val;
+    });
+  }
+
+  private _simpleMode: boolean = false;
+
+  get simpleMode(): boolean {
+    return this._simpleMode;
+  }
+
+  set simpleMode(val: boolean) {
+    runInAction(() => {
+      this._simpleMode = val;
+      if (val && this.rootStore.projectStore.curProjectId != "") {
+        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId,ISSUE_TYPE_TASK);
+        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId,ISSUE_TYPE_BUG);
+      }
     });
   }
 }

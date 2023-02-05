@@ -70,7 +70,7 @@ const ChatMsgList = () => {
     }
   };
   return (
-    <div className={readonly ? styles.readOnlyChatListWrap : styles.chatListWrap}>
+    <div className={styles.chatListWrap}>
       <div ref={chatListElRef} className={styles.chatList} onScroll={() => onScroll()}>
         {chatMsgStore.msgList.map((msg) => {
           return <ChatMsg msg={msg} key={msg.msg.msg_id} readonly={readonly ?? true} />;
