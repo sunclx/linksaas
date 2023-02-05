@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge, Input, Popover, message } from "antd";
 import { APP_PROJECT_CHAT_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
-import { FolderFilled, VideoCameraOutlined } from "@ant-design/icons";
+import { DoubleRightOutlined, FolderFilled, VideoCameraOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
 import type { ProjectInfo } from "@/api/project";
@@ -174,23 +174,6 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
 
     return (
         <div
-            onClick={() => {
-                if (docSpaceStore.inEdit) {
-                    docSpaceStore.showCheckLeave(() => {
-                        if (appStore.simpleMode) {
-                            appStore.simpleMode = false;
-                        }
-                        history.push(APP_PROJECT_CHAT_PATH);
-                        projectStore.setCurProjectId(item.project_id);
-                    });
-                    return;
-                }
-                if (appStore.simpleMode) {
-                    appStore.simpleMode = false;
-                }
-                history.push(APP_PROJECT_CHAT_PATH);
-                projectStore.setCurProjectId(item.project_id);
-            }}
             className={cls.project_child_wrap}
             onMouseOver={e => {
                 e.stopPropagation();
@@ -208,17 +191,37 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                     <Badge count={item.project_status.total_count} className={cls.badge} dot={appStore.simpleMode}
                         style={{ top: appStore.simpleMode ? "12px" : undefined, left: appStore.simpleMode ? "10px" : undefined }} />
                 }
-
                 {item.project_id !== projectStore.curProjectId && <FolderFilled />}
                 {item.project_id == projectStore.curProjectId &&
                     item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
                 {item.project_id == projectStore.curProjectId &&
                     !item.project_status.work_snap_shot_enable && <FolderFilled />}
-                <span className={cls.name}>&nbsp;{item.basic_info.project_name} </span>
+                <span className={cls.name} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (docSpaceStore.inEdit) {
+                        docSpaceStore.showCheckLeave(() => {
+                            history.push(APP_PROJECT_CHAT_PATH);
+                            projectStore.setCurProjectId(item.project_id);
+                        });
+                        return;
+                    }
+                    history.push(APP_PROJECT_CHAT_PATH);
+                    projectStore.setCurProjectId(item.project_id);
+                }}>&nbsp;{item.basic_info.project_name} </span>
                 {appStore.simpleMode == false && (
                     <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false}>
                         {hover && <i className={cls.more} />}
                     </Popover>
+                )}
+                {appStore.simpleMode == true && (
+                    <i style={{ cursor: "pointer", paddingLeft: "20px" }} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        appStore.simpleMode = false;
+                        history.push(APP_PROJECT_CHAT_PATH);
+                        projectStore.setCurProjectId(item.project_id);
+                    }}><DoubleRightOutlined /></i>
                 )}
             </div>
             {projectStore.curProjectId == item.project_id && appStore.simpleMode && (

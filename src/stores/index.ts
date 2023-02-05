@@ -32,7 +32,7 @@ export class RootStore {
   constructor() {
     this.userStore = new UserStore(this);
     this.projectStore = new ProjectStore(this);
-    this.appStore = new AppStore();
+    this.appStore = new AppStore(this);
     this.memberStore = new MemberStore(this);
     this.noticeStore = new NoticeStore(this);
     this.channelStore = new ChannelStore(this);

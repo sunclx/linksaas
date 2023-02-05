@@ -418,6 +418,9 @@ class LinkAuxStore {
   rootStore: RootStore;
 
   async goToLink(link: LinkInfo, history: History, remoteCheck: boolean = true) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     const pathname = history.location.pathname;
     if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CHANNEL) {
       const channelLink = link as LinkChannelInfo;
@@ -489,9 +492,6 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
-      if(this.rootStore.appStore.simpleMode){
-        this.rootStore.appStore.simpleMode = false;
-      }
       history.push(this.genUrl(pathname, TASK_DETAIL_SUFFIX), {
         issueId: taskLink.issueId,
         content: '',
@@ -517,9 +517,6 @@ class LinkAuxStore {
       }
       if (this.rootStore.projectStore.curProjectId != bugLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(bugLink.projectId);
-      }
-      if(this.rootStore.appStore.simpleMode){
-        this.rootStore.appStore.simpleMode = false;
       }
       history.push(this.genUrl(pathname, BUG_DETAIL_SUFFIX), {
         issueId: bugLink.issueId,
@@ -652,6 +649,9 @@ class LinkAuxStore {
 
   //跳转到创建文档
   async goToCreateDoc(content: string, projectId: string, docSpaceId: string, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
@@ -670,6 +670,9 @@ class LinkAuxStore {
 
   //跳转到创建任务
   async goToCreateTask(content: string, projectId: string, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
@@ -682,6 +685,9 @@ class LinkAuxStore {
 
   //跳转到创建缺陷
   async goToCreateBug(content: string, projectId: string, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
@@ -694,92 +700,145 @@ class LinkAuxStore {
 
   //跳转到任务列表
   goToTaskList(state: LinkIssueListState | undefined, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/task"), state);
   }
 
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState | undefined, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/bug"), state);
   }
 
   //跳转到服务器代理列表
   goToRobotList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/robot"));
   }
 
   //跳转到迭代列表
   goToSpritList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/sprit"));
   }
 
   //跳转到测试用例列表页
   goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/testcase"), state);
   }
 
   //跳转到测试结果列表页
   goToTestCaseResultList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/testcase/result"));
   }
 
   //跳转到研发行为列表页
   goToEventList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/record"));
   }
 
   //跳转到研发行为订阅页面
   goToEventSubscribeList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/record/subscribe"));
   }
 
   //跳转到项目信息页面
   goToProjectInfo(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/home"));
   }
 
   //跳转到项目成员页面
   goToMemberList(tab: string, history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, `/member?tab=${tab}`));
   }
 
   //跳转到成员互评页面
   goToAppriaseList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/appraise"));
   }
 
   //跳转到项目贡献页面
   goToAwardList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/award"));
   }
 
   //跳转到代码仓库列表
   goToRepoList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/repo"));
   }
 
   //跳转到第三方接入列表
   goToExtEventList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/access"));
   }
 
   //跳转到项目应用
   goToAppList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/appstore"));
   }
 
   //跳转到本地接口页面
   goToLocalApi(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/localapi"));
-
   }
 
   //跳转到创建服务端脚本页面
   goToCreateScript(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, SCRIPT_CREATE_SUFFIX));
   }
 
   //跳转到服务端脚本列表页面
   goToScriptList(history: History) {
+    if(this.rootStore.appStore.simpleMode){
+      this.rootStore.appStore.simpleMode = false;
+    }
     history.push(this.genUrl(history.location.pathname, "/script"));
   }
 
