@@ -3,8 +3,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 export type APP_OPEN_TYPE = number;
 
 export const OPEN_TYPE_BROWSER: APP_OPEN_TYPE = 0;
-export const OPEN_TYPE_MIN_APP_REMOTE: APP_OPEN_TYPE = 1;
-export const OPEN_TYPE_MIN_APP_LOCAL: APP_OPEN_TYPE = 2;
+export const OPEN_TYPE_MIN_APP: APP_OPEN_TYPE = 1;
 
 
 export type BasicApp = {

@@ -11,6 +11,12 @@
     "withGlobalTauri": true
   },
   "tauri": {
+    "pattern": {
+      "use": "isolation",
+      "options": {
+        "dir": "../dist-isolation"
+      }
+    },
     "bundle": {
       "active": true,
       "targets": [
@@ -99,7 +105,9 @@
       },
       "fs": {
         "readFile": true,
-        "scope": ["$HOME/.linksaas/**"]
+        "scope": [
+          "$HOME/.linksaas/**"
+        ]
       }
     },
     "windows": [

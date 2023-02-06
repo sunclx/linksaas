@@ -9,9 +9,8 @@ import s from './index.module.less';
 import { ReactComponent as Deletesvg } from '@/assets/svg/delete.svg';
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { MoreOutlined } from '@ant-design/icons';
-import { open as open_dialog } from '@tauri-apps/api/dialog';
-import { start as start_min_app } from '@/api/min_app';
-import { uniqId } from '@/utils/utils';
+import DebugMinAppModal from './components/DebugMinAppModal';
+import { observer } from 'mobx-react';
 
 interface AddFormData {
   appName: string;
@@ -21,9 +20,11 @@ interface AddFormData {
 const AppStore: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+
   const [appList, setAppList] = useState([] as appApi.App[]);
   const [showAdd, setShowAdd] = useState(false);
-
+  const [showDebug, setShowDebug] = useState(false);
+  
 
   const loadAppList = async () => {
     const res = await request(
@@ -89,18 +90,6 @@ const AppStore: React.FC = () => {
     await open_shell(url.toString());
   };
 
-  const debugMinApp = async () => {
-    const selected = await open_dialog({
-      title: "选择程序目录",
-      directory: true,
-    });
-    if (Array.isArray(selected)) {
-      return;
-    } else if (selected === null) {
-      return;
-    }
-    await start_min_app("minApp_" + uniqId(), "调试微应用", projectStore.curProjectId, selected);
-  }
 
   useEffect(() => {
     loadAppList();
@@ -128,7 +117,7 @@ const AppStore: React.FC = () => {
               <Button type="link" style={{ margin: "10px 10px" }} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                debugMinApp();
+                setShowDebug(true);
               }}>调试微应用</Button>
             }>
               <MoreOutlined />
@@ -216,8 +205,11 @@ const AppStore: React.FC = () => {
           </Form>
         </Modal>
       )}
+      {showDebug == true && (
+        <DebugMinAppModal onCancel={() => setShowDebug(false)} onOk={() => setShowDebug(false)} />
+      )}
     </CardWrap>
   );
 };
 
-export default AppStore;
+export default observer(AppStore);

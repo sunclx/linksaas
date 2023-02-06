@@ -12,7 +12,7 @@ version = "0.1.40"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.0.4", features = [] }
+tauri-build = {version = "1.0.4", features = ["isolation"] }
 
 [dependencies]
 async-trait = "0.1.26"
@@ -21,6 +21,7 @@ dirs = "4.0.0"
 epub = "1.2.4"
 futures = "0.3"
 futures-util = "0.3.21"
+html-escape = "0.2.13"
 http = "0.2.8"
 hyper = {version = "0.14", features = ["full"] }
 image = "0.24.1"
@@ -36,7 +37,7 @@ serde_json = "1.0"
 signature = "1.6.4"
 ssh-key = {version = "0.5.1", features = ["alloc", "rsa", "dsa", "p256", "p384"] }
 swagger = {version = "6.1", features = ["serdejson", "server", "client", "tls", "tcp"] }
-tauri = {version = "1.2.0", features = ["clipboard-all", "devtools", "dialog-all", "fs-read-file", "macos-private-api", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all", "windows7-compat"] }
+tauri = {version = "1.2.0", features = ["clipboard-all", "devtools", "dialog-all", "fs-read-file", "isolation", "macos-private-api", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all", "windows7-compat"] }
 tokio = {version = "1.17.0", feature = ["time", "macros"] }
 tokio-stream = "0.1.6"
 tonic = "0.6.2"
