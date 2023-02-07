@@ -21,6 +21,8 @@
             return null;
           } else if (payload.cmd.startsWith('plugin:')) {
             return payload;
+          } else if (payload.cmd.startsWith('_')) {
+            return payload;
           }
           return null;
         }

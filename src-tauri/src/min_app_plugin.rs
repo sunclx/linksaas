@@ -681,6 +681,21 @@ async fn get_min_app_path<R: Runtime>(
     return Ok(String::from(cache_dir.to_str().unwrap()));
 }
 
+#[cfg(target_os = "windows")]
+fn adjust_entry_path(name:String) -> String {
+    return name.replace("/", "\\");
+}
+
+#[cfg(target_os = "linux")]
+fn adjust_entry_path(name:String) -> String {
+    return name.replace("\\", "/");
+}
+
+#[cfg(target_os = "mac")]
+fn adjust_entry_path(name:String) -> String {
+    return name.replace("\\", "/");
+}
+
 #[tauri::command]
 async fn unpack_min_app<R: Runtime>(
     window: Window<R>,
@@ -722,7 +737,8 @@ async fn unpack_min_app<R: Runtime>(
 
     for index in 0..entry_list.len() {
         let entry = entry_list.get(index).unwrap();
-        let dest_path = out_path.join(entry.filename());
+        let entry_filename = adjust_entry_path(String::from(entry.filename()));
+        let dest_path = out_path.join(entry_filename);
         if entry.dir() {
             let res = tokio::fs::create_dir_all(&dest_path).await;
             if res.is_err() {

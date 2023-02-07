@@ -36,6 +36,7 @@ const DownloadProgressModal: React.FC<DownloadProgressModalProps> = (props) => {
                 setStep(STEP_UNPACK);
                 setDownloadRatio(100);
             }
+            setStep(STEP_DOWNLOAD);
             await download_file(userStore.sessionId,
                 projectStore.curProject?.min_app_fs_id ?? "",
                 props.fileId, trackId, "content.zip");
