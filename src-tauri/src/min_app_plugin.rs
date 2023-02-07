@@ -691,7 +691,7 @@ fn adjust_entry_path(name:String) -> String {
     return name.replace("\\", "/");
 }
 
-#[cfg(target_os = "mac")]
+#[cfg(target_os = "macos")]
 fn adjust_entry_path(name:String) -> String {
     return name.replace("\\", "/");
 }
