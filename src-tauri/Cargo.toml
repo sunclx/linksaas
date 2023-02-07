@@ -46,6 +46,7 @@ url = "2.2.2"
 uuid = {version = "0.8", features = ["serde", "v4"] }
 walkdir = "2.3.2"
 async_zip = { version = "0.0.11", features = ["full"] }
+substring = "1.4.5"
 
 [features]
 # by default Tauri runs in production mode

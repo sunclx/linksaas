@@ -1,10 +1,14 @@
+use crate::user_api_plugin::get_session;
 use async_zip::read::seek::ZipFileReader;
 use async_zip::write::ZipFileWriter;
 use async_zip::{Compression, ZipEntryBuilder};
+use proto_gen_rust::project_app_api::project_app_api_client::ProjectAppApiClient;
+use proto_gen_rust::project_app_api::GetMinAppPermRequest;
 use proto_gen_rust::project_app_api::MinAppPerm;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::{fs, io::Read};
+use substring::Substring;
 use tauri::async_runtime::Mutex;
 use tauri::http::{status::StatusCode, Response};
 use tauri::Manager;
@@ -731,7 +735,7 @@ async fn unpack_min_app<R: Runtime>(
                     return Err(res.err().unwrap().to_string());
                 }
             }
-            
+
             let entry_reader = reader.entry(index).await;
             if entry_reader.is_err() {
                 return Err(entry_reader.err().unwrap().to_string());
@@ -740,7 +744,8 @@ async fn unpack_min_app<R: Runtime>(
             let writer = tokio::fs::OpenOptions::new()
                 .write(true)
                 .create_new(true)
-                .open(&dest_path).await;
+                .open(&dest_path)
+                .await;
             if writer.is_err() {
                 return Err(writer.err().unwrap().to_string());
             }
@@ -760,6 +765,39 @@ async fn unpack_min_app<R: Runtime>(
     return Ok(());
 }
 
+pub async fn get_min_app_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    project_id: String,
+) -> Option<MinAppPerm> {
+    let label = window.label();
+    if label.starts_with("minApp:") == false {
+        return None;
+    }
+    let app_id = label.substring(7, label.len());
+    if app_id == "debug" {
+        let cur_value = app_handle.state::<DebugPerm>().inner();
+        let cur_perm = cur_value.0.lock().await;
+        return cur_perm.clone();
+    } else {
+        let chan = super::get_grpc_chan(&app_handle).await;
+        if (&chan).is_none() {
+            return None;
+        }
+        let mut client = ProjectAppApiClient::new(chan.unwrap());
+        let res = client
+            .get_min_app_perm(GetMinAppPermRequest {
+                session_id: get_session(app_handle).await,
+                project_id: project_id,
+                app_id: app_id.into(),
+            })
+            .await;
+        if res.is_err() {
+            return None;
+        }
+        return res.unwrap().into_inner().perm;
+    }
+}
 pub struct MinAppPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }

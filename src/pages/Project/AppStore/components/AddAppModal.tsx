@@ -34,7 +34,6 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         },
         member_perm: {
             list_member: false,
-            get_last_goal: false,
             list_goal_history: false,
         },
         issue_perm: {

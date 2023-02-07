@@ -17,6 +17,8 @@
             } else {
               return null;
             }
+          } else if (payload.cmd.startsWith("plugin:user_api|")){
+            return null;
           } else if (payload.cmd.startsWith('plugin:')) {
             return payload;
           }

@@ -30,10 +30,6 @@ const memberOptionList: CheckboxOptionType[] = [
         value: "list_member",
     },
     {
-        label: "获取最后目标",
-        value: "get_last_goal",
-    },
-    {
         label: "列出目标历史",
         value: "list_goal_history",
     },
@@ -90,9 +86,6 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
         if (props.perm.member_perm.list_member) {
             tmpMemberValues.push("list_member");
         }
-        if (props.perm.member_perm.get_last_goal) {
-            tmpMemberValues.push("get_last_goal");
-        }
         if (props.perm.member_perm.list_goal_history) {
             tmpMemberValues.push("list_goal_history");
         }
@@ -133,7 +126,6 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
             },
             member_perm: {
                 list_member: false,
-                get_last_goal: false,
                 list_goal_history: false,
             },
             issue_perm: {
@@ -155,8 +147,6 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
         memberPermList.forEach(permStr => {
             if (permStr == "list_member") {
                 tempPerm.member_perm.list_member = true;
-            } else if (permStr == "get_last_goal") {
-                tempPerm.member_perm.get_last_goal = true;
             } else if (permStr == "list_goal_history") {
                 tempPerm.member_perm.list_goal_history = true;
             }

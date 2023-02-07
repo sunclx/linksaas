@@ -27,7 +27,6 @@ export type MinAppNetPerm = {
 
 export type MinAppMemberPerm = {
     list_member: boolean;
-    get_last_goal: boolean;
     list_goal_history: boolean;
 };
 
