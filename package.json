@@ -1,9 +1,9 @@
 {
   "name": "desktop",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
-  "author": "panleiming <panleiming@linksaas.com>",
+  "author": "panleiming <panleiming@linksaas.pro>",
   "main": "index.js",
   "scripts": {
     "build": "tsc && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" vite build",
