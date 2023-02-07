@@ -1,26 +1,36 @@
+use crate::user_api_plugin::get_session;
+use async_zip::read::seek::ZipFileReader;
+use async_zip::write::ZipFileWriter;
+use async_zip::{Compression, ZipEntryBuilder};
+use proto_gen_rust::project_app_api::project_app_api_client::ProjectAppApiClient;
+use proto_gen_rust::project_app_api::GetMinAppPermRequest;
+use proto_gen_rust::project_app_api::MinAppPerm;
 use std::path::PathBuf;
+use std::time::Duration;
 use std::{fs, io::Read};
+use substring::Substring;
+use tauri::async_runtime::Mutex;
 use tauri::http::{status::StatusCode, Response};
+use tauri::Manager;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window, WindowBuilder, WindowUrl,
 };
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
+use tokio::time::sleep;
 
 const INIT_SCRIPT: &str = r#"
-window.minApp = {
-    projectId: "__PROJECT_ID__",
-};
-var _reduceTauriCap = setInterval(
-    function() {
-        if(window.__TAURI__ != undefined){
-            window.__TAURI__ = {
-                invoke: window.__TAURI__.invoke,
-            };
-
-            clearInterval(_reduceTauriCap);
-            _reduceTauriCap = undefined;
-        }
-    }, 100);
+Object.defineProperty(window, "minApp", {
+    value: {
+        projectId: "__PROJECT_ID__",
+        projectName: "__PROJECT_NAME__",
+        memberUserId: "__MEMBER_USER_ID__",
+        memberDisplayName: "__MEMBER_DISPLAY_NAME__",
+        tokenUrl: "__TOKEN_URL__",
+        crossHttp: __CROSS_HTTP__
+    }
+});
 "#;
 
 fn get_file_type(url_path: &String) -> &str {
@@ -461,32 +471,70 @@ fn send_file_data(data_path: String, url_path: String, response: &mut Response) 
     response.body_mut().extend_from_slice(&content);
 }
 
+#[derive(Default)]
+pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
+
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+pub struct StartRequest {
+    pub project_id: String,
+    pub project_name: String,
+    pub member_user_id: String,
+    pub member_display_name: String,
+    pub token_url: String,
+    pub label: String,
+    pub title: String,
+    pub path: String,
+}
+
 #[tauri::command]
 async fn start<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    project_id: String,
-    label: String,
-    title: String,
-    path: String,
+    request: StartRequest,
+    perm: MinAppPerm,
 ) -> Result<(), String> {
     if window.label() != "main" {
         return Err("no permission".into());
     }
-    let script = INIT_SCRIPT.replace("__PROJECT_ID__", &project_id);
-    let init_url = if path.starts_with("http://") || path.starts_with("https://") {
-        match url::Url::parse(&path) {
+    let mut script = INIT_SCRIPT
+        .replace("__PROJECT_ID__", &request.project_id)
+        .replace(
+            "__PROJECT_NAME__",
+            &html_escape::encode_script_quoted_text(&request.project_name),
+        )
+        .replace("__MEMBER_USER_ID__", &request.member_user_id)
+        .replace(
+            "__MEMBER_DISPLAY_NAME__",
+            &html_escape::encode_script_quoted_text(&request.member_display_name),
+        )
+        .replace(
+            "__TOKEN_URL__",
+            &html_escape::encode_script_quoted_text(&request.token_url),
+        );
+    if let Some(net_perm) = perm.net_perm {
+        if net_perm.cross_domain_http {
+            script = script.replace("__CROSS_HTTP__", "true");
+        } else {
+            script = script.replace("__CROSS_HTTP__", "false");
+        }
+    } else {
+        script = script.replace("__CROSS_HTTP__", "false");
+    }
+
+    let init_url = if request.path.starts_with("http://") || request.path.starts_with("https://") {
+        match url::Url::parse(&request.path) {
             Ok(res_url) => WindowUrl::External(res_url),
             Err(_) => WindowUrl::App("index.html".into()),
         }
-    }else {
+    } else {
         WindowUrl::App("index.html".into())
     };
-    let res = WindowBuilder::new(&app_handle, label, init_url)
-        .title(title)
+
+    let res = WindowBuilder::new(&app_handle, request.label, init_url)
+        .title(request.title)
         .visible(true)
-        .on_web_resource_request(move |request, response| {
-            let req_url = url::Url::parse(request.uri());
+        .on_web_resource_request(move |req, response| {
+            let req_url = url::Url::parse(req.uri());
             if req_url.is_err() {
                 send_error(500, req_url.err().unwrap().to_string(), response);
                 return;
@@ -495,8 +543,9 @@ async fn start<R: Runtime>(
             if req_url.scheme() != "tauri" {
                 return;
             }
-            send_file_data(path.clone(), String::from(req_url.path()), response);
-        }).initialization_script(&script)
+            send_file_data(request.path.clone(), String::from(req_url.path()), response);
+        })
+        .initialization_script(&script)
         .build();
     if res.is_err() {
         return Err(res.err().unwrap().to_string());
@@ -504,6 +553,251 @@ async fn start<R: Runtime>(
     Ok(())
 }
 
+#[tauri::command]
+async fn start_debug<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: StartRequest,
+    perm: MinAppPerm,
+) -> Result<(), String> {
+    let debug_perm = app_handle.state::<DebugPerm>().inner();
+    *debug_perm.0.lock().await = Some(perm.clone());
+
+    if let Some(win) = app_handle.get_window(&request.label) {
+        win.close().unwrap();
+        sleep(Duration::from_millis(100)).await;
+    }
+
+    return start(app_handle, window, request, perm).await;
+}
+
+#[tauri::command]
+async fn pack_min_app<R: Runtime>(
+    window: Window<R>,
+    trace: String,
+    path: String,
+) -> Result<String, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let app_tmp_dir = crate::get_tmp_dir();
+    if app_tmp_dir.is_none() {
+        return Err("no tmp dir".into());
+    }
+    let tmp_dir = mktemp::Temp::new_dir_in(app_tmp_dir.unwrap());
+    if tmp_dir.is_err() {
+        return Err(tmp_dir.err().unwrap().to_string());
+    }
+    let tmp_dir = tmp_dir.unwrap();
+    let mut tmp_path = tmp_dir.release();
+    tmp_path.push("content.zip");
+    let tmp_file = File::create(&tmp_path).await;
+    if tmp_file.is_err() {
+        return Err(tmp_file.err().unwrap().to_string());
+    }
+    let mut tmp_file = tmp_file.unwrap();
+    let mut writer = ZipFileWriter::new(&mut tmp_file);
+
+    for entry in walkdir::WalkDir::new(&path) {
+        let entry = entry.unwrap();
+        if entry.file_type().is_dir() {
+            continue;
+        }
+        let full_path = entry.path();
+        let path_in_zip = full_path.strip_prefix(&path).unwrap();
+        let zip_entry = ZipEntryBuilder::new(
+            String::from(path_in_zip.to_str().unwrap()),
+            Compression::Deflate,
+        );
+        let f = tokio::fs::File::open(full_path).await;
+        if f.is_err() {
+            return Err(f.err().unwrap().to_string());
+        }
+        let mut f = f.unwrap();
+        let mut data: Vec<u8> = Vec::new();
+        let read_res = f.read_to_end(&mut data).await;
+        if read_res.is_err() {
+            return Err(read_res.err().unwrap().to_string());
+        }
+        let write_res = writer.write_entry_whole(zip_entry, data.as_ref()).await;
+        if write_res.is_err() {
+            return Err(write_res.err().unwrap().to_string());
+        }
+        if &trace != "" {
+            let res = window.emit(&trace, String::from(path_in_zip.to_str().unwrap()));
+            if res.is_err() {
+                println!("{}", res.err().unwrap());
+            }
+        }
+    }
+    let res = writer.close().await;
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    return Ok(String::from(tmp_path.to_str().unwrap()));
+}
+
+#[tauri::command]
+async fn check_unpark<R: Runtime>(
+    window: Window<R>,
+    fs_id: String,
+    file_id: String,
+) -> Result<bool, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let cache_dir = crate::get_cache_dir();
+    if cache_dir.is_none() {
+        return Err("no cache dir".into());
+    }
+    let mut cache_dir = std::path::PathBuf::from(cache_dir.unwrap());
+    cache_dir.push(fs_id);
+    cache_dir.push(file_id);
+    cache_dir.push("content");
+
+    if cache_dir.is_dir() {
+        return Ok(true);
+    }
+    return Ok(false);
+}
+
+#[tauri::command]
+async fn get_min_app_path<R: Runtime>(
+    window: Window<R>,
+    fs_id: String,
+    file_id: String,
+) -> Result<String, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let cache_dir = crate::get_cache_dir();
+    if cache_dir.is_none() {
+        return Err("no cache dir".into());
+    }
+    let mut cache_dir = std::path::PathBuf::from(cache_dir.unwrap());
+    cache_dir.push(fs_id);
+    cache_dir.push(file_id);
+    cache_dir.push("content");
+    return Ok(String::from(cache_dir.to_str().unwrap()));
+}
+
+#[tauri::command]
+async fn unpack_min_app<R: Runtime>(
+    window: Window<R>,
+    fs_id: String,
+    file_id: String,
+    trace: String,
+) -> Result<(), String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let cache_dir = crate::get_cache_dir();
+    if cache_dir.is_none() {
+        return Err("no cache dir".into());
+    }
+    let mut cache_dir = std::path::PathBuf::from(cache_dir.unwrap());
+    cache_dir.push(fs_id);
+    cache_dir.push(file_id);
+    let mut src_file = cache_dir.clone();
+    src_file.push("content.zip");
+
+    let mut out_path = cache_dir.clone();
+    out_path.push("content");
+
+    let src_file = File::open(&src_file).await;
+    if src_file.is_err() {
+        return Err(src_file.err().unwrap().to_string());
+    }
+
+    let mut src_file = src_file.unwrap();
+    let reader = ZipFileReader::new(&mut src_file).await;
+    if reader.is_err() {
+        return Err(reader.err().unwrap().to_string());
+    }
+    let mut reader = reader.unwrap();
+    let mut entry_list = Vec::new();
+    for entry in reader.file().entries() {
+        entry_list.push(entry.entry().clone());
+    }
+
+    for index in 0..entry_list.len() {
+        let entry = entry_list.get(index).unwrap();
+        let dest_path = out_path.join(entry.filename());
+        if entry.dir() {
+            let res = tokio::fs::create_dir_all(&dest_path).await;
+            if res.is_err() {
+                return Err(res.err().unwrap().to_string());
+            }
+        } else {
+            if let Some(parent) = dest_path.parent() {
+                let res = tokio::fs::create_dir_all(&parent).await;
+                if res.is_err() {
+                    return Err(res.err().unwrap().to_string());
+                }
+            }
+
+            let entry_reader = reader.entry(index).await;
+            if entry_reader.is_err() {
+                return Err(entry_reader.err().unwrap().to_string());
+            }
+            let mut entry_reader = entry_reader.unwrap();
+            let writer = tokio::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&dest_path)
+                .await;
+            if writer.is_err() {
+                return Err(writer.err().unwrap().to_string());
+            }
+            let mut writer = writer.unwrap();
+            let res = tokio::io::copy(&mut entry_reader, &mut writer).await;
+            if res.is_err() {
+                return Err(res.err().unwrap().to_string());
+            }
+        }
+        if &trace != "" {
+            let res = window.emit(&trace, String::from(entry.filename()));
+            if res.is_err() {
+                println!("{}", res.err().unwrap());
+            }
+        }
+    }
+    return Ok(());
+}
+
+pub async fn get_min_app_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    project_id: String,
+) -> Option<MinAppPerm> {
+    let label = window.label();
+    if label.starts_with("minApp:") == false {
+        return None;
+    }
+    let app_id = label.substring(7, label.len());
+    if app_id == "debug" {
+        let cur_value = app_handle.state::<DebugPerm>().inner();
+        let cur_perm = cur_value.0.lock().await;
+        return cur_perm.clone();
+    } else {
+        let chan = super::get_grpc_chan(&app_handle).await;
+        if (&chan).is_none() {
+            return None;
+        }
+        let mut client = ProjectAppApiClient::new(chan.unwrap());
+        let res = client
+            .get_min_app_perm(GetMinAppPermRequest {
+                session_id: get_session(app_handle).await,
+                project_id: project_id,
+                app_id: app_id.into(),
+            })
+            .await;
+        if res.is_err() {
+            return None;
+        }
+        return res.unwrap().into_inner().perm;
+    }
+}
 pub struct MinAppPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -511,7 +805,14 @@ pub struct MinAppPlugin<R: Runtime> {
 impl<R: Runtime> MinAppPlugin<R> {
     pub fn new() -> Self {
         Self {
-            invoke_handler: Box::new(tauri::generate_handler![start]),
+            invoke_handler: Box::new(tauri::generate_handler![
+                start,
+                start_debug,
+                pack_min_app,
+                check_unpark,
+                get_min_app_path,
+                unpack_min_app
+            ]),
         }
     }
 }
@@ -524,7 +825,8 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
         None
     }
 
-    fn initialize(&mut self, _app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+    fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+        app.manage(DebugPerm(Default::default()));
         Ok(())
     }
 

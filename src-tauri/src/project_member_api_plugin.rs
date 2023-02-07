@@ -1,11 +1,10 @@
+use crate::{min_app_plugin::get_min_app_perm, notice_decode::new_wrong_session_notice, user_api_plugin::get_session};
 use proto_gen_rust::project_member_api::project_member_api_client::ProjectMemberApiClient;
 use proto_gen_rust::project_member_api::*;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
-use crate::notice_decode::new_wrong_session_notice;
-
 
 #[tauri::command]
 async fn gen_invite<R: Runtime>(
@@ -22,12 +21,14 @@ async fn gen_invite<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == gen_invite_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("gen_invite".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("gen_invite".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -52,7 +53,7 @@ async fn join<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -68,7 +69,7 @@ async fn leave<R: Runtime>(
     }
     let mut client = ProjectMemberApiClient::new(chan.unwrap());
     match client.leave(request).await {
-        Ok(response) =>{
+        Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == leave_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("leave".into())) {
@@ -76,7 +77,7 @@ async fn leave<R: Runtime>(
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -95,12 +96,14 @@ async fn create_role<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == create_role_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("create_role".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("create_role".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -119,12 +122,14 @@ async fn update_role<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_role_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_role".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_role".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -143,12 +148,14 @@ async fn remove_role<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_role_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_role".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_role".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -167,12 +174,14 @@ async fn list_role<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_role_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_role".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_role".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -192,12 +201,14 @@ async fn remove_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_member_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_member".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_member".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -216,16 +227,17 @@ async fn set_member_role<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_member_role_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_member_role".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_member_role".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
-
 
 #[tauri::command]
 async fn list_member<R: Runtime>(
@@ -233,25 +245,44 @@ async fn list_member<R: Runtime>(
     window: Window<R>,
     request: ListMemberRequest,
 ) -> Result<ListMemberResponse, String> {
+    let mut new_request = request.clone();
+    if let Some(min_app_perm) = get_min_app_perm(
+        app_handle.clone(),
+        window.clone(),
+        new_request.project_id.clone(),
+    )
+    .await
+    {
+        let member_perm = min_app_perm.member_perm;
+        if member_perm.is_none() {
+            return Err("no permission".into());
+        }
+        if member_perm.unwrap().list_member == false {
+            return Err("no permission".into());
+        }
+        new_request.session_id = get_session(app_handle.clone()).await;
+    }
+
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.list_member(request.clone()).await {
+    match client.list_member(new_request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_member_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_member".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_member".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
-
 
 #[tauri::command]
 async fn get_member<R: Runtime>(
@@ -268,12 +299,14 @@ async fn get_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_member_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_member".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_member".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -293,12 +326,15 @@ async fn set_work_snap_shot<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_work_snap_shot_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_work_snap_shot".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_work_snap_shot".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -318,12 +354,15 @@ pub async fn get_work_snap_shot_status<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_work_snap_shot_status_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_work_snap_shot_status".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_work_snap_shot_status".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -342,12 +381,15 @@ pub async fn upload_work_snap_shot<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == upload_work_snap_shot_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("upload_work_snap_shot".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("upload_work_snap_shot".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -367,12 +409,14 @@ pub async fn create_goal<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == create_goal_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("create_goal".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("create_goal".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
@@ -392,16 +436,17 @@ pub async fn update_goal<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_goal_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_goal".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_goal".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }
-
 
 #[tauri::command]
 pub async fn list_goal<R: Runtime>(
@@ -409,21 +454,40 @@ pub async fn list_goal<R: Runtime>(
     window: Window<R>,
     request: ListGoalRequest,
 ) -> Result<ListGoalResponse, String> {
+    let mut new_request = request.clone();
+    if let Some(min_app_perm) = get_min_app_perm(
+        app_handle.clone(),
+        window.clone(),
+        new_request.project_id.clone(),
+    )
+    .await{
+        let member_perm = min_app_perm.member_perm;
+        if member_perm.is_none() {
+            return Err("no permission".into());
+        }
+        if member_perm.unwrap().list_goal_history == false {
+            return Err("no permission".into());
+        }
+        new_request.session_id = get_session(app_handle.clone()).await;
+    }
+
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.list_goal(request).await {
+    match client.list_goal(new_request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_goal_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_goal".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_goal".into()))
+                {
                     println!("{:?}", err);
                 }
             }
             return Ok(inner_resp);
-        },
+        }
         Err(status) => Err(status.message().into()),
     }
 }

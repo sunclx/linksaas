@@ -11,6 +11,12 @@
     "withGlobalTauri": true
   },
   "tauri": {
+    "pattern": {
+      "use": "isolation",
+      "options": {
+        "dir": "../dist-isolation"
+      }
+    },
     "bundle": {
       "active": true,
       "targets": [
@@ -99,7 +105,9 @@
       },
       "fs": {
         "readFile": true,
-        "scope": ["$HOME/.linksaas/**"]
+        "scope": [
+          "$HOME/.linksaas/**"
+        ]
       }
     },
     "windows": [
@@ -109,7 +117,7 @@
         "width": 1000,
         "height": 640,
         "minHeight": 500,
-        "minWidth": 600,
+        "minWidth": 200,
         "resizable": true,
         "fullscreen": false,
         "center": true,

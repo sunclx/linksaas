@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Isolation Secure Script</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      window.__TAURI_ISOLATION_HOOK__ = (payload) => {
+        if (
+          window.__TAURI_METADATA__ != undefined &&
+          window.__TAURI_METADATA__.__currentWindow.label.startsWith('minApp:')
+        ) {
+          if (payload.cmd == 'http') {
+            if (window.minApp !== undefined && window.minApp.crossHttp === true) {
+              return payload;
+            } else {
+              return null;
+            }
+          } else if (payload.cmd.startsWith("plugin:user_api|")){
+            return null;
+          } else if (payload.cmd.startsWith('plugin:')) {
+            return payload;
+          }
+          return null;
+        }
+        return payload;
+      };
+    </script>
+  </body>
+</html>
