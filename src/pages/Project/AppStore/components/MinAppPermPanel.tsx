@@ -76,19 +76,17 @@ interface MinAppPermPanelProps {
 }
 
 const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
-
-    const [netValues, setNetValues] = useState<string[]>([]);
-    const [memberValues, setMemberValues] = useState<string[]>([]);
-    const [issueValues, setIssueValues] = useState<string[]>([]);
-    const [eventValues, setEventValues] = useState<string[]>([]);
+    const tmpNetValues: string[] = [];
+    const tmpMemberValues: string[] = [];
+    const tmpIssueValues: string[] = [];
+    const tmpEventValues: string[] = [];
 
     if (props.perm != undefined) {
-        const tmpNetValues: string[] = [];
+
         if (props.perm.net_perm.cross_domain_http) {
             tmpNetValues.push("cross_domain_http");
         }
 
-        const tmpMemberValues: string[] = [];
         if (props.perm.member_perm.list_member) {
             tmpMemberValues.push("list_member");
         }
@@ -99,7 +97,7 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
             tmpMemberValues.push("list_goal_history");
         }
 
-        const tmpIssueValues: string[] = [];
+
         if (props.perm.issue_perm.list_my_task) {
             tmpIssueValues.push("list_my_task");
         }
@@ -113,19 +111,20 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
             tmpIssueValues.push("list_all_bug");
         }
 
-        const tmpEventValues: string[] = [];
+
         if (props.perm.event_perm.list_my_event) {
             tmpEventValues.push("list_my_event");
         }
         if (props.perm.event_perm.list_all_event) {
             tmpEventValues.push("list_all_event");
         }
-
-        setNetValues(tmpNetValues);
-        setMemberValues(tmpMemberValues);
-        setIssueValues(tmpIssueValues);
-        setEventValues(tmpEventValues);
     }
+
+    const [netValues, setNetValues] = useState<string[]>(tmpNetValues);
+    const [memberValues, setMemberValues] = useState<string[]>(tmpMemberValues);
+    const [issueValues, setIssueValues] = useState<string[]>(tmpIssueValues);
+    const [eventValues, setEventValues] = useState<string[]>(tmpEventValues);
+
 
     const calcPerm = (netPermList: string[], memberPermList: string[], issuePermList: string[], eventPermList: string[]) => {
         const tempPerm: MinAppPerm = {

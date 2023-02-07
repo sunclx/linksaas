@@ -108,22 +108,27 @@ async fn get_grpc_chan<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) -> O
 }
 
 fn get_base_dir() -> Option<String> {
-    if let Some(home_dir) = dirs::home_dir() {
-        return Some(format!("{}/.linksaas", home_dir.to_str().unwrap()));
+    if let Some(mut home_dir) = dirs::home_dir() {
+        home_dir.push(".linksaas");
+        return Some(home_dir.to_str().unwrap().into());
     }
     None
 }
 
 fn get_cache_dir() -> Option<String> {
-    if let Some(home_dir) = dirs::home_dir() {
-        return Some(format!("{}/.linksaas/cache", home_dir.to_str().unwrap()));
+    if let Some(mut home_dir) = dirs::home_dir() {
+        home_dir.push(".linksaas");
+        home_dir.push("cache");
+        return Some(home_dir.to_str().unwrap().into());
     }
     None
 }
 
 fn get_tmp_dir() -> Option<String> {
-    if let Some(home_dir) = dirs::home_dir() {
-        return Some(format!("{}/.linksaas/tmp", home_dir.to_str().unwrap()));
+    if let Some(mut home_dir) = dirs::home_dir() {
+        home_dir.push(".linksaas");
+        home_dir.push("tmp");
+        return Some(home_dir.to_str().unwrap().into());
     }
     None
 }

@@ -1,3 +1,6 @@
+use async_zip::read::seek::ZipFileReader;
+use async_zip::write::ZipFileWriter;
+use async_zip::{Compression, ZipEntryBuilder};
 use proto_gen_rust::project_app_api::MinAppPerm;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -9,6 +12,8 @@ use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window, WindowBuilder, WindowUrl,
 };
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
 use tokio::time::sleep;
 
 const INIT_SCRIPT: &str = r#"
@@ -511,7 +516,7 @@ async fn start<R: Runtime>(
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
     }
-    
+
     let init_url = if request.path.starts_with("http://") || request.path.starts_with("https://") {
         match url::Url::parse(&request.path) {
             Ok(res_url) => WindowUrl::External(res_url),
@@ -561,6 +566,200 @@ async fn start_debug<R: Runtime>(
 
     return start(app_handle, window, request, perm).await;
 }
+
+#[tauri::command]
+async fn pack_min_app<R: Runtime>(
+    window: Window<R>,
+    trace: String,
+    path: String,
+) -> Result<String, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let app_tmp_dir = crate::get_tmp_dir();
+    if app_tmp_dir.is_none() {
+        return Err("no tmp dir".into());
+    }
+    let tmp_dir = mktemp::Temp::new_dir_in(app_tmp_dir.unwrap());
+    if tmp_dir.is_err() {
+        return Err(tmp_dir.err().unwrap().to_string());
+    }
+    let tmp_dir = tmp_dir.unwrap();
+    let mut tmp_path = tmp_dir.release();
+    tmp_path.push("content.zip");
+    let tmp_file = File::create(&tmp_path).await;
+    if tmp_file.is_err() {
+        return Err(tmp_file.err().unwrap().to_string());
+    }
+    let mut tmp_file = tmp_file.unwrap();
+    let mut writer = ZipFileWriter::new(&mut tmp_file);
+
+    for entry in walkdir::WalkDir::new(&path) {
+        let entry = entry.unwrap();
+        if entry.file_type().is_dir() {
+            continue;
+        }
+        let full_path = entry.path();
+        let path_in_zip = full_path.strip_prefix(&path).unwrap();
+        let zip_entry = ZipEntryBuilder::new(
+            String::from(path_in_zip.to_str().unwrap()),
+            Compression::Deflate,
+        );
+        let f = tokio::fs::File::open(full_path).await;
+        if f.is_err() {
+            return Err(f.err().unwrap().to_string());
+        }
+        let mut f = f.unwrap();
+        let mut data: Vec<u8> = Vec::new();
+        let read_res = f.read_to_end(&mut data).await;
+        if read_res.is_err() {
+            return Err(read_res.err().unwrap().to_string());
+        }
+        let write_res = writer.write_entry_whole(zip_entry, data.as_ref()).await;
+        if write_res.is_err() {
+            return Err(write_res.err().unwrap().to_string());
+        }
+        if &trace != "" {
+            let res = window.emit(&trace, String::from(path_in_zip.to_str().unwrap()));
+            if res.is_err() {
+                println!("{}", res.err().unwrap());
+            }
+        }
+    }
+    let res = writer.close().await;
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    return Ok(String::from(tmp_path.to_str().unwrap()));
+}
+
+#[tauri::command]
+async fn check_unpark<R: Runtime>(
+    window: Window<R>,
+    fs_id: String,
+    file_id: String,
+) -> Result<bool, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let cache_dir = crate::get_cache_dir();
+    if cache_dir.is_none() {
+        return Err("no cache dir".into());
+    }
+    let mut cache_dir = std::path::PathBuf::from(cache_dir.unwrap());
+    cache_dir.push(fs_id);
+    cache_dir.push(file_id);
+    cache_dir.push("content");
+
+    if cache_dir.is_dir() {
+        return Ok(true);
+    }
+    return Ok(false);
+}
+
+#[tauri::command]
+async fn get_min_app_path<R: Runtime>(
+    window: Window<R>,
+    fs_id: String,
+    file_id: String,
+) -> Result<String, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let cache_dir = crate::get_cache_dir();
+    if cache_dir.is_none() {
+        return Err("no cache dir".into());
+    }
+    let mut cache_dir = std::path::PathBuf::from(cache_dir.unwrap());
+    cache_dir.push(fs_id);
+    cache_dir.push(file_id);
+    cache_dir.push("content");
+    return Ok(String::from(cache_dir.to_str().unwrap()));
+}
+
+#[tauri::command]
+async fn unpack_min_app<R: Runtime>(
+    window: Window<R>,
+    fs_id: String,
+    file_id: String,
+    trace: String,
+) -> Result<(), String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let cache_dir = crate::get_cache_dir();
+    if cache_dir.is_none() {
+        return Err("no cache dir".into());
+    }
+    let mut cache_dir = std::path::PathBuf::from(cache_dir.unwrap());
+    cache_dir.push(fs_id);
+    cache_dir.push(file_id);
+    let mut src_file = cache_dir.clone();
+    src_file.push("content.zip");
+
+    let mut out_path = cache_dir.clone();
+    out_path.push("content");
+
+    let src_file = File::open(&src_file).await;
+    if src_file.is_err() {
+        return Err(src_file.err().unwrap().to_string());
+    }
+
+    let mut src_file = src_file.unwrap();
+    let reader = ZipFileReader::new(&mut src_file).await;
+    if reader.is_err() {
+        return Err(reader.err().unwrap().to_string());
+    }
+    let mut reader = reader.unwrap();
+    let mut entry_list = Vec::new();
+    for entry in reader.file().entries() {
+        entry_list.push(entry.entry().clone());
+    }
+
+    for index in 0..entry_list.len() {
+        let entry = entry_list.get(index).unwrap();
+        let dest_path = out_path.join(entry.filename());
+        if entry.dir() {
+            let res = tokio::fs::create_dir_all(&dest_path).await;
+            if res.is_err() {
+                return Err(res.err().unwrap().to_string());
+            }
+        } else {
+            if let Some(parent) = dest_path.parent() {
+                let res = tokio::fs::create_dir_all(&parent).await;
+                if res.is_err() {
+                    return Err(res.err().unwrap().to_string());
+                }
+            }
+            
+            let entry_reader = reader.entry(index).await;
+            if entry_reader.is_err() {
+                return Err(entry_reader.err().unwrap().to_string());
+            }
+            let mut entry_reader = entry_reader.unwrap();
+            let writer = tokio::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&dest_path).await;
+            if writer.is_err() {
+                return Err(writer.err().unwrap().to_string());
+            }
+            let mut writer = writer.unwrap();
+            let res = tokio::io::copy(&mut entry_reader, &mut writer).await;
+            if res.is_err() {
+                return Err(res.err().unwrap().to_string());
+            }
+        }
+        if &trace != "" {
+            let res = window.emit(&trace, String::from(entry.filename()));
+            if res.is_err() {
+                println!("{}", res.err().unwrap());
+            }
+        }
+    }
+    return Ok(());
+}
+
 pub struct MinAppPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -568,7 +767,14 @@ pub struct MinAppPlugin<R: Runtime> {
 impl<R: Runtime> MinAppPlugin<R> {
     pub fn new() -> Self {
         Self {
-            invoke_handler: Box::new(tauri::generate_handler![start, start_debug]),
+            invoke_handler: Box::new(tauri::generate_handler![
+                start,
+                start_debug,
+                pack_min_app,
+                check_unpark,
+                get_min_app_path,
+                unpack_min_app
+            ]),
         }
     }
 }
