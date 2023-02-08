@@ -647,7 +647,7 @@ async fn check_session<R: Runtime>(
 }
 
 #[tauri::command]
-async fn get_session<R: Runtime>(app_handle: AppHandle<R>) -> String {
+pub async fn get_session<R: Runtime>(app_handle: AppHandle<R>) -> String {
     let cur_value = app_handle.state::<CurSession>().inner();
     let cur_session = cur_value.0.lock().await;
     if let Some(cur_session) = cur_session.clone() {
@@ -661,6 +661,16 @@ pub async fn get_session_inner(app_handle: &AppHandle) -> String {
     let cur_session = cur_value.0.lock().await;
     if let Some(cur_session) = cur_session.clone() {
         return cur_session;
+    }
+    return "".into();
+}
+
+#[tauri::command]
+pub async fn get_user_id<R: Runtime>(app_handle: AppHandle<R>) -> String {
+    let cur_value = app_handle.state::<CurUserId>().inner();
+    let cur_user_id = cur_value.0.lock().await;
+    if let Some(cur_user_id) = cur_user_id.clone() {
+        return cur_user_id;
     }
     return "".into();
 }
@@ -704,6 +714,7 @@ impl<R: Runtime> UserApiPlugin<R> {
                 reset_password,
                 check_session,
                 get_session,
+                get_user_id,
                 set_cur_work_snapshot,
             ]),
         }

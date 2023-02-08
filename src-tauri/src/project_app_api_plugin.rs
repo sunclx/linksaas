@@ -108,6 +108,62 @@ async fn get_token_url<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn set_min_app_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetMinAppPermRequest,
+) -> Result<SetMinAppPermResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectAppApiClient::new(chan.unwrap());
+    match client.set_min_app_perm(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_min_app_perm_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_min_app_perm".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_min_app_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetMinAppPermRequest,
+) -> Result<GetMinAppPermResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectAppApiClient::new(chan.unwrap());
+    match client.get_min_app_perm(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_min_app_perm_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_min_app_perm".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectAppApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -115,7 +171,14 @@ pub struct ProjectAppApiPlugin<R: Runtime> {
 impl<R: Runtime> ProjectAppApiPlugin<R> {
     pub fn new() -> Self {
         Self {
-            invoke_handler: Box::new(tauri::generate_handler![list, add, remove, get_token_url,]),
+            invoke_handler: Box::new(tauri::generate_handler![
+                list,
+                add,
+                remove,
+                get_token_url,
+                set_min_app_perm,
+                get_min_app_perm
+            ]),
         }
     }
 }

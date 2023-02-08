@@ -1,4 +1,7 @@
-use crate::events_decode::{decode_event, EventMessage};
+use crate::{
+    events_decode::{decode_event, EventMessage},
+    min_app_plugin::get_min_app_perm, user_api_plugin::{get_user_id, get_session},
+};
 use proto_gen_rust::events_api::events_api_client::EventsApiClient;
 use proto_gen_rust::events_api::*;
 use std::vec;
@@ -188,12 +191,41 @@ async fn list_project_event<R: Runtime>(
     window: Window<R>,
     request: ListProjectEventRequest,
 ) -> Result<PluginListProjectEventResponse, String> {
+    let mut new_request = request.clone();
+    if let Some(min_app_perm) = get_min_app_perm(
+        app_handle.clone(),
+        window.clone(),
+        new_request.project_id.clone(),
+    )
+    .await
+    {
+        let event_perm = min_app_perm.event_perm;
+        if event_perm.is_none() {
+            return Err("no permission".into());
+        }
+        let event_perm = event_perm.unwrap();
+
+        let cur_user_id = get_user_id(app_handle.clone()).await;
+        
+        let mut valid = false;
+        if event_perm.list_all_event {
+            valid = true;
+        } else if event_perm.list_my_event
+            && request.filter_by_member_user_id
+            && &request.member_user_id == &cur_user_id
+        {
+            valid = true;
+        }
+        if valid {
+            new_request.session_id = get_session(app_handle.clone()).await;
+        }
+    }
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = EventsApiClient::new(chan.unwrap());
-    match client.list_project_event(request).await {
+    match client.list_project_event(new_request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_project_event_response::Code::WrongSession as i32 {

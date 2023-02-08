@@ -20,7 +20,7 @@ export const FILE_OWNER_TYPE_PROJECT: FILE_OWNER_TYPE = 99; //项目范围
 export const FILE_OWNER_TYPE_PROJECT_ARTIFACT: FILE_OWNER_TYPE = 8;   //自动化构建结果
 export const FILE_OWNER_TYPE_TEST_CASE: FILE_OWNER_TYPE = 9;          //测试用例
 export const FILE_OWNER_TYPE_TEST_CASE_RESULT: FILE_OWNER_TYPE = 10;  //测试用例结果
-
+export const FILE_OWNER_TYPE_MIN_APP: FILE_OWNER_TYPE = 11; //微应用
 
 
 

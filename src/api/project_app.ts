@@ -3,7 +3,8 @@ import { invoke } from '@tauri-apps/api/tauri';
 export type APP_OPEN_TYPE = number;
 
 export const OPEN_TYPE_BROWSER: APP_OPEN_TYPE = 0;
-export const OPEN_TYPE_INNER: APP_OPEN_TYPE = 1;
+export const OPEN_TYPE_MIN_APP: APP_OPEN_TYPE = 1;
+
 
 export type BasicApp = {
     project_id: string;
@@ -18,6 +19,34 @@ export type App = {
     basic_info: BasicApp,
     create_time: number;
     create_user_id: string;
+};
+
+export type MinAppNetPerm = {
+    cross_domain_http: boolean;
+};
+
+export type MinAppMemberPerm = {
+    list_member: boolean;
+    list_goal_history: boolean;
+};
+
+export type MinAppIssuePerm = {
+    list_my_task: boolean;
+    list_all_task: boolean;
+    list_my_bug: boolean;
+    list_all_bug: boolean;
+};
+
+export type MinAppEventPerm = {
+    list_my_event: boolean;
+    list_all_event: boolean;
+};
+
+export type MinAppPerm = {
+    net_perm: MinAppNetPerm;
+    member_perm: MinAppMemberPerm;
+    issue_perm: MinAppIssuePerm;
+    event_perm: MinAppEventPerm;
 };
 
 export type ListRequest = {
@@ -65,6 +94,30 @@ export type GetTokenUrlResponse = {
     url: string;
 };
 
+export type SetMinAppPermRequest = {
+    session_id: string;
+    project_id: string;
+    app_id: string;
+    perm: MinAppPerm;
+};
+
+export type SetMinAppPermResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type GetMinAppPermRequest = {
+    session_id: string;
+    project_id: string;
+    app_id: string;
+};
+
+export type GetMinAppPermResponse = {
+    code: number;
+    err_msg: string;
+    perm: MinAppPerm;
+};
+
 //列出应用
 export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:project_app_api|list';
@@ -97,6 +150,24 @@ export async function get_token_url(request: GetTokenUrlRequest): Promise<GetTok
     const cmd = 'plugin:project_app_api|get_token_url';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetTokenUrlResponse>(cmd, {
+        request,
+    });
+}
+
+//设置权限
+export async function set_min_app_perm(request: SetMinAppPermRequest): Promise<SetMinAppPermResponse> {
+    const cmd = 'plugin:project_app_api|set_min_app_perm';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SetMinAppPermResponse>(cmd, {
+        request,
+    });
+}
+
+//读取权限
+export async function get_min_app_perm(request: GetMinAppPermRequest): Promise<GetMinAppPermResponse> {
+    const cmd = 'plugin:project_app_api|get_min_app_perm';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetMinAppPermResponse>(cmd, {
         request,
     });
 }
