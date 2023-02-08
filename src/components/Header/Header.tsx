@@ -66,7 +66,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
       <div className={style.l} >
-        {projectStore.curProjectId != "" && <ProjectQuickAccess />}
+        {projectStore.curProjectId != "" && userStore.sessionId != "" && <ProjectQuickAccess />}
       </div>
       <div className={style.r}>
         {props.type == "login" && hasNewVersion == true && (
