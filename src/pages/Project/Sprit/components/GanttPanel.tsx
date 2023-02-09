@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import s from './Panel.module.less';
 import RcGantt from 'rc-gantt';
+import type { Gantt } from 'rc-gantt';
 import { useStores } from "@/hooks";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
@@ -59,6 +60,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
     const history = useHistory();
 
     const [taskList, setTaskList] = useState<Record<string, any>[]>([]);
+    const [unit, setUnit] = useState<Gantt.Sight>("day");
 
     useEffect(() => {
         const tmpList: Record<string, any>[] = [];
@@ -68,7 +70,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
                     e.stopPropagation();
                     e.preventDefault();
                     linkAuxStore.goToLink(new LinkTaskInfo("", task.project_id, task.issue_id), history);
-                }}><LinkOutlined key="icon"/>&nbsp;任务：{task.basic_info.title}</a>,
+                }}><LinkOutlined key="icon" />&nbsp;任务：{task.basic_info.title}</a>,
                 startDate: moment(task.start_time).format("YYYY-MM-DD"),
                 endDate: moment(task.end_time).format("YYYY-MM-DD"),
                 execDisplayName: task.exec_display_name,
@@ -87,7 +89,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
                     e.stopPropagation();
                     e.preventDefault();
                     linkAuxStore.goToLink(new LinkBugInfo("", bug.project_id, bug.issue_id), history);
-                }}><LinkOutlined key="icon"/>&nbsp;缺陷：{bug.basic_info.title}</a>,
+                }}><LinkOutlined key="icon" />&nbsp;缺陷：{bug.basic_info.title}</a>,
                 startDate: moment(bug.start_time).format("YYYY-MM-DD"),
                 endDate: moment(bug.end_time).format("YYYY-MM-DD"),
                 execDisplayName: bug.exec_display_name,
@@ -111,12 +113,22 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
             children: tmpList,
         };
         setTaskList([spritTask]);
+        const diffDay = moment().diff(moment(props.startTime)) / 1000 / 3600 / 24;
+        if (diffDay > 240){
+            setUnit("halfYear");
+        }else if (diffDay > 120){
+            setUnit("quarter");
+        }else if (diffDay > 40) {
+            setUnit("month");
+        } else if (diffDay > 20) {
+            setUnit("week");
+        }
     }, [spritStore.taskList, spritStore.bugList]);
 
     return (
         <div className={s.panel_wrap}>
             <RcGantt
-                unit="day"
+                unit={unit}
                 showBackToday={true}
                 data={taskList}
                 tableCollapseAble={false}
