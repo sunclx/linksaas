@@ -913,6 +913,81 @@ pub mod script {
     }
 }
 
+pub mod requirement {
+    use prost::Message;
+    use proto_gen_rust::events_requirement;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateCateEvent(events_requirement::CreateCateEvent),
+        UpdateCateEvent(events_requirement::UpdateCateEvent),
+        RemoveCateEvent(events_requirement::RemoveCateEvent),
+        CreateRequirementEvent(events_requirement::CreateRequirementEvent),
+        UpdateRequirementEvent(events_requirement::UpdateRequirementEvent),
+        SetRequirementCateEvent(events_requirement::SetRequirementCateEvent),
+        RemoveRequirementEvent(events_requirement::RemoveRequirementEvent),
+        LinkIssueEvent(events_requirement::LinkIssueEvent),
+        UnlinkIssueEvent(events_requirement::UnlinkIssueEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_requirement::CreateCateEvent::type_url() {
+            if let Ok(ev) = events_requirement::CreateCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateCateEvent(ev));
+            }
+        } else if data.type_url == events_requirement::UpdateCateEvent::type_url() {
+            if let Ok(ev) = events_requirement::UpdateCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateCateEvent(ev));
+            }
+        } else if data.type_url == events_requirement::RemoveCateEvent::type_url() {
+            if let Ok(ev) = events_requirement::RemoveCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveCateEvent(ev));
+            }
+        } else if data.type_url == events_requirement::CreateRequirementEvent::type_url() {
+            if let Ok(ev) =
+                events_requirement::CreateRequirementEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::CreateRequirementEvent(ev));
+            }
+        } else if data.type_url == events_requirement::UpdateRequirementEvent::type_url() {
+            if let Ok(ev) =
+                events_requirement::UpdateRequirementEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::UpdateRequirementEvent(ev));
+            }
+        } else if data.type_url == events_requirement::SetRequirementCateEvent::type_url() {
+            if let Ok(ev) =
+                events_requirement::SetRequirementCateEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::SetRequirementCateEvent(ev));
+            }
+        } else if data.type_url == events_requirement::RemoveRequirementEvent::type_url() {
+            if let Ok(ev) =
+                events_requirement::RemoveRequirementEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::RemoveRequirementEvent(ev));
+            }
+        } else if data.type_url == events_requirement::RemoveRequirementEvent::type_url() {
+            if let Ok(ev) =
+                events_requirement::RemoveRequirementEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::RemoveRequirementEvent(ev));
+            }
+        } else if data.type_url == events_requirement::LinkIssueEvent::type_url() {
+            if let Ok(ev) = events_requirement::LinkIssueEvent::decode(data.value.as_slice()) {
+                return Some(Event::LinkIssueEvent(ev));
+            }
+        } else if data.type_url == events_requirement::UnlinkIssueEvent::type_url() {
+            if let Ok(ev) = events_requirement::UnlinkIssueEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnlinkIssueEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -928,6 +1003,7 @@ pub enum EventMessage {
     RobotEvent(robot::Event),
     EarthlyEvent(earthly::Event),
     ScriptEvent(script::Event),
+    RequirementEvent(requirement::Event),
     NoopEvent(),
 }
 
@@ -972,6 +1048,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = script::decode_event(data) {
         return Some(EventMessage::ScriptEvent(ret));
+    }
+    if let Some(ret) = requirement::decode_event(data) {
+        return Some(EventMessage::RequirementEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }
