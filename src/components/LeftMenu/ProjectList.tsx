@@ -76,7 +76,7 @@ const ProjectList = () => {
     const memberStore = useStores('memberStore');
 
     return (
-        <div className={cls.project_menu} data-tauri-drag-region={true}>
+        <div className={cls.project_menu}>
             <div className={cls.menu_title}>
                 项目
 
@@ -106,8 +106,7 @@ const ProjectList = () => {
                 </div>
 
             </div>
-            <div style={{ height: appStore.simpleMode ? "calc(100vh - 125px)" : undefined, maxHeight: appStore.simpleMode ? undefined : "300px", overflowY: "scroll" }}
-                data-tauri-drag-region={true}>
+            <div style={{ height: appStore.simpleMode ? "calc(100vh - 125px)" : undefined, maxHeight: appStore.simpleMode ? undefined : "300px", overflowY: "scroll" }}>
                 {projectStore.filterProjectList.map(item => (
                     <div key={item.project_id} className={cls.project_child_menu}>
                         <ProjectItem item={item} />

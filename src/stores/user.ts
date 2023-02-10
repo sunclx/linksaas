@@ -43,14 +43,16 @@ class UserStore {
 
   logout() {
     request(user_logout(this.sessionId));
-    this.sessionId = '';
-    this.userInfo = {
-      userId: '',
-      userName: '',
-      displayName: '',
-      logoUri: '',
-      userFsId: '',
-    };
+    runInAction(() => {
+      this.sessionId = '';
+      this.userInfo = {
+        userId: '',
+        userName: '',
+        displayName: '',
+        logoUri: '',
+        userFsId: '',
+      };
+    });
     sessionStorage.removeItem('sessionId');
     sessionStorage.removeItem('userInfo');
   }

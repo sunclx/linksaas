@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { useHistory, useLocation } from 'react-router-dom';
-import { appWindow } from '@tauri-apps/api/window';
+import { PhysicalSize, appWindow } from '@tauri-apps/api/window';
 
 
 import Header from '../components/Header';
@@ -48,34 +48,38 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
     },
   );
 
-  const adjustSize = async () =>{
+  const adjustSize = async () => {
     const winSize = await appWindow.outerSize();
-    if(appStore.simpleMode){
-      if(winSize.width > 300){
-        winSize.width = 200;
+    const deviceRatio = window.devicePixelRatio ?? 1;
+    if (deviceRatio > 1.1) {
+      appWindow.setMinSize(new PhysicalSize(200 * deviceRatio, 500 * deviceRatio));
+    }
+    if (appStore.simpleMode) {
+      if (winSize.width > 300 * deviceRatio) {
+        winSize.width = 200 * deviceRatio;
         appWindow.setSize(winSize);
       }
-    }else {
-      if(winSize.width < 300 ){
-        winSize.width = 1300;
+    } else {
+      if (winSize.width < 300 * deviceRatio) {
+        winSize.width = 1300 * deviceRatio;
         appWindow.setSize(winSize);
       }
     }
   };
 
-  useEffect(()=>{
-    if(userStore.sessionId == ""){
+  useEffect(() => {
+    if (userStore.sessionId == "") {
       return;
     }
     adjustSize();
-  },[appStore.simpleMode]);
+  }, [appStore.simpleMode]);
 
   if (!sessionId && !userStore.isResetPassword) return <div />;
 
   return (
     <>
       {appStore.simpleMode == true && (
-        <div className={style.basicLayout} data-tauri-drag-region={true}>
+        <div className={style.basicLayout}>
           <LeftMenu />
         </div>
       )}
