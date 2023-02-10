@@ -28,6 +28,8 @@ export const REPO_ACTION_EXEC_RESULT_SUFFIX = '/repo/exec_result';
 
 export const SCRIPT_EXEC_RESULT_SUFFIX = '/script/exec_result';
 
+export const REQUIRE_MENT_CREATE_SUFFIX = '/req/create';
+
 export const ADMIN_PATH = "/admin";
 
 export const ADMIN_PATH_USER_LIST_SUFFIX = '/admin/user/list';
