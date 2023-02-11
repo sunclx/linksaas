@@ -13,7 +13,7 @@ import Button from "@/components/Button";
 import s from "./RequirementDetail.module.less";
 import RequirementDetailRight from "./components/RequirementDetailRight";
 import RequirementDetailLeft from "./components/RequirementDetailLeft";
-import { message } from "antd";
+import { Modal, message } from "antd";
 
 
 const RequirementDetail = () => {
@@ -28,6 +28,7 @@ const RequirementDetail = () => {
 
     const [requirementInfo, setRequirementInfo] = useState<RequirementInfo | null>(null);
     const [dataVersion, setDataVersion] = useState(0);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
 
 
     const loadRequirementInfo = async () => {
@@ -87,7 +88,7 @@ const RequirementDetail = () => {
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            removeRequirement();
+                            setShowRemoveModal(true);
                         }}>删除</Button>
                 </DetailsNav>)}
             <div className={s.content_wrap}>
@@ -102,6 +103,23 @@ const RequirementDetail = () => {
                     )}
                 </div>
             </div>
+            {showRemoveModal == true && (
+                <Modal open title="删除需求"
+                    okButtonProps={{ danger: true }}
+                    okText="删除"
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowRemoveModal(false);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeRequirement();
+                    }}>
+                    是否删除需求&nbsp;{requirementInfo?.base_info.title ?? ""}&nbsp;?
+                </Modal>
+            )}
         </CardWrap>
     );
 };

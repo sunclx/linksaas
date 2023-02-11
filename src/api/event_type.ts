@@ -3,7 +3,7 @@ import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
 import * as es from './events_subscribe';
-import { LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -4306,8 +4306,7 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: CreateCateEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建需求分类 ${inner.cate_name}`)];
   }
 
   export type UpdateCateEvent = {
@@ -4321,8 +4320,7 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: UpdateCateEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新需求分类 ${inner.new_cate_name}  (原名称 ${inner.old_cate_name})`)];
   }
 
   export type RemoveCateEvent = {
@@ -4335,8 +4333,7 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: RemoveCateEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除需求分类 ${inner.cate_name}`)];
   }
 
   export type CreateRequirementEvent = {
@@ -4351,8 +4348,10 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: CreateRequirementEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 创建需求 `),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+    ];
   }
 
   export type UpdateRequirementEvent = {
@@ -4368,8 +4367,11 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: UpdateRequirementEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 修改需求`),
+      new LinkRequirementInfo(inner.new_title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo(`(原标题 ${inner.old_title})`),
+    ];
   }
 
   export type SetRequirementCateEvent = {
@@ -4386,8 +4388,11 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: SetRequirementCateEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改需求 `),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo(`到需求分类 ${inner.new_cate_name} (原需求分类 ${inner.old_cate_name})`),
+    ];
   }
 
   export type RemoveRequirementEvent = {
@@ -4402,8 +4407,7 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: RemoveRequirementEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从需求分类 ${inner.cate_name} 删除需求 ${inner.title}`)];
   }
 
   export type LinkIssueEvent = {
@@ -4420,8 +4424,12 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: LinkIssueEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联 需求`),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo("到任务"),
+      new LinkTaskInfo(inner.issue_title,ev.project_id,inner.issue_id),
+    ];
   }
 
   export type UnlinkIssueEvent = {
@@ -4438,8 +4446,13 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: UnlinkIssueEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消 需求`),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo("和任务"),
+      new LinkTaskInfo(inner.issue_title,ev.project_id,inner.issue_id),
+      new LinkNoneInfo("的关联"),
+    ];
   }
 
   export class AllRequirementEvent {
