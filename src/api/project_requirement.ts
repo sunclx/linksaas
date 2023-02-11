@@ -117,6 +117,18 @@ export type ListRequirementResponse = {
     requirement_list: RequirementInfo[];
 };
 
+export type GetRequirementRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+};
+
+export type GetRequirementResponse = {
+    code: number;
+    err_msg: string;
+    requirement: RequirementInfo;
+};
+
 
 export type UpdateRequirementRequest = {
     session_id: string;
@@ -243,6 +255,15 @@ export async function list_requirement(request: ListRequirementRequest): Promise
     const cmd = 'plugin:project_requirement_api|list_requirement';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListRequirementResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个需求
+export async function get_requirement(request: GetRequirementRequest): Promise<GetRequirementResponse> {
+    const cmd = 'plugin:project_requirement_api|get_requirement';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetRequirementResponse>(cmd, {
         request,
     });
 }

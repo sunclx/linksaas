@@ -16,6 +16,7 @@ import {
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
   REQUIRE_MENT_CREATE_SUFFIX,
+  REQUIRE_MENT_DETAIL_SUFFIX,
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
   SCRIPT_EXEC_RESULT_SUFFIX,
@@ -47,6 +48,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_TEST_CASE_ENTRY,
   LINK_TARGET_SCRIPT_SUITE,
   LINK_TARGET_SCRIPT_EXEC,
+  LINK_TARGET_REQUIRE_MENT,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -326,6 +328,19 @@ export class LinkTestCaseEntryInfo {
   linkContent: string;
   projectId: string;
   entryId: string;
+}
+
+export class LinkRequirementInfo {
+  constructor(content: string, projectId: string, requirementId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.requirementId = requirementId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  requirementId: string;
 }
 
 export class LinkImageInfo {
@@ -648,6 +663,17 @@ class LinkAuxStore {
         execId: scriptExecLink.execId,
       };
       history.push(this.genUrl(pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
+      const reqLink = link as LinkRequirementInfo;
+      if (this.rootStore.projectStore.curProjectId != reqLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(reqLink.projectId);
+      }
+      const state: LinkRequirementState = {
+        cateId: "",
+        requirementId: reqLink.requirementId,
+        content: "",
+      };
+      history.push(this.genUrl(pathname, REQUIRE_MENT_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);

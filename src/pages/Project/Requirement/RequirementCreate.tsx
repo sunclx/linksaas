@@ -7,6 +7,7 @@ import { Form, Input, Select, Space, message } from "antd";
 import { useHistory, useLocation } from "react-router-dom";
 import s from './RequirementCreate.module.less';
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
+import { LinkRequirementInfo } from "@/stores/linkAux";
 import type { LinkRequirementState } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_PROJECT, FILE_OWNER_TYPE_REQUIRE_MENT } from "@/api/fs";
@@ -22,6 +23,7 @@ const RequirementCreate = () => {
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
 
     const { editor, editorRef } = useCommonEditor({
@@ -93,7 +95,8 @@ const RequirementCreate = () => {
         await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_REQUIRE_MENT, createRes.requirement_id);
 
         message.info("创建需求成功");
-        //TODO 跳转到详情页面
+        //跳转到详情页面
+        linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, createRes.requirement_id), history);
     };
 
     useEffect(() => {
@@ -106,7 +109,10 @@ const RequirementCreate = () => {
                 创建需求
                 <Form layout="inline">
                     <Form.Item label="需求分类">
-                        <Select style={{ width: "100px" }} value={curCateId} bordered={false}>
+                        <Select style={{ width: "100px" }} value={curCateId} bordered={false}
+                            onChange={value => {
+                                setCurCateId(value);
+                            }}>
                             {cateList.map(item => (
                                 <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
                             ))}

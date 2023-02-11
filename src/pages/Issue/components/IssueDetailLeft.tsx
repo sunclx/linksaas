@@ -16,6 +16,7 @@ import { updateContent as updateIssueContent } from './utils';
 
 export interface IssueDetailLeftProps {
     issue: IssueInfo;
+    onUpdate: () => void;
 }
 
 const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
@@ -51,6 +52,7 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
             setInEdit(false);
             setIsEmpty(is_empty_doc(data));
             message.info("更新内容成功");
+            props.onUpdate();
         } else {
             message.error("更新内容失败");
         }

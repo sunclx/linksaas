@@ -16,6 +16,7 @@ import Pagination from "@/components/Pagination";
 import moment from 'moment';
 import { EditText } from "@/components/EditCell/EditText";
 import { EditSelect } from "@/components/EditCell/EditSelect";
+import { LinkRequirementInfo } from "@/stores/linkAux";
 
 const PAGE_SIZE = 10;
 
@@ -147,7 +148,8 @@ const RequirementList = () => {
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        //TODO 跳转到详情页
+                        //跳转到详情页
+                        linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, row.requirement_id), history);
                     }}>查看</Button>
             ),
         },

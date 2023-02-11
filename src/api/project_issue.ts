@@ -231,6 +231,10 @@ export type IssueInfo = {
   exec_award_point: number;
   check_award_point: number;
   extra_info: ExtraInfo;
+  //项目需求相关
+  requirement_id: string;
+  requirement_title: string;
+
 };
 
 export type GetResponse = {

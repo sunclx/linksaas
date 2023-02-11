@@ -158,6 +158,31 @@ async fn list_requirement<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_requirement<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetRequirementRequest,
+) -> Result<GetRequirementResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.get_requirement(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_requirement_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_requirement".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn update_requirement<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -321,6 +346,7 @@ impl<R: Runtime> ProjectRequirementApiPlugin<R> {
                 remove_cate,
                 create_requirement,
                 list_requirement,
+                get_requirement,
                 update_requirement,
                 set_requirement_cate,
                 remove_requirement,
