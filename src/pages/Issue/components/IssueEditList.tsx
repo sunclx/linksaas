@@ -1,17 +1,17 @@
 import type { IssueInfo } from '@/api/project_issue';
 import {
-  ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK,
+  ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG,
 } from '@/api/project_issue';
 
 import { useStores } from '@/hooks';
-import { getIssueText, getIsTask, getIssueDetailUrl } from '@/utils/utils';
+import { getIssueText, getIsTask } from '@/utils/utils';
 import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import { Table, Tooltip } from 'antd';
 
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { ColumnType } from 'antd/lib/table';
-import type { LinkIssueState } from '@/stores/linkAux';
+import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from '@/stores/linkAux';
 import { showShortNote } from '@/utils/short_note';
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from '@/api/short_note';
 import { issueState } from '@/utils/constant';
@@ -46,11 +46,12 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
   const userStore = useStores("userStore");
   const projectStore = useStores("projectStore");
   const memberStore = useStores("memberStore");
+  const linkAuxStore = useStores("linkAuxStore");
+
   const { pathname } = useLocation();
-  const { push } = useHistory();
+  const history = useHistory();
 
   const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
-
 
   const columnsList: ColumnsTypes[] = [
     {
@@ -66,16 +67,14 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              push(
-                getIssueDetailUrl(pathname), {
-                  issueId: record.issue_id,
-                  content: "",
-                  contextIssueIdList: issueIdList,
-                } as LinkIssueState
-              );
+              if (record.issue_type == ISSUE_TYPE_TASK) {
+                linkAuxStore.goToLink(new LinkTaskInfo("", record.project_id, record.issue_id, issueIdList), history);
+              } else if (record.issue_type == ISSUE_TYPE_BUG) {
+                linkAuxStore.goToLink(new LinkBugInfo("", record.project_id, record.issue_id, issueIdList), history);
+              }
             }}
           >
-            <a><LinkOutlined />&nbsp;&nbsp;{v}</a>
+            <a><LinkOutlined />&nbsp;{v}</a>
           </span>
         );
       },
@@ -104,13 +103,12 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
               }}
               onClick={async (e) => {
                 e.stopPropagation();
-                push(
-                  getIssueDetailUrl(pathname), {
-                    issueId: record.issue_id,
-                    content: "",
-                    contextIssueIdList: issueIdList,
-                  } as LinkIssueState
-                );
+                e.preventDefault();
+                if (record.issue_type == ISSUE_TYPE_TASK) {
+                  linkAuxStore.goToLink(new LinkTaskInfo("", record.project_id, record.issue_id, issueIdList), history);
+                } else if (record.issue_type == ISSUE_TYPE_BUG) {
+                  linkAuxStore.goToLink(new LinkBugInfo("", record.project_id, record.issue_id, issueIdList), history);
+                }
               }}
             >
               <img src={msgIcon} alt="" />
@@ -119,6 +117,25 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
           </div>
         );
       },
+    },
+    {
+      title: "相关需求",
+      dataIndex: "requirement_id",
+      width: 150,
+      ellipsis: true,
+      hideInTable: getIsTask(pathname) == false,
+      render: (_, record: IssueInfo) => (
+        <>
+          {record.requirement_id == "" && "-"}
+          {record.requirement_id != "" && (
+            <a onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              linkAuxStore.goToLink(new LinkRequirementInfo("", record.project_id, record.requirement_id), history);
+            }}><LinkOutlined />&nbsp;{record.requirement_title}</a>
+          )}
+        </>
+      ),
     },
     {
       title: "桌面便签",

@@ -14,7 +14,7 @@
   .menuCurrent {
     width: 28px;
     height: 28px;
-    margin: 10px auto;
+    margin: 9px auto;
     cursor: pointer;
   }
 
@@ -22,7 +22,7 @@
     opacity: 0.6;
   }
 
-  @menuItems: home, task, bug, setting, member, invite, record, access, appraise, appstore, award, robot, repo, localapi, sprit, testcase, script;
+  @menuItems: home, task, bug, setting, member, invite, record, access, appraise, appstore, award, robot, repo, localapi, sprit, testcase, script, req;
 
   .for(@data, @i: 1) when(@i =< length(@data)) {
     @item: extract(@data, @i);

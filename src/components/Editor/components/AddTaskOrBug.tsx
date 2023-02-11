@@ -40,6 +40,7 @@ type AddTaskOrBugProps = Omit<ModalProps, 'onOk'> & {
   onCancel?: () => void;
   okText?: string;
   cancelText?: string;
+  disableLinkReq?: boolean; //关联到项目需求
   issueIdList: string[];
   type: 'task' | 'bug';
 };
@@ -113,7 +114,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const projectStore = useStores('projectStore');
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const [keyword, setKeyword] = useState('');
-  const [selectedRowKeys, setselectedRowKeys] = useState<React.Key[]>(props.issueIdList);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(props.issueIdList);
 
   const [curPage, setCurPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
@@ -172,7 +173,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
 
   const rowSelection = {
     onChange: (keys: React.Key[]) => {
-      setselectedRowKeys(keys);
+      setSelectedRowKeys(keys);
     },
   };
 
@@ -195,7 +196,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       dataIndex: ['basic_info', 'title'],
       width: 150,
       render: (v: string, row: IssueInfo) => renderTitle(row),
-      // renderTitle(row, projectStore.curProjectId, undefined, undefined),
     },
     {
       title: '优先级',
@@ -226,6 +226,11 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       width: 100,
       align: 'center',
       render: (val: number) => renderState(val),
+    },
+    {
+      title: "关联需求",
+      width: 150,
+      dataIndex: "requirement_title",
     },
     {
       title: '处理人',
@@ -297,23 +302,26 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         />
       </div>
       <Table
-        style={{ marginTop: '8px',height:"calc(100vh - 400px)",overflowY:"scroll" }}
+        style={{ marginTop: '8px', height: "calc(100vh - 400px)", overflowY: "scroll" }}
         rowKey={'issue_id'}
         columns={columns}
-        scroll={{ x: 800}}
+        scroll={{ x: 950 }}
         dataSource={dataSource}
         pagination={false}
         rowSelection={{
           type: 'checkbox',
           selectedRowKeys: selectedRowKeys,
+          getCheckboxProps: (record: IssueInfo) => ({
+            disabled: props.disableLinkReq == true && record.requirement_id != "",
+          }),
           ...rowSelection,
         }}
       />
       <Pagination
         total={totalCount}
         pageSize={PAGE_SIZE}
-        current={curPage+1}
-        onChange={(page: number) => setCurPage(page-1)}
+        current={curPage + 1}
+        onChange={(page: number) => setCurPage(page - 1)}
       />
     </ActionModal>
   );

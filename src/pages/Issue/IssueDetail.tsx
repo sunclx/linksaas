@@ -119,7 +119,7 @@ const IssueDetail = () => {
         }
         <div className={s.content_wrap}>
             <div className={s.content_left}>
-                {issue != null && <IssueDetailLeft issue={issue} />}
+                {issue != null && <IssueDetailLeft issue={issue} onUpdate={() => { loadIssue() }}/>}
             </div>
             <div className={s.content_rigth}>
                 {issue != null && <IssueDetailRight issue={issue} onUpdate={() => { loadIssue() }} dataVersion={dataVersion} setShowStageModal={() => setShowStageModal(true)} />}

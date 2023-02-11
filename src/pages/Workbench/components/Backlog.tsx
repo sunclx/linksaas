@@ -4,6 +4,7 @@ import {
   SORT_KEY_UPDATE_TIME,
   SORT_TYPE_DSC,
   ISSUE_TYPE_TASK,
+  ISSUE_TYPE_BUG,
 } from '@/api/project_issue';
 import RenderSelectOpt from '@/components/RenderSelectOpt';
 import {
@@ -11,7 +12,7 @@ import {
   issueState,
   taskPriority,
 } from '@/utils/constant';
-import { issueTypeIsTask, timeToDateString, getIssueDetailUrl } from '@/utils/utils';
+import { issueTypeIsTask, timeToDateString } from '@/utils/utils';
 import { Empty, Table } from 'antd';
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -23,14 +24,14 @@ import { debounce } from 'lodash';
 import { get_issue_type_str } from '@/api/event_type';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
-import { useHistory } from 'react-router-dom';
 import moment from 'moment';
-import type { LinkIssueState } from '@/stores/linkAux';
 import { observer } from 'mobx-react';
 import { showShortNote } from '@/utils/short_note';
 import { SHORT_NOTE_TASK, SHORT_NOTE_BUG } from '@/api/short_note';
 import { ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
 import { getStateColor } from '@/pages/Issue/components/utils';
+import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from '@/stores/linkAux';
+import { useHistory } from 'react-router-dom';
 
 
 type BacklogProps = {
@@ -38,10 +39,12 @@ type BacklogProps = {
 };
 
 const Backlog: React.FC<BacklogProps> = (props) => {
+  const history = useHistory();
+
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const { push } = useHistory();
+  const linkAuxStore = useStores('linkAuxStore');
 
   const [pageSize, setPageSize] = useState(10);
   const [curPage, setCurPage] = useState(0);
@@ -96,12 +99,12 @@ const Backlog: React.FC<BacklogProps> = (props) => {
         <a onClick={e => {
           e.stopPropagation();
           e.preventDefault();
-          projectStore.setCurProjectId(row.project_id);
-          push(getIssueDetailUrl(row.issue_type == ISSUE_TYPE_TASK ? "/task" : "/bug"), {
-            issueId: row.issue_id,
-            content: "",
-          } as LinkIssueState);
-        }} title={row.basic_info?.title}><span><LinkOutlined />{row.basic_info?.title}</span></a>
+          if (row.issue_type == ISSUE_TYPE_TASK) {
+            linkAuxStore.goToLink(new LinkTaskInfo("", row.project_id, row.issue_id), history);
+          } else if (row.issue_type == ISSUE_TYPE_BUG) {
+            linkAuxStore.goToLink(new LinkBugInfo("", row.project_id, row.issue_id), history);
+          }
+        }} title={row.basic_info?.title}><span><LinkOutlined />&nbsp;{row.basic_info?.title}</span></a>
         {row.msg_count > 0 && (
           <span
             style={{
@@ -180,6 +183,23 @@ const Backlog: React.FC<BacklogProps> = (props) => {
       dataIndex: ['basic_info', 'title'],
       width: 150,
       render: (v: string, row: IssueInfo) => renderTitle(row),
+    },
+    {
+      title: "关联需求",
+      ellipsis: true,
+      width: 150,
+      render: (_, row: IssueInfo) => (
+        <>
+          {row.requirement_id == "" && "-"}
+          {row.requirement_id != "" && (
+            <a onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              linkAuxStore.goToLink(new LinkRequirementInfo("", row.project_id, row.requirement_id), history);
+            }}><LinkOutlined />&nbsp;{row.requirement_title}</a>
+          )}
+        </>
+      )
     },
     {
       title: "桌面便签",
@@ -271,7 +291,7 @@ const Backlog: React.FC<BacklogProps> = (props) => {
             style={{ marginTop: '8px' }}
             rowKey={'issue_id'}
             columns={columns}
-            scroll={{ x: 100 }}
+            scroll={{ x: 1000 }}
             dataSource={dataSource}
             pagination={false}
           />

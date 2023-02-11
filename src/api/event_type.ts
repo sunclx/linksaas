@@ -3,7 +3,7 @@ import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
 import * as es from './events_subscribe';
-import { LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -3773,8 +3773,8 @@ namespace earthly {
     inner: ExecEvent,
   ): LinkInfo[] {
     let paramStr = "";
-    if (inner.param_list.length > 0){
-      paramStr = `执行参数: ${inner.param_list.map(item=>item.name+"="+item.value).join(" ,")}`;
+    if (inner.param_list.length > 0) {
+      paramStr = `执行参数: ${inner.param_list.map(item => item.name + "=" + item.value).join(" ,")}`;
     }
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从仓库 ${inner.repo_url} 执行命令`),
@@ -4295,6 +4295,213 @@ namespace script {
   }
 }
 
+namespace requirement {
+  export type CreateCateEvent = {
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_create_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateCateEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建需求分类 ${inner.cate_name}`)];
+  }
+
+  export type UpdateCateEvent = {
+    cate_id: string;
+    old_cate_name: string;
+    new_cate_name: string;
+  };
+
+  function get_update_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateCateEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新需求分类 ${inner.new_cate_name}  (原名称 ${inner.old_cate_name})`)];
+  }
+
+  export type RemoveCateEvent = {
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_remove_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveCateEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除需求分类 ${inner.cate_name}`)];
+  }
+
+  export type CreateRequirementEvent = {
+    requirement_id: string;
+    title: string;
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_create_req_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateRequirementEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 创建需求 `),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+    ];
+  }
+
+  export type UpdateRequirementEvent = {
+    requirement_id: string;
+    old_title: string;
+    new_title: string;
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_update_req_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateRequirementEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 修改需求`),
+      new LinkRequirementInfo(inner.new_title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo(`(原标题 ${inner.old_title})`),
+    ];
+  }
+
+  export type SetRequirementCateEvent = {
+    requirement_id: string;
+    title: string;
+    old_cate_id: string;
+    old_cate_name: string;
+    new_cate_id: string;
+    new_cate_name: string;
+  };
+
+  function get_set_req_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetRequirementCateEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改需求 `),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo(`到需求分类 ${inner.new_cate_name} (原需求分类 ${inner.old_cate_name})`),
+    ];
+  }
+
+  export type RemoveRequirementEvent = {
+    requirement_id: string;
+    title: string;
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_remove_req_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveRequirementEvent,
+  ): LinkInfo[] {
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从需求分类 ${inner.cate_name} 删除需求 ${inner.title}`)];
+  }
+
+  export type LinkIssueEvent = {
+    requirement_id: string;
+    title: string;
+    cate_id: string;
+    cate_name: string;
+    issue_id: string;
+    issue_title: string;
+  };
+
+  function get_link_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: LinkIssueEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联 需求`),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo("到任务"),
+      new LinkTaskInfo(inner.issue_title,ev.project_id,inner.issue_id),
+    ];
+  }
+
+  export type UnlinkIssueEvent = {
+    requirement_id: string;
+    title: string;
+    cate_id: string;
+    cate_name: string;
+    issue_id: string;
+    issue_title: string;
+  };
+
+  function get_unlink_issue_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnlinkIssueEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消 需求`),
+      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkNoneInfo("和任务"),
+      new LinkTaskInfo(inner.issue_title,ev.project_id,inner.issue_id),
+      new LinkNoneInfo("的关联"),
+    ];
+  }
+
+  export class AllRequirementEvent {
+    CreateCateEvent?: CreateCateEvent;
+    UpdateCateEvent?: UpdateCateEvent;
+    RemoveCateEvent?: RemoveCateEvent;
+    CreateRequirementEvent?: CreateRequirementEvent;
+    UpdateRequirementEvent?: UpdateRequirementEvent;
+    SetRequirementCateEvent?: SetRequirementCateEvent;
+    RemoveRequirementEvent?: RemoveRequirementEvent;
+    LinkIssueEvent?: LinkIssueEvent;
+    UnlinkIssueEvent?: UnlinkIssueEvent;
+  }
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllRequirementEvent,
+  ): LinkInfo[] {
+    if (inner.CreateCateEvent !== undefined) {
+      return get_create_cate_simple_content(ev, skip_prj_name, inner.CreateCateEvent);
+    }
+    if (inner.UpdateCateEvent !== undefined) {
+      return get_update_cate_simple_content(ev, skip_prj_name, inner.UpdateCateEvent);
+    }
+    if (inner.RemoveCateEvent !== undefined) {
+      return get_remove_cate_simple_content(ev, skip_prj_name, inner.RemoveCateEvent);
+    }
+    if (inner.CreateRequirementEvent !== undefined) {
+      return get_create_req_simple_content(ev, skip_prj_name, inner.CreateRequirementEvent);
+    }
+    if (inner.UpdateRequirementEvent !== undefined) {
+      return get_update_req_simple_content(ev, skip_prj_name, inner.UpdateRequirementEvent);
+    }
+    if (inner.SetRequirementCateEvent !== undefined) {
+      return get_set_req_cate_simple_content(ev, skip_prj_name, inner.SetRequirementCateEvent);
+    }
+    if (inner.RemoveRequirementEvent !== undefined) {
+      return get_remove_req_simple_content(ev, skip_prj_name, inner.RemoveRequirementEvent);
+    }
+    if (inner.LinkIssueEvent !== undefined) {
+      return get_link_issue_simple_content(ev, skip_prj_name, inner.LinkIssueEvent);
+    }
+    if (inner.UnlinkIssueEvent !== undefined) {
+      return get_unlink_issue_simple_content(ev, skip_prj_name, inner.UnlinkIssueEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
 export class AllEvent {
   ProjectEvent?: project.AllProjectEvent;
   ProjectDocEvent?: project_doc.AllProjectDocEvent;
@@ -4309,6 +4516,7 @@ export class AllEvent {
   RobotEvent?: robot.AllRobotEvent;
   EarthlyEvent?: earthly.AllEarthlyEvent;
   ScriptEvent?: script.AllScriptEvent;
+  RequirementEvent?: requirement.AllRequirementEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -4338,6 +4546,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return earthly.get_simple_content_inner(ev, skip_prj_name, ev.event_data.EarthlyEvent);
   } else if (ev.event_data.ScriptEvent !== undefined) {
     return script.get_simple_content_inner(ev, skip_prj_name, ev.event_data.ScriptEvent);
+  } else if (ev.event_data.RequirementEvent !== undefined) {
+    return requirement.get_simple_content_inner(ev, skip_prj_name, ev.event_data.RequirementEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

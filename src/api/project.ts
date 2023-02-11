@@ -47,6 +47,7 @@ export type ProjectInfo = {
   artifact_fs_id: string;
   test_case_fs_id: string;
   min_app_fs_id: string;
+  require_ment_fs_id: string;
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
 };

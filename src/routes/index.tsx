@@ -41,6 +41,8 @@ import {
   BUG_DETAIL_SUFFIX,
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
+  REQUIRE_MENT_CREATE_SUFFIX,
+  REQUIRE_MENT_DETAIL_SUFFIX,
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
   SCRIPT_EXEC_RESULT_SUFFIX,
@@ -79,6 +81,9 @@ import DepartMentList from '@/pages/Admin/OrgAdmin/DepartMentList';
 import CreateProject from '@/pages/Admin/ProjectAdmin/CrateProject';
 import MenuAdmin from '@/pages/Admin/ClientAdmin/MenuAdmin';
 import AdAdmin from '@/pages/Admin/ClientAdmin/AdAdmin';
+import RequirementList from '@/pages/Project/Requirement/RequirementList';
+import RequirementCreate from '@/pages/Project/Requirement/RequirementCreate';
+import RequirementDetail from '@/pages/Project/Requirement/RequirementDetail';
 
 
 
@@ -120,6 +125,24 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/award',
       title: '项目成员贡献',
       component: ProjectAward,
+    },
+    {
+      path: prefix + "/req",
+      title: "需求列表",
+      component: RequirementList,
+      exact: true,
+    },
+    {
+      path: prefix + REQUIRE_MENT_CREATE_SUFFIX,
+      title: "创建需求",
+      component: RequirementCreate,
+      exact: true,
+    },
+    {
+      path: prefix + REQUIRE_MENT_DETAIL_SUFFIX,
+      title: "需求详情",
+      component: RequirementDetail,
+      exact:true,
     },
     {
       path: prefix + '/task',

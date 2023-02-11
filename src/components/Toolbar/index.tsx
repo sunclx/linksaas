@@ -68,6 +68,11 @@ const Toolbar: React.FC = observer(() => {
       />
       <Divider />
       <Item
+        id="req"
+        pathname={pathname}
+        title="需求列表"
+      />
+      <Item
         id="task"
         pathname={pathname}
         title="任务列表"
