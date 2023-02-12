@@ -23,9 +23,6 @@ export const EditSelect: React.FC<EditSelectProps> = (props) => {
     const [curValue, setCurValue] = useState(props.curValue);
 
     const getCurValue = () => {
-        if (curValue === "") {
-            return (<span>-</span>);
-        }
         const index = props.itemList.findIndex(item => item.value === curValue);
         if (index == -1) {
             return (<span>-</span>);

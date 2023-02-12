@@ -5,7 +5,7 @@ import { getIssueText, getIsTask, timeToDateString } from "@/utils/utils";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import s from './IssueDetailRight.module.less';
-import { Timeline, Tooltip, } from 'antd';
+import { Timeline, Tooltip } from 'antd';
 import type { PluginEvent } from '@/api/events';
 import { EVENT_TYPE_BUG, EVENT_TYPE_TASK, EVENT_REF_TYPE_TASK, EVENT_REF_TYPE_BUG, list_event_by_ref } from '@/api/events';
 import EventCom from "@/components/EventCom";
@@ -54,7 +54,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
 
     useEffect(() => {
         loadEvent();
-    }, [props.issue.issue_id, props.dataVersion])
+    }, [props.issue.issue_id, props.dataVersion]);
 
     const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 

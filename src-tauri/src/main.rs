@@ -45,6 +45,7 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
+mod project_requirement_api_plugin;
 
 mod min_app_plugin;
 
@@ -318,6 +319,7 @@ fn main() {
         .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .plugin(min_app_plugin::MinAppPlugin::new())
+        .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

@@ -1,23 +1,20 @@
-import React, { useState } from "react";
+import { useStores } from "@/hooks";
 import { Input, Modal } from "antd";
 import { observer } from 'mobx-react';
-import { useLocation } from "react-router-dom";
-import { getIssueText, getIsTask } from '@/utils/utils';
-import { BUG_LEVEL_MINOR, BUG_PRIORITY_LOW, create as create_issue, ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, TASK_PRIORITY_LOW } from '@/api/project_issue';
-import { useStores } from "@/hooks";
+import React, { useState } from "react";
+import { create as create_issue, ISSUE_TYPE_TASK, TASK_PRIORITY_LOW } from '@/api/project_issue';
 import { request } from "@/utils/request";
+import { link_issue } from '@/api/project_requirement';
 
-interface BatchCreateProps {
+interface BatchCreateTaskProps {
+    requirementId: string;
     onCancel: () => void;
     onOk: () => void;
 }
 
-const BatchCreate: React.FC<BatchCreateProps> = (props) => {
-    const location = useLocation();
-
+const BatchCreateTask: React.FC<BatchCreateTaskProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-
 
     const [titles, setTitles] = useState("");
     const [disabled, setDisabled] = useState(true);
@@ -30,35 +27,37 @@ const BatchCreate: React.FC<BatchCreateProps> = (props) => {
                 continue;
             }
             try {
-                await request(create_issue({
+                const res = await request(create_issue({
                     session_id: userStore.sessionId,
                     project_id: projectStore.curProjectId,
-                    issue_type: getIsTask(location.pathname) ? ISSUE_TYPE_TASK : ISSUE_TYPE_BUG,
+                    issue_type: ISSUE_TYPE_TASK,
                     basic_info: {
                         title: title,
                         content: JSON.stringify({ type: "doc" }),
                     },
                     extra_info: {
-                        ExtraTaskInfo: getIsTask(location.pathname) ? {
+                        ExtraTaskInfo: {
                             priority: TASK_PRIORITY_LOW,
-                        } : undefined,
-                        ExtraBugInfo: getIsTask(location.pathname) ? undefined : {
-                            software_version: "",
-                            level: BUG_LEVEL_MINOR,
-                            priority: BUG_PRIORITY_LOW,
                         },
+                        ExtraBugInfo: undefined,
                     }
+                }));
+                await request(link_issue({
+                    session_id: userStore.sessionId,
+                    project_id: projectStore.curProjectId,
+                    requirement_id: props.requirementId,
+                    issue_id: res.issue_id,
                 }));
             } catch (e) {
                 console.log(e);
             }
         }
         props.onOk();
-    }
+    };
 
     return (
         <Modal
-            title={`批量创建${getIssueText(location.pathname)}`}
+            title="批量创建任务"
             open
             onCancel={e => {
                 e.stopPropagation();
@@ -72,7 +71,7 @@ const BatchCreate: React.FC<BatchCreateProps> = (props) => {
                 e.preventDefault();
                 batchCreate();
             }}>
-            <p>下面每一行将作为一个{getIssueText(location.pathname)}标题</p>
+            <p>下面每一行将作为一个任务标题</p>
             <Input.TextArea rows={10} onChange={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -85,5 +84,6 @@ const BatchCreate: React.FC<BatchCreateProps> = (props) => {
             }} />
         </Modal>
     );
-}
-export default observer(BatchCreate);
+};
+
+export default observer(BatchCreateTask);

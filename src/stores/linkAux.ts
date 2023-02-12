@@ -15,6 +15,8 @@ import {
   BUG_DETAIL_SUFFIX,
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
   REPO_ACTION_EXEC_RESULT_SUFFIX,
+  REQUIRE_MENT_CREATE_SUFFIX,
+  REQUIRE_MENT_DETAIL_SUFFIX,
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
   SCRIPT_EXEC_RESULT_SUFFIX,
@@ -46,6 +48,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_TEST_CASE_ENTRY,
   LINK_TARGET_SCRIPT_SUITE,
   LINK_TARGET_SCRIPT_EXEC,
+  LINK_TARGET_REQUIRE_MENT,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -327,6 +330,19 @@ export class LinkTestCaseEntryInfo {
   entryId: string;
 }
 
+export class LinkRequirementInfo {
+  constructor(content: string, projectId: string, requirementId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.requirementId = requirementId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  requirementId: string;
+}
+
 export class LinkImageInfo {
   constructor(content: string, imgUrl: string, thumbImgUrl: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_IMAGE;
@@ -375,6 +391,12 @@ export type LinkDocState = {
   docId: string;
 };
 
+export type LinkRequirementState = {
+  cateId: string;
+  requirementId: string;
+  content: string;
+}
+
 export type LinkRobotState = {
   robotId: string
 };
@@ -418,7 +440,7 @@ class LinkAuxStore {
   rootStore: RootStore;
 
   async goToLink(link: LinkInfo, history: History, remoteCheck: boolean = true) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     const pathname = history.location.pathname;
@@ -641,6 +663,17 @@ class LinkAuxStore {
         execId: scriptExecLink.execId,
       };
       history.push(this.genUrl(pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
+      const reqLink = link as LinkRequirementInfo;
+      if (this.rootStore.projectStore.curProjectId != reqLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(reqLink.projectId);
+      }
+      const state: LinkRequirementState = {
+        cateId: "",
+        requirementId: reqLink.requirementId,
+        content: "",
+      };
+      history.push(this.genUrl(pathname, REQUIRE_MENT_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -649,7 +682,7 @@ class LinkAuxStore {
 
   //跳转到创建文档
   async goToCreateDoc(content: string, projectId: string, docSpaceId: string, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     if (projectId != this.rootStore.projectStore.curProjectId) {
@@ -670,7 +703,7 @@ class LinkAuxStore {
 
   //跳转到创建任务
   async goToCreateTask(content: string, projectId: string, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     if (projectId != this.rootStore.projectStore.curProjectId) {
@@ -685,7 +718,7 @@ class LinkAuxStore {
 
   //跳转到创建缺陷
   async goToCreateBug(content: string, projectId: string, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     if (projectId != this.rootStore.projectStore.curProjectId) {
@@ -698,9 +731,25 @@ class LinkAuxStore {
     } as LinkIssueState);
   }
 
+  //跳转到创建需求
+  async goToCreateRequirement(content: string, projectId: string, cateId: string, history: History) {
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    if (projectId != this.rootStore.projectStore.curProjectId) {
+      await this.rootStore.projectStore.setCurProjectId(projectId);
+    }
+    const state: LinkRequirementState = {
+      content: content,
+      requirementId: '',
+      cateId: cateId,
+    };
+    history.push(this.genUrl(history.location.pathname, REQUIRE_MENT_CREATE_SUFFIX), state);
+  }
+
   //跳转到任务列表
   goToTaskList(state: LinkIssueListState | undefined, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/task"), state);
@@ -708,7 +757,7 @@ class LinkAuxStore {
 
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState | undefined, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/bug"), state);
@@ -716,7 +765,7 @@ class LinkAuxStore {
 
   //跳转到服务器代理列表
   goToRobotList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/robot"));
@@ -724,7 +773,7 @@ class LinkAuxStore {
 
   //跳转到迭代列表
   goToSpritList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/sprit"));
@@ -732,7 +781,7 @@ class LinkAuxStore {
 
   //跳转到测试用例列表页
   goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/testcase"), state);
@@ -740,7 +789,7 @@ class LinkAuxStore {
 
   //跳转到测试结果列表页
   goToTestCaseResultList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/testcase/result"));
@@ -748,7 +797,7 @@ class LinkAuxStore {
 
   //跳转到研发行为列表页
   goToEventList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/record"));
@@ -756,7 +805,7 @@ class LinkAuxStore {
 
   //跳转到研发行为订阅页面
   goToEventSubscribeList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/record/subscribe"));
@@ -764,7 +813,7 @@ class LinkAuxStore {
 
   //跳转到项目信息页面
   goToProjectInfo(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/home"));
@@ -772,7 +821,7 @@ class LinkAuxStore {
 
   //跳转到项目成员页面
   goToMemberList(tab: string, history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, `/member?tab=${tab}`));
@@ -780,7 +829,7 @@ class LinkAuxStore {
 
   //跳转到成员互评页面
   goToAppriaseList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/appraise"));
@@ -788,7 +837,7 @@ class LinkAuxStore {
 
   //跳转到项目贡献页面
   goToAwardList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/award"));
@@ -796,7 +845,7 @@ class LinkAuxStore {
 
   //跳转到代码仓库列表
   goToRepoList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/repo"));
@@ -804,7 +853,7 @@ class LinkAuxStore {
 
   //跳转到第三方接入列表
   goToExtEventList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/access"));
@@ -812,7 +861,7 @@ class LinkAuxStore {
 
   //跳转到项目应用
   goToAppList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/appstore"));
@@ -820,7 +869,7 @@ class LinkAuxStore {
 
   //跳转到本地接口页面
   goToLocalApi(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/localapi"));
@@ -828,7 +877,7 @@ class LinkAuxStore {
 
   //跳转到创建服务端脚本页面
   goToCreateScript(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, SCRIPT_CREATE_SUFFIX));
@@ -836,7 +885,7 @@ class LinkAuxStore {
 
   //跳转到服务端脚本列表页面
   goToScriptList(history: History) {
-    if(this.rootStore.appStore.simpleMode){
+    if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/script"));
