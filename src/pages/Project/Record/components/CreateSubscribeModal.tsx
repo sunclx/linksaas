@@ -1,7 +1,7 @@
 import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
@@ -28,6 +28,7 @@ interface FormValue {
     spritEvCfg: string[] | undefined;
     testCaseEvCfg: string[] | undefined;
     scriptEvCfg: string[] | undefined;
+    requirementEvCfg: string[] | undefined;
 }
 
 
@@ -75,6 +76,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [testCaseEvCfgCheckAll, setTestCaseEvCfgCheckAll] = useState(false);
     const [testCaseEvCfgIndeterminate, setTestCaseEvCfgIndeterminate] = useState(false);
 
+    const [requirementEvCfgCheckAll, setRequirementEvCfgCheckAll] = useState(false);
+    const [requirementEvCfgIndeterminate, setRequirementEvCfgIndeterminate] = useState(false);
+
     const createSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -110,6 +114,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 test_case_ev_cfg: calcTestCaseEvCfg(formValue.testCaseEvCfg),
                 script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
+                requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
             },
         }));
         props.onOk();
@@ -342,6 +347,31 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setGitlabEvCfgCheckAll(false);
                                 setGitlabEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={requirementEvCfgIndeterminate} checked={requirementEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRequirementEvCfgIndeterminate(false);
+                        if (requirementEvCfgCheckAll) {
+                            setRequirementEvCfgCheckAll(false);
+                            form.setFieldValue("requirementEvCfg", []);
+                        } else {
+                            setRequirementEvCfgCheckAll(true);
+                            form.setFieldValue("requirementEvCfg", requirementEvOptionList.map(item => item.value));
+                        }
+                    }}>需求事件</Checkbox>} name="requirementEvCfg">
+                        <Checkbox.Group options={requirementEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setRequirementEvCfgCheckAll(false);
+                                setRequirementEvCfgIndeterminate(false);
+                            } else if (values.length == requirementEvOptionList.length) {
+                                setRequirementEvCfgCheckAll(true);
+                                setRequirementEvCfgIndeterminate(false);
+                            } else {
+                                setRequirementEvCfgCheckAll(false);
+                                setRequirementEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

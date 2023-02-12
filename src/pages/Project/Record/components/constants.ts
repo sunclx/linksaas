@@ -1,5 +1,5 @@
 import type { CheckboxOptionType } from 'antd';
-import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg, ScriptEvCfg } from '@/api/events_subscribe';
+import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg, ScriptEvCfg, RequirementEvCfg } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
     {
@@ -1254,6 +1254,116 @@ export const genIssueEvCfgValues = (cfg: IssueEvCfg): string[] => {
     }
     return retList;
 };
+
+export const requirementEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建需求分类",
+        value: "create_cate",
+    },
+    {
+        label: "更新需求分类",
+        value: "update_cate",
+    },
+    {
+        label: "删除需求分类",
+        value: "remove_cate",
+    },
+    {
+        label: "创建需求",
+        value: "create_requirement",
+    },
+    {
+        label: "更新需求",
+        value: "update_requirement",
+    },
+    {
+        label: "移动需求",
+        value: "set_requirement_cate",
+    },
+    {
+        label: "删除需求",
+        value: "remove_requirement",
+    },
+    {
+        label: "关联任务",
+        value: "link_issue",
+    },
+    {
+        label: "取消关联任务",
+        value: "unlink_issue",
+    },
+];
+
+export const calcRequirementEvCfg = (values: string[] | undefined): RequirementEvCfg => {
+    const ret: RequirementEvCfg = {
+        create_cate: false,
+        update_cate: false,
+        remove_cate: false,
+        create_requirement: false,
+        update_requirement: false,
+        set_requirement_cate: false,
+        remove_requirement: false,
+        link_issue: false,
+        unlink_issue: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create_cate") {
+            ret.create_cate = true;
+        } else if (value == "update_cate") {
+            ret.update_cate = true;
+        } else if (value == "remove_cate") {
+            ret.remove_cate = true;
+        } else if (value == "create_requirement") {
+            ret.create_requirement = true;
+        } else if (value == "update_requirement") {
+            ret.update_requirement = true;
+        } else if (value == "set_requirement_cate") {
+            ret.set_requirement_cate = true;
+        } else if (value == "remove_requirement") {
+            ret.remove_requirement = true;
+        } else if (value == "link_issue") {
+            ret.link_issue = true;
+        } else if (value == "unlink_issue") {
+            ret.unlink_issue = true;
+        }
+    });
+    return ret;
+};
+
+export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create_cate) {
+        retList.push("create_cate");
+    }
+    if (cfg.update_cate) {
+        retList.push("update_cate");
+    }
+    if (cfg.remove_cate) {
+        retList.push("remove_cate");
+    }
+    if (cfg.create_requirement) {
+        retList.push("create_requirement");
+    }
+    if (cfg.update_requirement) {
+        retList.push("update_requirement");
+    }
+    if (cfg.set_requirement_cate) {
+        retList.push("set_requirement_cate");
+    }
+    if (cfg.remove_requirement) {
+        retList.push("remove_requirement");
+    }
+    if (cfg.link_issue) {
+        retList.push("link_issue");
+    }
+    if (cfg.unlink_issue) {
+        retList.push("unlink_issue"); 
+    }
+    return retList;
+}
 
 export const robotEvOptionList: CheckboxOptionType[] = [
     {
