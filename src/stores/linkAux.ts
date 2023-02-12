@@ -891,6 +891,14 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, "/script"));
   }
 
+  //跳转到项目需求列表页面
+  goToRequirementList(history: History) {
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(history.location.pathname, "/req"));
+  }
+
   private genUrl(pathname: string, suffix: string): string {
     if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       return APP_PROJECT_CHAT_PATH + suffix;

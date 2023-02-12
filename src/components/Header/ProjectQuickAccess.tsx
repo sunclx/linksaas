@@ -25,6 +25,8 @@ const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
 const MENU_KEY_CREATE_DOC = "create.doc";
 const MENU_KEY_KB_BOOK_SHELF = "kb.bookShelf";
 const MENU_KEY_KB_VC = "kb.vc";
+const MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT = "toolbar.requirement.show";
+const MENU_KEY_CREATE_REQUIRE_MENT = "crate.requirement";
 const MENU_KEY_SHOW_TOOL_BAR_TASK_MY = "toolbar.task.my.show";
 const MENU_KEY_SHOW_TOOL_BAR_TASK_ALL = "toolbar.task.all.show";
 const MENU_KEY_CREATE_TASK = "create.task";
@@ -145,6 +147,20 @@ const ProjectQuickAccess = () => {
                 {
                     key: MENU_KEY_KB_VC,
                     label: "可变内容块",
+                },
+            ],
+        },
+        {
+            key: "requirement",
+            label: "项目需求",
+            children: [
+                {
+                    key: MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT,
+                    label: "查看项目需求",
+                },
+                {
+                    key: MENU_KEY_CREATE_REQUIRE_MENT,
+                    label: "创建项目需求",
                 },
             ],
         },
@@ -311,6 +327,12 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_KB_VC:
                 history.push(APP_PROJECT_KB_CB_PATH);
+                break;
+            case MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT:
+                linkAuxStore.goToRequirementList(history);
+                break;
+            case MENU_KEY_CREATE_REQUIRE_MENT:
+                linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, "", history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_TASK_MY:
                 linkAuxStore.goToTaskList(undefined, history);
