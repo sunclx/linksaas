@@ -21,6 +21,7 @@ export { GitlabListProjectWidget } from './GitlabListProjectWidget';
 export { GitlabListWikiWidget } from './GitlabListWikiWidget';
 export { SurveyChoiceWidget } from './SurveyChoiceWidget';
 export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
+export { RequirementRefWidget } from "./RequirementRefWidget";
 
 import { funnelWidgetInitData } from './FunnelWidget';
 import { taskRefWidgetInitData, bugRefWidgetInitData } from './IssueRefWidget';
@@ -44,9 +45,11 @@ import { gitlabListProjectWidgetInitData } from './GitlabListProjectWidget';
 import { gitlabListWikiWidgetInitData } from './GitlabListWikiWidget';
 import { surveyChoiceWidgetInitData } from './SurveyChoiceWidget';
 import { surveyTrueOrFlaseWidgetInitData } from './SurveyTrueOrFalseWidget';
+import { requirementRefWidgetInitData } from './RequirementRefWidget';
 
 export type WIDGET_TYPE = string;
 export const WIDGET_TYPE_FUNNEL: WIDGET_TYPE = "funnel";//漏斗分析法
+export const WIDGET_TYPE_REQUIRE_MENT_REF: WIDGET_TYPE = "requirementRef"; //引用项目需求
 export const WIDGET_TYPE_TASK_REF: WIDGET_TYPE = "taskRef";//引用任务
 export const WIDGET_TYPE_BUG_REF: WIDGET_TYPE = "bugRef";//引用缺陷
 export const WIDGET_TYPE_SPRIT_REF: WIDGET_TYPE = "spritRef"; //引用迭代
@@ -73,6 +76,7 @@ export const WIDGET_TYPE_SURVEY_TRUE_OR_FALSE: WIDGET_TYPE = "surveyTrueOrFalse"
 
 export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_FUNNEL,
+    WIDGET_TYPE_REQUIRE_MENT_REF,
     WIDGET_TYPE_TASK_REF,
     WIDGET_TYPE_BUG_REF,
     WIDGET_TYPE_SPRIT_REF,
@@ -101,6 +105,7 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
 export const WidgetInitDataMap: Map<WIDGET_TYPE, unknown> = new Map();
 
 WidgetInitDataMap.set(WIDGET_TYPE_FUNNEL, funnelWidgetInitData);
+WidgetInitDataMap.set(WIDGET_TYPE_REQUIRE_MENT_REF, requirementRefWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TASK_REF, taskRefWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_BUG_REF, bugRefWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SPRIT_REF, spritRefWidgetInitData);

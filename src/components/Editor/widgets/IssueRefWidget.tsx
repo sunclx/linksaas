@@ -74,6 +74,7 @@ const renderTitle = (
       <Button
         type="link"
         disabled={linkAuxStore == undefined}
+        style={{ minWidth: "0px", padding: "0px 0px" }}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -86,7 +87,7 @@ const renderTitle = (
           }
         }}
       >
-        <span title={row.basic_info?.title}><LinkOutlined />{row.basic_info?.title}</span>
+        <span title={row.basic_info?.title}><LinkOutlined />&nbsp;{row.basic_info?.title}</span>
       </Button>
       {row.msg_count > 0 && (
         <span
@@ -210,7 +211,7 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
       ellipsis: true,
       dataIndex: ['basic_info', 'title'],
       width: 200,
-      render: (v: string, row: IssueInfo) =>
+      render: (_, row: IssueInfo) =>
         renderTitle(row, projectStore.curProjectId, undefined, [], [], undefined),
     },
     {
