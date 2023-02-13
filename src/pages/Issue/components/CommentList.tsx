@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { request } from '@/utils/request';
 import type { Comment } from '@/api/project_issue';
-import { list_comment, add_comment } from '@/api/project_issue';
+import { list_comment, add_comment, remove_comment } from '@/api/project_issue';
 import { useStores } from '@/hooks';
 import { is_empty_doc, ReadOnlyEditor, useCommonEditor } from '@/components/Editor';
 import Pagination from '@/components/Pagination';
@@ -86,6 +86,16 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
     }
   }
 
+  const removeComment = async (commentId: string) => {
+    await request(remove_comment({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      issue_id: props.issueId,
+      comment_id: commentId,
+    }));
+    await loadComment();
+  };
+
   useEffect(() => {
     loadComment();
   }, [props.issueId, curPage]);
@@ -99,14 +109,25 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
       <div style={{ borderTop: '1px solid  #f0f0f5', marginTop: '20px' }}>
         {commentList.map((item) => {
           return (
-            <div key={item.comment_id}>
-              <UserPhoto logoUri={item.sender_logo_uri} width="24px" height="24px" style={{ borderRadius: "20px",marginRight:"10px" }} />
-              <span>{item.sender_display_name}</span>
-              <span>&nbsp;&nbsp;{moment(item.send_time).format('YYYY-MM-DD HH:mm:ss')}</span>
+            <Card key={item.comment_id} bordered={false}
+              headStyle={{ borderBottom: "none" ,borderTop:"1px solid #e4e4e8"}}
+              title={<>
+                <UserPhoto logoUri={item.sender_logo_uri} width="24px" height="24px" style={{ borderRadius: "20px", marginRight: "10px" }} />
+                <span>{item.sender_display_name}</span>
+                <span>&nbsp;&nbsp;{moment(item.send_time).format('YYYY-MM-DD HH:mm:ss')}</span>
+              </>}
+              extra={
+                <Button type="default" disabled={!(projectStore.isAdmin || item.sender_user_id == userStore.userInfo.userId)}
+                  onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    removeComment(item.comment_id);
+                  }}>删除</Button>
+              }>
               <div style={{ width: '90%', paddingBottom: "10px", paddingTop: "5px", paddingLeft: "32px" }}>
                 <ReadOnlyEditor content={item.basic_comment.comment_data} />
               </div>
-            </div>
+            </Card>
           );
         })}
         {totalCount == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
