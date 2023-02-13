@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
 import s from './RequirementList.module.less';
 import Button from "@/components/Button";
-import { Card, Menu, Popover, Table, message } from "antd";
+import { Card, Form, Input, Menu, Popover, Select, Space, Table, message } from "antd";
 import type { CateInfo, RequirementInfo } from '@/api/project_requirement';
 import { list_cate, list_requirement, update_requirement, set_requirement_cate } from '@/api/project_requirement';
 import { useStores } from "@/hooks";
@@ -32,6 +32,9 @@ const RequirementList = () => {
     const [showAddCate, setShowAddCate] = useState(false);
     const [updateCateInfo, setUpdateCateInfo] = useState<CateInfo | null>(null);
     const [removeCateInfo, setRemoveCateInfo] = useState<CateInfo | null>(null);
+
+    const [keyword, setKeyword] = useState("");
+    const [hasLinkIssue, setHasLinkIssue] = useState<boolean | null>(null);
 
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
@@ -71,6 +74,10 @@ const RequirementList = () => {
             cate_id: curCateId,
             offset: PAGE_SIZE * curPage,
             limit: PAGE_SIZE,
+            filter_by_keyword: keyword.trim() != "",
+            keyword: keyword,
+            filter_by_has_link_issue: hasLinkIssue !== null,
+            has_link_issue: hasLinkIssue == null ? false : hasLinkIssue,
         }));
         setTotalCount(res.total_count);
         setReqInfoList(res.requirement_list);
@@ -185,7 +192,7 @@ const RequirementList = () => {
 
     useEffect(() => {
         loadReqInfoList();
-    }, [curPage, curCateId])
+    }, [curPage, curCateId, keyword, hasLinkIssue])
 
     return (
         <CardWrap>
@@ -263,8 +270,32 @@ const RequirementList = () => {
                         </Card>
                     </div>
                     <div className={s.right_panel_wrap}>
-                        <Table rowKey="requirement_id" columns={columns} dataSource={reqInfoList} pagination={false} scroll={{ x: 900 }} />
-                        <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
+                        <Card bordered={false}
+                            extra={<Space>
+                                <span className={s.fiter_title}>过滤条件:</span>
+                                <Form layout="inline">
+                                    <Form.Item label="需求标题">
+                                        <Input value={keyword} onChange={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setKeyword(e.target.value);
+                                        }} />
+                                    </Form.Item>
+                                    <Form.Item label="任务关联">
+                                        <Select style={{ width: 100 }} value={hasLinkIssue} onChange={value => setHasLinkIssue(value)}>
+                                            <Select.Option value={null}>全部</Select.Option>
+                                            <Select.Option value={true}>有关联</Select.Option>
+                                            <Select.Option value={false}>无关联</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Form>
+                            </Space>}>
+                            <div className={s.table_wrap}>
+                                <Table rowKey="requirement_id" columns={columns} dataSource={reqInfoList} pagination={false} scroll={{ x: 900 }} />
+                                <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
+                            </div>
+                        </Card>
+
                     </div>
                 </div>
             </div>

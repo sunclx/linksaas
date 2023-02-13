@@ -20,6 +20,7 @@ import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import {
   WIDGET_TYPE_FUNNEL,
+  WIDGET_TYPE_REQUIRE_MENT_REF,
   WIDGET_TYPE_TASK_REF,
   WIDGET_TYPE_BUG_REF,
   WIDGET_TYPE_5W2H,
@@ -344,6 +345,10 @@ const ContentWidget = () => {
             {
               key: WIDGET_TYPE_MEMBER_DUTY,
               label: '人员职责',
+            },
+            {
+              key: WIDGET_TYPE_REQUIRE_MENT_REF,
+              label: "引用需求",
             },
             {
               key: WIDGET_TYPE_TASK_REF,

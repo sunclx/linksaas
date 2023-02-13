@@ -27,6 +27,7 @@ export type RequirementInfo = {
     project_id: string;
     base_info: BaseRequirementInfo;
     issue_link_count: number;
+    comment_count: number;
     create_user_id: string;
     create_time: number;
     create_display_name: string;
@@ -36,6 +37,26 @@ export type RequirementInfo = {
     update_display_name: string;
     update_logo_uri: string;
 };
+
+export type BasicComment = {
+    comment_data: string;
+    ref_comment_id: string;
+};
+
+export type Comment = {
+    comment_id: string;
+    project_id: string;
+    requirement_id: string;
+    basic_comment: BasicComment;
+    sender_user_id: string;
+    send_time: number;
+    sender_logo_uri: string;
+    sender_display_name: string;
+    ref_comment_data: string;
+    ref_user_logo_uri: string;
+    ref_user_display_name: string;
+};
+
 
 export type CreateCateRequest = {
     session_id: string;
@@ -106,6 +127,10 @@ export type ListRequirementRequest = {
     project_id: string;
     filter_by_cate_id: boolean;
     cate_id: string;
+    filter_by_keyword: boolean;
+    keyword: string;
+    filter_by_has_link_issue: boolean;
+    has_link_issue: boolean;
     offset: number;
     limit: number;
 };
@@ -114,6 +139,18 @@ export type ListRequirementResponse = {
     code: number;
     err_msg: string;
     total_count: number;
+    requirement_list: RequirementInfo[];
+};
+
+export type ListRequirementByIdRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id_list: string[];
+};
+
+export type ListRequirementByIdResponse = {
+    code: number;
+    err_msg: string;
     requirement_list: RequirementInfo[];
 };
 
@@ -205,6 +242,62 @@ export type ListIssueLinkResponse = {
     issue_id_list: string[];
 };
 
+export type ListMultiIssueLinkRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id_list: string[];
+}
+
+export type ListMultiIssueLinkResponse = {
+    code: number;
+    err_msg: string;
+    issue_id_list: string[];
+};
+
+
+export type AddCommentRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    comment: BasicComment;
+};
+
+export type AddCommentResponse = {
+    code: number;
+    err_msg: string;
+    comment_id: string;
+};
+
+
+export type ListCommentRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    offset: number;
+    limit: number;
+};
+
+export type ListCommentResponse = {
+    code: number;
+    err_msg: string;
+    total_count: number;
+    comment_list: Comment[];
+};
+
+
+export type RemoveCommentRequest ={
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    comment_id: string;
+};
+
+export type RemoveCommentResponse = {
+    code: number;
+    err_msg: string;
+};
+
+
 //创建需求分类
 export async function create_cate(request: CreateCateRequest): Promise<CreateCateResponse> {
     const cmd = 'plugin:project_requirement_api|create_cate';
@@ -255,6 +348,15 @@ export async function list_requirement(request: ListRequirementRequest): Promise
     const cmd = 'plugin:project_requirement_api|list_requirement';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListRequirementResponse>(cmd, {
+        request,
+    });
+}
+
+//按ID列出需求
+export async function list_requirement_by_id(request: ListRequirementByIdRequest): Promise<ListRequirementByIdResponse> {
+    const cmd = 'plugin:project_requirement_api|list_requirement_by_id';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListRequirementByIdResponse>(cmd, {
         request,
     });
 }
@@ -318,6 +420,42 @@ export async function list_issue_link(request: ListIssueLinkRequest): Promise<Li
     const cmd = 'plugin:project_requirement_api|list_issue_link';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListIssueLinkResponse>(cmd, {
+        request,
+    });
+}
+
+//列出多个需求的工单关联
+export async function list_multi_issue_link(request: ListMultiIssueLinkRequest): Promise<ListMultiIssueLinkResponse> {
+    const cmd = 'plugin:project_requirement_api|list_multi_issue_link';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListMultiIssueLinkResponse>(cmd, {
+        request,
+    });
+}
+
+//增加评论
+export async function add_comment(request: AddCommentRequest): Promise<AddCommentResponse> {
+    const cmd = 'plugin:project_requirement_api|add_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AddCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//列出评论
+export async function list_comment(request: ListCommentRequest): Promise<ListCommentResponse> {
+    const cmd = 'plugin:project_requirement_api|list_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//删除评论
+export async function remove_comment(request: RemoveCommentRequest): Promise<RemoveCommentResponse> {
+    const cmd = 'plugin:project_requirement_api|remove_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemoveCommentResponse>(cmd, {
         request,
     });
 }

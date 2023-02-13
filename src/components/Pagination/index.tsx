@@ -7,16 +7,22 @@ type PaginationProps = {
   pageSize: number;
   current?: number;
   onChange?: (page: number) => void;
+  skipShowTotal?: boolean;
 };
 
 const Pagination: FC<PaginationProps> = (props) => {
-  const { total, pageSize, onChange, current } = props;
+  const { total, pageSize, onChange, current, skipShowTotal } = props;
   return (
     <PaginationAntd
       size="small"
       total={total}
       pageSize={pageSize}
-      showTotal={() => `共 ${total} 条`}
+      showTotal={() => {
+        if (skipShowTotal == true) {
+          return "";
+        }
+        return `共 ${total} 条`;
+      }}
       current={current || 1}
       onChange={onChange}
       showSizeChanger={false}

@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card, Select } from 'antd';
+import { Card, Form, Select } from 'antd';
 import type { ModalProps } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
 import type { LinkInfo } from '@/stores/linkAux';
-import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkScriptSuiteInfo, LinkRequirementInfo } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import {
   list as list_issue,
@@ -25,6 +25,8 @@ import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
 import type { ScriptSuiteKey } from '@/api/robot_script';
 import { list_script_suite_key } from '@/api/robot_script';
+import type { RequirementInfo, CateInfo } from '@/api/project_requirement';
+import { list_cate, list_requirement } from '@/api/project_requirement';
 
 const PAGE_SIZE = 10;
 
@@ -49,6 +51,7 @@ export interface LinkSelectProps {
   title: string;
   showChannel: boolean;
   showDoc: boolean;
+  showRequirement: boolean;
   showTask: boolean;
   showBug: boolean;
   showScript: boolean;
@@ -69,6 +72,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     defaultTab = 'channel';
   } else if (props.showDoc) {
     defaultTab = 'doc';
+  } else if (props.showRequirement) {
+    defaultTab = "requirement";
   } else if (props.showTask) {
     defaultTab = 'task';
   } else if (props.showBug) {
@@ -79,6 +84,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     defaultTab = 'externe';
   }
 
+  const [requirementList, setRequirementList] = useState([] as RequirementInfo[]);
   const [taskList, setTaskList] = useState([] as IssueInfo[]);
   const [bugList, setBugList] = useState([] as IssueInfo[]);
   const [scriptList, setscriptList] = useState([] as ScriptSuiteKey[]);
@@ -88,7 +94,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [tab, setTab] = useState(defaultTab);
   const [keyword, setKeyword] = useState('');
   const [externeUrl, setExterneUrl] = useState('');
-
+  const [curCateId, setCurCateId] = useState<string | null>(null);
+  const [cateInfoList, setCateInfoList] = useState([] as CateInfo[]);
 
   const tabList = [];
   if (props.showChannel) {
@@ -101,6 +108,12 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     tabList.push({
       label: '项目文档',
       value: 'doc',
+    });
+  }
+  if (props.showRequirement) {
+    tabList.push({
+      label: '项目需求',
+      value: 'requirement',
     });
   }
   if (props.showTask) {
@@ -133,6 +146,44 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
 
 
   useMemo(() => {
+    if (tab == 'doc') {
+      request(list_doc_space({
+        session_id: userStore.sessionId,
+        project_id: projectStore.curProjectId,
+      })).then(res => {
+        const tmpList = res.doc_space_list.slice();
+        tmpList.unshift(ALL_DOC_SPACE);
+        setDocSpaceList(tmpList);
+      })
+    } else if (tab == 'requirement') {
+      request(list_cate({
+        session_id: userStore.sessionId,
+        project_id: projectStore.curProjectId,
+      })).then(res => {
+        res.cate_info_list.unshift({
+          cate_id: "",
+          project_id: projectStore.curProjectId,
+          cate_name: "未分类需求",
+          requirement_count: -1,
+          create_user_id: "",
+          create_time: 0,
+          create_display_name: "",
+          create_logo_uri: "",
+          update_user_id: "",
+          update_time: 0,
+          update_display_name: "",
+          update_logo_uri: "",
+        });
+        setCateInfoList(res.cate_info_list);
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
+  useEffect(() => {
+    if (!(tab == "task" || tab == "bug")) {
+      return;
+    }
     const listIssueParam: ListIssueParam = {
       filter_by_issue_type: true,
       issue_type: ISSUE_TYPE_TASK,
@@ -193,18 +244,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
         setBugList(res.info_list);
         setTotalCount(res.total_count);
       });
-    } else if (tab == 'doc') {
-      request(list_doc_space({
-        session_id: userStore.sessionId,
-        project_id: projectStore.curProjectId,
-      })).then(res => {
-        const tmpList = res.doc_space_list.slice();
-        tmpList.unshift(ALL_DOC_SPACE);
-        setDocSpaceList(tmpList);
-      })
-
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, keyword, curPage]);
 
   useEffect(() => {
@@ -244,6 +284,27 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       setTotalCount(res.total_count);
     });
   }, [tab, curPage])
+
+  useEffect(() => {
+    if (tab != 'requirement') {
+      return;
+    }
+    request(list_requirement({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      filter_by_cate_id: curCateId != null,
+      cate_id: curCateId == null ? "" : curCateId,
+      filter_by_keyword: keyword.trim() != "",
+      keyword: keyword.trim(),
+      filter_by_has_link_issue: false,
+      has_link_issue: false,
+      offset: curPage * PAGE_SIZE,
+      limit: PAGE_SIZE,
+    })).then(res => {
+      setTotalCount(res.total_count);
+      setRequirementList(res.requirement_list);
+    })
+  }, [tab, curPage, keyword, curCateId]);
 
   const renderItemContent = () => {
     if (props.showChannel && tab === 'channel') {
@@ -302,6 +363,55 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
           </div>
         </Card>
       );
+    } else if (props.showRequirement && tab == "requirement") {
+      return (
+        <div className={s.con_item_wrap}>
+          <Form layout='inline' style={{ paddingLeft: "20px", paddingTop: "10px", paddingBottom: "10px", borderBottom: "1px solid #e4e4e8" }}>
+            <Form.Item label="标题">
+              <Input
+                style={{ width: 150 }}
+                prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
+                placeholder="输入关键词"
+                value={keyword}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setKeyword(e.target.value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item label="分类">
+              <Select value={curCateId} style={{ width: "100px" }} onChange={value => setCurCateId(value)}>
+                <Select.Option value={null}>全部分类</Select.Option>
+                {cateInfoList.map(item => (
+                  <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+          {requirementList.map((item) => (
+            <div
+              className={s.con_item}
+              key={item.requirement_id}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onOk(new LinkRequirementInfo(item.base_info.title, item.project_id, item.requirement_id));
+              }}
+            >
+              <div>
+                {item.base_info.title}
+              </div>
+            </div>
+          ))}
+          <Pagination
+            total={totalCount}
+            pageSize={PAGE_SIZE}
+            current={curPage + 1}
+            onChange={(page: number) => setCurPage(page - 1)}
+          />
+        </div>
+      );
     } else if (props.showTask && tab === 'task') {
       return (
         <div className={s.con_item_wrap}>
@@ -310,6 +420,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
             addonBefore="过滤任务标题:"
             placeholder="输入关键词"
+            value={keyword}
             onChange={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -347,6 +458,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
             addonBefore="过滤缺陷标题:"
             placeholder="输入关键词"
+            value={keyword}
             onChange={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -452,7 +564,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
                 key={item.value}
                 onClick={() => {
                   setTab(item.value);
-                  if (item.value === 'task' || item.value === 'bug' || item.value === "script") {
+                  if (item.value === 'task' || item.value === 'bug' || item.value === "script" || item.value == "requirement") {
+                    setKeyword("");
                     setTotalCount(0);
                     setCurPage(0);
                   }

@@ -36,6 +36,7 @@ const LinkBtn = () => {
         <LinkSelect
           title="设置链接"
           showChannel={true}
+          showRequirement={true}
           showTask={true}
           showBug={true}
           showDoc={true}
