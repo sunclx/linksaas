@@ -11,6 +11,7 @@ import { bugPriority, issueState, taskPriority } from '@/utils/constant';
 import { issueTypeIsTask } from '@/utils/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ModalProps } from 'antd';
+import { Form, Select, Tabs } from 'antd';
 import { Input } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import Table from 'antd/lib/table';
@@ -27,11 +28,14 @@ import type {
   ExtraTaskInfo,
   IssueInfo,
 } from '@/api/project_issue';
-import { list as list_issue } from '@/api/project_issue';
+import { list as list_issue, list_by_id as list_issue_by_id } from '@/api/project_issue';
 import { LinkTaskInfo, LinkBugInfo, LinkNoneInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import Pagination from '@/components/Pagination';
 import { getStateColor } from '@/pages/Issue/components/utils';
+import type { CateInfo } from '@/api/project_requirement';
+import { list_cate, list_requirement, list_multi_issue_link } from '@/api/project_requirement';
+
 
 const PAGE_SIZE = 10;
 
@@ -112,6 +116,11 @@ const getExtraInfoType = (row: IssueInfo): ExtraTaskInfo | ExtraBugInfo | undefi
 const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+
+  const [activeKey, setActiveKey] = useState('task');
+  const [cateList, setCateList] = useState<CateInfo[]>([]);
+  const [curCateId, setCurCateId] = useState<string | null>(null);
+
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const [keyword, setKeyword] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(props.issueIdList);
@@ -119,8 +128,29 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const [curPage, setCurPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
+  const loadCateList = async () => {
+    const res = await request(list_cate({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+    }));
+    res.cate_info_list.unshift({
+      cate_id: "",
+      project_id: projectStore.curProjectId,
+      cate_name: "未分类需求",
+      requirement_count: -1,
+      create_user_id: "",
+      create_time: 0,
+      create_display_name: "",
+      create_logo_uri: "",
+      update_user_id: "",
+      update_time: 0,
+      update_display_name: "",
+      update_logo_uri: "",
+    })
+    setCateList(res.cate_info_list);
+  };
 
-  useEffect(() => {
+  const loadIssue = async () => {
     const listIssueParam: ListIssueParam = {
       filter_by_issue_type: true,
       issue_type: ISSUE_TYPE_TASK,
@@ -151,7 +181,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       title_keyword: keyword,
     };
 
-    request(
+    const res = await request(
       list_issue({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
@@ -164,12 +194,62 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         offset: curPage * PAGE_SIZE,
         limit: PAGE_SIZE,
       }),
-    ).then((res) => {
-      setDataSource(res.info_list);
-      setTotalCount(res.total_count);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyword, props.type, curPage]);
+    )
+    setDataSource(res.info_list);
+    setTotalCount(res.total_count);
+  };
+
+  const loadIssueByReq = async () => {
+    const reqRes = await request(list_requirement({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      filter_by_cate_id: curCateId != null,
+      cate_id: curCateId == null ? "" : curCateId,
+      filter_by_keyword: keyword.trim() != "",
+      keyword: keyword.trim(),
+      filter_by_has_link_issue: true,
+      has_link_issue: true,
+      offset: curPage * PAGE_SIZE,
+      limit: PAGE_SIZE,
+    }));
+    if (reqRes.total_count == 0) {
+      setDataSource([]);
+      setTotalCount(0);
+      return;
+    }
+    const issueIdRes = await request(list_multi_issue_link({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      requirement_id_list: reqRes.requirement_list.map(item => item.requirement_id),
+    }));
+    const res = await request(list_issue_by_id({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      issue_id_list: issueIdRes.issue_id_list,
+    }));
+    setDataSource(res.info_list);
+    setTotalCount(reqRes.total_count);
+  };
+
+  useEffect(() => {
+    if (props.type == "task") {
+      loadCateList();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (props.type == "bug") {
+      loadIssue();
+    } else if (props.type == "task" && activeKey == "task") {
+      loadIssue();
+    }
+  }, [keyword, props.type, curPage, activeKey]);
+
+  useEffect(() => {
+    if (props.type == "task" && activeKey == "requirement") {
+      loadIssueByReq();
+    }
+  }, [keyword, props.type, curPage, activeKey, curCateId])
 
   const rowSelection = {
     onChange: (keys: React.Key[]) => {
@@ -289,17 +369,74 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
 
   return (
     <ActionModal {...props} width={833} onOK={okchange}>
-      <div>
-        <Input
-          placeholder="输入关键词"
-          prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
-          style={{ width: '350px', borderRadius: ' 6px' }}
-          onChange={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            setKeyword(e.target.value);
-          }}
-        />
+      <div style={{ borderBottom: "1px solid #e4e4e8", paddingBottom: "15px" }}>
+        {props.type == "task" && (
+          <Tabs activeKey={activeKey} onChange={key => {
+            setKeyword("");
+            setCurPage(0);
+            setActiveKey(key);
+          }}>
+            <Tabs.TabPane tab="任务视角" key="task">
+              <Form layout="inline" style={{ paddingLeft: "10px" }}>
+                <Form.Item label="任务标题">
+                  <Input
+                    placeholder="输入关键词"
+                    prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
+                    style={{ width: '350px', borderRadius: ' 6px' }}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setKeyword(e.target.value);
+                    }}
+                  />
+                </Form.Item>
+              </Form>
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="需求视角" key='requirement'>
+              <Form layout="inline" style={{ paddingLeft: "10px" }}>
+                <Form.Item label="需求标题">
+                  <Input
+                    placeholder="输入关键词"
+                    prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
+                    style={{ width: '350px', borderRadius: ' 6px' }}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setKeyword(e.target.value);
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="需求类别">
+                  <Select value={curCateId}
+                    onChange={value => {
+                      setCurCateId(value);
+                    }}>
+                    <Select.Option value={null}>全部分类</Select.Option>
+                    {cateList.map(item => (
+                      <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Form>
+            </Tabs.TabPane>
+          </Tabs>
+        )}
+        {props.type == "bug" && (
+          <Form layout="inline" style={{ paddingLeft: "10px" }}>
+            <Form.Item label="任务标题">
+              <Input
+                placeholder="输入关键词"
+                prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
+                style={{ width: '350px', borderRadius: ' 6px' }}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setKeyword(e.target.value);
+                }}
+              />
+            </Form.Item>
+          </Form>
+        )}
       </div>
       <Table
         style={{ marginTop: '8px', height: "calc(100vh - 400px)", overflowY: "scroll" }}
@@ -319,6 +456,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       />
       <Pagination
         total={totalCount}
+        skipShowTotal={props.type == "task" && activeKey == "requirement"}
         pageSize={PAGE_SIZE}
         current={curPage + 1}
         onChange={(page: number) => setCurPage(page - 1)}
