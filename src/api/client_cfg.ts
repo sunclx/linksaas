@@ -18,7 +18,6 @@ export type ServerCap = {
   project_doc: boolean;
   expert_qa: boolean;
   sprit: boolean;
-  vc: boolean;
   restrict: boolean;
   search: boolean;
   appraise: boolean;

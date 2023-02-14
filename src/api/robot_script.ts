@@ -25,7 +25,6 @@ export type SysPermission = {
 export type NetPermission = {
     allow_all: boolean;
     addr_list: string[];
-    allow_vc_update: boolean;
 };
 
 export type ReadPermission = {

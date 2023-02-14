@@ -22,6 +22,7 @@ const PrjTodoIssueList: React.FC<PrjTodoIssueListProps> = (props) => {
     const linkAuxStore = useStores('linkAuxStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const appStore = useStores('appStore');
 
     if (props.issueType == ISSUE_TYPE_TASK && issueStore.prjTodoTaskList.length == 0) {
         return (<></>);
@@ -37,7 +38,7 @@ const PrjTodoIssueList: React.FC<PrjTodoIssueListProps> = (props) => {
                         {issueStore.prjTodoTaskList.map(item => (
                             <List.Item key={item.issue_id}>
                                 <Space size="small">
-                                    <div style={{ width: "150px" }}>
+                                    <div style={{ width: "230px" }}>
                                         <a onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
@@ -83,8 +84,26 @@ const PrjTodoIssueList: React.FC<PrjTodoIssueListProps> = (props) => {
                     </>
                 )}
             </List>
-        } placement="bottom" trigger="click">
-            <div className={cls.content_wrap}>
+        } placement="right" trigger={[]}
+            open={(props.issueType == ISSUE_TYPE_TASK && appStore.simpleModeExpand == "task") || (props.issueType == ISSUE_TYPE_BUG && appStore.simpleModeExpand == "bug")}>
+            <div className={cls.content_wrap} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (props.issueType == ISSUE_TYPE_TASK) {
+                    if (appStore.simpleModeExpand == "task") {
+                        appStore.simpleModeExpand = null;
+                    } else {
+                        appStore.simpleModeExpand = "task";
+                    }
+
+                } else if (props.issueType == ISSUE_TYPE_BUG) {
+                    if (appStore.simpleModeExpand == "bug") {
+                        appStore.simpleModeExpand = null;
+                    } else {
+                        appStore.simpleModeExpand = "bug";
+                    }
+                }
+            }}>
                 {props.issueType == ISSUE_TYPE_TASK && (
                     <>
                         <Badge count={issueStore.prjTodoTaskList.length} className={cls.badge} dot={true} style={{ boxShadow: "none" }} /> 待办任务

@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.6
+  version: 0.1.7
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -26,8 +26,6 @@ tags:
     description: 项目中文档相关接口
   - name: projectChannel
     description: 项目中的沟通频道
-  - name: projectContentBlock
-    description: 项目中的可变内容块
   - name: projectTestCase
     description: 项目中的测试用例
 paths:
@@ -51,130 +49,6 @@ paths:
               schema:
                 type: string
                 example: hello linksaas
-  /project/{projectId}/blockColl:
-    get:
-      tags:
-        - projectContentBlock
-      summary: 可变内容集合
-      description: 列出可变内容集合
-      operationId: projectProjectIdBlockCollGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/AccessToken'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  totalCount:
-                    type: integer
-                    description: 集合总数量
-                  blockCollList:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/BlockCollInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/blockColl/{blockCollId}:
-    get:
-      tags:
-        - projectContentBlock
-      summary: 可变内容块
-      description: 列出可变内容块
-      operationId: projectProjectIdBlockCollBlockCollIdGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/BlockCollId'
-        - $ref: '#/components/parameters/AccessToken'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  totalCount:
-                    type: integer
-                    description: 内容块总数量
-                  blockList:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/BlockInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/blockColl/{blockCollId}/{blockId}:
-    get:
-      tags:
-        - projectContentBlock
-      summary: 可变内容块内容
-      description: 获取可变内容块内容
-      operationId: projectProjectIdBlockCollBlockCollIdBlockIdGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/BlockCollId'
-        - $ref: '#/components/parameters/BlockId'
-        - $ref: '#/components/parameters/AccessToken'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BlockContentInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/bug/all:
     get:
       tags:
@@ -1410,20 +1284,6 @@ components:
         type: string
       required: true
       description: 访问令牌
-    BlockCollId:
-      in: path
-      name: blockCollId
-      schema:
-        type: string
-      required: true
-      description: 内容集合ID
-    BlockId:
-      in: path
-      name: blockId
-      schema:
-        type: string
-      required: true
-      description: 可变内容块ID
     BugId:
       in: path
       name: bugId
@@ -1511,75 +1371,6 @@ components:
       required: true
       description: 任务ID
   schemas:
-    BlockCollInfo:
-      type: object
-      properties:
-        blockCollId:
-          type: string
-          description: 可变内容集合ID
-        title:
-          type: string
-          description: 集合标题
-        createUserId:
-          type: string
-          description: 创建人ID
-        createDisplayName:
-          type: string
-          description: 创建人名称
-        createTime:
-          type: integer
-          description: 创建时间
-          format: int64
-        updateTime:
-          type: integer
-          description: 更新时间
-          format: int64
-    BlockContentInfo:
-      type: object
-      properties:
-        blockId:
-          type: string
-          description: 可变内容块ID
-        contentType:
-          type: string
-          description: 内容类型
-          enum:
-            - text
-            - html
-            - markDown
-        content:
-          type: string
-          description: 内容
-        createTime:
-          type: integer
-          description: 创建时间
-          format: int64
-    BlockInfo:
-      type: object
-      properties:
-        blockId:
-          type: string
-          description: 可变内容块ID
-        blockCollId:
-          type: string
-          description: 可变内容集合ID
-        title:
-          type: string
-          description: 集合标题
-        createUserId:
-          type: string
-          description: 创建人ID
-        createDisplayName:
-          type: string
-          description: 创建人名称
-        createTime:
-          type: integer
-          description: 创建时间
-          format: int64
-        updateTime:
-          type: integer
-          description: 更新时间
-          format: int64
     BugInfo:
       type: object
       properties:

@@ -73,16 +73,15 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::{
-    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBlockCollBlockCollIdGet200Response,
-    ProjectProjectIdBlockCollGet200Response, ProjectProjectIdBugAllGet200Response,
+    DocSpaceInfo, ErrInfo, IssueInfo, 
+     ProjectProjectIdBugAllGet200Response,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
     ProjectProjectIdTestCaseReportEntryIdPost200Response,
     ProjectProjectIdTestCaseReportEntryIdPostRequest,
 };
 use local_api_rust::{
-    Api, HelloGetResponse, ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse,
-    ProjectProjectIdBlockCollBlockCollIdGetResponse, ProjectProjectIdBlockCollGetResponse,
+    Api, HelloGetResponse, 
     ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
     ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
@@ -1510,152 +1509,6 @@ where
             }
             return Ok(ProjectProjectIdChannelOrphanGetResponse::Status200 {
                 body: super::channel_api::convert_channel_list(res.info_list),
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-    }
-
-    /// 可变内容块内容
-    async fn project_project_id_block_coll_block_coll_id_block_id_get(
-        &self,
-        project_id: String,
-        block_coll_id: String,
-        block_id: String,
-        access_token: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-        let res =
-            super::vc_api::get_block_content(&self.app, &project_id, &block_coll_id, &block_id)
-                .await;
-        if res.is_err() {
-            return Ok(
-                ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err().unwrap()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(
-                    ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse::Status500 {
-                        body: ErrInfo {
-                            err_msg: Some(res.err_msg),
-                        },
-                        access_control_allow_origin: Some("*".into()),
-                    },
-                );
-            }
-            return Ok(
-                ProjectProjectIdBlockCollBlockCollIdBlockIdGetResponse::Status200 {
-                    body: super::vc_api::convert_content_list(res.content_list),
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-    }
-
-    /// 可变内容块
-    async fn project_project_id_block_coll_block_coll_id_get(
-        &self,
-        project_id: String,
-        block_coll_id: String,
-        access_token: String,
-        offset: i32,
-        limit: i32,
-        _context: &C,
-    ) -> Result<ProjectProjectIdBlockCollBlockCollIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdBlockCollBlockCollIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let res =
-            super::vc_api::list_block(&self.app, &project_id, &block_coll_id, offset, limit).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdBlockCollBlockCollIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdBlockCollBlockCollIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdBlockCollBlockCollIdGetResponse::Status200 {
-                body: ProjectProjectIdBlockCollBlockCollIdGet200Response {
-                    total_count: Some(res.total_count as i32),
-                    block_list: Some(super::vc_api::convert_block_list(res.block_list)),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-    }
-
-    /// 可变内容集合
-    async fn project_project_id_block_coll_get(
-        &self,
-        project_id: String,
-        access_token: String,
-        offset: i32,
-        limit: i32,
-        _context: &C,
-    ) -> Result<ProjectProjectIdBlockCollGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdBlockCollGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let res = super::vc_api::list_block_coll(&self.app, &project_id, offset, limit).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdBlockCollGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdBlockCollGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdBlockCollGetResponse::Status200 {
-                body: ProjectProjectIdBlockCollGet200Response {
-                    total_count: Some(res.total_count as i32),
-                    block_coll_list: Some(super::vc_api::convert_block_coll_list(
-                        res.block_coll_list,
-                    )),
-                },
                 access_control_allow_origin: Some("*".into()),
             });
         }

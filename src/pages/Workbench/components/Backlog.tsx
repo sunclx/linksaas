@@ -20,7 +20,6 @@ import React from 'react';
 import Pagination from '@/components/Pagination';
 import { request } from '@/utils/request';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
-import { debounce } from 'lodash';
 import { get_issue_type_str } from '@/api/event_type';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
@@ -33,6 +32,7 @@ import { getStateColor } from '@/pages/Issue/components/utils';
 import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from '@/stores/linkAux';
 import { useHistory } from 'react-router-dom';
 
+const PAGE_SIZE = 15;
 
 type BacklogProps = {
   onChange: (count: number) => void;
@@ -46,19 +46,16 @@ const Backlog: React.FC<BacklogProps> = (props) => {
   const projectStore = useStores('projectStore');
   const linkAuxStore = useStores('linkAuxStore');
 
-  const [pageSize, setPageSize] = useState(10);
   const [curPage, setCurPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
-  const getList = async (size?: number) => {
-    const s = size || pageSize;
-    setPageSize(s);
+  const getList = async () => {
     const data = {
       session_id: userStore.sessionId,
       sort_type: SORT_TYPE_DSC, // SORT_TYPE_DSC SORT_TYPE_ASC
       sort_key: SORT_KEY_UPDATE_TIME,
-      offset: curPage * s,
-      limit: s,
+      offset: curPage * PAGE_SIZE,
+      limit: PAGE_SIZE,
     };
 
     try {
@@ -69,28 +66,10 @@ const Backlog: React.FC<BacklogProps> = (props) => {
     } catch (error) { }
   };
 
-  const getListType = () => {
-    const node: HTMLElement = document.getElementById('backlog')!;
-    if (node) {
-      const size = Math.floor(node.parentElement!.clientHeight / 46 - 2);
-      if (size < 1) return;
-      getList(size);
-      return;
-    }
-  };
-
   useEffect(() => {
-    getListType();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    getList();
   }, [curPage]);
 
-  useEffect(() => {
-    window.addEventListener('resize', debounce(getListType, 1000));
-    return () => {
-      removeEventListener('resize', debounce(getListType, 1000));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
 
   const renderTitle = (row: IssueInfo) => {
@@ -297,7 +276,7 @@ const Backlog: React.FC<BacklogProps> = (props) => {
           />
           <Pagination
             total={totalCount}
-            pageSize={pageSize}
+            pageSize={PAGE_SIZE}
             current={curPage + 1}
             onChange={(page: number) => setCurPage(page - 1)}
           />

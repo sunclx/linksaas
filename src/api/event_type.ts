@@ -3960,7 +3960,6 @@ namespace script {
   export type NetPermission = {
     allow_all: boolean;
     addr_list: string[];
-    allow_vc_update: boolean;
   }
 
   export type UpdateNetPermEvent = {
@@ -3979,15 +3978,9 @@ namespace script {
     if (inner.old_perm.allow_all == false && inner.old_perm.addr_list.length > 0) {
       oldPerm = oldPerm + `,可访问网络:` + inner.old_perm.addr_list.join(",");
     }
-    if (inner.old_perm.allow_all == false) {
-      oldPerm = oldPerm + `,更新可变内容块:${inner.old_perm.allow_vc_update ? "是" : "否"}`
-    }
     let newPerm = `访问全部网络：${inner.new_perm.allow_all ? "是" : "否"}`;
     if (inner.new_perm.allow_all == false && inner.new_perm.addr_list.length > 0) {
       newPerm = newPerm + `,可访问网络:` + inner.new_perm.addr_list.join(",");
-    }
-    if (inner.new_perm.allow_all == false) {
-      newPerm = newPerm + `,更新可变内容块:${inner.new_perm.allow_vc_update ? "是" : "否"}`
     }
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新脚本套件`),

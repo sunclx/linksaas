@@ -157,12 +157,6 @@ const CreateScript = () => {
                 this.netPermAddrValue = value;
             });
         },
-        netPermVcUpdate: false,
-        setNetPermVcUpdate(value: boolean) {
-            runInAction(() => {
-                this.netPermVcUpdate = value;
-            });
-        },
         //文件和目录读权限
         readAllowAll: false,
         setReadAllowAll(value: boolean) {
@@ -475,7 +469,6 @@ const CreateScript = () => {
                 net_perm: {
                     allow_all: localStore.netAllowAll,
                     addr_list: localStore.netAllowAll ? [] : localStore.netPermAddrList.map(item => item.value),
-                    allow_vc_update: localStore.netAllowAll ? false : localStore.netPermVcUpdate,
                 },
                 read_perm: {
                     allow_all: localStore.readAllowAll,
@@ -661,17 +654,10 @@ const CreateScript = () => {
                         </div>
                     </Card>
                     <Card title={<h2>网络访问权限</h2>} bordered={false} extra={
-                        <Space>
-                            <Checkbox checked={localStore.netAllowAll} onChange={e => {
-                                e.stopPropagation();
-                                localStore.setNetAllowAll(e.target.checked);
-                            }}>访问全部网络</Checkbox>
-                            <Checkbox checked={localStore.netAllowAll || localStore.netPermVcUpdate}
-                                disabled={localStore.netAllowAll} onChange={e => {
-                                    e.stopPropagation();
-                                    localStore.setNetPermVcUpdate(e.target.checked);
-                                }}>可更新可变内容块</Checkbox>
-                        </Space>
+                        <Checkbox checked={localStore.netAllowAll} onChange={e => {
+                            e.stopPropagation();
+                            localStore.setNetAllowAll(e.target.checked);
+                        }}>访问全部网络</Checkbox>
                     }>
                         {localStore.netAllowAll == false && (
                             <div className={s.tag_list}>

@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { Link, useLocation } from 'react-router-dom';
 import style from '../index.module.less';
 import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 
 const AccessTable: React.FC<{
   data: API.EventSourceInfo[];
@@ -30,8 +30,6 @@ const AccessTable: React.FC<{
           destPath = APP_PROJECT_CHAT_PATH + '/access/view';
         } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
           destPath = APP_PROJECT_KB_DOC_PATH + '/access/view';
-        } else if (pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
-          destPath = APP_PROJECT_KB_CB_PATH + '/access/view';
         } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
           destPath = APP_PROJECT_KB_BOOK_SHELF_PATH + '/access/view';
         }

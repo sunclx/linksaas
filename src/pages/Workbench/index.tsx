@@ -9,10 +9,10 @@ import { useStores } from '@/hooks';
 import Card from './components/Card';
 import InfoCount from './components/InfoCount';
 import Backlog from './components/Backlog';
-import Myproject from './components/MyProject';
-import Record from './components/Record';
-import { Button, Space } from 'antd';
+import { Tabs } from 'antd';
 import { observer } from 'mobx-react';
+import Record from './components/Record';
+import { FieldTimeOutlined, IssuesCloseOutlined } from '@ant-design/icons';
 
 
 const Workbench: FC = () => {
@@ -23,7 +23,6 @@ const Workbench: FC = () => {
   const [passwordModal, setPasswordModal] = useState(type === 'resetPassword');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const appStore = useStores('appStore');
 
   const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
 
@@ -37,34 +36,21 @@ const Workbench: FC = () => {
       <Card className={s.infoCount_wrap} childStyle={{ height: '100%' }}>
         {!userStore.isResetPassword && <InfoCount total={totalMyIssueCount} />}
       </Card>
-      <Card className={s.backlog_wrap} title="我的待办">
-        {!userStore.isResetPassword && <Backlog onChange={count=>setTotalMyIssueCount(count)} />}
-      </Card>
-      <div className={s.my_wrap}>
-        <Card className={s.project_wrap} title="我的项目" extraContent={(
-          <Space style={{ position: "absolute", right: "20px", top: "-5px" }}>
-            {projectStore.projectList.length == 0 && (<>
-              <Button type="ghost" onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                appStore.showJoinProject = true;
-              }}>加入项目</Button>
-              <Button type="ghost" onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                appStore.showCreateProject = true;
-              }}>创建新项目</Button>
-            </>)
-            }
-          </Space>
-        )}>
-          {!userStore.isResetPassword && <Myproject />}
-        </Card>
-        <Card className={s.record_wrap} title="我的工作记录">
-          {!userStore.isResetPassword && <Record />}
-        </Card>
-      </div>
-
+      <Tabs defaultActiveKey='myIssue' className={s.my_wrap} type="card">
+        <Tabs.TabPane tab={<h2><IssuesCloseOutlined />&nbsp;我的待办</h2>} key="myIssue">
+          <div className={s.content_wrap}>
+            {!userStore.isResetPassword && <Backlog onChange={count => setTotalMyIssueCount(count)} />}
+          </div>
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={<h2><FieldTimeOutlined />&nbsp;我的工作记录</h2>} key="myEvent">
+          <div className={s.content_wrap}>
+            <Record />
+          </div>
+        </Tabs.TabPane>
+      </Tabs>
+      {/* <Card className={s.backlog_wrap} title="我的待办">
+        
+      </Card> */}
       {passwordModal && (
         <PasswordModal
           visible={passwordModal}

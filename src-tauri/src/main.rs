@@ -34,7 +34,6 @@ mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
 mod project_sprit_api_plugin;
 mod project_test_case_api_plugin;
-mod project_vc_api_plugin;
 mod restrict_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
@@ -296,7 +295,6 @@ fn main() {
         .plugin(project_appraise_api_plugin::ProjectAppraiseApiPlugin::new())
         .plugin(user_kb_api_plugin::UserKbApiPlugin::new())
         .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
-        .plugin(project_vc_api_plugin::ProjectVcApiPlugin::new())
         .plugin(project_expert_qa_api_plugin::ProjectExpertQaApiPlugin::new())
         .plugin(search_api_plugin::SearchApiPlugin::new())
         .plugin(restrict_api_plugin::RestrictApiPlugin::new())
@@ -332,33 +330,6 @@ fn main() {
                         let cur_session = cur_value.0.lock().await;
                         if let Some(cur_session_id) = cur_session.clone() {
                             return fs_api_plugin::http_download_file(
-                                app_handle,
-                                req_url.path(),
-                                cur_session_id.as_str(),
-                            )
-                            .await;
-                        } else {
-                            return ResponseBuilder::new()
-                                .header("Access-Control-Allow-Origin", "*")
-                                .status(403)
-                                .body("wrong session".into());
-                        }
-                    });
-                }
-            }
-        })
-        .register_uri_scheme_protocol("vc", move |app_handle, request| {
-            match url::Url::parse(request.uri()) {
-                Err(_) => ResponseBuilder::new()
-                    .header("Access-Control-Allow-Origin", "*")
-                    .status(404)
-                    .body("wrong url".into()),
-                Ok(req_url) => {
-                    let cur_value = app_handle.state::<user_api_plugin::CurSession>().inner();
-                    return tauri::async_runtime::block_on(async move {
-                        let cur_session = cur_value.0.lock().await;
-                        if let Some(cur_session_id) = cur_session.clone() {
-                            return project_vc_api_plugin::http_read_content(
                                 app_handle,
                                 req_url.path(),
                                 cur_session_id.as_str(),

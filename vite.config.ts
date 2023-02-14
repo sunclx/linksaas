@@ -45,7 +45,6 @@ export default ({ command, mode }: ConfigEnv) => {
       rollupOptions: {
         input: {
           default: 'index.html',
-          vc: 'vc.html',
           about: 'about.html',
           shortNote: "short_note.html",
           searchResult: "search_result.html",

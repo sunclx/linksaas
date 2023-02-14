@@ -15,7 +15,6 @@ import {
   IframeExtension,
   WidgetExtension,
   CodeExtension,
-  VariableContentExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -52,7 +51,6 @@ export const getExtensions = (param?: {
     new FortuneSheetExtension(),
     new IframeExtension({ collapse: param?.collapse }),
     new CodeExtension({ collapse: param?.collapse }),
-    new VariableContentExtension(),
 
     // Marks
     new HeadingExtension({ defaultLevel: 3, levels: [1, 2, 3, 4, 5, 6] }),

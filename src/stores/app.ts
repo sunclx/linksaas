@@ -59,6 +59,7 @@ class AppStore {
   }
 
   private _simpleMode: boolean = false;
+  private _simpleModeExpand: "task" | "bug" | null = null;
 
   get simpleMode(): boolean {
     return this._simpleMode;
@@ -68,9 +69,19 @@ class AppStore {
     runInAction(() => {
       this._simpleMode = val;
       if (val && this.rootStore.projectStore.curProjectId != "") {
-        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId,ISSUE_TYPE_TASK);
-        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId,ISSUE_TYPE_BUG);
+        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
+        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
       }
+    });
+  }
+
+  get simpleModeExpand(): "task" | "bug" | null {
+    return this._simpleModeExpand;
+  }
+
+  set simpleModeExpand(val: "task" | "bug" | null) {
+    runInAction(() => {
+      this._simpleModeExpand = val;
     });
   }
 }

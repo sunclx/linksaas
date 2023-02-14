@@ -7,4 +7,3 @@ export * from './IframeExtension';
 export * from './CodeExtension';
 export * from './LinkExtension';
 export * from './FortuneSheetExtension';
-export * from './VariableContentExtension';
