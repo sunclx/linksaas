@@ -55,15 +55,18 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
       appWindow.setMinSize(new PhysicalSize(200 * deviceRatio, 500 * deviceRatio));
     }
     if (appStore.simpleMode) {
-      if (winSize.width > 300 * deviceRatio) {
-        winSize.width = 200 * deviceRatio;
+      if (appStore.simpleModeExpand != null) {
+        winSize.width = 500 * deviceRatio;
         appWindow.setSize(winSize);
+      } else {
+        winSize.width = 200 * deviceRatio;
+        setTimeout(() => {
+          appWindow.setSize(winSize);
+        }, 100);
       }
     } else {
-      if (winSize.width < 300 * deviceRatio) {
-        winSize.width = 1300 * deviceRatio;
-        appWindow.setSize(winSize);
-      }
+      winSize.width = 1300 * deviceRatio;
+      appWindow.setSize(winSize);
     }
   };
 
@@ -72,15 +75,16 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
       return;
     }
     adjustSize();
-  }, [appStore.simpleMode]);
+  }, [appStore.simpleMode, appStore.simpleModeExpand]);
 
   if (!sessionId && !userStore.isResetPassword) return <div />;
 
   return (
     <>
       {appStore.simpleMode == true && (
-        <div className={style.basicLayout}>
+        <div className={style.basicLayout} style={{ display: "flex", background: "transparent" }}>
           <LeftMenu />
+          <div style={{ background: "transparent", width: "300px" }} />
         </div>
       )}
       {appStore.simpleMode == false && (

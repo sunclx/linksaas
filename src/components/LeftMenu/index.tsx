@@ -45,6 +45,7 @@ const LeftMenu: React.FC = () => {
             e.stopPropagation();
             e.preventDefault();
             appStore.simpleMode = false;
+            appStore.simpleModeExpand = null;
           }} title='退出精简模式'><ArrowsAltOutlined /></div>
         )}
         {appStore.simpleMode == false && (
@@ -52,6 +53,7 @@ const LeftMenu: React.FC = () => {
             e.stopPropagation();
             e.preventDefault();
             appStore.simpleMode = true;
+            appStore.simpleModeExpand = null;
           }} title='进入精简模式'><ShrinkOutlined /></div>
         )}
       </div>

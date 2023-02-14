@@ -203,11 +203,13 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                         docSpaceStore.showCheckLeave(() => {
                             history.push(APP_PROJECT_CHAT_PATH);
                             projectStore.setCurProjectId(item.project_id);
+                            appStore.simpleModeExpand = null;
                         });
                         return;
                     }
                     history.push(APP_PROJECT_CHAT_PATH);
                     projectStore.setCurProjectId(item.project_id);
+                    appStore.simpleModeExpand = null;
                 }}>&nbsp;{item.basic_info.project_name} </span>
                 {appStore.simpleMode == false && (
                     <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false}>
