@@ -10,6 +10,7 @@ import { Card, Empty, Space, message } from 'antd';
 import Button from '@/components/Button';
 import { request } from '@/utils/request';
 import LinkIssuePanel from './LinkIssuePanel';
+import { CommentList } from './CommentList';
 
 interface RequirementDetailLeftProps {
     requirement: RequirementInfo;
@@ -100,6 +101,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
             </Card>
             <hr/>
             <LinkIssuePanel requirementId={props.requirement.requirement_id} onUpdate={()=>props.onUpdate()}/>
+            <CommentList requirementId={props.requirement.requirement_id} />
         </div>
     );
 };

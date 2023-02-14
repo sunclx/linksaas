@@ -5,6 +5,7 @@
     .title {
         display: flex;
         justify-content: space-between;
+        border-bottom: 1px solid #e4e4e8;
 
         h2 {
             color: #2c2d2e;
@@ -37,23 +38,35 @@
                 line-height: 20px;
             }
         }
+
         .right_panel_wrap {
             // border: 1px solid black;
             height: calc(100vh - 180px);
             width: 100%;
             overflow-y: hidden;
             padding: 0px 20px;
+            .fiter_title {
+                font-size: 14px;
+                font-weight: 550;
+            }
+            .table_wrap {
+                // border: 1px solid red;
+                height: calc(100vh - 235px);
+                overflow-y: scroll;
+            }
         }
     }
 }
 
 .cate_item {
     position: relative;
+
     h3 {
         width: 120px;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
     .more {
         position: absolute;
         right: -10px;

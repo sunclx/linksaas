@@ -160,6 +160,7 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                     title="选择依赖任务/缺陷"
                     showChannel={false}
                     showDoc={false}
+                    showRequirement={false}
                     showTask={true}
                     showBug={true}
                     showScript={false}

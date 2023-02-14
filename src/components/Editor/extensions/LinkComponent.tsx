@@ -9,6 +9,7 @@ import type {
   LinkDocInfo,
   LinkExterneInfo,
   LinkScriptSuiteInfo,
+  LinkRequirementInfo,
 } from '@/stores/linkAux';
 import { LINK_TARGET_TYPE } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
@@ -20,6 +21,7 @@ import { get as get_issue } from '@/api/project_issue';
 import { get_doc_key } from '@/api/project_doc';
 import { LinkOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { get_script_suite_key } from '@/api/robot_script';
+import { get_requirement } from '@/api/project_requirement';
 
 const Link: React.FC<{
   link: LinkInfo;
@@ -47,6 +49,16 @@ const Link: React.FC<{
       );
       if (res) {
         setTitle('频道:' + res.info.basic_info.channel_name);
+      }
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
+      const reqLink = link as unknown as LinkRequirementInfo;
+      const res = await request(get_requirement({
+        session_id: userStore.sessionId,
+        project_id: reqLink.projectId,
+        requirement_id: reqLink.requirementId,
+      }));
+      if (res) {
+        setTitle('项目需求:' + res.requirement.base_info.title);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TASK) {
       const taskLink = link as unknown as LinkTaskInfo;

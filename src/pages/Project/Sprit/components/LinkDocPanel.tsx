@@ -95,6 +95,7 @@ const LinkDocPanel = () => {
                 <LinkSelect title="关联文档"
                     showChannel={false}
                     showDoc={true}
+                    showRequirement={false}
                     showTask={false}
                     showBug={false}
                     showScript={false}

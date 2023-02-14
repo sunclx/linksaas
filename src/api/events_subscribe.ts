@@ -172,6 +172,19 @@ export type ScriptEvCfg = {
     exec: boolean;
 };
 
+export type RequirementEvCfg = {
+    create_cate: boolean;
+    update_cate: boolean;
+    remove_cate: boolean;
+    create_requirement: boolean;
+    update_requirement: boolean;
+    set_requirement_cate: boolean;
+    remove_requirement: boolean;
+    link_issue: boolean;
+    unlink_issue: boolean;
+};
+
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     book_shelf_ev_cfg: BookShelfEvCfg;
@@ -185,6 +198,7 @@ export type EventCfg = {
     sprit_ev_cfg: SpritEvCfg;
     test_case_ev_cfg: TestCaseEvCfg;
     script_ev_cfg: ScriptEvCfg;
+    requirement_ev_cfg: RequirementEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -299,9 +313,25 @@ export async function update(request: UpdateRequest): Promise<UpdateResponse> {
 export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:events_subscribe_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListResponse>(cmd, {
+    const ret = await invoke<ListResponse>(cmd, {
         request,
     });
+    for (const info of ret.info_list) {
+        if (info.event_cfg.requirement_ev_cfg == undefined || info.event_cfg.requirement_ev_cfg == null) {
+            info.event_cfg.requirement_ev_cfg = {
+                create_cate: false,
+                update_cate: false,
+                remove_cate: false,
+                create_requirement: false,
+                update_requirement: false,
+                set_requirement_cate: false,
+                remove_requirement: false,
+                link_issue: false,
+                unlink_issue: false,
+            };
+        }
+    }
+    return ret;
 }
 
 //删除订阅

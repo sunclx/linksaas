@@ -3,7 +3,7 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -28,6 +28,7 @@ interface FormValue {
     spritEvCfg: string[] | undefined;
     testCaseEvCfg: string[] | undefined;
     scriptEvCfg: string[] | undefined;
+    requirementEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -83,6 +84,10 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [testCaseEvCfgCheckAll, setTestCaseEvCfgCheckAll] = useState(testCaseEvCfgValues.length == testCaseEvOptionList.length);
     const [testCaseEvCfgIndeterminate, setTestCaseEvCfgIndeterminate] = useState(testCaseEvCfgValues.length > 0 && testCaseEvCfgValues.length < testCaseEvOptionList.length);
 
+    const requirementEvCfgValues = genRequirementEvCfgValues(props.subscribe.event_cfg.requirement_ev_cfg);
+    const [requirementEvCfgCheckAll, setRequirementEvCfgCheckAll] = useState(requirementEvCfgValues.length == requirementEvOptionList.length);
+    const [requirementEvCfgIndeterminate, setRequirementEvCfgIndeterminate] = useState(requirementEvCfgValues.length > 0 && requirementEvCfgValues.length < requirementEvOptionList.length);
+
     const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -106,6 +111,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 test_case_ev_cfg: calcTestCaseEvCfg(formValue.testCaseEvCfg),
                 script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
+                requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
             },
         }));
         props.onOk();
@@ -336,6 +342,31 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setGitlabEvCfgCheckAll(false);
                                 setGitlabEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={requirementEvCfgIndeterminate} checked={requirementEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRequirementEvCfgIndeterminate(false);
+                        if (requirementEvCfgCheckAll) {
+                            setRequirementEvCfgCheckAll(false);
+                            form.setFieldValue("requirementEvCfg", []);
+                        } else {
+                            setRequirementEvCfgCheckAll(true);
+                            form.setFieldValue("requirementEvCfg", requirementEvOptionList.map(item => item.value));
+                        }
+                    }}>需求事件</Checkbox>} name="requirementEvCfg">
+                        <Checkbox.Group options={requirementEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setRequirementEvCfgCheckAll(false);
+                                setRequirementEvCfgIndeterminate(false);
+                            } else if (values.length == requirementEvOptionList.length) {
+                                setRequirementEvCfgCheckAll(true);
+                                setRequirementEvCfgIndeterminate(false);
+                            } else {
+                                setRequirementEvCfgCheckAll(false);
+                                setRequirementEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>
