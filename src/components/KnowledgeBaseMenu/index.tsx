@@ -1,5 +1,5 @@
 import { useStores } from '@/hooks';
-import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 import { Popover, Modal, Input, message } from 'antd';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import DocSpace from './components/DocSpace';
 import s from './index.module.less';
-import { ReactComponent as ContentMansvg } from '@/assets/svg/content_man.svg';
 import * as prjDocApi from '@/api/project_doc';
 import { request } from '@/utils/request';
 import { BookOutlined, DeleteOutlined, FileTextOutlined } from '@ant-design/icons';
@@ -73,7 +72,7 @@ const KnowledgeBaseMenu = () => {
   return (
     <div className={s.menu_wrap}>
       <div
-        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_DOC_PATH) && !docSpaceStore.recycleBin && s.active)}
+        className={classNames(s.sub_menu_wrap, pathname.startsWith(APP_PROJECT_KB_DOC_PATH) && !docSpaceStore.recycleBin && s.active)}
         onClick={e => {
           e.stopPropagation();
           e.preventDefault();
@@ -88,13 +87,13 @@ const KnowledgeBaseMenu = () => {
           history.push(APP_PROJECT_KB_DOC_PATH);
         }}
       >
-        <FileTextOutlined /> 文档空间{docRightTop()}
+        <FileTextOutlined /> <span className={s.sub_menu_head}>文档空间</span>{docRightTop()}
       </div>
       <div className={s.doc_space_wrap}>
         <DocSpace />
       </div>
       <div
-        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_DOC_PATH) && docSpaceStore.recycleBin && s.active)}
+        className={classNames(s.sub_menu_wrap, pathname.startsWith(APP_PROJECT_KB_DOC_PATH) && docSpaceStore.recycleBin && s.active)}
         onClick={e => {
           e.stopPropagation();
           e.preventDefault();
@@ -109,10 +108,10 @@ const KnowledgeBaseMenu = () => {
           history.push(APP_PROJECT_KB_DOC_PATH);
         }}
       >
-        <DeleteOutlined /> 文档回收站
+        <DeleteOutlined /> <span className={s.sub_menu_head}>文档回收站</span>
       </div>
       <div
-        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH) && s.active)}
+        className={classNames(s.sub_menu_wrap, pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH) && s.active)}
         onClick={() => {
           if (docSpaceStore.inEdit) {
             docSpaceStore.showCheckLeave(() => {
@@ -123,21 +122,7 @@ const KnowledgeBaseMenu = () => {
           history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
         }}
       >
-        <BookOutlined /> 电子书库
-      </div>
-      <div
-        className={classNames(s.content_block, pathname.startsWith(APP_PROJECT_KB_CB_PATH) && s.active)}
-        onClick={() => {
-          if (docSpaceStore.inEdit) {
-            docSpaceStore.showCheckLeave(() => {
-              history.push(APP_PROJECT_KB_CB_PATH);
-            });
-            return;
-          }
-          history.push(APP_PROJECT_KB_CB_PATH);
-        }}
-      >
-        <ContentMansvg /> 可变内容块管理
+        <BookOutlined /> <span className={s.sub_menu_head}>电子书库</span>
       </div>
       {showAddModal && (
         <Modal

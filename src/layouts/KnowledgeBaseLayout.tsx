@@ -1,7 +1,7 @@
 import React from 'react';
 import type { IRouteConfig } from '@/routes';
 import { renderRoutes } from 'react-router-config';
-import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 import style from './style.module.less';
 import { useLocation } from 'react-router-dom';
 import KnowledgeBaseMenu from '@/components/KnowledgeBaseMenu';
@@ -22,7 +22,7 @@ const KnowledgeBaseLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
         {renderRoutes(route.routes)}
         <KnowledgeBaseMenu />
       </div>
-      {!(pathname == APP_PROJECT_KB_DOC_PATH || pathname == APP_PROJECT_KB_CB_PATH || pathname == APP_PROJECT_KB_BOOK_SHELF_PATH) && (
+      {!(pathname == APP_PROJECT_KB_DOC_PATH || pathname == APP_PROJECT_KB_BOOK_SHELF_PATH) && (
         <div className={style.toolsModel}>{renderRoutes(subRoutes)}</div>
       )}
     </>

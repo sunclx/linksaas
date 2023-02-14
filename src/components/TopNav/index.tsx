@@ -7,7 +7,6 @@ import { useHistory } from 'react-router-dom';
 import ChannelHeader from '@/pages/Channel/components/ChannelHeader';
 import {
   APP_PROJECT_KB_DOC_PATH,
-  APP_PROJECT_KB_CB_PATH,
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
@@ -65,12 +64,6 @@ const TopNav = () => {
         {pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /></>)}
         {pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /></>)}
         {pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>电子书库</div><SearchBar /></>)}
-        {pathname.includes(APP_PROJECT_KB_CB_PATH) && (
-          <>
-            <div className={s.doc_title}>可变内容块管理</div>
-            <SearchBar />
-          </>
-        )}
       </div>
     </div>
   );

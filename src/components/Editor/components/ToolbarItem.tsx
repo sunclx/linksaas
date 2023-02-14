@@ -9,13 +9,11 @@ import {
 
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Select, Menu, Tooltip } from 'antd';
-import type { ItemType } from 'antd/lib/menu/hooks/useItems';
 import { DownOutlined } from '@ant-design/icons';
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { uniqId } from '@/utils/utils';
 import { request } from '@/utils/request';
 import * as fsApi from '@/api/fs';
-import * as vcApi from '@/api/project_vc';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import {
@@ -476,76 +474,6 @@ export const contentWidgetItem = (
   <ToolbarGroup
     key="widget"
     items={[<ContentWidget key="widget" />]}
-    separator={false} />
-);
-
-
-const VcWidget = () => {
-  const userStore = useStores('userStore');
-  const projectStore = useStores('projectStore');
-
-  const commands = useCommands();
-  const [items, setItems] = useState<ItemType[]>([]);
-
-  const loadItems = async () => {
-    const res = await request(
-      vcApi.list_all({
-        session_id: userStore.sessionId,
-        project_id: projectStore.curProjectId,
-      }),
-    );
-    if (!res) {
-      return;
-    }
-    const menuItemList = res.coll_list.map((coll) => {
-      return {
-        key: coll.block_coll_id,
-        label: coll.title,
-        children: coll.block_list.map((block) => {
-          return {
-            key: block.block_id,
-            label: block.title,
-          };
-        }),
-      };
-    });
-    setItems(menuItemList);
-  };
-
-  useEffect(() => {
-    if (items.length > 0) {
-      return;
-    }
-    loadItems();
-  }, []);
-
-  const menu = (
-    <Menu
-      subMenuCloseDelay={0.05}
-      onClick={(value) => {
-        if (value.keyPath.length != 2) {
-          return;
-        }
-        commands.insertVariableContent(projectStore.curProjectId, value.keyPath[1], value.key);
-      }}
-      items={items}
-    />
-  );
-  return (
-    <Dropdown overlay={menu}>
-      <Tooltip title="可变内容块">
-        <div className="vc-btn">
-          <DownOutlined />
-        </div>
-      </Tooltip>
-    </Dropdown>
-  );
-};
-
-export const vcWidgetItem = (
-  <ToolbarGroup
-    key="vc"
-    items={[<VcWidget key="vc" />]}
     separator={false} />
 );
 

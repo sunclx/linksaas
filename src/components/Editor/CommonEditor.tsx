@@ -13,7 +13,6 @@ import {
   listItem,
   newCommItem,
   contentWidgetItem,
-  vcWidgetItem
 } from './components/ToolbarItem';
 import { Reminder } from './components/index';
 
@@ -84,7 +83,6 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
   );
   if (attrs.widgetInToolbar) {
     toolbarItems.push(contentWidgetItem);
-    toolbarItems.push(vcWidgetItem);
   }
   const editor = (
     <ThemeProvider>

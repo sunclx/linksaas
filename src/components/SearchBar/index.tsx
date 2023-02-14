@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import s from './index.module.less';
 import { DatePicker, Input, Select } from "antd";
 import { useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type moment from 'moment';
 import Button from "../Button";
@@ -75,17 +75,6 @@ const SearchBar = () => {
                 label: "全部频道",
                 value: SEARCH_SCOPE_ALL_CHANNEL,
             });
-        }
-        if (location.pathname.startsWith(APP_PROJECT_KB_CB_PATH)) {
-            tmpList.push({
-                label: "全部文档空间",
-                value: SEARCH_SCOPE_ALL_DOC_SPACE,
-            });
-            tmpList.push({
-                label: "全部频道",
-                value: SEARCH_SCOPE_ALL_CHANNEL,
-            });
-            setCurScope(SEARCH_SCOPE_ALL_DOC_SPACE);
         }
         tmpList.push({
             label: "任务",

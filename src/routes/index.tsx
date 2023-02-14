@@ -34,7 +34,6 @@ import {
   ADMIN_PATH_USER_LIST_SUFFIX,
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
-  APP_PROJECT_KB_CB_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
   BUG_CREATE_SUFFIX,
@@ -52,7 +51,6 @@ import {
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
-import ContentBlock from '@/pages/KnowledgeBase/ContentBlock';
 import IssueCreate from '@/pages/Issue/IssueCreate';
 import RobotList from '@/pages/Robot/RobotList';
 import MetricList from '@/pages/Robot/MetricList';
@@ -350,12 +348,6 @@ const routesConfig: IRouteConfig[] = [
                 title: "电子书库",
                 component: BookShelf,
                 routes: getToolbarRoute(APP_PROJECT_KB_BOOK_SHELF_PATH),
-              },
-              {
-                path: APP_PROJECT_KB_CB_PATH,
-                title: "可编辑块",
-                component: ContentBlock,
-                routes: getToolbarRoute(APP_PROJECT_KB_CB_PATH),
               },
             ],
           },

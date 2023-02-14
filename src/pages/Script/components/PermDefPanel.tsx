@@ -3,7 +3,7 @@ import { observer, useLocalObservable } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { useLocation } from "react-router-dom";
 import type { LinkScriptSuiteSate } from "@/stores/linkAux";
-import { Card, Checkbox, Input, Space, Tag, message } from "antd";
+import { Card, Checkbox, Input, Tag, message } from "antd";
 import s from "./PermDefPanel.module.less";
 import type { Permission, EnvPermission, SysPermission, NetPermission, ReadPermission, WritePermission, RunPermission } from "@/api/robot_script";
 import { runInAction } from "mobx";
@@ -152,12 +152,6 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                 this.netPermAddrValue = value;
             });
         },
-        netPermVcUpdate: props.permission.net_perm.allow_vc_update,
-        setNetPermVcUpdate(value: boolean) {
-            runInAction(() => {
-                this.netPermVcUpdate = value;
-            });
-        },
         //文件和目录读权限
         readAllowAll: props.permission.read_perm.allow_all,
         setReadAllowAll(value: boolean) {
@@ -296,11 +290,10 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
         props.onUpdateSysPerm(perm);
     };
 
-    const updateNetPerm = async (allowAll: boolean, addrList: string[], allowVcUpdate: boolean) => {
+    const updateNetPerm = async (allowAll: boolean, addrList: string[]) => {
         const netPerm: NetPermission = {
             allow_all: allowAll,
             addr_list: allowAll ? [] : addrList,
-            allow_vc_update: allowAll ? false : allowVcUpdate,
         };
         await request(update_net_perm({
             session_id: userStore.sessionId,
@@ -323,7 +316,7 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                 id: uniqId(),
                 value: localStore.netPermAddrValue,
             });
-            await updateNetPerm(localStore.netAllowAll, tmpList.map(item => item.value), localStore.netPermVcUpdate);
+            await updateNetPerm(localStore.netAllowAll, tmpList.map(item => item.value));
             localStore.setNetPermAddrList(tmpList);
             localStore.setNetPermAddrValue("");
         }
@@ -331,7 +324,7 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
 
     const removeNetPermAddr = async (id: string) => {
         const tmpList = localStore.netPermAddrList.filter(item => item.id != id);
-        await updateNetPerm(localStore.netAllowAll, tmpList.map(item => item.value), localStore.netPermVcUpdate);
+        await updateNetPerm(localStore.netAllowAll, tmpList.map(item => item.value));
         localStore.setNetPermAddrList(tmpList);
     };
 
@@ -641,24 +634,15 @@ const PermDefPanel: React.FC<PermDefPanelProps> = (props) => {
                 </div>
             </Card>
             <Card title={<h2 className={s.head}>网络访问权限</h2>} bordered={false} extra={
-                <Space>
-                    <Checkbox checked={localStore.netAllowAll}
-                        disabled={!projectStore.isAdmin}
-                        onChange={e => {
-                            e.stopPropagation();
-                            updateNetPerm(e.target.checked, localStore.netPermAddrList.map(item => item.value), localStore.netPermVcUpdate).then(() => {
-                                localStore.setNetAllowAll(e.target.checked);
-                            });
+                <Checkbox checked={localStore.netAllowAll}
+                    disabled={!projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        updateNetPerm(e.target.checked, localStore.netPermAddrList.map(item => item.value)).then(() => {
+                            localStore.setNetAllowAll(e.target.checked);
+                        });
 
-                        }}>访问全部网络</Checkbox>
-                    <Checkbox checked={localStore.netAllowAll || localStore.netPermVcUpdate}
-                        disabled={!projectStore.isAdmin || localStore.netAllowAll} onChange={e => {
-                            e.stopPropagation();
-                            updateNetPerm(localStore.netAllowAll, localStore.netPermAddrList.map(item => item.value), e.target.checked).then(() => {
-                                localStore.setNetPermVcUpdate(e.target.checked);
-                            });
-                        }}>可更新可变内容块</Checkbox>
-                </Space>
+                    }}>访问全部网络</Checkbox>
             }>
                 {localStore.netAllowAll == false && (
                     <div className={s.tag_list}>

@@ -6,7 +6,7 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_CB_PATH, APP_PROJECT_KB_DOC_PATH } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from "@/utils/constant";
 import { LinkChannelInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
@@ -24,7 +24,6 @@ const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
 const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
 const MENU_KEY_CREATE_DOC = "create.doc";
 const MENU_KEY_KB_BOOK_SHELF = "kb.bookShelf";
-const MENU_KEY_KB_VC = "kb.vc";
 const MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT = "toolbar.requirement.show";
 const MENU_KEY_CREATE_REQUIRE_MENT = "crate.requirement";
 const MENU_KEY_SHOW_TOOL_BAR_TASK_MY = "toolbar.task.my.show";
@@ -143,10 +142,6 @@ const ProjectQuickAccess = () => {
                 {
                     key: MENU_KEY_KB_BOOK_SHELF,
                     label: "电子书库",
-                },
-                {
-                    key: MENU_KEY_KB_VC,
-                    label: "可变内容块",
                 },
             ],
         },
@@ -324,9 +319,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_KB_BOOK_SHELF:
                 history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
-                break;
-            case MENU_KEY_KB_VC:
-                history.push(APP_PROJECT_KB_CB_PATH);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT:
                 linkAuxStore.goToRequirementList(history);
