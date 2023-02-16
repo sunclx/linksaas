@@ -59,7 +59,7 @@ const ReadDoc: React.FC<ReadDocProps> = (props) => {
                 e.preventDefault();
                 history.push(`${WORKBENCH_PATH}?tab=userDoc&spaceId=${props.spaceId}`)
             }}><LeftOutlined /></a>
-            &nbsp;{title}
+            &nbsp;文档：{title}
         </span>} extra={
             <Space size="large">
                 <Button onClick={e => {
