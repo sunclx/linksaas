@@ -11,6 +11,7 @@ import moment from 'moment';
 import type * as API from '@/api/events';
 import { PLATFORM } from '@/pages/Project/Record/common';
 import { useStores } from '@/hooks';
+import { Empty } from 'antd';
 
 const Record: FC = () => {
   const [, setTotalCount] = useState(0);
@@ -48,6 +49,7 @@ const Record: FC = () => {
 
   return (
     <div className={style.recordList}>
+      {Object.entries(recordList).length == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
       {Object.entries(recordList)
         .reverse()
         .map((item) => (

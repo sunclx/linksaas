@@ -36,6 +36,7 @@ import {
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
+  WORKBENCH_KB_DOC_SUFFIX,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
@@ -48,6 +49,7 @@ import {
   SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
+  WORKBENCH_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -82,6 +84,7 @@ import AdAdmin from '@/pages/Admin/ClientAdmin/AdAdmin';
 import RequirementList from '@/pages/Project/Requirement/RequirementList';
 import RequirementCreate from '@/pages/Project/Requirement/RequirementCreate';
 import RequirementDetail from '@/pages/Project/Requirement/RequirementDetail';
+import UserDoc from '@/pages/UserExtend/UserKb/UserDoc';
 
 
 
@@ -140,7 +143,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + REQUIRE_MENT_DETAIL_SUFFIX,
       title: "需求详情",
       component: RequirementDetail,
-      exact:true,
+      exact: true,
     },
     {
       path: prefix + '/task',
@@ -302,7 +305,7 @@ const routesConfig: IRouteConfig[] = [
     title: '',
     exact: true,
     render: () => {
-      return <Redirect to="/app/workbench" />;
+      return <Redirect to={WORKBENCH_PATH} />;
     },
   },
   {
@@ -312,9 +315,16 @@ const routesConfig: IRouteConfig[] = [
     // exact: true,
     routes: [
       {
-        path: '/app/workbench',
+        path: WORKBENCH_PATH,
         title: '工作台',
         component: Workbench,
+        exact: true,
+      },
+      {
+        path: WORKBENCH_KB_DOC_SUFFIX,
+        title: "知识库文档",
+        component: UserDoc,
+        exact: true,
       },
       {
         path: '/app/extra_menu',

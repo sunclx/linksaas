@@ -10,6 +10,7 @@ import { runInAction } from "mobx";
 import JoinProject from "./JoinProject";
 import CreatedProject from "./CreatedProject";
 import AddMember from "./AddMember";
+import { ProjectOutlined } from "@ant-design/icons";
 
 
 const AddMenu: React.FC = observer(() => {
@@ -78,8 +79,9 @@ const ProjectList = () => {
     return (
         <div className={cls.project_menu}>
             <div className={cls.menu_title}>
-                项目
-
+                <div>
+                    <ProjectOutlined style={{ width: "20px" }} />项目
+                </div>
                 <div className={cls.menu_icon_wrap}>
                     {appStore.simpleMode == false && (
                         <Popover
