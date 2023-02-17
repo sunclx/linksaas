@@ -42,11 +42,17 @@ export type MinAppEventPerm = {
     list_all_event: boolean;
 };
 
+export type MinAppFsPerm = {
+    read_file: boolean;
+    write_file: boolean;
+};
+
 export type MinAppPerm = {
     net_perm: MinAppNetPerm;
     member_perm: MinAppMemberPerm;
     issue_perm: MinAppIssuePerm;
     event_perm: MinAppEventPerm;
+    fs_perm: MinAppFsPerm;
 };
 
 export type ListRequest = {

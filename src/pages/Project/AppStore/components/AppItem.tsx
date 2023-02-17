@@ -165,25 +165,22 @@ const AppItem: React.FC<AppItemProps> = (props) => {
             {minAppPerm != null && (
                 <Modal open
                     title={`${projectStore.isAdmin ? "修改权限" : "查看权限"}`}
-                    footer={null}
+                    okText="修改权限"
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setMinAppPerm(null);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.stopPropagation();
+                        updateAppPerm();
                     }}>
                     <MinAppPermPanel perm={minAppPerm} disable={!projectStore.isAdmin}
+                        showTitle={false}
                         onChange={newPerm => {
                             setMinAppPerm(newPerm);
                         }} />
-                    <div style={{ position: "relative", height: "25px" }}>
-                        <Button type="primary" style={{ position: "absolute", right: "20px", top: "-10px" }}
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.stopPropagation();
-                                updateAppPerm();
-                            }}>修改</Button>
-                    </div>
-
                 </Modal>
             )}
             {showRemoveModal == true && (

@@ -23,7 +23,6 @@ const AppStore: React.FC = () => {
 
 
   const loadAppList = async () => {
-    console.log("xxxxxxxxxxxxxxxxxxxxxx");
     const res = await request(
       list_app({
         session_id: userStore.sessionId,

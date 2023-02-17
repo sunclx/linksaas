@@ -39,6 +39,10 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             list_my_event: false,
             list_all_event: false,
         },
+        fs_perm: {
+            read_file: false,
+            write_file: false,
+        },
     });
 
     const choicePath = async () => {
@@ -59,7 +63,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                 message.error("请输入url地址");
                 return;
             }
-            if (!remoteUrl.trim().startsWith("localhost")){
+            if (!remoteUrl.trim().startsWith("localhost")) {
                 message.error("只支持localhost的url地址");
                 return;
             }
@@ -132,7 +136,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                     </Form.Item>
                 )}
             </Form>
-            <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} />
+            <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} showTitle/>
         </Modal>
     );
 };
