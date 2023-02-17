@@ -32,6 +32,7 @@ mod project_expert_qa_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
+mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_test_case_api_plugin;
 mod restrict_api_plugin;
@@ -44,8 +45,8 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
-mod project_requirement_api_plugin;
 
+mod min_app_fs_plugin;
 mod min_app_plugin;
 
 mod my_updater;
@@ -223,6 +224,13 @@ fn main() {
             is_conn_server,
             check_update,
         ])
+        .on_window_event(|ev| match ev.event() {
+            tauri::WindowEvent::Destroyed => {
+                println!("{}", ev.window().label());
+                //TODO 清除微应用相关资源
+            }
+            _ => {}
+        })
         .on_system_tray_event(move |app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
                 let all_windows = app.windows();
@@ -317,6 +325,7 @@ fn main() {
         .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .plugin(min_app_plugin::MinAppPlugin::new())
+        .plugin(min_app_fs_plugin::MinAppFsPlugin::new())
         .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
