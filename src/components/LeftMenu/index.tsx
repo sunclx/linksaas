@@ -59,27 +59,31 @@ const LeftMenu: React.FC = () => {
       </div>
       <div>
         {appStore.simpleMode == false && (
-          <div className={`${cls.workbench_menu} ${location.pathname.startsWith(WORKBENCH_PATH) ? cls.active_menu : ""}`}
-            onClick={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (docSpaceStore.inEdit) {
-                docSpaceStore.showCheckLeave(() => {
-                  projectStore.setCurProjectId("");
-                  history.push(WORKBENCH_PATH);
-                });
-                return;
-              }
-              projectStore.setCurProjectId("");
-              history.push(WORKBENCH_PATH);
-            }}>
-            <img src={workbench_icon} alt="" className={cls.workbench_icon} />
-            工作台
-          </div>
+          <>
+            <div className={`${cls.workbench_menu} ${location.pathname.startsWith(WORKBENCH_PATH) ? cls.active_menu : ""}`}
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (docSpaceStore.inEdit) {
+                  docSpaceStore.showCheckLeave(() => {
+                    projectStore.setCurProjectId("");
+                    history.push(WORKBENCH_PATH);
+                  });
+                  return;
+                }
+                projectStore.setCurProjectId("");
+                history.push(WORKBENCH_PATH);
+              }}>
+              <img src={workbench_icon} alt="" className={cls.workbench_icon} />
+              工作台
+            </div>
+            <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
+          </>
         )}
         <ProjectList />
         {appStore.simpleMode == false && (
           <>
+            {(appStore.clientCfg?.item_list.length ?? 0) > 0 && <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />}
             {appStore.clientCfg?.item_list.map(extraItem => (
               <div key={extraItem.menu_id}
                 className={`${cls.workbench_menu} ${location.pathname.startsWith(EXTRA_MENU_PATH) && curExtraMenuId == extraItem.menu_id ? cls.active_menu : ""}`}

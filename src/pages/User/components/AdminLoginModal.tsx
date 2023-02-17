@@ -26,7 +26,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = (props) => {
         const selectd = await open_dialog({
             title: "选择OpenSsh密钥"
         });
-        console.log(selectd);
         if (!(Array.isArray(selectd) || selectd == null)) {
             setPrivKey(selectd);
             form.setFieldValue("privKey", selectd);

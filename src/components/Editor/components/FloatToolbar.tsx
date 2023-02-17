@@ -11,8 +11,12 @@ import type { TextHighlightAttributes } from '@remirror/extension-text-highlight
 import s from './FloatToolbar.module.less';
 import { ReactComponent as Bgsvg } from '@/assets/svg/bg.svg';
 import ToolbarGroup from './ToolbarGroup';
+import { observer } from 'mobx-react';
+import { useStores } from '@/hooks';
 
-const LinkBtn = () => {
+const LinkBtn = observer(() => {
+  const projectStore = useStores('projectStore');
+
   const [showModal, setShowModal] = useState(false);
   const commands = useCommands();
 
@@ -35,12 +39,12 @@ const LinkBtn = () => {
       {showModal && (
         <LinkSelect
           title="设置链接"
-          showChannel={true}
-          showRequirement={true}
-          showTask={true}
-          showBug={true}
-          showDoc={true}
-          showScript={true}
+          showChannel={projectStore.curProjectId != ""}
+          showRequirement={projectStore.curProjectId != ""}
+          showTask={projectStore.curProjectId != ""}
+          showBug={projectStore.curProjectId != ""}
+          showDoc={projectStore.curProjectId != ""}
+          showScript={projectStore.curProjectId != ""}
           showExterne={true}
           onOk={(link) => {
             setShowModal(false);
@@ -53,7 +57,7 @@ const LinkBtn = () => {
       )}
     </>
   );
-};
+});
 
 const headAndLinkItem = (
   <ToolbarGroup

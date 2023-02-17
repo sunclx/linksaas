@@ -212,7 +212,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                     appStore.simpleModeExpand = null;
                 }}>&nbsp;{item.basic_info.project_name} </span>
                 {appStore.simpleMode == false && (
-                    <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false}>
+                    <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false} trigger="click">
                         {hover && <i className={cls.more} />}
                     </Popover>
                 )}

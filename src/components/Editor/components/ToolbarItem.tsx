@@ -320,7 +320,8 @@ export const listItem = (
 );
 
 
-const ContentWidget = () => {
+const ContentWidget = observer(() => {
+  const projectStore = useStores('projectStore');
   const commands = useCommands();
   const menu = (
     <Menu
@@ -335,6 +336,7 @@ const ContentWidget = () => {
         {
           key: 'manager',
           label: '项目管理',
+          disabled: projectStore.curProjectId == "",
           children: [
             {
               key: WIDGET_TYPE_TIME_RANGE,
@@ -468,7 +470,7 @@ const ContentWidget = () => {
       </Tooltip>
     </Dropdown>
   );
-};
+});
 
 export const contentWidgetItem = (
   <ToolbarGroup
@@ -686,19 +688,25 @@ export interface NewCommItemParam {
 
 
 export const newCommItem = (param: NewCommItemParam) => {
+  const items = [];
+  if (param.fsId != "") {
+    items.push(<AddUploadImage
+      key="image"
+      fsId={param.fsId}
+      thumbWidth={param.thumbWidth}
+      thumbHeight={param.thumbHeight}
+      ownerType={param.ownerType}
+      ownerId={param.ownerId}
+    />);
+    items.push(
+      <AddUploadFile key="file" fsId={param.fsId} ownerType={param.ownerType} ownerId={param.ownerId} />
+    );
+  }
   return (
     <ToolbarGroup
       key="common"
       items={[
-        <AddUploadImage
-          key="image"
-          fsId={param.fsId}
-          thumbWidth={param.thumbWidth}
-          thumbHeight={param.thumbHeight}
-          ownerType={param.ownerType}
-          ownerId={param.ownerId}
-        />,
-        <AddUploadFile key="file" fsId={param.fsId} ownerType={param.ownerType} ownerId={param.ownerId} />,
+        ...items,
         <AddCode key="code" />,
         <AddExcaliDraw key="excaliDraw" />,
         <AddFortuneSheet key="sheet" />,

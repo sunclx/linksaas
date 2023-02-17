@@ -88,7 +88,7 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
         </div>
       )}
       {appStore.simpleMode == false && (
-        <Layout className="basicLayout">
+        <Layout className={style.basicLayout}>
           <LeftMenu />
           <Layout>
             <Header />

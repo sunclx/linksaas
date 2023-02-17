@@ -2,6 +2,8 @@ import * as issueApi from '@/api/project_issue';
 
 export const USER_LOGIN_PATH = '/user/login';
 export const WORKBENCH_PATH = '/app/workbench';
+export const WORKBENCH_KB_DOC_SUFFIX = "/app/workbench/kb/doc";
+
 export const EXTRA_MENU_PATH = '/app/extra_menu';
 export const RESET_TEXT = 'resetPassword';
 
