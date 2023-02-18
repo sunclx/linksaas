@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+use tauri::api::ipc::{format_callback, format_callback_result, CallbackFn};
 use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
 
@@ -54,10 +55,40 @@ mod my_updater;
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
 use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem, Window, WindowBuilder, WindowUrl,
+    AppHandle, CustomMenuItem, InvokeResponse, Manager, Runtime, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, Window, WindowBuilder, WindowUrl,
 };
 use tokio::fs;
+
+const INIT_SCRIPT: &str = r#"
+Object.defineProperty(window, "__TAURI_POST_MESSAGE__", {
+    value: (message) => {
+      if (
+        window.__TAURI_METADATA__ != undefined &&
+        window.__TAURI_METADATA__.__currentWindow.label.startsWith("minApp:")
+      ) {
+        if (message.cmd == "http") {
+          if (window.minApp !== undefined && window.minApp.crossHttp === true) {
+            window.ipc.postMessage(JSON.stringify(message));
+            return;
+          } else {
+            return;
+          }
+        } else if (message.cmd.startsWith("plugin:user_api|")) {
+          return;
+        } else if (message.cmd.startsWith("plugin:")) {
+          window.ipc.postMessage(JSON.stringify(message));
+          return;
+        } else if (message.cmd.startsWith("_")) {
+          window.ipc.postMessage(JSON.stringify(message));
+          return;
+        }
+      } else {
+        window.ipc.postMessage(JSON.stringify(message));
+      }
+    },
+  });  
+"#;
 
 #[derive(Default)]
 struct GrpcChan(Mutex<Option<Channel>>);
@@ -191,6 +222,22 @@ async fn capture_screen(
             return Ok(ret_list);
         }
     }
+}
+
+pub fn window_invoke_responder<R: Runtime>(
+    window: Window<R>,
+    response: InvokeResponse,
+    success_callback: CallbackFn,
+    error_callback: CallbackFn,
+) {
+    let callback_string =
+        match format_callback_result(response.into_result(), success_callback, error_callback) {
+            Ok(callback_string) => callback_string,
+            Err(e) => format_callback(error_callback, &e.to_string())
+                .expect("unable to serialize response string to json"),
+        };
+
+    let _ = window.eval(&callback_string);
 }
 
 fn main() {
@@ -327,6 +374,7 @@ fn main() {
         .plugin(min_app_plugin::MinAppPlugin::new())
         .plugin(min_app_fs_plugin::MinAppFsPlugin::new())
         .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
+        .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()

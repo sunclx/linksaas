@@ -466,6 +466,9 @@ fn send_file_data(data_path: String, url_path: String, response: &mut Response) 
     }
 
     response.set_status(StatusCode::from_u16(200).unwrap());
+    let header = response.headers_mut();
+    header.insert("Cross-Origin-Embedder-Policy", "require-corp".parse().unwrap());
+    header.insert("Cross-Origin-Opener-Policy", "same-origin".parse().unwrap());
     response.set_mimetype(Some(String::from(get_file_type(&url_path))));
     response.body_mut().clear();
     response.body_mut().extend_from_slice(&content);
@@ -521,16 +524,7 @@ async fn start<R: Runtime>(
         script = script.replace("__CROSS_HTTP__", "false");
     }
 
-    let init_url = if request.path.starts_with("http://") || request.path.starts_with("https://") {
-        match url::Url::parse(&request.path) {
-            Ok(res_url) => WindowUrl::External(res_url),
-            Err(_) => WindowUrl::App("index.html".into()),
-        }
-    } else {
-        WindowUrl::App("index.html".into())
-    };
-
-    let res = WindowBuilder::new(&app_handle, request.label, init_url)
+    let res = WindowBuilder::new(&app_handle, request.label, WindowUrl::App("index.html".into()))
         .title(request.title)
         .visible(true)
         .on_web_resource_request(move |req, response| {
