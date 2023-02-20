@@ -19,6 +19,8 @@ async fn read_file<R: Runtime>(
     window: Window<R>,
     project_id: String,
     multi: bool,
+    filter_name: String,
+    extensions: Vec<String>,
 ) -> Result<Vec<File>, String> {
     //检查权限
     let perm = get_min_app_perm(app_handle.clone(), window, project_id.clone()).await;
@@ -36,7 +38,14 @@ async fn read_file<R: Runtime>(
     }
     //读取文件
     let (tx, rx) = oneshot::channel();
-    let builder = FileDialogBuilder::new().set_title("读取文件");
+    let mut builder = FileDialogBuilder::new().set_title("读取文件");
+    if filter_name.len() > 0 && extensions.len() > 0 {
+        let mut exts = Vec::new();
+        for ext in &extensions {
+            exts.push(ext.as_ref());
+        }
+        builder = builder.add_filter(filter_name, exts.as_slice());
+    }
     if multi {
         builder.pick_files(|files| {
             tx.send(files).unwrap();
@@ -91,6 +100,7 @@ async fn write_file<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
     project_id: String,
+    file_name: String,
     file_data: Vec<u8>,
 ) -> Result<(), String> {
     //检查权限
@@ -111,6 +121,7 @@ async fn write_file<R: Runtime>(
     let (tx, rx) = oneshot::channel();
     FileDialogBuilder::new()
         .set_title("写入文件")
+        .set_file_name(&file_name)
         .save_file(|file| {
             tx.send(file).unwrap();
         });
