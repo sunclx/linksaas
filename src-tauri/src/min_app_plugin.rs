@@ -2,15 +2,19 @@ use crate::user_api_plugin::get_session;
 use async_zip::read::seek::ZipFileReader;
 use async_zip::write::ZipFileWriter;
 use async_zip::{Compression, ZipEntryBuilder};
+use hyper::server::conn::AddrStream;
+use hyper::service::{make_service_fn, service_fn};
+use hyper::{Body, Request, Response};
 use proto_gen_rust::project_app_api::project_app_api_client::ProjectAppApiClient;
 use proto_gen_rust::project_app_api::GetMinAppPermRequest;
 use proto_gen_rust::project_app_api::MinAppPerm;
+use std::collections::HashMap;
+use std::convert::Infallible;
+use std::net::TcpListener;
 use std::path::PathBuf;
 use std::time::Duration;
-use std::{fs, io::Read};
 use substring::Substring;
 use tauri::async_runtime::Mutex;
-use tauri::http::{status::StatusCode, Response};
 use tauri::Manager;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
@@ -436,43 +440,8 @@ fn get_file_type(url_path: &String) -> &str {
     return "text/html";
 }
 
-fn send_error(code: u16, msg: String, response: &mut Response) {
-    response.set_status(StatusCode::from_u16(code).unwrap());
-    response.body_mut().clear();
-    let content = Vec::from(msg);
-    response.body_mut().extend_from_slice(&content);
-}
-
-fn send_file_data(data_path: String, url_path: String, response: &mut Response) {
-    let mut file_path = PathBuf::from(data_path);
-    for sub_path in url_path.split("/") {
-        file_path.push(sub_path);
-    }
-    if url_path.ends_with("/") {
-        file_path.push("index.html");
-    }
-
-    let file = fs::File::open(file_path);
-    if file.is_err() {
-        send_error(500, file.err().unwrap().to_string(), response);
-        return;
-    }
-    let mut file = file.unwrap();
-    let mut content = vec![];
-    let read_res = file.read_to_end(&mut content);
-    if read_res.is_err() {
-        send_error(404, read_res.err().unwrap().to_string(), response);
-        return;
-    }
-
-    response.set_status(StatusCode::from_u16(200).unwrap());
-    let header = response.headers_mut();
-    header.insert("Cross-Origin-Embedder-Policy", "require-corp".parse().unwrap());
-    header.insert("Cross-Origin-Opener-Policy", "same-origin".parse().unwrap());
-    response.set_mimetype(Some(String::from(get_file_type(&url_path))));
-    response.body_mut().clear();
-    response.body_mut().extend_from_slice(&content);
-}
+#[derive(Default)]
+pub struct HttpServerMap(pub Mutex<HashMap<String, tokio::sync::oneshot::Sender<()>>>);
 
 #[derive(Default)]
 pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
@@ -489,6 +458,123 @@ pub struct StartRequest {
     pub path: String,
 }
 
+#[derive(Copy, Clone)]
+struct WebRoot {
+    root: [u8; 1024],
+    len: u16,
+}
+
+impl WebRoot {
+    fn new(path: String) -> Result<Self, String> {
+        let bytes = path.as_bytes();
+        if bytes.len() > 1024 {
+            return Err("too large string".into());
+        }
+        let mut root: [u8; 1024] = [0; 1024];
+        for item in bytes.into_iter().enumerate() {
+            root[item.0] = *item.1;
+        }
+        Ok(Self {
+            root: root,
+            len: bytes.len() as u16,
+        })
+    }
+    fn to_string(self) -> Result<String, std::string::FromUtf8Error> {
+        let mut vec = Vec::from(self.root);
+        vec.truncate(self.len as usize);
+        return String::from_utf8(vec);
+    }
+}
+
+async fn start_http_serv<R: Runtime>(
+    app_handle: AppHandle<R>,
+    label: String,
+    path: String,
+) -> Result<u16, String> {
+    let root = WebRoot::new(path);
+    if root.is_err() {
+        return Err(root.err().unwrap());
+    }
+    let root = root.unwrap();
+    let make_svc = make_service_fn(move |_: &AddrStream| async move {
+        Ok::<_, Infallible>(service_fn(move |req: Request<Body>| async move {
+            let root = root.to_string();
+            if root.is_err() {
+                let resp = Response::builder()
+                    .status(500)
+                    .body(Body::from(root.err().unwrap().to_string()))
+                    .unwrap();
+                return Ok::<_, Infallible>(resp);
+            } else {
+                let mut path = PathBuf::from(root.unwrap());
+                req.uri().path().split("/").for_each(|sub_path| {
+                    if !sub_path.is_empty() {
+                        path.push(sub_path);
+                    }
+                });
+                let data = tokio::fs::read(path).await;
+                if data.is_err() {
+                    let resp = Response::builder()
+                        .status(404)
+                        .body(Body::from(data.err().unwrap().to_string()))
+                        .unwrap();
+                    return Ok::<_, Infallible>(resp);
+                } else {
+                    let mut resp = Response::builder().status(200);
+                    let header = resp.headers_mut().unwrap();
+                    let req_path = String::from(req.uri().path());
+                    let content_type = String::from(get_file_type(&req_path));
+                    header.insert("Content-Type", content_type.parse().unwrap());
+                    header.insert(
+                        "Cross-Origin-Embedder-Policy",
+                        "require-corp".parse().unwrap(),
+                    );
+                    header.insert("Cross-Origin-Opener-Policy", "same-origin".parse().unwrap());
+                    let resp = resp.body(Body::from(data.unwrap())).unwrap();
+                    return Ok::<_, Infallible>(resp);
+                }
+            }
+        }))
+    });
+
+    for port in 9001..9099 {
+        let addr = format!("127.0.0.1:{}", port);
+        let listener = TcpListener::bind(&addr);
+        if listener.is_err() {
+            continue;
+        }
+        let listener = listener.unwrap();
+        let builder = hyper::server::Server::from_tcp(listener);
+        if builder.is_err() {
+            continue;
+        }
+
+        let (tx, rx) = tokio::sync::oneshot::channel::<()>();
+        tauri::async_runtime::spawn(async move {
+            let server = builder.unwrap().serve(make_svc);
+            let graceful = server.with_graceful_shutdown(async {
+                rx.await.ok();
+            });
+            graceful.await.ok();
+        });
+        let serv_map = app_handle.state::<HttpServerMap>().inner();
+        let mut serv_map_data = serv_map.0.lock().await;
+        serv_map_data.insert(label, tx);
+        return Ok(port as u16);
+    }
+
+    Err("".into())
+}
+
+pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String) {
+    let serv_map = app_handle.state::<HttpServerMap>().inner();
+    let mut serv_map_data = serv_map.0.lock().await;
+    let tx = serv_map_data.remove(&label);
+    if tx.is_some() {
+        tx.unwrap().send(()).ok();
+    }
+}
+
 #[tauri::command]
 async fn start<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -499,6 +585,29 @@ async fn start<R: Runtime>(
     if window.label() != "main" {
         return Err("no permission".into());
     }
+    //关闭之前的窗口
+    let dest_win = app_handle.get_window(&request.label);
+    if dest_win.is_some() {
+        if let Err(err) = dest_win.unwrap().close() {
+            return Err(err.to_string());
+        }
+    }
+    #[allow(unused_assignments)]
+    let mut dest_url = String::from("");
+    if request.path.starts_with("http://") {
+        dest_url = request.path;
+    } else {
+        let serv = start_http_serv(app_handle.clone(), request.label.clone(), request.path).await;
+        if serv.is_err() {
+            return Err(serv.err().unwrap());
+        }
+        dest_url = format!("http://localhost:{}/index.html", serv.unwrap());
+    }
+    let dest_url = url::Url::parse(dest_url.as_str());
+    if dest_url.is_err() {
+        return Err(dest_url.err().unwrap().to_string());
+    }
+
     let mut script = INIT_SCRIPT
         .replace("__PROJECT_ID__", &request.project_id)
         .replace(
@@ -524,23 +633,15 @@ async fn start<R: Runtime>(
         script = script.replace("__CROSS_HTTP__", "false");
     }
 
-    let res = WindowBuilder::new(&app_handle, request.label, WindowUrl::App("index.html".into()))
-        .title(request.title)
-        .visible(true)
-        .on_web_resource_request(move |req, response| {
-            let req_url = url::Url::parse(req.uri());
-            if req_url.is_err() {
-                send_error(500, req_url.err().unwrap().to_string(), response);
-                return;
-            }
-            let req_url = req_url.unwrap();
-            if req_url.scheme() != "tauri" {
-                return;
-            }
-            send_file_data(request.path.clone(), String::from(req_url.path()), response);
-        })
-        .initialization_script(&script)
-        .build();
+    let res = WindowBuilder::new(
+        &app_handle,
+        request.label,
+        WindowUrl::External(dest_url.unwrap()),
+    )
+    .title(request.title)
+    .visible(true)
+    .initialization_script(&script)
+    .build();
     if res.is_err() {
         return Err(res.err().unwrap().to_string());
     }
@@ -676,17 +777,17 @@ async fn get_min_app_path<R: Runtime>(
 }
 
 #[cfg(target_os = "windows")]
-fn adjust_entry_path(name:String) -> String {
+fn adjust_entry_path(name: String) -> String {
     return name.replace("/", "\\");
 }
 
 #[cfg(target_os = "linux")]
-fn adjust_entry_path(name:String) -> String {
+fn adjust_entry_path(name: String) -> String {
     return name.replace("\\", "/");
 }
 
 #[cfg(target_os = "macos")]
-fn adjust_entry_path(name:String) -> String {
+fn adjust_entry_path(name: String) -> String {
     return name.replace("\\", "/");
 }
 
@@ -837,6 +938,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
 
     fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
         app.manage(DebugPerm(Default::default()));
+        app.manage(HttpServerMap(Default::default()));
         Ok(())
     }
 

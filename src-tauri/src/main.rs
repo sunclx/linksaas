@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+use min_app_plugin::clear_by_close;
 use tauri::api::ipc::{format_callback, format_callback_result, CallbackFn};
 use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
@@ -273,8 +274,13 @@ fn main() {
         ])
         .on_window_event(|ev| match ev.event() {
             tauri::WindowEvent::Destroyed => {
-                println!("{}", ev.window().label());
-                //TODO 清除微应用相关资源
+                let win = ev.window().clone();
+                //清除微应用相关资源
+                let app_handle = win.app_handle();
+                let label = String::from(win.label());
+                tauri::async_runtime::spawn(async move {
+                    clear_by_close(app_handle, label).await;
+                });
             }
             _ => {}
         })
