@@ -52,6 +52,17 @@ export type AdPerm = {
     set_weight: boolean;
 };
 
+export type AppStorePerm = {
+    read: boolean;
+    add_cate: boolean;
+    update_cate: boolean;
+    remove_cate: boolean;
+    add_app: boolean;
+    update_app: boolean;
+    remove_app: boolean;
+};
+
+
 export type AdminPermInfo = {
     org_perm: OrgPerm;
     user_perm: UserPerm;
@@ -59,6 +70,7 @@ export type AdminPermInfo = {
     project_member_perm: ProjectMemberPerm;
     menu_perm: MenuPerm;
     ad_perm: AdPerm;
+    app_store_perm: AppStorePerm;
 };
 
 export type PreAuthRequest = {

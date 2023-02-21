@@ -47,6 +47,8 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
+mod appstore_api_plugin;
+mod appstore_admin_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -380,6 +382,8 @@ fn main() {
         .plugin(min_app_plugin::MinAppPlugin::new())
         .plugin(min_app_fs_plugin::MinAppFsPlugin::new())
         .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
+        .plugin(appstore_api_plugin::AppstoreApiPlugin::new())
+        .plugin(appstore_admin_api_plugin::AppstoreAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
