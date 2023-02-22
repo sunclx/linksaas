@@ -24,6 +24,8 @@ export const FILE_OWNER_TYPE_TEST_CASE: FILE_OWNER_TYPE = 9;          //测试�
 export const FILE_OWNER_TYPE_TEST_CASE_RESULT: FILE_OWNER_TYPE = 10;  //测试用例结果
 export const FILE_OWNER_TYPE_MIN_APP: FILE_OWNER_TYPE = 11; //微应用
 export const FILE_OWNER_TYPE_REQUIRE_MENT: FILE_OWNER_TYPE = 12; //项目需求
+export const FILE_OWNER_TYPE_APP_STORE: FILE_OWNER_TYPE = 13; //应用市场
+
 
 export type DownloadResult = {
     exist_in_local: boolean;

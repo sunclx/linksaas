@@ -105,6 +105,26 @@ async fn get_app<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn get_cate_path<R: Runtime>(
+    app_handle: AppHandle<R>,
+    _window: Window<R>,
+    request: GetCatePathRequest,
+) -> Result<GetCatePathResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = AppstoreApiClient::new(chan.unwrap());
+    match client.get_cate_path(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct AppstoreApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -118,6 +138,7 @@ impl<R: Runtime> AppstoreApiPlugin<R> {
                 list_sub_minor_cate,
                 list_app,
                 get_app,
+                get_cate_path,
             ]),
         }
     }

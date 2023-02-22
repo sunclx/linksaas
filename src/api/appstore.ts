@@ -16,11 +16,13 @@ export const OS_SCOPE_LINUX: OS_SCOPE = 2;
 export type MajorCate = {
     cate_id: string;
     cate_name: string;
+    minor_cate_count: number;
 };
 
 export type MinorCate = {
     cate_id: string;
     cate_name: string;
+    sub_minor_cate_count: number;
 };
 
 export type SubMinorCate = {
@@ -98,6 +100,12 @@ export type ListAppParam = {
     os_scope: OS_SCOPE;
 };
 
+export type CatePath = {
+    major_cate_id: string;
+    minor_cate_id: string;
+    sub_minor_cate_id: string;
+};
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ListMajorCateRequest = {};
 
@@ -127,6 +135,16 @@ export type ListSubMinorCateResponse = {
     code: number;
     err_msg: string;
     cate_info_list: SubMinorCate[];
+};
+
+export type GetCatePathRequest = {
+    cate_id: string;
+};
+
+export type GetCatePathResponse = {
+    code: number;
+    err_msg: string;
+    cate_path: CatePath;
 };
 
 export type ListAppRequest = {
@@ -183,8 +201,17 @@ export async function list_sub_minor_cate(request: ListSubMinorCateRequest): Pro
     });
 }
 
+//列出分类路径
+export async function get_cate_path(request: GetCatePathRequest): Promise<GetCatePathResponse> {
+    const cmd = 'plugin:appstore_api|get_cate_path';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetCatePathResponse>(cmd, {
+        request,
+    });
+}
 
-//xx
+
+//列出应用
 export async function list_app(request: ListAppRequest): Promise<ListAppResponse> {
     const cmd = 'plugin:appstore_api|list_app';
     console.log(`%c${cmd}`, 'color:#0f0;', request);

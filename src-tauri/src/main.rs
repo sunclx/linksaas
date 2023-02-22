@@ -9,6 +9,8 @@ use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
 
 mod admin_auth_api_plugin;
+mod appstore_admin_api_plugin;
+mod appstore_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod events_admin_api_plugin;
@@ -47,8 +49,6 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
-mod appstore_api_plugin;
-mod appstore_admin_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -392,9 +392,12 @@ fn main() {
                     .status(404)
                     .body("wrong url".into()),
                 Ok(req_url) => {
-                    let cur_value = app_handle.state::<user_api_plugin::CurSession>().inner();
+                    let user_value = app_handle.state::<user_api_plugin::CurSession>().inner();
+                    let admin_value = app_handle
+                        .state::<admin_auth_api_plugin::CurAdminSession>()
+                        .inner();
                     return tauri::async_runtime::block_on(async move {
-                        let cur_session = cur_value.0.lock().await;
+                        let cur_session = user_value.0.lock().await;
                         if let Some(cur_session_id) = cur_session.clone() {
                             return fs_api_plugin::http_download_file(
                                 app_handle,
@@ -403,10 +406,20 @@ fn main() {
                             )
                             .await;
                         } else {
-                            return ResponseBuilder::new()
-                                .header("Access-Control-Allow-Origin", "*")
-                                .status(403)
-                                .body("wrong session".into());
+                            let cur_session = admin_value.0.lock().await;
+                            if let Some(cur_session_id) = cur_session.clone() {
+                                return fs_api_plugin::http_download_file(
+                                    app_handle,
+                                    req_url.path(),
+                                    cur_session_id.as_str(),
+                                )
+                                .await;
+                            } else {
+                                return ResponseBuilder::new()
+                                    .header("Access-Control-Allow-Origin", "*")
+                                    .status(403)
+                                    .body("wrong session".into());
+                            }
                         }
                     });
                 }
