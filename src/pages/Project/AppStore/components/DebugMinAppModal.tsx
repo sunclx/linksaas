@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, message } from "antd";
+import { Button, Form, Input, Modal, Radio, message } from "antd";
 import React, { useState } from "react";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
@@ -17,6 +17,8 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
+    const [useUrl, setUseUrl] = useState(true);
+    const [remoteUrl, setRemoteUrl] = useState("");
     const [localPath, setLocalPath] = useState("");
     const [debugPerm, setDebugPerm] = useState<MinAppPerm>({
         net_perm: {
@@ -54,9 +56,23 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
     };
 
     const startDebug = async () => {
-        if (localPath.trim() == "") {
-            message.error("请选择本地目录");
-            return;
+        let path = "";
+        if (useUrl == true) {
+            if (remoteUrl.trim() == "") {
+                message.error("请输入url地址");
+                return;
+            }
+            if (!remoteUrl.trim().startsWith("localhost")) {
+                message.error("只支持localhost的url地址");
+                return;
+            }
+            path = "http://" + remoteUrl;
+        } else {
+            if (localPath.trim() == "") {
+                message.error("请选择本地目录");
+                return;
+            }
+            path = localPath;
         }
 
         await start_debug({
@@ -66,8 +82,8 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             member_display_name: userStore.userInfo.displayName,
             token_url: "",
             label: "minApp:debug",
-            title: `调试微应用(${localPath})`,
-            path: localPath,
+            title: `调试微应用(${path})`,
+            path: path,
         }, debugPerm);
         props.onOk();
     };
@@ -85,6 +101,26 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                 startDebug();
             }}>
             <Form>
+            <Form.Item label="应用方式">
+                    <Radio.Group value={useUrl} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setUseUrl(e.target.value!);
+                    }}>
+                        <Radio value={true}>本地URL</Radio>
+                        <Radio value={false}>本地路径</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                {useUrl == true && (
+                    <Form.Item label="url地址">
+                        <Input prefix="http://" value={remoteUrl} onChange={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setRemoteUrl(e.target.value);
+                        }} />
+                    </Form.Item>
+                )}
+                {useUrl == false && (
                 <Form.Item label="本地路径">
                     <Input value={localPath} onChange={e => {
                         e.stopPropagation();
@@ -97,6 +133,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                             choicePath();
                         }} />} />
                 </Form.Item>
+                )}
             </Form>
             <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} showTitle />
         </Modal>

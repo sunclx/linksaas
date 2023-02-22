@@ -4,6 +4,7 @@ export type APP_OPEN_TYPE = number;
 
 export const OPEN_TYPE_BROWSER: APP_OPEN_TYPE = 0;
 export const OPEN_TYPE_MIN_APP: APP_OPEN_TYPE = 1;
+export const OPEN_TYPE_MIN_APP_IN_STORE: APP_OPEN_TYPE = 2;
 
 
 export type BasicApp = {

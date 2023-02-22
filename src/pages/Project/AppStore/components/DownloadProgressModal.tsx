@@ -9,6 +9,7 @@ import { download_file, get_cache_file } from '@/api/fs';
 import { check_unpark, unpack_min_app } from '@/api/min_app';
 
 interface DownloadProgressModalProps {
+    fsId: string;
     fileId: string;
     onCancel: () => void;
     onOk: () => void;
@@ -23,7 +24,6 @@ const STEP_FINISH: STEP = 4;
 
 const DownloadProgressModal: React.FC<DownloadProgressModalProps> = (props) => {
     const userStore = useStores('userStore');
-    const projectStore = useStores('projectStore');
 
     const [step, setStep] = useState(STEP_UNSTART);
     const [curUnPackFile, setCurUnPackFile] = useState("");
@@ -31,14 +31,14 @@ const DownloadProgressModal: React.FC<DownloadProgressModalProps> = (props) => {
 
     const runDownload = async (trackId: string) => {
         try {
-            const res = await get_cache_file(projectStore.curProject?.min_app_fs_id ?? "", props.fileId, "content.zip");
+            const res = await get_cache_file(props.fsId, props.fileId, "content.zip");
             if (res.exist_in_local) {
                 setStep(STEP_UNPACK);
                 setDownloadRatio(100);
             }
             setStep(STEP_DOWNLOAD);
             await download_file(userStore.sessionId,
-                projectStore.curProject?.min_app_fs_id ?? "",
+                props.fsId,
                 props.fileId, trackId, "content.zip");
         } catch (e) {
             console.log(e);
@@ -48,14 +48,14 @@ const DownloadProgressModal: React.FC<DownloadProgressModalProps> = (props) => {
     };
 
     const runUnpack = async (traceName: string) => {
-        const ok = await check_unpark(projectStore.curProject?.min_app_fs_id ?? "", props.fileId);
+        const ok = await check_unpark(props.fsId, props.fileId);
         if (ok) {
             setStep(STEP_FINISH);
             props.onOk();
             return;
         }
         try {
-            await unpack_min_app(projectStore.curProject?.min_app_fs_id ?? "", props.fileId, traceName);
+            await unpack_min_app(props.fsId, props.fileId, traceName);
             setStep(STEP_FINISH);
             props.onOk();
         } catch (e) {

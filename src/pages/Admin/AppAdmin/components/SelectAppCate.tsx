@@ -16,7 +16,7 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
 
     const [curMajorCateId, setCurMajorCateId] = useState<string | null>(null);
     const [curMinorCateId, setCurMinorCateId] = useState<string | null>(null);
-    const [curSubMinorCateId, setSubCurMinorCateId] = useState<string | null>(null);
+    const [curSubMinorCateId, setCurSubMinorCateId] = useState<string | null>(null);
 
     const loadMajorCateList = async () => {
         const res = await request(list_major_cate({}));
@@ -61,7 +61,7 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
     return (
         <Form layout="inline">
             <Form.Item label="一级分类">
-                <Select style={{ width: 100 }} value={curMajorCateId} onChange={value => {
+                <Select style={{ width: 60 }} value={curMajorCateId} onChange={value => {
                     setCurMajorCateId(value);
                     props.onChange(value ?? "", "", "");
                 }}>
@@ -72,7 +72,7 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
                 </Select>
             </Form.Item>
             <Form.Item label="二级分类">
-                <Select style={{ width: 100 }} value={curMinorCateId} onChange={value => {
+                <Select style={{ width: 60 }} value={curMinorCateId} onChange={value => {
                     setCurMinorCateId(value);
                     props.onChange(curMajorCateId ?? "", value ?? "", "");
                 }}>
@@ -83,8 +83,8 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
                 </Select>
             </Form.Item>
             <Form.Item label="三级分类">
-                <Select style={{ width: 100 }} value={curSubMinorCateId} onChange={value => {
-                    setSubCurMinorCateId(value);
+                <Select style={{ width: 60 }} value={curSubMinorCateId} onChange={value => {
+                    setCurSubMinorCateId(value);
                     props.onChange(curMajorCateId ?? "", curMinorCateId ?? "", value ?? "");
                 }}>
                     <Select.Option value={null}>全部</Select.Option>
