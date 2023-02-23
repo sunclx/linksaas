@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import CardWrap from '@/components/CardWrap';
-import styles from './index.module.less';
+import styles from './ProjectAward.module.less';
 import type { AwardState, AwardRecord, AWARD_RELATE_TYPE } from '@/api/project_award';
 import { list_state, list_record, AWARD_RELATE_TASK, AWARD_RELATE_BUG } from '@/api/project_award';
 import { observer } from 'mobx-react';
@@ -123,7 +122,6 @@ const ProjectAward: React.FC = () => {
     ];
 
     return (
-        <CardWrap title="项目成员贡献" halfContent>
             <div className={styles.wrap}>
                 <div className={styles.list}>
                     <div className={styles.list_cont}>
@@ -168,7 +166,7 @@ const ProjectAward: React.FC = () => {
                                         {recordList.length > 0 &&
                                             <Table<AwardRecord>
                                                 rowKey={e=>`${e.relate_id}${e.relate_type}`}
-                                                style={{ marginLeft: "30px" }}
+                                                style={{ marginLeft: "10px" }}
                                                 dataSource={recordList}
                                                 columns={columns}
                                                 pagination={recordCount <= ITEM_PER_PAGE ? false : {
@@ -207,7 +205,6 @@ const ProjectAward: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </CardWrap>
     );
 }
 

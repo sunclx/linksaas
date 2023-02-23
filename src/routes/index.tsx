@@ -9,7 +9,6 @@ import NoFond from '@/pages/NoFond';
 import ProjectHome from '@/pages/Project/Home';
 import ProjectMember from '@/pages/Project/Member';
 import ProjectAppraise from '@/pages/Project/Appraise';
-import ProjectAward from '@/pages/Project/Award';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
@@ -125,11 +124,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/appraise',
       title: '项目成员互评',
       component: ProjectAppraise,
-    },
-    {
-      path: prefix + '/award',
-      title: '项目成员贡献',
-      component: ProjectAward,
     },
     {
       path: prefix + "/req",

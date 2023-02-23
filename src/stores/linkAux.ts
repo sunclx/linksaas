@@ -834,14 +834,6 @@ class LinkAuxStore {
     history.push(this.genUrl(history.location.pathname, "/appraise"));
   }
 
-  //跳转到项目贡献页面
-  goToAwardList(history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(history.location.pathname, "/award"));
-  }
-
   //跳转到代码仓库列表
   goToRepoList(history: History) {
     if (this.rootStore.appStore.simpleMode) {

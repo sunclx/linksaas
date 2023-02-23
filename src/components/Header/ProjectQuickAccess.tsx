@@ -300,7 +300,7 @@ const ProjectQuickAccess = () => {
                 linkAuxStore.goToAppriaseList(history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_AWARD:
-                linkAuxStore.goToAwardList(history);
+                linkAuxStore.goToMemberList("award", history);
                 break;
             case MENU_KEY_CREATE_CHANNEL:
                 history.push(APP_PROJECT_CHAT_PATH);
