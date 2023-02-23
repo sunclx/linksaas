@@ -94,9 +94,9 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             const res = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", selectd, ""));
             setIconFileId(res.file_id);
             if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
+                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
             } else {
-                setIconUrl(`fs://lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
+                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
             }
         }
     };

@@ -162,9 +162,9 @@ const AppItem: React.FC<AppItemProps> = (props) => {
 
     const adjustUrl = (url: string) => {
         if (appStore.isOsWindows) {
-            return url.replace("fs://localhost/", "https://fs.localhost/");
+            return url.replace("lcalhost","localhost").replace("fs://localhost/", "https://fs.localhost/");
         } else {
-            return url.replace("https://fs.localhost/", "fs://localhost/");
+            return url.replace("lcalhost","localhost").replace("https://fs.localhost/", "fs://localhost/");
         }
     }
 

@@ -50,9 +50,9 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
     useEffect(() => {
         if (props.appInfo.base_info.icon_file_id != "") {
             if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.appInfo.base_info.icon_file_id}/x.png`);
+                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.appInfo.base_info.icon_file_id}/x.png`);
             } else {
-                setIconUrl(`fs://lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.appInfo.base_info.icon_file_id}/x.png`);
+                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.appInfo.base_info.icon_file_id}/x.png`);
             }
         }
     }, []);
