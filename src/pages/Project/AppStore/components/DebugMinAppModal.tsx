@@ -17,7 +17,6 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
-
     const [useUrl, setUseUrl] = useState(true);
     const [remoteUrl, setRemoteUrl] = useState("");
     const [localPath, setLocalPath] = useState("");
@@ -39,6 +38,10 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             list_my_event: false,
             list_all_event: false,
         },
+        fs_perm: {
+            read_file: false,
+            write_file: false,
+        },
     });
 
     const choicePath = async () => {
@@ -59,7 +62,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                 message.error("请输入url地址");
                 return;
             }
-            if (!remoteUrl.trim().startsWith("localhost")){
+            if (!remoteUrl.trim().startsWith("localhost")) {
                 message.error("只支持localhost的url地址");
                 return;
             }
@@ -98,7 +101,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                 startDebug();
             }}>
             <Form>
-                <Form.Item label="应用方式">
+            <Form.Item label="应用方式">
                     <Radio.Group value={useUrl} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -118,21 +121,21 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                     </Form.Item>
                 )}
                 {useUrl == false && (
-                    <Form.Item label="本地路径">
-                        <Input value={localPath} onChange={e => {
+                <Form.Item label="本地路径">
+                    <Input value={localPath} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setLocalPath(e.target.value);
+                    }}
+                        addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setLocalPath(e.target.value);
-                        }}
-                            addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                choicePath();
-                            }} />} />
-                    </Form.Item>
+                            choicePath();
+                        }} />} />
+                </Form.Item>
                 )}
             </Form>
-            <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} />
+            <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} showTitle />
         </Modal>
     );
 };

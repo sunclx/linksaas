@@ -36,6 +36,7 @@ export type GetCfgResponse = {
   can_register: boolean;
   enable_admin: boolean;
   enable_search: boolean;
+  app_store_fs_id: string;
 };
 
 export type ServerInfo = {

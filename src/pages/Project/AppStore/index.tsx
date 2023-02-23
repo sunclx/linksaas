@@ -11,6 +11,7 @@ import DebugMinAppModal from './components/DebugMinAppModal';
 import { observer } from 'mobx-react';
 import AddAppModal from './components/AddAppModal';
 import AppItem from './components/AppItem';
+import AppStorePanel from './components/AppStorePanel';
 
 
 const AppStore: React.FC = () => {
@@ -23,7 +24,6 @@ const AppStore: React.FC = () => {
 
 
   const loadAppList = async () => {
-    console.log("xxxxxxxxxxxxxxxxxxxxxx");
     const res = await request(
       list_app({
         session_id: userStore.sessionId,
@@ -77,7 +77,7 @@ const AppStore: React.FC = () => {
             }}
             dataSource={appList}
             renderItem={(item) => (
-              <List.Item>
+              <List.Item key={item.app_id}>
                 <AppItem appInfo={item} onRemove={() => loadAppList()} />
               </List.Item>
             )}
@@ -87,6 +87,9 @@ const AppStore: React.FC = () => {
             <h3>说明</h3>
             <p>您可以把项目团队用到的研发系统地址添加在这里。</p>
           </div>
+          {projectStore.isAdmin && (
+            <AppStorePanel onAddApp={() => loadAppList()} />
+          )}
         </div>
       </div>
       {showAdd == true && (
