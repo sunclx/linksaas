@@ -9,7 +9,6 @@ import NoFond from '@/pages/NoFond';
 import ProjectHome from '@/pages/Project/Home';
 import ProjectMember from '@/pages/Project/Member';
 import ProjectAppraise from '@/pages/Project/Appraise';
-import ProjectAward from '@/pages/Project/Award';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
@@ -62,7 +61,6 @@ import RepoList from '@/pages/Earthly/RepoList';
 import EarthlyExecResult from '@/pages/Earthly/ExecResult';
 import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
-import LocalApi from '@/pages/Project/LocalApi';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import SpritList from '@/pages/Project/Sprit/SpritList';
 import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
@@ -125,11 +123,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/appraise',
       title: '项目成员互评',
       component: ProjectAppraise,
-    },
-    {
-      path: prefix + '/award',
-      title: '项目成员贡献',
-      component: ProjectAward,
     },
     {
       path: prefix + "/req",
@@ -291,12 +284,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/appstore",
       title: "更多应用",
       component: AppStore,
-      exact: true,
-    },
-    {
-      path: prefix + "/localapi",
-      title: "项目接口",
-      component: LocalApi,
       exact: true,
     },
   ];
