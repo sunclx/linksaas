@@ -811,11 +811,11 @@ class LinkAuxStore {
   }
 
   //跳转到项目信息页面
-  goToProjectInfo(history: History) {
+  goToHome(tab: string, history: History) {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/home"));
+    history.push(this.genUrl(history.location.pathname, `/home?tab=${tab}`));
   }
 
   //跳转到项目成员页面
@@ -856,14 +856,6 @@ class LinkAuxStore {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(history.location.pathname, "/appstore"));
-  }
-
-  //跳转到本地接口页面
-  goToLocalApi(history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(history.location.pathname, "/localapi"));
   }
 
   //跳转到创建服务端脚本页面

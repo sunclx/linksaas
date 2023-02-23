@@ -61,7 +61,6 @@ import RepoList from '@/pages/Earthly/RepoList';
 import EarthlyExecResult from '@/pages/Earthly/ExecResult';
 import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
-import LocalApi from '@/pages/Project/LocalApi';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import SpritList from '@/pages/Project/Sprit/SpritList';
 import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
@@ -285,12 +284,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/appstore",
       title: "更多应用",
       component: AppStore,
-      exact: true,
-    },
-    {
-      path: prefix + "/localapi",
-      title: "项目接口",
-      component: LocalApi,
       exact: true,
     },
   ];

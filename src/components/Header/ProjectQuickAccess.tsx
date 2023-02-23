@@ -285,7 +285,7 @@ const ProjectQuickAccess = () => {
     const onMenuClick = async (info: MenuInfo) => {
         switch (info.key) {
             case MENU_KEY_SHOW_TOOL_PROJECT_INFO:
-                linkAuxStore.goToProjectInfo(history);
+                linkAuxStore.goToHome("info", history);
                 break;
             case MENU_KEY_SHOW_INVITE_MEMBER:
                 memberStore.showInviteMember = true;
@@ -384,7 +384,7 @@ const ProjectQuickAccess = () => {
                 linkAuxStore.goToAppList(history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_LOCAL_API:
-                linkAuxStore.goToLocalApi(history);
+                linkAuxStore.goToHome("api", history);
                 break;
             case MENU_KEY_SHOW_LOCAL_API_DEBUG:
                 await openApiConsole();
