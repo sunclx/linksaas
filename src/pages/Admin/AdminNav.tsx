@@ -6,6 +6,8 @@ import type { AdminPermInfo } from '@/api/admin_auth';
 import { get_admin_perm } from '@/api/admin_auth';
 import { useHistory, useLocation } from "react-router-dom";
 import {
+    ADMIN_PATH_APPSTORE_APP_SUFFIX,
+    ADMIN_PATH_APPSTORE_CATE_SUFFIX,
     ADMIN_PATH_CLIENT_AD_SUFFIX,
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
     ADMIN_PATH_ORG_LIST_SUFFIX, ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
@@ -26,6 +28,7 @@ const AdminNav = () => {
     const [projectSelectedKeys, setProjectSelectedKeys] = useState<string[]>([]);
     const [orgSelectedKeys, setOrgSelectedKeys] = useState<string[]>([]);
     const [clientCfgSelectedKeys, setClientCfgSelectedKeys] = useState<string[]>([]);
+    const [appstoreSelectedKeys, setAppstoreSelectedKeys] = useState<string[]>([]);
 
     useEffect(() => {
         setUserSelectedKeys([]);
@@ -60,6 +63,16 @@ const AdminNav = () => {
             setClientCfgSelectedKeys(["ad_admin"]);
         }
     }, [location.pathname])
+
+    useEffect(() => {
+        setAppstoreSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_APPSTORE_CATE_SUFFIX) {
+            setAppstoreSelectedKeys(["app_cate"]);
+        } else if (location.pathname == ADMIN_PATH_APPSTORE_APP_SUFFIX) {
+            setAppstoreSelectedKeys(["app_app"]);
+        }
+    }, [location.pathname])
+
     useEffect(() => {
         get_admin_perm().then(res => setPermInfo(res));
     }, []);
@@ -79,7 +92,7 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg"]}>
+            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore"]}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
                         {
@@ -142,6 +155,31 @@ const AdminNav = () => {
                                     history.push(ADMIN_PATH_PROJECT_LIST_SUFFIX);
                                 } else if (e.selectedKeys[0] == "prj_create") {
                                     history.push(ADMIN_PATH_PROJECT_CREATE_SUFFIX);
+                                }
+                            }
+                        }}
+                    />
+                </Collapse.Panel>
+                <Collapse.Panel header="应用管理" key="appstore">
+                    <Menu selectedKeys={appstoreSelectedKeys} items={[
+                        {
+                            label: "管理类别",
+                            key: "app_cate",
+                            disabled: !(permInfo?.app_store_perm.read ?? false),
+                        },
+                        {
+                            label: "管理应用",
+                            key: "app_app",
+                            disabled: !(permInfo?.app_store_perm.read ?? false),
+                        },
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "app_cate") {
+                                    history.push(ADMIN_PATH_APPSTORE_CATE_SUFFIX);
+                                } else if (e.selectedKeys[0] == "app_app") {
+                                    history.push(ADMIN_PATH_APPSTORE_APP_SUFFIX);
                                 }
                             }
                         }}

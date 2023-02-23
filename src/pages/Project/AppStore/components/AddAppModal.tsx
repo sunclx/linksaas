@@ -46,6 +46,10 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             list_my_event: false,
             list_all_event: false,
         },
+        fs_perm: {
+            read_file: false,
+            write_file: false,
+        },
     });
 
     const choicePath = async () => {
@@ -193,7 +197,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
                     )}
                 </Form>
                 {openType == OPEN_TYPE_MIN_APP && (
-                    <MinAppPermPanel disable={false} onChange={perm => setMinAppPerm(perm)} />
+                    <MinAppPermPanel disable={false} onChange={perm => setMinAppPerm(perm)} showTitle/>
                 )}
             </Modal>
             {showUpload == true && (

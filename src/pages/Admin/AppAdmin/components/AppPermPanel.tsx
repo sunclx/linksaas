@@ -1,6 +1,6 @@
 import { Card, Checkbox, Form, Popover, Space } from "antd";
 import React, { useState } from "react";
-import type { MinAppPerm } from "@/api/project_app";
+import type { AppPerm } from "@/api/appstore";
 import type { CheckboxOptionType } from 'antd';
 import { InfoCircleOutlined } from "@ant-design/icons";
 
@@ -76,14 +76,14 @@ const fsOptionList: CheckboxOptionType[] = [
     },
 ];
 
-interface MinAppPermPanelProps {
+interface AppPermPanelProps {
     disable: boolean;
     showTitle: boolean;
-    perm?: MinAppPerm;
-    onChange: (perm: MinAppPerm) => void;
+    perm?: AppPerm;
+    onChange: (perm: AppPerm) => void;
 }
 
-const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
+const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
     const tmpNetValues: string[] = [];
     const tmpMemberValues: string[] = [];
     const tmpIssueValues: string[] = [];
@@ -140,7 +140,7 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
     const [fsValues, setFsValues] = useState<string[]>(tmpFsValues);
 
     const calcPerm = (netPermList: string[], memberPermList: string[], issuePermList: string[], eventPermList: string[], fsPermList: string[]) => {
-        const tempPerm: MinAppPerm = {
+        const tempPerm: AppPerm = {
             net_perm: {
                 cross_domain_http: false,
             },
@@ -246,4 +246,4 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
     );
 }
 
-export default MinAppPermPanel;
+export default AppPermPanel;

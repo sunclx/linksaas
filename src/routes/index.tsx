@@ -50,6 +50,8 @@ import {
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
   WORKBENCH_PATH,
+  ADMIN_PATH_APPSTORE_CATE_SUFFIX,
+  ADMIN_PATH_APPSTORE_APP_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -85,6 +87,8 @@ import RequirementList from '@/pages/Project/Requirement/RequirementList';
 import RequirementCreate from '@/pages/Project/Requirement/RequirementCreate';
 import RequirementDetail from '@/pages/Project/Requirement/RequirementDetail';
 import UserDoc from '@/pages/UserExtend/UserKb/UserDoc';
+import AppCateList from '@/pages/Admin/AppAdmin/AppCateList';
+import AppList from '@/pages/Admin/AppAdmin/AppList';
 
 
 
@@ -442,6 +446,18 @@ const routesConfig: IRouteConfig[] = [
         component: AdAdmin,
         exact: true,
       },
+      {
+        path: ADMIN_PATH_APPSTORE_CATE_SUFFIX,
+        title: "应用类别管理",
+        component: AppCateList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_APPSTORE_APP_SUFFIX,
+        title: "应用管理",
+        component: AppList,
+        exact: true,
+      }
     ]
   },
 

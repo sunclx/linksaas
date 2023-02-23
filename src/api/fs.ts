@@ -4,6 +4,8 @@ export type FS_OWNER_TYPE = number;
 
 export const FS_OWNER_TYPE_USER: FS_OWNER_TYPE = 0; //用户文件存储
 export const FS_OWNER_TYPE_PROJECT: FS_OWNER_TYPE = 1; //项目文件存储
+export const FS_OWNER_TYPE_GLOBAL: FS_OWNER_TYPE = 2; //全局文件系统
+
 
 export type FILE_OWNER_TYPE = number;
 
@@ -22,8 +24,7 @@ export const FILE_OWNER_TYPE_TEST_CASE: FILE_OWNER_TYPE = 9;          //测试�
 export const FILE_OWNER_TYPE_TEST_CASE_RESULT: FILE_OWNER_TYPE = 10;  //测试用例结果
 export const FILE_OWNER_TYPE_MIN_APP: FILE_OWNER_TYPE = 11; //微应用
 export const FILE_OWNER_TYPE_REQUIRE_MENT: FILE_OWNER_TYPE = 12; //项目需求
-
-
+export const FILE_OWNER_TYPE_APP_STORE: FILE_OWNER_TYPE = 13; //应用市场
 
 
 export type DownloadResult = {

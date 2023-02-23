@@ -3,10 +3,14 @@
     windows_subsystem = "windows"
 )]
 
+use min_app_plugin::clear_by_close;
+use tauri::api::ipc::{format_callback, format_callback_result, CallbackFn};
 use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
 
 mod admin_auth_api_plugin;
+mod appstore_admin_api_plugin;
+mod appstore_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod events_admin_api_plugin;
@@ -32,6 +36,7 @@ mod project_expert_qa_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
+mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_test_case_api_plugin;
 mod restrict_api_plugin;
@@ -44,8 +49,8 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_kb_api_plugin;
-mod project_requirement_api_plugin;
 
+mod min_app_fs_plugin;
 mod min_app_plugin;
 
 mod my_updater;
@@ -53,10 +58,40 @@ mod my_updater;
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
 use tauri::{
-    AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem, Window, WindowBuilder, WindowUrl,
+    AppHandle, CustomMenuItem, InvokeResponse, Manager, Runtime, SystemTray, SystemTrayEvent,
+    SystemTrayMenu, SystemTrayMenuItem, Window, WindowBuilder, WindowUrl,
 };
 use tokio::fs;
+
+const INIT_SCRIPT: &str = r#"
+Object.defineProperty(window, "__TAURI_POST_MESSAGE__", {
+    value: (message) => {
+      if (
+        window.__TAURI_METADATA__ != undefined &&
+        window.__TAURI_METADATA__.__currentWindow.label.startsWith("minApp:")
+      ) {
+        if (message.cmd == "http") {
+          if (window.minApp !== undefined && window.minApp.crossHttp === true) {
+            window.ipc.postMessage(JSON.stringify(message));
+            return;
+          } else {
+            return;
+          }
+        } else if (message.cmd.startsWith("plugin:user_api|")) {
+          return;
+        } else if (message.cmd.startsWith("plugin:")) {
+          window.ipc.postMessage(JSON.stringify(message));
+          return;
+        } else if (message.cmd.startsWith("_")) {
+          window.ipc.postMessage(JSON.stringify(message));
+          return;
+        }
+      } else {
+        window.ipc.postMessage(JSON.stringify(message));
+      }
+    },
+  });  
+"#;
 
 #[derive(Default)]
 struct GrpcChan(Mutex<Option<Channel>>);
@@ -192,6 +227,22 @@ async fn capture_screen(
     }
 }
 
+pub fn window_invoke_responder<R: Runtime>(
+    window: Window<R>,
+    response: InvokeResponse,
+    success_callback: CallbackFn,
+    error_callback: CallbackFn,
+) {
+    let callback_string =
+        match format_callback_result(response.into_result(), success_callback, error_callback) {
+            Ok(callback_string) => callback_string,
+            Err(e) => format_callback(error_callback, &e.to_string())
+                .expect("unable to serialize response string to json"),
+        };
+
+    let _ = window.eval(&callback_string);
+}
+
 fn main() {
     if local_api::is_instance_run() {
         return;
@@ -223,6 +274,18 @@ fn main() {
             is_conn_server,
             check_update,
         ])
+        .on_window_event(|ev| match ev.event() {
+            tauri::WindowEvent::Destroyed => {
+                let win = ev.window().clone();
+                //清除微应用相关资源
+                let app_handle = win.app_handle();
+                let label = String::from(win.label());
+                tauri::async_runtime::spawn(async move {
+                    clear_by_close(app_handle, label).await;
+                });
+            }
+            _ => {}
+        })
         .on_system_tray_event(move |app, event| match event {
             SystemTrayEvent::LeftClick { .. } => {
                 let all_windows = app.windows();
@@ -317,7 +380,11 @@ fn main() {
         .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .plugin(min_app_plugin::MinAppPlugin::new())
+        .plugin(min_app_fs_plugin::MinAppFsPlugin::new())
         .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
+        .plugin(appstore_api_plugin::AppstoreApiPlugin::new())
+        .plugin(appstore_admin_api_plugin::AppstoreAdminApiPlugin::new())
+        .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
                 Err(_) => ResponseBuilder::new()
@@ -325,9 +392,12 @@ fn main() {
                     .status(404)
                     .body("wrong url".into()),
                 Ok(req_url) => {
-                    let cur_value = app_handle.state::<user_api_plugin::CurSession>().inner();
+                    let user_value = app_handle.state::<user_api_plugin::CurSession>().inner();
+                    let admin_value = app_handle
+                        .state::<admin_auth_api_plugin::CurAdminSession>()
+                        .inner();
                     return tauri::async_runtime::block_on(async move {
-                        let cur_session = cur_value.0.lock().await;
+                        let cur_session = user_value.0.lock().await;
                         if let Some(cur_session_id) = cur_session.clone() {
                             return fs_api_plugin::http_download_file(
                                 app_handle,
@@ -336,10 +406,20 @@ fn main() {
                             )
                             .await;
                         } else {
-                            return ResponseBuilder::new()
-                                .header("Access-Control-Allow-Origin", "*")
-                                .status(403)
-                                .body("wrong session".into());
+                            let cur_session = admin_value.0.lock().await;
+                            if let Some(cur_session_id) = cur_session.clone() {
+                                return fs_api_plugin::http_download_file(
+                                    app_handle,
+                                    req_url.path(),
+                                    cur_session_id.as_str(),
+                                )
+                                .await;
+                            } else {
+                                return ResponseBuilder::new()
+                                    .header("Access-Control-Allow-Origin", "*")
+                                    .status(403)
+                                    .body("wrong session".into());
+                            }
                         }
                     });
                 }
