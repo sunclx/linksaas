@@ -1,119 +1,85 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
 export type BasicApp = {
-
     app_name: string;
-
     icon_file_id: string;
-
     app_id_in_store: string;
 };
 
 export type App = {
-
     app_id: string;
-
     basic_info: BasicApp;
-
     create_time: number;
 };
 
 export type UserAppNetPerm = {
-
     cross_domain_http: boolean;
 };
 
 export type UserAppFsPerm = {
-
     read_file: boolean;
-
     write_file: boolean;
 };
 
 export type UserAppPerm = {
-
     net_perm: UserAppNetPerm;
-
     fs_perm: UserAppFsPerm;
 };
 
 export type ListRequest = {
-
     session_id: string;
 };
 
 export type ListResponse = {
-
     code: number;
-
     err_msg: string;
-
     app_list: App[];
 };
 
 
 export type AddRequest = {
-
     session_id: string;
-
     basic_info: BasicApp;
 };
 
 export type AddResponse = {
-
     code: number;
-
     err_msg: string;
-
     app_id: string;
 };
 
 
 export type RemoveRequest = {
-
     session_id: string;
-
     app_id: string;
 };
 
 export type RemoveResponse = {
-
     code: number;
-
     err_msg: string;
 };
 
 
 export type SetUserAppPermRequest = {
-
     session_id: string;
-
     app_id: string;
-
     perm: UserAppPerm;
 };
 
 export type SetUserAppPermResponse = {
-
     code: number;
-
     err_msg: string;
 };
 
 
 export type GetUserAppPermRequest = {
-
     session_id: string;
-
     app_id: string;
 };
 
 export type GetUserAppPermResponse = {
-
     code: number;
-
     err_msg: string;
-
     perm: UserAppPerm;
 };
 

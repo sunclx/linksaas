@@ -215,7 +215,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
             {minAppPerm != null && (
                 <Modal open
                     title={`${projectStore.isAdmin ? "修改权限" : "查看权限"}`}
-                    okText="修改权限"
+                    okText={`${projectStore.isAdmin ? "修改权限" : "确定"}`}
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();

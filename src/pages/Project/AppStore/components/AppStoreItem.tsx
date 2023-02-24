@@ -6,8 +6,9 @@ import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { useStores } from "@/hooks";
 import { ReadOnlyEditor } from '@/components/Editor';
 import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
-import { OPEN_TYPE_MIN_APP_IN_STORE, add as add_app, set_min_app_perm } from "@/api/project_app";
+import { OPEN_TYPE_MIN_APP_IN_STORE, add as add_app_to_project, set_min_app_perm } from "@/api/project_app";
 import { request } from "@/utils/request";
+import { add as add_app_to_user, set_user_app_perm } from "@/api/user_app";
 
 interface AppStoreItemProps {
     appInfo: AppInfo;
@@ -23,7 +24,7 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
     const [showDetailModal, setShowDetailModal] = useState(false);
 
     const addAppToProject = async () => {
-        const addRes = await request(add_app({
+        const addRes = await request(add_app_to_project({
             session_id: userStore.sessionId,
             basic_info: {
                 project_id: projectStore.curProjectId,
@@ -40,6 +41,28 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
             app_id: addRes.app_id,
             perm: {
                 ...appPerm,
+            },
+        }));
+        setShowDetailModal(false);
+        props.onAddApp();
+        message.info(`添加应用${props.appInfo.base_info.app_name}成功`);
+    };
+
+    const addAppToUser = async () => {
+        const addRes = await request(add_app_to_user({
+            session_id: userStore.sessionId,
+            basic_info: {
+                app_name: props.appInfo.base_info.app_name,
+                icon_file_id: props.appInfo.base_info.icon_file_id,
+                app_id_in_store: props.appInfo.app_id,
+            },
+        }));
+        await request(set_user_app_perm({
+            session_id: userStore.sessionId,
+            app_id: addRes.app_id,
+            perm: {
+                net_perm: props.appInfo.app_perm.net_perm,
+                fs_perm: props.appInfo.app_perm.fs_perm,
             },
         }));
         setShowDetailModal(false);
@@ -83,7 +106,11 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
                     onOk={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        addAppToProject();
+                        if (projectStore.curProjectId != "") {
+                            addAppToProject();
+                        } else {
+                            addAppToUser();
+                        }
                     }}>
                     <Descriptions bordered>
                         <Descriptions.Item label="一级分类">{props.appInfo.major_cate.cate_name}</Descriptions.Item>

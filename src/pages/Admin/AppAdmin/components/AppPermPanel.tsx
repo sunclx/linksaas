@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import type { AppPerm } from "@/api/appstore";
 import type { CheckboxOptionType } from 'antd';
 import { InfoCircleOutlined } from "@ant-design/icons";
+import { useLocation } from "react-router-dom";
+import { APP_PROJECT_PATH } from "@/utils/constant";
 
 
 const netOptionList: CheckboxOptionType[] = [
@@ -84,6 +86,8 @@ interface AppPermPanelProps {
 }
 
 const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
+    const location = useLocation();
+
     const tmpNetValues: string[] = [];
     const tmpMemberValues: string[] = [];
     const tmpIssueValues: string[] = [];
@@ -204,7 +208,7 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
     };
 
     return (
-        <Card title={props.showTitle?"微应用权限":null} bordered={false}>
+        <Card title={props.showTitle ? "微应用权限" : null} bordered={false}>
             <Form labelCol={{ span: 5 }}>
                 <Form.Item label="网络权限">
                     <Checkbox.Group disabled={props.disable} options={netOptionList} value={netValues}
@@ -213,27 +217,31 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
                             calcPerm(values as string[], memberValues, issueValues, eventValues, fsValues);
                         }} />
                 </Form.Item>
-                <Form.Item label="项目成员权限">
-                    <Checkbox.Group disabled={props.disable} options={memberOptionList} value={memberValues}
-                        onChange={values => {
-                            setMemberValues(values as string[]);
-                            calcPerm(netValues, values as string[], issueValues, eventValues, fsValues);
-                        }} />
-                </Form.Item>
-                <Form.Item label="工单权限">
-                    <Checkbox.Group disabled={props.disable} options={issueOptionList} value={issueValues}
-                        onChange={values => {
-                            setIssueValues(values as string[]);
-                            calcPerm(netValues, memberValues, values as string[], eventValues, fsValues);
-                        }} />
-                </Form.Item>
-                <Form.Item label="事件权限">
-                    <Checkbox.Group disabled={props.disable} options={eventOptionList} value={eventValues}
-                        onChange={values => {
-                            setEventValues(values as string[]);
-                            calcPerm(netValues, memberValues, issueValues, values as string[], fsValues);
-                        }} />
-                </Form.Item>
+                {location.pathname.startsWith(APP_PROJECT_PATH) && (
+                    <>
+                        <Form.Item label="项目成员权限">
+                            <Checkbox.Group disabled={props.disable} options={memberOptionList} value={memberValues}
+                                onChange={values => {
+                                    setMemberValues(values as string[]);
+                                    calcPerm(netValues, values as string[], issueValues, eventValues, fsValues);
+                                }} />
+                        </Form.Item>
+                        <Form.Item label="工单权限">
+                            <Checkbox.Group disabled={props.disable} options={issueOptionList} value={issueValues}
+                                onChange={values => {
+                                    setIssueValues(values as string[]);
+                                    calcPerm(netValues, memberValues, values as string[], eventValues, fsValues);
+                                }} />
+                        </Form.Item>
+                        <Form.Item label="事件权限">
+                            <Checkbox.Group disabled={props.disable} options={eventOptionList} value={eventValues}
+                                onChange={values => {
+                                    setEventValues(values as string[]);
+                                    calcPerm(netValues, memberValues, issueValues, values as string[], fsValues);
+                                }} />
+                        </Form.Item>
+                    </>
+                )}
                 <Form.Item label="本地文件权限">
                     <Checkbox.Group disabled={props.disable} options={fsOptionList} value={fsValues}
                         onChange={values => {
