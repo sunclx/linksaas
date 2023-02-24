@@ -40,9 +40,9 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
 
     if (props.baseInfo.icon_file_id != "") {
         if (appStore.isOsWindows) {
-            setIconUrl(`https://fs.lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
+            setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
         } else {
-            setIconUrl(`fs://lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
+            setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
         }
     }
 
@@ -61,9 +61,9 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
             const res = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", selectd, ""));
             setIconFileId(res.file_id);
             if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
+                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
             } else {
-                setIconUrl(`fs://lcalhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
+                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
             }
         }
     };

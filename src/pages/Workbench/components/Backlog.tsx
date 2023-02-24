@@ -160,13 +160,13 @@ const Backlog: React.FC<BacklogProps> = (props) => {
       title: `名称`,
       ellipsis: true,
       dataIndex: ['basic_info', 'title'],
-      width: 150,
+      width: 250,
       render: (v: string, row: IssueInfo) => renderTitle(row),
     },
     {
       title: "关联需求",
       ellipsis: true,
-      width: 150,
+      width: 250,
       render: (_, row: IssueInfo) => (
         <>
           {row.requirement_id == "" && "-"}
@@ -270,7 +270,7 @@ const Backlog: React.FC<BacklogProps> = (props) => {
             style={{ marginTop: '8px' }}
             rowKey={'issue_id'}
             columns={columns}
-            scroll={{ x: 1000 }}
+            scroll={{ x: 1300 }}
             dataSource={dataSource}
             pagination={false}
           />

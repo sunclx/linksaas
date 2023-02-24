@@ -33,13 +33,14 @@ const Workbench: React.FC = () => {
 
   let tab = urlParams.get('tab');
   if (tab == null) {
-    tab = "myIssue";
+    tab = "myProject";
   }
   const spaceId = urlParams.get("spaceId");
 
   const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
   const [activeKey, setActiveKey] = useState(tab);
   const [curKbSpace, setCurKbSpace] = useState<KbSpaceInfo | null>(null);
+  const [userChangeTab, setUserChangeTab] = useState(false);
 
   useMemo(() => {
     projectStore.setCurProjectId('');
@@ -47,9 +48,11 @@ const Workbench: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (projectStore.projectList.length == 0) {
-      if (["myIssue", "myEvent"].includes(activeKey)) {
-        setActiveKey("myProject");
+    if (userChangeTab == false) {
+      if (projectStore.projectList.length == 0) {
+          setActiveKey("myProject");
+      } else {
+        setActiveKey("myIssue");
       }
     }
   }, [projectStore.projectList]);
@@ -60,6 +63,7 @@ const Workbench: React.FC = () => {
         {!userStore.isResetPassword && <InfoCount total={totalMyIssueCount} />}
       </Card>
       <Tabs activeKey={activeKey} className={s.my_wrap} type="card" onChange={key => {
+        setUserChangeTab(true);
         setActiveKey(key);
         setCurKbSpace(null);
       }}
