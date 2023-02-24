@@ -19,6 +19,7 @@ import type { KbSpaceInfo } from '@/api/user_kb';
 import type { UserDocState } from '../UserExtend/UserKb/UserDoc';
 import { runInAction } from 'mobx';
 import MyProjectList from './components/MyProjectList';
+import UserAppList from './components/UserAppList';
 
 
 const Workbench: React.FC = () => {
@@ -137,6 +138,13 @@ const Workbench: React.FC = () => {
               <UserDocSpaceList onChange={kbSpace => setCurKbSpace(kbSpace)} spaceId={spaceId ?? userStore.userInfo.defaultKbSpaceId} />
             </div>
           )}
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;我的微应用</h2>} key="userApp">
+        {activeKey == "userApp" && (
+          <div className={s.content_wrap}>
+            <UserAppList/>
+          </div>
+        )}
         </Tabs.TabPane>
         <Tabs.TabPane tab={<h2><ProjectOutlined />&nbsp;我的项目</h2>} key="myProject">
           {activeKey == "myProject" && (

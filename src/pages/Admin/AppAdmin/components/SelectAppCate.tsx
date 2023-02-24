@@ -60,8 +60,8 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
 
     return (
         <Form layout="inline">
-            <Form.Item label="一级分类">
-                <Select style={{ width: 60 }} value={curMajorCateId} onChange={value => {
+            <Form.Item label="应用分类">
+                <Select style={{ width: 80 }} value={curMajorCateId} onChange={value => {
                     setCurMajorCateId(value);
                     props.onChange(value ?? "", "", "");
                 }}>
@@ -71,8 +71,8 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
                     ))}
                 </Select>
             </Form.Item>
-            <Form.Item label="二级分类">
-                <Select style={{ width: 60 }} value={curMinorCateId} onChange={value => {
+            <Form.Item label="::">
+                <Select style={{ width: 80 }} value={curMinorCateId} onChange={value => {
                     setCurMinorCateId(value);
                     props.onChange(curMajorCateId ?? "", value ?? "", "");
                 }}>
@@ -82,8 +82,8 @@ const SelectAppCate: React.FC<SelectAppCateProps> = (props) => {
                     ))}
                 </Select>
             </Form.Item>
-            <Form.Item label="三级分类">
-                <Select style={{ width: 60 }} value={curSubMinorCateId} onChange={value => {
+            <Form.Item label="::">
+                <Select style={{ width: 80 }} value={curSubMinorCateId} onChange={value => {
                     setCurSubMinorCateId(value);
                     props.onChange(curMajorCateId ?? "", curMinorCateId ?? "", value ?? "");
                 }}>
