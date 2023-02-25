@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import CardWrap from '@/components/CardWrap';
 import { observer } from 'mobx-react';
-import s from './index.module.less';
+import s from './LocalApi.module.less';
 import { useStores } from "@/hooks";
 import { get_port } from "@/api/local_api";
 import { request } from '@/utils/request';
 import { get_local_api_token, remove_local_api_token, renew_local_api_token } from '@/api/project';
 import Button from "@/components/Button";
 import { WarningTwoTone } from "@ant-design/icons";
-import { Input, Modal, Space, message } from "antd";
+import { Card, Input, Modal, Space, message } from "antd";
 import { writeText } from '@tauri-apps/api/clipboard';
 import { WebviewWindow } from '@tauri-apps/api/window';
 import { PROTO } from "@/pages/LocalApi/proto";
@@ -83,17 +82,16 @@ const LocalApi = () => {
     }, []);
 
     return (
-        <CardWrap title="项目接口" halfContent>
+        <Card bordered={false} extra={
+            <Button
+                title={port == 0 ? "本地服务没有启动" : ""}
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    openApiConsole();
+                }} disabled={port == 0}>调试接口</Button>
+        }>
             <div className={s.content_wrap}>
-                <div className={s.api_btn_wrap}>
-                    <Button
-                        title={port == 0 ? "本地服务没有启动" : ""}
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            openApiConsole();
-                        }} disabled={port == 0}>调试接口</Button>
-                </div>
                 <div>
                     <div className={s.info_wrap}>
                         <div className={s.info_label}>项目ID：</div>
@@ -190,7 +188,7 @@ const LocalApi = () => {
                 {projectStore.isAdmin && (
                     <>
                         <h2 className={s.head}>接口权限</h2>
-                        <LocalApiPermInfo/>
+                        <LocalApiPermInfo />
                     </>
                 )}
                 <h2 className={s.head}>相关项目</h2>
@@ -230,7 +228,7 @@ const LocalApi = () => {
                     <p><WarningTwoTone twoToneColor="red" />&nbsp;删除令牌后，当前项目的数据将不能通过接口获取</p>
                 </Modal>
             )}
-        </CardWrap>
+        </Card>
     );
 };
 

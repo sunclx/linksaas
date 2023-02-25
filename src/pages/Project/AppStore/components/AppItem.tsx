@@ -160,6 +160,14 @@ const AppItem: React.FC<AppItemProps> = (props) => {
         await openMinApp(appStore.clientCfg?.app_store_fs_id ?? "", appRes.app_info.file_id);
     };
 
+    const adjustUrl = (url: string) => {
+        if (appStore.isOsWindows) {
+            return url.replace("lcalhost","localhost").replace("fs://localhost/", "https://fs.localhost/");
+        } else {
+            return url.replace("lcalhost","localhost").replace("https://fs.localhost/", "fs://localhost/");
+        }
+    }
+
     return (
         <Card title={props.appInfo.basic_info.app_name} bordered={false} extra={
             <Popover content={
@@ -188,7 +196,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
         }>
             <Image
                 style={{ width: "80px", cursor: "pointer" }}
-                src={props.appInfo.basic_info.app_icon_url}
+                src={adjustUrl(props.appInfo.basic_info.app_icon_url)}
                 alt={""}
                 preview={false}
                 fallback={defaultIcon}
@@ -207,7 +215,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
             {minAppPerm != null && (
                 <Modal open
                     title={`${projectStore.isAdmin ? "修改权限" : "查看权限"}`}
-                    okText="修改权限"
+                    okText={`${projectStore.isAdmin ? "修改权限" : "确定"}`}
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();

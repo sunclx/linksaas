@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import s from './index.module.less';
+import s from './LocalApi.module.less';
 import { Switch } from 'antd';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';

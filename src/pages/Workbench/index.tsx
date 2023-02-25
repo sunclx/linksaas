@@ -19,6 +19,7 @@ import type { KbSpaceInfo } from '@/api/user_kb';
 import type { UserDocState } from '../UserExtend/UserKb/UserDoc';
 import { runInAction } from 'mobx';
 import MyProjectList from './components/MyProjectList';
+import UserAppList from './components/UserAppList';
 
 
 const Workbench: React.FC = () => {
@@ -33,13 +34,14 @@ const Workbench: React.FC = () => {
 
   let tab = urlParams.get('tab');
   if (tab == null) {
-    tab = "myIssue";
+    tab = "myProject";
   }
   const spaceId = urlParams.get("spaceId");
 
   const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
   const [activeKey, setActiveKey] = useState(tab);
   const [curKbSpace, setCurKbSpace] = useState<KbSpaceInfo | null>(null);
+  const [userChangeTab, setUserChangeTab] = useState(false);
 
   useMemo(() => {
     projectStore.setCurProjectId('');
@@ -47,9 +49,11 @@ const Workbench: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (projectStore.projectList.length == 0) {
-      if (["myIssue", "myEvent"].includes(activeKey)) {
-        setActiveKey("myProject");
+    if (userChangeTab == false) {
+      if (projectStore.projectList.length == 0) {
+          setActiveKey("myProject");
+      } else {
+        setActiveKey("myIssue");
       }
     }
   }, [projectStore.projectList]);
@@ -60,6 +64,7 @@ const Workbench: React.FC = () => {
         {!userStore.isResetPassword && <InfoCount total={totalMyIssueCount} />}
       </Card>
       <Tabs activeKey={activeKey} className={s.my_wrap} type="card" onChange={key => {
+        setUserChangeTab(true);
         setActiveKey(key);
         setCurKbSpace(null);
       }}
@@ -133,6 +138,13 @@ const Workbench: React.FC = () => {
               <UserDocSpaceList onChange={kbSpace => setCurKbSpace(kbSpace)} spaceId={spaceId ?? userStore.userInfo.defaultKbSpaceId} />
             </div>
           )}
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;我的微应用</h2>} key="userApp">
+        {activeKey == "userApp" && (
+          <div className={s.content_wrap}>
+            <UserAppList/>
+          </div>
+        )}
         </Tabs.TabPane>
         <Tabs.TabPane tab={<h2><ProjectOutlined />&nbsp;我的项目</h2>} key="myProject">
           {activeKey == "myProject" && (

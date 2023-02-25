@@ -5,7 +5,7 @@
   bottom: 0;
   z-index: 500;
   width: 59px;
-  overflow: auto;
+  overflow: hidden;
   background: #f6f6f8;
   border-left: 1px solid #eaeaef;
   border-radius: 0 0 6px 0;
@@ -14,7 +14,7 @@
   .menuCurrent {
     width: 28px;
     height: 28px;
-    margin: 9px auto;
+    margin: 6px auto;
     cursor: pointer;
   }
 
@@ -22,7 +22,7 @@
     opacity: 0.6;
   }
 
-  @menuItems: home, task, bug, setting, member, invite, record, access, appraise, appstore, award, robot, repo, localapi, sprit, testcase, script, req;
+  @menuItems: home, task, bug, setting, member, invite, record, access, appraise, appstore, robot, repo, sprit, testcase, script, req;
 
   .for(@data, @i: 1) when(@i =< length(@data)) {
     @item: extract(@data, @i);
