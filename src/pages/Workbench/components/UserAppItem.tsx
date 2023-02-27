@@ -107,6 +107,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
                 list_all_event: false,
             },
             fs_perm: permRes.perm.fs_perm,
+            extra_perm: permRes.perm.extra_perm,
         });
     };
 

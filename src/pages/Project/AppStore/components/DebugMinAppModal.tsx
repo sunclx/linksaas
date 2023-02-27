@@ -42,6 +42,9 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             read_file: false,
             write_file: false,
         },
+        extra_perm: {
+            cross_origin_isolated: false,
+        }
     });
 
     const choicePath = async () => {
@@ -101,7 +104,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                 startDebug();
             }}>
             <Form>
-            <Form.Item label="应用方式">
+                <Form.Item label="应用方式">
                     <Radio.Group value={useUrl} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -121,18 +124,18 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                     </Form.Item>
                 )}
                 {useUrl == false && (
-                <Form.Item label="本地路径">
-                    <Input value={localPath} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setLocalPath(e.target.value);
-                    }}
-                        addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
+                    <Form.Item label="本地路径">
+                        <Input value={localPath} onChange={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            choicePath();
-                        }} />} />
-                </Form.Item>
+                            setLocalPath(e.target.value);
+                        }}
+                            addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                choicePath();
+                            }} />} />
+                    </Form.Item>
                 )}
             </Form>
             <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} showTitle />

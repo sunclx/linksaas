@@ -48,12 +48,18 @@ export type MinAppFsPerm = {
     write_file: boolean;
 };
 
+export type MinAppExtraPerm = {
+    cross_origin_isolated: boolean;
+};
+
+
 export type MinAppPerm = {
     net_perm: MinAppNetPerm;
     member_perm: MinAppMemberPerm;
     issue_perm: MinAppIssuePerm;
     event_perm: MinAppEventPerm;
     fs_perm: MinAppFsPerm;
+    extra_perm: MinAppExtraPerm;
 };
 
 export type ListRequest = {
