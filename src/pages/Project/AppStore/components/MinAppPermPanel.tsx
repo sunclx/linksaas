@@ -76,6 +76,25 @@ const fsOptionList: CheckboxOptionType[] = [
     },
 ];
 
+const extraOptionList: CheckboxOptionType[] = [
+    {
+        label: (
+            <Space size="small">
+                <span>crossOriginIsolated</span>
+                <Popover content={
+                    <div style={{ padding: "10px 10px" }}>
+                        设置windows.crossOriginIsolated为true
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/API/crossOriginIsolated" target="_blank" rel="noreferrer">详细信息</a>。
+                    </div>
+                }>
+                    <InfoCircleOutlined style={{ color: "blue" }} />
+                </Popover>
+            </Space>
+        ),
+        value: "cross_origin_isolated",
+    },
+];
+
 interface MinAppPermPanelProps {
     disable: boolean;
     showTitle: boolean;
@@ -89,6 +108,7 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
     const tmpIssueValues: string[] = [];
     const tmpEventValues: string[] = [];
     const tmpFsValues: string[] = [];
+    const tmpExtraValues: string[] = [];
 
     if (props.perm != undefined) {
 
@@ -131,6 +151,10 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
         if (props.perm.fs_perm.write_file) {
             tmpFsValues.push("write_file");
         }
+
+        if (props.perm.extra_perm.cross_origin_isolated) {
+            tmpExtraValues.push("cross_origin_isolated");
+        }
     }
 
     const [netValues, setNetValues] = useState<string[]>(tmpNetValues);
@@ -138,8 +162,9 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
     const [issueValues, setIssueValues] = useState<string[]>(tmpIssueValues);
     const [eventValues, setEventValues] = useState<string[]>(tmpEventValues);
     const [fsValues, setFsValues] = useState<string[]>(tmpFsValues);
+    const [extraValues, setExtraValues] = useState<string[]>(tmpExtraValues);
 
-    const calcPerm = (netPermList: string[], memberPermList: string[], issuePermList: string[], eventPermList: string[], fsPermList: string[]) => {
+    const calcPerm = (netPermList: string[], memberPermList: string[], issuePermList: string[], eventPermList: string[], fsPermList: string[],extraPermList: string[]) => {
         const tempPerm: MinAppPerm = {
             net_perm: {
                 cross_domain_http: false,
@@ -162,6 +187,9 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
                 read_file: false,
                 write_file: false,
             },
+            extra_perm: {
+                cross_origin_isolated:false,
+            }
         };
         netPermList.forEach(permStr => {
             if (permStr == "cross_domain_http") {
@@ -200,6 +228,11 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
                 tempPerm.fs_perm.write_file = true;
             }
         })
+        extraPermList.forEach(permStr => {
+            if (permStr == "cross_origin_isolated") {
+                tempPerm.extra_perm.cross_origin_isolated = true;
+            }
+        });
         props.onChange(tempPerm);
     };
 
@@ -210,35 +243,42 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
                     <Checkbox.Group disabled={props.disable} options={netOptionList} value={netValues}
                         onChange={values => {
                             setNetValues(values as string[]);
-                            calcPerm(values as string[], memberValues, issueValues, eventValues, fsValues);
+                            calcPerm(values as string[], memberValues, issueValues, eventValues, fsValues,extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="项目成员权限">
                     <Checkbox.Group disabled={props.disable} options={memberOptionList} value={memberValues}
                         onChange={values => {
                             setMemberValues(values as string[]);
-                            calcPerm(netValues, values as string[], issueValues, eventValues, fsValues);
+                            calcPerm(netValues, values as string[], issueValues, eventValues, fsValues,extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="工单权限">
                     <Checkbox.Group disabled={props.disable} options={issueOptionList} value={issueValues}
                         onChange={values => {
                             setIssueValues(values as string[]);
-                            calcPerm(netValues, memberValues, values as string[], eventValues, fsValues);
+                            calcPerm(netValues, memberValues, values as string[], eventValues, fsValues,extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="事件权限">
                     <Checkbox.Group disabled={props.disable} options={eventOptionList} value={eventValues}
                         onChange={values => {
                             setEventValues(values as string[]);
-                            calcPerm(netValues, memberValues, issueValues, values as string[], fsValues);
+                            calcPerm(netValues, memberValues, issueValues, values as string[], fsValues,extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="本地文件权限">
                     <Checkbox.Group disabled={props.disable} options={fsOptionList} value={fsValues}
                         onChange={values => {
                             setFsValues(values as string[]);
-                            calcPerm(netValues, memberValues, issueValues, eventValues, values as string[]);
+                            calcPerm(netValues, memberValues, issueValues, eventValues, values as string[],extraValues);
+                        }} />
+                </Form.Item>
+                <Form.Item label="其他权限">
+                    <Checkbox.Group disabled={props.disable} options={extraOptionList} value={extraValues}
+                        onChange={values => {
+                            setExtraValues(values as string[]);
+                            calcPerm(netValues, memberValues, issueValues, eventValues, fsValues, values as string[]);
                         }} />
                 </Form.Item>
             </Form>

@@ -21,9 +21,15 @@ export type UserAppFsPerm = {
     write_file: boolean;
 };
 
+export type UserAppExtraPerm = {
+    cross_origin_isolated: boolean;
+};
+
+
 export type UserAppPerm = {
     net_perm: UserAppNetPerm;
     fs_perm: UserAppFsPerm;
+    extra_perm: UserAppExtraPerm;
 };
 
 export type ListRequest = {

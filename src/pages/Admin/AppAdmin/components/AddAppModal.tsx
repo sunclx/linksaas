@@ -54,6 +54,9 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             read_file: false,
             write_file: false,
         },
+        extra_perm: {
+            cross_origin_isolated: false,
+        }
     });
 
     const [iconFileId, setIconFileId] = useState("");
