@@ -28,9 +28,7 @@
         "icons/icon.ico"
       ],
       "resources": [],
-      "externalBin": [
-        "bin/shell"
-      ],
+      "externalBin": [],
       "copyright": "",
       "category": "DeveloperTool",
       "shortDescription": "",
