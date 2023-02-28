@@ -1,19 +1,8 @@
-use image::codecs::bmp::BmpEncoder;
 use image::codecs::png::PngEncoder;
 use image::imageops::resize;
 use image::io::Reader as ImageReader;
 use image::{ColorType, EncodableLayout, ImageEncoder, RgbaImage};
 use std::vec::Vec;
-
-pub fn encode_to_bmp(img: RgbaImage) -> Result<Vec<u8>, String> {
-    let mut ret_data: Vec<u8> = Vec::new();
-    let (w, h) = (&img).dimensions();
-    let encoder = BmpEncoder::new(&mut ret_data);
-    if let Ok(_) = encoder.write_image(img.as_bytes(), w, h, ColorType::Rgba8) {
-        return Ok(ret_data);
-    }
-    return Err("encode failed".into());
-}
 
 pub fn encode_to_png(img: RgbaImage) -> Result<Vec<u8>, String> {
     let mut ret_data: Vec<u8> = Vec::new();

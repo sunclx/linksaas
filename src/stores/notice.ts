@@ -166,15 +166,13 @@ class NoticeStore {
 
   private processClientNotice(notice: NoticeType.client.AllNotice) {
     if (notice.WrongSessionNotice !== undefined) {
-      if (notice.WrongSessionNotice.name.indexOf("snap") == -1) { //忽略快照相关接口报错
-        if (this.rootStore.userStore.adminSessionId != "") {
-          runInAction(() => {
-            this.rootStore.userStore.adminSessionId = "";
-          });
-          this.history.push(USER_LOGIN_PATH);
-        } else {
-          this.rootStore.userStore.logout();
-        }
+      if (this.rootStore.userStore.adminSessionId != "") {
+        runInAction(() => {
+          this.rootStore.userStore.adminSessionId = "";
+        });
+        this.history.push(USER_LOGIN_PATH);
+      } else {
+        this.rootStore.userStore.logout();
       }
     } else if (notice.SwitchUserNotice !== undefined) {
       this.rootStore.userStore.logout();
