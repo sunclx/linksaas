@@ -69,27 +69,6 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_MARK_MAP: {
       return <widgets.MarkmapWidget {...widgetProps} />;
     }
-    case widgets.WIDGET_TYPE_MYSQL_QUERY: {
-      return <widgets.MysqlQueryWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_MONGO_QUERY: {
-      return <widgets.MongoQueryWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_GITLAB_LIST_GROUP: {
-      return <widgets.GitlabListGroupWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_GITLAB_LIST_PROJECT: {
-      return <widgets.GitlabListProjectWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_GITLAB_LIST_WIKI: {
-      return <widgets.GitlabListWikiWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_GITLAB_LIST_COMMIT: {
-      return <widgets.GitlabListCommitWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_GITLAB_LIST_ISSUE: {
-      return <widgets.GitlabListIssueWidget {...widgetProps} />;
-    }
     case widgets.WIDGET_TYPE_SURVEY_CHOICE: {
       return <widgets.SurveyChoiceWidget {...widgetProps} />;
     }

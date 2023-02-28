@@ -31,13 +31,6 @@ import {
   WIDGET_TYPE_TIME_RANGE,
   WIDGET_TYPE_MERMAID,
   WIDGET_TYPE_MARK_MAP,
-  // WIDGET_TYPE_MYSQL_QUERY,
-  // WIDGET_TYPE_MONGO_QUERY,
-  WIDGET_TYPE_GITLAB_LIST_GROUP,
-  WIDGET_TYPE_GITLAB_LIST_PROJECT,
-  WIDGET_TYPE_GITLAB_LIST_WIKI,
-  WIDGET_TYPE_GITLAB_LIST_COMMIT,
-  WIDGET_TYPE_GITLAB_LIST_ISSUE,
   WIDGET_TYPE_SURVEY_CHOICE,
   WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
@@ -409,38 +402,6 @@ const ContentWidget = observer(() => {
             {
               key: WIDGET_TYPE_SWAGGER,
               label: 'swagger',
-            },
-          ],
-        },
-        {
-          key: 'data',
-          label: '数据获取',
-          children: [
-            {
-              key: 'gitlab',
-              label: 'gitlab',
-              children: [
-                {
-                  key: WIDGET_TYPE_GITLAB_LIST_GROUP,
-                  label: '列出项目组',
-                },
-                {
-                  key: WIDGET_TYPE_GITLAB_LIST_PROJECT,
-                  label: '列出项目',
-                },
-                {
-                  key: WIDGET_TYPE_GITLAB_LIST_WIKI,
-                  label: '列出WIKI',
-                },
-                {
-                  key: WIDGET_TYPE_GITLAB_LIST_COMMIT,
-                  label: '列出COMMIT',
-                },
-                {
-                  key: WIDGET_TYPE_GITLAB_LIST_ISSUE,
-                  label: '列出工单',
-                },
-              ],
             },
           ],
         },
