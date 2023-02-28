@@ -633,11 +633,6 @@ const AddCode = () => {
   );
 };
 
-const AddFortuneSheet = () => {
-  const commands = useCommands();
-
-  return <div className="table-btn" onClick={() => commands.insertFortuneSheet()} />;
-};
 
 export interface NewCommItemParam {
   fsId: string;
@@ -670,7 +665,6 @@ export const newCommItem = (param: NewCommItemParam) => {
         ...items,
         <AddCode key="code" />,
         <AddExcaliDraw key="excaliDraw" />,
-        <AddFortuneSheet key="sheet" />,
       ]}
       separator={true} />
   );
