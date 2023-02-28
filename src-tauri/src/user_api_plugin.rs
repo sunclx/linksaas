@@ -1,14 +1,10 @@
 use crate::notice_decode::{
-    decode_notice, earthly::Notice as EarthlyNotice, new_upload_snap_shot_notice,
+    decode_notice, earthly::Notice as EarthlyNotice, 
     new_wrong_session_notice, robot::Notice as RobotNotice, script::Notice as ScriptNotice,
     NoticeMessage,
 };
 use prost::Message;
-use proto_gen_rust::fs_api::{FileOwnerType, SetFileOwnerRequest};
 use proto_gen_rust::google::protobuf::Any;
-use proto_gen_rust::project_member_api::{
-    get_work_snap_shot_status_response, GetWorkSnapShotStatusRequest, UploadWorkSnapShotRequest,
-};
 use proto_gen_rust::user_api::user_api_client::UserApiClient;
 use proto_gen_rust::user_api::*;
 use rumqttc::AsyncClient as MqttClient;
@@ -32,9 +28,6 @@ pub struct CurUserId(pub Mutex<Option<String>>);
 
 #[derive(Default)]
 struct CurNoticeClient(Mutex<Option<MqttClient>>);
-
-#[derive(Default)]
-struct CurWorkSnapShotProject(Mutex<Option<String>>);
 
 #[tauri::command]
 async fn gen_captcha<R: Runtime>(
@@ -121,241 +114,6 @@ async fn keep_alive<R: Runtime>(app_handle: &AppHandle<R>) {
                         }
                     }
                 }
-            }
-        }
-    });
-}
-
-struct CheckSnapShotResult {
-    pub need_snap_shot: bool,
-    pub fs_id: String,
-}
-
-async fn check_need_snap_shot<R: Runtime>(
-    app_handle: &AppHandle<R>,
-    window: &Window<R>,
-    session_id: String,
-    project_id: String,
-) -> CheckSnapShotResult {
-    //检查是否需要做工作快照
-    let last_snap_info_res = crate::project_member_api_plugin::get_work_snap_shot_status(
-        app_handle.clone(),
-        window.clone(),
-        GetWorkSnapShotStatusRequest {
-            session_id: session_id.clone(),
-            project_id: project_id.clone(),
-        },
-    )
-    .await;
-    if last_snap_info_res.is_err() {
-        println!("{:?}", last_snap_info_res.err().unwrap());
-        return CheckSnapShotResult {
-            need_snap_shot: false,
-            fs_id: "".into(),
-        };
-    }
-    let last_snap_info = last_snap_info_res.unwrap();
-    if last_snap_info.code != get_work_snap_shot_status_response::Code::Ok as i32 {
-        return CheckSnapShotResult {
-            need_snap_shot: false,
-            fs_id: "".into(),
-        };
-    }
-    if last_snap_info.work_snap_shot_info.is_none() {
-        return CheckSnapShotResult {
-            need_snap_shot: false,
-            fs_id: "".into(),
-        };
-    }
-    let work_snap_config = last_snap_info.work_snap_shot_info.unwrap();
-    // println!("work snap shot config:{:?}", work_snap_config.clone());
-    if !work_snap_config.enable {
-        return CheckSnapShotResult {
-            need_snap_shot: false,
-            fs_id: "".into(),
-        };
-    }
-
-    let now = std::time::SystemTime::now();
-    let now_timestamp = now.duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
-
-    if now_timestamp - ((last_snap_info.last_time_stamp / 1000) as u64)
-        < work_snap_config.interval as u64
-    {
-        println!(
-            "time diff {} {}",
-            now_timestamp - ((last_snap_info.last_time_stamp / 1000) as u64),
-            work_snap_config.interval
-        );
-        return CheckSnapShotResult {
-            need_snap_shot: false,
-            fs_id: "".into(),
-        };
-    }
-    return CheckSnapShotResult {
-        need_snap_shot: true,
-        fs_id: last_snap_info.fs_id,
-    };
-}
-
-async fn exec_snap_shot<R: Runtime>(
-    app_handle: &AppHandle<R>,
-    window: &Window<R>,
-    session_id: String,
-    project_id: String,
-    fs_id: String,
-) {
-    let img_list = crate::image_utils::capture_screen_data(true, 2.0);
-    if img_list.is_err() {
-        println!("{:?}", img_list.err().unwrap());
-        return;
-    }
-    let img_list = img_list.unwrap();
-    for img in img_list {
-        //生成缩略图,200*150
-        let thumbnial_img =
-            image::imageops::resize(&img, 200, 150, image::imageops::FilterType::Nearest);
-        let img_png = crate::image_utils::encode_to_png(img);
-        if img_png.is_err() {
-            println!("{:?}", img_png.err().unwrap());
-            return;
-        }
-        let thumbnial_img_png = crate::image_utils::encode_to_png(thumbnial_img);
-        if thumbnial_img_png.is_err() {
-            println!("{:?}", thumbnial_img_png.err().unwrap());
-            return;
-        }
-        //上传文件
-        let img_res = crate::fs_api_plugin::write_file_data(
-            app_handle.clone(),
-            window.clone(),
-            "".into(),
-            session_id.clone(),
-            fs_id.clone(),
-            format!("{}.png", Uuid::new_v4().to_string()),
-            img_png.unwrap(),
-        )
-        .await;
-        if img_res.is_err() {
-            println!("{:?}", img_res.err().unwrap());
-            return;
-        }
-        let img_res = img_res.unwrap();
-        let thumbnial_img_res = crate::fs_api_plugin::write_file_data(
-            app_handle.clone(),
-            window.clone(),
-            "".into(),
-            session_id.clone(),
-            fs_id.clone(),
-            format!("{}.png", Uuid::new_v4().to_string()),
-            thumbnial_img_png.unwrap(),
-        )
-        .await;
-        if thumbnial_img_res.is_err() {
-            println!("{:?}", thumbnial_img_res.err().unwrap());
-            return;
-        }
-        let thumbnial_img_res = thumbnial_img_res.unwrap();
-        //设置文件owner
-        if let Err(err) = crate::fs_api_plugin::set_file_owner(
-            app_handle.clone(),
-            window.clone(),
-            SetFileOwnerRequest {
-                session_id: session_id.clone(),
-                fs_id: fs_id.clone(),
-                file_id: img_res.clone().file_id,
-                owner_type: FileOwnerType::WorkSnapshot as i32,
-                owner_id: project_id.clone(),
-            },
-        )
-        .await
-        {
-            println!("{}", err);
-            return;
-        }
-        if let Err(err) = crate::fs_api_plugin::set_file_owner(
-            app_handle.clone(),
-            window.clone(),
-            SetFileOwnerRequest {
-                session_id: session_id.clone(),
-                fs_id: fs_id.clone(),
-                file_id: thumbnial_img_res.clone().file_id,
-                owner_type: FileOwnerType::WorkSnapshot as i32,
-                owner_id: project_id.clone(),
-            },
-        )
-        .await
-        {
-            println!("{}", err);
-            return;
-        }
-        //增加snap shot事件
-        if let Err(upload_res) = crate::project_member_api_plugin::upload_work_snap_shot(
-            app_handle.clone(),
-            window.clone(),
-            UploadWorkSnapShotRequest {
-                session_id: session_id.clone(),
-                project_id: project_id.clone(),
-                fs_id: fs_id.clone(),
-                file_id: img_res.file_id,
-                thumb_file_id: thumbnial_img_res.file_id,
-            },
-        )
-        .await
-        {
-            println!("{}", upload_res);
-            return;
-        }
-        println!("upload snap shot success");
-    }
-    //发送notice
-    let res = window.emit("notice", new_upload_snap_shot_notice(project_id.clone()));
-    if res.is_err() {
-        println!("{:?}", res);
-    }
-}
-
-async fn run_work_snap_shot<R: Runtime>(app_handle: &AppHandle<R>) {
-    let handle = app_handle.clone();
-    tauri::async_runtime::spawn(async move {
-        loop {
-            let mut session_id = String::from("");
-            {
-                let cur_value = (&handle).state::<CurSession>().inner();
-                let cur_session = cur_value.0.lock().await;
-                if let Some(cur_session_id) = cur_session.clone() {
-                    session_id = cur_session_id;
-                }
-            }
-            if &session_id == "" {
-                sleep(Duration::from_secs(60)).await;
-                continue;
-            }
-
-            let cur_value = (&handle).state::<CurWorkSnapShotProject>().inner();
-            let cur_snap_item = cur_value.0.lock().await;
-            if let Some(cur_snap_item) = cur_snap_item.clone() {
-                let window = handle.get_window("main").unwrap();
-                let snap_shot_res = check_need_snap_shot(
-                    &handle,
-                    &window,
-                    session_id.clone(),
-                    cur_snap_item.clone(),
-                )
-                .await;
-                if !(snap_shot_res.need_snap_shot) {
-                    sleep(Duration::from_secs(60)).await;
-                    continue;
-                }
-                exec_snap_shot(
-                    &handle,
-                    &window,
-                    session_id.clone(),
-                    cur_snap_item.clone(),
-                    snap_shot_res.fs_id,
-                )
-                .await;
-                sleep(Duration::from_secs(120)).await;
             }
         }
     });
@@ -684,17 +442,6 @@ pub async fn get_user_id_inner(app_handle: &AppHandle) -> String {
     return "".into();
 }
 
-#[tauri::command]
-async fn set_cur_work_snapshot<R: Runtime>(app_handle: AppHandle<R>, project_id: String) {
-    println!("set cur work snapshot for project {}", &project_id);
-    let cur_value = app_handle.state::<CurWorkSnapShotProject>().inner();
-    if (&project_id).is_empty() {
-        *cur_value.0.lock().await = None;
-    } else {
-        *cur_value.0.lock().await = Some(project_id);
-    }
-}
-
 pub struct UserApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -715,7 +462,6 @@ impl<R: Runtime> UserApiPlugin<R> {
                 check_session,
                 get_session,
                 get_user_id,
-                set_cur_work_snapshot,
             ]),
         }
     }
@@ -733,10 +479,8 @@ impl<R: Runtime> Plugin<R> for UserApiPlugin<R> {
         app.manage(CurSession(Default::default()));
         app.manage(CurUserId(Default::default()));
         app.manage(CurNoticeClient(Default::default()));
-        app.manage(CurWorkSnapShotProject(Default::default()));
         tauri::async_runtime::block_on(async {
             keep_alive(app).await;
-            run_work_snap_shot(app).await;
         });
         Ok(())
     }

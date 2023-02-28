@@ -49,11 +49,7 @@ export namespace project {
     channel_id: string;
     msg_id: string;
   };
-  export type SetWorkSnapShotNotice = {
-    project_id: string;
-    member_user_id: string;
-    enable: boolean;
-  };
+
   export type UserOnlineNotice = {
     user_id: string;
   };
@@ -94,7 +90,6 @@ export namespace project {
     RemoveChannelMemberNotice?: RemoveChannelMemberNotice;
     NewMsgNotice?: NewMsgNotice;
     UpdateMsgNotice?: UpdateMsgNotice;
-    SetWorkSnapShotNotice?: SetWorkSnapShotNotice;
     UserOnlineNotice?: UserOnlineNotice,
     UserOfflineNotice?: UserOfflineNotice,
     NewEventNotice?: NewEventNotice,
@@ -266,15 +261,10 @@ export namespace client {
     name: string;
   };
 
-  export type UploadSnapShotNotice = {
-    project_id: string;
-  };
-
   export type SwitchUserNotice = {};
 
   export type AllNotice = {
     WrongSessionNotice?: WrongSessionNotice;
-    UploadSnapShotNotice?: UploadSnapShotNotice;
     SwitchUserNotice?: SwitchUserNotice;
   };
 }

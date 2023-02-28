@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge, Input, Popover, message } from "antd";
 import { APP_PROJECT_CHAT_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
-import { DoubleRightOutlined, FolderFilled, VideoCameraOutlined } from "@ant-design/icons";
+import { DoubleRightOutlined, FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
 import type { ProjectInfo } from "@/api/project";
@@ -192,10 +192,6 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                         style={{ top: appStore.simpleMode ? "12px" : undefined, left: appStore.simpleMode ? "10px" : undefined }} />
                 }
                 {item.project_id !== projectStore.curProjectId && <FolderFilled />}
-                {item.project_id == projectStore.curProjectId &&
-                    item.project_status.work_snap_shot_enable && <VideoCameraOutlined />}
-                {item.project_id == projectStore.curProjectId &&
-                    !item.project_status.work_snap_shot_enable && <FolderFilled />}
                 <span className={cls.name} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();

@@ -84,8 +84,6 @@ pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
             event_type = "doc";
         } else if item.event_type == EventType::Disk as i32 {
             event_type = "disk";
-        } else if item.event_type == EventType::WorkSnapshot as i32 {
-            event_type = "workSnapshot";
         } else if item.event_type == EventType::App as i32 {
             event_type = "app";
         } else if item.event_type == EventType::BookShelf as i32 {
