@@ -63,6 +63,7 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
             perm: {
                 net_perm: props.appInfo.app_perm.net_perm,
                 fs_perm: props.appInfo.app_perm.fs_perm,
+                extra_perm: props.appInfo.app_perm.extra_perm,
             },
         }));
         setShowDetailModal(false);

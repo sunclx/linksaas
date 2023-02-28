@@ -490,6 +490,7 @@ async fn start_http_serv<R: Runtime>(
     app_handle: AppHandle<R>,
     label: String,
     path: String,
+    cross_origin_isolated: bool,
 ) -> Result<u16, String> {
     let root = WebRoot::new(path);
     if root.is_err() {
@@ -525,11 +526,13 @@ async fn start_http_serv<R: Runtime>(
                     let req_path = String::from(req.uri().path());
                     let content_type = String::from(get_file_type(&req_path));
                     header.insert("Content-Type", content_type.parse().unwrap());
-                    header.insert(
-                        "Cross-Origin-Embedder-Policy",
-                        "require-corp".parse().unwrap(),
-                    );
-                    header.insert("Cross-Origin-Opener-Policy", "same-origin".parse().unwrap());
+                    if cross_origin_isolated {
+                        header.insert(
+                            "Cross-Origin-Embedder-Policy",
+                            "require-corp".parse().unwrap(),
+                        );
+                        header.insert("Cross-Origin-Opener-Policy", "same-origin".parse().unwrap());
+                    }
                     let resp = resp.body(Body::from(data.unwrap())).unwrap();
                     return Ok::<_, Infallible>(resp);
                 }
@@ -597,7 +600,17 @@ async fn start<R: Runtime>(
     if request.path.starts_with("http://") {
         dest_url = request.path;
     } else {
-        let serv = start_http_serv(app_handle.clone(), request.label.clone(), request.path).await;
+        let mut cross_origin_isolated = false;
+        if let Some(extra_perm) = perm.extra_perm {
+            cross_origin_isolated = extra_perm.cross_origin_isolated;
+        }
+        let serv = start_http_serv(
+            app_handle.clone(),
+            request.label.clone(),
+            request.path,
+            cross_origin_isolated,
+        )
+        .await;
         if serv.is_err() {
             return Err(serv.err().unwrap());
         }

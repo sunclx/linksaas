@@ -63,7 +63,7 @@ const PrjTodoIssueList: React.FC<PrjTodoIssueListProps> = (props) => {
                         {issueStore.prjTodoBugList.map(item => (
                             <List.Item key={item.issue_id}>
                                 <Space size="small">
-                                    <div style={{ width: "150px" }}>
+                                    <div style={{ width: "230px" }}>
                                         <a onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
@@ -106,7 +106,7 @@ const PrjTodoIssueList: React.FC<PrjTodoIssueListProps> = (props) => {
             }}>
                 {props.issueType == ISSUE_TYPE_TASK && (
                     <>
-                        <Badge count={issueStore.prjTodoTaskList.length} className={cls.badge} dot={true} style={{ boxShadow: "none" }} /> 待办任务
+                        <Badge count={issueStore.prjTodoTaskList.length} className={cls.badge} dot={true} style={{ boxShadow: "none" }} /> 待处理任务
                     </>
                 )}
                 {props.issueType == ISSUE_TYPE_BUG && (

@@ -62,12 +62,17 @@ export type AppFsPerm = {
     write_file: boolean;
 };
 
+export type  AppExtraPerm = {
+    cross_origin_isolated: boolean;
+};
+
 export type AppPerm = {
     net_perm: AppNetPerm;
     member_perm: AppMemberPerm;
     issue_perm: AppIssuePerm;
     event_perm: AppEventPerm;
     fs_perm: AppFsPerm;
+    extra_perm: AppExtraPerm;
 };
 
 export type AppInfo = {
