@@ -4,11 +4,9 @@ import type { ProjectInfo } from '@/api/project';
 import { list as listProject, get_project as getProject } from '@/api/project';
 import { request } from '@/utils/request';
 import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
-import { set_cur_work_snapshot } from '@/api/user';
 import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
-import { get_work_snap_shot_status } from '@/api/project_member';
 import type { History } from 'history';
 
 
@@ -21,7 +19,6 @@ export class WebProjectStatus {
   undone_bug_count: number = 0;
   undone_appraise_count: number = 0;
   new_event_count: number = 0; //启动软件以来的新事件数
-  work_snap_shot_enable: boolean = false;
 
   get total_count(): number {
     return (
@@ -57,7 +54,6 @@ export default class ProjectStore {
     runInAction(() => {
       this._curProjectId = val;
     });
-    set_cur_work_snapshot(val);
     if (val !== '' && val != oldProjectId) {
       await this.rootStore.memberStore.loadMemberList(val);
       await this.rootStore.channelStore.loadChannelList(val);
@@ -159,12 +155,6 @@ export default class ProjectStore {
     );
     if (appraiseStateRes) {
       status.undone_appraise_count = appraiseStateRes.un_done_count;
-    }
-    const snapShotStateRes = await request(
-      get_work_snap_shot_status(this.rootStore.userStore.sessionId, projectId),
-    );
-    if (snapShotStateRes) {
-      status.work_snap_shot_enable = snapShotStateRes.work_snap_shot_info.enable;
     }
     return new Promise((resolve) => {
       resolve(status);
@@ -289,22 +279,6 @@ export default class ProjectStore {
         this._projectList = tmpList;
       });
     }
-  }
-
-  updateSnapShot(projectId: string, enable: boolean) {
-    const tmpList = this._projectList.slice();
-    const index = tmpList.findIndex((item) => item.project_id == projectId);
-    if (index != -1) {
-      tmpList[index].project_status.work_snap_shot_enable = enable;
-    }
-    runInAction(() => {
-      this._projectList = tmpList;
-      const prj = this._projectMap.get(projectId);
-      if (prj !== undefined) {
-        prj.project_status.work_snap_shot_enable = enable;
-        this._projectMap.set(projectId, prj);
-      }
-    });
   }
 
   removeProject(projecId: string, history: History) {

@@ -312,89 +312,6 @@ async fn get_member<R: Runtime>(
 }
 
 #[tauri::command]
-async fn set_work_snap_shot<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: SetWorkSnapShotRequest,
-) -> Result<SetWorkSnapShotResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.set_work_snap_shot(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == set_work_snap_shot_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("set_work_snap_shot".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-pub async fn get_work_snap_shot_status<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: GetWorkSnapShotStatusRequest,
-) -> Result<GetWorkSnapShotStatusResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.get_work_snap_shot_status(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == get_work_snap_shot_status_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("get_work_snap_shot_status".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-pub async fn upload_work_snap_shot<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UploadWorkSnapShotRequest,
-) -> Result<UploadWorkSnapShotResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.upload_work_snap_shot(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == upload_work_snap_shot_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("upload_work_snap_shot".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 pub async fn create_goal<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -511,8 +428,6 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
                 set_member_role,
                 list_member,
                 get_member,
-                set_work_snap_shot,
-                get_work_snap_shot_status,
                 create_goal,
                 update_goal,
                 list_goal,

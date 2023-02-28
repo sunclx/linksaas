@@ -7,7 +7,7 @@ import { LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkRequirementInfo, LinkSc
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
-  LinkImageInfo, LinkExterneInfo, LinkAppraiseInfo,
+  LinkExterneInfo, LinkAppraiseInfo,
   LinkSpritInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo,
   LinkAppInfo, LinkTestCaseEntryInfo
 } from '@/stores/linkAux'
@@ -386,22 +386,6 @@ export namespace project {
     ];
   }
 
-  export type UploadWorkSnapShotEvent = {
-    fs_id: string;
-    file_id: string;
-    thumb_file_id: string;
-  };
-  function get_upload_work_snap_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UploadWorkSnapShotEvent,
-  ): LinkInfo[] {
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 上传工作快照`),
-      new LinkImageInfo('图片', `fs://localhost/${inner.fs_id}/${inner.file_id}/snap.png`, `fs://localhost/${inner.fs_id}/${inner.thumb_file_id}/snap.png`),
-    ];
-  }
-
   export type CreateAppraiseEvent = {
     appraise_id: string;
     title: string;
@@ -596,7 +580,6 @@ export namespace project {
     RemoveChannelEvent?: RemoveChannelEvent;
     AddChannelMemberEvent?: AddChannelMemberEvent;
     RemoveChannelMemberEvent?: RemoveChannelMemberEvent;
-    UploadWorkSnapShotEvent?: UploadWorkSnapShotEvent;
     CreateAppraiseEvent?: CreateAppraiseEvent;
     UpdateAppraiseEvent?: UpdateAppraiseEvent;
     RemoveAppraiseEvent?: RemoveAppraiseEvent;
@@ -668,8 +651,6 @@ export namespace project {
         skip_prj_name,
         inner.RemoveChannelMemberEvent,
       );
-    } else if (inner.UploadWorkSnapShotEvent !== undefined) {
-      return get_upload_work_snap_simple_content(ev, skip_prj_name, inner.UploadWorkSnapShotEvent);
     } else if (inner.CreateAppraiseEvent !== undefined) {
       return get_create_appraise_simple_content(ev, skip_prj_name, inner.CreateAppraiseEvent);
     } else if (inner.UpdateAppraiseEvent !== undefined) {
@@ -4343,7 +4324,7 @@ namespace requirement {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 创建需求 `),
-      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
     ];
   }
 
@@ -4362,7 +4343,7 @@ namespace requirement {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 修改需求`),
-      new LinkRequirementInfo(inner.new_title,ev.project_id,inner.requirement_id),
+      new LinkRequirementInfo(inner.new_title, ev.project_id, inner.requirement_id),
       new LinkNoneInfo(`(原标题 ${inner.old_title})`),
     ];
   }
@@ -4383,7 +4364,7 @@ namespace requirement {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改需求 `),
-      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
       new LinkNoneInfo(`到需求分类 ${inner.new_cate_name} (原需求分类 ${inner.old_cate_name})`),
     ];
   }
@@ -4419,9 +4400,9 @@ namespace requirement {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联 需求`),
-      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
       new LinkNoneInfo("到任务"),
-      new LinkTaskInfo(inner.issue_title,ev.project_id,inner.issue_id),
+      new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id),
     ];
   }
 
@@ -4441,9 +4422,9 @@ namespace requirement {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消 需求`),
-      new LinkRequirementInfo(inner.title,ev.project_id,inner.requirement_id),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
       new LinkNoneInfo("和任务"),
-      new LinkTaskInfo(inner.issue_title,ev.project_id,inner.issue_id),
+      new LinkTaskInfo(inner.issue_title, ev.project_id, inner.issue_id),
       new LinkNoneInfo("的关联"),
     ];
   }

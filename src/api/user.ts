@@ -232,14 +232,6 @@ export async function check_session(session_id: string): Promise<CheckSessionRes
   });
 }
 
-//设置当前快照项目
-export function set_cur_work_snapshot(project_id: string) {
-  invoke<null>('plugin:user_api|set_cur_work_snapshot', {
-    projectId: project_id,
-  }).finally(() => {
-
-  });
-}
 //获取session
 export async function get_session(): Promise<string> {
   return invoke<string>('plugin:user_api|get_session', {})

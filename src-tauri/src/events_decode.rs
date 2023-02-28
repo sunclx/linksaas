@@ -27,7 +27,6 @@ pub mod project {
         RemoveChannelEvent(events_project::RemoveChannelEvent),
         AddChannelMemberEvent(events_project::AddChannelMemberEvent),
         RemoveChannelMemberEvent(events_project::RemoveChannelMemberEvent),
-        UploadWorkSnapShotEvent(events_project::UploadWorkSnapShotEvent),
         CreateAppraiseEvent(events_project::CreateAppraiseEvent),
         UpdateAppraiseEvent(events_project::UpdateAppraiseEvent),
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
@@ -129,10 +128,6 @@ pub mod project {
             if let Ok(ev) = events_project::RemoveChannelMemberEvent::decode(data.value.as_slice())
             {
                 return Some(Event::RemoveChannelMemberEvent(ev));
-            }
-        } else if data.type_url == events_project::UploadWorkSnapShotEvent::type_url() {
-            if let Ok(ev) = events_project::UploadWorkSnapShotEvent::decode(data.value.as_slice()) {
-                return Some(Event::UploadWorkSnapShotEvent(ev));
             }
         } else if data.type_url == events_project::CreateAppraiseEvent::type_url() {
             if let Ok(ev) = events_project::CreateAppraiseEvent::decode(data.value.as_slice()) {

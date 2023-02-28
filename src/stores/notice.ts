@@ -165,9 +165,7 @@ class NoticeStore {
   }
 
   private processClientNotice(notice: NoticeType.client.AllNotice) {
-    if (notice.UploadSnapShotNotice !== undefined) {
-      //TODO
-    } else if (notice.WrongSessionNotice !== undefined) {
+    if (notice.WrongSessionNotice !== undefined) {
       if (notice.WrongSessionNotice.name.indexOf("snap") == -1) { //忽略快照相关接口报错
         if (this.rootStore.userStore.adminSessionId != "") {
           runInAction(() => {
@@ -259,13 +257,6 @@ class NoticeStore {
       if (this.rootStore.projectStore.curProjectId == notice.UpdateMsgNotice.project_id && this.rootStore.channelStore.curChannelId == notice.UpdateMsgNotice.channel_id) {
         //替换内容
         this.rootStore.chatMsgStore.updateMsg(notice.UpdateMsgNotice.msg_id);
-      }
-    } else if (notice.SetWorkSnapShotNotice !== undefined) {
-      if (notice.SetWorkSnapShotNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        await this.rootStore.memberStore.updateSnapShot(notice.SetWorkSnapShotNotice.member_user_id, notice.SetWorkSnapShotNotice.enable);
-      }
-      if (notice.SetWorkSnapShotNotice.member_user_id == this.rootStore.userStore.userInfo.userId) {
-        await this.rootStore.projectStore.updateSnapShot(notice.SetWorkSnapShotNotice.project_id, notice.SetWorkSnapShotNotice.enable);
       }
     } else if (notice.UserOnlineNotice !== undefined) {
       await this.rootStore.memberStore.updateOnline(notice.UserOnlineNotice.user_id, true);
