@@ -1,5 +1,5 @@
 import { Modal, Image, Form, Input, Card, message } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { BaseAppInfo } from "@/api/appstore";
 import s from "./AddAppModal.module.less";
@@ -37,14 +37,6 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
         showReminder: false,
         channelMember: false,
     });
-
-    if (props.baseInfo.icon_file_id != "") {
-        if (appStore.isOsWindows) {
-            setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
-        } else {
-            setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
-        }
-    }
 
     const changeIcon = async () => {
         const selectd = await open_dialog({
@@ -84,7 +76,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
                 owner_id: props.appId,
             }));
         }
-        const content = editorRef.current?.getContent() ?? {type: 'doc'};
+        const content = editorRef.current?.getContent() ?? { type: 'doc' };
         await request(update_app({
             admin_session_id: sessionId,
             app_id: props.appId,
@@ -96,6 +88,16 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
         }));
         props.onOk();
     };
+
+    useEffect(() => {
+        if (props.baseInfo.icon_file_id != "") {
+            if (appStore.isOsWindows) {
+                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
+            } else {
+                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
+            }
+        }
+    }, []);
 
     return (
         <Modal open title="修改应用信息"
