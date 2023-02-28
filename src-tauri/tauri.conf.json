@@ -28,9 +28,7 @@
         "icons/icon.ico"
       ],
       "resources": [],
-      "externalBin": [
-        "bin/shell"
-      ],
+      "externalBin": [],
       "copyright": "",
       "category": "DeveloperTool",
       "shortDescription": "",
@@ -67,17 +65,6 @@
     "allowlist": {
       "window": {
         "all": true
-      },
-      "shell": {
-        "sidecar": true,
-        "open": ".*",
-        "scope": [
-          {
-            "name": "bin/shell",
-            "sidecar": true,
-            "args": true
-          }
-        ]
       },
       "dialog": {
         "all": true
