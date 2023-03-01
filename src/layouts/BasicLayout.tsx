@@ -6,7 +6,7 @@ import { Layout } from 'antd';
 import classNames from 'classnames';
 import { when } from 'mobx';
 import { observer } from 'mobx-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PhysicalSize, appWindow } from '@tauri-apps/api/window';
@@ -16,6 +16,7 @@ import Header from '../components/Header';
 import LeftMenu from '../components/LeftMenu';
 import Toolbar from '../components/Toolbar';
 import style from './style.module.less';
+import SimpleModePanel from "@/pages/Project/SimpleMode/index";
 
 const { Content } = Layout;
 
@@ -33,6 +34,8 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const type = urlParams.get('type');
+
+  const [oldHeight, setOldHeight] = useState<number | null>(null);
 
   useEffect(() => {
     userStore.setIsResetPassword(type === 'resetPassword');
@@ -55,18 +58,19 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
       appWindow.setMinSize(new PhysicalSize(200 * deviceRatio, 500 * deviceRatio));
     }
     if (appStore.simpleMode) {
-      if (appStore.simpleModeExpand != null) {
-        winSize.width = 500 * deviceRatio;
-        appWindow.setSize(winSize);
-      } else {
-        winSize.width = 200 * deviceRatio;
-        setTimeout(() => {
-          appWindow.setSize(winSize);
-        }, 100);
-      }
+      setOldHeight(winSize.height);
+      winSize.width = 500 * deviceRatio;
+      winSize.height = 500 * deviceRatio;
+      appWindow.setSize(winSize);
+      appWindow.setResizable(false);
     } else {
       winSize.width = 1300 * deviceRatio;
+      if(oldHeight != null){
+        winSize.height = oldHeight;
+        setOldHeight(null);
+      }
       appWindow.setSize(winSize);
+      appWindow.setResizable(true);
     }
   };
 
@@ -75,7 +79,7 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
       return;
     }
     adjustSize();
-  }, [appStore.simpleMode, appStore.simpleModeExpand]);
+  }, [appStore.simpleMode]);
 
   if (!sessionId && !userStore.isResetPassword) return <div />;
 
@@ -84,7 +88,10 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
       {appStore.simpleMode == true && (
         <div className={style.basicLayout} style={{ display: "flex", background: "transparent" }}>
           <LeftMenu />
-          <div style={{ background: "transparent", width: "300px" }} />
+          <div style={{ width: "300px" }} >
+            <Header />
+            <SimpleModePanel/>
+          </div>
         </div>
       )}
       {appStore.simpleMode == false && (

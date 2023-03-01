@@ -308,10 +308,16 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_KB_DOC_SPACE:
                 history.push(APP_PROJECT_KB_DOC_PATH);
+                if(appStore.simpleMode){
+                    appStore.simpleMode = false;
+                }
                 docSpaceStore.showDocList("", false);
                 break;
             case MENU_KEY_KB_DOC_RECYCLE:
                 history.push(APP_PROJECT_KB_DOC_PATH);
+                if(appStore.simpleMode){
+                    appStore.simpleMode = false;
+                }
                 docSpaceStore.showDocList("", true);
                 break;
             case MENU_KEY_CREATE_DOC:
@@ -403,7 +409,7 @@ const ProjectQuickAccess = () => {
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
             <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 0px" }}>
                 <Space>
-                    项目快捷菜单
+                    快捷菜单
                     <DownOutlined />
                 </Space>
             </a>

@@ -59,7 +59,6 @@ class AppStore {
   }
 
   private _simpleMode: boolean = false;
-  private _simpleModeExpand: "task" | "bug" | null = null;
 
   get simpleMode(): boolean {
     return this._simpleMode;
@@ -75,15 +74,6 @@ class AppStore {
     });
   }
 
-  get simpleModeExpand(): "task" | "bug" | null {
-    return this._simpleModeExpand;
-  }
-
-  set simpleModeExpand(val: "task" | "bug" | null) {
-    runInAction(() => {
-      this._simpleModeExpand = val;
-    });
-  }
 }
 
 export default AppStore;

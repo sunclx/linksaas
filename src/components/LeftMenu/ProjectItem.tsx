@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge, Input, Popover, message } from "antd";
 import { APP_PROJECT_CHAT_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
-import { DoubleRightOutlined, FolderFilled } from "@ant-design/icons";
+import { FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
 import type { ProjectInfo } from "@/api/project";
@@ -14,8 +14,6 @@ import Button from '../Button';
 import { request } from "@/utils/request";
 import { close, open, remove } from '@/api/project';
 import { leave } from '@/api/project_member';
-import PrjTodoIssueList from "./PrjTodoIssueList";
-import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 
 const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
     const [hover, setHover] = useState(false);
@@ -199,35 +197,19 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                         docSpaceStore.showCheckLeave(() => {
                             history.push(APP_PROJECT_CHAT_PATH);
                             projectStore.setCurProjectId(item.project_id);
-                            appStore.simpleModeExpand = null;
                         });
                         return;
                     }
                     history.push(APP_PROJECT_CHAT_PATH);
                     projectStore.setCurProjectId(item.project_id);
-                    appStore.simpleModeExpand = null;
                 }}>&nbsp;{item.basic_info.project_name} </span>
                 {appStore.simpleMode == false && (
                     <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false} trigger="click">
                         {hover && <i className={cls.more} />}
                     </Popover>
                 )}
-                {appStore.simpleMode == true && (
-                    <i style={{ cursor: "pointer", paddingLeft: "20px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        appStore.simpleMode = false;
-                        history.push(APP_PROJECT_CHAT_PATH);
-                        projectStore.setCurProjectId(item.project_id);
-                    }}><DoubleRightOutlined /></i>
-                )}
+
             </div>
-            {projectStore.curProjectId == item.project_id && appStore.simpleMode && (
-                <div className={cls.project_info_wrap}>
-                    <PrjTodoIssueList issueType={ISSUE_TYPE_TASK} />
-                    <PrjTodoIssueList issueType={ISSUE_TYPE_BUG} />
-                </div>
-            )}
             {pjChangeObj.visible && (
                 <ActionModal
                     open={pjChangeObj.visible}
