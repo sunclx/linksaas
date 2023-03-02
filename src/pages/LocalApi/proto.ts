@@ -1728,6 +1728,12 @@ components:
           type: integer
           description: 更新时间
           format: int64
+        canUpdate:
+          type: boolean
+          description: 是否可以更新
+        canRemove:
+          type: boolean
+          description: 是否可以删除
     DocInfo:
       type: object
       properties:

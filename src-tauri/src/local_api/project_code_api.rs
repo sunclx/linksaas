@@ -149,6 +149,8 @@ pub fn convert_to_comment(comment: &Comment) -> CodeCommentInfo {
         user_display_name: Some(comment.user_display_name.clone()),
         create_time: Some(comment.create_time),
         update_time: Some(comment.update_time),
+        can_update: Some(comment.can_update),
+        can_remove: Some(comment.can_remove),
     };
 }
 
