@@ -6,7 +6,7 @@ import { Layout } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { BugOutlined, BulbOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { ArrowsAltOutlined, BugOutlined, BulbOutlined, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import ProjectQuickAccess from './ProjectQuickAccess';
 import { checkUpdate } from '@tauri-apps/api/updater';
@@ -22,6 +22,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 }) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+  const appStore = useStores('appStore');
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
 
@@ -78,10 +79,38 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             <InfoCircleOutlined />&nbsp;有新版本
           </a>
         )}
-        <a href="https://doc.linksaas.pro/" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="使用文档"><BulbOutlined /></a>
-        <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
+        {appStore.simpleMode == false && (
+          <>
+            <a href="https://doc.linksaas.pro/" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="使用文档"><BulbOutlined /></a>
+            <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "30px" }} title="报告缺陷"><BugOutlined /></a>
+          </>
+        )}
+
+        {appStore.simpleMode == true && (
+          <div
+            className={style.btnSimpleMode}
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              appStore.simpleMode = false;
+            }} title='退出精简模式'><ArrowsAltOutlined /></div>
+        )}
+        {appStore.simpleMode == false && projectStore.curProjectId != "" && (
+          <div
+            className={style.btnSimpleMode}
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              appStore.simpleMode = true;
+            }} title='进入精简模式'><ShrinkOutlined /></div>
+        )}
+
         {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
-        {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+        {appStore.simpleMode == false && (
+          <>
+            {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+          </>
+        )}
         <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
       </div>
     </Header>

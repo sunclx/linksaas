@@ -12,13 +12,6 @@ export { TechCompareWidget } from './TechCompareWidget';
 export { TimeRangeWidget } from './TimeRangeWidget';
 export { MermaidWidget } from './MermaidWidget';
 export { MarkmapWidget } from './MarkmapWidget';
-export { MysqlQueryWidget } from './MysqlQueryWidget';
-export { MongoQueryWidget } from './MongoQueryWidget';
-export { GitlabListCommitWidget } from './GitlabListCommitWidget';
-export { GitlabListGroupWidget } from './GitlabListGroupWidget';
-export { GitlabListIssueWidget } from './GitlabListIssueWidget';
-export { GitlabListProjectWidget } from './GitlabListProjectWidget';
-export { GitlabListWikiWidget } from './GitlabListWikiWidget';
 export { SurveyChoiceWidget } from './SurveyChoiceWidget';
 export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
 export { RequirementRefWidget } from "./RequirementRefWidget";
@@ -36,13 +29,6 @@ import { techCompareWidgetInitData } from './TechCompareWidget';
 import { timeRangeWidgetInitData } from './TimeRangeWidget';
 import { mermaidWidgetInitData } from './MermaidWidget';
 import { markmapWidgetInitData } from './MarkmapWidget';
-import { mysqlQueryWidgetInitData } from './MysqlQueryWidget';
-import { mongoQueryWidgetInitData } from './MongoQueryWidget';
-import { gitlabListCommitWidgetInitData } from './GitlabListCommitWidget';
-import { gitlabListGroupWidgetInitData } from './GitlabListGroupWidget';
-import { gitlabListIssueWidgetInitData } from './GitlabListIssueWidget';
-import { gitlabListProjectWidgetInitData } from './GitlabListProjectWidget';
-import { gitlabListWikiWidgetInitData } from './GitlabListWikiWidget';
 import { surveyChoiceWidgetInitData } from './SurveyChoiceWidget';
 import { surveyTrueOrFlaseWidgetInitData } from './SurveyTrueOrFalseWidget';
 import { requirementRefWidgetInitData } from './RequirementRefWidget';
@@ -63,13 +49,6 @@ export const WIDGET_TYPE_TECH_COMPARE: WIDGET_TYPE = "techCompare"; //技术对�
 export const WIDGET_TYPE_TIME_RANGE: WIDGET_TYPE = "timeRange"; // 时间区间
 export const WIDGET_TYPE_MERMAID: WIDGET_TYPE = "mermaid";
 export const WIDGET_TYPE_MARK_MAP: WIDGET_TYPE = "markMap";
-export const WIDGET_TYPE_MYSQL_QUERY: WIDGET_TYPE = "mysqlQuery";
-export const WIDGET_TYPE_MONGO_QUERY: WIDGET_TYPE = "mongoQuery";
-export const WIDGET_TYPE_GITLAB_LIST_GROUP: WIDGET_TYPE = "gitlabListGroup";
-export const WIDGET_TYPE_GITLAB_LIST_PROJECT: WIDGET_TYPE = "gitlabListProject";
-export const WIDGET_TYPE_GITLAB_LIST_WIKI: WIDGET_TYPE = "gitlabListWiki";
-export const WIDGET_TYPE_GITLAB_LIST_COMMIT: WIDGET_TYPE = "gitlabListCommit";
-export const WIDGET_TYPE_GITLAB_LIST_ISSUE: WIDGET_TYPE = "gitlabListIssue";
 export const WIDGET_TYPE_SURVEY_CHOICE: WIDGET_TYPE = "surveyChoice"; //问卷选择题
 export const WIDGET_TYPE_SURVEY_TRUE_OR_FALSE: WIDGET_TYPE = "surveyTrueOrFalse"; //问卷对错题
 
@@ -89,13 +68,6 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_TECH_COMPARE,
     WIDGET_TYPE_TIME_RANGE,
     WIDGET_TYPE_MERMAID,
-    WIDGET_TYPE_MYSQL_QUERY,
-    WIDGET_TYPE_MONGO_QUERY,
-    WIDGET_TYPE_GITLAB_LIST_GROUP,
-    WIDGET_TYPE_GITLAB_LIST_PROJECT,
-    WIDGET_TYPE_GITLAB_LIST_WIKI,
-    WIDGET_TYPE_GITLAB_LIST_COMMIT,
-    WIDGET_TYPE_GITLAB_LIST_ISSUE,
     WIDGET_TYPE_MARK_MAP,
     WIDGET_TYPE_SURVEY_CHOICE,
     WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
@@ -118,13 +90,6 @@ WidgetInitDataMap.set(WIDGET_TYPE_SWOT, swotWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TECH_COMPARE, techCompareWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TIME_RANGE, timeRangeWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_MERMAID, mermaidWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_MARK_MAP, markmapWidgetInitData)
-WidgetInitDataMap.set(WIDGET_TYPE_MYSQL_QUERY, mysqlQueryWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_MONGO_QUERY, mongoQueryWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_GITLAB_LIST_GROUP, gitlabListGroupWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_GITLAB_LIST_PROJECT, gitlabListProjectWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_GITLAB_LIST_WIKI, gitlabListWikiWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_GITLAB_LIST_COMMIT, gitlabListCommitWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_GITLAB_LIST_ISSUE, gitlabListIssueWidgetInitData);
+WidgetInitDataMap.set(WIDGET_TYPE_MARK_MAP, markmapWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_CHOICE, surveyChoiceWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_TRUE_OR_FALSE, surveyTrueOrFlaseWidgetInitData);

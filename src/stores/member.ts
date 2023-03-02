@@ -138,22 +138,6 @@ class MemberStore {
     });
   }
 
-  updateSnapShot(userId: string, enable: boolean) {
-    runInAction(() => {
-      const memberList = this._memberList.slice();
-      const index = memberList.findIndex((item) => item.member.member_user_id == userId);
-      if (index != -1) {
-        memberList[index].member.work_snap_shot_info.enable = enable;
-      }
-      this._memberList = memberList;
-      const member = this._memberMap.get(userId);
-      if (member !== undefined) {
-        member.member.work_snap_shot_info.enable = enable;
-        this._memberMap.set(userId, member);
-      }
-    });
-  }
-
   updateMemberRole(userId: string, roleId: string) {
     runInAction(() => {
       const memberList = this._memberList.slice();

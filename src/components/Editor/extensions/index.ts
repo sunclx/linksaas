@@ -6,4 +6,3 @@ export * from './WidgetExtension';
 export * from './IframeExtension';
 export * from './CodeExtension';
 export * from './LinkExtension';
-export * from './FortuneSheetExtension';

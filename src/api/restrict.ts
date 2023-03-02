@@ -32,7 +32,6 @@ export type GetProjectRestrictResponse = {
     project_restrict: ProjectRestrict;
     project_fs_restrict: FsRestrict;
     channel_fs_restrict: FsRestrict;
-    work_snap_shot_fs_restrict: FsRestrict;
     issue_fs_restrict: FsRestrict;
     doc_fs_restrict: FsRestrict;
 };

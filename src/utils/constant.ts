@@ -183,17 +183,6 @@ export enum PROJECT_STATE_OPT_ENUM {
   REMOVE = 'remove',
 }
 
-export const snapShotOpt = [
-  {
-    label: '开启',
-    value: true,
-  },
-  {
-    label: '不开启',
-    value: false,
-  },
-];
-
 export enum FILTER_DOC_ENUM {
   ALL = 'all',
   CONCERN = 'concern',

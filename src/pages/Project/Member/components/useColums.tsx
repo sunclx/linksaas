@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { message, Select, Switch } from 'antd';
+import { message, Select } from 'antd';
 import type { WebMemberInfo } from '@/stores/member';
 import * as API from '@/api/project_member';
 import iconUnfold from '@/assets/allIcon/icon-unfold.png';
@@ -40,27 +40,6 @@ const useColums = (props: UseColumsType) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectStore.isAdmin]);
 
-  // 工作快照设置
-  const onChangeSwitch = async (checked: boolean, row: WebMemberInfo) => {
-    const res = await request(
-      API.set_work_snap_shot({
-        session_id: userStore.sessionId,
-        project_id: projectStore.curProjectId,
-        member_user_id: row.member.member_user_id,
-        info: {
-          enable: checked,
-          interval: 900,
-        },
-      }),
-    );
-    if (res) {
-      memberStore.updateSnapShot(row.member.member_user_id, checked);
-      if (row.member.member_user_id == userStore.userInfo.userId) {
-        projectStore.updateSnapShot(projectStore.curProjectId, checked);
-      }
-      message.success('工作快照设置成功');
-    }
-  };
 
   // 修改角色
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -131,16 +110,6 @@ const useColums = (props: UseColumsType) => {
             {row.member.role_name}
           </div>
         );
-      },
-    },
-    {
-      title: '工作快照',
-      dataIndex: ['member', 'work_snap_shot_info', 'enable'],
-      width: 100,
-      align: 'center',
-      isShow: projectStore.isAdmin,
-      render: (v: boolean, row: WebMemberInfo) => {
-        return <Switch checked={v} onChange={(e) => { onChangeSwitch(e, row) }} />;
       },
     },
     {

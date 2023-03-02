@@ -39,7 +39,6 @@ export type ProjectInfo = {
   default_channel_id: string;
   default_role_id: string;
   channel_fs_id: string;
-  work_snap_shot_fs_id: string;
   issue_fs_id: string;
   project_fs_id: string;
   doc_fs_id: string;

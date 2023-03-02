@@ -11,7 +11,6 @@ import {
   FileUploadExtension,
   ExcalidrawExtension,
   ReminderUserExtension,
-  FortuneSheetExtension,
   IframeExtension,
   WidgetExtension,
   CodeExtension,
@@ -48,7 +47,6 @@ export const getExtensions = (param?: {
     new ExcalidrawExtension({ collapse: param?.collapse }),
     new WidgetExtension({ collapse: param?.collapse }),
     new ReminderUserExtension({ setShow: param?.setShowRemind }),
-    new FortuneSheetExtension(),
     new IframeExtension({ collapse: param?.collapse }),
     new CodeExtension({ collapse: param?.collapse }),
 

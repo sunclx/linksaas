@@ -202,32 +202,6 @@ async fn check_update(app_handle: AppHandle) {
     my_updater::check_update_with_dialog(app_handle).await;
 }
 
-#[tauri::command]
-async fn capture_screen(
-    _app_handle: AppHandle,
-    _window: Window,
-    do_blur: bool,
-    blur_sigma: f32,
-) -> Result<Vec<Vec<u8>>, String> {
-    match image_utils::capture_screen_data(do_blur, blur_sigma) {
-        Err(err) => Err(err),
-        Ok(img_list) => {
-            let mut ret_list: Vec<Vec<u8>> = Vec::new();
-            for img in img_list {
-                match image_utils::encode_to_bmp(img) {
-                    Err(err) => {
-                        return Err(err);
-                    }
-                    Ok(data) => {
-                        ret_list.push(data);
-                    }
-                }
-            }
-            return Ok(ret_list);
-        }
-    }
-}
-
 pub fn window_invoke_responder<R: Runtime>(
     window: Window<R>,
     response: InvokeResponse,
@@ -271,7 +245,6 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             conn_grpc_server,
-            capture_screen,
             is_conn_server,
             check_update,
         ])

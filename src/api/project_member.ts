@@ -64,11 +64,6 @@ type SetMemberRoleResponse = {
   err_msg: string;
 };
 
-export type WorkSnapShotInfo = {
-  enable: boolean;
-  interval: number; //单位秒
-};
-
 export type Okr = {
   objective: string;
   key_result_list: string[];
@@ -85,7 +80,6 @@ export type MemberInfo = {
   member_user_id: string;
   role_id: string;
   role_name: string;
-  work_snap_shot_info: WorkSnapShotInfo;
   last_event_id: string;
   last_goal_id: string;
   last_goal_info: BasicGoalInfo;
@@ -112,18 +106,6 @@ export type GoalInfo = {
 };
 
 
-type SetWorkSnapShotRequest = {
-  session_id: string;
-  project_id: string;
-  member_user_id: string;
-  info: WorkSnapShotInfo;
-};
-
-type SetWorkSnapShotResponse = {
-  code: number;
-  err_msg: string;
-};
-
 export type ListMemberResponse = {
   code: number;
   err_msg: string;
@@ -134,14 +116,6 @@ type GetMemberResponse = {
   code: number;
   err_msg: string;
   member: MemberInfo;
-};
-
-export type GetWorkSnapShotStatusResponse = {
-  code: number;
-  err_msg: string;
-  fs_id: string;
-  last_time_stamp: number;
-  work_snap_shot_info: WorkSnapShotInfo;
 };
 
 export type CreateGoalRequest = {
@@ -381,31 +355,6 @@ export async function get_member(
 
   return invoke<GetMemberResponse>(cmd, {
     request,
-  });
-}
-
-//工作快照设置
-export async function set_work_snap_shot(
-  request: SetWorkSnapShotRequest,
-): Promise<SetWorkSnapShotResponse> {
-  const cmd = 'plugin:project_member_api|set_work_snap_shot';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<SetWorkSnapShotResponse>(cmd, {
-    request,
-  });
-}
-
-//获取快照状态
-export async function get_work_snap_shot_status(session_id: string, project_id: string): Promise<GetWorkSnapShotStatusResponse> {
-  const cmd = 'plugin:project_member_api|get_work_snap_shot_status';
-  console.log(`%c${cmd}`, 'color:#0f0;', session_id, project_id);
-
-  return invoke<GetWorkSnapShotStatusResponse>(cmd, {
-    request: {
-      session_id,
-      project_id,
-    },
   });
 }
 

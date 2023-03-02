@@ -18,7 +18,6 @@ pub mod project {
         RemoveChannelMemberNotice(notices_project::RemoveChannelMemberNotice),
         NewMsgNotice(notices_project::NewMsgNotice),
         UpdateMsgNotice(notices_project::UpdateMsgNotice),
-        SetWorkSnapShotNotice(notices_project::SetWorkSnapShotNotice),
         UserOnlineNotice(notices_project::UserOnlineNotice),
         UserOfflineNotice(notices_project::UserOfflineNotice),
         NewEventNotice(notices_project::NewEventNotice),
@@ -83,12 +82,6 @@ pub mod project {
         } else if data.type_url == notices_project::UpdateMsgNotice::type_url() {
             if let Ok(notice) = notices_project::UpdateMsgNotice::decode(data.value.as_slice()) {
                 return Some(Notice::UpdateMsgNotice(notice));
-            }
-        } else if data.type_url == notices_project::SetWorkSnapShotNotice::type_url() {
-            if let Ok(notice) =
-                notices_project::SetWorkSnapShotNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::SetWorkSnapShotNotice(notice));
             }
         } else if data.type_url == notices_project::UserOnlineNotice::type_url() {
             if let Ok(notice) = notices_project::UserOnlineNotice::decode(data.value.as_slice()) {
@@ -369,18 +362,11 @@ pub mod client {
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
-    pub struct UploadSnapShotNotice {
-        pub project_id: String,
-    }
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    #[serde(rename_all = "snake_case")]
     pub struct SwitchUserNotice {}
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         WrongSessionNotice(WrongSessionNotice),
-        UploadSnapShotNotice(UploadSnapShotNotice),
         SwitchUserNotice(SwitchUserNotice),
     }
 }
@@ -427,14 +413,6 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
 pub fn new_wrong_session_notice(name: String) -> NoticeMessage {
     return NoticeMessage::ClientNotice(client::Notice::WrongSessionNotice(
         client::WrongSessionNotice { name: name },
-    ));
-}
-
-pub fn new_upload_snap_shot_notice(project_id: String) -> NoticeMessage {
-    return NoticeMessage::ClientNotice(client::Notice::UploadSnapShotNotice(
-        client::UploadSnapShotNotice {
-            project_id: project_id,
-        },
     ));
 }
 

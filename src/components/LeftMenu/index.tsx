@@ -9,7 +9,7 @@ const { Sider } = Layout;
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import adImg from '@/assets/allIcon/ad.png';
 import ProjectList from './ProjectList';
-import { ArrowsAltOutlined, GlobalOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { GlobalOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { EXTRA_MENU_PATH, WORKBENCH_PATH } from '@/utils/constant';
 
@@ -40,22 +40,6 @@ const LeftMenu: React.FC = () => {
           </div>
         )}
         <div className={cls.name}>{userStore.userInfo.displayName}</div>
-        {appStore.simpleMode == true && (
-          <div className={cls.expand} onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            appStore.simpleMode = false;
-            appStore.simpleModeExpand = null;
-          }} title='退出精简模式'><ArrowsAltOutlined /></div>
-        )}
-        {appStore.simpleMode == false && (
-          <div className={cls.expand} onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            appStore.simpleMode = true;
-            appStore.simpleModeExpand = null;
-          }} title='进入精简模式'><ShrinkOutlined /></div>
-        )}
       </div>
       <div>
         {appStore.simpleMode == false && (
