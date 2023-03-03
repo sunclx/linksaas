@@ -983,6 +983,37 @@ pub mod requirement {
     }
 }
 
+pub mod code {
+    use prost::Message;
+    use proto_gen_rust::events_code;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        AddCommentEvent(events_code::AddCommentEvent),
+        UpdateCommentEvent(events_code::UpdateCommentEvent),
+        RemoveCommentEvent(events_code::RemoveCommentEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_code::AddCommentEvent::type_url() {
+            if let Ok(ev) = events_code::AddCommentEvent::decode(data.value.as_slice()) {
+                return Some(Event::AddCommentEvent(ev));
+            }
+        } else if data.type_url == events_code::UpdateCommentEvent::type_url() {
+            if let Ok(ev) = events_code::UpdateCommentEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateCommentEvent(ev));
+            }
+        } else if data.type_url == events_code::RemoveCommentEvent::type_url() {
+            if let Ok(ev) = events_code::RemoveCommentEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveCommentEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -999,6 +1030,7 @@ pub enum EventMessage {
     EarthlyEvent(earthly::Event),
     ScriptEvent(script::Event),
     RequirementEvent(requirement::Event),
+    CodeEvent(code::Event),
     NoopEvent(),
 }
 
@@ -1046,6 +1078,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = requirement::decode_event(data) {
         return Some(EventMessage::RequirementEvent(ret));
+    }
+    if let Some(ret) = code::decode_event(data) {
+        return Some(EventMessage::CodeEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

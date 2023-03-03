@@ -184,6 +184,12 @@ export type RequirementEvCfg = {
     unlink_issue: boolean;
 };
 
+export type CodeEvCfg = {
+    add_comment: boolean;
+    update_comment: boolean;
+    remove_comment: boolean;
+};
+
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
@@ -199,6 +205,7 @@ export type EventCfg = {
     test_case_ev_cfg: TestCaseEvCfg;
     script_ev_cfg: ScriptEvCfg;
     requirement_ev_cfg: RequirementEvCfg;
+    code_ev_cfg: CodeEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -286,6 +293,13 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             update_arg_param_def: false,
             recover_script: false,
             exec: false,
+        };
+    }
+    if (cfg.code_ev_cfg == undefined) {
+        cfg.code_ev_cfg = {
+            add_comment: false,
+            update_comment: false,
+            remove_comment: false,
         };
     }
     return cfg;

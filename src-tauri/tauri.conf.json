@@ -66,6 +66,9 @@
       "window": {
         "all": true
       },
+      "shell": {
+        "open": ".*"
+      },
       "dialog": {
         "all": true
       },
