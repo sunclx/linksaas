@@ -48,6 +48,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_SCRIPT_SUITE,
   LINK_TARGET_SCRIPT_EXEC,
   LINK_TARGET_REQUIRE_MENT,
+  LINK_TARGET_CODE_COMMENT,
 
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
@@ -340,6 +341,21 @@ export class LinkRequirementInfo {
   linkContent: string;
   projectId: string;
   requirementId: string;
+}
+
+export class LinkCodeCommentInfo {
+  constructor(content: string, projectId: string, threadId: string, commentId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_CODE_COMMENT;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.threadId = threadId;
+    this.commentId = commentId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  threadId: string;
+  commentId: string;
 }
 
 export class LinkImageInfo {
@@ -673,6 +689,12 @@ class LinkAuxStore {
         content: "",
       };
       history.push(this.genUrl(pathname, REQUIRE_MENT_DETAIL_SUFFIX), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CODE_COMMENT) {
+      const commentLink = link as LinkCodeCommentInfo;
+      if (this.rootStore.projectStore.curProjectId != commentLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(commentLink.projectId);
+      }
+      this.rootStore.appStore.setCodeCommentInfo(commentLink.threadId, commentLink.commentId);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
