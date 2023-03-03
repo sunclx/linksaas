@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.7
+  version: 0.1.8
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -28,6 +28,8 @@ tags:
     description: 项目中的沟通频道
   - name: projectTestCase
     description: 项目中的测试用例
+  - name: projectCodeComment
+    description: 项目中的代码评论
 paths:
   /hello:
     get:
@@ -378,6 +380,212 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ChannelInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/codeComment/{commentThreadId}:
+    get:
+      tags:
+        - projectCodeComment
+      summary: 列出代码评论
+      description: 列出代码评论
+      operationId: projectProjectIdCodeCommentCommentThreadIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/CommentThreadId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeCommentInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+    put:
+      tags:
+        - projectCodeComment
+      summary: 新增代码评论
+      description: 新增代码评论
+      operationId: projectProjectIdCodeCommentCommentThreadIdPut
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/CommentThreadId'
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentType:
+                  type: string
+                  description: 内容类型
+                  enum:
+                    - text
+                    - markdown
+                content:
+                  type: string
+                  description: 内容
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId:
+                    type: string
+                    description: 代码评论ID
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+  /project/{projectId}/codeComment/{commentThreadId}/{commentId}:
+    delete:
+      tags:
+        - projectCodeComment
+      summary: 删除代码评论
+      description: 删除代码评论
+      operationId: projectProjectIdCodeCommentCommentThreadIdCommentIdDelete
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/CommentThreadId'
+        - $ref: '#/components/parameters/CommentId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+    get:
+      tags:
+        - projectCodeComment
+      summary: 获取单个代码评论
+      description: 获取单个代码评论
+      operationId: projectProjectIdCodeCommentCommentThreadIdCommentIdGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/CommentThreadId'
+        - $ref: '#/components/parameters/CommentId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeCommentInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+    post:
+      tags:
+        - projectCodeComment
+      summary: 更新单个代码评论
+      description: 更新单个代码评论
+      operationId: projectProjectIdCodeCommentCommentThreadIdCommentIdPost
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/CommentThreadId'
+        - $ref: '#/components/parameters/CommentId'
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contentType:
+                  type: string
+                  description: 内容类型
+                  enum:
+                    - text
+                    - markdown
+                content:
+                  type: string
+                  description: 内容
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
           headers:
@@ -1298,6 +1506,20 @@ components:
         type: string
       required: true
       description: 频道ID
+    CommentId:
+      in: path
+      name: commentId
+      schema:
+        type: string
+      required: true
+      description: 代码评论ID
+    CommentThreadId:
+      in: path
+      name: commentThreadId
+      schema:
+        type: string
+      required: true
+      description: 代码评论会话ID
     DocId:
       in: path
       name: docId
@@ -1474,6 +1696,44 @@ components:
           type: integer
           description: 更新时间
           format: int64
+    CodeCommentInfo:
+      type: object
+      properties:
+        commentId:
+          type: string
+          description: 代码评论ID
+        threadId:
+          type: string
+          description: 代码评论会话ID
+        contentType:
+          type: string
+          description: 内容类型
+          enum:
+            - text
+            - markdown
+        content:
+          type: string
+          description: 内容
+        userId:
+          type: string
+          description: 用户ID
+        userDisplayName:
+          type: string
+          description: 用户名称
+        createTime:
+          type: integer
+          description: 创建时间
+          format: int64
+        updateTime:
+          type: integer
+          description: 更新时间
+          format: int64
+        canUpdate:
+          type: boolean
+          description: 是否可以更新
+        canRemove:
+          type: boolean
+          description: 是否可以删除
     DocInfo:
       type: object
       properties:
@@ -1581,7 +1841,6 @@ components:
             - sprit
             - doc
             - disk
-            - workSnapshot
             - app
             - bookShelf
             - robot
