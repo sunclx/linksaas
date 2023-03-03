@@ -73,21 +73,26 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::{
-    DocSpaceInfo, ErrInfo, IssueInfo, 
-     ProjectProjectIdBugAllGet200Response,
+    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBugAllGet200Response,
+    ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
     ProjectProjectIdTestCaseReportEntryIdPost200Response,
     ProjectProjectIdTestCaseReportEntryIdPostRequest,
+    ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
 };
 use local_api_rust::{
-    Api, HelloGetResponse, 
-    ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
+    Api, HelloGetResponse, ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
     ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
     ProjectProjectIdChannelMyGetResponse, ProjectProjectIdChannelNotJoinGetResponse,
-    ProjectProjectIdChannelOrphanGetResponse, ProjectProjectIdCreateBugGetResponse,
+    ProjectProjectIdChannelOrphanGetResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdGetResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ProjectProjectIdCreateBugGetResponse,
     ProjectProjectIdCreateDocDocSpaceIdGetResponse, ProjectProjectIdCreateTaskGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ProjectProjectIdDocSpaceGetResponse,
@@ -100,8 +105,8 @@ use local_api_rust::{
     ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse, ProjectProjectIdTestCaseLangGetResponse,
     ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse,
     ProjectProjectIdTestCaseLangLangGetResponse, ProjectProjectIdTestCaseListEntryIdGetResponse,
-    ProjectProjectIdTestCaseReportEntryIdPostResponse, ShowGetResponse,
-    ProjectProjectIdTestCaseShowEntryIdGetResponse
+    ProjectProjectIdTestCaseReportEntryIdPostResponse,
+    ProjectProjectIdTestCaseShowEntryIdGetResponse, ShowGetResponse,
 };
 use swagger::ApiError;
 
@@ -1976,8 +1981,8 @@ where
         project_id: String,
         entry_id: String,
         access_token: String,
-        _context: &C) -> Result<ProjectProjectIdTestCaseShowEntryIdGetResponse, ApiError>
-    {
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseShowEntryIdGetResponse, ApiError> {
         if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
             return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status500 {
                 body: ErrInfo {
@@ -2023,4 +2028,316 @@ where
         });
     }
 
+    /// 删除代码评论
+    async fn project_project_id_code_comment_comment_thread_id_comment_id_delete(
+        &self,
+        project_id: String,
+        _comment_thread_id: String,
+        comment_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res =
+            super::project_code_api::remove_comment(&self.app, &project_id, &comment_id).await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse::Status200 {
+                    body: json!({}),
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+    }
+
+    /// 获取单个代码评论
+    async fn project_project_id_code_comment_comment_thread_id_comment_id_get(
+        &self,
+        project_id: String,
+        _comment_thread_id: String,
+        comment_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res = super::project_code_api::get_comment(&self.app, &project_id, &comment_id).await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            if res.comment.is_none() {
+                return Ok(
+                    ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some("no code comment".into()),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            let comment = res.comment.unwrap();
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse::Status200 {
+                    body: super::project_code_api::convert_to_comment(&comment),
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+    }
+
+    /// 更新单个代码评论
+    async fn project_project_id_code_comment_comment_thread_id_comment_id_post(
+        &self,
+        project_id: String,
+        _comment_thread_id: String,
+        comment_id: String,
+        access_token: String,
+        request: Option<ProjectProjectIdCodeCommentCommentThreadIdPutRequest>,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        if request.is_none() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("错误的请求参数".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let request = request.unwrap();
+        let content = request.content.unwrap_or_default();
+        let content_type_str = request.content_type.unwrap_or_default();
+        let mut content_type = proto_gen_rust::project_code_api::ContentType::Text;
+        if content_type_str == "markdown" {
+            content_type = proto_gen_rust::project_code_api::ContentType::Markdown;
+        }
+        let res = super::project_code_api::update_comment(
+            &self.app,
+            &project_id,
+            &comment_id,
+            content_type,
+            &content,
+        )
+        .await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status200 {
+                    body: json!({}),
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+    }
+
+    /// 列出代码评论
+    async fn project_project_id_code_comment_comment_thread_id_get(
+        &self,
+        project_id: String,
+        thread_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let res = super::project_code_api::list_comment(&self.app, &project_id, &thread_id).await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdCodeCommentCommentThreadIdGetResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdGetResponse::Status200 {
+                    body: super::project_code_api::convert_to_comment_list(&res.comment_list),
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+    }
+
+    /// 新增代码评论
+    async fn project_project_id_code_comment_comment_thread_id_put(
+        &self,
+        project_id: String,
+        thread_id: String,
+        access_token: String,
+        request: Option<ProjectProjectIdCodeCommentCommentThreadIdPutRequest>,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("访问令牌错误".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        if request.is_none() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("错误的请求参数".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+        let request = request.unwrap();
+        let content = request.content.unwrap_or_default();
+        let content_type_str = request.content_type.unwrap_or_default();
+        let mut content_type = proto_gen_rust::project_code_api::ContentType::Text;
+        if content_type_str == "markdown" {
+            content_type = proto_gen_rust::project_code_api::ContentType::Markdown;
+        }
+
+        let res = super::project_code_api::add_comment(
+            &self.app,
+            &project_id,
+            &thread_id,
+            content_type,
+            &content,
+        )
+        .await;
+        if res.is_err() {
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err().unwrap()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(
+                    ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status500 {
+                        body: ErrInfo {
+                            err_msg: Some(res.err_msg),
+                        },
+                        access_control_allow_origin: Some("*".into()),
+                    },
+                );
+            }
+            return Ok(
+                ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status200 {
+                    body: ProjectProjectIdCodeCommentCommentThreadIdPut200Response {
+                        comment_id: Some(res.comment_id),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                },
+            );
+        }
+    }
 }
