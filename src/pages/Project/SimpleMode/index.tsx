@@ -23,6 +23,7 @@ const SimpleModePanel = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
+    const memberStore = useStores('memberStore');
 
     const [taskList, setTaskList] = useState<IssueInfo[]>([]);
     const [bugList, setBugList] = useState<IssueInfo[]>([]);
@@ -113,11 +114,11 @@ const SimpleModePanel = () => {
 
     useEffect(() => {
         loadMyIssue();
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId, memberStore.myUnDoneIssueCount]);
 
     return (
         <div className={s.content_wrap}>
-            <Collapse bordered={true} className={s.collapse} activeKey={["task", "bug"]}>
+            <Collapse bordered={true} className={s.collapse} defaultActiveKey={["task", "bug"]}>
                 <Collapse.Panel key="task" header="待处理任务" extra={
                     <Button onClick={e => {
                         e.stopPropagation();

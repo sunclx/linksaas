@@ -259,6 +259,18 @@ class MemberStore {
       this._showInviteMember = val;
     });
   }
+  //我未完成的issue数量
+  get myUnDoneIssueCount(): number {
+    const member = this.getMember(this.rootStore.userStore.userInfo.userId);
+    if (member == undefined) {
+      return 0;
+    }
+    const state = member.issue_member_state;
+    if (state == undefined) {
+      return 0;
+    }
+    return state.bug_un_exec_count + state.bug_un_check_count + state.task_un_exec_count + state.task_un_check_count;
+  }
 }
 
 export default MemberStore;

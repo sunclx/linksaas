@@ -60,7 +60,7 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
     if (appStore.simpleMode) {
       setOldHeight(winSize.height);
       winSize.width = 500 * deviceRatio;
-      winSize.height = 500 * deviceRatio;
+      winSize.height = 400 * deviceRatio;
       appWindow.setSize(winSize);
       appWindow.setResizable(false);
     } else {
