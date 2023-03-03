@@ -3,7 +3,7 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -29,6 +29,7 @@ interface FormValue {
     testCaseEvCfg: string[] | undefined;
     scriptEvCfg: string[] | undefined;
     requirementEvCfg: string[] | undefined;
+    codeEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -88,6 +89,11 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [requirementEvCfgCheckAll, setRequirementEvCfgCheckAll] = useState(requirementEvCfgValues.length == requirementEvOptionList.length);
     const [requirementEvCfgIndeterminate, setRequirementEvCfgIndeterminate] = useState(requirementEvCfgValues.length > 0 && requirementEvCfgValues.length < requirementEvOptionList.length);
 
+    const codeEvCfgValues = genCodeEvCfgValues(props.subscribe.event_cfg.code_ev_cfg);
+    const [codeEvCfgCheckAll, setCodeEvCfgCheckAll] = useState(codeEvCfgValues.length == codeEvOptionList.length);
+    const [codeEvCfgIndeterminate, setCodeEvCfgIndeterminate] = useState(codeEvCfgValues.length > 0 && codeEvCfgValues.length < codeEvOptionList.length);
+
+
     const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -112,6 +118,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 test_case_ev_cfg: calcTestCaseEvCfg(formValue.testCaseEvCfg),
                 script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
+                code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
             },
         }));
         props.onOk();
@@ -141,6 +148,8 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "robotEvCfg": robotEvCfgValues,
                     "spritEvCfg": spritEvCfgValues,
                     "testCaseEvCfg": testCaseEvCfgValues,
+                    "requirementEvCfg": requirementEvCfgValues,
+                    "codeEvCfg": codeEvCfgValues,
                 }}>
                     <Form.Item label="订阅名称" name="chatBotName" rules={[{ required: true }]}>
                         <Input defaultValue={props.subscribe.chat_bot_name} />
@@ -467,6 +476,31 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setTestCaseEvCfgCheckAll(false);
                                 setTestCaseEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={codeEvCfgIndeterminate} checked={codeEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setCodeEvCfgIndeterminate(false);
+                        if (codeEvCfgCheckAll) {
+                            setCodeEvCfgCheckAll(false);
+                            form.setFieldValue("codeEvCfg", []);
+                        } else {
+                            setCodeEvCfgCheckAll(true);
+                            form.setFieldValue("codeEvCfg", codeEvOptionList.map(item => item.value));
+                        }
+                    }}>代码事件</Checkbox>} name="codeEvCfg">
+                        <Checkbox.Group options={codeEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setCodeEvCfgCheckAll(false);
+                                setCodeEvCfgIndeterminate(false);
+                            } else if (values.length == codeEvOptionList.length) {
+                                setCodeEvCfgCheckAll(true);
+                                setCodeEvCfgIndeterminate(false);
+                            } else {
+                                setCodeEvCfgCheckAll(false);
+                                setCodeEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>
