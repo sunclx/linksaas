@@ -74,6 +74,24 @@ class AppStore {
     });
   }
 
+  //显示代码评论
+  private _codeCommentThreadId = "";
+  private _codeCommentId = "";
+
+  setCodeCommentInfo(threadId: string, commentId: string) {
+    runInAction(() => {
+      this._codeCommentThreadId = threadId;
+      this._codeCommentId = commentId;
+    });
+  }
+
+  get codeCommentThreadId(): string {
+    return this._codeCommentThreadId;
+  }
+
+  get codeCommentId(): string {
+    return this._codeCommentId;
+  }
 }
 
 export default AppStore;

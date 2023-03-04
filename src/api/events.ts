@@ -19,6 +19,7 @@ export const EVENT_TYPE_EARTHLY: EVENT_TYPE = 11;       // ci/cd
 export const EVENT_TYPE_TEST_CASE: EVENT_TYPE = 12;     //测试用例
 export const EVENT_TYPE_SCRIPT: EVENT_TYPE = 13;        //服务端脚本
 export const EVENT_TYPE_REQUIRE_MENT: EVENT_TYPE = 14; //需求
+export const EVENT_TYPE_CODE: EVENT_TYPE = 15; //代码相关
 export const EVENT_TYPE_GITLAB: EVENT_TYPE = 100; //gitlab事件
 export const EVENT_TYPE_GITHUB: EVENT_TYPE = 101; //github事件
 export const EVENT_TYPE_GITEA: EVENT_TYPE = 102; //gitea事件
@@ -44,6 +45,8 @@ export const EVENT_REF_TYPE_REPO: EVENT_REF_TYPE = 10;
 export const EVENT_REF_TYPE_TEST_CASE: EVENT_REF_TYPE = 11;
 export const EVENT_REF_TYPE_SCRIPT: EVENT_REF_TYPE = 12;
 export const EVENT_REF_TYPE_REQUIRE_MENT: EVENT_REF_TYPE = 13;
+export const EVENT_REF_TYPE_CODE_COMMENT_THREAD: EVENT_REF_TYPE = 14;
+
 
 export type DayEventStatusItem = {
   day: number;

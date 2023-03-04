@@ -1,5 +1,5 @@
 import type { CheckboxOptionType } from 'antd';
-import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg, ScriptEvCfg, RequirementEvCfg } from '@/api/events_subscribe';
+import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg, ScriptEvCfg, RequirementEvCfg, CodeEvCfg } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
     {
@@ -1360,7 +1360,7 @@ export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
         retList.push("link_issue");
     }
     if (cfg.unlink_issue) {
-        retList.push("unlink_issue"); 
+        retList.push("unlink_issue");
     }
     return retList;
 }
@@ -1661,6 +1661,56 @@ export const genTestCaseEvCfgValues = (cfg: TestCaseEvCfg): string[] => {
     }
     if (cfg.update_content) {
         retList.push("updateContent");
+    }
+    return retList;
+};
+
+export const codeEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "增加评论",
+        value: "addComment",
+    },
+    {
+        label: "更新评论",
+        value: "updateComment",
+    },
+    {
+        label: "删除评论",
+        value: "removeComment",
+    }
+];
+
+export const calcCodeEvCfg = (values: string[] | undefined): CodeEvCfg => {
+    const ret: CodeEvCfg = {
+        add_comment: false,
+        update_comment: false,
+        remove_comment: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "addComment") {
+            ret.add_comment = true;
+        } else if (value == "updateComment") {
+            ret.update_comment = true;
+        } else if (value == "removeComment") {
+            ret.remove_comment = true;
+        }
+    });
+    return ret;
+};
+
+export const genCodeEvCfgValues = (cfg: CodeEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.add_comment) {
+        retList.push("addComment");
+    }
+    if (cfg.update_comment) {
+        retList.push("updateComment");
+    }
+    if (cfg.remove_comment) {
+        retList.push("removeComment");
     }
     return retList;
 };

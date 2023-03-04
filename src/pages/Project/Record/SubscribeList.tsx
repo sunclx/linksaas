@@ -11,7 +11,7 @@ import { request } from "@/utils/request";
 import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
-import { bookShelfEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./components/constants";
+import { bookShelfEvOptionList, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
 
@@ -72,11 +72,6 @@ const SubscribeList = () => {
                         <div className={s.list_item} key={item.subscribe_id}>
                             <div className={s.list_hd}>
                                 <div className={s.list_title}>{item.chat_bot_name}</div>
-                                {/* <Button type="link" disabled={projectStore.isAdmin == false} onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setUpdateSubscribe(item);
-                                }}>修改</Button> */}
                                 <div className={s.list_info}>
                                     <div className={s.list_info_item}>
                                         创建人：{item.create_display_name}
@@ -170,6 +165,9 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="测试用例事件">
                                             <Checkbox.Group options={testCaseEvOptionList} defaultValue={genTestCaseEvCfgValues(item.event_cfg.test_case_ev_cfg)} disabled={true} />
+                                        </Form.Item>
+                                        <Form.Item label="代码事件">
+                                            <Checkbox.Group options={codeEvOptionList} defaultValue={genCodeEvCfgValues(item.event_cfg.code_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                     </Form>
                                 </Card>
