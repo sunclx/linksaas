@@ -348,6 +348,33 @@ async fn get_local_api_perm<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn update_setting<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateSettingRequest,
+) -> Result<UpdateSettingResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.update_setting(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_setting_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_setting".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 pub struct ProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -369,6 +396,7 @@ impl<R: Runtime> ProjectApiPlugin<R> {
                 renew_local_api_token,
                 set_local_api_perm,
                 get_local_api_perm,
+                update_setting,
             ]),
         }
     }
