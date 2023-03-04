@@ -3,11 +3,11 @@ import cls from './index.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge, Input, Popover, message } from "antd";
-import { APP_PROJECT_CHAT_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
 import { FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
-import type { ProjectInfo } from "@/api/project";
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT, ProjectInfo } from "@/api/project";
 import { useSetState } from "ahooks";
 import ActionModal from '../ActionModal';
 import Button from '../Button';
@@ -195,12 +195,20 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                     e.preventDefault();
                     if (docSpaceStore.inEdit) {
                         docSpaceStore.showCheckLeave(() => {
-                            history.push(APP_PROJECT_CHAT_PATH);
+                            if([LAYOUT_TYPE_CHAT_AND_KB,LAYOUT_TYPE_CHAT].includes(item.setting.layout_type)){
+                                history.push(APP_PROJECT_CHAT_PATH);
+                            }else if([LAYOUT_TYPE_KB_AND_CHAT,LAYOUT_TYPE_KB].includes(item.setting.layout_type)){
+                                history.push(APP_PROJECT_KB_DOC_PATH);
+                            }
                             projectStore.setCurProjectId(item.project_id);
                         });
                         return;
                     }
-                    history.push(APP_PROJECT_CHAT_PATH);
+                    if([LAYOUT_TYPE_CHAT_AND_KB,LAYOUT_TYPE_CHAT].includes(item.setting.layout_type)){
+                        history.push(APP_PROJECT_CHAT_PATH);
+                    }else if([LAYOUT_TYPE_KB_AND_CHAT,LAYOUT_TYPE_KB].includes(item.setting.layout_type)){
+                        history.push(APP_PROJECT_KB_DOC_PATH);
+                    }
                     projectStore.setCurProjectId(item.project_id);
                 }}>&nbsp;{item.basic_info.project_name} </span>
                 {appStore.simpleMode == false && (

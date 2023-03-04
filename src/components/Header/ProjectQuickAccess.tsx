@@ -1,6 +1,6 @@
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
@@ -10,6 +10,7 @@ import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_D
 import { LinkChannelInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 
 const MENU_KEY_SHOW_TOOL_PROJECT_INFO = "toolbar.prjInfo.show"; //查看右侧工具栏项目信息
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
@@ -59,12 +60,16 @@ const ProjectQuickAccess = () => {
 
     const history = useHistory();
 
-    const items: MenuProps['items'] = [
-        {
-            key: MENU_KEY_SHOW_TOOL_PROJECT_INFO,
-            label: "查看项目信息",
-        },
-        {
+    const [items, setItems] = useState<MenuProps['items']>([]);
+
+    const calcItems = () => {
+        const tmpItems: MenuProps['items'] = [
+            {
+                key: MENU_KEY_SHOW_TOOL_PROJECT_INFO,
+                label: "查看项目信息",
+            },
+        ];
+        const memberItem = {
             key: "member",
             label: "成员",
             children: [
@@ -81,14 +86,7 @@ const ProjectQuickAccess = () => {
                     key: MENU_KEY_SHOW_TOOL_BAR_GOAL,
                     label: "查看成员目标",
                 },
-                {
-                    key: MENU_KEY_SHOW_TOOL_BAR_APPRAISE,
-                    label: "查看成员互评",
-                },
-                {
-                    key: MENU_KEY_SHOW_TOOL_BAR_AWARD,
-                    label: "查看成员贡献",
-                },
+
                 {
                     key: "members",
                     label: "成员列表",
@@ -98,54 +96,77 @@ const ProjectQuickAccess = () => {
                     })),
                 }
             ]
-        },
-        {
-            key: "channel",
-            label: "沟通",
-            children: [
-                {
-                    key: MENU_KEY_CREATE_CHANNEL,
-                    label: "创建频道",
-                },
-                {
-                    key: "channels",
-                    label: "频道列表",
-                    children: channelStore.channelList.map(item => ({
-                        key: `${MENU_KEY_CHANNEL_PREFIX}${item.channelInfo.channel_id}`,
-                        label: `${item.channelInfo.basic_info.channel_name}(${item.channelInfo.closed ? "关闭状态" : "激活状态"})`,
-                    }))
-                },
-            ],
-        },
-        {
-            key: "kb",
-            label: "知识库",
-            children: [
-                {
-                    key: "doc",
-                    label: "文档",
-                    children: [
-                        {
-                            key: MENU_KEY_KB_DOC_SPACE,
-                            label: "列出文档",
-                        },
-                        {
-                            key: MENU_KEY_KB_DOC_RECYCLE,
-                            label: "查看回收站"
-                        },
-                        {
-                            key: MENU_KEY_CREATE_DOC,
-                            label: "创建文档",
-                        },
-                    ],
-                },
-                {
-                    key: MENU_KEY_KB_BOOK_SHELF,
-                    label: "电子书库",
-                },
-            ],
-        },
-        {
+        };
+        if (projectStore.curProject?.setting.disable_member_appraise != true) {
+            memberItem.children.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_APPRAISE,
+                label: "查看成员互评",
+            });
+        }
+        memberItem.children.push({
+            key: MENU_KEY_SHOW_TOOL_BAR_AWARD,
+            label: "查看成员贡献",
+        });
+        memberItem.children.push({
+            key: "members",
+            label: "成员列表",
+            children: memberStore.memberList.map(item => ({
+                key: `${MENU_KEY_MEMBER_PREFIX}${item.member.member_user_id}`,
+                label: item.member.display_name,
+            })),
+        });
+        tmpItems.push(memberItem);
+        if ([LAYOUT_TYPE_CHAT_AND_KB,LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+            tmpItems.push({
+                key: "channel",
+                label: "沟通",
+                children: [
+                    {
+                        key: MENU_KEY_CREATE_CHANNEL,
+                        label: "创建频道",
+                    },
+                    {
+                        key: "channels",
+                        label: "频道列表",
+                        children: channelStore.channelList.map(item => ({
+                            key: `${MENU_KEY_CHANNEL_PREFIX}${item.channelInfo.channel_id}`,
+                            label: `${item.channelInfo.basic_info.channel_name}(${item.channelInfo.closed ? "关闭状态" : "激活状态"})`,
+                        }))
+                    },
+                ],
+            });
+        }
+        if([LAYOUT_TYPE_CHAT_AND_KB,LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+            tmpItems.push({
+                key: "kb",
+                label: "知识库",
+                children: [
+                    {
+                        key: "doc",
+                        label: "文档",
+                        children: [
+                            {
+                                key: MENU_KEY_KB_DOC_SPACE,
+                                label: "列出文档",
+                            },
+                            {
+                                key: MENU_KEY_KB_DOC_RECYCLE,
+                                label: "查看回收站"
+                            },
+                            {
+                                key: MENU_KEY_CREATE_DOC,
+                                label: "创建文档",
+                            },
+                        ],
+                    },
+                    {
+                        key: MENU_KEY_KB_BOOK_SHELF,
+                        label: "电子书库",
+                    },
+                ],
+            });
+        }
+        tmpItems.push({
             key: "requirement",
             label: "项目需求",
             children: [
@@ -158,8 +179,8 @@ const ProjectQuickAccess = () => {
                     label: "创建项目需求",
                 },
             ],
-        },
-        {
+        });
+        tmpItems.push({
             key: "task",
             label: "任务",
             children: [
@@ -176,8 +197,8 @@ const ProjectQuickAccess = () => {
                     label: "创建任务",
                 }
             ],
-        },
-        {
+        });
+        tmpItems.push({
             key: "bug",
             label: "缺陷",
             children: [
@@ -194,38 +215,44 @@ const ProjectQuickAccess = () => {
                     label: "创建缺陷",
                 }
             ],
-        },
-        {
-            key: MENU_KEY_SHOW_TOOL_BAR_TEST_CASE,
-            label: "测试用例",
-        },
-        {
-            key: "sprit",
-            label: "迭代",
-            children: [
-                {
-                    key: MENU_KEY_SHOW_TOOL_BAR_SPRIT,
-                    label: "查看迭代列表",
-                },
-                {
-                    key: MENU_KEY_CREATE_SPRIT,
-                    label: "创建迭代",
-                }
-            ]
-        },
-        {
-            key: MENU_KEY_SHOW_TOOL_BAR_ROBOT,
-            label: "服务器代理列表",
-        },
-        {
-            key: MENU_KEY_SHOW_TOOL_BAR_SCRIPT,
-            label: "服务端脚本列表",
-        },
-        {
-            key: MENU_KEY_SHOW_TOOL_BAR_EARTHLY,
-            label: "代码仓库列表",
-        },
-        {
+        });
+        if(projectStore.curProject?.setting.disable_test_case != true){
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_TEST_CASE,
+                label: "测试用例",
+            }); 
+        }
+        if(projectStore.curProject?.setting.disable_sprit != true){
+            tmpItems.push({
+                key: "sprit",
+                label: "迭代",
+                children: [
+                    {
+                        key: MENU_KEY_SHOW_TOOL_BAR_SPRIT,
+                        label: "查看迭代列表",
+                    },
+                    {
+                        key: MENU_KEY_CREATE_SPRIT,
+                        label: "创建迭代",
+                    }
+                ]
+            });
+        }
+        if(projectStore.curProject?.setting.disable_server_agent != true){
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_ROBOT,
+                label: "服务器代理列表",
+            });
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_SCRIPT,
+                label: "服务端脚本列表",
+            });
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_EARTHLY,
+                label: "代码仓库列表",
+            });
+        }
+        tmpItems.push({
             key: "event",
             label: "研发行为",
             children: [
@@ -236,18 +263,23 @@ const ProjectQuickAccess = () => {
                 {
                     key: MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE,
                     label: "订阅研发行为",
+                    disabled:projectStore.isAdmin == false,
                 },
             ],
-        },
-        {
-            key: MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS,
-            label: "查看第三方接入",
-        },
-        {
-            key: MENU_KEY_SHOW_TOOL_BAR_APP,
-            label: "查看项目应用",
-        },
-        {
+        });
+        if(projectStore.curProject?.setting.disable_ext_event != true){
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS,
+                label: "查看第三方接入",
+            });
+        }
+        if(projectStore.curProject?.setting.disable_app_store != true){
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_APP,
+                label: "查看项目应用",
+            });
+        }
+        tmpItems.push({
             key: "localApi",
             label: "本地接口",
             children: [
@@ -260,8 +292,9 @@ const ProjectQuickAccess = () => {
                     label: "调试本地接口",
                 }
             ]
-        }
-    ];
+        });
+        setItems(tmpItems);
+    };
 
     const openApiConsole = async () => {
         const label = "localapi"
@@ -308,14 +341,14 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_KB_DOC_SPACE:
                 history.push(APP_PROJECT_KB_DOC_PATH);
-                if(appStore.simpleMode){
+                if (appStore.simpleMode) {
                     appStore.simpleMode = false;
                 }
                 docSpaceStore.showDocList("", false);
                 break;
             case MENU_KEY_KB_DOC_RECYCLE:
                 history.push(APP_PROJECT_KB_DOC_PATH);
-                if(appStore.simpleMode){
+                if (appStore.simpleMode) {
                     appStore.simpleMode = false;
                 }
                 docSpaceStore.showDocList("", true);
@@ -405,6 +438,9 @@ const ProjectQuickAccess = () => {
         }
     }
 
+    useEffect(()=>{
+        calcItems();
+    },[projectStore.curProject?.setting]);
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
             <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 0px" }}>

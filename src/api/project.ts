@@ -67,6 +67,7 @@ export type ProjectInfo = {
   require_ment_fs_id: string;
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
+  setting: Setting;
 };
 
 export type ListResponse = {
