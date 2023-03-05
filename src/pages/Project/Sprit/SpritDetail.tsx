@@ -19,6 +19,7 @@ import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
 import LinkDocPanel from "./components/LinkDocPanel";
 import { EditSelect } from "@/components/EditCell/EditSelect";
+import { LAYOUT_TYPE_KB } from "@/api/project";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -89,7 +90,7 @@ const SpritDetail = () => {
                     {spritInfo !== null && (<div>
                         <EditSelect
                             width="150px"
-                            editable={projectStore.isAdmin}
+                            editable={projectStore.isAdmin && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB}
                             curValue={spritInfo?.link_channel_id ?? ""}
                             itemList={[
                                 { value: "", label: "-", color: "black" },
@@ -132,9 +133,11 @@ const SpritDetail = () => {
                                     console.log(e);
                                 }
                                 return false;
-                            }} showEditIcon={true} allowClear={false} />
+                            }} showEditIcon={projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB} allowClear={false} />
                         {((spritInfo?.link_channel_id.length ?? 0) > 0) && (
-                            <Button type="link" style={{ marginLeft: "20px" }} onClick={e => {
+                            <Button type="link" style={{ marginLeft: "20px" }} 
+                            disabled={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB}
+                            onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 linkAuxStore.goToLink(new LinkChannelInfo("", projectStore.curProjectId, spritInfo.link_channel_id ?? ""), history);

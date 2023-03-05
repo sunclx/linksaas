@@ -3,11 +3,13 @@ import { Form, Input, message } from 'antd';
 import type { FC } from 'react';
 import React from 'react';
 import Button from '../Button';
-import type { BasicProjectInfo } from '@/api/project';
+import { BasicProjectInfo, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
 import { create } from '@/api/project';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
 import { useSimpleEditor } from '@/components/Editor';
+import { useHistory } from 'react-router-dom';
+import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
 
 type CreatedProjectProps = {
   visible: boolean;
@@ -16,9 +18,14 @@ type CreatedProjectProps = {
 
 const CreatedProject: FC<CreatedProjectProps> = (props) => {
   const { visible, onChange } = props;
+
+  const history = useHistory();
+
   const [form] = Form.useForm();
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+  const memberStore = useStores('memberStore');
+  const appStore = useStores('appStore');
 
   const { editor, editorRef } = useSimpleEditor("请输入项目描述");
 
@@ -34,7 +41,15 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
       message.success('创建项目成功');
       await projectStore.updateProject(res.project_id);
       onChange(false);
-    } catch (error) {}
+      projectStore.setCurProjectId(res.project_id).then(() => {
+        if (memberStore.memberList.length == 1) {
+          history.push(APP_PROJECT_CHAT_PATH + "/member");
+        } else {
+          history.push(APP_PROJECT_CHAT_PATH);
+        }
+        appStore.showProjectSetting = true;
+      });
+    } catch (error) { }
   };
 
   return (

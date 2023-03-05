@@ -92,6 +92,19 @@ class AppStore {
   get codeCommentId(): string {
     return this._codeCommentId;
   }
+
+  //显示项目设置
+  private _showProjectSetting = false;
+
+  get showProjectSetting(): boolean {
+    return this._showProjectSetting;
+  }
+
+  set showProjectSetting(val: boolean) {
+    runInAction(() => {
+      this._showProjectSetting = val;
+    });
+  }
 }
 
 export default AppStore;
