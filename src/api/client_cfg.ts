@@ -25,6 +25,8 @@ export type ServerCap = {
   project_app: boolean;
   project_book_store: boolean;
   project_book_shelf: boolean;
+  project_award: boolean;
+  project_setting: boolean;
 };
 
 export type GetCfgResponse = {

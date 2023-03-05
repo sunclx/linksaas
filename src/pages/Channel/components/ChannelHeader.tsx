@@ -19,7 +19,7 @@ const ChannelHeader = observer(() => {
 
   return (
     <header className={styles.header}>
-      <h2 className={styles.title}>
+      <h2 className={styles.title} title={`沟通  #${channelStore.curChannel?.channelInfo.basic_info.channel_name || ''}`}>
         沟通&nbsp;&nbsp;#{channelStore.curChannel?.channelInfo.basic_info.channel_name || ''}
       </h2>
       {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && channelStore.curChannelId != '' && (
@@ -32,10 +32,6 @@ const ChannelHeader = observer(() => {
           open={visible}
           trigger="hover"
         >
-          {/* <a className={styles.btn_member}>
-            频道成员
-            <i className={styles.icon_arrow} />
-          </a> */}
           <Groupsvg />
         </Popover>
       )}

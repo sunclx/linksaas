@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import moment from 'moment';
 import { useStores } from "@/hooks";
 import ShareModal from "./ShareModal";
+import { LAYOUT_TYPE_KB } from "@/api/project";
 
 
 interface MarkListProps {
@@ -32,7 +33,9 @@ const MarkList: React.FC<MarkListProps> = (props) => {
 
                     <div className={s.links_wrap}>
                         <div className={s.links}>
-                            <Button type="link" onClick={e => {
+                            <Button type="link" 
+                            disabled={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB}
+                            onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setSendMarkId(mark.mark_id);
