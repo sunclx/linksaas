@@ -3,7 +3,7 @@ import { Form, Input, message } from 'antd';
 import type { FC } from 'react';
 import React from 'react';
 import Button from '../Button';
-import { BasicProjectInfo, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
+import type { BasicProjectInfo } from '@/api/project';
 import { create } from '@/api/project';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
