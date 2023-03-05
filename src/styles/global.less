@@ -42,25 +42,22 @@ code {
 }
 
 &::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
   background: transparent;
 }
 
-&:hover {
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    border-radius: 8px;
-  }
-  &::-webkit-scrollbar-track-piece {
-    width: 8px;
-    height: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    width: 8px;
-    height: 8px;
-    border-radius: 8px;
-  }
+&::-webkit-scrollbar-track-piece {
+  width: 8px;
+  height: 8px;
+}
+
+&::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
 }
 
 .table_state_plan {
