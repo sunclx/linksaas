@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { Checkbox, Form, Modal, Radio, Space, Tabs ,message} from "antd";
+import { Checkbox, Form, Modal, Radio, Space, Tabs, message } from "antd";
 import { useStores } from "@/hooks";
 import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB } from "@/api/project";
 import type { LAYOUT_TYPE } from "@/api/project";
@@ -44,15 +44,16 @@ const ProjectSettingModal = () => {
         appStore.showProjectSetting = false;
         message.info("修改项目设置成功");
         //特殊处理
-        if(layoutType == LAYOUT_TYPE_CHAT && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)){
+        if (layoutType == LAYOUT_TYPE_CHAT && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
             history.push(APP_PROJECT_CHAT_PATH);
-        }else if(layoutType == LAYOUT_TYPE_KB && !location.pathname.startsWith(APP_PROJECT_KB_PATH)){
+        } else if (layoutType == LAYOUT_TYPE_KB && !location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
             history.push(APP_PROJECT_KB_DOC_PATH);
         }
     };
 
     return (
-        <Modal open title={`${projectStore.curProject?.basic_info.project_name ?? ""} 项目设置`}
+        <Modal open mask={false}
+            title={`${projectStore.curProject?.basic_info.project_name ?? ""} 项目设置`}
             bodyStyle={{ paddingTop: 0 }}
             okText="更新"
             onCancel={e => {
@@ -60,7 +61,7 @@ const ProjectSettingModal = () => {
                 e.preventDefault();
                 appStore.showProjectSetting = false;
             }}
-            onOk={e=>{
+            onOk={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 updateSetting();

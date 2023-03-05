@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Badge, Divider, Tooltip } from 'antd';
 
@@ -8,8 +8,12 @@ import { observer } from 'mobx-react';
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 
 
-const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = (props) => {
+const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
   const history = useHistory();
+  const appStore = useStores('appStore');
+
+  const [showTip, setShowTip] = useState<boolean | undefined>(undefined);
+
   const current = props.pathname.includes(props.id);
   const gotoPage = (id: string) => {
     if (props.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
@@ -19,15 +23,24 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
     } else if (props.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       history.push(APP_PROJECT_CHAT_PATH + '/' + id);
     }
-
   };
+
+  useEffect(() => {
+    if (appStore.showProjectSetting) {
+      setShowTip(true);
+    } else {
+      setShowTip(false);
+      setTimeout(() => setShowTip(undefined), 100);
+    }
+  }, [appStore.showProjectSetting]);
 
   return (
     <Tooltip
       title={<span>{props.title}</span>}
       placement="left"
-      color="#f0f0f0"
-      overlayInnerStyle={{ color: '#555' }}
+      color="orange"
+      overlayInnerStyle={{ color: 'black' }}
+      open={showTip}
     >
       <div
         data-menu-id={props.id}
@@ -42,7 +55,7 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
       </div>
     </Tooltip>
   );
-};
+});
 
 const Toolbar: React.FC = observer(() => {
   const location = useLocation();

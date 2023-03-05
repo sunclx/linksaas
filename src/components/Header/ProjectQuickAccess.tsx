@@ -86,7 +86,6 @@ const ProjectQuickAccess = () => {
                     key: MENU_KEY_SHOW_TOOL_BAR_GOAL,
                     label: "查看成员目标",
                 },
-
                 {
                     key: "members",
                     label: "成员列表",
@@ -107,16 +106,8 @@ const ProjectQuickAccess = () => {
             key: MENU_KEY_SHOW_TOOL_BAR_AWARD,
             label: "查看成员贡献",
         });
-        memberItem.children.push({
-            key: "members",
-            label: "成员列表",
-            children: memberStore.memberList.map(item => ({
-                key: `${MENU_KEY_MEMBER_PREFIX}${item.member.member_user_id}`,
-                label: item.member.display_name,
-            })),
-        });
         tmpItems.push(memberItem);
-        if ([LAYOUT_TYPE_CHAT_AND_KB,LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+        if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
             tmpItems.push({
                 key: "channel",
                 label: "沟通",
@@ -136,7 +127,7 @@ const ProjectQuickAccess = () => {
                 ],
             });
         }
-        if([LAYOUT_TYPE_CHAT_AND_KB,LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+        if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
             tmpItems.push({
                 key: "kb",
                 label: "知识库",
@@ -216,13 +207,13 @@ const ProjectQuickAccess = () => {
                 }
             ],
         });
-        if(projectStore.curProject?.setting.disable_test_case != true){
+        if (projectStore.curProject?.setting.disable_test_case != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_TEST_CASE,
                 label: "测试用例",
-            }); 
+            });
         }
-        if(projectStore.curProject?.setting.disable_sprit != true){
+        if (projectStore.curProject?.setting.disable_sprit != true) {
             tmpItems.push({
                 key: "sprit",
                 label: "迭代",
@@ -238,7 +229,7 @@ const ProjectQuickAccess = () => {
                 ]
             });
         }
-        if(projectStore.curProject?.setting.disable_server_agent != true){
+        if (projectStore.curProject?.setting.disable_server_agent != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_ROBOT,
                 label: "服务器代理列表",
@@ -263,17 +254,17 @@ const ProjectQuickAccess = () => {
                 {
                     key: MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE,
                     label: "订阅研发行为",
-                    disabled:projectStore.isAdmin == false,
+                    disabled: projectStore.isAdmin == false,
                 },
             ],
         });
-        if(projectStore.curProject?.setting.disable_ext_event != true){
+        if (projectStore.curProject?.setting.disable_ext_event != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS,
                 label: "查看第三方接入",
             });
         }
-        if(projectStore.curProject?.setting.disable_app_store != true){
+        if (projectStore.curProject?.setting.disable_app_store != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_APP,
                 label: "查看项目应用",
@@ -438,9 +429,9 @@ const ProjectQuickAccess = () => {
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         calcItems();
-    },[projectStore.curProject?.setting]);
+    }, [projectStore.curProject?.setting, projectStore.curProjectId, memberStore.memberList, channelStore.channelList]);
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
             <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 0px" }}>
