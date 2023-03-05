@@ -41,25 +41,27 @@ code {
   display: none;
 }
 
-// .ant-table-body,
-// .detailsTimeline {
-// 全局滚动条
 &::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
   background: transparent;
 }
 
 &:hover {
-  &::-webkit-scrollbar-thumb {
-    // background: rgb(0 0 0 / 80%);
-    background: #c1c1c1;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
     border-radius: 8px;
-    // opacity: 0.1;
+  }
+  &::-webkit-scrollbar-track-piece {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
   }
 }
-
-// }
 
 .table_state_plan {
   padding: 5px 12px;
