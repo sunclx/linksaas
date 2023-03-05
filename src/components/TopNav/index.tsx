@@ -24,7 +24,7 @@ const SettingBtn = observer(() => {
   return (
     <div className={s.setting_btn_wrap}>
       {projectStore.isAdmin && (
-        <Tooltip title="项目设置" placement='left' color='orange' overlayInnerStyle={{ color: 'black',marginTop:"10px" }} open={appStore.showProjectSetting}>
+        <Tooltip title="项目设置" placement='left' color='orange' overlayInnerStyle={{ color: 'black', marginTop: "10px" }} open={appStore.showProjectSetting}>
           <Button type="link" className={s.setting_btn} onClick={e => {
             e.stopPropagation();
             e.preventDefault();
@@ -47,13 +47,15 @@ const TopNav = () => {
 
   const chatTabPanel = (
     <Tabs.TabPane tab={
-      <Tooltip title="主界面: 沟通面板" open={appStore.showProjectSetting} placement='left' color="orange" overlayInnerStyle={{ color: 'black' }}>
+      <Tooltip title="主界面: 沟通面板" open={appStore.showProjectSetting}
+        placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB_AND_CHAT ? "right" : "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
         <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_chat_active : s.tab_chat}><CommentOutlined />沟通</span>
       </Tooltip>
     } key={APP_PROJECT_CHAT_PATH} />);
   const kbTabPanel = (
     <Tabs.TabPane tab={
-      <Tooltip title="主界面: 知识库面板" open={appStore.showProjectSetting} placement='right' color="orange" overlayInnerStyle={{ color: 'black' }}>
+      <Tooltip title="主界面: 知识库面板" open={appStore.showProjectSetting}
+        placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_CHAT_AND_KB ? "right": "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
         <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_kb : s.tab_kb_active}><FileDoneOutlined />知识库</span>
       </Tooltip>
     } key={APP_PROJECT_KB_PATH} />);
