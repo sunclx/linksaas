@@ -10,6 +10,7 @@ import {
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
+  APP_PROJECT_PATH,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
@@ -24,7 +25,7 @@ import {
   TASK_DETAIL_SUFFIX,
 } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB } from '@/api/project';
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -510,7 +511,7 @@ class LinkAuxStore {
           return;
         }
       }
-      history.push(this.genUrl(pathname, "/record"), {
+      history.push(this.genUrl(eventLink.projectId, pathname, "/record"), {
         eventTime: eventLink.eventTime,
         memberUserId: eventLink.userId,
       } as LinkEventState);
@@ -535,7 +536,7 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
-      history.push(this.genUrl(pathname, TASK_DETAIL_SUFFIX), {
+      history.push(this.genUrl(taskLink.projectId, pathname, TASK_DETAIL_SUFFIX), {
         issueId: taskLink.issueId,
         content: '',
         contextIssueIdList: taskLink.contextIssueIdList,
@@ -561,7 +562,7 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != bugLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(bugLink.projectId);
       }
-      history.push(this.genUrl(pathname, BUG_DETAIL_SUFFIX), {
+      history.push(this.genUrl(bugLink.projectId, pathname, BUG_DETAIL_SUFFIX), {
         issueId: bugLink.issueId,
         content: '',
         contextIssueIdList: bugLink.contextIssueIdList,
@@ -621,7 +622,7 @@ class LinkAuxStore {
       const state: LinkRobotState = {
         robotId: robotLink.robotId,
       };
-      history.push(this.genUrl(pathname, ROBOT_METRIC_SUFFIX), state);
+      history.push(this.genUrl(robotLink.projectId, pathname, ROBOT_METRIC_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_ACTION) {
       const actionLink = link as LinkEarthlyActionInfo;
       if (this.rootStore.projectStore.getProject(actionLink.projectId)?.setting.disable_server_agent == true) {
@@ -634,10 +635,10 @@ class LinkAuxStore {
         repoId: actionLink.repoId,
         actionId: actionLink.actionId,
       };
-      history.push(this.genUrl(pathname, REPO_ACTION_ACTION_DETAIL_SUFFIX), state);
+      history.push(this.genUrl(actionLink.projectId, pathname, REPO_ACTION_ACTION_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_EXEC) {
       const execLink = link as LinkEarthlyExecInfo;
-      if(this.rootStore.projectStore.getProject(execLink.projectId)?.setting.disable_server_agent == true){
+      if (this.rootStore.projectStore.getProject(execLink.projectId)?.setting.disable_server_agent == true) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != execLink.projectId) {
@@ -648,10 +649,10 @@ class LinkAuxStore {
         actionId: execLink.actionId,
         execId: execLink.execId,
       };
-      history.push(this.genUrl(pathname, REPO_ACTION_EXEC_RESULT_SUFFIX), state);
+      history.push(this.genUrl(execLink.projectId, pathname, REPO_ACTION_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
       const bookMarkLink = link as LinkBookMarkInfo;
-      if(this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT){
+      if (this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != bookMarkLink.projectId) {
@@ -661,7 +662,7 @@ class LinkAuxStore {
       history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
-      if(this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_sprit == true){
+      if (this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_sprit == true) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
@@ -670,10 +671,10 @@ class LinkAuxStore {
       const state: LinkSpritState = {
         spritId: spritLink.spritId,
       };
-      history.push(this.genUrl(pathname, SPRIT_DETAIL_SUFFIX), state);
+      history.push(this.genUrl(spritLink.projectId, pathname, SPRIT_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY) {
       const entryLink = link as LinkTestCaseEntryInfo;
-      if(this.rootStore.projectStore.getProject(entryLink.projectId)?.setting.disable_test_case == true){
+      if (this.rootStore.projectStore.getProject(entryLink.projectId)?.setting.disable_test_case == true) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {
@@ -682,10 +683,10 @@ class LinkAuxStore {
       const state: LinkTestCaseEntryState = {
         entryId: entryLink.entryId,
       };
-      history.push(this.genUrl(pathname, "/testcase"), state);
+      history.push(this.genUrl(entryLink.entryId, pathname, "/testcase"), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
       const scriptSuiteLink = link as LinkScriptSuiteInfo;
-      if(this.rootStore.projectStore.getProject(scriptSuiteLink.projectId)?.setting.disable_server_agent == true){
+      if (this.rootStore.projectStore.getProject(scriptSuiteLink.projectId)?.setting.disable_server_agent == true) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != scriptSuiteLink.projectId) {
@@ -697,10 +698,10 @@ class LinkAuxStore {
         scriptTime: scriptSuiteLink.scriptTime,
         tab: scriptSuiteLink.tab,
       };
-      history.push(this.genUrl(pathname, "/script/detail"), state);
+      history.push(this.genUrl(scriptSuiteLink.projectId, pathname, "/script/detail"), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC) {
       const scriptExecLink = link as LinkScriptExecInfo;
-      if(this.rootStore.projectStore.getProject(scriptExecLink.projectId)?.setting.disable_server_agent == true){
+      if (this.rootStore.projectStore.getProject(scriptExecLink.projectId)?.setting.disable_server_agent == true) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != scriptExecLink.projectId) {
@@ -710,7 +711,7 @@ class LinkAuxStore {
         scriptSuiteId: scriptExecLink.scriptSuiteId,
         execId: scriptExecLink.execId,
       };
-      history.push(this.genUrl(pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
+      history.push(this.genUrl(scriptExecLink.projectId, pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as LinkRequirementInfo;
       if (this.rootStore.projectStore.curProjectId != reqLink.projectId) {
@@ -721,13 +722,20 @@ class LinkAuxStore {
         requirementId: reqLink.requirementId,
         content: "",
       };
-      history.push(this.genUrl(pathname, REQUIRE_MENT_DETAIL_SUFFIX), state);
+      history.push(this.genUrl(reqLink.projectId, pathname, REQUIRE_MENT_DETAIL_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CODE_COMMENT) {
       const commentLink = link as LinkCodeCommentInfo;
       if (this.rootStore.projectStore.curProjectId != commentLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(commentLink.projectId);
       }
       this.rootStore.appStore.setCodeCommentInfo(commentLink.threadId, commentLink.commentId);
+      if (!history.location.pathname.startsWith(APP_PROJECT_PATH)) {
+        if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+          history.push(APP_PROJECT_KB_DOC_PATH);
+        } else {
+          history.push(APP_PROJECT_CHAT_PATH);
+        }
+      }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -739,7 +747,7 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    if(this.rootStore.projectStore.getProject(projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT){
+    if (this.rootStore.projectStore.getProject(projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT) {
       return;
     }
     if (projectId != this.rootStore.projectStore.curProjectId) {
@@ -766,7 +774,7 @@ class LinkAuxStore {
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
-    history.push(this.genUrl(history.location.pathname, TASK_CREATE_SUFFIX), {
+    history.push(this.genUrl(projectId, history.location.pathname, TASK_CREATE_SUFFIX), {
       issueId: '',
       content: content,
       contextIssueIdList: [],
@@ -781,7 +789,7 @@ class LinkAuxStore {
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
-    history.push(this.genUrl(history.location.pathname, BUG_CREATE_SUFFIX), {
+    history.push(this.genUrl(projectId, history.location.pathname, BUG_CREATE_SUFFIX), {
       issueId: '',
       content: content,
       contextIssueIdList: [],
@@ -801,7 +809,7 @@ class LinkAuxStore {
       requirementId: '',
       cateId: cateId,
     };
-    history.push(this.genUrl(history.location.pathname, REQUIRE_MENT_CREATE_SUFFIX), state);
+    history.push(this.genUrl(projectId, history.location.pathname, REQUIRE_MENT_CREATE_SUFFIX), state);
   }
 
   //跳转到任务列表
@@ -809,7 +817,7 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/task"), state);
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/task"), state);
   }
 
   //跳转到缺陷列表
@@ -817,51 +825,51 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/bug"), state);
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/bug"), state);
   }
 
   //跳转到服务器代理列表
   goToRobotList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_server_agent == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/robot"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/robot"));
   }
 
   //跳转到迭代列表
   goToSpritList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_sprit == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_sprit == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/sprit"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/sprit"));
   }
 
   //跳转到测试用例列表页
   goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_sprit == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_sprit == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/testcase"), state);
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/testcase"), state);
   }
 
   //跳转到测试结果列表页
   goToTestCaseResultList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_sprit == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_sprit == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/testcase/result"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/testcase/result"));
   }
 
   //跳转到研发行为列表页
@@ -869,7 +877,7 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/record"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record"));
   }
 
   //跳转到研发行为订阅页面
@@ -877,7 +885,7 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/record/subscribe"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record/subscribe"));
   }
 
   //跳转到项目信息页面
@@ -885,7 +893,7 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, `/home?tab=${tab}`));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, `/home?tab=${tab}`));
   }
 
   //跳转到项目成员页面
@@ -893,73 +901,73 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, `/member?tab=${tab}`));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, `/member?tab=${tab}`));
   }
 
   //跳转到成员互评页面
   goToAppriaseList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_member_appraise == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_member_appraise == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/appraise"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appraise"));
   }
 
   //跳转到代码仓库列表
   goToRepoList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_server_agent == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/repo"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/repo"));
   }
 
   //跳转到第三方接入列表
   goToExtEventList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_ext_event == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_ext_event == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/access"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/access"));
   }
 
   //跳转到项目应用
   goToAppList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_app_store == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_app_store == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/appstore"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appstore"));
   }
 
   //跳转到创建服务端脚本页面
   goToCreateScript(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_server_agent == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, SCRIPT_CREATE_SUFFIX));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, SCRIPT_CREATE_SUFFIX));
   }
 
   //跳转到服务端脚本列表页面
   goToScriptList(history: History) {
-    if(this.rootStore.projectStore.curProject?.setting.disable_server_agent == true){
+    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/script"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/script"));
   }
 
   //跳转到项目需求列表页面
@@ -967,10 +975,10 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(history.location.pathname, "/req"));
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/req"));
   }
 
-  private genUrl(pathname: string, suffix: string): string {
+  private genUrl(projectId: string, pathname: string, suffix: string): string {
     if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       return APP_PROJECT_CHAT_PATH + suffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
@@ -978,7 +986,15 @@ class LinkAuxStore {
     } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
       return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
     }
-    return APP_PROJECT_CHAT_PATH + suffix;
+    const projectInfo = this.rootStore.projectStore.getProject(projectId);
+    if (projectInfo == undefined) {
+      return APP_PROJECT_CHAT_PATH + suffix;
+    }
+    if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectInfo.setting.layout_type)) {
+      return APP_PROJECT_KB_DOC_PATH + suffix;
+    } else {
+      return APP_PROJECT_CHAT_PATH + suffix;
+    }
   }
 }
 
