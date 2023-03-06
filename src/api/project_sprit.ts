@@ -36,6 +36,13 @@ export type SpritInfo = {
   link_channel_title: string;
 };
 
+export type BurnDownInfo = {
+  sprit_id: string;
+  day: number;
+  member_user_id: string;
+  remain_minutes: number;
+};
+
 export type ListResponse = {
   code: number;
   err_msg: string;
@@ -95,6 +102,33 @@ export type LinkChannelResponse = {
 export type CancelLinkChannelResponse = {
   code: number;
   err_msg: string;
+};
+
+
+export type UpdateBurnDownRequest = {
+  session_id: string;
+  project_id: string;
+  sprit_id: string;
+  day: number;
+  member_user_id: string;
+  remain_minutes: number;
+};
+
+export type UpdateBurnDownResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type ListBurnDownRequest = {
+  session_id: string;
+  project_id: string;
+  sprit_id: string;
+};
+
+export type ListBurnDownResponse = {
+  code: number;
+  err_msg: string;
+  info_list: BurnDownInfo[];
 };
 
 //创建迭代
@@ -313,6 +347,24 @@ export async function cancel_link_channel(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<CancelLinkChannelResponse>(cmd, {
+    request,
+  });
+}
+
+//更新燃尽图信息
+export async function update_burn_down(request: UpdateBurnDownRequest): Promise<UpdateBurnDownResponse> {
+  const cmd = 'plugin:project_sprit_api|update_burn_down';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateBurnDownResponse>(cmd, {
+    request,
+  });
+}
+
+//列出燃尽图信息
+export async function list_burn_down(request: ListBurnDownRequest): Promise<ListBurnDownResponse> {
+  const cmd = 'plugin:project_sprit_api|list_burn_down';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListBurnDownResponse>(cmd, {
     request,
   });
 }

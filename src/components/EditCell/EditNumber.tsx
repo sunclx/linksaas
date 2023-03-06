@@ -5,7 +5,7 @@ import { CheckOutlined, CloseOutlined, EditOutlined } from "@ant-design/icons";
 
 export interface EditNumberProps {
     editable: boolean;
-    value: number;
+    value?: number;
     onChange: (value: number) => Promise<boolean>;
     showEditIcon: boolean;
     fixedLen?: number;
@@ -25,13 +25,13 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
             }
         }}>
             {!inEdit && (
-                <span title={value.toString()} style={{ cursor: props.editable ? "pointer" : "default" }}>{value.toFixed(props.fixedLen ?? 2)}
+                <span title={(value ?? "-").toString()} style={{ cursor: props.editable ? "pointer" : "default" }}>{value == undefined ? "-" : value.toFixed(props.fixedLen ?? 2)}
                     {props.editable && props.showEditIcon &&
                         <a><EditOutlined /></a>
                     }
                 </span>)}
             {inEdit && (
-                <InputNumber value={value}
+                <InputNumber value={value ?? 0}
                     controls={false}
                     autoFocus={true}
                     precision={props.fixedLen ?? 2}
@@ -46,7 +46,7 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
                             <a onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                props.onChange(value).then(res => {
+                                props.onChange(value ?? -1).then(res => {
                                     if (!res) {
                                         setValue(props.value);
                                     }
@@ -72,7 +72,7 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
                         } else if (e.key == "Enter") {
                             e.stopPropagation();
                             e.preventDefault();
-                            props.onChange(value).then(res => {
+                            props.onChange(value ?? -1).then(res => {
                                 if (!res) {
                                     setValue(props.value);
                                 }

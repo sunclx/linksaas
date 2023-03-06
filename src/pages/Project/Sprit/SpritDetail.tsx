@@ -21,6 +21,7 @@ import LinkDocPanel from "./components/LinkDocPanel";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { LAYOUT_TYPE_KB } from "@/api/project";
 import KanbanPanel from "./components/KanbanPanel";
+import BurnDownPanel from "./components/BurnDownPanel";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -166,6 +167,9 @@ const SpritDetail = () => {
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="甘特图" key="gantt" disabled={!spritStore.allTimeReady}>
                         {activeKey == "gantt" && spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="燃尽图" key="burnDown" disabled={!spritStore.allTimeReady}>
+                        {activeKey == "burnDown" && spritInfo != null && <BurnDownPanel spritInfo={spritInfo}/>}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="统计信息" key="statistics" disabled={!spritStore.allTimeReady}>
                         {activeKey == "statistics" && <StatPanel />}
