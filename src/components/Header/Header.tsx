@@ -86,7 +86,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           </>
         )}
 
-        {appStore.simpleMode == true && (
+        {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
           <div
             className={style.btnSimpleMode}
             onClick={e => {
@@ -95,7 +95,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
               appStore.simpleMode = false;
             }} title='退出精简模式'><ArrowsAltOutlined /></div>
         )}
-        {appStore.simpleMode == false && projectStore.curProjectId != "" && (
+        {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == false && projectStore.curProjectId != "" && (
           <div
             className={style.btnSimpleMode}
             onClick={e => {
