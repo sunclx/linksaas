@@ -126,7 +126,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                 return false;
             }
             return true;
-        })
+        });
         for (const issueId of issueIdList) {
             await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, props.spritId));
         }

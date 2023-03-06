@@ -143,8 +143,8 @@ const Backlog: React.FC<BacklogProps> = (props) => {
   };
 
   const getExtraInfoType = (row: IssueInfo): ExtraTaskInfo | ExtraBugInfo | undefined => {
-    const isTack = issueTypeIsTask(row);
-    return isTack ? row.extra_info.ExtraTaskInfo : row.extra_info.ExtraBugInfo;
+    const isTask = issueTypeIsTask(row);
+    return isTask ? row.extra_info.ExtraTaskInfo : row.extra_info.ExtraBugInfo;
   };
 
   const columns: ColumnsType<IssueInfo> = [
