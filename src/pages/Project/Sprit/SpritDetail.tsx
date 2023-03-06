@@ -20,6 +20,7 @@ import GanttPanel from "./components/GanttPanel";
 import LinkDocPanel from "./components/LinkDocPanel";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { LAYOUT_TYPE_KB } from "@/api/project";
+import KanbanPanel from "./components/KanbanPanel";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -156,6 +157,9 @@ const SpritDetail = () => {
                     }}>
                     <Tabs.TabPane tab="任务/缺陷" key="issue">
                         {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="看板" key="kanban">
+                        {activeKey == "kanban" && <KanbanPanel/>}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="相关文档" key="linkDoc">
                         {activeKey == "linkDoc" && <LinkDocPanel />}
