@@ -57,7 +57,6 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
             });
         },
     }));
-    const [workDayList, setWorkDayList] = useState<number[]>([]);
     const [columns, setColumns] = useState<ColumnsType<MemberBurnDownInfo>>([]);
     const [dataVersion, setDataVersion] = useState(0);
 
@@ -208,7 +207,6 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
                 tmpDayList.push(parseInt(dayTime.format("YYYYMMDD")));
             }
         }
-        setWorkDayList(tmpDayList);
 
         const execUserIdSet = new Set<string>();
         spritStore.taskList.forEach(item => {
