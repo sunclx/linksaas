@@ -27,6 +27,7 @@ import { SupExtension } from '@remirror/extension-sup';
 import { FontSizeExtension } from '@remirror/extension-font-size';
 import { TextColorExtension } from '@remirror/extension-text-color';
 import { TextHighlightExtension } from '@remirror/extension-text-highlight';
+import { MarkdownExtension } from 'remirror/dist-types/extensions';
 
 export const getExtensions = (param?: {
   setShowRemind?: (value: boolean) => void;
@@ -49,6 +50,7 @@ export const getExtensions = (param?: {
     new ReminderUserExtension({ setShow: param?.setShowRemind }),
     new IframeExtension({ collapse: param?.collapse }),
     new CodeExtension({ collapse: param?.collapse }),
+    new MarkdownExtension({copyAsMarkdown: false}),
 
     // Marks
     new HeadingExtension({ defaultLevel: 3, levels: [1, 2, 3, 4, 5, 6] }),
