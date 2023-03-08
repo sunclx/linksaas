@@ -36,12 +36,12 @@ const Workbench: React.FC = () => {
   if (tab == null) {
     tab = "myProject";
   }
+  const userAction = urlParams.get("userAction");
   const spaceId = urlParams.get("spaceId");
 
   const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
   const [activeKey, setActiveKey] = useState(tab);
   const [curKbSpace, setCurKbSpace] = useState<KbSpaceInfo | null>(null);
-  const [userChangeTab, setUserChangeTab] = useState(false);
 
   useMemo(() => {
     projectStore.setCurProjectId('');
@@ -49,9 +49,9 @@ const Workbench: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (userChangeTab == false) {
+    if (userAction == null) {
       if (projectStore.projectList.length == 0) {
-          setActiveKey("myProject");
+        setActiveKey("myProject");
       } else {
         setActiveKey("myIssue");
       }
@@ -64,9 +64,9 @@ const Workbench: React.FC = () => {
         {!userStore.isResetPassword && <InfoCount total={totalMyIssueCount} />}
       </Card>
       <Tabs activeKey={activeKey} className={s.my_wrap} type="card" onChange={key => {
-        setUserChangeTab(true);
-        setActiveKey(key);
         setCurKbSpace(null);
+        setActiveKey(key);
+        history.push(`${WORKBENCH_PATH}?tab=${key}&userAction=true`);
       }}
         tabBarExtraContent={
           <>
@@ -140,11 +140,11 @@ const Workbench: React.FC = () => {
           )}
         </Tabs.TabPane>
         <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;我的微应用</h2>} key="userApp">
-        {activeKey == "userApp" && (
-          <div className={s.content_wrap}>
-            <UserAppList/>
-          </div>
-        )}
+          {activeKey == "userApp" && (
+            <div className={s.content_wrap}>
+              <UserAppList />
+            </div>
+          )}
         </Tabs.TabPane>
         <Tabs.TabPane tab={<h2><ProjectOutlined />&nbsp;我的项目</h2>} key="myProject">
           {activeKey == "myProject" && (

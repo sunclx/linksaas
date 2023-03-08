@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Remirror, useRemirror, EditorComponent } from '@remirror/react';
 import { ThemeProvider } from '@remirror/react';
 import Toolbar from './components/Toolbar';
-import  FloatToolBar  from './components/FloatToolbar';
+import FloatToolBar from './components/FloatToolbar';
 
 import { AllStyledComponent } from '@remirror/styles/emotion';
 
@@ -53,7 +53,12 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
     extensions: getExtensions({
       setShowRemind: (value: boolean) => {
         setShowReminder(value);
-      }
+      },
+      fsId: attrs.fsId,
+      thumbWidth: 200,
+      thumbHeight: 150,
+      ownerType: attrs.ownerType,
+      ownerId: attrs.ownerId,
     }),
     content: newContent,
     stringHandler: 'html',

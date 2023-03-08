@@ -27,16 +27,31 @@ import { SupExtension } from '@remirror/extension-sup';
 import { FontSizeExtension } from '@remirror/extension-font-size';
 import { TextColorExtension } from '@remirror/extension-text-color';
 import { TextHighlightExtension } from '@remirror/extension-text-highlight';
+import { MarkdownExtension } from '@remirror/extension-markdown';
+import type { FILE_OWNER_TYPE } from '@/api/fs';
+import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
+
 
 export const getExtensions = (param?: {
   setShowRemind?: (value: boolean) => void;
   collapse?: boolean;
+  fsId: string;
+  thumbWidth: number;
+  thumbHeight: number;
+  ownerType: FILE_OWNER_TYPE;
+  ownerId: string;
 }) => {
   const retList = [
     // Nodes
     new ParagraphExtension(),
     new HardBreakExtension(),
-    new ImageUploadExtension(),
+    new ImageUploadExtension({
+      fsId: param?.fsId ?? "",
+      thumbWidth: param?.thumbWidth ?? 200,
+      thumbHeight: param?.thumbHeight ?? 150,
+      ownerType: param?.ownerType ?? FILE_OWNER_TYPE_NONE,
+      ownerId: param?.ownerId ?? ""
+    }),
     new FileUploadExtension(),
     new HorizontalRuleExtension(),
     new BlockquoteExtension(),
@@ -49,6 +64,7 @@ export const getExtensions = (param?: {
     new ReminderUserExtension({ setShow: param?.setShowRemind }),
     new IframeExtension({ collapse: param?.collapse }),
     new CodeExtension({ collapse: param?.collapse }),
+    new MarkdownExtension({ copyAsMarkdown: false }),
 
     // Marks
     new HeadingExtension({ defaultLevel: 3, levels: [1, 2, 3, 4, 5, 6] }),

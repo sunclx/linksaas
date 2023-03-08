@@ -3,12 +3,14 @@ import { useCommands } from '@remirror/react';
 import type { NodeViewComponentProps } from '@remirror/react';
 import { Progress, Image } from 'antd';
 import { listen } from '@tauri-apps/api/event';
-import type { FsProgressEvent } from '@/api/fs';
+import type { FsProgressEvent, FILE_OWNER_TYPE } from '@/api/fs';
+import { save_tmp_file_base64, write_thumb_image_file, set_file_owner, write_file } from '@/api/fs';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import style from './common.module.less';
 import { ReactComponent as Deletesvg } from '@/assets/svg/delete.svg';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { request } from '@/utils/request';
 
 export type EditImageProps = NodeViewComponentProps & {
   trackId: string;
@@ -17,9 +19,19 @@ export type EditImageProps = NodeViewComponentProps & {
   fileName: string;
   fileId: string;
   thumbFileId: string;
+  //复制图片时使用
+  imageSrc?: string;
+  thumbWidth?: number;
+  thumbHeight?: number;
+  ownerType?: FILE_OWNER_TYPE;
+  ownerId?: string;
 };
 
 export const EditImage: React.FC<EditImageProps> = observer((props) => {
+  const userStore = useStores('userStore');
+  const appStore = useStores('appStore');
+
+
   const { deleteImageUpload } = useCommands();
   const removeNode = () => {
     deleteImageUpload((props.getPosition as () => number)());
@@ -28,8 +40,57 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
   const [progress, setProgress] = useState(0);
   const [imgUrl, setImgUrl] = useState('');
   const [thumbFileId, setThumbFileId] = useState('');
-  const appStore = useStores('appStore');
-  
+
+
+  //处理imageSrc数据
+  const uploadImageSrc = async () => {
+    if (props.imageSrc == undefined || props.imageSrc == null) {
+      return;
+    }
+    //保持临时文件
+    const filePath = await save_tmp_file_base64(props.fileName, props.imageSrc);
+    //上传缩略图
+    const thumbRes = await request(
+      write_thumb_image_file(
+        userStore.sessionId,
+        props.fsId,
+        filePath,
+        props.thumbTrackId,
+        props.thumbWidth ?? 200,
+        props.thumbHeight ?? 150,
+      ),
+    );
+    await request(
+      set_file_owner({
+        session_id: userStore.sessionId,
+        fs_id: props.fsId,
+        file_id: thumbRes.file_id,
+        owner_type: props.ownerType ?? 0,
+        owner_id: props.ownerId ?? "",
+      }),
+    );
+    //上传正式图片
+    const res = await request(
+      write_file(userStore.sessionId, props.fsId, filePath, props.trackId),
+    );
+    await request(
+      set_file_owner({
+        session_id: userStore.sessionId,
+        fs_id: props.fsId,
+        file_id: res.file_id,
+        owner_type: props.ownerType ?? 0,
+        owner_id: props.ownerId ?? "",
+      }),
+    );
+  };
+
+  useEffect(() => {
+    if (props.imageSrc == undefined || props.imageSrc == null) {
+      return;
+    }
+    uploadImageSrc();
+  }, [props.imageSrc]);
+
   useEffect(() => {
     if (props.fileId !== '' && props.thumbFileId !== '') {
       if (appStore.isOsWindows) {

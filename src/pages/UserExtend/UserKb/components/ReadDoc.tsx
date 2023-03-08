@@ -57,7 +57,7 @@ const ReadDoc: React.FC<ReadDocProps> = (props) => {
             <a onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                history.push(`${WORKBENCH_PATH}?tab=userDoc&spaceId=${props.spaceId}`)
+                history.push(`${WORKBENCH_PATH}?tab=userDoc&spaceId=${props.spaceId}&userAction=true`)
             }}><LeftOutlined /></a>
             &nbsp;文档：{title}
         </span>} extra={
