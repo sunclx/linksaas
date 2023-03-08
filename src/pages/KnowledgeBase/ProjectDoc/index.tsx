@@ -12,7 +12,7 @@ const ProjectDoc = () => {
   const docSpaceStore = useStores('docSpaceStore');
 
   return (
-    <div className={s.doc_wrap}>
+    <div className={s.doc_wrap} style={{ width: docSpaceStore.pageType == PAGE_TYPE.PAGE_DOC ? "100%" : "calc(100% - 200px)" }}>
       {docSpaceStore.pageType == PAGE_TYPE.PAGE_DOC_LIST && <DocList />}
       {docSpaceStore.pageType == PAGE_TYPE.PAGE_DOC && (
         <>

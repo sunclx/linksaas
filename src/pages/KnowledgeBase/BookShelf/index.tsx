@@ -11,7 +11,7 @@ const BookShelf = () => {
     const bookShelfStore = useStores('bookShelfStore');
 
     return (
-        <div className={s.book_wrap}>
+        <div className={s.book_wrap} style={{ width: bookShelfStore.pageType == PAGE_TYPE.PAGE_BOOK ? "100%" : "calc(100% - 200px)" }}>
             {bookShelfStore.pageType == PAGE_TYPE.PAGE_BOOK_LIST && <BookList />}
             {bookShelfStore.pageType == PAGE_TYPE.PAGE_BOOK && <BookReader />}
         </div>
