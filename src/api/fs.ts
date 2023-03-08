@@ -130,7 +130,7 @@ export async function write_file_base64(
         fileName: file_name,
         data: data,
         trackId: track_id,
-    })
+    });
 }
 
 export async function write_file(
@@ -181,4 +181,11 @@ export async function write_thumb_image_file(
         width: width,
         height: height,
     })
+}
+
+export async function save_tmp_file_base64(file_name: string, data: string): Promise<string> {
+    return invoke<string>('plugin:fs_api|save_tmp_file_base64', {
+        fileName: file_name,
+        data: data,
+    });
 }
