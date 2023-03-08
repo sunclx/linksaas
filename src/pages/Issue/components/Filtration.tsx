@@ -87,15 +87,15 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
         }}
       >
         {!getIsTask(pathname) && (
-          <BugLevelSelect name={'level'} style={{ width: 120 }} placeholder="级别:" />
+          <BugLevelSelect name={'level'} style={{ width: 100 }} placeholder="级别:" />
         )}
         {getIsTask(pathname) ? (
-          <PrioritySelect name={'priority'} style={{ width: 120 }} placeholder="优先级:" />
+          <PrioritySelect name={'priority'} style={{ width: 100 }} placeholder="优先级:" />
         ) : (
-          <BugPrioritySelect name={'priority'} style={{ width: 120 }} placeholder="优先级:" />
+          <BugPrioritySelect name={'priority'} style={{ width: 100 }} placeholder="优先级:" />
         )}
         <Form.Item name="stage">
-          <Select style={{ width: 120 }} placeholder="阶段：" allowClear defaultValue={defaultStage}>
+          <Select style={{ width: 100 }} placeholder="阶段：" allowClear defaultValue={defaultStage}>
             {Object.entries(issueState).map((item) => (
               <Option key={item[1]?.value} value={item[1]?.value}>
                 {item[1].label}
@@ -120,7 +120,7 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
         />
         {!getIsTask(pathname) && (
           <Form.Item name="version">
-            <Input placeholder="软件版本：" style={{ width: 120 }} allowClear />
+            <Input placeholder="软件版本：" style={{ width: 100 }} allowClear />
           </Form.Item>
         )}
       </Form>

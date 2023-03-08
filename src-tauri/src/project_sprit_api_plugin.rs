@@ -293,6 +293,62 @@ async fn cancel_link_channel<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn update_burn_down<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateBurnDownRequest,
+) -> Result<UpdateBurnDownResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.update_burn_down(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_burn_down_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_burn_down".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_burn_down<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListBurnDownRequest,
+) -> Result<ListBurnDownResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.list_burn_down(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_burn_down_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_burn_down".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectSpritApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -312,6 +368,8 @@ impl<R: Runtime> ProjectSpritApiPlugin<R> {
                 get_link_doc,
                 link_channel,
                 cancel_link_channel,
+                update_burn_down,
+                list_burn_down,
             ]),
         }
     }

@@ -105,6 +105,6 @@ const LinkDocPanel = () => {
             )}
         </div>
     );
-}
+};
 
 export default observer(LinkDocPanel);

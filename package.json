@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@linksaas.pro>",
@@ -59,6 +59,8 @@
     "react-color": "^2.19.3",
     "react-cropper": "^2.1.8",
     "react-diff-viewer": "^3.1.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.1.0",
     "react-markdown": "^8.0.3",
     "react-router-config": "^5.1.1",
