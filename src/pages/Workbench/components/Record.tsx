@@ -22,7 +22,7 @@ const Record: FC = () => {
     const resp = await request(
       list_user_event(
         userStore.sessionId,
-        moment().add('days', -3).valueOf(),
+        moment().add(-3, 'days').valueOf(),
         moment().endOf('day').valueOf(),
         0,
         999,
