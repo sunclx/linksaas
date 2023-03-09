@@ -1,0 +1,27 @@
+openapi: "3.0.0"
+info:
+  version: "0.0.1"
+  title: "ai-proto"
+  description: "ai proto for coder"
+  contact:
+    name: linksaas
+    email: "panleiming@linksaas.pro"
+    url: https://github.com/linksaas/ai-proto
+
+servers:
+  - url: localhost
+
+tags:
+  - name: dev
+    description: 开发模式相关接口
+  - name: coding
+    description: 提高编码效率的工具接口
+
+paths:
+  $ref: paths/index.yml
+
+components:
+  parameters:
+    $ref: parameters/index.yml
+  schemas:
+    $ref: schemas/index.yml

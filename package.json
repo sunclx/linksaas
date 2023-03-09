@@ -1,0 +1,17 @@
+{
+  "name": "ai-proto",
+  "version": "0.0.1",
+  "description": "ai proto for coder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linksaas/ai-proto"
+  },
+  "author": "panleiming@linksaas.pro",
+  "license": "GPL3",
+  "scripts": {
+    "build": "boats -i ./src/index.yml.njk -o index.yml"
+  },
+  "devDependencies": {
+    "boats": "^3.4.0"
+  }
+}

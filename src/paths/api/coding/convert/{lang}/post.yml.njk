@@ -1,0 +1,48 @@
+tags:
+  - coding
+summary: 对选中代码转换成其他编程语言
+description: 对选中代码转换成其他编程语言
+parameters:
+  - $ref: "@parameters/authToken.yml.njk"
+  - $ref: "@parameters/lang.yml.njk"
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - content
+          - destLang
+        properties:
+          content:
+            type: string
+            description: 代码内容
+          destLang:
+            $ref: "@schemas/lang.yml.njk"
+responses:
+  "200":
+    description: "成功"
+    headers:
+      Access-Control-Allow-Origin:
+        schema:
+          type: string
+          default: "*"
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            type: string
+          description: 生成代码候选列表
+  "500":
+    description: 失败
+    headers:
+      Access-Control-Allow-Origin:
+        schema:
+          type: string
+          default: "*"
+    content:
+      application/json:
+        schema:
+          $ref: "@schemas/errInfo.yml.njk"          
