@@ -32,6 +32,17 @@ responses:
           items:
             type: string
           description: 生成代码候选列表
+  "403":
+    description: 没有权限
+    headers:
+      Access-Control-Allow-Origin:
+        schema:
+          type: string
+          default: "*"
+    content:
+      application/json:
+        schema:
+          $ref: "@schemas/errInfo.yml.njk"
   "500":
     description: 失败
     headers:
