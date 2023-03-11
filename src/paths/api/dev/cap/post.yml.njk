@@ -7,20 +7,16 @@ parameters:
 requestBody:
   required: false
   content:
-    application/xml:
+    application/x-www-form-urlencoded:
       schema:
         type: object
-        xml:
-          name: xml
 responses:
   "200":
     description: "成功"
     content:
-      application/xml:
+      application/json:
         schema:
           type: object
-          xml:
-            name: xml
           required:
             - coding
           properties:
@@ -66,7 +62,7 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
           $ref: "@schemas/errInfo.yml.njk"
   "500":
@@ -77,6 +73,6 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
           $ref: "@schemas/errInfo.yml.njk"

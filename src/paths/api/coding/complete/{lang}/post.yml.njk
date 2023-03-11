@@ -8,14 +8,12 @@ parameters:
 requestBody:
   required: true
   content:
-    application/xml:
+    application/x-www-form-urlencoded:
       schema:
         type: object
         required:
           - beforeContent
           - afterContent
-        xml:
-          name: xml
         properties:
           beforeContent:
             type: string
@@ -32,19 +30,12 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
-          type: object
-          required:
-            - data
-          xml:
-            name: xml
-          properties:
-            data:
-              type: array
-              items:
-                type: string
-              description: 生成代码候选列表
+          type: array
+          items:
+            type: string
+          description: 生成代码候选列表
   "403":
     description: 没有权限
     headers:
@@ -53,7 +44,7 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
           $ref: "@schemas/errInfo.yml.njk"
   "500":
@@ -64,6 +55,6 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
           $ref: "@schemas/errInfo.yml.njk"

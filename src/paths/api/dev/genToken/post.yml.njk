@@ -6,14 +6,12 @@ operationId: "{{ uniqueOpId() }}"
 requestBody:
   required: true
   content:
-    application/xml:
+    application/x-www-form-urlencoded:
       schema:
         type: object
         required:
           - contextValue
           - randomStr
-        xml:
-          name: xml
         properties:
           contextValue:
             type: string
@@ -30,13 +28,11 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
           type: object
           required:
             - token
-          xml:
-            name: xml
           properties:
             token:
               type: string
@@ -49,6 +45,6 @@ responses:
           type: string
           default: "*"
     content:
-      application/xml:
+      application/json:
         schema:
           $ref: "@schemas/errInfo.yml.njk"
