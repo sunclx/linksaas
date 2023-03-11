@@ -27,19 +27,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          text/plain:
             schema:
-              type: object
-              required:
-                - beforeContent
-                - afterContent
-              properties:
-                beforeContent:
-                  type: string
-                  description: 编辑器光标前面的代码
-                afterContent:
-                  type: string
-                  description: 编辑器光标后面的代码
+              type: string
       responses:
         '200':
           description: 成功
@@ -86,21 +76,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/AuthToken'
         - $ref: '#/components/parameters/Lang'
+        - $ref: '#/components/parameters/DestLang'
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          text/plain:
             schema:
-              type: object
-              required:
-                - content
-                - destLang
-              properties:
-                content:
-                  type: string
-                  description: 代码内容
-                destLang:
-                  $ref: '#/components/schemas/Lang'
+              type: string
       responses:
         '200':
           description: 成功
@@ -150,15 +132,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          text/plain:
             schema:
-              type: object
-              required:
-                - content
-              properties:
-                content:
-                  type: string
-                  description: 代码内容
+              type: string
       responses:
         '200':
           description: 成功
@@ -208,15 +184,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          text/plain:
             schema:
-              type: object
-              required:
-                - content
-              properties:
-                content:
-                  type: string
-                  description: 报错内容
+              type: string
       responses:
         '200':
           description: 成功
@@ -266,15 +236,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          text/plain:
             schema:
-              type: object
-              required:
-                - content
-              properties:
-                content:
-                  type: string
-                  description: 代码内容
+              type: string
       responses:
         '200':
           description: 成功
@@ -348,27 +312,52 @@ paths:
                       completeLangList:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Lang'
+                          $ref: >-
+                            #/paths/~1api~1dev~1cap/post/responses/200/content/application~1json/schema/properties/coding/properties/genTestLangList/items
                         description: 代码补全支持的编程语言列表
                       genTestLangList:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Lang'
+                          type: string
+                          description: 编程语言
+                          enum:
+                            - python
+                            - c
+                            - cplusplus
+                            - java
+                            - csharp
+                            - visualbasic
+                            - javascript
+                            - sql
+                            - asm
+                            - php
+                            - r
+                            - go
+                            - matlab
+                            - swift
+                            - delphi
+                            - ruby
+                            - perl
+                            - objc
+                            - rust
                         description: 生成测试代码支持的编程语言列表
                       convertLangList:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Lang'
+                          $ref: >-
+                            #/paths/~1api~1dev~1cap/post/responses/200/content/application~1json/schema/properties/coding/properties/genTestLangList/items
                         description: 转换编程语言的支持列表
                       explainLangList:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Lang'
+                          $ref: >-
+                            #/paths/~1api~1dev~1cap/post/responses/200/content/application~1json/schema/properties/coding/properties/genTestLangList/items
                         description: 代码解释支持的编程语言列表
                       fixErrorLangList:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Lang'
+                          $ref: >-
+                            #/paths/~1api~1dev~1cap/post/responses/200/content/application~1json/schema/properties/coding/properties/genTestLangList/items
                         description: 根据错误提示给出修复方案支持的编程语言列表
         '403':
           description: 没有权限
@@ -452,6 +441,32 @@ components:
       schema:
         type: string
       required: true
+    DestLang:
+      in: query
+      name: destLang
+      schema:
+        type: string
+        enum:
+          - python
+          - c
+          - cplusplus
+          - java
+          - csharp
+          - visualbasic
+          - javascript
+          - sql
+          - asm
+          - php
+          - r
+          - go
+          - matlab
+          - swift
+          - delphi
+          - ruby
+          - perl
+          - objc
+          - rust
+      required: true
     Lang:
       in: path
       name: lang
@@ -485,26 +500,3 @@ components:
         errMsg:
           type: string
           description: 错误信息
-    Lang:
-      type: string
-      description: 编程语言
-      enum:
-        - python
-        - c
-        - cplusplus
-        - java
-        - csharp
-        - visualbasic
-        - javascript
-        - sql
-        - asm
-        - php
-        - r
-        - go
-        - matlab
-        - swift
-        - delphi
-        - ruby
-        - perl
-        - objc
-        - rust

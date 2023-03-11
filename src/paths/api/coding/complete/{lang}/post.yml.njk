@@ -8,19 +8,9 @@ parameters:
 requestBody:
   required: true
   content:
-    application/x-www-form-urlencoded:
+    text/plain:
       schema:
-        type: object
-        required:
-          - beforeContent
-          - afterContent
-        properties:
-          beforeContent:
-            type: string
-            description: 编辑器光标前面的代码
-          afterContent:
-            type: string
-            description: 编辑器光标后面的代码
+        type: string
 responses:
   "200":
     description: "成功"

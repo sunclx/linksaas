@@ -8,15 +8,9 @@ parameters:
 requestBody:
   required: true
   content:
-    application/x-www-form-urlencoded:
+    text/plain:
       schema:
-        type: object
-        required:
-          - content
-        properties:
-          content:
-            type: string
-            description: 报错内容
+        type: string
 responses:
   "200":
     description: "成功"
