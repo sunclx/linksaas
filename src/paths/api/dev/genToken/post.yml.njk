@@ -12,7 +12,6 @@ requestBody:
         required:
           - contextValue
           - randomStr
-          - secret
         properties:
           contextValue:
             type: string
@@ -20,9 +19,6 @@ requestBody:
           randomStr:
             type: string
             description: 随机字符串，加密因子。需要32位长度以上
-          secret:
-            type: string
-            description: 共享密钥
 responses:
   "200":
     description: "成功"

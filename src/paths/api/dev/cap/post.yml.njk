@@ -4,6 +4,12 @@ summary: 获取ai能力列表
 description: 获取ai能力列表
 parameters:
   - $ref: "@parameters/authToken.yml.njk"
+requestBody:
+  required: false
+  content:
+    application/json:
+      schema:
+        type: object
 responses:
   "200":
     description: "成功"
@@ -43,6 +49,17 @@ responses:
               items:
                 $ref: "@schemas/lang.yml.njk"
               description: "根据错误提示给出修复方案支持的编程语言列表"
+  "403":
+    description: 没有权限
+    headers:
+      Access-Control-Allow-Origin:
+        schema:
+          type: string
+          default: "*"
+    content:
+      application/json:
+        schema:
+          $ref: "@schemas/errInfo.yml.njk"
   "500":
     description: 失败
     headers:
