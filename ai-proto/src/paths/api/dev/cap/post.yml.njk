@@ -1,0 +1,78 @@
+tags:
+  - dev
+summary: 获取ai能力列表
+description: 获取ai能力列表
+parameters:
+  - $ref: "@parameters/authToken.yml.njk"
+requestBody:
+  required: false
+  content:
+    application/x-www-form-urlencoded:
+      schema:
+        type: object
+responses:
+  "200":
+    description: "成功"
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - coding
+          properties:
+            coding:
+              type: object
+              required:
+                - completeLangList
+                - genTestLangList
+                - convertLangList
+                - explainLangList
+                - fixErrorLangList
+              properties:
+                completeLangList:
+                  type: array
+                  items:
+                    $ref: "@schemas/lang.yml.njk"
+                  description: "代码补全支持的编程语言列表"
+                genTestLangList:
+                  type: array
+                  items:
+                    $ref: "@schemas/lang.yml.njk"
+                  description: "生成测试代码支持的编程语言列表"
+                convertLangList:
+                  type: array
+                  items:
+                    $ref: "@schemas/lang.yml.njk"
+                  description: "转换编程语言的支持列表"
+                explainLangList:
+                  type: array
+                  items:
+                    $ref: "@schemas/lang.yml.njk"
+                  description: "代码解释支持的编程语言列表"
+                fixErrorLangList:
+                  type: array
+                  items:
+                    $ref: "@schemas/lang.yml.njk"
+                  description: "根据错误提示给出修复方案支持的编程语言列表"
+  "403":
+    description: 没有权限
+    headers:
+      Access-Control-Allow-Origin:
+        schema:
+          type: string
+          default: "*"
+    content:
+      application/json:
+        schema:
+          $ref: "@schemas/errInfo.yml.njk"
+  "500":
+    description: 失败
+    headers:
+      Access-Control-Allow-Origin:
+        schema:
+          type: string
+          default: "*"
+    content:
+      application/json:
+        schema:
+          $ref: "@schemas/errInfo.yml.njk"

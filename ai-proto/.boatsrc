@@ -1,0 +1,16 @@
+{
+    "nunjucksOptions": {
+        "tags": {}
+    },
+    "jsonSchemaRefParserBundleOpts": {},
+    "picomatchOptions": {
+        "bash": true
+    },
+    "permissionConfig": {
+        "globalPrefix": true
+    },
+    "paths": {
+        "@parameters": "./src/parameters",
+        "@schemas": "./src/schemas"
+    }
+}

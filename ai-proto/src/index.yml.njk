@@ -1,0 +1,27 @@
+openapi: "3.0.0"
+info:
+  version: "{{ packageJson('version') }}"
+  title: "{{ packageJson('name') }}"
+  description: "{{ packageJson('description') }}"
+  contact:
+    name: linksaas
+    email: "{{ packageJson('author') }}"
+    url: https://github.com/linksaas/ai-proto
+
+servers:
+  - url: localhost
+
+tags:
+  - name: dev
+    description: 开发模式相关接口
+  - name: coding
+    description: 提高编码效率的工具接口
+
+paths:
+  $ref: paths/index.yml.njk
+
+components:
+  parameters:
+    $ref: parameters/index.yml.njk
+  schemas:
+    $ref: schemas/index.yml.njk
