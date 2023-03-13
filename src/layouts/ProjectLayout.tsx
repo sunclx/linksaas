@@ -4,14 +4,13 @@ import type { IRouteConfig } from '@/routes';
 import style from './style.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
-import MemberInfoModal from '@/pages/Channel/components/MemberInfoModal';
+import MemberInfoModal from '@/pages/ChannelAndAi/components/MemberInfoModal';
 import CodeCommentThreadModal from '@/pages/Project/Code/CodeCommentThreadModal';
 import ProjectSettingModal from '@/pages/Project/ProjectSettingModal';
 
 
 
 const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
-    const appStore = useStores('appStore');
     const memberStore = useStores("memberStore");
     const projectStore = useStores("projectStore");
 
@@ -19,10 +18,10 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
         <div className={style.projectLayout}>
             {renderRoutes(route.routes)}
             {memberStore.floatMemberUserId != "" && <MemberInfoModal memberId={memberStore.floatMemberUserId} />}
-            {appStore.codeCommentThreadId != "" && (
-                <CodeCommentThreadModal threadId={appStore.codeCommentThreadId} commentId={appStore.codeCommentId} />
+            {projectStore.codeCommentThreadId != "" && (
+                <CodeCommentThreadModal threadId={projectStore.codeCommentThreadId} commentId={projectStore.codeCommentId} />
             )}
-            {projectStore.curProjectId != "" && appStore.showProjectSetting && (
+            {projectStore.curProjectId != "" && projectStore.showProjectSetting != null && (
                 <ProjectSettingModal />
             )}
         </div>

@@ -4,12 +4,13 @@ import { useState } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import ChannelHeader from '@/pages/Channel/components/ChannelHeader';
+import ChannelHeader from '@/pages/ChannelAndAi/components/ChannelHeader';
 import {
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
+  PROJECT_SETTING_TAB,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import { CommentOutlined, FileDoneOutlined, SettingOutlined } from '@ant-design/icons';
@@ -19,17 +20,16 @@ import { observer } from 'mobx-react';
 import classNames from 'classnames';
 
 const SettingBtn = observer(() => {
-  const appStore = useStores('appStore');
   const projectStore = useStores('projectStore');
 
   return (
     <div className={s.setting_btn_wrap}>
       {projectStore.isAdmin && (
-        <Tooltip title="项目设置" placement='left' color='orange' overlayInnerStyle={{ color: 'black', marginTop: "10px" }} open={appStore.showProjectSetting}>
+        <Tooltip title="项目设置" placement='left' color='orange' overlayInnerStyle={{ color: 'black', marginTop: "10px" }} open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}>
           <Button type="link" className={s.setting_btn} onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            appStore.showProjectSetting = true;
+            projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
           }}><SettingOutlined /></Button>
         </Tooltip>
       )}
@@ -42,13 +42,12 @@ const TopNav = () => {
   const location = useLocation();
   const [activeKey, setActiveKey] = useState(location.pathname);
 
-  const appStore = useStores('appStore');
   const docSpaceStore = useStores('docSpaceStore');
   const projectStore = useStores('projectStore');
 
   const chatTabPanel = (
     <Tabs.TabPane tab={
-      <Tooltip title="主界面: 沟通面板" open={appStore.showProjectSetting}
+      <Tooltip title="主界面: 沟通面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
         placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB_AND_CHAT ? "right" : "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
         <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_chat_active : s.tab_chat}><CommentOutlined />沟通</span>
       </Tooltip>
@@ -56,7 +55,7 @@ const TopNav = () => {
 
   const kbTabPanel = (
     <Tabs.TabPane tab={
-      <Tooltip title="主界面: 知识库面板" open={appStore.showProjectSetting}
+      <Tooltip title="主界面: 知识库面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
         placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_CHAT_AND_KB ? "right" : "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
         <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_kb : s.tab_kb_active}><FileDoneOutlined />知识库</span>
       </Tooltip>

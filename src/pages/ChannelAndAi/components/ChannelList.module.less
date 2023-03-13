@@ -1,56 +1,3 @@
-.list {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  height: 50px;
-  line-height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.title {
-  font-size: 13px;
-  font-weight: 500;
-  color: #202021;
-  padding-left: 13px;
-  flex: 1;
-}
-
-.add {
-  display: block;
-  padding: 3px;
-  border-radius: 4px;
-  margin-right: 1px;
-
-  &:hover {
-    background-color: #EAEAEF;
-  }
-
-  .icon {
-    display: block;
-    width: 14px;
-    height: 14px;
-    background-image: url('@/assets/allIcon/icon-add-channel.png');
-    background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x, url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
-    background-size: contain;
-    background-repeat: no-repeat;
-
-  }
-}
-
-.more {
-  composes: add;
-
-  .icon {
-    background-image: url('@/assets/allIcon/icon-more-channel.png');
-    background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x, url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
-  }
-}
-
 // composes
 .mod_icon_channel {
   width: 14px;
@@ -60,19 +7,6 @@
   background-repeat: no-repeat;
   margin-right: 6px;
 }
-
-// .icon_channel_task {
-//   composes: mod_icon_channel;
-//   background-image: url('@/assets/allIcon/icon-channel-task.png');
-// }
-// .icon_channel_bug {
-//   composes: mod_icon_channel;
-//   background-image: url('@/assets/allIcon/icon-channel-bug.png');
-// }
-// .icon_channel_customize {
-//   composes: mod_icon_channel;
-//   background-image: url('@/assets/allIcon/icon-channel-customize.png');
-// }
 
 .icon_channel_all {
   width: 22px;
@@ -127,8 +61,9 @@
   background-color: #fff;
   border-top: 1px solid #F0F0F5;
   width: 100%;
+  height: calc(100vh - 170px);
   overflow-y: scroll;
-  margin-bottom: 40px;
+  // border: 1px solid red;
 
   .menu_item {
     position: relative;

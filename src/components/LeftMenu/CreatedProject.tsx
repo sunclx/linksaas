@@ -9,7 +9,7 @@ import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
 import { useSimpleEditor } from '@/components/Editor';
 import { useHistory } from 'react-router-dom';
-import { APP_PROJECT_CHAT_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 
 type CreatedProjectProps = {
   visible: boolean;
@@ -25,7 +25,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const memberStore = useStores('memberStore');
-  const appStore = useStores('appStore');
 
   const { editor, editorRef } = useSimpleEditor("请输入项目描述");
 
@@ -47,7 +46,7 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
         } else {
           history.push(APP_PROJECT_CHAT_PATH);
         }
-        appStore.showProjectSetting = true;
+        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
       });
     } catch (error) { }
   };

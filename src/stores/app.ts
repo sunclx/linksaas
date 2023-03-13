@@ -5,7 +5,6 @@ import type { RootStore } from '.';
 import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 
 class AppStore {
-
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
@@ -71,38 +70,6 @@ class AppStore {
         this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
         this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
       }
-    });
-  }
-
-  //显示代码评论
-  private _codeCommentThreadId = "";
-  private _codeCommentId = "";
-
-  setCodeCommentInfo(threadId: string, commentId: string) {
-    runInAction(() => {
-      this._codeCommentThreadId = threadId;
-      this._codeCommentId = commentId;
-    });
-  }
-
-  get codeCommentThreadId(): string {
-    return this._codeCommentThreadId;
-  }
-
-  get codeCommentId(): string {
-    return this._codeCommentId;
-  }
-
-  //显示项目设置
-  private _showProjectSetting = false;
-
-  get showProjectSetting(): boolean {
-    return this._showProjectSetting;
-  }
-
-  set showProjectSetting(val: boolean) {
-    runInAction(() => {
-      this._showProjectSetting = val;
     });
   }
 }

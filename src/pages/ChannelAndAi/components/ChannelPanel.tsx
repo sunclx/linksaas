@@ -1,15 +1,13 @@
 import React from 'react';
 import styles from './ChannelPanel.module.less';
 import * as channelApi from '@/api/project_channel';
-import { Popover, Divider } from 'antd';
+import { Divider } from 'antd';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
-import ActionMember, { ActionMemberType } from './ActionMember';
-import ChannelList from './ChannelList';
 import { runInAction } from 'mobx';
 import { CHANNEL_STATE } from '@/stores/channel';
 
-const RenderMoreMenu = observer(() => {
+export const RenderMoreMenu = observer(() => {
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
 
@@ -141,49 +139,3 @@ const RenderMoreMenu = observer(() => {
   );
 });
 
-const RenderHeader = observer(() => {
-  const projectStore = useStores('projectStore');
-  const channelStore = useStores('channelStore');
-
-  return (
-    <header className={styles.header}>
-      <h3 className={styles.title}>频道列表</h3>
-      {projectStore.curProject?.closed == false &&
-        channelStore.channelScope == channelApi.LIST_CHAN_SCOPE_INCLUDE_ME && (
-          <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
-            <i className={styles.icon} />
-          </a>
-        )}
-      <Popover
-        placement="bottomLeft"
-        content={<RenderMoreMenu />}
-        transitionName=""
-        overlayClassName="popover"
-      >
-        <a className={styles.more}>
-          <i className={styles.icon} />
-        </a>
-      </Popover>
-      {channelStore.showCreateChannel && (
-        <ActionMember
-          visible
-          type={ActionMemberType.CREATE_CHANNEL}
-          channelId=""
-          onChange={(value: boolean) => channelStore.showCreateChannel = value}
-          title="创建自定义频道"
-        />
-      )}
-    </header>
-  );
-});
-
-const ChannelPanel = () => {
-  return (
-    <div className={styles.list}>
-      <RenderHeader />
-      <ChannelList />
-    </div>
-  );
-};
-
-export default observer(ChannelPanel);

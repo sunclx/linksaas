@@ -16,7 +16,6 @@ interface CodeCommentThreadModalProps {
 }
 
 const CodeCommentThreadModal: React.FC<CodeCommentThreadModalProps> = (props) => {
-    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
@@ -41,7 +40,7 @@ const CodeCommentThreadModal: React.FC<CodeCommentThreadModalProps> = (props) =>
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                appStore.setCodeCommentInfo("", "");
+                projectStore.setCodeCommentInfo("", "");
             }}>
             <div style={{ maxHeight: "calc(100vh - 250px)", overflowY: "scroll" }}>
                 <List dataSource={commentList} renderItem={item => (
