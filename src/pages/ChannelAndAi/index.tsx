@@ -9,7 +9,8 @@ import ActionMember, { ActionMemberType } from './components/ActionMember';
 import { RenderMoreMenu } from './components/ChannelPanel';
 import { SettingOutlined } from '@ant-design/icons';
 import AiAssistantList from './components/AiAssistantList';
-import { PROJECT_SETTING_TAB } from '@/utils/constant';
+import { PROJECT_CHAT_TYPE, PROJECT_SETTING_TAB } from '@/utils/constant';
+import AiAssistant from './components/AiAssistant';
 
 const { Sider, Content } = Layout;
 
@@ -20,7 +21,8 @@ const ChannelAndAi = () => {
   return (
     <Layout className={styles.layout}>
       <Content className={styles.content}>
-        <Chat />
+        {projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_AI && <AiAssistant />}
+        {projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && <Chat />}
       </Content>
       <Sider className={styles.sider}>
         <Collapse accordion defaultActiveKey="channel" className={styles.panel} bordered={false}>

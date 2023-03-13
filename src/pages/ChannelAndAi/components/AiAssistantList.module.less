@@ -4,4 +4,26 @@
     width: 100%;
     height: calc(100vh - 170px);
     overflow-y: scroll;
+
+    .ai_item {
+        height: 48px;
+        line-height: 48px;
+        padding-left: 15px;
+
+        &:hover {
+            background-color: #F1F1F5;
+            cursor: pointer;
+        }
+
+        &.current {
+            background-color: rgba(14, 131, 255, .1);
+            color: @link_active_color;
+            border-left: 3px solid #0E83FF;
+            padding-left: 12px;
+        }
+
+        .divider {
+            border-top: 1px solid #e4e4e8;
+        }
+    }
 }

@@ -9,6 +9,7 @@ import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
+import type { AiCap, AI_CAP_TYPE } from '@/api/ai';
 
 
 export class WebProjectStatus {
@@ -66,6 +67,8 @@ export default class ProjectStore {
       this.setCodeCommentInfo("", "");
       this.showProjectSetting = null;
       this.projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL;
+      this.projectAiCap = null;
+      this.curAiCapType = null;
     }
   }
 
@@ -363,4 +366,33 @@ export default class ProjectStore {
       this._projectChatType = val;
     });
   }
+
+  //AI能力 
+  private _projectAiCap: AiCap | null = null;
+
+  get projectAiCap(): AiCap | null {
+    return this._projectAiCap;
+  }
+
+  set projectAiCap(val: AiCap | null) {
+    runInAction(() => {
+      this._projectAiCap = val;
+    });
+  }
+
+  private _curAiCapType: AI_CAP_TYPE | null = null;
+
+  get curAiCapType(): AI_CAP_TYPE | null {
+    return this._curAiCapType;
+  }
+
+  set curAiCapType(val: AI_CAP_TYPE | null) {
+    runInAction(() => {
+      this._curAiCapType = val;
+      if (val != null) {
+        this._projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_AI;
+      }
+    });
+  }
+
 }
