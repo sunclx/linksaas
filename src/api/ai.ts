@@ -39,15 +39,31 @@ export async function getAiCap(apiAddr: string, token: string): Promise<AiCap> {
 //补全代码
 export async function genCode(apiAddr: string, token: string, lang: string, srcCode: string): Promise<string[]> {
     const res = await fetch(`${apiAddr}/api/coding/complete/${lang}`, {
-        method:"POST",
+        method: "POST",
         headers: {
             "X-AuthToken": token,
         },
-        body:Body.text(srcCode),
+        body: Body.text(srcCode),
     });
     if (res.ok) {
         return res.data as string[];
-    }else {
+    } else {
+        throw res.data;
+    }
+}
+
+//翻译代码
+export async function convertCode(apiAddr: string, token: string, srcLang: string, destLang: string, srcCode: string): Promise<string[]> {
+    const res = await fetch(`${apiAddr}/api/coding/convert/${srcLang}?destLang=${destLang}`, {
+        method: "POST",
+        headers: {
+            "X-AuthToken": token,
+        },
+        body: Body.text(srcCode),
+    });
+    if (res.ok) {
+        return res.data as string[];
+    } else {
         throw res.data;
     }
 }

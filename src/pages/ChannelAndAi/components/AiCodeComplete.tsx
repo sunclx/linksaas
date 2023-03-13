@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, Form, List, Select } from "antd";
+import { Card, Form, List, Select,message } from "antd";
 import s from "./AiCodeComplete.module.less"
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useStores } from "@/hooks";
@@ -100,11 +100,15 @@ const AiCodeComplete = () => {
     };
 
     const callGenCode = async () => {
-        const res = await genCode(projectStore.curProject?.ai_gateway_addr ?? "", token, lang, content);
-        if (res.length > 1) {
-            setPromptList(res);
-        } else if (res.length == 1) {
-            setContent(oldContent => oldContent + res[0]);
+        try {
+            const res = await genCode(projectStore.curProject?.ai_gateway_addr ?? "", token, lang, content);
+            if (res.length > 1) {
+                setPromptList(res);
+            } else if (res.length == 1) {
+                setContent(oldContent => oldContent + res[0]);
+            }
+        } catch (e) {
+            message.error(JSON.stringify(e));
         }
     };
 
@@ -141,7 +145,6 @@ const AiCodeComplete = () => {
                 <CodeEditor
                     value={content}
                     language={lang}
-                    minHeight={200}
                     placeholder="请输入代码"
                     autoFocus={true}
                     onChange={(e) => {
