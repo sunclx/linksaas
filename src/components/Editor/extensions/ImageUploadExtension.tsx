@@ -17,10 +17,22 @@ import type { ComponentType } from 'react';
 import type { NodeViewComponentProps } from '@remirror/react';
 import React from 'react';
 import { EditImage, ViewImage } from './ImageUploadComponent';
+import { uniqId } from '@/utils/utils';
+import type { FILE_OWNER_TYPE } from '@/api/fs';
+import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 
-export interface ImageUploadOptions {}
 
-@extension<ImageUploadOptions>({ defaultOptions: {} })
+const IMG_DATA_SRC_PATTERN = /^data:image\/([a-zA-Z0-9]+);base64,(.*)$/;
+
+export interface ImageUploadOptions {
+  fsId: string;
+  thumbWidth: number;
+  thumbHeight: number;
+  ownerType: FILE_OWNER_TYPE;
+  ownerId: string;
+}
+
+@extension<ImageUploadOptions>({ defaultOptions: { fsId: "", thumbWidth: 200, thumbHeight: 150, ownerType: FILE_OWNER_TYPE_NONE, ownerId: "" } })
 export class ImageUploadExtension extends NodeExtension<ImageUploadOptions> {
   get name() {
     return 'imageUpload' as const;
@@ -44,7 +56,55 @@ export class ImageUploadExtension extends NodeExtension<ImageUploadOptions> {
         fsId: { default: '' },
         fileId: { default: '' },
         thumbFileId: { default: '' },
+        imageSrc: { default: undefined },
+        thumbWidth: { default: undefined },
+        thumbHeight: { default: undefined },
+        ownerType: { default: undefined },
+        ownerId: { default: undefined },
       },
+      parseDOM: [
+        {
+          tag: "img[src]",
+          getAttrs: (el) => {
+            if (this.options.fsId == "") {
+              return false;
+            }
+            if (typeof (el) == "string") {
+              return false;
+            }
+            const imgSrc = el.getAttribute("src");
+            if (imgSrc == null) {
+              return false;
+            }
+            if (imgSrc.startsWith("data:image/")) {
+              const match = imgSrc.match(IMG_DATA_SRC_PATTERN);
+              if (match == null) {
+                return false;
+              }
+              const trackId = uniqId();
+              const thumbTrackId = uniqId();
+              const fileName = `upload.${match[1]}`
+
+              const attr: ImageAttributes = {
+                fileName: fileName,
+                trackId: trackId,
+                thumbTrackId: thumbTrackId,
+                fsId: this.options.fsId,
+                imageSrc: match[2],
+                thumbWidth: this.options.thumbWidth,
+                thumbHeight: this.options.thumbHeight,
+                ownerType: this.options.ownerType,
+                ownerId: this.options.ownerId,
+              };
+              return attr;
+            }
+            //TODO process http or https
+
+            return false;
+          },
+          ...(override.parseDOM ?? []),
+        },
+      ],
       toDOM: (node) => {
         const attrs = omitExtraAttributes(node.attrs, extra);
         return ['img', { ...extra.dom(node), ...attrs }];
@@ -100,6 +160,11 @@ export class ImageUploadExtension extends NodeExtension<ImageUploadOptions> {
           fileName={attrs.fileName}
           fileId={attrs.fileId ?? ''}
           thumbFileId={attrs.thumbFileId ?? ''}
+          imageSrc={attrs.imageSrc}
+          thumbWidth={attrs.thumbWidth}
+          thumbHeight={attrs.thumbHeight}
+          ownerType={attrs.ownerType}
+          ownerId={attrs.ownerId}
         />
       );
     }
@@ -122,4 +187,10 @@ export interface ImageAttributes {
   fsId: string;
   fileId?: string;
   thumbFileId?: string;
+  //下面属性是直接处理复制图片使用
+  imageSrc?: string;
+  thumbWidth?: number;
+  thumbHeight?: number;
+  ownerType?: FILE_OWNER_TYPE;
+  ownerId?: string;
 }

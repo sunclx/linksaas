@@ -8,6 +8,7 @@ import { ThemeProvider } from '@remirror/react';
 import { observer } from 'mobx-react';
 import { ImperativeHandle } from './common';
 import type { EditorRef } from './common';
+import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 
 
 
@@ -33,7 +34,13 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) =>
   }, []);
 
   const { manager, state } = useRemirror({
-    extensions: getExtensions({ collapse }),
+    extensions: getExtensions({
+      collapse, fsId: "",
+      thumbWidth: 200,
+      thumbHeight: 150,
+      ownerType: FILE_OWNER_TYPE_NONE,
+      ownerId: "",
+    }),
     content: content,
     stringHandler: 'html',
     onError: onError,

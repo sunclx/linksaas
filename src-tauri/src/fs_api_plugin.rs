@@ -32,10 +32,10 @@ pub struct FsProgressEvent {
 }
 
 #[tauri::command]
-async fn stat_local_file(file_path:String)->Result<u64,String> {
+async fn stat_local_file(file_path: String) -> Result<u64, String> {
     if let Ok(stat) = fs::metadata(file_path.as_str()).await {
         return Ok(stat.len());
-    }else{
+    } else {
         return Err("stat file failed".into());
     }
 }
@@ -114,12 +114,8 @@ async fn download_file<R: Runtime>(
             "{}/{}",
             (&cache_dir).as_str(),
             (file_stat.clone().file_info.unwrap().file_name).as_str(),
-        ) ,
-        false => format!(
-            "{}/{}",
-            (&cache_dir).as_str(),
-            as_name.as_str(),
         ),
+        false => format!("{}/{}", (&cache_dir).as_str(), as_name.as_str(),),
     };
 
     let file_info = file_stat.file_info.unwrap();
@@ -500,6 +496,40 @@ pub async fn write_thumb_image_file<R: Runtime>(
 }
 
 #[tauri::command]
+pub async fn save_tmp_file_base64(
+    file_name: String,
+    data: String,
+) -> Result<String, String> {
+    let bytes = base64::decode(data);
+    if bytes.is_err() {
+        return Err(bytes.err().unwrap().to_string());
+    }
+    let bytes = bytes.unwrap();
+
+    let app_tmp_dir = crate::get_tmp_dir();
+    if app_tmp_dir.is_none() {
+        return Err("no tmp dir".into());
+    }
+    let tmp_dir = mktemp::Temp::new_dir_in(app_tmp_dir.unwrap());
+    if tmp_dir.is_err() {
+        return Err(tmp_dir.err().unwrap().to_string());
+    }
+    let tmp_dir = tmp_dir.unwrap();
+    let mut tmp_path = tmp_dir.release();
+    tmp_path.push(&file_name);
+    let tmp_file = tokio::fs::File::create(&tmp_path).await;
+    if tmp_file.is_err() {
+        return Err(tmp_file.err().unwrap().to_string());
+    }
+    let mut tmp_file = tmp_file.unwrap();
+    let res = tmp_file.write_all(&bytes).await;
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    return Ok(String::from(tmp_path.to_str().unwrap()));
+}
+
+#[tauri::command]
 pub async fn set_file_owner<R: Runtime>(
     app_handle: AppHandle<R>,
     _window: Window<R>,
@@ -566,6 +596,7 @@ impl<R: Runtime> FsApiPlugin<R> {
                 set_file_owner,
                 copy_file,
                 get_fs_status,
+                save_tmp_file_base64,
             ]),
         }
     }
