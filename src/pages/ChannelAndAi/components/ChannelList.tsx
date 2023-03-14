@@ -17,13 +17,15 @@ import { request } from '@/utils/request';
 import type { WebChannelInfo } from '@/stores/channel';
 import { Modal, Popover } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
+import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 
 
 const ChannelList = observer(() => {
   const channelStore = useStores('channelStore');
   const chatMsgStore = useStores('chatMsgStore');
   const { sessionId } = useStores('userStore');
-  const { curProjectId } = useStores('projectStore');
+  const projectStore = useStores('projectStore');
+
   const [closeChannelId, setCloseChannelId] = useState("");
   const [exitChannelId, setExitChannelId] = useState("");
   const [updateChannelId, setUpdateChannelId] = useState("");
@@ -47,9 +49,9 @@ const ChannelList = observer(() => {
     const setTopChannel = async (topWeight: number): Promise<void> => {
       if (channelItem !== undefined) {
         if (topWeight > 0) {
-          await request(unset_top(sessionId, curProjectId, channelItem.channelInfo.channel_id));
+          await request(unset_top(sessionId, projectStore.curProjectId, channelItem.channelInfo.channel_id));
         } else {
-          await request(set_top(sessionId, curProjectId, channelItem.channelInfo.channel_id));
+          await request(set_top(sessionId, projectStore.curProjectId, channelItem.channelInfo.channel_id));
         }
         await channelStore.updateChannel(channelItem.channelInfo.channel_id)
       }
@@ -57,7 +59,7 @@ const ChannelList = observer(() => {
 
     //激活频道
     const openChannel = async () => {
-      const res = await request(open_channel(sessionId, curProjectId, channelId));
+      const res = await request(open_channel(sessionId, projectStore.curProjectId, channelId));
       if (res) {
         channelStore.updateChannel(channelId);
       }
@@ -175,7 +177,7 @@ const ChannelList = observer(() => {
             className={
               styles.menu_item + ' ' +
               (item.channelInfo.closed ? styles.closed : '') + ' ' +
-              (item.channelInfo.channel_id == channelStore.curChannelId ? styles.current : '')
+              ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
             }
             onClick={() => {
               chatMsgStore.listRefMsgId = "";
@@ -192,7 +194,7 @@ const ChannelList = observer(() => {
             <div className={styles.menu_box}>
               <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')}>{`#${item.channelInfo.basic_info.channel_name}`}</div>
               <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="left">
-                {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel &&<i className={styles.more} />}
+                {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel && <i className={styles.more} />}
               </Popover>
 
             </div>
@@ -210,7 +212,7 @@ const ChannelList = observer(() => {
         title='警告'
         open={true}
         onOk={async (): Promise<void> => {
-          const res = await request(close_channel(sessionId, curProjectId, closeChannelId));
+          const res = await request(close_channel(sessionId, projectStore.curProjectId, closeChannelId));
           if (res) {
             channelStore.updateChannel(closeChannelId);
           }
@@ -229,7 +231,7 @@ const ChannelList = observer(() => {
         title='警告'
         open={true}
         onOk={async (): Promise<void> => {
-          const res = await request(leave_channel(sessionId, curProjectId, exitChannelId));
+          const res = await request(leave_channel(sessionId, projectStore.curProjectId, exitChannelId));
           if (res) {
             channelStore.removeChannel(exitChannelId);
           }
@@ -247,7 +249,7 @@ const ChannelList = observer(() => {
         title='警告'
         open={true}
         onOk={async (): Promise<void> => {
-          const res = await request(join_by_admin(sessionId, curProjectId, joinChannelId));
+          const res = await request(join_by_admin(sessionId, projectStore.curProjectId, joinChannelId));
           if (res) {
             channelStore.removeChannel(joinChannelId);
           }
@@ -281,7 +283,7 @@ const ChannelList = observer(() => {
             setRemoveChannelId("");
           }}
           onOk={async (): Promise<void> => {
-            const res = await request(remove_by_admin(sessionId, curProjectId, removeChannelId));
+            const res = await request(remove_by_admin(sessionId, projectStore.curProjectId, removeChannelId));
             if (res) {
               channelStore.removeChannel(removeChannelId);
             }

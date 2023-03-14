@@ -375,6 +375,63 @@ async fn update_setting<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
+
+#[tauri::command]
+async fn set_ai_gateway<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetAiGatewayRequest,
+) -> Result<SetAiGatewayResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.set_ai_gateway(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_ai_gateway_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_ai_gateway".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn gen_ai_token<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GenAiTokenRequest,
+) -> Result<GenAiTokenResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.gen_ai_token(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == gen_ai_token_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("gen_ai_token".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -397,6 +454,8 @@ impl<R: Runtime> ProjectApiPlugin<R> {
                 set_local_api_perm,
                 get_local_api_perm,
                 update_setting,
+                set_ai_gateway,
+                gen_ai_token,
             ]),
         }
     }

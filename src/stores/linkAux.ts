@@ -728,7 +728,7 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != commentLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(commentLink.projectId);
       }
-      this.rootStore.appStore.setCodeCommentInfo(commentLink.threadId, commentLink.commentId);
+      this.rootStore.projectStore.setCodeCommentInfo(commentLink.threadId, commentLink.commentId);
       if (!history.location.pathname.startsWith(APP_PROJECT_PATH)) {
         if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
           history.push(APP_PROJECT_KB_DOC_PATH);

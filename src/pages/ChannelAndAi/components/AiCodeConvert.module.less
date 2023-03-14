@@ -1,0 +1,26 @@
+.editor_wrap {
+    display: flex;
+    height: 100%;
+
+    .src_editor {
+        flex: 1;
+        height: calc(100vh - 150px);
+        font-size: 14px;
+    }
+    .divider {
+        width: 1px;
+        margin-left: 6px;
+        margin-right: 6px;
+        background-color: #e4e4e8;
+    }
+    .dest_editor_wrap {
+        flex: 1;
+        height: calc(100vh - 150px);
+        overflow-y: scroll;
+        .dest_editor {
+            width: 100%;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    }
+}

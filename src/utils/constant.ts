@@ -203,3 +203,13 @@ export const filterDocItemList = [
     value: FILTER_DOC_ENUM.NOT_CONCERN,
   },
 ];
+
+export enum PROJECT_SETTING_TAB {
+  PROJECT_SETTING_LAYOUT,
+  PROJECT_SETTING_AI,
+}
+
+export enum PROJECT_CHAT_TYPE {
+  PROJECT_CHAT_CHANNEL,
+  PROJECT_CHAT_AI,
+}

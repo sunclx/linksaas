@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.8
+  version: 0.1.9
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -30,6 +30,8 @@ tags:
     description: 项目中的测试用例
   - name: projectCodeComment
     description: 项目中的代码评论
+  - name: projectAi
+    description: 项目中AI相关接口
 paths:
   /hello:
     get:
@@ -51,6 +53,43 @@ paths:
               schema:
                 type: string
                 example: hello linksaas
+  /project/{projectId}/aiToken:
+    get:
+      tags:
+        - projectAi
+      summary: 生成Ai token
+      description: 生成Ai token
+      operationId: projectProjectIdAiTokenGet
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/AccessToken'
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Ai token
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/bug/all:
     get:
       tags:

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import React from 'react';
 import { useStores } from '@/hooks';
 import type { IRouteConfig } from '@/routes';
-import Channel from '@/pages/Channel/index';
+import ChannelAndAi from '@/pages/ChannelAndAi/index';
 import style from './style.module.less';
 import { renderRoutes } from 'react-router-config';
 import { useLocation } from 'react-router-dom';
@@ -31,7 +31,7 @@ const ChatLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   }
 
   return (<>
-    <Channel />
+    <ChannelAndAi />
     {pathname != APP_PROJECT_CHAT_PATH && (
       <div className={style.toolsModel}>{renderRoutes(route.routes)}</div>
     )}

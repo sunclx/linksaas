@@ -5,12 +5,12 @@ import { Badge, Divider, Tooltip } from 'antd';
 import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
   const history = useHistory();
-  const appStore = useStores('appStore');
+  const projectStore = useStores('projectStore');
 
   const [showTip, setShowTip] = useState<boolean | undefined>(undefined);
 
@@ -26,13 +26,13 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
   };
 
   useEffect(() => {
-    if (appStore.showProjectSetting) {
+    if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT) {
       setShowTip(true);
     } else {
       setShowTip(false);
       setTimeout(() => setShowTip(undefined), 100);
     }
-  }, [appStore.showProjectSetting]);
+  }, [projectStore.showProjectSetting]);
 
   return (
     <Tooltip
