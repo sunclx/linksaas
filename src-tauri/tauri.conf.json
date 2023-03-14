@@ -87,6 +87,14 @@
       "clipboard": {
         "all": true
       },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "http://**",
+          "https://**"
+        ]
+      },
       "fs": {
         "readFile": true,
         "scope": [

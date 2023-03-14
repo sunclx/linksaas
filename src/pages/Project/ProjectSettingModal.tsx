@@ -1,23 +1,24 @@
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { Checkbox, Form, Modal, Radio, Space, Tabs, message } from "antd";
+import { Checkbox, Form, Input, Modal, Radio, Space, Tabs, Tooltip, message } from "antd";
 import { useStores } from "@/hooks";
 import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB } from "@/api/project";
 import type { LAYOUT_TYPE } from "@/api/project";
-import { update_setting } from "@/api/project";
+import { update_setting, set_ai_gateway } from "@/api/project";
 import { request } from "@/utils/request";
 import { useHistory, useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, PROJECT_SETTING_TAB } from "@/utils/constant";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 
 const ProjectSettingModal = () => {
     const location = useLocation();
     const history = useHistory();
 
-    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
+    //界面设置相关参数
     const [layoutType, setLayoutType] = useState<LAYOUT_TYPE>(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB);
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
     const [disableTestCase, setDisableTestCase] = useState(projectStore.curProject?.setting.disable_test_case ?? false);
@@ -26,7 +27,28 @@ const ProjectSettingModal = () => {
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
 
+    //AI助理相关设置
+    const [aiGatewayAddr, setAiGatewayAddr] = useState(projectStore.curProject?.ai_gateway_addr ?? "");
+    const [aiGatewaySecret, setAiGatewaySecret] = useState("");
+
     const updateSetting = async () => {
+        //设置AI相关设置
+        if (aiGatewaySecret != "" && aiGatewayAddr != "") {
+            if (!(aiGatewayAddr.startsWith("http://") || aiGatewayAddr.startsWith("https://"))) {
+                message.error("算法网关必须是http://或者https://协议")
+                return;
+            }
+            if (aiGatewaySecret.length < 32) {
+                message.error("共享密钥必须32位以上长度")
+                return;
+            }
+            await request(set_ai_gateway({
+                session_id: userStore.sessionId,
+                project_id: projectStore.curProjectId,
+                addr: aiGatewayAddr,
+                secret: aiGatewaySecret,
+            }));
+        }
         await request(update_setting({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
@@ -41,7 +63,7 @@ const ProjectSettingModal = () => {
             },
         }));
         await projectStore.updateProject(projectStore.curProjectId);
-        appStore.showProjectSetting = false;
+        projectStore.showProjectSetting = null;
         message.info("修改项目设置成功");
         //特殊处理
         if (layoutType == LAYOUT_TYPE_CHAT && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
@@ -59,14 +81,21 @@ const ProjectSettingModal = () => {
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                appStore.showProjectSetting = false;
+                projectStore.showProjectSetting = null;
             }}
             onOk={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 updateSetting();
             }}>
-            <Tabs defaultActiveKey="layout" type="card">
+            <Tabs activeKey={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT ? "layout" : "ai"}
+                type="card" onChange={key => {
+                    if (key == "layout") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
+                    } else if (key == "ai") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_AI;
+                    }
+                }}>
                 <Tabs.TabPane key="layout" tab="界面布局">
                     <Form labelCol={{ span: 4 }}>
                         <Form.Item label="主界面">
@@ -111,6 +140,55 @@ const ProjectSettingModal = () => {
                             </Space>
                         </Form.Item>
                     </Form>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="ai" tab="AI助理">
+                    <Form labelCol={{ span: 4 }}>
+                        <Form.Item label="AI网关地址" help={
+                            <>
+                                {!(aiGatewayAddr.startsWith("http://".substring(0, aiGatewayAddr.length)) || aiGatewayAddr.startsWith("https://".substring(0, aiGatewayAddr.length))) && (
+                                    <span style={{ color: "red" }}>网关地址必须以http://或者https://开始</span>
+                                )}
+                            </>
+                        }>
+                            <Input value={aiGatewayAddr} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setAiGatewayAddr(e.target.value);
+                            }} />
+                        </Form.Item>
+                        <Form.Item label="共享密钥" help={
+                            <>
+                                {aiGatewaySecret.length >= 1 && aiGatewaySecret.length < 32 && (
+                                    <span style={{ color: "red" }}>共享密钥必须32位以上长度</span>
+                                )}
+                            </>
+                        }>
+                            <Input.Password value={aiGatewaySecret}
+                                placeholder="请输入共享密钥" onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setAiGatewaySecret(e.target.value);
+                                }} />
+                        </Form.Item>
+                    </Form>
+                    <div style={{ position: "relative", height: "24px" }}>
+                        <div style={{ position: "absolute", right: "20px" }}>
+                            <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setAiGatewayAddr("https://aidemo.linksaas.pro");
+                                setAiGatewaySecret("use_linksaas_ai_gateway_for_great_develop_teams");
+                            }}>使用测试网关</a>
+                            <Tooltip title={
+                                <div style={{ padding: "10px 10px" }}>
+                                    我们开源了AI网关，大家可以参考
+                                    <a href="https://github.com/linksaas/ai-gateway" target="_blank" rel="noreferrer">https://github.com/linksaas/ai-gateway</a>进行私有部署。
+                                </div>
+                            }>
+                                <QuestionCircleOutlined style={{ marginLeft: "10px" }} />
+                            </Tooltip>
+                        </div>
+                    </div>
                 </Tabs.TabPane>
             </Tabs>
         </Modal>

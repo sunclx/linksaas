@@ -3,11 +3,13 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import type { ProjectInfo } from '@/api/project';
 import { list as listProject, get_project as getProject } from '@/api/project';
 import { request } from '@/utils/request';
-import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
+import type { PROJECT_SETTING_TAB } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM, PROJECT_CHAT_TYPE } from '@/utils/constant';
 import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
+import type { AiCap, AI_CAP_TYPE } from '@/api/ai';
 
 
 export class WebProjectStatus {
@@ -62,6 +64,11 @@ export default class ProjectStore {
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_BUG);
       }
       this.rootStore.appraiseStore.clearData();
+      this.setCodeCommentInfo("", "");
+      this.showProjectSetting = null;
+      this.projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL;
+      this.projectAiCap = null;
+      this.curAiCapType = null;
     }
   }
 
@@ -314,4 +321,78 @@ export default class ProjectStore {
     }
     return false;
   }
+
+  //显示代码评论
+  private _codeCommentThreadId = "";
+  private _codeCommentId = "";
+
+  setCodeCommentInfo(threadId: string, commentId: string) {
+    runInAction(() => {
+      this._codeCommentThreadId = threadId;
+      this._codeCommentId = commentId;
+    });
+  }
+
+  get codeCommentThreadId(): string {
+    return this._codeCommentThreadId;
+  }
+
+  get codeCommentId(): string {
+    return this._codeCommentId;
+  }
+
+  //显示项目设置
+  private _showProjectSetting: PROJECT_SETTING_TAB | null = null;
+
+  get showProjectSetting(): PROJECT_SETTING_TAB | null {
+    return this._showProjectSetting;
+  }
+
+  set showProjectSetting(val: PROJECT_SETTING_TAB | null) {
+    runInAction(() => {
+      this._showProjectSetting = val;
+    });
+  }
+
+  //项目沟通模式
+  private _projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL;
+
+  get projectChatType(): PROJECT_CHAT_TYPE {
+    return this._projectChatType;
+  }
+
+  set projectChatType(val: PROJECT_CHAT_TYPE) {
+    runInAction(() => {
+      this._projectChatType = val;
+    });
+  }
+
+  //AI能力 
+  private _projectAiCap: AiCap | null = null;
+
+  get projectAiCap(): AiCap | null {
+    return this._projectAiCap;
+  }
+
+  set projectAiCap(val: AiCap | null) {
+    runInAction(() => {
+      this._projectAiCap = val;
+    });
+  }
+
+  private _curAiCapType: AI_CAP_TYPE | null = null;
+
+  get curAiCapType(): AI_CAP_TYPE | null {
+    return this._curAiCapType;
+  }
+
+  set curAiCapType(val: AI_CAP_TYPE | null) {
+    runInAction(() => {
+      this._curAiCapType = val;
+      if (val != null) {
+        this._projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_AI;
+      }
+    });
+  }
+
 }
