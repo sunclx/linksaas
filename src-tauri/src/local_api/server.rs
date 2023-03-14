@@ -73,17 +73,17 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::{
-    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBugAllGet200Response,
+    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdAiTokenGet200Response,
+    ProjectProjectIdBugAllGet200Response, ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
     ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
     ProjectProjectIdTestCaseReportEntryIdPost200Response,
     ProjectProjectIdTestCaseReportEntryIdPostRequest,
-    ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
 };
 use local_api_rust::{
-    Api, HelloGetResponse, ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
-    ProjectProjectIdBugRecordBugIdEventsGetResponse,
+    Api, HelloGetResponse, ProjectProjectIdAiTokenGetResponse, ProjectProjectIdBugAllGetResponse,
+    ProjectProjectIdBugMyGetResponse, ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
     ProjectProjectIdChannelMyGetResponse, ProjectProjectIdChannelNotJoinGetResponse,
@@ -2338,6 +2338,47 @@ where
                     access_control_allow_origin: Some("*".into()),
                 },
             );
+        }
+    }
+
+    async fn project_project_id_ai_token_get(
+        &self,
+        project_id: String,
+        access_token: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdAiTokenGetResponse, ApiError> {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let res = super::project_api::gen_ai_token(&self.app, &project_id).await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdAiTokenGetResponse::Status200 {
+                body: ProjectProjectIdAiTokenGet200Response {
+                    token: Some(res.token),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
         }
     }
 }
