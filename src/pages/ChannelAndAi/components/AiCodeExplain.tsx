@@ -51,7 +51,7 @@ const AiCodeExplain = () => {
     }, [projectStore.curProjectId, projectStore.projectAiCap]);
 
     return (
-        <Card title="代码翻译" bordered={false} extra={
+        <Card title="代码解释" bordered={false} extra={
             <Form layout="inline">
                 <Form.Item label="编程语言">
                     <Select style={{ width: "100px" }} value={lang} onChange={value => setLang(value)}>
