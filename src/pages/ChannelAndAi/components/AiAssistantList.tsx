@@ -56,7 +56,7 @@ const AiAssistantList = () => {
                                 e.preventDefault();
                                 projectStore.curAiCapType = AI_CAP_TYPE.AI_CAP_CODE_CONVERT;
                             }}>
-                            代码转换
+                            代码翻译
                             <div className={s.divider} />
                         </li>
                     )}

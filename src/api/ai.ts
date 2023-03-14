@@ -67,3 +67,19 @@ export async function convertCode(apiAddr: string, token: string, srcLang: strin
         throw res.data;
     }
 }
+
+//增加注释
+export async function explainCode(apiAddr: string, token: string, lang: string, srcCode: string): Promise<string[]> {
+    const res = await fetch(`${apiAddr}/api/coding/explain/${lang}`, {
+        method: "POST",
+        headers: {
+            "X-AuthToken": token,
+        },
+        body: Body.text(srcCode),
+    });
+    if (res.ok) {
+        return res.data as string[];
+    } else {
+        throw res.data;
+    }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, Form, List, Select,message } from "antd";
+import { Card, Form, List, Select, message } from "antd";
 import s from "./AiCodeComplete.module.less"
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useStores } from "@/hooks";
@@ -120,6 +120,10 @@ const AiCodeComplete = () => {
 
     useEffect(() => {
         genToken();
+        const timer = setInterval(() => genToken(), 1800 * 1000);
+        return () => {
+            clearInterval(timer);
+        };
     }, [projectStore.curProjectId, projectStore.projectAiCap]);
 
     return (
