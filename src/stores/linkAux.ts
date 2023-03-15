@@ -889,22 +889,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record/subscribe"));
   }
 
-  //跳转到项目信息页面
-  goToHome(tab: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, `/home?tab=${tab}`));
-  }
-
-  //跳转到项目成员页面
-  goToMemberList(tab: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, `/member?tab=${tab}`));
-  }
-
   //跳转到成员互评页面
   goToAppriaseList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_member_appraise == true) {

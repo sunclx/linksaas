@@ -12,12 +12,8 @@ import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 
-const MENU_KEY_SHOW_TOOL_PROJECT_INFO = "toolbar.prjInfo.show"; //查看右侧工具栏项目信息
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
-const MENU_KEY_SHOW_TOOL_BAR_MEMBER = "toolbar.member.show"; //查看右侧工具栏项目成员
-const MENU_KEY_SHOW_TOOL_BAR_GOAL = "toolbar.goal.show"; //查看右侧工具栏成员目标
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
-const MENU_KEY_SHOW_TOOL_BAR_AWARD = "toolbar.award.show"; //查看右侧工具栏项目贡献
 const MENU_KEY_MEMBER_PREFIX = "member:";
 const MENU_KEY_CREATE_CHANNEL = "create.channel";
 const MENU_KEY_CHANNEL_PREFIX = "channel:";
@@ -43,7 +39,6 @@ const MENU_KEY_SHOW_TOOL_BAR_EVENTS = "toolbar.events.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
 const MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS = "toolbar.extEvents.show";
 const MENU_KEY_SHOW_TOOL_BAR_APP = "toolbar.app.show";
-const MENU_KEY_SHOW_TOOL_BAR_LOCAL_API = "toolbar.localApi.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 
 
@@ -63,12 +58,7 @@ const ProjectQuickAccess = () => {
     const [items, setItems] = useState<MenuProps['items']>([]);
 
     const calcItems = () => {
-        const tmpItems: MenuProps['items'] = [
-            {
-                key: MENU_KEY_SHOW_TOOL_PROJECT_INFO,
-                label: "查看项目信息",
-            },
-        ];
+        const tmpItems: MenuProps['items'] = [];
         const memberItem = {
             key: "member",
             label: "成员",
@@ -77,14 +67,6 @@ const ProjectQuickAccess = () => {
                     key: MENU_KEY_SHOW_INVITE_MEMBER,
                     label: "邀请成员",
                     disabled: projectStore.curProject?.closed || appStore.clientCfg?.can_invite == false || projectStore.isAdmin == false,
-                },
-                {
-                    key: MENU_KEY_SHOW_TOOL_BAR_MEMBER,
-                    label: "查看项目成员",
-                },
-                {
-                    key: MENU_KEY_SHOW_TOOL_BAR_GOAL,
-                    label: "查看成员目标",
                 },
                 {
                     key: "members",
@@ -100,12 +82,9 @@ const ProjectQuickAccess = () => {
             memberItem.children.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_APPRAISE,
                 label: "查看成员互评",
+                children:[],
             });
         }
-        memberItem.children.push({
-            key: MENU_KEY_SHOW_TOOL_BAR_AWARD,
-            label: "查看成员贡献",
-        });
         tmpItems.push(memberItem);
         if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
             tmpItems.push({
@@ -275,10 +254,6 @@ const ProjectQuickAccess = () => {
             label: "本地接口",
             children: [
                 {
-                    key: MENU_KEY_SHOW_TOOL_BAR_LOCAL_API,
-                    label: "查看本地接口",
-                },
-                {
                     key: MENU_KEY_SHOW_LOCAL_API_DEBUG,
                     label: "调试本地接口",
                 }
@@ -308,23 +283,12 @@ const ProjectQuickAccess = () => {
 
     const onMenuClick = async (info: MenuInfo) => {
         switch (info.key) {
-            case MENU_KEY_SHOW_TOOL_PROJECT_INFO:
-                linkAuxStore.goToHome("info", history);
-                break;
+
             case MENU_KEY_SHOW_INVITE_MEMBER:
                 memberStore.showInviteMember = true;
                 break;
-            case MENU_KEY_SHOW_TOOL_BAR_MEMBER:
-                linkAuxStore.goToMemberList("member", history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_GOAL:
-                linkAuxStore.goToMemberList("goal", history);
-                break;
             case MENU_KEY_SHOW_TOOL_BAR_APPRAISE:
                 linkAuxStore.goToAppriaseList(history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_AWARD:
-                linkAuxStore.goToMemberList("award", history);
                 break;
             case MENU_KEY_CREATE_CHANNEL:
                 history.push(APP_PROJECT_CHAT_PATH);
@@ -412,9 +376,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_APP:
                 linkAuxStore.goToAppList(history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_LOCAL_API:
-                linkAuxStore.goToHome("api", history);
                 break;
             case MENU_KEY_SHOW_LOCAL_API_DEBUG:
                 await openApiConsole();
