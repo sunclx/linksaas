@@ -10,6 +10,7 @@ import {
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
+  APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_PATH,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
@@ -985,6 +986,8 @@ class LinkAuxStore {
       return APP_PROJECT_KB_DOC_PATH + suffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
       return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
+    }else if(pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+      return APP_PROJECT_OVERVIEW_PATH + suffix;
     }
     const projectInfo = this.rootStore.projectStore.getProject(projectId);
     if (projectInfo == undefined) {

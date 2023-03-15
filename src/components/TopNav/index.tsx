@@ -11,9 +11,10 @@ import {
   APP_PROJECT_KB_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   PROJECT_SETTING_TAB,
+  APP_PROJECT_OVERVIEW_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
-import { CommentOutlined, FileDoneOutlined, SettingOutlined } from '@ant-design/icons';
+import { CommentOutlined, FileDoneOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
 import SearchBar from '../SearchBar';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
 import { observer } from 'mobx-react';
@@ -57,15 +58,17 @@ const TopNav = () => {
     <Tabs.TabPane tab={
       <Tooltip title="主界面: 知识库面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
         placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_CHAT_AND_KB ? "right" : "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
-        <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_kb : s.tab_kb_active}><FileDoneOutlined />知识库</span>
+        <span className={activeKey == APP_PROJECT_KB_PATH ? s.tab_kb_active : s.tab_kb}><FileDoneOutlined />知识库</span>
       </Tooltip>
     } key={APP_PROJECT_KB_PATH} />);
 
   useEffect(() => {
     if (location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       setActiveKey(APP_PROJECT_CHAT_PATH);
-    } else {
+    } else if (location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
       setActiveKey(APP_PROJECT_KB_PATH);
+    } else if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+      setActiveKey(APP_PROJECT_OVERVIEW_PATH);
     }
   }, [location.pathname, history]);
 
@@ -81,8 +84,10 @@ const TopNav = () => {
                 setActiveKey(key);
                 if (key == APP_PROJECT_CHAT_PATH) {
                   history.push(APP_PROJECT_CHAT_PATH);
-                } else {
+                } else if (key == APP_PROJECT_KB_PATH) {
                   history.push(APP_PROJECT_KB_DOC_PATH);
+                } else if (key == APP_PROJECT_OVERVIEW_PATH) {
+                  history.push(APP_PROJECT_OVERVIEW_PATH);
                 }
               });
               return;
@@ -90,8 +95,10 @@ const TopNav = () => {
             setActiveKey(key);
             if (key == APP_PROJECT_CHAT_PATH) {
               history.push(APP_PROJECT_CHAT_PATH);
-            } else {
+            } else if (key == APP_PROJECT_KB_PATH) {
               history.push(APP_PROJECT_KB_DOC_PATH);
+            } else if (key == APP_PROJECT_OVERVIEW_PATH) {
+              history.push(APP_PROJECT_OVERVIEW_PATH);
             }
           }}
         >
@@ -117,6 +124,9 @@ const TopNav = () => {
               {kbTabPanel}
             </>
           )}
+          <Tabs.TabPane tab={
+            <span className={activeKey == APP_PROJECT_OVERVIEW_PATH ? s.tab_overview_active : s.tab_overview}><FundProjectionScreenOutlined />项目概览</span>
+          } key={APP_PROJECT_OVERVIEW_PATH} />);
         </Tabs>
       </div>
       <span />
@@ -124,6 +134,8 @@ const TopNav = () => {
         {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><SettingBtn /></>)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><SettingBtn /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>电子书库</div><SearchBar /><SettingBtn /></>)}
+        {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<SettingBtn />)}
+
       </div>
     </div>
   );
