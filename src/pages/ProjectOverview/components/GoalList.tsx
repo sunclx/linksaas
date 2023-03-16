@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { Card, DatePicker, Input, List, Modal, Space, message } from "antd";
 import type { BasicGoalInfo, Okr, GoalInfo } from '@/api/project_member';
-import { create_goal, update_goal, list_goal } from '@/api/project_member';
+import { create_goal, update_goal, list_goal, remove_goal } from '@/api/project_member';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Pagination from "@/components/Pagination";
@@ -43,6 +43,7 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
     const memberStore = useStores('memberStore');
 
     const [editGoal, setEditGoal] = useState<EditGoal | null>(null);
+    const [showRemoveGoal, setShowRemoveGoal] = useState(false);
 
     const setTime = (values: (Moment | null)[] | null) => {
         if (editGoal == null) {
@@ -235,6 +236,17 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
             });
         }
     };
+    const removeGoal = async () => {
+        if (props.goal == undefined) {
+            return;
+        }
+        await request(remove_goal({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            goal_id: props.goal.goal_id,
+        }));
+        props.onChange();
+    }
 
     const editItem = (
         <>
@@ -341,8 +353,8 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
         );
     } else {
         return (
-            <Card className={s.goal_wrap}  extra={
-                (props.goal != undefined && userStore.userInfo.userId != props.goal.member_user_id) ? null : (
+            <Card className={s.goal_wrap} extra={
+                (props.goal != undefined && (userStore.userInfo.userId != props.goal.member_user_id || moment().diff(props.goal.create_time, "days") > 3)) ? null : (
                     <>
                         {editGoal == null && props.goal != undefined && userStore.userInfo.userId == props.goal.member_user_id && props.goal.goal_id == memberStore.getMember(props.goal.member_user_id)?.member.last_goal_id && (
                             <Button onClick={e => {
@@ -351,6 +363,15 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
                                 genEditGoal();
                             }}>修改</Button>
                         )}
+                        {editGoal == null && props.goal != undefined && userStore.userInfo.userId == props.goal.member_user_id &&
+                            props.goal.goal_id != memberStore.getMember(props.goal.member_user_id)?.member.last_goal_id &&
+                            moment().diff(props.goal.create_time, "days") <= 3 && (
+                                <Button danger onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowRemoveGoal(true);
+                                }}>删除</Button>
+                            )}
                         {editGoal != null && (
                             <Space>
                                 <Button type="default" onClick={e => {
@@ -367,33 +388,51 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
                         )}
                     </>
                 )
-    }>
-        { editGoal == null && props.goal != undefined && (
-            <div>
-                <div>
-                    <div className={s.info_wrap}>
-                        <div className={s.info_label}>日期区间</div>
-                        <div>{moment(props.goal.basic_info.from_time).format("YYYY-MM")}&nbsp;至&nbsp;{moment(props.goal.basic_info.to_time).format("YYYY-MM")}</div>
-                    </div>
-                    {props.goal.basic_info.okr_list.map((okr, okrIndex) => (
-                        <div className={s.info_wrap} key={okrIndex}>
-                            <div className={s.info_label}>目标{okrIndex + 1}:</div>
-                            <div>
-                                {okr.objective}&nbsp;
-                                {okr.key_result_list.map((kr, krIndex) => (
-                                    <div className={s.info_wrap} key={krIndex}>
-                                        <div className={s.kr_label}>关键结果{krIndex + 1}:</div>
-                                        <div>{kr}&nbsp;</div>
-                                    </div>
-                                ))}
+            }>
+                {editGoal == null && props.goal != undefined && (
+                    <div>
+                        <div>
+                            <div className={s.info_wrap}>
+                                <div className={s.info_label}>日期区间</div>
+                                <div>{moment(props.goal.basic_info.from_time).format("YYYY-MM")}&nbsp;至&nbsp;{moment(props.goal.basic_info.to_time).format("YYYY-MM")}</div>
                             </div>
+                            {props.goal.basic_info.okr_list.map((okr, okrIndex) => (
+                                <div className={s.info_wrap} key={okrIndex}>
+                                    <div className={s.info_label}>目标{okrIndex + 1}:</div>
+                                    <div>
+                                        {okr.objective}&nbsp;
+                                        {okr.key_result_list.map((kr, krIndex) => (
+                                            <div className={s.info_wrap} key={krIndex}>
+                                                <div className={s.kr_label}>关键结果{krIndex + 1}:</div>
+                                                <div>{kr}&nbsp;</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            </div>
-        )
-}
-{ editItem }
+                    </div>
+                )
+                }
+                {editItem}
+                {showRemoveGoal == true && (
+                    <Modal open title="删除目标(OKR)"
+                        okText="删除"
+                        okButtonProps={{ danger: true }}
+                        onCancel={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowRemoveGoal(false);
+                        }}
+                        onOk={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            removeGoal();
+                        }}
+                    >
+                        是否删除目标？
+                    </Modal>
+                )}
             </Card >
         );
     }
@@ -441,7 +480,7 @@ const GoalList: React.FC<GoalListProps> = (props) => {
             ) : null
         }>
             <List dataSource={goalList} renderItem={item => (
-                <List.Item key={item.goal_id}>
+                <List.Item key={item.goal_id} style={{ border: "none" }}>
                     <GoalItem goal={item} onChange={() => loadGoalList()} />
                 </List.Item>
             )} />

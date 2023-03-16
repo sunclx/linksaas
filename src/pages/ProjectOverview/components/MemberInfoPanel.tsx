@@ -1,4 +1,4 @@
-import { Collapse, Descriptions, Modal, Popover, Select, message } from "antd";
+import { Collapse, Descriptions, Modal, Popover, Select, Space, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import Button from "@/components/Button";
@@ -13,6 +13,25 @@ import { change_owner } from "@/api/project";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import MemberInfo from "@/pages/ChannelAndAi/components/MemberInfo";
 import s from "./MemberInfoPanel.module.less";
+import type { AwardState } from '@/api/project_award';
+import { list_state } from '@/api/project_award';
+
+const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
+    if (state == undefined) {
+        return (<></>);
+    } else {
+        return (
+            <div style={{ paddingRight: "20px" }}>
+                <Space size="large">
+                    <span>上月贡献:&nbsp;{state.last_month_point}</span>
+                    <span>本月贡献:&nbsp;{state.cur_month_point}</span>
+                    <span>上周贡献:&nbsp;{state.last_weak_point}</span>
+                    <span>本周贡献:&nbsp;{state.cur_week_point}</span>
+                </Space>
+            </div>
+        );
+    }
+};
 
 const MemberInfoPanel = () => {
     const userStore = useStores('userStore');
@@ -23,6 +42,7 @@ const MemberInfoPanel = () => {
     const [roleList, setRoleList] = useState<RoleInfo[]>([]);
     const [removeMemberUserId, setRemoveMemberUserId] = useState("");
     const [ownerMemberUserId, setOwnerMemberUserId] = useState("");
+    const [awardStateList, setAwardStateList] = useState<AwardState[]>([]);
 
     const loadRoleList = async () => {
         const res = await request(list_role(userStore.sessionId, projectStore.curProjectId));
@@ -53,8 +73,17 @@ const MemberInfoPanel = () => {
         message.info("移除用户成功");
     };
 
+    const loadAwardStateList = async () => {
+        const res = await request(list_state({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+        }));
+        setAwardStateList(res.state_list);
+    };
+
     useEffect(() => {
         loadRoleList();
+        loadAwardStateList();
     }, [projectStore.curProjectId]);
 
     return (
@@ -75,9 +104,11 @@ const MemberInfoPanel = () => {
                             <Descriptions.Item label="用户名称">
                                 <Popover
                                     placement="right"
+                                    trigger="click"
                                     content={<MemberInfo memberId={member.member.member_user_id} showLink hideMemberInfo={() => { }} />}>
-                                    <UserPhoto logoUri={member.member.logo_uri} style={{ width: "24px", height: "24px", borderRadius: "24px", marginRight: "10px" }} />
-                                    {member.member.display_name}
+                                    <a>
+                                        <UserPhoto logoUri={member.member.logo_uri} style={{ width: "24px", height: "24px", borderRadius: "24px", marginRight: "10px" }} />
+                                        {member.member.display_name}</a>
                                 </Popover>
                             </Descriptions.Item>
                             <Descriptions.Item label="用户角色">
@@ -124,7 +155,8 @@ const MemberInfoPanel = () => {
                                     <Collapse.Panel key="okr" header="成员目标">
                                         <GoalList memberUserId={member.member.member_user_id} />
                                     </Collapse.Panel>
-                                    <Collapse.Panel key="award" header="成员贡献">
+                                    <Collapse.Panel key="award" header="成员贡献"
+                                        extra={<MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />}>
                                         <AwardList memberUserId={member.member.member_user_id} />
                                     </Collapse.Panel>
                                 </Collapse>

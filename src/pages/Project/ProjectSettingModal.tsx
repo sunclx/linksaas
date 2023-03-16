@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import { Checkbox, Form, Input, Modal, Radio, Space, Tabs, Tooltip, message } from "antd";
 import { useStores } from "@/hooks";
-import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB } from "@/api/project";
+import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB, LAYOUT_TYPE_NONE } from "@/api/project";
 import type { LAYOUT_TYPE } from "@/api/project";
 import { update_setting, set_ai_gateway } from "@/api/project";
 import { request } from "@/utils/request";
 import { useHistory, useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, PROJECT_SETTING_TAB } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, APP_PROJECT_OVERVIEW_PATH, PROJECT_SETTING_TAB } from "@/utils/constant";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
 
@@ -66,10 +66,14 @@ const ProjectSettingModal = () => {
         projectStore.showProjectSetting = null;
         message.info("修改项目设置成功");
         //特殊处理
-        if (layoutType == LAYOUT_TYPE_CHAT && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+        if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+            //do nothing
+        } else if (layoutType == LAYOUT_TYPE_CHAT && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
             history.push(APP_PROJECT_CHAT_PATH);
         } else if (layoutType == LAYOUT_TYPE_KB && !location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
             history.push(APP_PROJECT_KB_DOC_PATH);
+        } else if (layoutType == LAYOUT_TYPE_NONE && !location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+            history.push(APP_PROJECT_OVERVIEW_PATH);
         }
     };
 
@@ -108,6 +112,7 @@ const ProjectSettingModal = () => {
                                     <Radio value={LAYOUT_TYPE_KB_AND_CHAT}>显示知识库和沟通</Radio>
                                     <Radio value={LAYOUT_TYPE_CHAT}>只显示沟通</Radio>
                                     <Radio value={LAYOUT_TYPE_KB}>只显示知识库</Radio>
+                                    <Radio value={LAYOUT_TYPE_NONE}>只保留项目概览</Radio>
                                 </Space>
                             </Radio.Group>
                         </Form.Item>

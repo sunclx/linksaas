@@ -16,7 +16,7 @@ import {
 import { useStores } from '@/hooks';
 import { CommentOutlined, FileDoneOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
 import SearchBar from '../SearchBar';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_NONE } from '@/api/project';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 
@@ -62,6 +62,16 @@ const TopNav = () => {
       </Tooltip>
     } key={APP_PROJECT_KB_PATH} />);
 
+  const getTabCls = (): string => {
+    if (projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_NONE) {
+      return s.none;
+    } else if ([LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+      return s.single;
+    } else {
+      return s.multi;
+    }
+  };
+
   useEffect(() => {
     if (location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       setActiveKey(APP_PROJECT_CHAT_PATH);
@@ -76,7 +86,7 @@ const TopNav = () => {
     <div className={s.topnav}>
       <div>
         <Tabs
-          className={classNames(s.tabs, [LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) ? s.single : s.multi)}
+          className={classNames(s.tabs, getTabCls())}
           activeKey={activeKey}
           onChange={(key) => {
             if (docSpaceStore.inEdit) {
@@ -134,7 +144,10 @@ const TopNav = () => {
         {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><SettingBtn /></>)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><SettingBtn /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>电子书库</div><SearchBar /><SettingBtn /></>)}
-        {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<SettingBtn />)}
+        {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<>
+          {projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE && <SearchBar />}
+          <SettingBtn />
+        </>)}
 
       </div>
     </div>
