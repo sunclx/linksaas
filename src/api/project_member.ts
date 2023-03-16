@@ -157,6 +157,17 @@ export type ListGoalResponse = {
   goal_list: GoalInfo[];
 }
 
+export type RemoveGoalRequest = {
+  session_id: string;
+  project_id: string;
+  goal_id: string;
+};
+
+export type RemoveGoalResponse = {
+  code: number;
+  err_msg: string;
+}
+
 
 //生成加入项目邀请码
 export async function gen_invite(
@@ -384,6 +395,16 @@ export async function list_goal(request: ListGoalRequest): Promise<ListGoalRespo
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ListGoalResponse>(cmd, {
+    request,
+  });
+}
+
+//删除目标
+export async function remove_goal(request: RemoveGoalRequest): Promise<RemoveGoalResponse> {
+  const cmd = 'plugin:project_member_api|remove_goal';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<RemoveGoalResponse>(cmd, {
     request,
   });
 }

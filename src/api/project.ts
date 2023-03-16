@@ -5,7 +5,7 @@ export const LAYOUT_TYPE_CHAT_AND_KB: LAYOUT_TYPE = 0;  //沟通 知识库
 export const LAYOUT_TYPE_KB_AND_CHAT: LAYOUT_TYPE = 1;  //知识库 沟通
 export const LAYOUT_TYPE_CHAT: LAYOUT_TYPE = 2;         //沟通
 export const LAYOUT_TYPE_KB: LAYOUT_TYPE = 3;           //知识库
-
+export const LAYOUT_TYPE_NONE: LAYOUT_TYPE = 4;         //关闭 沟通和知识库 
 
 
 export type BasicProjectInfo = {

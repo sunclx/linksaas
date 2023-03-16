@@ -409,6 +409,33 @@ pub async fn list_goal<R: Runtime>(
     }
 }
 
+
+#[tauri::command]
+pub async fn remove_goal<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveGoalRequest,
+) -> Result<RemoveGoalResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.remove_goal(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_goal_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_goal".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 pub struct ProjectMemberApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -431,6 +458,7 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
                 create_goal,
                 update_goal,
                 list_goal,
+                remove_goal,
             ]),
         }
     }
