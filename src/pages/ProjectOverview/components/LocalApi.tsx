@@ -7,9 +7,8 @@ import { request } from '@/utils/request';
 import { get_local_api_token, remove_local_api_token, renew_local_api_token } from '@/api/project';
 import Button from "@/components/Button";
 import { WarningTwoTone } from "@ant-design/icons";
-import { Card, Input, Modal, Space, message } from "antd";
+import { Input, Modal, Space, message } from "antd";
 import { writeText } from '@tauri-apps/api/clipboard';
-import { WebviewWindow } from '@tauri-apps/api/window';
 import { PROTO } from "@/pages/LocalApi/proto";
 import { RelProjectList } from "./RelProjectList";
 import LocalApiPermInfo from "./LocalApiPermInfo";
@@ -58,39 +57,13 @@ const LocalApi = () => {
         message.info("复制成功");
     }
 
-    const openApiConsole = async () => {
-        const label = "localapi"
-        const view = WebviewWindow.getByLabel(label);
-        if (view != null) {
-            await view.close();
-        }
-        new WebviewWindow(label, {
-            url: `local_api.html?port=${port}`,
-            width: 800,
-            minWidth: 800,
-            height: 600,
-            minHeight: 600,
-            center: true,
-            title: "本地接口调试",
-            resizable: true,
-        });
-    };
-
     useEffect(() => {
         loadPort();
         loadToken();
     }, []);
 
     return (
-        <Card bordered={false} extra={
-            <Button
-                title={port == 0 ? "本地服务没有启动" : ""}
-                onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    openApiConsole();
-                }} disabled={port == 0}>调试接口</Button>
-        }>
+        <>
             <div className={s.content_wrap}>
                 <div>
                     <div className={s.info_wrap}>
@@ -228,7 +201,7 @@ const LocalApi = () => {
                     <p><WarningTwoTone twoToneColor="red" />&nbsp;删除令牌后，当前项目的数据将不能通过接口获取</p>
                 </Modal>
             )}
-        </Card>
+        </>
     );
 };
 

@@ -10,6 +10,7 @@ import {
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
+  APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_PATH,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
@@ -888,22 +889,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record/subscribe"));
   }
 
-  //跳转到项目信息页面
-  goToHome(tab: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, `/home?tab=${tab}`));
-  }
-
-  //跳转到项目成员页面
-  goToMemberList(tab: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, `/member?tab=${tab}`));
-  }
-
   //跳转到成员互评页面
   goToAppriaseList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_member_appraise == true) {
@@ -985,6 +970,8 @@ class LinkAuxStore {
       return APP_PROJECT_KB_DOC_PATH + suffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
       return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
+    }else if(pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+      return APP_PROJECT_OVERVIEW_PATH + suffix;
     }
     const projectInfo = this.rootStore.projectStore.getProject(projectId);
     if (projectInfo == undefined) {

@@ -10,8 +10,7 @@ import { request } from '@/utils/request';
 import { useCommonEditor, ReadOnlyEditor, change_file_fs } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT } from '@/api/fs';
 
-
-const ProjectInfoPanel: React.FC = () => {
+const ProjectInfoPanel = () => {
   const projectStore = useStores('projectStore');
   const userStore = useStores('userStore');
 
@@ -66,19 +65,21 @@ const ProjectInfoPanel: React.FC = () => {
   };
 
   return (
-    <Card bordered={false}
+    <Card
+      headStyle={{ backgroundColor: "#f5f5f5" }}
       title={
-        <>
+        <Space>
+          <span style={{ fontSize: "16px", fontWeight: 600 }}>项目名称: </span>
           {inEdit == true ? (
-            <Input style={{ width:"250px" }} placeholder={`输入项目名称`} value={title} onChange={e => {
+            <Input style={{ width: "250px" }} placeholder={`输入项目名称`} value={title} onChange={e => {
               e.stopPropagation();
               e.preventDefault();
               setTitle(e.target.value);
             }} />
           ) : (
-            <div style={{fontSize:"16px",fontWeight:600}}>{projectStore.curProject?.basic_info.project_name ?? ""}</div>
+            <div style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</div>
           )}
-        </>
+        </Space>
       }
       extra={
         <>
@@ -115,7 +116,7 @@ const ProjectInfoPanel: React.FC = () => {
       }>
       <div className={s.pj_detail_wrap}>
         <Form layout="vertical">
-          <Form.Item label="项目介绍">
+          <Form.Item>
             {inEdit == true ? (
               <div className="_projectEditContext">{editor}</div>
             ) : (
@@ -129,4 +130,5 @@ const ProjectInfoPanel: React.FC = () => {
     </Card>
   );
 };
+
 export default observer(ProjectInfoPanel);
