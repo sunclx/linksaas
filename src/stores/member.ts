@@ -44,13 +44,11 @@ class MemberStore {
     if (!res) {
       return;
     }
-    let memberList = res.member_list.map((item) => new WebMemberInfo(item));
-    const ownerIndex = memberList.findIndex((item) => item.member.is_project_owner);
-    if (ownerIndex != -1) {
-      const ownerObj = memberList[ownerIndex];
-      memberList.splice(ownerIndex, 1);
-      memberList.unshift(ownerObj);
-    }
+    //跳转member列表顺序
+    const tmpMemberList = res.member_list.filter(item => item.member_user_id == this.rootStore.userStore.userInfo.userId);
+    res.member_list.filter(item => item.member_user_id != this.rootStore.userStore.userInfo.userId).forEach(item => tmpMemberList.push(item));
+
+    let memberList = tmpMemberList.map((item) => new WebMemberInfo(item));
 
     //获取最后事件
     const eventIdList = memberList.filter(item => item.member.last_event_id != "").map(item => item.member.last_event_id);
@@ -101,7 +99,7 @@ class MemberStore {
         return item;
       });
     }
-
+    console.log("xxxxxx", memberList);
     runInAction(() => {
       this._memberList = memberList;
       this.syncToMap();

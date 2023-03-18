@@ -19,7 +19,7 @@ import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
 import LinkDocPanel from "./components/LinkDocPanel";
 import { EditSelect } from "@/components/EditCell/EditSelect";
-import { LAYOUT_TYPE_KB } from "@/api/project";
+import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB } from "@/api/project";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
 
@@ -137,13 +137,13 @@ const SpritDetail = () => {
                                 return false;
                             }} showEditIcon={projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB} allowClear={false} />
                         {((spritInfo?.link_channel_id.length ?? 0) > 0) && (
-                            <Button type="link" style={{ marginLeft: "20px" }} 
-                            disabled={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB}
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                linkAuxStore.goToLink(new LinkChannelInfo("", projectStore.curProjectId, spritInfo.link_channel_id ?? ""), history);
-                            }}>进入沟通频道</Button>
+                            <Button type="link" style={{ marginLeft: "20px" }}
+                                disabled={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    linkAuxStore.goToLink(new LinkChannelInfo("", projectStore.curProjectId, spritInfo.link_channel_id ?? ""), history);
+                                }}>进入沟通频道</Button>
                         )}
                     </div>
                     )}
@@ -160,16 +160,18 @@ const SpritDetail = () => {
                         {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="看板" key="kanban">
-                        {activeKey == "kanban" && <KanbanPanel/>}
+                        {activeKey == "kanban" && <KanbanPanel />}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="相关文档" key="linkDoc">
-                        {activeKey == "linkDoc" && <LinkDocPanel />}
-                    </Tabs.TabPane>
+                    {[LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) && (
+                        <Tabs.TabPane tab="相关文档" key="linkDoc">
+                            {activeKey == "linkDoc" && <LinkDocPanel />}
+                        </Tabs.TabPane>
+                    )}
                     <Tabs.TabPane tab="甘特图" key="gantt" disabled={!spritStore.allTimeReady}>
                         {activeKey == "gantt" && spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="燃尽图" key="burnDown" disabled={!spritStore.allTimeReady}>
-                        {activeKey == "burnDown" && spritInfo != null && <BurnDownPanel spritInfo={spritInfo}/>}
+                        {activeKey == "burnDown" && spritInfo != null && <BurnDownPanel spritInfo={spritInfo} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="统计信息" key="statistics" disabled={!spritStore.allTimeReady}>
                         {activeKey == "statistics" && <StatPanel />}

@@ -133,7 +133,7 @@ const SimpleModePanel = () => {
                                 e.preventDefault();
                                 linkAuxStore.goToLink(new LinkTaskInfo("", item.project_id, item.issue_id, taskList.map(task => task.issue_id)), history);
                             }}>{item.basic_info.title}</a>
-                            <a onClick={e => {
+                            <a className={s.export} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 showShortNote(userStore.sessionId, {
@@ -158,7 +158,7 @@ const SimpleModePanel = () => {
                                 e.preventDefault();
                                 linkAuxStore.goToLink(new LinkBugInfo("", item.project_id, item.issue_id, bugList.map(bug => bug.issue_id)), history);
                             }}>{item.basic_info.title}</a>
-                            <a onClick={e => {
+                            <a className={s.export} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 showShortNote(userStore.sessionId, {

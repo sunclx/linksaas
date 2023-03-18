@@ -6,8 +6,6 @@ import ProjectLayout from '@/layouts/ProjectLayout';
 import UserLayout from '@/layouts/UserLayout';
 import NoFond from '@/pages/NoFond';
 
-import ProjectHome from '@/pages/Project/Home';
-import ProjectMember from '@/pages/Project/Member';
 import ProjectAppraise from '@/pages/Project/Appraise';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
@@ -51,6 +49,7 @@ import {
   WORKBENCH_PATH,
   ADMIN_PATH_APPSTORE_CATE_SUFFIX,
   ADMIN_PATH_APPSTORE_APP_SUFFIX,
+  APP_PROJECT_OVERVIEW_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -87,6 +86,7 @@ import RequirementDetail from '@/pages/Project/Requirement/RequirementDetail';
 import UserDoc from '@/pages/UserExtend/UserKb/UserDoc';
 import AppCateList from '@/pages/Admin/AppAdmin/AppCateList';
 import AppList from '@/pages/Admin/AppAdmin/AppList';
+import OverviewLayout from '@/layouts/OverviewLayout';
 
 
 
@@ -109,16 +109,6 @@ export interface IRouteConfig {
 
 const getToolbarRoute = (prefix: string): IRouteConfig[] => {
   const routeList: IRouteConfig[] = [
-    {
-      path: prefix + '/home',
-      title: '项目详情',
-      component: ProjectHome,
-    },
-    {
-      path: prefix + '/member',
-      title: '项目成员',
-      component: ProjectMember,
-    },
     {
       path: prefix + '/appraise',
       title: '项目成员互评',
@@ -352,6 +342,12 @@ const routesConfig: IRouteConfig[] = [
               },
             ],
           },
+          {
+            path: APP_PROJECT_OVERVIEW_PATH,
+            title: '项目概览',
+            component: OverviewLayout,
+            routes: getToolbarRoute(APP_PROJECT_OVERVIEW_PATH),
+          }
         ],
       },
     ],
