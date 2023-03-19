@@ -4556,6 +4556,249 @@ namespace requirement {
   }
 }
 
+namespace idea {
+  export type CreateTagEvent = {
+    tag_id: string;
+    tag_name: string;
+  };
+
+  function get_create_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateTagEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UpdateTagEvent = {
+    tag_id: string;
+    old_tag_name: string;
+    new_tag_name: string;
+  };
+
+  function get_update_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateTagEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type RemoveTagEvent = {
+    tag_id: string;
+    tag_name: string;
+  };
+
+  function get_remove_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveTagEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type IdeaTag = {
+    tag_id: string;
+    tag_name: string;
+  };
+
+  export type CreateIdeaEvent = {
+    idea_id: string;
+    title: string;
+    tag_list: IdeaTag[];
+    keyword_list: string[];
+  };
+
+  function get_create_idea_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateIdeaEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UpdateIdeaContentEvent = {
+    idea_id: string;
+    old_title: string;
+    new_title: string;
+  }
+
+  function get_update_idea_content_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateIdeaContentEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UpdateIdeaTagEvent = {
+    idea_id: string;
+    title: string;
+    old_tag_list: IdeaTag[];
+    new_tag_list: IdeaTag[];
+  }
+
+  function get_update_idea_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateIdeaTagEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UpdateIdeaKeywordEvent = {
+    idea_id: string;
+    title: string;
+    old_keyword_list: string[];
+    new_keyword_list: string[];
+  }
+
+  function get_update_idea_keyword_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateIdeaKeywordEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type LockIdeaEvent = {
+    idea_id: string;
+    title: string;
+  };
+
+  function get_lock_idea_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: LockIdeaEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type UnlockIdeaEvent = {
+    idea_id: string;
+    title: string;
+  };
+
+  function get_unlock_idea_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnlockIdeaEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type RemoveIdeaEvent = {
+    idea_id: string;
+    title: string;
+  };
+
+  function get_remove_idea_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveIdeaEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type SetAppraiseEvent = {
+    idea_id: string;
+    title: string;
+    appriase_type: number;
+  }
+
+  function get_set_appraise_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetAppraiseEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export type CancelAppraiseEvent = {
+    idea_id: string;
+    title: string;
+    appriase_type: number;
+  }
+
+  function get_cancel_appraise_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelAppraiseEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [new LinkNoneInfo('TODO')];
+  }
+
+  export class AllIdeaEvent {
+    CreateTagEvent?: CreateTagEvent;
+    UpdateTagEvent?: UpdateTagEvent;
+    RemoveTagEvent?: RemoveTagEvent;
+    CreateIdeaEvent?: CreateIdeaEvent;
+    UpdateIdeaContentEvent?: UpdateIdeaContentEvent;
+    UpdateIdeaTagEvent?: UpdateIdeaTagEvent;
+    UpdateIdeaKeywordEvent?: UpdateIdeaKeywordEvent;
+    LockIdeaEvent?: LockIdeaEvent;
+    UnlockIdeaEvent?: UnlockIdeaEvent;
+    RemoveIdeaEvent?: RemoveIdeaEvent;
+    SetAppraiseEvent?: SetAppraiseEvent;
+    CancelAppraiseEvent?: CancelAppraiseEvent;
+  };
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllIdeaEvent,
+  ): LinkInfo[] {
+    if (inner.CreateTagEvent !== undefined) {
+      return get_create_tag_simple_content(ev, skip_prj_name, inner.CreateTagEvent);
+    }
+    if (inner.UpdateTagEvent !== undefined) {
+      return get_update_tag_simple_content(ev, skip_prj_name, inner.UpdateTagEvent);
+    }
+    if (inner.RemoveTagEvent !== undefined) {
+      return get_remove_tag_simple_content(ev, skip_prj_name, inner.RemoveTagEvent);
+    }
+    if (inner.CreateIdeaEvent !== undefined) {
+      return get_create_idea_simple_content(ev, skip_prj_name, inner.CreateIdeaEvent);
+    }
+    if (inner.UpdateIdeaContentEvent !== undefined) {
+      return get_update_idea_content_simple_content(ev, skip_prj_name, inner.UpdateIdeaContentEvent);
+    }
+    if (inner.UpdateIdeaTagEvent !== undefined) {
+      return get_update_idea_tag_simple_content(ev, skip_prj_name, inner.UpdateIdeaTagEvent);
+    }
+    if (inner.UpdateIdeaKeywordEvent !== undefined) {
+      return get_update_idea_keyword_simple_content(ev, skip_prj_name, inner.UpdateIdeaKeywordEvent);
+    }
+    if (inner.LockIdeaEvent !== undefined) {
+      return get_lock_idea_simple_content(ev, skip_prj_name, inner.LockIdeaEvent);
+    }
+    if (inner.UnlockIdeaEvent !== undefined) {
+      return get_unlock_idea_simple_content(ev, skip_prj_name, inner.UnlockIdeaEvent);
+    }
+    if (inner.RemoveIdeaEvent !== undefined) {
+      return get_remove_idea_simple_content(ev, skip_prj_name, inner.RemoveIdeaEvent);
+    }
+    if (inner.SetAppraiseEvent !== undefined) {
+      return get_set_appraise_simple_content(ev, skip_prj_name, inner.SetAppraiseEvent);
+    }
+    if (inner.CancelAppraiseEvent !== undefined) {
+      return get_cancel_appraise_simple_content(ev, skip_prj_name, inner.CancelAppraiseEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
 export class AllEvent {
   ProjectEvent?: project.AllProjectEvent;
   ProjectDocEvent?: project_doc.AllProjectDocEvent;
@@ -4572,6 +4815,7 @@ export class AllEvent {
   ScriptEvent?: script.AllScriptEvent;
   RequirementEvent?: requirement.AllRequirementEvent;
   CodeEvent?: code.AllCodeEvent;
+  IdeaEvent?: idea.AllIdeaEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -4605,6 +4849,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return requirement.get_simple_content_inner(ev, skip_prj_name, ev.event_data.RequirementEvent);
   } else if (ev.event_data.CodeEvent !== undefined) {
     return code.get_simple_content_inner(ev, skip_prj_name, ev.event_data.CodeEvent);
+  } else if (ev.event_data.IdeaEvent != undefined) {
+    return idea.get_simple_content_inner(ev, skip_prj_name, ev.event_data.IdeaEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

@@ -18,14 +18,15 @@ export const FILE_OWNER_TYPE_ISSUE: FILE_OWNER_TYPE = 4; //工单(任务，缺�
 // export const FILE_OWNER_TYPE_WORK_SNAPSHOT: FILE_OWNER_TYPE = 5; //工作快照
 export const FILE_OWNER_TYPE_PROJECT_DOC: FILE_OWNER_TYPE = 6; //文档
 export const FILE_OWNER_TYPE_PROJECT_EBOOK: FILE_OWNER_TYPE = 7; //电子书
-export const FILE_OWNER_TYPE_PROJECT: FILE_OWNER_TYPE = 99; //项目范围 
 export const FILE_OWNER_TYPE_PROJECT_ARTIFACT: FILE_OWNER_TYPE = 8;   //自动化构建结果
 export const FILE_OWNER_TYPE_TEST_CASE: FILE_OWNER_TYPE = 9;          //测试用例
 export const FILE_OWNER_TYPE_TEST_CASE_RESULT: FILE_OWNER_TYPE = 10;  //测试用例结果
 export const FILE_OWNER_TYPE_MIN_APP: FILE_OWNER_TYPE = 11; //微应用
 export const FILE_OWNER_TYPE_REQUIRE_MENT: FILE_OWNER_TYPE = 12; //项目需求
 export const FILE_OWNER_TYPE_APP_STORE: FILE_OWNER_TYPE = 13; //应用市场
+export const FILE_OWNER_TYPE_IDEA: FILE_OWNER_TYPE = 14; //知识点
 
+export const FILE_OWNER_TYPE_PROJECT: FILE_OWNER_TYPE = 99; //项目范围 
 
 export type DownloadResult = {
     exist_in_local: boolean;

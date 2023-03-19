@@ -311,6 +311,18 @@ export namespace script {
   };
 }
 
+export namespace idea {
+  export type KeywordChangeNotice = {
+    project_id: string;
+    add_keyword_list: string[];
+    remove_keyword_list: string[];
+  };
+
+  export type AllNotice = {
+    KeywordChangeNotice?: KeywordChangeNotice;
+  };
+}
+
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   ProjectDocNotice?: project_doc.AllNotice;
@@ -320,4 +332,5 @@ export type AllNotice = {
   EarthlyNotice?: earthly.AllNotice;
   ScriptNotice?: script.AllNotice;
   ClientNotice?: client.AllNotice;
+  IdeaNotice?: idea.AllNotice;
 };

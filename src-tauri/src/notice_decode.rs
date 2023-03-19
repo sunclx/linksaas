@@ -353,6 +353,27 @@ pub mod script {
     }
 }
 
+pub mod idea {
+    use prost::Message;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::notices_idea;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    pub enum Notice {
+        KeywordChangeNotice(notices_idea::KeywordChangeNotice),
+    }
+
+    pub fn decode_notice(data: &Any) -> Option<Notice> {
+        if data.type_url == notices_idea::KeywordChangeNotice::type_url() {
+            if let Ok(notice) = notices_idea::KeywordChangeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::KeywordChangeNotice(notice));
+            }
+        }
+        None
+    }
+}
+
 pub mod client {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
@@ -380,6 +401,7 @@ pub enum NoticeMessage {
     RobotNotice(robot::Notice),
     EarthlyNotice(earthly::Notice),
     ScriptNotice(script::Notice),
+    IdeaNotice(idea::Notice),
     ClientNotice(client::Notice),
 }
 
@@ -406,6 +428,9 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = script::decode_notice(data) {
         return Some(NoticeMessage::ScriptNotice(ret));
+    }
+    if let Some(ret) = idea::decode_notice(data) {
+        return Some(NoticeMessage::IdeaNotice(ret));
     }
     None
 }
