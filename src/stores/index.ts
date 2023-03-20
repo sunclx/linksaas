@@ -12,6 +12,7 @@ import DocSpaceStore from './docSpace';
 import BookShelfStore from './bookShelf';
 import SpritStore from './sprit';
 import IssueStore from './issue';
+import IdeaStore from './idea';
 
 export class RootStore {
   userStore: UserStore;
@@ -28,6 +29,7 @@ export class RootStore {
   bookShelfStore: BookShelfStore;
   spritStore: SpritStore;
   issueStore: IssueStore;
+  ideaStore: IdeaStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -44,6 +46,7 @@ export class RootStore {
     this.bookShelfStore = new BookShelfStore(this);
     this.spritStore = new SpritStore(this);
     this.issueStore = new IssueStore(this);
+    this.ideaStore = new IdeaStore(this);
   }
 }
 
@@ -63,6 +66,7 @@ const _store = {
   bookShelfStore: rootStore.bookShelfStore,
   spritStore: rootStore.spritStore,
   issueStore: rootStore.issueStore,
+  ideaStore: rootStore.ideaStore,
 };
 
 export type StoreType = typeof _store;

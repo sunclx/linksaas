@@ -7,12 +7,14 @@ import { useStores } from '@/hooks';
 import MemberInfoModal from '@/pages/ChannelAndAi/components/MemberInfoModal';
 import CodeCommentThreadModal from '@/pages/Project/Code/CodeCommentThreadModal';
 import ProjectSettingModal from '@/pages/Project/ProjectSettingModal';
+import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';
 
 
 
 const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
     const memberStore = useStores("memberStore");
     const projectStore = useStores("projectStore");
+    const ideaStore = useStores("ideaStore");
 
     return (
         <div className={style.projectLayout}>
@@ -23,6 +25,9 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
             )}
             {projectStore.curProjectId != "" && projectStore.showProjectSetting != null && (
                 <ProjectSettingModal />
+            )}
+            {projectStore.curProjectId != "" && ideaStore.showCreateIdea == true && (
+                <CreateIdeaModal/>
             )}
         </div>
     );

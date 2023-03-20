@@ -66,6 +66,12 @@ const Toolbar: React.FC = observer(() => {
 
   return (
     <div className={style.toolbar}>
+      <Item
+        id="idea"
+        pathname={pathname}
+        title="知识点"
+      />
+      <Divider />
       {projectStore.curProject?.setting.disable_member_appraise != true && (
         <>
           <Item

@@ -27,6 +27,7 @@ import {
 } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
+import type { IdeaPageState } from '@/pages/Idea/IdeaPage';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -963,6 +964,18 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/req"));
   }
 
+  //跳转到知识点列表页面
+  goToIdeaList(keywordList: string[], tagId: string | null,history: History) {
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    const state: IdeaPageState = {
+      keywordList: keywordList,
+      tagId: tagId,
+    };
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/idea"), state);
+  }
+
   private genUrl(projectId: string, pathname: string, suffix: string): string {
     if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       return APP_PROJECT_CHAT_PATH + suffix;
@@ -970,7 +983,7 @@ class LinkAuxStore {
       return APP_PROJECT_KB_DOC_PATH + suffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
       return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
-    }else if(pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+    } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
       return APP_PROJECT_OVERVIEW_PATH + suffix;
     }
     const projectInfo = this.rootStore.projectStore.getProject(projectId);
