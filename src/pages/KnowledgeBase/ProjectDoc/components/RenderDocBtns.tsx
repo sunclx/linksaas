@@ -17,7 +17,7 @@ import Button from '@/components/Button';
 
 
 
-const RenderDocBtns: React.FC = () => {
+const RenderDocBtns = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');

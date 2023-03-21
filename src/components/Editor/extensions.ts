@@ -14,6 +14,7 @@ import {
   IframeExtension,
   WidgetExtension,
   CodeExtension,
+  KeywordExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -40,6 +41,8 @@ export const getExtensions = (param?: {
   thumbHeight: number;
   ownerType: FILE_OWNER_TYPE;
   ownerId: string;
+  keywordList?: string[];
+  keywordCallback?: (kwList: string[]) => void;
 }) => {
   const retList = [
     // Nodes
@@ -77,6 +80,9 @@ export const getExtensions = (param?: {
     new FontSizeExtension({ defaultSize: '12', unit: 'px' }),
     new TextColorExtension(),
     new TextHighlightExtension(),
+
+    new KeywordExtension({ keywordList: param?.keywordList ?? [], kwListCb: param?.keywordCallback }),
   ];
+
   return () => retList;
 };

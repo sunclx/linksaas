@@ -6,16 +6,21 @@ import { request } from '@/utils/request';
 import { observer } from 'mobx-react';
 import s from './EditDoc.module.less';
 import RenderDocBtns from './RenderDocBtns';
-import { Button, message } from 'antd';
+import { Button, Popover, message } from 'antd';
 import RemoveModal from './RemoveModal';
 import leftArrow from '@/assets/image/leftArrow.png';
 import { useHistory } from 'react-router-dom';
+import { LinkIdeaPageInfo } from '@/stores/linkAux';
+import { BulbFilled } from '@ant-design/icons';
 
 const ReadDoc: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
+  const [matchKeywordList, setMatchKeywordList] = useState<string[]>([]);
 
   const userStore = useStores('userStore');
   const docSpaceStore = useStores('docSpaceStore');
+  const ideaStore = useStores('ideaStore');
+  const linkAuxStore = useStores("linkAuxStore");
 
   const history = useHistory();
 
@@ -89,11 +94,29 @@ const ReadDoc: React.FC = () => {
             <img src={leftArrow} />
           </a>
           {docSpaceStore.curDoc?.base_info.title ?? ""}
+          {matchKeywordList.length > 0 && (
+            <Popover placement='right'
+              title="相关知识点"
+              overlayStyle={{ width: 150 }}
+              content={
+                <div style={{ maxHeight: "calc(100vh - 300px)", padding: "10px 10px" }}>
+                  {matchKeywordList.map(keyword => (
+                    <Button key={keyword} type="link" style={{ minWidth: 0 }} onClick={e => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      linkAuxStore.goToLink(new LinkIdeaPageInfo("", docSpaceStore.curDoc?.project_id ?? "", "", [keyword]), history);
+                    }}>{keyword}</Button>
+                  ))}
+                </div>
+              }>
+              <BulbFilled style={{ color: "orange", paddingRight: "10px", marginLeft: "10px" }} />
+            </Popover>
+          )}
         </h1>
         <RenderDocBtns />
       </div>
       <div className={s.read_doc}>
-        {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} />}
+        {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />}
       </div>
     </div>
   );
