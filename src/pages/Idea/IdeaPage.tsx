@@ -7,11 +7,6 @@ import TagListPanel from "./components/TagListPanel";
 import { useStores } from "@/hooks";
 import ContentPanel from "./components/ContentPanel";
 
-export interface IdeaPageState {
-    keywordList: string[];
-    tagId: string;
-}
-
 const IdeaPage = () => {
     const ideaStore = useStores('ideaStore');
 

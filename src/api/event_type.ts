@@ -3,7 +3,7 @@ import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
 import * as es from './events_subscribe';
-import { LinkCodeCommentInfo, LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkCodeCommentInfo, LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkIdeaPageInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -14,6 +14,7 @@ import {
 import * as tc from '@/api/project_test_case';
 
 import moment from 'moment';
+import { APPRAISE_AGREE } from './project_idea';
 
 
 export function get_issue_type_str(issue_type: number): string {
@@ -4567,8 +4568,10 @@ namespace idea {
     skip_prj_name: boolean,
     inner: CreateTagEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 知识点标签`),
+      new LinkIdeaPageInfo(inner.tag_name, ev.project_id, inner.tag_id, []),
+    ];
   }
 
   export type UpdateTagEvent = {
@@ -4582,8 +4585,11 @@ namespace idea {
     skip_prj_name: boolean,
     inner: UpdateTagEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点标签`),
+      new LinkIdeaPageInfo(inner.new_tag_name, ev.project_id, inner.tag_id, []),
+      new LinkNoneInfo(`原标签 ${inner.old_tag_name}`),
+    ];
   }
 
   export type RemoveTagEvent = {
@@ -4596,8 +4602,7 @@ namespace idea {
     skip_prj_name: boolean,
     inner: RemoveTagEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点标签 ${inner.tag_name}`)];
   }
 
   export type IdeaTag = {
@@ -4617,8 +4622,23 @@ namespace idea {
     skip_prj_name: boolean,
     inner: CreateIdeaEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+    ];
+    if (inner.tag_list.length > 0) {
+      retList.push(new LinkNoneInfo("标签列表"));
+      inner.tag_list.forEach(tag => {
+        retList.push(new LinkIdeaPageInfo(tag.tag_name, ev.project_id, tag.tag_id, []));
+      })
+    }
+    if (inner.keyword_list.length > 0) {
+      retList.push(new LinkNoneInfo("关键词列表"));
+      inner.keyword_list.forEach(keyword => {
+        retList.push(new LinkIdeaPageInfo(keyword, ev.project_id, "", [keyword]));
+      })
+    }
+    return retList;
   }
 
   export type UpdateIdeaContentEvent = {
@@ -4632,8 +4652,11 @@ namespace idea {
     skip_prj_name: boolean,
     inner: UpdateIdeaContentEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点`),
+      new LinkIdeaPageInfo(inner.new_title, ev.project_id, "", [], inner.idea_id),
+      new LinkNoneInfo(`内容 原标题 ${inner.old_title}`),
+    ];
   }
 
   export type UpdateIdeaTagEvent = {
@@ -4648,8 +4671,20 @@ namespace idea {
     skip_prj_name: boolean,
     inner: UpdateIdeaTagEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+      new LinkNoneInfo("标签"),
+    ];
+    retList.push(new LinkNoneInfo("新标签"));
+    inner.new_tag_list.forEach(tag => {
+      retList.push(new LinkIdeaPageInfo(tag.tag_name, ev.project_id, tag.tag_id, []));
+    });
+    retList.push(new LinkNoneInfo("原标签"));
+    inner.old_tag_list.forEach(tag => {
+      retList.push(new LinkIdeaPageInfo(tag.tag_name, ev.project_id, tag.tag_id, []));
+    });
+    return retList;
   }
 
   export type UpdateIdeaKeywordEvent = {
@@ -4664,8 +4699,20 @@ namespace idea {
     skip_prj_name: boolean,
     inner: UpdateIdeaKeywordEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+      new LinkNoneInfo("关键词"),
+    ];
+    retList.push(new LinkNoneInfo("新关键词"));
+    inner.new_keyword_list.forEach(keyword => {
+      new LinkIdeaPageInfo(keyword, ev.project_id, "", [keyword]);
+    });
+    retList.push(new LinkNoneInfo("原关键词"));
+    inner.old_keyword_list.forEach(keyword => {
+      new LinkIdeaPageInfo(keyword, ev.project_id, "", [keyword]);
+    });
+    return retList;
   }
 
   export type LockIdeaEvent = {
@@ -4678,8 +4725,10 @@ namespace idea {
     skip_prj_name: boolean,
     inner: LockIdeaEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 锁定 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+    ];
   }
 
   export type UnlockIdeaEvent = {
@@ -4692,8 +4741,10 @@ namespace idea {
     skip_prj_name: boolean,
     inner: UnlockIdeaEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 解锁 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+    ];
   }
 
   export type RemoveIdeaEvent = {
@@ -4706,8 +4757,7 @@ namespace idea {
     skip_prj_name: boolean,
     inner: RemoveIdeaEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 知识点 ${inner.title}`)];
   }
 
   export type SetAppraiseEvent = {
@@ -4721,8 +4771,10 @@ namespace idea {
     skip_prj_name: boolean,
     inner: SetAppraiseEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${inner.appriase_type == APPRAISE_AGREE ? "赞同" : "不赞同"} 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+    ];
   }
 
   export type CancelAppraiseEvent = {
@@ -4736,8 +4788,10 @@ namespace idea {
     skip_prj_name: boolean,
     inner: CancelAppraiseEvent,
   ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [new LinkNoneInfo('TODO')];
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消标记 知识点`),
+      new LinkIdeaPageInfo(inner.title, ev.project_id, "", [], inner.idea_id),
+    ];
   }
 
   export class AllIdeaEvent {

@@ -27,7 +27,6 @@ import {
 } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
-import type { IdeaPageState } from '@/pages/Idea/IdeaPage';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -57,6 +56,8 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_NONE,
   LINK_TARGET_IMAGE,
   LINK_TARGET_EXTERNE,
+
+  LINK_TARGET_IDEA_PAGE,
 }
 
 export interface LinkInfo {
@@ -362,6 +363,23 @@ export class LinkCodeCommentInfo {
   commentId: string;
 }
 
+export class LinkIdeaPageInfo {
+  constructor(content: string, projectId: string, tagId: string, keywordList: string[], ideaId: string = "") {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_IDEA_PAGE;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.tagId = tagId;
+    this.keywordList = keywordList;
+    this.ideaId = ideaId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  tagId: string;
+  keywordList: string[];
+  ideaId: string;
+}
+
 export class LinkImageInfo {
   constructor(content: string, imgUrl: string, thumbImgUrl: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_IMAGE;
@@ -449,6 +467,12 @@ export type LinkScriptSuiteSate = {
 export type LinkScriptExecState = {
   scriptSuiteId: string;
   execId: string;
+}
+
+export type LinkIdeaPageState = {
+  keywordList: string[];
+  tagId: string;
+  ideaId: string;
 }
 
 class LinkAuxStore {
@@ -738,6 +762,17 @@ class LinkAuxStore {
           history.push(APP_PROJECT_CHAT_PATH);
         }
       }
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_IDEA_PAGE) {
+      const ideaPageLink = link as LinkIdeaPageInfo;
+      if (this.rootStore.projectStore.curProjectId != ideaPageLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(ideaPageLink.projectId);
+      }
+      const state: LinkIdeaPageState = {
+        keywordList: ideaPageLink.keywordList,
+        tagId: ideaPageLink.tagId,
+        ideaId: ideaPageLink.ideaId,
+      };
+      history.push(this.genUrl(ideaPageLink.projectId, pathname, "/idea"), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       await open(externLink.destUrl);
@@ -962,18 +997,6 @@ class LinkAuxStore {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/req"));
-  }
-
-  //跳转到知识点列表页面
-  goToIdeaList(keywordList: string[], tagId: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    const state: IdeaPageState = {
-      keywordList: keywordList,
-      tagId: tagId,
-    };
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/idea"), state);
   }
 
   private genUrl(projectId: string, pathname: string, suffix: string): string {

@@ -41,11 +41,11 @@ const IdeaEventModal: React.FC<IdeaEventModalProps> = (props) => {
                 e.preventDefault();
                 props.onCancel();
             }}>
-            <div style={{ maxHeight: "calc(100vh - 600px)", overflowY: "scroll" }}>
-            <Timeline  reverse={true}>
+            <div style={{ maxHeight: "calc(100vh - 400px)", overflowY: "scroll" }}>
+            <Timeline reverse={true} style={{paddingTop:"10px"}}>
                     {eventList.map((item) => (
                         <Timeline.Item color="gray" key={item.event_id}>
-                            <p>{moment(item.event_time).format("YYYY-MM-DD HH:mm:ss")}</p>
+                            <p>{item.cur_user_display_name}&nbsp;{moment(item.event_time).format("YYYY-MM-DD HH:mm:ss")}</p>
                             <EventCom key={item.event_id} item={item} skipProjectName={true} skipLink={true} showMoreLink={false} />
                         </Timeline.Item>
                     ))}

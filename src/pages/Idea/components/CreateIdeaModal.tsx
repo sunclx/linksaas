@@ -8,6 +8,7 @@ import type { IdeaTag } from "@/api/project_idea";
 import { list_tag, create_idea } from "@/api/project_idea";
 import { request } from "@/utils/request";
 import { useHistory } from "react-router-dom";
+import { LinkIdeaPageInfo } from "@/stores/linkAux";
 
 const CreateModal = () => {
     const history = useHistory();
@@ -72,7 +73,7 @@ const CreateModal = () => {
         //变更文件Owner
         await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_IDEA, createRes.idea_id);
         ideaStore.closeShowCreateIdea();
-        linkAuxStore.goToIdeaList([], "", history);
+        linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);
     };
 
     useEffect(() => {

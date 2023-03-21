@@ -66,7 +66,7 @@ const IdeaAppraiseModal: React.FC<IdeaAppraiseModalProps> = (props) => {
                 e.preventDefault();
                 props.onCancel();
             }}>
-            <div style={{ maxHeight: "calc(100vh - 600px)", overflowY: "scroll" }}>
+            <div style={{ maxHeight: "calc(100vh - 400px)", overflowY: "scroll" }}>
                 <Table pagination={false} rowKey="member_user_id" dataSource={appraiseList} columns={columns} />
             </div>
         </Modal>

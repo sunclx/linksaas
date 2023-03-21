@@ -10,18 +10,21 @@ import { TwitterPicker } from 'react-color';
 import randomColor from 'randomcolor';
 import { useHistory, useLocation } from "react-router-dom";
 import { observer } from 'mobx-react';
-import type { IdeaPageState } from "../IdeaPage";
+import type { LinkIdeaPageState } from "@/stores/linkAux";
+import { LinkIdeaPageInfo } from "@/stores/linkAux";
+
 
 
 const TagListPanel = () => {
     const history = useHistory();
     const location = useLocation();
 
-    let state: IdeaPageState | undefined = location.state as IdeaPageState | undefined;
+    let state: LinkIdeaPageState | undefined = location.state as LinkIdeaPageState | undefined;
     if (state == undefined) {
         state = {
             keywordList: [],
             tagId: "",
+            ideaId: "",
         }
     }
 
@@ -88,7 +91,7 @@ const TagListPanel = () => {
         message.info("删除标签成功");
         if (showRemoveTag.tag_id == state?.tagId) {
             setShowRemoveTag(null);
-            linkAuxStore.goToIdeaList(state?.keywordList ?? [], "", history);
+            linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);
         } else {
             setShowRemoveTag(null);
             ideaStore.removeTag(showRemoveTag.tag_id);
@@ -115,7 +118,7 @@ const TagListPanel = () => {
                             e.stopPropagation();
                             e.preventDefault();
                             if (state?.tagId != "") {
-                                linkAuxStore.goToIdeaList(state?.keywordList ?? [], "", history);
+                                linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", state?.keywordList ?? []), history);
                             }
                         }}
                     >全部知识点</div>
@@ -127,7 +130,7 @@ const TagListPanel = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 if (state?.tagId != item.tag_id) {
-                                    linkAuxStore.goToIdeaList(state?.keywordList ?? [], item.tag_id, history);
+                                    linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, item.tag_id, state?.keywordList ?? []), history);
                                 }
                             }}
                         >{item.basic_info.tag_name}</div>
