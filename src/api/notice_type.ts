@@ -318,8 +318,26 @@ export namespace idea {
     remove_keyword_list: string[];
   };
 
+  export type CreateTagNotice = {
+    project_id: string;
+    tag_id: string;
+  };
+
+  export type UpdateTagNotice = {
+    project_id: string;
+    tag_id: string;
+  };
+
+  export type RemoveTagNotice = {
+    project_id: string;
+    tag_id: string;
+  };
+
   export type AllNotice = {
     KeywordChangeNotice?: KeywordChangeNotice;
+    CreateTagNotice?: CreateTagNotice;
+    UpdateTagNotice?: UpdateTagNotice;
+    RemoveTagNotice?: RemoveTagNotice;
   };
 }
 

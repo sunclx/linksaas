@@ -72,7 +72,7 @@ const CreateModal = () => {
         //变更文件Owner
         await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_IDEA, createRes.idea_id);
         ideaStore.closeShowCreateIdea();
-        linkAuxStore.goToIdeaList([], null, history);
+        linkAuxStore.goToIdeaList([], "", history);
     };
 
     useEffect(() => {
@@ -116,7 +116,7 @@ const CreateModal = () => {
                 </Form.Item>
                 <Form.Item label="关键词">
                     <Select mode="tags" onChange={value => setKeywordList(value as string[])}>
-                        {ideaStore.curKeywordList.map(keyword => (
+                        {ideaStore.keywordList.map(keyword => (
                             <Select.Option key={keyword} value={keyword}>{keyword}</Select.Option>
                         ))}
                     </Select>

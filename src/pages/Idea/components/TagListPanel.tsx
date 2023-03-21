@@ -1,9 +1,9 @@
 import { Button, Form, Input, List, Modal, Popover, message } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import s from "./TagListPanel.module.less";
 import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import type { IdeaTag } from "@/api/project_idea";
-import { list_tag, create_tag, update_tag, remove_tag } from "@/api/project_idea";
+import { create_tag, update_tag, remove_tag } from "@/api/project_idea";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { TwitterPicker } from 'react-color';
@@ -21,7 +21,7 @@ const TagListPanel = () => {
     if (state == undefined) {
         state = {
             keywordList: [],
-            tagId: null,
+            tagId: "",
         }
     }
 
@@ -29,21 +29,13 @@ const TagListPanel = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
+    const ideaStore = useStores('ideaStore');
 
-    const [tagList, setTagList] = useState<IdeaTag[]>([]);
     const [showCreate, setShowCreate] = useState(false);
     const [tagTitle, setTagTitle] = useState("");
     const [tagColor, setTagColor] = useState(randomColor({ luminosity: "dark", format: "hex", alpha: 1.0 }));
     const [showUpdateTag, setShowUpdateTag] = useState<IdeaTag | null>(null);
     const [showRemoveTag, setShowRemoveTag] = useState<IdeaTag | null>(null);
-
-    const loadTagList = async () => {
-        const res = await request(list_tag({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-        }));
-        setTagList(res.tag_list);
-    }
 
     const createTag = async () => {
         const title = tagTitle.trim();
@@ -51,7 +43,7 @@ const TagListPanel = () => {
             message.error("标签标题不能为空");
             return;
         }
-        await request(create_tag({
+        const res = await request(create_tag({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             basic_info: {
@@ -59,9 +51,9 @@ const TagListPanel = () => {
                 tag_color: tagColor,
             },
         }));
+        ideaStore.updateTag(res.tag_id);
         setShowCreate(false);
         message.info("创建标签成功");
-        await loadTagList();
     };
 
     const updateTag = async () => {
@@ -79,9 +71,9 @@ const TagListPanel = () => {
                 tag_color: tagColor,
             },
         }));
+        ideaStore.updateTag(showUpdateTag?.tag_id ?? "");
         setShowUpdateTag(null);
         message.info("修改标签成功");
-        await loadTagList();
     }
 
     const removeTag = async () => {
@@ -96,16 +88,13 @@ const TagListPanel = () => {
         message.info("删除标签成功");
         if (showRemoveTag.tag_id == state?.tagId) {
             setShowRemoveTag(null);
-            linkAuxStore.goToIdeaList(state?.keywordList ?? [], null, history);
-        }else{
+            linkAuxStore.goToIdeaList(state?.keywordList ?? [], "", history);
+        } else {
             setShowRemoveTag(null);
-            await loadTagList();
+            ideaStore.removeTag(showRemoveTag.tag_id);
         }
     };
 
-    useEffect(() => {
-        loadTagList();
-    }, [projectStore.curProjectId])
 
     return (
         <div>
@@ -119,49 +108,60 @@ const TagListPanel = () => {
                     setShowCreate(true);
                 }}><PlusOutlined /></Button>
             </div>
-            <List className={s.tag_list} dataSource={tagList} renderItem={item => (
-                <List.Item key={item.tag_id} className={item.tag_id == state?.tagId ? s.cur_tag : ""}>
-                    <div className={s.tag} style={{ backgroundColor: item.basic_info.tag_color }}
+            <List className={s.tag_list} >
+                <List.Item className={state?.tagId == "" ? s.cur_tag : ""}>
+                    <div className={s.tag}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            if (state?.tagId == item.tag_id) {
-                                linkAuxStore.goToIdeaList(state?.keywordList ?? [], null, history);
-                            } else {
-                                linkAuxStore.goToIdeaList(state?.keywordList ?? [], item.tag_id, history);
+                            if (state?.tagId != "") {
+                                linkAuxStore.goToIdeaList(state?.keywordList ?? [], "", history);
                             }
                         }}
-                    >{item.basic_info.tag_name}</div>
-                    <Popover trigger="click" placement="right"
-                        content={
-                            <div style={{ padding: "4px 10px" }}>
-                                <div>
-                                    <Button type="link" onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setTagTitle(item.basic_info.tag_name);
-                                        setTagColor(item.basic_info.tag_color);
-                                        setShowUpdateTag(item);
-                                    }}>修改标签</Button>
-                                </div>
-                                <div>
-                                    <Button type="link" danger onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setShowRemoveTag(item);
-                                    }}>删除标签</Button>
-                                </div>
-                            </div>
-                        }>
-                        <Button type="text" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                        }}>
-                            <MoreOutlined />
-                        </Button>
-                    </Popover>
+                    >全部知识点</div>
                 </List.Item>
-            )} />
+                {ideaStore.tagList.map(item => (
+                    <List.Item key={item.tag_id} className={item.tag_id == state?.tagId ? s.cur_tag : ""}>
+                        <div className={s.tag} style={{ backgroundColor: item.basic_info.tag_color }}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                if (state?.tagId != item.tag_id) {
+                                    linkAuxStore.goToIdeaList(state?.keywordList ?? [], item.tag_id, history);
+                                }
+                            }}
+                        >{item.basic_info.tag_name}</div>
+                        <Popover trigger="click" placement="right"
+                            content={
+                                <div style={{ padding: "4px 10px" }}>
+                                    <div>
+                                        <Button type="link" onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setTagTitle(item.basic_info.tag_name);
+                                            setTagColor(item.basic_info.tag_color);
+                                            setShowUpdateTag(item);
+                                        }}>修改标签</Button>
+                                    </div>
+                                    <div>
+                                        <Button type="link" danger onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowRemoveTag(item);
+                                        }}>删除标签</Button>
+                                    </div>
+                                </div>
+                            }>
+                            <Button type="text" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                            }}>
+                                <MoreOutlined />
+                            </Button>
+                        </Popover>
+                    </List.Item>
+                ))}
+            </List>
             {showCreate == true && (
                 <Modal open title="创建标签"
                     okText="创建" okButtonProps={{ disabled: tagTitle.trim() == "" }}

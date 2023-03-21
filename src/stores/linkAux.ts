@@ -965,7 +965,7 @@ class LinkAuxStore {
   }
 
   //跳转到知识点列表页面
-  goToIdeaList(keywordList: string[], tagId: string | null,history: History) {
+  goToIdeaList(keywordList: string[], tagId: string, history: History) {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }

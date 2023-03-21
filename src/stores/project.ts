@@ -60,6 +60,7 @@ export default class ProjectStore {
       await this.rootStore.memberStore.loadMemberList(val);
       await this.rootStore.channelStore.loadChannelList(val);
       await this.rootStore.ideaStore.loadKeyword(val);
+      await this.rootStore.ideaStore.loadTagList(val);
       if (this.rootStore.appStore.simpleMode) {
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_TASK);
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_BUG);

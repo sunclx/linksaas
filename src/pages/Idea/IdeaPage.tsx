@@ -9,7 +9,7 @@ import ContentPanel from "./components/ContentPanel";
 
 export interface IdeaPageState {
     keywordList: string[];
-    tagId: string | null;
+    tagId: string;
 }
 
 const IdeaPage = () => {

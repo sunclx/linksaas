@@ -8,6 +8,11 @@ export type IDEA_SORT_TYPE = number;
 export const IDEA_SORT_UPDATE_TIME: IDEA_SORT_TYPE = 0;
 export const IDEA_SORT_APPRAISE: IDEA_SORT_TYPE = 1;
 
+export type KEYWORD_SEARCH_TYPE = number;
+export const KEYWORD_SEARCH_AND: KEYWORD_SEARCH_TYPE = 0;
+export const KEYWORD_SEARCH_OR: KEYWORD_SEARCH_TYPE = 1;
+
+
 export type BasicIdeaTag = {
     tag_name: string;
     tag_color: string;
@@ -34,6 +39,7 @@ export type UserPerm = {
     can_update: boolean;
     can_remove: boolean;
     can_change_lock: boolean;
+    can_appraise: boolean;
 };
 
 export type SimpleIdeaTag = {
@@ -67,6 +73,7 @@ export type ListIdeaParam = {
     tag_id_list: string[];
     filter_by_keyword: boolean;
     keyword_list: string[];
+    keyword_search_type: KEYWORD_SEARCH_TYPE;
 };
 
 export type Appraise = {
@@ -113,6 +120,17 @@ export type RemoveTagResponse = {
     err_msg: string;
 };
 
+export type GetTagRequest = {
+    session_id: string;
+    project_id: string;
+    tag_id: string;
+};
+
+export type GetTagResponse = {
+    code: number;
+    err_msg: string;
+    tag: IdeaTag;
+};
 
 export type ListTagRequest = {
     session_id: string;
@@ -320,6 +338,14 @@ export async function remove_tag(request: RemoveTagRequest): Promise<RemoveTagRe
     });
 }
 
+//获取单个标签
+export async function get_tag(request: GetTagRequest): Promise<GetTagResponse> {
+    const cmd = 'plugin:project_idea_api|get_tag';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetTagResponse>(cmd, {
+        request,
+    });
+}
 //列出标签
 export async function list_tag(request: ListTagRequest): Promise<ListTagResponse> {
     const cmd = 'plugin:project_idea_api|list_tag';

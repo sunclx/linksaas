@@ -88,6 +88,33 @@ async fn remove_tag<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_tag<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetTagRequest,
+) -> Result<GetTagResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIdeaApiClient::new(chan.unwrap());
+    match client.get_tag(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_tag_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_tag".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_tag<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -477,6 +504,7 @@ impl<R: Runtime> ProjectIdeaApiPlugin<R> {
                 create_tag,
                 update_tag,
                 remove_tag,
+                get_tag,
                 list_tag,
                 create_idea,
                 update_idea_content,
