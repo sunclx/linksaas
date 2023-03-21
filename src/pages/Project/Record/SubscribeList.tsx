@@ -11,7 +11,13 @@ import { request } from "@/utils/request";
 import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
-import { bookShelfEvOptionList, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./components/constants";
+import {
+    bookShelfEvOptionList, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues,
+    genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
+    genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues,
+    genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
+    requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList, ideaEvOptionList, genIdeaEvCfgValues
+} from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
 
@@ -33,7 +39,7 @@ const SubscribeList = () => {
         setSubscribeList(res.info_list.map(item => {
             return {
                 ...item,
-                event_cfg: adjust_event_cfg(item.event_cfg)
+                event_cfg: adjust_event_cfg(item.event_cfg),
             };
         }));
     };
@@ -128,46 +134,49 @@ const SubscribeList = () => {
                                 }>
                                     <Form labelCol={{ span: 3 }}>
                                         <Form.Item label="项目事件">
-                                            <Checkbox.Group options={projectEvOptionList} defaultValue={genProjectEvCfgValues(item.event_cfg.project_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={projectEvOptionList} value={genProjectEvCfgValues(item.event_cfg.project_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="电子书事件">
-                                            <Checkbox.Group options={bookShelfEvOptionList} defaultValue={genBookShelfEvCfgValues(item.event_cfg.book_shelf_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={bookShelfEvOptionList} value={genBookShelfEvCfgValues(item.event_cfg.book_shelf_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="文档事件">
-                                            <Checkbox.Group options={docEvOptionList} defaultValue={genDocEvCfgValues(item.event_cfg.doc_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={docEvOptionList} value={genDocEvCfgValues(item.event_cfg.doc_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="自动化事件">
-                                            <Checkbox.Group options={earthlyEvOptionList} defaultValue={genEarthlyEvCfgValues(item.event_cfg.earthly_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={earthlyEvOptionList} value={genEarthlyEvCfgValues(item.event_cfg.earthly_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="服务端脚本事件">
-                                            <Checkbox.Group options={scriptEvOptionList} defaultValue={genScriptEvCfgValues(item.event_cfg.script_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={scriptEvOptionList} value={genScriptEvCfgValues(item.event_cfg.script_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="第三方接入事件">
-                                            <Checkbox.Group options={extEvOptionList} defaultValue={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={extEvOptionList} value={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="gitee事件">
-                                            <Checkbox.Group options={giteeEvOptionList} defaultValue={genGiteeEvCfgValues(item.event_cfg.gitee_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={giteeEvOptionList} value={genGiteeEvCfgValues(item.event_cfg.gitee_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="gitlab事件">
-                                            <Checkbox.Group options={gitlabEvOptionList} defaultValue={genGitlabEvCfgValues(item.event_cfg.gitlab_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={gitlabEvOptionList} value={genGitlabEvCfgValues(item.event_cfg.gitlab_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="需求事件">
-                                            <Checkbox.Group options={requirementEvOptionList} defaultValue={genRequirementEvCfgValues(item.event_cfg.requirement_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={requirementEvOptionList} value={genRequirementEvCfgValues(item.event_cfg.requirement_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="工单事件">
-                                            <Checkbox.Group options={issueEvOptionList} defaultValue={genIssueEvCfgValues(item.event_cfg.issue_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={issueEvOptionList} value={genIssueEvCfgValues(item.event_cfg.issue_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="服务器事件">
-                                            <Checkbox.Group options={robotEvOptionList} defaultValue={genRobotEvCfgValues(item.event_cfg.robot_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={robotEvOptionList} value={genRobotEvCfgValues(item.event_cfg.robot_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="迭代事件">
-                                            <Checkbox.Group options={spritEvOptionList} defaultValue={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={spritEvOptionList} value={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="测试用例事件">
-                                            <Checkbox.Group options={testCaseEvOptionList} defaultValue={genTestCaseEvCfgValues(item.event_cfg.test_case_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={testCaseEvOptionList} value={genTestCaseEvCfgValues(item.event_cfg.test_case_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="代码事件">
-                                            <Checkbox.Group options={codeEvOptionList} defaultValue={genCodeEvCfgValues(item.event_cfg.code_ev_cfg)} disabled={true} />
+                                            <Checkbox.Group options={codeEvOptionList} value={genCodeEvCfgValues(item.event_cfg.code_ev_cfg)} disabled={true} />
+                                        </Form.Item>
+                                        <Form.Item label="知识点事件">
+                                            <Checkbox.Group options={ideaEvOptionList} value={genIdeaEvCfgValues(item.event_cfg.idea_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                     </Form>
                                 </Card>
