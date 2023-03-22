@@ -570,9 +570,63 @@ async fn remove_by_admin<R: Runtime>(
     match client.remove_by_admin(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == join_by_admin_response::Code::WrongSession as i32 {
+            if inner_resp.code == remove_by_admin_response::Code::WrongSession as i32 {
                 if let Err(err) =
                     window.emit("notice", new_wrong_session_notice("remove_by_admin".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn watch<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: WatchRequest,
+) -> Result<WatchResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.watch(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == watch_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("watch".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn un_watch<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UnWatchRequest,
+) -> Result<UnWatchResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.un_watch(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == un_watch_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("un_watch".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -613,6 +667,8 @@ impl<R: Runtime> ProjectChannelApiPlugin<R> {
                 list_by_admin,
                 join_by_admin,
                 remove_by_admin,
+                watch,
+                un_watch,
             ]),
         }
     }
