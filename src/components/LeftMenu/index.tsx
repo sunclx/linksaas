@@ -27,82 +27,69 @@ const LeftMenu: React.FC = () => {
   return (
     <Sider className={cls.sider} data-tauri-drag-region={true}>
       <div className={cls.user} data-tauri-drag-region={true}>
-        {appStore.simpleMode == false && (
-          <Portrait>
-            <div className={cls.avatar}>
-              <UserPhoto logoUri={userStore.userInfo.logoUri ?? ''} />
-            </div>
-          </Portrait>
-        )}
-        {appStore.simpleMode == true && (
+
+        <Portrait>
           <div className={cls.avatar}>
             <UserPhoto logoUri={userStore.userInfo.logoUri ?? ''} />
           </div>
-        )}
+        </Portrait>
+
+
         <div className={cls.name}>{userStore.userInfo.displayName}</div>
       </div>
       <div>
-        {appStore.simpleMode == false && (
-          <>
-            <div className={`${cls.workbench_menu} ${location.pathname.startsWith(WORKBENCH_PATH) ? cls.active_menu : ""}`}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (docSpaceStore.inEdit) {
-                  docSpaceStore.showCheckLeave(() => {
-                    projectStore.setCurProjectId("");
-                    history.push(WORKBENCH_PATH);
-                  });
-                  return;
-                }
+        <div className={`${cls.workbench_menu} ${location.pathname.startsWith(WORKBENCH_PATH) ? cls.active_menu : ""}`}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (docSpaceStore.inEdit) {
+              docSpaceStore.showCheckLeave(() => {
                 projectStore.setCurProjectId("");
                 history.push(WORKBENCH_PATH);
-              }}>
-              <img src={workbench_icon} alt="" className={cls.workbench_icon} />
-              工作台
-            </div>
-            <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
-          </>
-        )}
+              });
+              return;
+            }
+            projectStore.setCurProjectId("");
+            history.push(WORKBENCH_PATH);
+          }}>
+          <img src={workbench_icon} alt="" className={cls.workbench_icon} />
+          工作台
+        </div>
+        <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
         <ProjectList />
-        {appStore.simpleMode == false && (
-          <>
-            {(appStore.clientCfg?.item_list.length ?? 0) > 0 && <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />}
-            {appStore.clientCfg?.item_list.map(extraItem => (
-              <div key={extraItem.menu_id}
-                className={`${cls.workbench_menu} ${location.pathname.startsWith(EXTRA_MENU_PATH) && curExtraMenuId == extraItem.menu_id ? cls.active_menu : ""}`}
-                onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  projectStore.setCurProjectId("");
-                  history.push(EXTRA_MENU_PATH, { url: extraItem.url });
-                  setCurExtraMenuId(extraItem.menu_id);
-                }}>
-                <GlobalOutlined />&nbsp;{extraItem.name}
-              </div>
-            ))}
-          </>
-        )}
-
+        {(appStore.clientCfg?.item_list.length ?? 0) > 0 && <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />}
+        {appStore.clientCfg?.item_list.map(extraItem => (
+          <div key={extraItem.menu_id}
+            className={`${cls.workbench_menu} ${location.pathname.startsWith(EXTRA_MENU_PATH) && curExtraMenuId == extraItem.menu_id ? cls.active_menu : ""}`}
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              projectStore.setCurProjectId("");
+              history.push(EXTRA_MENU_PATH, { url: extraItem.url });
+              setCurExtraMenuId(extraItem.menu_id);
+            }}>
+            <GlobalOutlined />&nbsp;{extraItem.name}
+          </div>
+        ))}
       </div>
 
-      {appStore.simpleMode == false && (
-        <div className={cls.adArea}>
-          <Carousel autoplay>
-            <a href="htttp://wwww.linksaas.pro" target="_blank" rel="noreferrer">
-              <img
-                src={adImg}
-              />
-            </a>
-            {appStore.clientCfg && appStore.clientCfg.ad_list.map(
-              item => (
-                <a key={item.ad_id} href={item.url} target="_blank" rel="noreferrer" aria-disabled={item.url == ""}>
-                  <img src={item.img_url} />
-                </a>
-              ))}
-          </Carousel>
-        </div>
-      )}
+
+      <div className={cls.adArea}>
+        <Carousel autoplay>
+          <a href="htttp://wwww.linksaas.pro" target="_blank" rel="noreferrer">
+            <img
+              src={adImg}
+            />
+          </a>
+          {appStore.clientCfg && appStore.clientCfg.ad_list.map(
+            item => (
+              <a key={item.ad_id} href={item.url} target="_blank" rel="noreferrer" aria-disabled={item.url == ""}>
+                <img src={item.img_url} />
+              </a>
+            ))}
+        </Carousel>
+      </div>
+
     </Sider>
   );
 };

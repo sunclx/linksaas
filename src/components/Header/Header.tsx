@@ -67,7 +67,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
       <div className={style.l} >
-        {projectStore.curProjectId != "" && userStore.sessionId != "" && <ProjectQuickAccess />}
+        {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == false && <ProjectQuickAccess />}
+        {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
       </div>
       <div className={style.r}>
         {props.type == "login" && hasNewVersion == true && (
@@ -105,13 +106,13 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             }} title='进入精简模式'><ShrinkOutlined /></div>
         )}
 
-        {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
         {appStore.simpleMode == false && (
           <>
+            {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
             {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+            <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
           </>
         )}
-        <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
       </div>
     </Header>
   );

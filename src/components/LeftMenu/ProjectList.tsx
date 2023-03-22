@@ -83,18 +83,16 @@ const ProjectList = () => {
                     <ProjectOutlined style={{ width: "20px" }} />项目
                 </div>
                 <div className={cls.menu_icon_wrap}>
-                    {appStore.simpleMode == false && (
-                        <Popover
-                            placement="bottomLeft"
-                            content={<AddMenu />}
-                            trigger="click"
-                            overlayClassName="popover"
-                        >
-                            <a className={cls.icon_wrap}>
-                                <i className={cls.add} />
-                            </a>
-                        </Popover>
-                    )}
+                    <Popover
+                        placement="bottomLeft"
+                        content={<AddMenu />}
+                        trigger="click"
+                        overlayClassName="popover"
+                    >
+                        <a className={cls.icon_wrap}>
+                            <i className={cls.add} />
+                        </a>
+                    </Popover>
                     <Popover
                         placement="bottomLeft"
                         content={<FilterMenu />}
@@ -108,14 +106,14 @@ const ProjectList = () => {
                 </div>
 
             </div>
-            <div style={{ height: appStore.simpleMode ? "calc(100vh - 125px)" : undefined, maxHeight: appStore.simpleMode ? undefined : "300px", overflowY: "scroll" }}>
+            <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
                 {projectStore.filterProjectList.map(item => (
                     <div key={item.project_id} className={cls.project_child_menu}>
                         <ProjectItem item={item} />
                     </div>
                 ))}
             </div>
-            {projectStore.projectList.length == 0 && appStore.simpleMode == false && (<div className={cls.zero_project_tips}>
+            {projectStore.projectList.length == 0 && (<div className={cls.zero_project_tips}>
                 您的项目列表为空，您可以通过上方的<i className={cls.add} />加入或创建新项目。
             </div>)}
             {appStore.showJoinProject && <JoinProject

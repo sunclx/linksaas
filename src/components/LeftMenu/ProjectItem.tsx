@@ -187,8 +187,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
         >
             <div className={`${cls.project_child_title} ${item.closed && cls.close} ${item.project_id == projectStore.curProjectId ? cls.active_menu : ""}`}>
                 {item.project_id !== projectStore.curProjectId &&
-                    <Badge count={item.project_status.total_count} className={cls.badge} dot={appStore.simpleMode}
-                        style={{ top: appStore.simpleMode ? "12px" : undefined, left: appStore.simpleMode ? "10px" : undefined }} />
+                    <Badge count={item.project_status.total_count} className={cls.badge} />
                 }
                 {item.project_id !== projectStore.curProjectId && <FolderFilled />}
                 <span className={cls.name} onClick={e => {
@@ -201,7 +200,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                                     history.push(APP_PROJECT_CHAT_PATH);
                                 } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(item.setting.layout_type)) {
                                     history.push(APP_PROJECT_KB_DOC_PATH);
-                                }else if(item.setting.layout_type == LAYOUT_TYPE_NONE){
+                                } else if (item.setting.layout_type == LAYOUT_TYPE_NONE) {
                                     history.push(APP_PROJECT_OVERVIEW_PATH);
                                 }
                             });
@@ -213,17 +212,14 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                             history.push(APP_PROJECT_CHAT_PATH);
                         } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(item.setting.layout_type)) {
                             history.push(APP_PROJECT_KB_DOC_PATH);
-                        }else if(item.setting.layout_type == LAYOUT_TYPE_NONE){
+                        } else if (item.setting.layout_type == LAYOUT_TYPE_NONE) {
                             history.push(APP_PROJECT_OVERVIEW_PATH);
                         }
                     });
                 }}>&nbsp;{item.basic_info.project_name} </span>
-                {appStore.simpleMode == false && (
-                    <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false} trigger="click">
-                        {hover && <i className={cls.more} />}
-                    </Popover>
-                )}
-
+                <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false} trigger="click">
+                    {hover && <i className={cls.more} />}
+                </Popover>
             </div>
             {pjChangeObj.visible && (
                 <ActionModal
