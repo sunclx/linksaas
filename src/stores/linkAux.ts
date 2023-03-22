@@ -27,6 +27,7 @@ import {
 } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
+import { uniqId } from '@/utils/utils';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -1000,23 +1001,27 @@ class LinkAuxStore {
   }
 
   private genUrl(projectId: string, pathname: string, suffix: string): string {
+    let newSuffix = suffix;
+    if (suffix.indexOf("?") == -1) {
+      newSuffix = `${suffix}?v=${uniqId()}`
+    }
     if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-      return APP_PROJECT_CHAT_PATH + suffix;
+      return APP_PROJECT_CHAT_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
-      return APP_PROJECT_KB_DOC_PATH + suffix;
+      return APP_PROJECT_KB_DOC_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
-      return APP_PROJECT_KB_BOOK_SHELF_PATH + suffix;
+      return APP_PROJECT_KB_BOOK_SHELF_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
-      return APP_PROJECT_OVERVIEW_PATH + suffix;
+      return APP_PROJECT_OVERVIEW_PATH + newSuffix;
     }
     const projectInfo = this.rootStore.projectStore.getProject(projectId);
     if (projectInfo == undefined) {
-      return APP_PROJECT_CHAT_PATH + suffix;
+      return APP_PROJECT_CHAT_PATH + newSuffix;
     }
     if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectInfo.setting.layout_type)) {
-      return APP_PROJECT_KB_DOC_PATH + suffix;
+      return APP_PROJECT_KB_DOC_PATH + newSuffix;
     } else {
-      return APP_PROJECT_CHAT_PATH + suffix;
+      return APP_PROJECT_CHAT_PATH + newSuffix;
     }
   }
 }
