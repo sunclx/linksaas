@@ -1,4 +1,3 @@
-export * from './ExcalidrawExtension';
 export * from './FileUploadExtension';
 export * from './ImageUploadExtension';
 export * from './ReminderUserExtension';
