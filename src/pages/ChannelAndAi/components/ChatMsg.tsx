@@ -98,7 +98,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           {matchKeywordList.length > 0 && (
             <Popover placement='right'
               title="相关知识点"
-              overlayStyle={{width:150}}
+              overlayStyle={{ width: 150 }}
               content={
                 <div style={{ maxHeight: "calc(100vh - 300px)", padding: "10px 10px" }}>
                   {matchKeywordList.map(keyword => (
@@ -132,6 +132,11 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
                 className={styles.editBtn}
                 onClick={() => chatMsgStore.setEditMsg(msg)}
               />)}
+              <span
+                title="创建知识点"
+                className={styles.ideaBtn}
+                onClick={() => ideaStore.setShowCreateIdea("", msg.msg.basic_msg.msg_data)}
+              />
               <span
                 title="创建文档"
                 className={styles.docBtn}

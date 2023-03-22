@@ -303,7 +303,7 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                         <>
                             <Select value={keywordList} mode="tags"
                                 style={{ width: "100%" }}
-                                onChange={value => setKeywordList(value as string[])}>
+                                onChange={value => setKeywordList((value as string[]).map(item => item.toLowerCase()))}>
                                 {ideaStore.keywordList.map(keyword => (
                                     <Select.Option key={keyword} value={keyword}>{keyword}</Select.Option>
                                 ))}

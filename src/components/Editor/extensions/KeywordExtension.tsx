@@ -56,12 +56,13 @@ export class KeywordExtension extends PlainExtension<KeywordOptions> {
             }
 
             const start = pos + 1;
+            const textContent = node.textContent.toLowerCase();
 
             for (const keyword of this.options.keywordList) {
                 let lastIndex: number | undefined = undefined;
                 let match = false;
                 while (true) {
-                    const retIndex = node.textContent.indexOf(keyword, lastIndex);
+                    const retIndex = textContent.indexOf(keyword, lastIndex);
                     if (retIndex == -1) {
                         break;
                     } else {

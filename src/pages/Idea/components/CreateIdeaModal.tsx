@@ -116,7 +116,7 @@ const CreateModal = () => {
                     </Select>
                 </Form.Item>
                 <Form.Item label="关键词">
-                    <Select mode="tags" onChange={value => setKeywordList(value as string[])}>
+                    <Select mode="tags" onChange={value => setKeywordList((value as string[]).map(item => item.toLowerCase()))}>
                         {ideaStore.keywordList.map(keyword => (
                             <Select.Option key={keyword} value={keyword}>{keyword}</Select.Option>
                         ))}
