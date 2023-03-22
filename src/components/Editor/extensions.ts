@@ -9,11 +9,11 @@ import {
   LinkExtension,
   ImageUploadExtension,
   FileUploadExtension,
-  ExcalidrawExtension,
   ReminderUserExtension,
   IframeExtension,
   WidgetExtension,
   CodeExtension,
+  KeywordExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -40,6 +40,8 @@ export const getExtensions = (param?: {
   thumbHeight: number;
   ownerType: FILE_OWNER_TYPE;
   ownerId: string;
+  keywordList?: string[];
+  keywordCallback?: (kwList: string[]) => void;
 }) => {
   const retList = [
     // Nodes
@@ -59,7 +61,6 @@ export const getExtensions = (param?: {
     new BulletListExtension(),
     new OrderedListExtension(),
     new TaskListExtension(),
-    new ExcalidrawExtension({ collapse: param?.collapse }),
     new WidgetExtension({ collapse: param?.collapse }),
     new ReminderUserExtension({ setShow: param?.setShowRemind }),
     new IframeExtension({ collapse: param?.collapse }),
@@ -77,6 +78,9 @@ export const getExtensions = (param?: {
     new FontSizeExtension({ defaultSize: '12', unit: 'px' }),
     new TextColorExtension(),
     new TextHighlightExtension(),
+
+    new KeywordExtension({ keywordList: param?.keywordList ?? [], kwListCb: param?.keywordCallback }),
   ];
+
   return () => retList;
 };

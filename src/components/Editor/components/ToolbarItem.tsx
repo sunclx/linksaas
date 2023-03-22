@@ -613,16 +613,6 @@ const AddUploadFile: React.FC<UploadFileProps> = observer((props) => {
   );
 });
 
-const AddExcaliDraw = () => {
-  const commands = useCommands();
-
-  return (
-    <Tooltip title="白板">
-      <div className="draw-btn" onClick={() => commands.insertExcaliDraw()} />
-    </Tooltip>
-  );
-};
-
 const AddCode = () => {
   const commands = useCommands();
 
@@ -664,7 +654,6 @@ export const newCommItem = (param: NewCommItemParam) => {
       items={[
         ...items,
         <AddCode key="code" />,
-        <AddExcaliDraw key="excaliDraw" />,
       ]}
       separator={true} />
   );

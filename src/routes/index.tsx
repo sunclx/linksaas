@@ -87,6 +87,7 @@ import UserDoc from '@/pages/UserExtend/UserKb/UserDoc';
 import AppCateList from '@/pages/Admin/AppAdmin/AppCateList';
 import AppList from '@/pages/Admin/AppAdmin/AppList';
 import OverviewLayout from '@/layouts/OverviewLayout';
+import IdeaPage from '@/pages/Idea/IdeaPage';
 
 
 
@@ -109,6 +110,11 @@ export interface IRouteConfig {
 
 const getToolbarRoute = (prefix: string): IRouteConfig[] => {
   const routeList: IRouteConfig[] = [
+    {
+      path: prefix + "/idea",
+      title: "项目知识点",
+      component: IdeaPage,
+    },
     {
       path: prefix + '/appraise',
       title: '项目成员互评',

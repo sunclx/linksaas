@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@linksaas.pro>",
@@ -27,7 +27,6 @@
     "@ant-design/pro-table": "^2.73.0",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
-    "@excalidraw/excalidraw": "^0.12.0",
     "@loadable/component": "^5.15.2",
     "@remirror/pm": "^2.0.0",
     "@remirror/react": "^2.0.4",

@@ -335,7 +335,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                 <Timeline className={s.timeLine} reverse={true}>
                     {timeLine?.map((item) => (
                         <Timeline.Item color="gray" key={item.event_id}>
-                            <p>{timeToDateString(item.event_time)}</p>
+                            <p>{item.cur_user_display_name}&nbsp;{timeToDateString(item.event_time)}</p>
                             <EventCom key={item.event_id} item={item} skipProjectName={true} skipLink={true} showMoreLink={true} />
                         </Timeline.Item>
                     ))}

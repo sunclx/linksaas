@@ -190,6 +190,20 @@ export type CodeEvCfg = {
     remove_comment: boolean;
 };
 
+export type IdeaEvCfg = {
+    create_tag: boolean;
+    update_tag: boolean;
+    remove_tag: boolean;
+    create_idea: boolean;
+    update_idea_content: boolean;
+    update_idea_tag: boolean;
+    update_idea_keyword: boolean;
+    lock_idea: boolean;
+    unlock_idea: boolean;
+    remove_idea: boolean;
+    set_appraise: boolean;
+    cancel_appraise: boolean;
+};
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
@@ -206,6 +220,7 @@ export type EventCfg = {
     script_ev_cfg: ScriptEvCfg;
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;
+    idea_ev_cfg: IdeaEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -300,6 +315,22 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             add_comment: false,
             update_comment: false,
             remove_comment: false,
+        };
+    }
+    if (cfg.idea_ev_cfg == undefined) {
+        cfg.idea_ev_cfg = {
+            create_tag: false,
+            update_tag: false,
+            remove_tag: false,
+            create_idea: false,
+            update_idea_content: false,
+            update_idea_tag: false,
+            update_idea_keyword: false,
+            lock_idea: false,
+            unlock_idea: false,
+            remove_idea: false,
+            set_appraise: false,
+            cancel_appraise: false,
         };
     }
     return cfg;
