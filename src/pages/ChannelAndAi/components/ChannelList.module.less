@@ -139,9 +139,30 @@
   .menu_title {
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px;
+    max-width: 140px;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: 14px;
+    vertical-align: middle;
+    
+    .isCollect {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      vertical-align: middle;
+      background: url('@/assets/allIcon/collect.png');
+      background-size: 100% 100%;
+    }
+
+    .noCollect {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      vertical-align: middle;
+      background: url('@/assets/allIcon/no_collect.png');
+      background-size: 100% 100%;
+    }
   }
 
   .system {

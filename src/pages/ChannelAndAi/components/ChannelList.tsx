@@ -10,12 +10,14 @@ import {
   join_by_admin,
   remove_by_admin,
   leave as leave_channel,
+  watch as watch_channel,
+  un_watch as un_watch_channel,
   LIST_CHAN_SCOPE_INCLUDE_ME,
   LIST_CHAN_SCOPE_ORPHAN
 } from '@/api/project_channel';
 import { request } from '@/utils/request';
 import type { WebChannelInfo } from '@/stores/channel';
-import { Modal, Popover } from 'antd';
+import { Modal, Popover,message } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
 import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 
@@ -159,10 +161,27 @@ const ChannelList = observer(() => {
             </div>
           </>
         )}
-
-
-
       </div>);
+  };
+
+  const unWatchChannel = async (chanId: string) => {
+    await request(un_watch_channel({
+      session_id: sessionId,
+      project_id: projectStore.curProjectId,
+      channel_id: chanId,
+    }));
+    channelStore.setWatch(chanId, false);
+    message.info("取消关注频道成功");
+  };
+
+  const watchChannel = async (chanId: string) => {
+    await request(watch_channel({
+      session_id: sessionId,
+      project_id: projectStore.curProjectId,
+      channel_id: chanId,
+    }));
+    channelStore.setWatch(chanId, true);
+    message.info("关注频道成功");
   };
 
   return (
@@ -179,11 +198,6 @@ const ChannelList = observer(() => {
               (item.channelInfo.closed ? styles.closed : '') + ' ' +
               ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
             }
-            onClick={() => {
-              chatMsgStore.listRefMsgId = "";
-              chatMsgStore.replayRefMsgId = "";
-              channelStore.curChannelId = item.channelInfo.channel_id;
-            }}
             key={item.channelInfo.channel_id}
             onMouseOver={e => {
               e.stopPropagation();
@@ -192,7 +206,22 @@ const ChannelList = observer(() => {
             }}
           >
             <div className={styles.menu_box}>
-              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')}>{`#${item.channelInfo.basic_info.channel_name}`}</div>
+              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')}>
+                { channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (<span className={item.channelInfo.my_watch ? styles.isCollect : styles.noCollect} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (item.channelInfo.my_watch) {
+                    unWatchChannel(item.channelInfo.channel_id);
+                  } else {
+                    watchChannel(item.channelInfo.channel_id);
+                  }
+                }} />)}
+                <span onClick={() => {
+                  chatMsgStore.listRefMsgId = "";
+                  chatMsgStore.replayRefMsgId = "";
+                  channelStore.curChannelId = item.channelInfo.channel_id;
+                }}>#{item.channelInfo.basic_info.channel_name}</span>
+              </div>
               <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="left">
                 {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel && <i className={styles.more} />}
               </Popover>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Chat from './components/Chat';
 import { Collapse, Layout, Popover } from 'antd';
 import { observer } from 'mobx-react';
@@ -17,6 +17,11 @@ const { Sider, Content } = Layout;
 const ChannelAndAi = () => {
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
+  const [activeKey, setActiveKey] = useState("channel");
+
+  useEffect(() => { 
+    setActiveKey("channel");
+  }, [projectStore.curProjectId, channelStore.filterChannelList]);
 
   return (
     <Layout className={styles.layout}>
@@ -25,7 +30,7 @@ const ChannelAndAi = () => {
         {projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && <Chat />}
       </Content>
       <Sider className={styles.sider}>
-        <Collapse accordion defaultActiveKey="channel" className={styles.panel} bordered={false}>
+        <Collapse accordion activeKey={activeKey} className={styles.panel} bordered={false} onChange={key => setActiveKey(key as string)}>
           <Collapse.Panel key="channel" header="频道列表" extra={
             <div className={styles.header}>
               <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
