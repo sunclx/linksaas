@@ -235,7 +235,9 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                     </>
                 }>
                     {inEditContent == false && (
-                        <ReadOnlyEditor content={props.idea.basic_info.content} collapse={false} />
+                        <div className="_editChatContext">
+                            <ReadOnlyEditor content={props.idea.basic_info.content} collapse={false} />
+                        </div>
                     )}
                     {inEditContent == true && (
                         <div className="_editChatContext">
