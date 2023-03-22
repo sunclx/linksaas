@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import s from "./index.module.less";
-import { Collapse, Form, Input, List, Modal, Select, message } from "antd";
+import { Collapse, Input, List, Modal, Select, message } from "antd";
 import Button from "@/components/Button";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";

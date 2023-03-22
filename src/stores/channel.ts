@@ -274,6 +274,18 @@ class ChannelStore {
       this._showCreateChannel = val;
     });
   }
+
+  //设置频道关注
+  setWatch(channelId: string, watch: boolean) {
+    const tmpList = this._channelList.slice();
+    const index = tmpList.findIndex(item => item.channelInfo.channel_id == channelId);
+    if (index != -1) {
+      tmpList[index].channelInfo.my_watch = watch;
+      runInAction(() => {
+        this._channelList = tmpList;
+      });
+    }
+  }
 }
 
 export default ChannelStore;

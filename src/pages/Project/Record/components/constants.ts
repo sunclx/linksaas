@@ -134,6 +134,14 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         label: "删除事件订阅",
         value: "removeSubscribe",
     },
+    {
+        label: "关注频道",
+        value: "watchChannel",
+    },
+    {
+        label: "取消关注频道",
+        value: "unWatchChannel",
+    },
 ];
 
 export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => {
@@ -170,6 +178,8 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         create_subscribe: false,
         update_subscribe: false,
         remove_subscribe: false,
+        watch_channel: false,
+        un_watch_channel: false,
     };
     if (values == undefined) {
         return ret;
@@ -239,6 +249,10 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.update_subscribe = true;
         } else if (value == "removeSubscribe") {
             ret.remove_subscribe = true;
+        } else if (value == "watchChannel") {
+            ret.watch_channel = true;
+        } else if (value == "unWatchChannel") {
+            ret.un_watch_channel = true;
         }
     });
     return ret;
@@ -341,6 +355,12 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.remove_subscribe) {
         retList.push("removeSubscribe");
+    }
+    if (cfg.watch_channel){
+        retList.push("watchChannel");
+    }
+    if(cfg.un_watch_channel){
+        retList.push("unWatchChannel");
     }
     return retList;
 }

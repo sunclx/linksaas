@@ -559,6 +559,38 @@ export namespace project {
     return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除事件订阅 ${get_chat_bot_type_str(inner.chat_bot_type)} ${inner.chat_bot_name}`)];
   }
 
+  export type WatchChannelEvent = {
+    channel_id: string;
+    channel_name: string;
+  };
+
+  function get_watch_channel_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: WatchChannelEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注频道 `),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+    ];
+  }
+
+  export type UnWatchChannelEvent = {
+    channel_id: string;
+    channel_name: string;
+  };
+
+  function get_unwatch_channel_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnWatchChannelEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消关注频道 `),
+      new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
+    ];
+  }
+
   export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
     UpdateProjectEvent?: UpdateProjectEvent;
@@ -592,6 +624,8 @@ export namespace project {
     CreateEventSubscribeEvent?: CreateEventSubscribeEvent;
     UpdateEventSubscribeEvent?: UpdateEventSubscribeEvent;
     RemoveEventSubscribeEvent?: RemoveEventSubscribeEvent;
+    WatchChannelEvent?: WatchChannelEvent;
+    UnWatchChannelEvent?: UnWatchChannelEvent;
   };
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -674,6 +708,10 @@ export namespace project {
       return get_update_subscribe_simple_content(ev, skip_prj_name, inner.UpdateEventSubscribeEvent);
     } else if (inner.RemoveEventSubscribeEvent !== undefined) {
       return get_remove_subscribe_simple_content(ev, skip_prj_name, inner.RemoveEventSubscribeEvent);
+    } else if (inner.WatchChannelEvent !== undefined) {
+      return get_watch_channel_simple_content(ev, skip_prj_name, inner.WatchChannelEvent);
+    } else if (inner.UnWatchChannelEvent !== undefined) {
+      return get_unwatch_channel_simple_content(ev, skip_prj_name, inner.UnWatchChannelEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }

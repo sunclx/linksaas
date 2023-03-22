@@ -25,7 +25,9 @@ export const RenderMoreMenu = observer(() => {
               ? styles.selected
               : '')
           }
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
             runInAction(() => {
               runInAction(() => {
                 if (channelStore.filterChanelState != CHANNEL_STATE.CHANNEL_STATE_ALL) {
@@ -45,7 +47,9 @@ export const RenderMoreMenu = observer(() => {
               ? styles.selected
               : '')
           }
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
             runInAction(() => {
               if (channelStore.filterChanelState != CHANNEL_STATE.CHANNEL_STATE_OPEN) {
                 channelStore.filterChanelState = CHANNEL_STATE.CHANNEL_STATE_OPEN;
@@ -63,7 +67,9 @@ export const RenderMoreMenu = observer(() => {
               ? styles.selected
               : '')
           }
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
             runInAction(() => {
               runInAction(() => {
                 if (channelStore.filterChanelState != CHANNEL_STATE.CHANNEL_STATE_CLOSE) {
@@ -90,12 +96,14 @@ export const RenderMoreMenu = observer(() => {
                 ? styles.selected
                 : '')
             }
-            onClick={() =>
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
               channelStore.loadChannelList(
                 projectStore.curProjectId,
                 channelApi.LIST_CHAN_SCOPE_INCLUDE_ME,
-              )
-            }
+              );
+            }}
           >
             已加入频道
           </div>
@@ -107,12 +115,14 @@ export const RenderMoreMenu = observer(() => {
                 ? styles.selected
                 : '')
             }
-            onClick={() =>
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
               channelStore.loadChannelList(
                 projectStore.curProjectId,
                 channelApi.LIST_CHAN_SCOPE_WITHOUT_ME,
-              )
-            }
+              );
+            }}
           >
             未加入频道
           </div>
@@ -124,12 +134,14 @@ export const RenderMoreMenu = observer(() => {
                 ? styles.selected
                 : '')
             }
-            onClick={() =>
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
               channelStore.loadChannelList(
                 projectStore.curProjectId,
                 channelApi.LIST_CHAN_SCOPE_ORPHAN,
-              )
-            }
+              );
+            }}
           >
             无人频道
           </div>

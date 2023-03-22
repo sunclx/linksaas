@@ -9,20 +9,25 @@
 }
 
 .active_menu {
-  background-color: #0078f7;
+  color: white !important;
+  font-weight: 600;
+  background-color: #555;
+  border-radius: 6px;
 }
 
 .workbench_menu {
-  color: white;
+  color: #aaa;
   margin-left: 4px;
   margin-right: 20px;
   padding-left: 20px;
-  border-radius: 20px;
   margin-top: 10px;
   cursor: pointer;
+  font-size: 14px;
 
   &:hover {
-    background-color: #666;
+    color: white;
+    background-color: #555;
+    border-radius: 6px;
   }
 
   .workbench_icon {
@@ -114,17 +119,24 @@
 
   .project_child_menu {
     position: relative;
-    margin: 5px 0;
 
     .project_child_wrap {
+      margin-left: 10px;
+
       .project_child_title {
-        color: #fff;
+        color: #aaa;
         opacity: 1;
-        padding-left: 42px;
-        border-radius: 20px;
+        padding-left: 32px;
+        line-height: 1.0em;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        margin: 4px 0px;
 
         &:hover {
-          background-color: #666;
+          color: white;
+          font-weight: 600;
+          background-color: #555;
+          border-radius: 6px;
         }
 
         &.close {
@@ -142,7 +154,6 @@
         }
 
         .name {
-          line-height: 12px;
           display: inline-block;
           overflow: hidden;
           white-space: nowrap;

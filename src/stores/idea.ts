@@ -49,7 +49,6 @@ export default class IdeaStore {
     }
 
     updateKeyword(addList: string[], removeList: string[]) {
-        // console.log("zzzzzzzzzzz", addList, removeList);
         const tmpList = this._keywordList.filter(item => removeList.includes(item));
         runInAction(() => {
             this._keywordList = tmpList.concat(addList);

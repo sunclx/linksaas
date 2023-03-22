@@ -25,8 +25,6 @@ export const SENDER_TYPE_MEMBER: SENDER_TYPE = 0;
 export const SENDER_TYPE_ROBOT: SENDER_TYPE = 1;
 
 
-
-
 export type BasicChannelInfo = {
   channel_name: string;
   pub_channel: boolean;
@@ -85,6 +83,7 @@ export type ChannelInfo = {
   last_event_id_list: string[];
   user_channel_perm: UserChannelPerm;
   readonly: boolean;
+  my_watch: boolean;
 };
 
 export type ListRequest = {
@@ -161,7 +160,7 @@ export type Msg = {
   send_time: number;
   has_update_time: boolean;
   update_time: number;
-  sender_type: SENDER_TYPE; 
+  sender_type: SENDER_TYPE;
   sender_logo_uri: string;
   sender_display_name: string;
   link_dest_title: string;
@@ -253,6 +252,29 @@ export type RemoveByAdminResponse = {
   code: number;
   err_msg: string;
 };
+
+export type WatchRequest = {
+  session_id: string;
+  project_id: string;
+  channel_id: string;
+};
+
+export type WatchResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type UnWatchRequest = {
+  session_id: string;
+  project_id: string;
+  channel_id: string;
+};
+
+export type UnWatchResponse = {
+  code: number;
+  err_msg: string;
+};
+
 
 
 //创建频道
@@ -613,5 +635,23 @@ export async function remove_by_admin(
       project_id: project_id,
       channel_id: channel_id,
     },
+  });
+}
+
+//关注频道
+export async function watch(request: WatchRequest): Promise<WatchResponse> {
+  const cmd = 'plugin:project_channel_api|watch';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<WatchResponse>(cmd, {
+      request,
+  });
+}
+
+//取消关注频道
+export async function un_watch(request: UnWatchRequest): Promise<UnWatchResponse> {
+  const cmd = 'plugin:project_channel_api|un_watch';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UnWatchResponse>(cmd, {
+      request,
   });
 }

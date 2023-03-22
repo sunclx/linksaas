@@ -12,7 +12,7 @@ import {
 import { request } from "@/utils/request";
 import type { ColumnType } from 'antd/lib/table';
 import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from "@/stores/linkAux";
-import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { showShortNote } from "@/utils/short_note";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { EditSelect } from "@/components/EditCell/EditSelect";

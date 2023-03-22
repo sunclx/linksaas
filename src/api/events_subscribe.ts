@@ -39,6 +39,8 @@ export type ProjectEvCfg = {
     create_subscribe: boolean;
     update_subscribe: boolean;
     remove_subscribe: boolean;
+    watch_channel: boolean;
+    un_watch_channel: boolean;
 };
 
 export type BookShelfEvCfg = {

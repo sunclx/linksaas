@@ -36,10 +36,11 @@ const RenderDocBtns = () => {
           doc_id: docSpaceStore.curDocId,
         }),
       );
-      message.success('已关注此文档');
       if (!res) {
         return;
       }
+      message.success('已关注此文档');
+      docSpaceStore.loadCurWatchDocList(docSpaceStore.curDoc.project_id);
     } else {
       const res = await request(
         docApi.un_watch_doc({
@@ -49,11 +50,11 @@ const RenderDocBtns = () => {
           doc_id: docSpaceStore.curDocId,
         }),
       );
-      message.success('已取消关注此文档');
-
       if (!res) {
         return;
       }
+      message.success('已取消关注此文档');
+      docSpaceStore.loadCurWatchDocList(docSpaceStore.curDoc.project_id);
     }
     runInAction(() => {
       if (docSpaceStore.curDoc != undefined) {
