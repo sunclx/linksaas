@@ -1014,6 +1014,82 @@ pub mod code {
     }
 }
 
+pub mod idea {
+    use prost::Message;
+    use proto_gen_rust::events_idea;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateTagEvent(events_idea::CreateTagEvent),
+        UpdateTagEvent(events_idea::UpdateTagEvent),
+        RemoveTagEvent(events_idea::RemoveTagEvent),
+        CreateIdeaEvent(events_idea::CreateIdeaEvent),
+        UpdateIdeaContentEvent(events_idea::UpdateIdeaContentEvent),
+        UpdateIdeaTagEvent(events_idea::UpdateIdeaTagEvent),
+        UpdateIdeaKeywordEvent(events_idea::UpdateIdeaKeywordEvent),
+        LockIdeaEvent(events_idea::LockIdeaEvent),
+        UnlockIdeaEvent(events_idea::UnlockIdeaEvent),
+        RemoveIdeaEvent(events_idea::RemoveIdeaEvent),
+        SetAppraiseEvent(events_idea::SetAppraiseEvent),
+        CancelAppraiseEvent(events_idea::CancelAppraiseEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_idea::CreateTagEvent::type_url() {
+            if let Ok(ev) = events_idea::CreateTagEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateTagEvent(ev));
+            }
+        } else if data.type_url == events_idea::UpdateTagEvent::type_url() {
+            if let Ok(ev) = events_idea::UpdateTagEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateTagEvent(ev));
+            }
+        } else if data.type_url == events_idea::RemoveTagEvent::type_url() {
+            if let Ok(ev) = events_idea::RemoveTagEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveTagEvent(ev));
+            }
+        } else if data.type_url == events_idea::CreateIdeaEvent::type_url() {
+            if let Ok(ev) = events_idea::CreateIdeaEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateIdeaEvent(ev));
+            }
+        } else if data.type_url == events_idea::UpdateIdeaContentEvent::type_url() {
+            if let Ok(ev) = events_idea::UpdateIdeaContentEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateIdeaContentEvent(ev));
+            }
+        } else if data.type_url == events_idea::UpdateIdeaTagEvent::type_url() {
+            if let Ok(ev) = events_idea::UpdateIdeaTagEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateIdeaTagEvent(ev));
+            }
+        } else if data.type_url == events_idea::UpdateIdeaKeywordEvent::type_url() {
+            if let Ok(ev) = events_idea::UpdateIdeaKeywordEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateIdeaKeywordEvent(ev));
+            }
+        } else if data.type_url == events_idea::LockIdeaEvent::type_url() {
+            if let Ok(ev) = events_idea::LockIdeaEvent::decode(data.value.as_slice()) {
+                return Some(Event::LockIdeaEvent(ev));
+            }
+        } else if data.type_url == events_idea::UnlockIdeaEvent::type_url() {
+            if let Ok(ev) = events_idea::UnlockIdeaEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnlockIdeaEvent(ev));
+            }
+        } else if data.type_url == events_idea::RemoveIdeaEvent::type_url() {
+            if let Ok(ev) = events_idea::RemoveIdeaEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveIdeaEvent(ev));
+            }
+        } else if data.type_url == events_idea::SetAppraiseEvent::type_url() {
+            if let Ok(ev) = events_idea::SetAppraiseEvent::decode(data.value.as_slice()) {
+                return Some(Event::SetAppraiseEvent(ev));
+            }
+        } else if data.type_url == events_idea::CancelAppraiseEvent::type_url() {
+            if let Ok(ev) = events_idea::CancelAppraiseEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelAppraiseEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -1031,6 +1107,7 @@ pub enum EventMessage {
     ScriptEvent(script::Event),
     RequirementEvent(requirement::Event),
     CodeEvent(code::Event),
+    IdeaEvent(idea::Event),
     NoopEvent(),
 }
 
@@ -1081,6 +1158,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = code::decode_event(data) {
         return Some(EventMessage::CodeEvent(ret));
+    }
+    if let Some(ret) = idea::decode_event(data) {
+        return Some(EventMessage::IdeaEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

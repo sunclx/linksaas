@@ -1,5 +1,9 @@
 import type { CheckboxOptionType } from 'antd';
-import type { ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg, GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg, ScriptEvCfg, RequirementEvCfg, CodeEvCfg } from '@/api/events_subscribe';
+import type {
+    ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg,
+    GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg,
+    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg
+} from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
     {
@@ -1714,3 +1718,143 @@ export const genCodeEvCfgValues = (cfg: CodeEvCfg): string[] => {
     }
     return retList;
 };
+
+export const ideaEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "增加标签",
+        value: "create_tag",
+    },
+    {
+        label: "更新标签",
+        value: "update_tag",
+    },
+    {
+        label: "删除标签",
+        value: "remove_tag",
+    },
+    {
+        label: "增加知识点",
+        value: "create_idea",
+    },
+    {
+        label: "更新知识点内容",
+        value: "update_idea_content",
+    },
+    {
+        label: "更新知识点标签",
+        value: "update_idea_tag",
+    },
+    {
+        label: "更新知识点关键词",
+        value: "update_idea_keyword",
+    },
+    {
+        label: "锁定知识点",
+        value: "lock_idea",
+    },
+    {
+        label: "解锁知识点",
+        value: "unlock_idea",
+    },
+    {
+        label: "删除知识点",
+        value: "remove_idea",
+    },
+    {
+        label: "评价知识点",
+        value: "set_appraise",
+    },
+    {
+        label: "取消评价知识点",
+        value: "cancel_appraise",
+    },
+]
+
+export const calcIdeaEvCfg = (values: string[] | undefined): IdeaEvCfg => {
+    const ret: IdeaEvCfg = {
+        create_tag: false,
+        update_tag: false,
+        remove_tag: false,
+        create_idea: false,
+        update_idea_content: false,
+        update_idea_tag: false,
+        update_idea_keyword: false,
+        lock_idea: false,
+        unlock_idea: false,
+        remove_idea: false,
+        set_appraise: false,
+        cancel_appraise: false,
+    }
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create_tag") {
+            ret.create_tag = true;
+        } else if (value == "update_tag") {
+            ret.update_tag = true;
+        } else if (value == "remove_tag") {
+            ret.remove_tag = true;
+        } else if (value == "create_idea") {
+            ret.create_idea = true;
+        } else if (value == "update_idea_content") {
+            ret.update_idea_content = true;
+        } else if (value == "update_idea_tag") {
+            ret.update_idea_tag = true;
+        } else if (value == "update_idea_keyword") {
+            ret.update_idea_keyword = true;
+        } else if (value == "lock_idea") {
+            ret.lock_idea = true;
+        } else if (value == "unlock_idea") {
+            ret.unlock_idea = true;
+        } else if (value == "remove_idea") {
+            ret.remove_idea = true;
+        } else if (value == "set_appraise") {
+            ret.set_appraise = true;
+        } else if (value == "cancel_appraise") {
+            ret.cancel_appraise = true;
+        }
+    });
+    return ret;
+}
+
+export const genIdeaEvCfgValues = (cfg: IdeaEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create_tag) {
+        retList.push("create_tag");
+    }
+    if (cfg.update_tag) {
+        retList.push("update_tag");
+    }
+    if (cfg.remove_tag) {
+        retList.push("remove_tag");
+    }
+    if (cfg.create_idea) {
+        retList.push("create_idea");
+    }
+    if (cfg.update_idea_content) {
+        retList.push("update_idea_content");
+    }
+    if (cfg.update_idea_tag) {
+        retList.push("update_idea_tag");
+    }
+    if (cfg.update_idea_keyword) {
+        retList.push("update_idea_keyword");
+    }
+    if (cfg.lock_idea) {
+        retList.push("lock_idea");
+    }
+    if (cfg.unlock_idea) {
+        retList.push("unlock_idea");
+    }
+    if (cfg.remove_idea) {
+        retList.push("remove_idea");
+    }
+    if (cfg.set_appraise) {
+        retList.push("set_appraise");
+    }
+    if (cfg.cancel_appraise) {
+        retList.push("cancel_appraise");
+    }
+    return retList;
+}

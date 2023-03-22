@@ -1,7 +1,7 @@
 import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
@@ -30,6 +30,7 @@ interface FormValue {
     scriptEvCfg: string[] | undefined;
     requirementEvCfg: string[] | undefined;
     codeEvCfg: string[] | undefined;
+    ideaEvCfg: string[] | undefined;
 }
 
 
@@ -83,6 +84,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [codeEvCfgCheckAll, setCodeEvCfgCheckAll] = useState(false);
     const [codeEvCfgIndeterminate, setCodeEvCfgIndeterminate] = useState(false);
 
+    const [ideaEvCfgCheckAll, setIdeaEvCfgCheckAll] = useState(false);
+    const [ideaEvCfgIndeterminate, setIdeaEvCfgIndeterminate] = useState(false);
+
     const createSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -120,6 +124,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
+                idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg)
             },
         }));
         props.onOk();
@@ -502,6 +507,32 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setCodeEvCfgCheckAll(false);
                                 setCodeEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+
+                    <Form.Item label={<Checkbox indeterminate={ideaEvCfgIndeterminate} checked={ideaEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setIdeaEvCfgIndeterminate(false);
+                        if (ideaEvCfgCheckAll) {
+                            setIdeaEvCfgCheckAll(false);
+                            form.setFieldValue("ideaEvCfg", []);
+                        } else {
+                            setIdeaEvCfgCheckAll(true);
+                            form.setFieldValue("ideaEvCfg", ideaEvOptionList.map(item => item.value));
+                        }
+                    }}>知识点事件</Checkbox>} name="ideaEvCfg">
+                        <Checkbox.Group options={ideaEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setIdeaEvCfgCheckAll(false);
+                                setIdeaEvCfgIndeterminate(false);
+                            } else if (values.length == ideaEvOptionList.length) {
+                                setIdeaEvCfgCheckAll(true);
+                                setIdeaEvCfgIndeterminate(false);
+                            } else {
+                                setIdeaEvCfgCheckAll(false);
+                                setIdeaEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

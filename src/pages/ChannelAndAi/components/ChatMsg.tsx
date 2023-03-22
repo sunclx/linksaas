@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { WebMsg } from '@/stores/chatMsg';
 import { MSG_LINK_BUG, MSG_LINK_TASK, MSG_LINK_CHANNEL, SENDER_TYPE_ROBOT, MSG_LINK_ROBOT_METRIC } from '@/api/project_channel';
 import type { MSG_LINK_TYPE } from '@/api/project_channel';
 import { observer } from 'mobx-react';
 import { runInAction } from 'mobx';
-import { Space } from 'antd';
+import { Popover, Space } from 'antd';
 import { useStores } from '@/hooks';
 import { useHistory } from 'react-router-dom';
-import { LinkTaskInfo, LinkBugInfo, LinkChannelInfo, LinkRobotMetricInfo } from '@/stores/linkAux';
+import { LinkTaskInfo, LinkBugInfo, LinkChannelInfo, LinkRobotMetricInfo, LinkIdeaPageInfo } from '@/stores/linkAux';
 import { ReadOnlyEditor } from '@/components/Editor';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import styles from './ChatMsg.module.less';
-import { LinkOutlined } from '@ant-design/icons';
+import { BulbFilled, LinkOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { CloseOutlined } from '@ant-design/icons';
+import Button from '@/components/Button';
 
 export type ChatMsgProp = {
   msg: WebMsg;
@@ -26,7 +27,11 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
   const projectStore = useStores('projectStore');
   const chatMsgStore = useStores('chatMsgStore');
   const linkAuxStore = useStores('linkAuxStore');
+  const ideaStore = useStores('ideaStore');
+
   const history = useHistory();
+
+  const [matchKeywordList, setMatchKeywordList] = useState<string[]>([]);
 
   const goToDest = () => {
     if (msg.msg.basic_msg.link_type == MSG_LINK_TASK) {
@@ -90,6 +95,24 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               <span className={styles.chatTime}>&nbsp;&nbsp;{moment(msg.msg.update_time).format("YYYY-MM-DD HH:mm:ss")}</span>
             </>
           )}
+          {matchKeywordList.length > 0 && (
+            <Popover placement='right'
+              title="相关知识点"
+              overlayStyle={{ width: 150 }}
+              content={
+                <div style={{ maxHeight: "calc(100vh - 300px)", padding: "10px 10px" }}>
+                  {matchKeywordList.map(keyword => (
+                    <Button key={keyword} type="link" style={{ minWidth: 0 }} onClick={e => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", [keyword]), history);
+                    }}>{keyword}</Button>
+                  ))}
+                </div>
+              }>
+              <BulbFilled style={{ color: "orange", paddingRight: "10px" }} />
+            </Popover>
+          )}
           {msg.msg.basic_msg.link_dest_id != "" && (
             <span className={styles.linkInfo}>
               来自{getLinkType(msg.msg.basic_msg.link_type)}:
@@ -109,6 +132,11 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
                 className={styles.editBtn}
                 onClick={() => chatMsgStore.setEditMsg(msg)}
               />)}
+              <span
+                title="创建知识点"
+                className={styles.ideaBtn}
+                onClick={() => ideaStore.setShowCreateIdea("", msg.msg.basic_msg.msg_data)}
+              />
               <span
                 title="创建文档"
                 className={styles.docBtn}
@@ -133,7 +161,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           )}
         </div>
         <div>
-          <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} collapse={true} />
+          <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} collapse={true} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />
         </div>
       </div>
       {chatMsgStore.listRefMsgId == msg.msg.msg_id && (

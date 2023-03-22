@@ -3,7 +3,7 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIdeaEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -30,6 +30,7 @@ interface FormValue {
     scriptEvCfg: string[] | undefined;
     requirementEvCfg: string[] | undefined;
     codeEvCfg: string[] | undefined;
+    ideaEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -93,6 +94,9 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [codeEvCfgCheckAll, setCodeEvCfgCheckAll] = useState(codeEvCfgValues.length == codeEvOptionList.length);
     const [codeEvCfgIndeterminate, setCodeEvCfgIndeterminate] = useState(codeEvCfgValues.length > 0 && codeEvCfgValues.length < codeEvOptionList.length);
 
+    const ideaEvCfgValues = genIdeaEvCfgValues(props.subscribe.event_cfg.idea_ev_cfg);
+    const [ideaEvCfgCheckAll, setIdeaEvCfgCheckAll] = useState(ideaEvCfgValues.length == ideaEvOptionList.length);
+    const [ideaEvCfgIndeterminate, setIdeaEvCfgIndeterminate] = useState(ideaEvCfgValues.length > 0 && ideaEvCfgValues.length < ideaEvOptionList.length);
 
     const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
@@ -119,6 +123,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 script_ev_cfg: calcScriptEvCfg(formValue.scriptEvCfg),
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
+                idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
             },
         }));
         props.onOk();
@@ -150,6 +155,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "testCaseEvCfg": testCaseEvCfgValues,
                     "requirementEvCfg": requirementEvCfgValues,
                     "codeEvCfg": codeEvCfgValues,
+                    "ideaEvCfg": ideaEvCfgValues,
                 }}>
                     <Form.Item label="订阅名称" name="chatBotName" rules={[{ required: true }]}>
                         <Input defaultValue={props.subscribe.chat_bot_name} />
@@ -501,6 +507,32 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setCodeEvCfgCheckAll(false);
                                 setCodeEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+
+                    <Form.Item label={<Checkbox indeterminate={ideaEvCfgIndeterminate} checked={ideaEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setIdeaEvCfgIndeterminate(false);
+                        if (ideaEvCfgCheckAll) {
+                            setIdeaEvCfgCheckAll(false);
+                            form.setFieldValue("ideaEvCfg", []);
+                        } else {
+                            setIdeaEvCfgCheckAll(true);
+                            form.setFieldValue("ideaEvCfg", ideaEvOptionList.map(item => item.value));
+                        }
+                    }}>知识点事件</Checkbox>} name="ideaEvCfg">
+                        <Checkbox.Group options={ideaEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setIdeaEvCfgCheckAll(false);
+                                setIdeaEvCfgIndeterminate(false);
+                            } else if (values.length == ideaEvOptionList.length) {
+                                setIdeaEvCfgCheckAll(true);
+                                setIdeaEvCfgIndeterminate(false);
+                            } else {
+                                setIdeaEvCfgCheckAll(false);
+                                setIdeaEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

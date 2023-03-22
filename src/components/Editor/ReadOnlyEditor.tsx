@@ -10,11 +10,11 @@ import { ImperativeHandle } from './common';
 import type { EditorRef } from './common';
 import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 
-
-
 export type ReadOnlyEditorProps = {
   content: RemirrorContentType;
   collapse?: boolean;
+  keywordList?: string[];
+  keywordCallback?: (kwList: string[]) => void;
 };
 
 export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) => {
@@ -33,14 +33,18 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) =>
     return transformers.remove(json, invalidContent);
   }, []);
 
+  const extensions = getExtensions({
+    collapse, fsId: "",
+    thumbWidth: 200,
+    thumbHeight: 150,
+    ownerType: FILE_OWNER_TYPE_NONE,
+    ownerId: "",
+    keywordList: props.keywordList,
+    keywordCallback: props.keywordCallback,
+  });
+
   const { manager, state } = useRemirror({
-    extensions: getExtensions({
-      collapse, fsId: "",
-      thumbWidth: 200,
-      thumbHeight: 150,
-      ownerType: FILE_OWNER_TYPE_NONE,
-      ownerId: "",
-    }),
+    extensions: extensions,
     content: content,
     stringHandler: 'html',
     onError: onError,

@@ -57,6 +57,8 @@ class NoticeStore {
           this.processAppraiseNotice(notice.AppraiseNotice)
         } else if (notice.ClientNotice !== undefined) {
           this.processClientNotice(notice.ClientNotice);
+        } else if (notice.IdeaNotice !== undefined) {
+          this.processIdeaNotice(notice.IdeaNotice);
         }
       } catch (e) {
         console.log(e);
@@ -160,6 +162,26 @@ class NoticeStore {
         this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
         this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
         this.rootStore.appraiseStore.loadUserScore();
+      }
+    }
+  }
+
+  private async processIdeaNotice(notice: NoticeType.idea.AllNotice) {
+    if (notice.KeywordChangeNotice !== undefined) {
+      if (this.rootStore.projectStore.curProjectId === notice.KeywordChangeNotice.project_id) {
+        this.rootStore.ideaStore.updateKeyword(notice.KeywordChangeNotice.add_keyword_list, notice.KeywordChangeNotice.remove_keyword_list);
+      }
+    } else if (notice.CreateTagNotice !== undefined) {
+      if (this.rootStore.projectStore.curProjectId === notice.CreateTagNotice.project_id) {
+        await this.rootStore.ideaStore.updateTag(notice.CreateTagNotice.tag_id);
+      }
+    } else if (notice.UpdateTagNotice !== undefined) {
+      if (this.rootStore.projectStore.curProjectId === notice.UpdateTagNotice.project_id) {
+        await this.rootStore.ideaStore.updateTag(notice.UpdateTagNotice.tag_id);
+      }
+    } else if (notice.RemoveTagNotice !== undefined) {
+      if (this.rootStore.projectStore.curProjectId === notice.RemoveTagNotice.project_id) {
+        this.rootStore.ideaStore.removeTag(notice.RemoveTagNotice.tag_id);
       }
     }
   }
