@@ -3,7 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import type { ProjectInfo } from '@/api/project';
 import { list as listProject, get_project as getProject } from '@/api/project';
 import { request } from '@/utils/request';
-import type { PROJECT_SETTING_TAB } from '@/utils/constant';
+import type { PROJECT_SETTING_TAB, PROJECT_TOOL_TYPE } from '@/utils/constant';
 import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM, PROJECT_CHAT_TYPE } from '@/utils/constant';
 import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
@@ -398,4 +398,16 @@ export default class ProjectStore {
     });
   }
 
+  //显示小工具
+  private _projectTool: PROJECT_TOOL_TYPE | null = null;
+
+  get projectTool(): PROJECT_TOOL_TYPE | null {
+    return this._projectTool;
+  }
+
+  set projectTool(val: PROJECT_TOOL_TYPE | null) {
+    runInAction(() => {
+      this._projectTool = val;
+    });
+  }
 }

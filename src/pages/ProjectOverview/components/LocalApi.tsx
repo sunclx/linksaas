@@ -109,7 +109,7 @@ const LocalApi = () => {
                             )}
                         </div>
                     </div>
-                    {token != "" && (
+                    {token != "" && projectStore.isAdmin && (
                         <div className={s.info_wrap}>
                             <div className={s.info_label} />
                             <div className={s.info_value}>

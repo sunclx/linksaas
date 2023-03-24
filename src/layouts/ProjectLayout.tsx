@@ -8,6 +8,7 @@ import MemberInfoModal from '@/pages/ChannelAndAi/components/MemberInfoModal';
 import CodeCommentThreadModal from '@/pages/Project/Code/CodeCommentThreadModal';
 import ProjectSettingModal from '@/pages/Project/ProjectSettingModal';
 import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';
+import ProjectTool from '@/pages/Project/ProjectTool';
 
 
 
@@ -28,6 +29,9 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
             )}
             {projectStore.curProjectId != "" && ideaStore.showCreateIdea == true && (
                 <CreateIdeaModal/>
+            )}
+            {projectStore.curProjectId !="" && projectStore.projectTool != null && (
+                <ProjectTool/>
             )}
         </div>
     );
