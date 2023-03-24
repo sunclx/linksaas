@@ -17,7 +17,7 @@ import {
 } from '@/api/project_channel';
 import { request } from '@/utils/request';
 import type { WebChannelInfo } from '@/stores/channel';
-import { Modal, Popover,message } from 'antd';
+import { Modal, Popover, message } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
 import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 
@@ -205,9 +205,13 @@ const ChannelList = observer(() => {
               setHoverChannelId(item.channelInfo.channel_id);
             }}
           >
-            <div className={styles.menu_box}>
-              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')}>
-                { channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (<span className={item.channelInfo.my_watch ? styles.isCollect : styles.noCollect} onClick={e => {
+            <div className={styles.menu_box} onClick={() => {
+                chatMsgStore.listRefMsgId = "";
+                chatMsgStore.replayRefMsgId = "";
+                channelStore.curChannelId = item.channelInfo.channel_id;
+              }}>
+              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')} >
+                {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (<span className={item.channelInfo.my_watch ? styles.isCollect : styles.noCollect} onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
                   if (item.channelInfo.my_watch) {
@@ -216,11 +220,7 @@ const ChannelList = observer(() => {
                     watchChannel(item.channelInfo.channel_id);
                   }
                 }} />)}
-                <span onClick={() => {
-                  chatMsgStore.listRefMsgId = "";
-                  chatMsgStore.replayRefMsgId = "";
-                  channelStore.curChannelId = item.channelInfo.channel_id;
-                }}>#{item.channelInfo.basic_info.channel_name}</span>
+                <span>#{item.channelInfo.basic_info.channel_name}</span>
               </div>
               <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="left">
                 {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel && <i className={styles.more} />}
