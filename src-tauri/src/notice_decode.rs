@@ -401,9 +401,16 @@ pub mod client {
     pub struct SwitchUserNotice {}
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    #[serde(rename_all = "snake_case")]
+    pub struct GitPostHookNotice {
+        pub project_id: String,
+    }
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         WrongSessionNotice(WrongSessionNotice),
         SwitchUserNotice(SwitchUserNotice),
+        GitPostHookNotice(GitPostHookNotice),
     }
 }
 
@@ -459,5 +466,13 @@ pub fn new_wrong_session_notice(name: String) -> NoticeMessage {
 pub fn new_switch_user_notice() -> NoticeMessage {
     return NoticeMessage::ClientNotice(client::Notice::SwitchUserNotice(
         client::SwitchUserNotice {},
+    ));
+}
+
+pub fn new_git_post_hook_notice(project_id: String) -> NoticeMessage {
+    return NoticeMessage::ClientNotice(client::Notice::GitPostHookNotice(
+        client::GitPostHookNotice {
+            project_id: project_id,
+        },
     ));
 }

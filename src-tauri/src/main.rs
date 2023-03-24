@@ -31,14 +31,17 @@ mod project_appraise_api_plugin;
 mod project_award_api_plugin;
 mod project_book_shelf_api_plugin;
 mod project_channel_api_plugin;
+mod project_code_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
+mod project_idea_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
 mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_test_case_api_plugin;
+mod project_tool_api_plugin;
 mod restrict_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
@@ -48,11 +51,8 @@ mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
-mod user_kb_api_plugin;
 mod user_app_api_plugin;
-mod project_code_api_plugin;
-mod project_idea_api_plugin;
-mod project_tool_api_plugin;
+mod user_kb_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -222,7 +222,20 @@ pub fn window_invoke_responder<R: Runtime>(
 }
 
 fn main() {
+    let mut cmd_post_hook = false;
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() == 2 && args[1] == "postHook" {
+        cmd_post_hook = true;
+    }
+
     if local_api::is_instance_run() {
+        if cmd_post_hook {
+            local_api::call_git_post_hook();
+        }
+        return;
+    }
+
+    if cmd_post_hook {
         return;
     }
     let tray_menu = SystemTrayMenu::new()

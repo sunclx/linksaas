@@ -263,9 +263,14 @@ export namespace client {
 
   export type SwitchUserNotice = {};
 
+  export type GitPostHookNotice = {
+    project_id: string;
+  };
+
   export type AllNotice = {
     WrongSessionNotice?: WrongSessionNotice;
     SwitchUserNotice?: SwitchUserNotice;
+    GitPostHookNotice?: GitPostHookNotice;
   };
 }
 

@@ -9,8 +9,8 @@ use tokio::{fs, io::AsyncWriteExt};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct ProjectLinksaasYml {
-    project_id: String,
-    access_token: String,
+    pub project_id: String,
+    pub access_token: String,
 }
 
 #[tauri::command]

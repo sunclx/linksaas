@@ -410,4 +410,16 @@ export default class ProjectStore {
       this._projectTool = val;
     });
   }
+
+  private _showPostHookModal: boolean = false;
+
+  get showPostHookModal(): boolean {
+    return this._showPostHookModal;
+  }
+
+  set showPostHookModal(val: boolean) {
+    runInAction(() => {
+      this._showPostHookModal = val;
+    });
+  }
 }
