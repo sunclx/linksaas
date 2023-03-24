@@ -6,17 +6,19 @@ use tauri::{
     AppHandle, Invoke, Manager, PageLoadPayload, Runtime, Window,
 };
 
+use crate::project_tool_api_plugin::ProjectLinksaasYml;
+
 mod access_check;
+mod channel_api;
 mod doc_space_api;
 mod event_api;
 mod issue_api;
 mod member_api;
-mod channel_api;
-mod project_api;
-mod testcase_api;
-mod project_code_api;
 mod notice;
+mod project_api;
+mod project_code_api;
 mod server;
+mod testcase_api;
 
 #[derive(Default)]
 pub struct ServPort(Mutex<Option<i16>>);
@@ -83,6 +85,80 @@ pub fn is_instance_run() -> bool {
         }
     }
     return false;
+}
+
+pub fn call_git_post_hook() {
+    let home_dir = dirs::home_dir();
+    if home_dir.is_none() {
+        return;
+    }
+    let home_dir = home_dir.unwrap();
+    let file_path = format!("{}/.linksaas/local_api", home_dir.to_str().unwrap());
+    let file = std::fs::OpenOptions::new().read(true).open(file_path);
+    if file.is_err() {
+        return;
+    }
+    let mut file = file.unwrap();
+    let mut data: Vec<u8> = Vec::new();
+    if let Err(_) = file.read_to_end(&mut data) {
+        return;
+    }
+    let addr = String::from_utf8(data);
+    if addr.is_err() {
+        return;
+    }
+    let addr = addr.unwrap();
+    //读取.linksaas.yml
+    let cur_dir = std::env::current_dir();
+    if cur_dir.is_err() {
+        return;
+    }
+    let mut cur_dir = cur_dir.unwrap();
+    loop {
+        let mut git_dir = cur_dir.clone();
+        git_dir.push(".git");
+        if git_dir.exists() && git_dir.is_dir() {
+            break;
+        }
+        let parent_dir = cur_dir.parent();
+        if parent_dir.is_none() {
+            return;
+        }
+        cur_dir = parent_dir.unwrap().to_path_buf();
+    }
+    let mut yml_file = cur_dir.clone();
+    yml_file.push(".linksaas.yml");
+    let yml_file = std::fs::OpenOptions::new().read(true).open(yml_file);
+    if yml_file.is_err() {
+        return;
+    }
+    let mut yml_file = yml_file.unwrap();
+    let mut yml_data: Vec<u8> = Vec::new();
+    if let Err(_) = yml_file.read_to_end(&mut yml_data) {
+        return;
+    }
+    let cfg: Result<ProjectLinksaasYml, serde_yaml::Error> = serde_yaml::from_slice(&yml_data);
+    if cfg.is_err() {
+        return;
+    }
+    let cfg = cfg.unwrap();
+    //调用接口
+    let builder = ClientBuilder::new();
+    let client = builder.build();
+    if client.is_err() {
+        return;
+    }
+    let client = client.unwrap();
+    let res = client
+        .get(format!(
+            "http://{}/project/{}/tools/postHook?accessToken={}",
+            &addr, cfg.project_id, cfg.access_token
+        ))
+        .send();
+    if res.is_err() {
+        return;
+    }
+    return;
 }
 
 pub struct LocalApiPlugin {

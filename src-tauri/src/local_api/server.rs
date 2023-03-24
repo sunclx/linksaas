@@ -1,4 +1,5 @@
 use crate::fs_api_plugin::{set_file_owner, write_file, write_thumb_image_file};
+use crate::notice_decode::new_git_post_hook_notice;
 use crate::user_api_plugin::get_session_inner;
 use async_trait::async_trait;
 use local_api_rust::server::MakeService;
@@ -106,7 +107,7 @@ use local_api_rust::{
     ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse,
     ProjectProjectIdTestCaseLangLangGetResponse, ProjectProjectIdTestCaseListEntryIdGetResponse,
     ProjectProjectIdTestCaseReportEntryIdPostResponse,
-    ProjectProjectIdTestCaseShowEntryIdGetResponse, ShowGetResponse,
+    ProjectProjectIdTestCaseShowEntryIdGetResponse, ShowGetResponse, ProjectProjectIdToolsPostHookGetResponse,
 };
 use swagger::ApiError;
 
@@ -2381,4 +2382,39 @@ where
             });
         }
     }
+
+    /// git post commit hook回调
+    async fn project_project_id_tools_post_hook_get(
+        &self,
+        project_id: String,
+        access_token: String,
+        _context: &C) -> Result<ProjectProjectIdToolsPostHookGetResponse, ApiError>
+    {
+        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
+            return Ok(ProjectProjectIdToolsPostHookGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("访问令牌错误".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        
+        let win = self.app.get_window("main");
+        if win.is_some() {
+            let win = win.unwrap();
+            if let Err(_) = win.emit("notice", new_git_post_hook_notice(project_id)){
+                return Ok(ProjectProjectIdToolsPostHookGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some("发送通知失败".into()),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+        }
+        return Ok(ProjectProjectIdToolsPostHookGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
+    }
+
 }
