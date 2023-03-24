@@ -7,14 +7,15 @@ import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PA
 import { FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
-import { LAYOUT_TYPE_NONE, ProjectInfo } from "@/api/project";
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
+import type { ProjectInfo } from "@/api/project";
+import { LAYOUT_TYPE_NONE, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 import { useSetState } from "ahooks";
 import ActionModal from '../ActionModal';
 import Button from '../Button';
 import { request } from "@/utils/request";
 import { close, open, remove } from '@/api/project';
 import { leave } from '@/api/project_member';
+import ProjectWatch from "./ProjectWatch";
 
 const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
     const [hover, setHover] = useState(false);
@@ -187,10 +188,9 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
         >
             <div className={`${cls.project_child_title} ${item.closed && cls.close} ${item.project_id == projectStore.curProjectId ? cls.active_menu : ""}`}>
                 {item.project_id !== projectStore.curProjectId &&
-                    <Badge count={item.project_status.total_count} className={cls.badge} dot={appStore.simpleMode}
-                        style={{ top: appStore.simpleMode ? "12px" : undefined, left: appStore.simpleMode ? "10px" : undefined }} />
+                    <Badge count={item.project_status.total_count} className={cls.badge} />
                 }
-                {item.project_id !== projectStore.curProjectId && <FolderFilled />}
+                
                 <span className={cls.name} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -201,7 +201,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                                     history.push(APP_PROJECT_CHAT_PATH);
                                 } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(item.setting.layout_type)) {
                                     history.push(APP_PROJECT_KB_DOC_PATH);
-                                }else if(item.setting.layout_type == LAYOUT_TYPE_NONE){
+                                } else if (item.setting.layout_type == LAYOUT_TYPE_NONE) {
                                     history.push(APP_PROJECT_OVERVIEW_PATH);
                                 }
                             });
@@ -213,18 +213,21 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                             history.push(APP_PROJECT_CHAT_PATH);
                         } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(item.setting.layout_type)) {
                             history.push(APP_PROJECT_KB_DOC_PATH);
-                        }else if(item.setting.layout_type == LAYOUT_TYPE_NONE){
+                        } else if (item.setting.layout_type == LAYOUT_TYPE_NONE) {
                             history.push(APP_PROJECT_OVERVIEW_PATH);
                         }
                     });
-                }}>&nbsp;{item.basic_info.project_name} </span>
-                {appStore.simpleMode == false && (
-                    <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false} trigger="click">
-                        {hover && <i className={cls.more} />}
-                    </Popover>
+                }}><FolderFilled style={{ color: item.project_id == projectStore.curProjectId ? "white" : "inherit" }} />&nbsp;{item.basic_info.project_name} </span>
+                <Popover content={rendePjOpenOrClose(item)} placement="right" autoAdjustOverflow={false} trigger="click">
+                    {hover && <i className={cls.more} />}
+                </Popover>
+                {item.project_id == projectStore.curProjectId && (
+                    <div>
+                        <ProjectWatch />
+                    </div>
                 )}
-
             </div>
+
             {pjChangeObj.visible && (
                 <ActionModal
                     open={pjChangeObj.visible}

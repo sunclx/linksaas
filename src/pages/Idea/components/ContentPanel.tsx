@@ -96,7 +96,7 @@ const ContentPanel = () => {
         } else {
             loadIdeaList();
         }
-    }, [keywordList, curPage, state.tagId, state.ideaId, keywordSearchType]);
+    }, [keywordList, curPage, state.tagId, state.ideaId, keywordSearchType, location.search]);
 
     return (
         <Card title="知识点列表" bordered={false} extra={

@@ -1,0 +1,30 @@
+.content_wrap {
+    .title {
+        display: inline-block;
+        color: #aaa;
+        // border: 1px solid red;
+        width: 130px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        padding-left: 18px;
+        padding-top: 8px;
+        cursor: pointer;
+        &:hover {
+            color: white;
+        }
+    }
+    .title_active {
+        color: white !important;
+    }
+    .collect {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 4px;
+        vertical-align: middle;
+        background: url('@/assets/allIcon/collect.png');
+        background-size: 100% 100%;
+      }
+}

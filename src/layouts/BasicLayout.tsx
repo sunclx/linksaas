@@ -55,11 +55,11 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
     const winSize = await appWindow.outerSize();
     const deviceRatio = window.devicePixelRatio ?? 1;
     if (deviceRatio > 1.1) {
-      appWindow.setMinSize(new PhysicalSize(200 * deviceRatio, 500 * deviceRatio));
+      appWindow.setMinSize(new PhysicalSize(200 * deviceRatio, 300 * deviceRatio));
     }
     if (appStore.simpleMode) {
       setOldHeight(winSize.height);
-      winSize.width = 500 * deviceRatio;
+      winSize.width = 300 * deviceRatio;
       winSize.height = 400 * deviceRatio;
       appWindow.setSize(winSize);
       appWindow.setResizable(false);
@@ -86,8 +86,7 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   return (
     <>
       {appStore.simpleMode == true && (
-        <div className={style.basicLayout} style={{ display: "flex", background: "transparent" }}>
-          <LeftMenu />
+        <div className={style.basicLayout} style={{ display: "flex" }}>
           <div style={{ width: "300px" }} >
             <Header />
             <SimpleModePanel/>

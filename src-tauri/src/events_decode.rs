@@ -38,6 +38,8 @@ pub mod project {
         CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
         UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
         RemoveEventSubscribeEvent(events_project::RemoveEventSubscribeEvent),
+        WatchChannelEvent(events_project::WatchChannelEvent),
+        UnWatchChannelEvent(events_project::UnWatchChannelEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -175,6 +177,14 @@ pub mod project {
             if let Ok(ev) = events_project::RemoveEventSubscribeEvent::decode(data.value.as_slice())
             {
                 return Some(Event::RemoveEventSubscribeEvent(ev));
+            }
+        } else if data.type_url == events_project::WatchChannelEvent::type_url() {
+            if let Ok(ev) = events_project::WatchChannelEvent::decode(data.value.as_slice()) {
+                return Some(Event::WatchChannelEvent(ev));
+            }
+        } else if data.type_url == events_project::UnWatchChannelEvent::type_url() {
+            if let Ok(ev) = events_project::UnWatchChannelEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnWatchChannelEvent(ev));
             }
         }
         None

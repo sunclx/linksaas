@@ -59,6 +59,7 @@ export default class ProjectStore {
     if (val !== '' && val != oldProjectId) {
       await this.rootStore.memberStore.loadMemberList(val);
       await this.rootStore.channelStore.loadChannelList(val);
+      await this.rootStore.docSpaceStore.loadCurWatchDocList(val);
       await this.rootStore.ideaStore.loadKeyword(val);
       await this.rootStore.ideaStore.loadTagList(val);
       if (this.rootStore.appStore.simpleMode) {

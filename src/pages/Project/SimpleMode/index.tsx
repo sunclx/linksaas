@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import s from "./index.module.less";
-import { Collapse, Input, List, Modal, message } from "antd";
+import { Collapse, Input, List, Modal, Select, message } from "antd";
 import Button from "@/components/Button";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -118,7 +118,18 @@ const SimpleModePanel = () => {
 
     return (
         <div className={s.content_wrap}>
-            <Collapse bordered={true} className={s.collapse} defaultActiveKey={["task", "bug"]}>
+            <div className={s.prj_list_wrap}>
+                <div className={s.prj_list}>
+                    <span>当前项目：</span>
+                    <Select value={projectStore.curProjectId} style={{ width: "100px" }}
+                        onChange={value => projectStore.setCurProjectId(value)}>
+                        {projectStore.projectList.map(prj => (
+                            <Select.Option key={prj.project_id} value={prj.project_id}>{prj.basic_info.project_name}</Select.Option>
+                        ))}
+                    </Select>
+                </div>
+            </div>
+            <Collapse bordered={true} className={s.collapse} defaultActiveKey={["task", "bug"]} style={{paddingRight:"10px"}}>
                 <Collapse.Panel key="task" header="待处理任务" extra={
                     <Button onClick={e => {
                         e.stopPropagation();

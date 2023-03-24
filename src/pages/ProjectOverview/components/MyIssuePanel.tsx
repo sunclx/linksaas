@@ -12,7 +12,7 @@ import {
 import { request } from "@/utils/request";
 import type { ColumnType } from 'antd/lib/table';
 import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from "@/stores/linkAux";
-import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { showShortNote } from "@/utils/short_note";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { EditSelect } from "@/components/EditCell/EditSelect";
@@ -209,11 +209,8 @@ const MyTaskPanel = () => {
             align: 'center',
             render: (val: number, row: IssueInfo) => {
                 const v = issueState[val];
-                let cursor = "auto";
                 let tips = "";
-                if (row.user_issue_perm.next_state_list.length > 0) {
-                    cursor = "pointer";
-                } else {
+                if (row.user_issue_perm.next_state_list.length == 0) {
                     if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
                         (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
                     )) {
@@ -229,12 +226,10 @@ const MyTaskPanel = () => {
                             borderRadius: '50px',
                             textAlign: 'center',
                             color: `rgb(${getStateColor(val)})`,
-                            cursor: `${cursor}`,
                             margin: '0 auto',
                         }}
                     >
                         <Tooltip title={tips}>{v.label}</Tooltip>
-                        {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
                     </div>
                 );
             },
