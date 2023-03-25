@@ -30,6 +30,9 @@ const ChatMsgList = () => {
         ) {
           chatListElRef.current.scrollTop =
             chatListElRef.current.scrollHeight - chatListElRef.current.clientHeight;
+        } else if (chatMsgStore.listRefMsgId != "") {
+          chatListElRef.current.scrollTop =
+            chatListElRef.current.scrollHeight - chatListElRef.current.clientHeight;
         }
       }
     }, 100);
@@ -77,7 +80,7 @@ const ChatMsgList = () => {
   };
   return (
     <div className={styles.chatListWrap}>
-      <div ref={chatListElRef} className={styles.chatList} onScroll={() => onScroll()} onMouseEnter={() => {
+      <div ref={chatListElRef} className={styles.chatList} onScroll={() => onScroll()} onMouseMove={() => {
         if (keepLastTimer != null) {
           clearInterval(keepLastTimer);
           setKeepLastTimer(null);
