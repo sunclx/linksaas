@@ -20,6 +20,7 @@ export class KeywordExtension extends PlainExtension<KeywordOptions> {
     }
 
     private _ranges: Range[] = [];
+    private _done: boolean = false;
 
     createPlugin(): CreateExtensionPlugin {
         return {
@@ -27,10 +28,15 @@ export class KeywordExtension extends PlainExtension<KeywordOptions> {
                 init() {
                     return DecorationSet.empty;
                 },
-                apply: (tr) => {
-                    const doc = tr.doc;
-                    this._ranges = this.gatherFindResults(doc);
-                    return this.createDecorationSet(doc);
+                apply: (tr, old) => {
+                    if (this._done == false) {
+                        const doc = tr.doc;
+                        this._ranges = this.gatherFindResults(doc);
+                        this._done = true;
+                        return this.createDecorationSet(doc);
+                    } else {
+                        return old;
+                    }
                 },
             },
 

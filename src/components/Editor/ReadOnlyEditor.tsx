@@ -6,9 +6,10 @@ import type { InvalidContentHandler } from 'remirror';
 import { AllStyledComponent } from '@remirror/styles/emotion';
 import { ThemeProvider } from '@remirror/react';
 import { observer } from 'mobx-react';
-import { ImperativeHandle } from './common';
-import type { EditorRef } from './common';
 import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
+import type { EditorRef } from './common';
+import { ImperativeHandle } from './common';
+
 
 export type ReadOnlyEditorProps = {
   content: RemirrorContentType;
@@ -49,6 +50,7 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) =>
     stringHandler: 'html',
     onError: onError,
   });
+
   const editorRef = useRef<EditorRef | null>(null);
 
   useEffect(() => {

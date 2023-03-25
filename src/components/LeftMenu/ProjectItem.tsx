@@ -175,12 +175,12 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
     return (
         <div
             className={cls.project_child_wrap}
-            onMouseOver={e => {
+            onMouseEnter={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 setHover(true);
             }}
-            onMouseOut={e => {
+            onMouseLeave={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 setHover(false);

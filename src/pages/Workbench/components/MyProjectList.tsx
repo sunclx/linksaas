@@ -22,8 +22,9 @@ const MyProjectList = () => {
                 <a onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    projectStore.setCurProjectId(row.project_id);
-                    history.push(APP_PROJECT_CHAT_PATH);
+                    projectStore.setCurProjectId(row.project_id).then(()=>{
+                        history.push(APP_PROJECT_CHAT_PATH);
+                    });
                 }}><LinkOutlined />&nbsp;{row.basic_info.project_name}</a>
             )
         },
