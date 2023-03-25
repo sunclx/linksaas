@@ -23,6 +23,7 @@ import type { RemirrorContentType } from '@remirror/core';
 import type { FILE_OWNER_TYPE } from '@/api/fs';
 import { getExtensions } from './extensions';
 import type { InvalidContentHandler } from 'remirror';
+import type { TocInfo } from './extensions/index';
 
 export interface UseCommonEditorAttrs {
   content: RemirrorContentType;
@@ -34,6 +35,7 @@ export interface UseCommonEditorAttrs {
   widgetInToolbar: boolean;
   showReminder: boolean;
   channelMember: boolean;
+  tocCallback?: (tocList: TocInfo[]) => void;
 }
 
 export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
@@ -59,6 +61,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
       thumbHeight: 150,
       ownerType: attrs.ownerType,
       ownerId: attrs.ownerId,
+      tocCallback: attrs.tocCallback,
     }),
     content: newContent,
     stringHandler: 'html',

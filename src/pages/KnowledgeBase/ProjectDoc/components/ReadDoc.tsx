@@ -12,10 +12,14 @@ import leftArrow from '@/assets/image/leftArrow.png';
 import { useHistory } from 'react-router-dom';
 import { LinkIdeaPageInfo } from '@/stores/linkAux';
 import { BulbFilled } from '@ant-design/icons';
+import type { TocInfo } from '@/components/Editor/extensions/index';
+import DocTocPanel from './DocTocPanel';
+
 
 const ReadDoc: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [matchKeywordList, setMatchKeywordList] = useState<string[]>([]);
+  const [tocList, setTocList] = useState<TocInfo[]>([]);
 
   const userStore = useStores('userStore');
   const docSpaceStore = useStores('docSpaceStore');
@@ -115,8 +119,16 @@ const ReadDoc: React.FC = () => {
         </h1>
         <RenderDocBtns />
       </div>
-      <div className={s.read_doc}>
-        {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />}
+      <div className={s.doc_wrap}>
+        <div className={s.read_doc}>
+          {<ReadOnlyEditor content={docSpaceStore.curDoc?.base_info.content ?? ""} keywordList={ideaStore.keywordList}
+            keywordCallback={(kwList) => setMatchKeywordList(kwList)}
+            tocCallback={(result) => setTocList(result)} />}
+        </div>
+        {tocList.length > 0 && (
+          <DocTocPanel tocList={tocList} />
+        )}
+
       </div>
     </div>
   );

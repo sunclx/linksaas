@@ -143,7 +143,7 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
       unListenFn.then((unListen) => unListen());
       unListenFn2.then((unListen) => unListen());
     };
-  });
+  },[props]);
 
   return (
     <ErrorBoundary>

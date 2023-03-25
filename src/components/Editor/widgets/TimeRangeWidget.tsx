@@ -153,7 +153,6 @@ const ViewTimeRange: React.FC<WidgetProps> = (props) => {
     return item;
   });
   const timeLen = data.endTimeStamp - data.startTimeStamp;
-  console.log('111', timeLen / (1000 * 60 * 60 * 24));
 
   const remainDay = (data.endTimeStamp - moment().unix() * 1000) / 1000 / 3600 / 24;
   const nowTime = moment();

@@ -85,7 +85,7 @@ export class KeywordExtension extends PlainExtension<KeywordOptions> {
             }
             return false;
         });
-        if (this.options.kwListCb !== undefined) {
+        if (this.options.kwListCb !== undefined && matchKwList.length > 0) {
             this.options.kwListCb(matchKwList);
         }
         return ranges;
