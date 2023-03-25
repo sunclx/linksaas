@@ -6,6 +6,7 @@ import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
+import { LAYOUT_TYPE_NONE } from '@/api/project';
 
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
@@ -66,12 +67,17 @@ const Toolbar: React.FC = observer(() => {
 
   return (
     <div className={style.toolbar}>
-      <Item
-        id="idea"
-        pathname={pathname}
-        title="知识点"
-      />
-      <Divider />
+      {projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE && (
+        <>
+          <Item
+            id="idea"
+            pathname={pathname}
+            title="知识点"
+          />
+          <Divider />
+        </>
+      )}
+
       {projectStore.curProject?.setting.disable_member_appraise != true && (
         <>
           <Item

@@ -15,7 +15,8 @@ import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get as get_issue } from '@/api/project_issue';
-import { APP_PROJECT_CHAT_PATH, USER_LOGIN_PATH } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, USER_LOGIN_PATH } from '@/utils/constant';
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_NONE } from '@/api/project';
 
 
 class NoticeStore {
@@ -186,7 +187,7 @@ class NoticeStore {
     }
   }
 
-  private processClientNotice(notice: NoticeType.client.AllNotice) {
+  private async processClientNotice(notice: NoticeType.client.AllNotice) {
     if (notice.WrongSessionNotice !== undefined) {
       if (this.rootStore.userStore.adminSessionId != "") {
         runInAction(() => {
@@ -198,6 +199,38 @@ class NoticeStore {
       }
     } else if (notice.SwitchUserNotice !== undefined) {
       this.rootStore.userStore.logout();
+    } else if (notice.GitPostHookNotice !== undefined) {
+      const projectId = notice.GitPostHookNotice.project_id;
+      if (projectId != this.rootStore.projectStore.curProjectId) {
+        if (this.rootStore.docSpaceStore.inEdit) {
+          this.rootStore.docSpaceStore.showCheckLeave(() => {
+            this.rootStore.projectStore.setCurProjectId(projectId).then(() => {
+              this.rootStore.projectStore.showPostHookModal = true;
+              const layoutType = this.rootStore.projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
+              if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_CHAT].includes(layoutType)) {
+                this.history.push(APP_PROJECT_CHAT_PATH);
+              } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(layoutType)) {
+                this.history.push(APP_PROJECT_KB_DOC_PATH);
+              } else if (layoutType == LAYOUT_TYPE_NONE) {
+                this.history.push(APP_PROJECT_OVERVIEW_PATH);
+              }
+            });
+          });
+        } else {
+          await this.rootStore.projectStore.setCurProjectId(projectId);
+          this.rootStore.projectStore.showPostHookModal = true;
+          const layoutType = this.rootStore.projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
+          if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_CHAT].includes(layoutType)) {
+            this.history.push(APP_PROJECT_CHAT_PATH);
+          } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(layoutType)) {
+            this.history.push(APP_PROJECT_KB_DOC_PATH);
+          } else if (layoutType == LAYOUT_TYPE_NONE) {
+            this.history.push(APP_PROJECT_OVERVIEW_PATH);
+          }
+        }
+      } else {
+        this.rootStore.projectStore.showPostHookModal = true;
+      }
     }
   }
 
