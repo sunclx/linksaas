@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import ChatMsg from './ChatMsg';
@@ -13,9 +13,10 @@ const ChatMsgList = () => {
   const chatListElRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
 
   const readonly = channelStore.curChannel?.channelInfo.closed || channelStore.curChannel?.channelInfo.readonly;
+  const [keepLastTimer, setKeepLastTimer] = useState<NodeJS.Timer | null>(null);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setInterval(() => {
       if (chatListElRef.current != null) {
         const bottomDis =
           chatListElRef.current.scrollHeight -
@@ -31,8 +32,13 @@ const ChatMsgList = () => {
             chatListElRef.current.scrollHeight - chatListElRef.current.clientHeight;
         }
       }
-    }, 200);
-  }, [chatMsgStore.lastMsgId]);
+    }, 100);
+    setKeepLastTimer(timer);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [chatMsgStore.lastMsgId, channelStore.curChannelId]);
+
 
   const onScroll = () => {
     if (chatListElRef.current != null) {
@@ -71,7 +77,12 @@ const ChatMsgList = () => {
   };
   return (
     <div className={styles.chatListWrap}>
-      <div ref={chatListElRef} className={styles.chatList} onScroll={() => onScroll()}>
+      <div ref={chatListElRef} className={styles.chatList} onScroll={() => onScroll()} onMouseEnter={() => {
+        if (keepLastTimer != null) {
+          clearInterval(keepLastTimer);
+          setKeepLastTimer(null);
+        }
+      }}>
         {chatMsgStore.msgList.map((msg) => {
           return <ChatMsg msg={msg} key={msg.msg.msg_id} readonly={readonly ?? true} />;
         })}

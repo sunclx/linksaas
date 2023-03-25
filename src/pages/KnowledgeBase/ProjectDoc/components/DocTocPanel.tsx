@@ -19,7 +19,7 @@ const DocTocPanel: React.FC<DocTocPanelProps> = (props) => {
     return (
         <div className={s.toc}>
             {tocList.map((toc, index) => (
-                <div key={index} style={{ paddingLeft: 20 * toc.level, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div key={index} title={toc.title} style={{ paddingLeft: 20 * toc.level, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     <a onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();

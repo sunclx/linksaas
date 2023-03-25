@@ -46,6 +46,9 @@ export class TocExtension extends PlainExtension<TocOptions> {
     }
 
     private calcToc(doc: ProsemirrorNode) {
+        if (this.store == undefined || this.store.view == undefined || this.store.view.nodeDOM == undefined) {
+            return;
+        }
         const tocList: TocInfo[] = [];
         doc.descendants((node, pos) => {
             if (node.type.name != "heading") {
