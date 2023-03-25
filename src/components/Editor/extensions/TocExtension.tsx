@@ -22,7 +22,17 @@ export class TocExtension extends PlainExtension<TocOptions> {
         return {
             state: {
                 init: (_, state) => {
-                    this.calcToc(state.doc);
+                    let count = 0;
+                    const timer = setInterval(() => {
+                        count++;
+                        if (count >= 50) {
+                            clearInterval(timer);
+                        }
+                        if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
+                            this.calcToc(state.doc);
+                            clearInterval(timer);
+                        }
+                    }, 200);
                     return DecorationSet.empty;
                 },
                 apply: (tr, old) => {
@@ -30,7 +40,17 @@ export class TocExtension extends PlainExtension<TocOptions> {
                         return old;
                     }
                     if (tr.docChanged) {
-                        this.calcToc(tr.doc);
+                        let count = 0;
+                        const timer = setInterval(() => {
+                            count++;
+                            if (count >= 50) {
+                                clearInterval(timer);
+                            }
+                            if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
+                                this.calcToc(tr.doc);
+                                clearInterval(timer);
+                            }
+                        }, 200);
                         return old.map(tr.mapping, tr.doc);
                     }
                     return old;
@@ -46,9 +66,6 @@ export class TocExtension extends PlainExtension<TocOptions> {
     }
 
     private calcToc(doc: ProsemirrorNode) {
-        if (this.store == undefined || this.store.view == undefined || this.store.view.nodeDOM == undefined) {
-            return;
-        }
         const tocList: TocInfo[] = [];
         doc.descendants((node, pos) => {
             if (node.type.name != "heading") {
