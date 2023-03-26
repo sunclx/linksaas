@@ -95,6 +95,7 @@ const TopNav = () => {
                 if (key == APP_PROJECT_CHAT_PATH) {
                   history.push(APP_PROJECT_CHAT_PATH);
                 } else if (key == APP_PROJECT_KB_PATH) {
+                  docSpaceStore.showDocList("", false);
                   history.push(APP_PROJECT_KB_DOC_PATH);
                 } else if (key == APP_PROJECT_OVERVIEW_PATH) {
                   history.push(APP_PROJECT_OVERVIEW_PATH);
@@ -106,6 +107,7 @@ const TopNav = () => {
             if (key == APP_PROJECT_CHAT_PATH) {
               history.push(APP_PROJECT_CHAT_PATH);
             } else if (key == APP_PROJECT_KB_PATH) {
+              docSpaceStore.showDocList("", false);
               history.push(APP_PROJECT_KB_DOC_PATH);
             } else if (key == APP_PROJECT_OVERVIEW_PATH) {
               history.push(APP_PROJECT_OVERVIEW_PATH);

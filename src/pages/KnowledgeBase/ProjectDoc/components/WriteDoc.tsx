@@ -12,12 +12,16 @@ import s from './EditDoc.module.less';
 import { observer } from 'mobx-react';
 import { runInAction } from 'mobx';
 import Button from '@/components/Button';
+import type { TocInfo } from '@/components/Editor/extensions/index';
+import DocTocPanel from './DocTocPanel';
+import classNames from 'classnames';
 
 const WriteDoc: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');
   const [newTitle, setNewTitle] = useState(''); //新建文档时有空
+  const [tocList, setTocList] = useState<TocInfo[]>([]);
 
   const location = useLocation();
 
@@ -31,6 +35,7 @@ const WriteDoc: React.FC = () => {
     widgetInToolbar: true,
     showReminder: true,
     channelMember: false,
+    tocCallback: (result) => setTocList(result),
   });
 
   useEffect(() => {
@@ -215,7 +220,12 @@ const WriteDoc: React.FC = () => {
           </Space>
         </div>
       </div>
-      <div className="_docContext">{editor}</div>
+      <div className={s.doc_wrap}>
+        <div className={classNames(s.read_doc, "_docContext")} >{editor}</div>
+        {tocList.length > 0 && (
+          <DocTocPanel tocList={tocList} />
+        )}
+      </div>
     </div>
   );
 };

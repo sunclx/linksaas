@@ -44,13 +44,16 @@ const LeftMenu: React.FC = () => {
             e.preventDefault();
             if (docSpaceStore.inEdit) {
               docSpaceStore.showCheckLeave(() => {
-                projectStore.setCurProjectId("");
-                history.push(WORKBENCH_PATH);
+                projectStore.setCurProjectId("").then(()=>{
+                  history.push(WORKBENCH_PATH);
+                });
+                
               });
               return;
             }
-            projectStore.setCurProjectId("");
-            history.push(WORKBENCH_PATH);
+            projectStore.setCurProjectId("").then(()=>{
+              history.push(WORKBENCH_PATH);
+            });
           }}>
           <img src={workbench_icon} alt="" className={cls.workbench_icon} />
           工作台
@@ -64,8 +67,9 @@ const LeftMenu: React.FC = () => {
             onClick={e => {
               e.stopPropagation();
               e.preventDefault();
-              projectStore.setCurProjectId("");
-              history.push(EXTRA_MENU_PATH, { url: extraItem.url });
+              projectStore.setCurProjectId("").then(()=>{
+                history.push(EXTRA_MENU_PATH, { url: extraItem.url });
+              });
               setCurExtraMenuId(extraItem.menu_id);
             }}>
             <GlobalOutlined />&nbsp;{extraItem.name}

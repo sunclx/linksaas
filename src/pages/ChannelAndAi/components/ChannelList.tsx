@@ -185,7 +185,7 @@ const ChannelList = observer(() => {
   };
 
   return (
-    <div className={styles.menu} onMouseOut={e => {
+    <div className={styles.menu} onMouseLeave={e => {
       e.stopPropagation();
       e.preventDefault();
       setHoverChannelId("");
@@ -199,7 +199,7 @@ const ChannelList = observer(() => {
               ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
             }
             key={item.channelInfo.channel_id}
-            onMouseOver={e => {
+            onMouseEnter={e => {
               e.stopPropagation();
               e.preventDefault();
               setHoverChannelId(item.channelInfo.channel_id);

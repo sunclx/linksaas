@@ -56,7 +56,9 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
     }
   };
   const setHover = (hover: boolean) => {
-    runInAction(() => (msg.hovered = hover));
+    if (msg.hovered != hover) {
+      runInAction(() => (msg.hovered = hover));
+    }
   };
   const getLinkType = (linkType: MSG_LINK_TYPE) => {
     if (linkType == MSG_LINK_BUG) {
@@ -72,8 +74,8 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
     <>
       <div
         className={styles.chatItem}
-        onMouseOver={() => setHover(true)}
-        onMouseOut={() => setHover(false)}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
         <div>
           <UserPhoto
@@ -160,7 +162,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
             </span>
           )}
         </div>
-        <div>
+        <div className='_readContext'>
           <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} collapse={true} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />
         </div>
       </div>

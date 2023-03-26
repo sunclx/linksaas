@@ -30,8 +30,8 @@ export class WidgetExtension extends NodeExtension<WidgetOptions> {
   createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): NodeExtensionSpec {
     return {
       inline: false,
-      draggable: true,
-      selectable: true,
+      draggable: false,
+      selectable: false,
       ...override,
       attrs: {
         ...extra.defaults(),

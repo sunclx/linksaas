@@ -57,11 +57,15 @@ export default class ProjectStore {
       this._curProjectId = val;
     });
     if (val !== '' && val != oldProjectId) {
-      await this.rootStore.memberStore.loadMemberList(val);
+      await Promise.all([
+        this.rootStore.memberStore.loadMemberList(val),
+        this.rootStore.ideaStore.loadKeyword(val),
+        this.rootStore.ideaStore.loadTagList(val),
+        this.rootStore.docSpaceStore.loadCurWatchDocList(val),
+      ]);
+      
       await this.rootStore.channelStore.loadChannelList(val);
-      await this.rootStore.docSpaceStore.loadCurWatchDocList(val);
-      await this.rootStore.ideaStore.loadKeyword(val);
-      await this.rootStore.ideaStore.loadTagList(val);
+
       if (this.rootStore.appStore.simpleMode) {
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_TASK);
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_BUG);

@@ -2,6 +2,7 @@
   position: relative;
   overflow: hidden;
   height: calc(100vh - 130px);
+
   .docInRecycle {
     display: flex;
     justify-content: space-between;
@@ -16,6 +17,7 @@
     font-size: 12px;
     line-height: 42px;
     background: #fee;
+
     .text_wrap {
       span {
         display: inline-block;
@@ -31,6 +33,7 @@
         border-radius: 14px;
       }
     }
+
     .btn_wrap {
       button {
         width: 66px;
@@ -41,12 +44,14 @@
         line-height: 22px;
         background: transparent;
         border-radius: 4px;
+
         &:nth-child(1) {
           margin-right: 10px;
         }
       }
     }
   }
+
   .editdoc_title_wrap {
     position: relative;
     display: flex;
@@ -55,38 +60,56 @@
     margin-bottom: 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid #eaeaef;
+
     input {
       width: calc(100% - 10px);
       height: 40px;
       font-size: 18px;
       border: none;
+
       &:focus {
         border: none;
       }
     }
+
     img {
       margin-right: 10px;
     }
+
     h1 {
       position: relative;
       font-size: 20px;
       font-weight: 800;
     }
+
     :global {
+
       .ant-input:focus,
       .ant-input-focused {
         border-color: none;
       }
     }
   }
+
   .save {
     position: absolute;
     right: 10px;
     margin: 10px 0;
   }
-  .read_doc {
-    height: calc(100vh - 190px);
-    overflow: scroll;
+
+  .doc_wrap {
+    display: flex;
+
+    .read_doc {
+      height: calc(100vh - 190px);
+      overflow: scroll;
+      flex: 1;
+    }
+
+    .toc {
+      width: 200px;
+      border-left: 1px solid #e4e4e8;
+    }
   }
 }
 
@@ -118,6 +141,7 @@
     background-size: 100% 100%;
     cursor: pointer;
   }
+
   svg {
     margin-left: 15px;
     cursor: pointer;

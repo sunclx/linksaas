@@ -92,12 +92,12 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
 
     return (<li key={docSpace.doc_space_id}
         className={classNames(s.list_item, docSpace.doc_space_id == docSpaceStore.curDocSpaceId ? s.current : "")}
-        onMouseOver={e => {
+        onMouseEnter={e => {
             e.stopPropagation();
             e.preventDefault();
             setHover(true);
         }}
-        onMouseOut={e => {
+        onMouseLeave={e => {
             e.stopPropagation();
             e.preventDefault();
             setHover(false);

@@ -5,6 +5,7 @@ import { HeadingExtension } from '@remirror/extension-heading';
 import { HorizontalRuleExtension } from '@remirror/extension-horizontal-rule';
 import { ItalicExtension } from '@remirror/extension-italic';
 import { ParagraphExtension } from '@remirror/extension-paragraph';
+import type { TocInfo } from './extensions/index';
 import {
   LinkExtension,
   ImageUploadExtension,
@@ -14,6 +15,7 @@ import {
   WidgetExtension,
   CodeExtension,
   KeywordExtension,
+  TocExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -42,6 +44,7 @@ export const getExtensions = (param?: {
   ownerId: string;
   keywordList?: string[];
   keywordCallback?: (kwList: string[]) => void;
+  tocCallback?: (tocList: TocInfo[]) => void;
 }) => {
   const retList = [
     // Nodes
@@ -80,6 +83,7 @@ export const getExtensions = (param?: {
     new TextHighlightExtension(),
 
     new KeywordExtension({ keywordList: param?.keywordList ?? [], kwListCb: param?.keywordCallback }),
+    new TocExtension({ tocCb: param?.tocCallback }),
   ];
 
   return () => retList;
