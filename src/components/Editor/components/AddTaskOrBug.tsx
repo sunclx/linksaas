@@ -33,7 +33,7 @@ import { LinkTaskInfo, LinkBugInfo, LinkNoneInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import Pagination from '@/components/Pagination';
 import { getStateColor } from '@/pages/Issue/components/utils';
-import type { CateInfo } from '@/api/project_requirement';
+import { CateInfo, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 import { list_cate, list_requirement, list_multi_issue_link } from '@/api/project_requirement';
 
 
@@ -209,8 +209,11 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       keyword: keyword.trim(),
       filter_by_has_link_issue: true,
       has_link_issue: true,
+      filter_by_closed: false,//FIXME
+      closed: false,//FIXME
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
+      sort_type: REQ_SORT_UPDATE_TIME,//FIXME
     }));
     if (reqRes.total_count == 0) {
       setDataSource([]);

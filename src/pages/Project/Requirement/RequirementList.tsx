@@ -5,7 +5,7 @@ import s from './RequirementList.module.less';
 import Button from "@/components/Button";
 import { Card, Form, Input, Menu, Popover, Select, Space, Table, message } from "antd";
 import type { CateInfo, RequirementInfo } from '@/api/project_requirement';
-import { list_cate, list_requirement, update_requirement, set_requirement_cate } from '@/api/project_requirement';
+import { list_cate, list_requirement, update_requirement, set_requirement_cate, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { AddCateModal, RemoveCateModal, UpdateCateModal } from "./components/CateModal";
@@ -78,6 +78,9 @@ const RequirementList = () => {
             keyword: keyword,
             filter_by_has_link_issue: hasLinkIssue !== null,
             has_link_issue: hasLinkIssue == null ? false : hasLinkIssue,
+            filter_by_closed: false,//FIXME
+            closed: false,//FIXME
+            sort_type: REQ_SORT_UPDATE_TIME,//FIXME
         }));
         setTotalCount(res.total_count);
         setReqInfoList(res.requirement_list);

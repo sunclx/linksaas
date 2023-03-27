@@ -1,5 +1,11 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type REQ_SORT_TYPE = number;
+export const REQ_SORT_UPDATE_TIME: REQ_SORT_TYPE = 0;  //更新时间
+export const REQ_SORT_CREATE_TIME: REQ_SORT_TYPE = 1;  //创建时间
+export const REQ_SORT_KANO: REQ_SORT_TYPE = 2;         //根据kano better系数和更新时间
+export const REQ_SORT_URGENT: REQ_SORT_TYPE = 3;       //根据四象限紧急层度
+export const REQ_SORT_IMPORTANT: REQ_SORT_TYPE = 4;    //根据四象限重要层度
 
 export type CateInfo = {
     cate_id: string;
@@ -36,6 +42,40 @@ export type RequirementInfo = {
     update_time: number;
     update_display_name: string;
     update_logo_uri: string;
+    closed: boolean;
+
+    kano_excite_value: number;//兴奋型
+    kano_expect_value: number;//期望型
+    kano_basic_value: number;//基础型
+    kano_nodiff_value: number;//无差异
+    kano_reverse_value: number;//反向型
+    kano_dubiouse_value: number;//可疑数值
+    four_q_urgency_value: number;//紧急层度
+    four_q_important_value: number;//重要层度
+};
+
+export type KanoInfo = {
+    requirement_id: string;
+    ///正向数值
+    like_positive: number;
+    expect_positive: number;
+    neutral_positive: number;
+    tolerate_positive: number;
+    dislike_positive: number;
+    ///反向数值
+    like_negative: number;
+    expect_negative: number;
+    neutral_negative: number;
+    tolerate_negative: number;
+    dislike_negative: number;
+};
+
+export type FourQInfo = {
+    requirement_id: string;
+    urgent_value: number;
+    not_urgent_value: number;
+    important_value: number;
+    not_important_value: number;
 };
 
 export type BasicComment = {
@@ -131,8 +171,12 @@ export type ListRequirementRequest = {
     keyword: string;
     filter_by_has_link_issue: boolean;
     has_link_issue: boolean;
+    filter_by_closed: boolean;
+    closed: boolean;
+
     offset: number;
     limit: number;
+    sort_type: REQ_SORT_TYPE;
 };
 
 export type ListRequirementResponse = {
@@ -285,7 +329,7 @@ export type ListCommentResponse = {
 };
 
 
-export type RemoveCommentRequest ={
+export type RemoveCommentRequest = {
     session_id: string;
     project_id: string;
     requirement_id: string;
@@ -295,6 +339,84 @@ export type RemoveCommentRequest ={
 export type RemoveCommentResponse = {
     code: number;
     err_msg: string;
+};
+
+export type CloseRequirementRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+};
+
+export type CloseRequirementResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type OpenRequirementRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+};
+
+export type OpenRequirementResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type SetKanoInfoRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    kano_info: KanoInfo;
+    kano_excite_value: number; //兴奋型
+    kano_expect_value: number;//期望型
+    kano_basic_value: number;//基础型
+    kano_nodiff_value: number;//无差异
+    kano_reverse_value: number;//反向型
+    kano_dubiouse_value: number;//可疑数值
+};
+
+export type SetKanoInfoResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type GetKanoInfoRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+};
+
+export type GetKanoInfoResponse = {
+    code: number;
+    err_msg: string;
+    kano_info: KanoInfo;
+};
+
+export type SetFourQInfoRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    four_q_info: FourQInfo;
+    four_q_urgency_value: number;
+    four_q_important_value: number;
+};
+
+export type SetFourQInfoResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type GetFourQInfoRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+};
+
+export type GetFourQInfoResponse = {
+    code: number;
+    err_msg: string;
+    four_q_info: FourQInfo;
 };
 
 
@@ -456,6 +578,60 @@ export async function remove_comment(request: RemoveCommentRequest): Promise<Rem
     const cmd = 'plugin:project_requirement_api|remove_comment';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//关闭需求
+export async function close_requirement(request: CloseRequirementRequest): Promise<CloseRequirementResponse> {
+    const cmd = 'plugin:project_requirement_api|close_requirement';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<CloseRequirementResponse>(cmd, {
+        request,
+    });
+}
+
+//打开需求
+export async function open_requirement(request: OpenRequirementRequest): Promise<OpenRequirementResponse> {
+    const cmd = 'plugin:project_requirement_api|open_requirement';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<OpenRequirementResponse>(cmd, {
+        request,
+    });
+}
+
+//设置kano数值
+export async function set_kano_info(request: SetKanoInfoRequest): Promise<SetKanoInfoResponse> {
+    const cmd = 'plugin:project_requirement_api|set_kano_info';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SetKanoInfoResponse>(cmd, {
+        request,
+    });
+}
+
+//获取kano数值
+export async function get_kano_info(request: GetKanoInfoRequest): Promise<GetKanoInfoResponse> {
+    const cmd = 'plugin:project_requirement_api|get_kano_info';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetKanoInfoResponse>(cmd, {
+        request,
+    });
+}
+
+//设置fourQ数值
+export async function set_four_q_info(request: SetFourQInfoRequest): Promise<SetFourQInfoResponse> {
+    const cmd = 'plugin:project_requirement_api|set_four_q_info';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SetFourQInfoResponse>(cmd, {
+        request,
+    });
+}
+
+//获取fourQ数值
+export async function get_four_q_info(request: GetFourQInfoRequest): Promise<GetFourQInfoResponse> {
+    const cmd = 'plugin:project_requirement_api|xx';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetFourQInfoResponse>(cmd, {
         request,
     });
 }
