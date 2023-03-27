@@ -149,7 +149,7 @@ const RequirementCreate = () => {
                         setTitle(e.target.value);
                     }}
                 />
-                <div className="_docContext">{editor}</div>
+                <div className="_reqContext">{editor}</div>
             </div>
         </CardWrap>
     );

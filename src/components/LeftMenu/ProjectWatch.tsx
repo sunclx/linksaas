@@ -4,13 +4,14 @@ import { useStores } from "@/hooks";
 import { Badge } from "antd";
 import s from "./ProjectWatch.module.less";
 import classNames from 'classnames';
-import { PROJECT_CHAT_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
 import { LinkChannelInfo, LinkDocInfo } from "@/stores/linkAux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { CommentOutlined, FileOutlined } from "@ant-design/icons";
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 
 const ProjectWatch = () => {
+    const location = useLocation();
     const history = useHistory();
 
     const channelStore = useStores('channelStore');
@@ -26,7 +27,7 @@ const ProjectWatch = () => {
                         channelStore.channelList.filter(item => item.channelInfo.my_watch).map(item => (
                             <div key={item.channelInfo.channel_id} style={{ position: "relative" }}>
                                 <Badge count={item.unreadMsgCount} dot={true} style={{ position: "absolute", left: 0, top: -4 }} />
-                                <span className={classNames(s.title, (projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && channelStore.curChannelId == item.channelInfo.channel_id) ? s.title_active : "")}
+                                <span className={classNames(s.title, (projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && channelStore.curChannelId == item.channelInfo.channel_id && location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) ? s.title_active : "")}
                                     onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
@@ -41,7 +42,7 @@ const ProjectWatch = () => {
                 <>
                     {docSpaceStore.curWatchDocList.map(item => (
                         <div key={item.doc_id}>
-                            <span className={classNames(s.title, docSpaceStore.curDocId == item.doc_id ? s.title_active : "")}
+                            <span className={classNames(s.title, (docSpaceStore.curDocId == item.doc_id && location.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) ? s.title_active : "")}
                                 onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();

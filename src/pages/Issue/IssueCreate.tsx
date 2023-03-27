@@ -190,7 +190,7 @@ const IssueCreate = () => {
                             setTitle(e.target.value);
                         }}
                     />
-                    <div className="_docContext">{editor}</div>
+                    <div className="_issueContext">{editor}</div>
                 </div>
                 <div className={s.content_rigth}>
                     <h2>基本信息</h2>

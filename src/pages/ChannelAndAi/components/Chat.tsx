@@ -105,6 +105,7 @@ const ChannelHeader = observer(() => {
       link_type: MSG_LINK_NONE,
       link_dest_id: '',
     }));
+    await chatMsgStore.updateMsg(editMsg.msg.msg_id);
     chatMsgStore.setEditMsg(undefined);
   };
 
