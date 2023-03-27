@@ -6,11 +6,13 @@ import s from "./RequirementDetailLeft.module.less";
 import { ReadOnlyEditor, is_empty_doc, useCommonEditor } from '@/components/Editor';
 import { useStores } from '@/hooks';
 import { FILE_OWNER_TYPE_REQUIRE_MENT } from '@/api/fs';
-import { Card, Empty, Space, message } from 'antd';
+import { Card, Empty, Space, Tabs, message } from 'antd';
 import Button from '@/components/Button';
 import { request } from '@/utils/request';
 import LinkIssuePanel from './LinkIssuePanel';
 import { CommentList } from './CommentList';
+import KanoPanel from './KanoPanel';
+import FourQPanel from './FourQPanel';
 
 interface RequirementDetailLeftProps {
     requirement: RequirementInfo;
@@ -99,8 +101,18 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
                     </>
                 )}
             </Card>
-            <hr/>
-            <LinkIssuePanel requirementId={props.requirement.requirement_id} onUpdate={()=>props.onUpdate()}/>
+            <hr />
+            <LinkIssuePanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+            <Card title={<h2>需求分析</h2>} bordered={false}>
+                <Tabs defaultActiveKey='kano' type="card">
+                    <Tabs.TabPane tab="Kano分析" key="kano">
+                        <KanoPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="四象限分析" key="fourQ">
+                        <FourQPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+                    </Tabs.TabPane>
+                </Tabs>
+            </Card>
             <CommentList requirementId={props.requirement.requirement_id} />
         </div>
     );

@@ -54,20 +54,21 @@ export type RequirementInfo = {
     four_q_important_value: number;//重要层度
 };
 
+export type KanoRow = {
+    like: number;
+    expect: number;
+    neutral: number;
+    tolerate: number;
+    dislike: number;
+};
+
 export type KanoInfo = {
     requirement_id: string;
-    ///正向数值
-    like_positive: number;
-    expect_positive: number;
-    neutral_positive: number;
-    tolerate_positive: number;
-    dislike_positive: number;
-    ///反向数值
-    like_negative: number;
-    expect_negative: number;
-    neutral_negative: number;
-    tolerate_negative: number;
-    dislike_negative: number;
+    like_vs_row: KanoRow;
+    expect_vs_row: KanoRow;
+    neutral_vs_row: KanoRow;
+    tolerate_vs_row: KanoRow;
+    dislike_vs_row: KanoRow;
 };
 
 export type FourQInfo = {
