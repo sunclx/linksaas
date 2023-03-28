@@ -184,6 +184,11 @@ export type RequirementEvCfg = {
     remove_requirement: boolean;
     link_issue: boolean;
     unlink_issue: boolean;
+    close_requirement: boolean;
+    open_requirement: boolean;
+    set_kano_info: boolean;
+    set_four_q_info: boolean;
+
 };
 
 export type CodeEvCfg = {
@@ -375,6 +380,10 @@ export async function list(request: ListRequest): Promise<ListResponse> {
                 remove_requirement: false,
                 link_issue: false,
                 unlink_issue: false,
+                close_requirement: false,
+                open_requirement: false,
+                set_kano_info: false,
+                set_four_q_info: false,
             };
         }
     }

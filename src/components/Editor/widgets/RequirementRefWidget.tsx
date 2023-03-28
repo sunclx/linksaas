@@ -5,7 +5,7 @@ import s from './RequirementRefWidget.module.less';
 import Button from '@/components/Button';
 import { LinkOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { Card, Form, Input, Modal, Select, Space, Table } from 'antd';
-import type { RequirementInfo, CateInfo } from '@/api/project_requirement';
+import { RequirementInfo, CateInfo, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 import { list_requirement, list_cate, get_requirement, list_requirement_by_id } from '@/api/project_requirement';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
@@ -80,8 +80,11 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
             keyword: keyword.trim(),
             filter_by_has_link_issue: false,
             has_link_issue: false,
+            filter_by_closed: false,//FIXME
+            closed: false,//FIXME
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
+            sort_type: REQ_SORT_UPDATE_TIME,//FIXME
         }));
         setTotalCount(res.total_count);
         setRequirementList(res.requirement_list);

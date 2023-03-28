@@ -4,12 +4,15 @@ import CardWrap from "@/components/CardWrap";
 import s from './RequirementList.module.less';
 import Button from "@/components/Button";
 import { Card, Form, Input, Menu, Popover, Select, Space, Table, message } from "antd";
-import type { CateInfo, RequirementInfo } from '@/api/project_requirement';
-import { list_cate, list_requirement, update_requirement, set_requirement_cate } from '@/api/project_requirement';
+import type { CateInfo, RequirementInfo, REQ_SORT_TYPE } from '@/api/project_requirement';
+import {
+    list_cate, list_requirement, update_requirement, set_requirement_cate, open_requirement, close_requirement,
+    REQ_SORT_UPDATE_TIME, REQ_SORT_CREATE_TIME, REQ_SORT_KANO, REQ_SORT_URGENT, REQ_SORT_IMPORTANT
+} from '@/api/project_requirement';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { AddCateModal, RemoveCateModal, UpdateCateModal } from "./components/CateModal";
-import { MoreOutlined } from "@ant-design/icons";
+import { LinkOutlined, MoreOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { ColumnsType } from 'antd/lib/table';
 import Pagination from "@/components/Pagination";
@@ -35,6 +38,8 @@ const RequirementList = () => {
 
     const [keyword, setKeyword] = useState("");
     const [hasLinkIssue, setHasLinkIssue] = useState<boolean | null>(null);
+    const [filterClosed, setFilterClosed] = useState<boolean | null>(null);
+    const [sortType, setSortType] = useState<REQ_SORT_TYPE>(REQ_SORT_UPDATE_TIME);
 
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
@@ -78,6 +83,9 @@ const RequirementList = () => {
             keyword: keyword,
             filter_by_has_link_issue: hasLinkIssue !== null,
             has_link_issue: hasLinkIssue == null ? false : hasLinkIssue,
+            filter_by_closed: filterClosed != null,
+            closed: filterClosed == null ? false : filterClosed,
+            sort_type: sortType,
         }));
         setTotalCount(res.total_count);
         setReqInfoList(res.requirement_list);
@@ -88,29 +96,37 @@ const RequirementList = () => {
             title: "需求标题",
             width: 250,
             render: (_, row: RequirementInfo) => (
-                <EditText editable={true} content={row.base_info.title}
-                    onChange={async (value: string) => {
-                        const title = value.trim();
-                        if (title == "") {
-                            message.error("标题不能为空");
+                <Space size="middle">
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, row.requirement_id), history);
+                    }}><LinkOutlined /></a>
+                    <EditText editable={true} content={row.base_info.title}
+                        onChange={async (value: string) => {
+                            const title = value.trim();
+                            if (title == "") {
+                                message.error("标题不能为空");
+                                return false;
+                            }
+                            try {
+                                await request(update_requirement({
+                                    session_id: userStore.sessionId,
+                                    project_id: projectStore.curProjectId,
+                                    requirement_id: row.requirement_id,
+                                    base_info: {
+                                        title: title,
+                                        content: row.base_info.content,
+                                    },
+                                }));
+                                return true;
+                            } catch (e) {
+                                console.log(e);
+                            }
                             return false;
-                        }
-                        try {
-                            await request(update_requirement({
-                                session_id: userStore.sessionId,
-                                project_id: projectStore.curProjectId,
-                                requirement_id: row.requirement_id,
-                                base_info: {
-                                    title: title,
-                                    content: row.base_info.content,
-                                },
-                            }));
-                            return true;
-                        } catch (e) {
-                            console.log(e);
-                        }
-                        return false;
-                    }} showEditIcon={true} />
+                        }} showEditIcon={true} />
+
+                </Space>
             ),
         },
         {
@@ -149,6 +165,44 @@ const RequirementList = () => {
             ),
         },
         {
+            title: "状态",
+            width: 100,
+            render: (_, row: RequirementInfo) => (
+                <EditSelect editable={projectStore.isAdmin} curValue={row.closed ? 1 : 0} itemList={[
+                    {
+                        value: 1,
+                        label: "关闭状态",
+                        color: "black",
+                    },
+                    {
+                        value: 0,
+                        label: "打开状态",
+                        color: "black",
+                    },
+                ]} onChange={async (value) => {
+                    try {
+                        if ((value as number) > 0.8) {
+                            await request(close_requirement({
+                                session_id: userStore.sessionId,
+                                project_id: row.project_id,
+                                requirement_id: row.requirement_id,
+                            }));
+                        } else {
+                            await request(open_requirement({
+                                session_id: userStore.sessionId,
+                                project_id: row.project_id,
+                                requirement_id: row.requirement_id,
+                            }));
+                        }
+                    } catch (e) {
+                        console.log(e);
+                        return false;
+                    }
+                    return true;
+                }} showEditIcon={true} allowClear={false} />
+            ),
+        },
+        {
             title: "操作",
             render: (_, row: RequirementInfo) => (
                 <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
@@ -161,9 +215,33 @@ const RequirementList = () => {
             ),
         },
         {
+            title: "KANO系数",
+            width: 600,
+            render: (_, row: RequirementInfo) => (
+                <Space size="small">
+                    <span>兴奋型：{row.kano_excite_value.toFixed(3)}</span>
+                    <span>期望型：{row.kano_expect_value.toFixed(3)}</span>
+                    <span>基础型：{row.kano_basic_value.toFixed(3)}</span>
+                    <span>无差异：{row.kano_nodiff_value.toFixed(3)}</span>
+                    <span>反向型：{row.kano_reverse_value.toFixed(3)}</span>
+                    <span>可疑数值：{row.kano_dubiouse_value.toFixed(3)}</span>
+                </Space>
+            ),
+        },
+        {
+            title: "紧急系数",
+            width: 80,
+            render: (_, row: RequirementInfo) => row.four_q_urgency_value.toFixed(3),
+        },
+        {
+            title: "重要系数",
+            width: 80,
+            render: (_, row: RequirementInfo) => row.four_q_important_value.toFixed(3),
+        },
+        {
             title: "创建用户",
             dataIndex: "create_display_name",
-            width: 80,
+            width: 100,
         },
         {
             title: "创建时间",
@@ -175,7 +253,7 @@ const RequirementList = () => {
         {
             title: "更新用户",
             dataIndex: "update_display_name",
-            width: 80,
+            width: 100,
         },
         {
             title: "更新时间",
@@ -192,7 +270,7 @@ const RequirementList = () => {
 
     useEffect(() => {
         loadReqInfoList();
-    }, [curPage, curCateId, keyword, hasLinkIssue])
+    }, [curPage, curCateId, keyword, hasLinkIssue, filterClosed, sortType])
 
     return (
         <CardWrap>
@@ -272,10 +350,9 @@ const RequirementList = () => {
                     <div className={s.right_panel_wrap}>
                         <Card bordered={false}
                             extra={<Space>
-                                <span className={s.fiter_title}>过滤条件:</span>
                                 <Form layout="inline">
                                     <Form.Item label="需求标题">
-                                        <Input value={keyword} onChange={e => {
+                                        <Input value={keyword} style={{ width: 100 }} onChange={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             setKeyword(e.target.value);
@@ -288,10 +365,26 @@ const RequirementList = () => {
                                             <Select.Option value={false}>无关联</Select.Option>
                                         </Select>
                                     </Form.Item>
+                                    <Form.Item label="状态">
+                                        <Select style={{ width: 100 }} value={filterClosed} onChange={value => setFilterClosed(value)}>
+                                            <Select.Option value={null}>全部状态</Select.Option>
+                                            <Select.Option value={false}>打开状态</Select.Option>
+                                            <Select.Option value={true}>关闭状态</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item label="排序">
+                                        <Select style={{ width: 100 }} value={sortType} onChange={value => setSortType(value)}>
+                                            <Select value={REQ_SORT_UPDATE_TIME}>更新时间</Select>
+                                            <Select value={REQ_SORT_CREATE_TIME}>创建时间</Select>
+                                            <Select value={REQ_SORT_KANO}>KANO系数</Select>
+                                            <Select value={REQ_SORT_URGENT}>紧急层度</Select>
+                                            <Select value={REQ_SORT_IMPORTANT}>重要层度</Select>
+                                        </Select>
+                                    </Form.Item>
                                 </Form>
                             </Space>}>
                             <div className={s.table_wrap}>
-                                <Table rowKey="requirement_id" columns={columns} dataSource={reqInfoList} pagination={false} scroll={{ x: 900 }} />
+                                <Table rowKey="requirement_id" columns={columns} dataSource={reqInfoList} pagination={false} scroll={{ x: 1700 }} />
                                 <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
                             </div>
                         </Card>

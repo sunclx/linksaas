@@ -356,10 +356,10 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     if (cfg.remove_subscribe) {
         retList.push("removeSubscribe");
     }
-    if (cfg.watch_channel){
+    if (cfg.watch_channel) {
         retList.push("watchChannel");
     }
-    if(cfg.un_watch_channel){
+    if (cfg.un_watch_channel) {
         retList.push("unWatchChannel");
     }
     return retList;
@@ -1316,6 +1316,22 @@ export const requirementEvOptionList: CheckboxOptionType[] = [
         label: "取消关联任务",
         value: "unlink_issue",
     },
+    {
+        label: "关闭需求",
+        value: "close_requirement",
+    },
+    {
+        label: "打开需求",
+        value: "open_requirement",
+    },
+    {
+        label: "更新kano分析数值",
+        value: "set_kano_info",
+    },
+    {
+        label: "更新四象限分析数值",
+        value: "set_four_q_info",
+    },
 ];
 
 export const calcRequirementEvCfg = (values: string[] | undefined): RequirementEvCfg => {
@@ -1329,6 +1345,10 @@ export const calcRequirementEvCfg = (values: string[] | undefined): RequirementE
         remove_requirement: false,
         link_issue: false,
         unlink_issue: false,
+        close_requirement: false,
+        open_requirement: false,
+        set_kano_info: false,
+        set_four_q_info: false,
     };
     if (values == undefined) {
         return ret;
@@ -1352,6 +1372,14 @@ export const calcRequirementEvCfg = (values: string[] | undefined): RequirementE
             ret.link_issue = true;
         } else if (value == "unlink_issue") {
             ret.unlink_issue = true;
+        } else if (value == "close_requirement") {
+            ret.close_requirement = true;
+        } else if (value == "open_requirement") {
+            ret.open_requirement = true;
+        } else if (value == "set_kano_info") {
+            ret.set_kano_info = true;
+        } else if (value == "set_four_q_info") {
+            ret.set_four_q_info = true;
         }
     });
     return ret;
@@ -1385,6 +1413,18 @@ export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
     }
     if (cfg.unlink_issue) {
         retList.push("unlink_issue");
+    }
+    if (cfg.close_requirement) {
+        retList.push("close_requirement");
+    }
+    if (cfg.open_requirement) {
+        retList.push("open_requirement");
+    }
+    if (cfg.set_kano_info) {
+        retList.push("set_kano_info");
+    }
+    if (cfg.set_four_q_info) {
+        retList.push("set_four_q_info");
     }
     return retList;
 }
