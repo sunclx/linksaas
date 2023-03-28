@@ -116,7 +116,7 @@ const RequirementDetail = () => {
                                     label: "删除",
                                     key: "remove",
                                     danger: true,
-                                    disabled: !(projectStore.isAdmin && requirementInfo.issue_link_count == 0),
+                                    disabled: !((projectStore.isAdmin || requirementInfo.create_user_id == userStore.userInfo.userId) && requirementInfo.issue_link_count == 0),
                                 },
                             ],
                             onClick: (e) => {
