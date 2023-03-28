@@ -12,6 +12,8 @@ export const ISSUE_STATE_PROCESS: ISSUE_STATE = 1; //处理
 export const ISSUE_STATE_CHECK: ISSUE_STATE = 2; //验收
 export const ISSUE_STATE_CLOSE: ISSUE_STATE = 3; //关闭
 
+export const ISSUE_STATE_PROCESS_OR_CHECK: ISSUE_STATE = 99;//特殊状态
+
 export type TASK_PRIORITY = number;
 
 export const TASK_PRIORITY_LOW: TASK_PRIORITY = 0;
