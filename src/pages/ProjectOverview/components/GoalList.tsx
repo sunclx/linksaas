@@ -331,7 +331,7 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
 
     if (props.goal == undefined) {
         return (
-            <Modal open width={400}
+            <Modal open width={430}
                 title="新增目标(OKR)"
                 okText="创建"
                 onCancel={e => {
