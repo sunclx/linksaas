@@ -6,7 +6,6 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
-
 #[tauri::command]
 async fn create_cate<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -22,7 +21,9 @@ async fn create_cate<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == create_cate_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("create_cate".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("create_cate".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -47,7 +48,9 @@ async fn list_cate<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_cate_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_cate".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_cate".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -72,7 +75,9 @@ async fn update_cate<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_cate_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_cate".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_cate".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -97,7 +102,9 @@ async fn remove_cate<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_cate_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_cate".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_cate".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -122,7 +129,10 @@ async fn create_requirement<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == create_requirement_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("create_requirement".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("create_requirement".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -147,7 +157,10 @@ async fn list_requirement<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_requirement_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_requirement".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_requirement".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -172,7 +185,10 @@ async fn list_requirement_by_id<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_requirement_by_id_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_requirement_by_id".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_requirement_by_id".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -197,7 +213,9 @@ async fn get_requirement<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_requirement_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_requirement".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_requirement".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -222,7 +240,10 @@ async fn update_requirement<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_requirement_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_requirement".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_requirement".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -247,7 +268,10 @@ async fn set_requirement_cate<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_requirement_cate_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_requirement_cate".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_requirement_cate".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -272,7 +296,10 @@ async fn remove_requirement<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_requirement_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_requirement".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_requirement".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -297,7 +324,9 @@ async fn link_issue<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == link_issue_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("link_issue".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("link_issue".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -322,7 +351,9 @@ async fn unlink_issue<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == unlink_issue_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("unlink_issue".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("unlink_issue".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -347,7 +378,9 @@ async fn list_issue_link<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_issue_link_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_issue_link".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_issue_link".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -372,7 +405,10 @@ async fn list_multi_issue_link<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_multi_issue_link_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_multi_issue_link".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_multi_issue_link".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -397,7 +433,9 @@ async fn add_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("add_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -406,7 +444,6 @@ async fn add_comment<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
-
 
 #[tauri::command]
 async fn list_comment<R: Runtime>(
@@ -423,7 +460,9 @@ async fn list_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -448,7 +487,173 @@ async fn remove_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_comment".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn close_requirement<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CloseRequirementRequest,
+) -> Result<CloseRequirementResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.close_requirement(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == close_requirement_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("close_requirement".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn open_requirement<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: OpenRequirementRequest,
+) -> Result<OpenRequirementResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.open_requirement(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == open_requirement_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("open_requirement".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn set_kano_info<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetKanoInfoRequest,
+) -> Result<SetKanoInfoResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.set_kano_info(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_kano_info_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_kano_info".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_kano_info<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetKanoInfoRequest,
+) -> Result<GetKanoInfoResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.get_kano_info(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_kano_info_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_kano_info".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn set_four_q_info<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetFourQInfoRequest,
+) -> Result<SetFourQInfoResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.set_four_q_info(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_four_q_info_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_four_q_info".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_four_q_info<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetFourQInfoRequest,
+) -> Result<GetFourQInfoResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
+    match client.get_four_q_info(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_four_q_info_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_four_q_info".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -484,6 +689,12 @@ impl<R: Runtime> ProjectRequirementApiPlugin<R> {
                 add_comment,
                 list_comment,
                 remove_comment,
+                close_requirement,
+                open_requirement,
+                set_kano_info,
+                get_kano_info,
+                set_four_q_info,
+                get_four_q_info,
             ]),
         }
     }

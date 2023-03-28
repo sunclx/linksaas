@@ -935,6 +935,10 @@ pub mod requirement {
         RemoveRequirementEvent(events_requirement::RemoveRequirementEvent),
         LinkIssueEvent(events_requirement::LinkIssueEvent),
         UnlinkIssueEvent(events_requirement::UnlinkIssueEvent),
+        CloseRequirementEvent(events_requirement::CloseRequirementEvent),
+        OpenRequirementEvent(events_requirement::OpenRequirementEvent),
+        SetKanoInfoEvent(events_requirement::SetKanoInfoEvent),
+        SetFourQInfoEvent(events_requirement::SetFourQInfoEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -987,6 +991,24 @@ pub mod requirement {
         } else if data.type_url == events_requirement::UnlinkIssueEvent::type_url() {
             if let Ok(ev) = events_requirement::UnlinkIssueEvent::decode(data.value.as_slice()) {
                 return Some(Event::UnlinkIssueEvent(ev));
+            }
+        } else if data.type_url == events_requirement::CloseRequirementEvent::type_url() {
+            if let Ok(ev) = events_requirement::CloseRequirementEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::CloseRequirementEvent(ev));
+            }
+        } else if data.type_url == events_requirement::OpenRequirementEvent::type_url() {
+            if let Ok(ev) = events_requirement::OpenRequirementEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::OpenRequirementEvent(ev));
+            }
+        } else if data.type_url == events_requirement::SetKanoInfoEvent::type_url() {
+            if let Ok(ev) = events_requirement::SetKanoInfoEvent::decode(data.value.as_slice()) {
+                return Some(Event::SetKanoInfoEvent(ev));
+            }
+        } else if data.type_url == events_requirement::SetFourQInfoEvent::type_url() {
+            if let Ok(ev) = events_requirement::SetFourQInfoEvent::decode(data.value.as_slice()) {
+                return Some(Event::SetFourQInfoEvent(ev));
             }
         }
         None

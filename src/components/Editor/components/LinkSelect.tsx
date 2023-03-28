@@ -25,7 +25,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
 import type { ScriptSuiteKey } from '@/api/robot_script';
 import { list_script_suite_key } from '@/api/robot_script';
-import type { RequirementInfo, CateInfo } from '@/api/project_requirement';
+import { RequirementInfo, CateInfo, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 import { list_cate, list_requirement } from '@/api/project_requirement';
 
 const PAGE_SIZE = 10;
@@ -298,8 +298,11 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       keyword: keyword.trim(),
       filter_by_has_link_issue: false,
       has_link_issue: false,
+      filter_by_closed: false,//FIXME
+      closed: false,//FIXME
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
+      sort_type: REQ_SORT_UPDATE_TIME,//FIXME
     })).then(res => {
       setTotalCount(res.total_count);
       setRequirementList(res.requirement_list);

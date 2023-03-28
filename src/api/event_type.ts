@@ -4548,6 +4548,72 @@ namespace requirement {
     ];
   }
 
+  export type CloseRequirementEvent = {
+    requirement_id: string;
+    title: string;
+  };
+
+  function get_close_req_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CloseRequirementEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关闭 需求`),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
+    ];
+  }
+
+  export type OpenRequirementEvent = {
+    requirement_id: string;
+    title: string;
+  };
+
+  function get_open_req_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: OpenRequirementEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 打开 需求`),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
+    ];
+  }
+
+  export type SetKanoInfoEvent = {
+    requirement_id: string;
+    title: string;
+  };
+
+  function get_set_kano_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetKanoInfoEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改 需求`),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
+      new LinkNoneInfo("kano 分析数值"),
+    ];
+  }
+
+  export type SetFourQInfoEvent = {
+    requirement_id: string;
+    title: string;
+  };
+
+  function get_set_four_q_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetFourQInfoEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改 需求`),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
+      new LinkNoneInfo("四象限分析数值"),
+    ];
+  }
+
   export class AllRequirementEvent {
     CreateCateEvent?: CreateCateEvent;
     UpdateCateEvent?: UpdateCateEvent;
@@ -4558,6 +4624,10 @@ namespace requirement {
     RemoveRequirementEvent?: RemoveRequirementEvent;
     LinkIssueEvent?: LinkIssueEvent;
     UnlinkIssueEvent?: UnlinkIssueEvent;
+    CloseRequirementEvent?: CloseRequirementEvent;
+    OpenRequirementEvent?: OpenRequirementEvent;
+    SetKanoInfoEvent?: SetKanoInfoEvent;
+    SetFourQInfoEvent?: SetFourQInfoEvent;
   }
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -4590,6 +4660,18 @@ namespace requirement {
     }
     if (inner.UnlinkIssueEvent !== undefined) {
       return get_unlink_issue_simple_content(ev, skip_prj_name, inner.UnlinkIssueEvent);
+    }
+    if (inner.CloseRequirementEvent !== undefined) {
+      return get_close_req_simple_content(ev, skip_prj_name, inner.CloseRequirementEvent);
+    }
+    if (inner.OpenRequirementEvent !== undefined) {
+      return get_open_req_simple_content(ev, skip_prj_name, inner.OpenRequirementEvent);
+    }
+    if (inner.SetKanoInfoEvent !== undefined) {
+      return get_set_kano_simple_content(ev, skip_prj_name, inner.SetKanoInfoEvent);
+    }
+    if (inner.SetFourQInfoEvent !== undefined) {
+      return get_set_four_q_simple_content(ev, skip_prj_name, inner.SetFourQInfoEvent);
     }
     return [new LinkNoneInfo('未知事件')];
   }
