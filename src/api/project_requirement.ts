@@ -73,10 +73,10 @@ export type KanoInfo = {
 
 export type FourQInfo = {
     requirement_id: string;
-    urgent_value: number;
-    not_urgent_value: number;
-    important_value: number;
-    not_important_value: number;
+    urgent_and_important: number;//紧急且重要
+    urgent_and_not_important: number;//紧急但不重要
+    not_urgent_and_not_important: number;//不紧急也不重要
+    not_urgent_and_important: number;//不紧急但重要
 };
 
 export type BasicComment = {
@@ -630,7 +630,7 @@ export async function set_four_q_info(request: SetFourQInfoRequest): Promise<Set
 
 //获取fourQ数值
 export async function get_four_q_info(request: GetFourQInfoRequest): Promise<GetFourQInfoResponse> {
-    const cmd = 'plugin:project_requirement_api|xx';
+    const cmd = 'plugin:project_requirement_api|get_four_q_info';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetFourQInfoResponse>(cmd, {
         request,

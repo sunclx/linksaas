@@ -154,10 +154,7 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
                 this.dislikeVsTolerate = info.dislike_vs_row.tolerate;
                 this.dislikeVsDislike = info.dislike_vs_row.dislike;
             });
-
         }
-
-
     }));
 
     const loadKanoInfo = async () => {
