@@ -170,6 +170,60 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
         setKanoInfo(res.kano_info);
     };
 
+    const saveKanoInfo = async () => {
+        await request(set_kano_info({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            requirement_id: props.requirementId,
+            kano_info: {
+                requirement_id: props.requirementId,
+                like_vs_row: {
+                    like: localStore.likeVsLike,
+                    expect: localStore.likeVsExpect,
+                    neutral: localStore.likeVsNeutral,
+                    tolerate: localStore.likeVsTolerate,
+                    dislike: localStore.likeVsDislike,
+                },
+                expect_vs_row: {
+                    like: localStore.expectVsLike,
+                    expect: localStore.expectVsExpect,
+                    neutral: localStore.expectVsNeutral,
+                    tolerate: localStore.expectVsTolerate,
+                    dislike: localStore.expectVsDislike,
+                },
+                neutral_vs_row: {
+                    like: localStore.neutralVsLike,
+                    expect: localStore.neutralVsExpect,
+                    neutral: localStore.neutralVsNeutral,
+                    tolerate: localStore.neutralVsTolerate,
+                    dislike: localStore.neutralVsDislike,
+                },
+                tolerate_vs_row: {
+                    like: localStore.tolerateVsLike,
+                    expect: localStore.tolerateVsExpect,
+                    neutral: localStore.tolerateVsNeutral,
+                    tolerate: localStore.tolerateVsTolerate,
+                    dislike: localStore.tolerateVsDislike,
+                },
+                dislike_vs_row: {
+                    like: localStore.dislikeVsLike,
+                    expect: localStore.dislikeVsExpect,
+                    neutral: localStore.dislikeVsNeutral,
+                    tolerate: localStore.dislikeVsTolerate,
+                    dislike: localStore.dislikeVsDislike,
+                },
+            },
+            kano_excite_value: localStore.statA,
+            kano_expect_value: localStore.statO,
+            kano_basic_value: localStore.statM,
+            kano_nodiff_value: localStore.statI,
+            kano_reverse_value: localStore.statR,
+            kano_dubiouse_value: localStore.statQ,
+        }));
+        setInEdit(false);
+        props.onUpdate();
+    }
+
     useEffect(() => {
         loadKanoInfo();
     }, [props.requirementId]);
@@ -206,7 +260,7 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
                             <Button onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                //TODO
+                                saveKanoInfo();
                             }}>保存</Button>
                         </Space>
                     )}

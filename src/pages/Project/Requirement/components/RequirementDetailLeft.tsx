@@ -104,12 +104,12 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
             <hr />
             <LinkIssuePanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
             <Card title={<h2>需求分析</h2>} bordered={false}>
-                <Tabs defaultActiveKey='kano' type="card">
-                    <Tabs.TabPane tab="Kano分析" key="kano">
-                        <KanoPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
-                    </Tabs.TabPane>
+                <Tabs defaultActiveKey='fourQ' type="card">
                     <Tabs.TabPane tab="四象限分析" key="fourQ">
                         <FourQPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Kano分析" key="kano">
+                        <KanoPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
                     </Tabs.TabPane>
                 </Tabs>
             </Card>
