@@ -167,10 +167,12 @@ export namespace project {
     }
     return ret_list;
   }
+  
   export type CreateRoleEvent = {
     role_id: string;
     role_name: string;
   };
+
   function get_create_role_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -181,11 +183,13 @@ export namespace project {
       new LinkNoneInfo(` ${inner.role_name}`),
     ];
   }
+
   export type UpdateRoleEvent = {
     role_id: string;
     old_role_name: string;
     new_role_name: string;
   };
+
   function get_update_role_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -200,10 +204,12 @@ export namespace project {
     }
     return ret_list;
   }
+  
   export type RemoveRoleEvent = {
     role_id: string;
     role_name: string;
   };
+
   function get_remove_role_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -326,6 +332,7 @@ export namespace project {
     channel_id: string;
     channel_name: string;
   };
+
   function get_close_chan_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -591,6 +598,18 @@ export namespace project {
     ];
   }
 
+  export type SetAlarmConfigEvent = {};
+
+  function get_set_alarm_config_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    // inner: UnWatchChannelEvent
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目预警设置`),
+    ];
+  }
+
   export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
     UpdateProjectEvent?: UpdateProjectEvent;
@@ -626,6 +645,7 @@ export namespace project {
     RemoveEventSubscribeEvent?: RemoveEventSubscribeEvent;
     WatchChannelEvent?: WatchChannelEvent;
     UnWatchChannelEvent?: UnWatchChannelEvent;
+    SetAlarmConfigEvent?: SetAlarmConfigEvent;
   };
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -712,6 +732,8 @@ export namespace project {
       return get_watch_channel_simple_content(ev, skip_prj_name, inner.WatchChannelEvent);
     } else if (inner.UnWatchChannelEvent !== undefined) {
       return get_unwatch_channel_simple_content(ev, skip_prj_name, inner.UnWatchChannelEvent);
+    } else if (inner.SetAlarmConfigEvent !== undefined) {
+      return get_set_alarm_config_simple_content(ev, skip_prj_name);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }
@@ -1655,7 +1677,6 @@ namespace issue {
     inner: SetStartTimeEvent,
   ): LinkInfo[] {
     const issue_type_str = get_issue_type_str(inner.issue_type);
-    const d = new Date(inner.start_time);
     const ret_list = [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置${issue_type_str}`),
     ];
@@ -1664,7 +1685,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
     }
-    ret_list.push(new LinkNoneInfo(`开始时间 ${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`));
+    ret_list.push(new LinkNoneInfo(`开始时间 ${moment(inner.start_time).format("YYYY-MM-DD")}`));
     return ret_list;
   }
   export type SetEndTimeEvent = {
@@ -1679,7 +1700,6 @@ namespace issue {
     inner: SetEndTimeEvent,
   ): LinkInfo[] {
     const issue_type_str = get_issue_type_str(inner.issue_type);
-    const d = new Date(inner.end_time);
     const ret_list = [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置${issue_type_str}`),
     ];
@@ -1688,7 +1708,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
     }
-    ret_list.push(new LinkNoneInfo(`结束时间 ${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`));
+    ret_list.push(new LinkNoneInfo(`结束时间 ${moment(inner.end_time).format("YYYY-MM-DD")}`));
     return ret_list;
   }
   export type SetEstimateMinutesEvent = {
@@ -1996,6 +2016,53 @@ namespace issue {
     return ret_list;
   }
 
+  export type SetDeadLineTimeEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    dead_line_time: number;
+  };
+
+  function get_set_deadline_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetDeadLineTimeEvent,
+  ): LinkInfo[] {
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 设置 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      retList.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      retList.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    retList.push(new LinkNoneInfo(`底线时间 ${moment(inner.dead_line_time).format("YYYY-MM-DD")}`));
+    return retList;
+  }
+
+  export type CancelDeadLineTimeEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+  };
+
+  function get_cancel_deadline_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CancelDeadLineTimeEvent,
+  ): LinkInfo[] {
+    const retList = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消 ${get_issue_type_str(inner.issue_type)}`),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      retList.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      retList.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    retList.push(new LinkNoneInfo("底线时间"));
+    return retList;
+  }
+
   export class AllIssueEvent {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
@@ -2019,6 +2086,8 @@ namespace issue {
     RemoveSubIssueEvent?: RemoveSubIssueEvent;
     AddDependenceEvent?: AddDependenceEvent;
     RemoveDependenceEvent?: RemoveDependenceEvent;
+    SetDeadLineTimeEvent?: SetDeadLineTimeEvent;
+    CancelDeadLineTimeEvent?: CancelDeadLineTimeEvent;
   }
   export function get_simple_content_inner(
     ev: PluginEvent,
@@ -2069,6 +2138,10 @@ namespace issue {
       return get_add_depend_simple_content(ev, skip_prj_name, inner.AddDependenceEvent);
     } else if (inner.RemoveDependenceEvent !== undefined) {
       return get_remove_depend_simple_content(ev, skip_prj_name, inner.RemoveDependenceEvent);
+    } else if (inner.SetDeadLineTimeEvent !== undefined) {
+      return get_set_deadline_simple_content(ev, skip_prj_name, inner.SetDeadLineTimeEvent);
+    } else if (inner.CancelDeadLineTimeEvent !== undefined) {
+      return get_cancel_deadline_simple_content(ev, skip_prj_name, inner.CancelDeadLineTimeEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }

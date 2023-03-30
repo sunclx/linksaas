@@ -219,11 +219,16 @@ export type IssueInfo = {
   exec_display_name: string; //执行人名称
   check_display_name: string; //检查人名称
   msg_count: number;
+  depend_me_count: number;
+  re_open_count: number;
+
   ///计划相关字段
   has_start_time: boolean;
   start_time: number;
   has_end_time: boolean;
   end_time: number;
+  has_dead_line_time: boolean;
+  dead_line_time: number;
   has_estimate_minutes: boolean;
   estimate_minutes: number;
   has_remain_minutes: boolean;
@@ -603,6 +608,30 @@ export type SetCheckAwardResponse = {
   code: number;
   err_msg: string;
 };
+
+export type SetDeadLineTimeRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  dead_line_time: number;
+};
+
+export type SetDeadLineTimeResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type CancelDeadLineTimeRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type CancelDeadLineTimeResponse = {
+  code: number;
+  err_msg: string;
+};
+
 
 //创建工单，根据类型区分是任务还是缺陷
 export async function create(request: CreateRequest): Promise<CreateResponse> {
@@ -1142,6 +1171,24 @@ export async function set_check_award(request: SetCheckAwardRequest): Promise<Se
   const cmd = 'plugin:project_issue_api|set_check_award';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<SetCheckAwardResponse>(cmd, {
+    request,
+  });
+}
+
+//设置截至时间
+export async function set_dead_line_time(request: SetDeadLineTimeRequest): Promise<SetDeadLineTimeResponse> {
+  const cmd = 'plugin:project_issue_api|set_dead_line_time';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<SetDeadLineTimeResponse>(cmd, {
+    request,
+  });
+}
+
+//取消截至时间
+export async function cancel_dead_line_time(request: CancelDeadLineTimeRequest): Promise<CancelDeadLineTimeResponse> {
+  const cmd = 'plugin:project_issue_api|cancel_dead_line_time';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<CancelDeadLineTimeResponse>(cmd, {
     request,
   });
 }

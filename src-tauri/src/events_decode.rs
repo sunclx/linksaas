@@ -40,6 +40,7 @@ pub mod project {
         RemoveEventSubscribeEvent(events_project::RemoveEventSubscribeEvent),
         WatchChannelEvent(events_project::WatchChannelEvent),
         UnWatchChannelEvent(events_project::UnWatchChannelEvent),
+        SetAlarmConfigEvent(events_project::SetAlarmConfigEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -185,6 +186,10 @@ pub mod project {
         } else if data.type_url == events_project::UnWatchChannelEvent::type_url() {
             if let Ok(ev) = events_project::UnWatchChannelEvent::decode(data.value.as_slice()) {
                 return Some(Event::UnWatchChannelEvent(ev));
+            }
+        } else if data.type_url == events_project::SetAlarmConfigEvent::type_url() {
+            if let Ok(ev) = events_project::SetAlarmConfigEvent::decode(data.value.as_slice()) {
+                return Some(Event::SetAlarmConfigEvent(ev));
             }
         }
         None
@@ -440,6 +445,9 @@ pub mod issue {
         RemoveSubIssueEvent(events_issue::RemoveSubIssueEvent),
         AddDependenceEvent(events_issue::AddDependenceEvent),
         RemoveDependenceEvent(events_issue::RemoveDependenceEvent),
+
+        SetDeadLineTimeEvent(events_issue::SetDeadLineTimeEvent),
+        CancelDeadLineTimeEvent(events_issue::CancelDeadLineTimeEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -531,6 +539,14 @@ pub mod issue {
         } else if data.type_url == events_issue::RemoveDependenceEvent::type_url() {
             if let Ok(ev) = events_issue::RemoveDependenceEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveDependenceEvent(ev));
+            }
+        } else if data.type_url == events_issue::SetDeadLineTimeEvent::type_url() {
+            if let Ok(ev) = events_issue::SetDeadLineTimeEvent::decode(data.value.as_slice()) {
+                return Some(Event::SetDeadLineTimeEvent(ev));
+            }
+        } else if data.type_url == events_issue::CancelDeadLineTimeEvent::type_url() {
+            if let Ok(ev) = events_issue::CancelDeadLineTimeEvent::decode(data.value.as_slice()) {
+                return Some(Event::CancelDeadLineTimeEvent(ev));
             }
         }
         None

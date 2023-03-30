@@ -142,6 +142,10 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         label: "取消关注频道",
         value: "unWatchChannel",
     },
+    {
+        label: "更新预警配置",
+        value: "setAlarmConfig",
+    }
 ];
 
 export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => {
@@ -180,6 +184,7 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         remove_subscribe: false,
         watch_channel: false,
         un_watch_channel: false,
+        set_alarm_config: false,
     };
     if (values == undefined) {
         return ret;
@@ -253,6 +258,8 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.watch_channel = true;
         } else if (value == "unWatchChannel") {
             ret.un_watch_channel = true;
+        } else if (value == "setAlarmConfig") {
+            ret.set_alarm_config = true;
         }
     });
     return ret;
@@ -361,6 +368,9 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.un_watch_channel) {
         retList.push("unWatchChannel");
+    }
+    if (cfg.set_alarm_config) {
+        retList.push("setAlarmConfig");
     }
     return retList;
 }
@@ -1128,6 +1138,14 @@ export const issueEvOptionList: CheckboxOptionType[] = [
         label: "删除依赖工单",
         value: "removeDependence",
     },
+    {
+        label: "设置截至时间",
+        value: "setDeadLineTime",
+    },
+    {
+        label: "取消截至时间",
+        value: "cancelDeadLineTime"
+    },
 ];
 
 export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
@@ -1154,6 +1172,8 @@ export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
         remove_sub_issue: false,
         add_dependence: false,
         remove_dependence: false,
+        set_dead_line_time: false,
+        cancel_dead_line_time: false,
     };
     if (values == undefined) {
         return ret;
@@ -1203,6 +1223,10 @@ export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
             ret.add_dependence = true;
         } else if (value == "removeDependence") {
             ret.remove_dependence = true;
+        } else if (value == "setDeadLineTime") {
+            ret.set_dead_line_time = true;
+        } else if (value == "cancelDeadLineTime") {
+            ret.cancel_dead_line_time = true;
         }
     });
     return ret;
@@ -1275,6 +1299,12 @@ export const genIssueEvCfgValues = (cfg: IssueEvCfg): string[] => {
     }
     if (cfg.remove_dependence) {
         retList.push("removeDependence");
+    }
+    if (cfg.set_dead_line_time) {
+        retList.push("setDeadLineTime");
+    }
+    if (cfg.cancel_dead_line_time) {
+        retList.push("cancelDeadLineTime");
     }
     return retList;
 };
