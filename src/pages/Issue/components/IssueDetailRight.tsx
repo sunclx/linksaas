@@ -14,7 +14,7 @@ import type { ListEventByRefRequest } from '@/api/events';
 import { request } from '@/utils/request';
 import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
-import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime } from "./utils";
+import { cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime } from "./utils";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
@@ -196,6 +196,29 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     </div>
                 </div>
                 <div className={s.basic_info}>
+                    <span>截止时间</span>
+                    <div>
+                        <EditDate
+                            editable={projectStore.isAdmin}
+                            hasTimeStamp={props.issue.has_dead_line_time}
+                            timeStamp={props.issue.dead_line_time}
+                            onChange={async (value) => {
+                                if (value === undefined) {
+                                    const res = await cancelDeadLineTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                    if (res) {
+                                        props.onUpdate();
+                                    }
+                                    return true;
+                                }
+                                const res = await updateDeadLineTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                if (res) {
+                                    props.onUpdate();
+                                }
+                                return res;
+                            }} showEditIcon={true} />
+                    </div>
+                </div>
+                <div className={s.basic_info}>
                     <span>处理贡献
                         <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
                             <a><QuestionCircleOutlined /></a>
@@ -328,7 +351,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
             <div
                 className={s.time_line_wrap}
                 style={{
-                    height: `${getIsTask(pathname) ? 'calc(100% - 320px)' : 'calc(100% - 380px)'}`,
+                    height: `${getIsTask(pathname) ? 'calc(100% - 360px)' : 'calc(100% - 420px)'}`,
                 }}
             >
                 <h2>动态</h2>

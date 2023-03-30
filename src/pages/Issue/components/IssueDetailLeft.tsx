@@ -13,7 +13,6 @@ import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_ISSUE } from "@/api/fs";
 import { updateContent as updateIssueContent } from './utils';
 
-
 export interface IssueDetailLeftProps {
     issue: IssueInfo;
     onUpdate: () => void;

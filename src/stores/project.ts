@@ -63,7 +63,7 @@ export default class ProjectStore {
         this.rootStore.ideaStore.loadTagList(val),
         this.rootStore.docSpaceStore.loadCurWatchDocList(val),
       ]);
-      
+
       await this.rootStore.channelStore.loadChannelList(val);
 
       if (this.rootStore.appStore.simpleMode) {
@@ -424,6 +424,17 @@ export default class ProjectStore {
   set showPostHookModal(val: boolean) {
     runInAction(() => {
       this._showPostHookModal = val;
+    });
+  }
+  //告警状态
+  private _alarmVersion: number = 0;
+  get alarmVersion(): number {
+    return this._alarmVersion;
+  }
+
+  addAlarmVersion() {
+    runInAction(() => {
+      this._alarmVersion = this._alarmVersion + 1;
     });
   }
 }

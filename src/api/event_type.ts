@@ -2036,7 +2036,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       retList.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
     }
-    retList.push(new LinkNoneInfo(`底线时间 ${moment(inner.dead_line_time).format("YYYY-MM-DD")}`));
+    retList.push(new LinkNoneInfo(`截止时间 ${moment(inner.dead_line_time).format("YYYY-MM-DD")}`));
     return retList;
   }
 
@@ -2059,7 +2059,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       retList.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
     }
-    retList.push(new LinkNoneInfo("底线时间"));
+    retList.push(new LinkNoneInfo("截止时间"));
     return retList;
   }
 
