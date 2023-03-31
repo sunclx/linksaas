@@ -53,6 +53,7 @@ mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
 mod user_kb_api_plugin;
+mod project_alarm_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -378,6 +379,7 @@ fn main() {
         .plugin(project_code_api_plugin::ProjectCodeApiPlugin::new())
         .plugin(project_idea_api_plugin::ProjectIdeaApiPlugin::new())
         .plugin(project_tool_api_plugin::ProjectToolApiPlugin::new())
+        .plugin(project_alarm_api_plugin::ProjectAlarmApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

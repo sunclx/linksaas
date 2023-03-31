@@ -5,18 +5,22 @@ import DetailsNav from '@/components/DetailsNav';
 import { getIssueText, getIsTask } from "@/utils/utils";
 import { useHistory, useLocation } from "react-router-dom";
 import s from './IssueCreate.module.less';
-import { Input, Select, Space, Tooltip, message } from "antd";
+import { DatePicker, Input, Select, Space, Tooltip, message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
 import type { LinkIssueState } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_ISSUE, FILE_OWNER_TYPE_PROJECT } from "@/api/fs";
 import Button from "@/components/Button";
-import { assign_check_user, assign_exec_user, BUG_LEVEL_MINOR, BUG_PRIORITY_LOW, create as create_issue, ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, set_check_award, set_exec_award, TASK_PRIORITY_LOW } from '@/api/project_issue';
+import {
+    assign_check_user, assign_exec_user, BUG_LEVEL_MINOR, BUG_PRIORITY_LOW, create as create_issue, set_dead_line_time,
+    ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, set_check_award, set_exec_award, TASK_PRIORITY_LOW
+} from '@/api/project_issue';
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, taskPrioritySelectItems } from "./components/constant";
 import { getMemberSelectItems } from "./components/utils";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { request } from "@/utils/request";
+import type { Moment } from "moment";
 
 
 interface RenderSelectProps {
@@ -33,7 +37,7 @@ const RenderSelect: React.FC<RenderSelectProps> = (props) => {
         allowClear={props.allowClear}
         value={selValue}
         showArrow={false}
-        style={{ width: "100px" }}
+        style={{ width: "120px" }}
         onChange={(value) => {
             if (props.onChange(value)) {
                 setSelValue(value);
@@ -76,6 +80,7 @@ const IssueCreate = () => {
     const [taskPriority, setTaskPriority] = useState(TASK_PRIORITY_LOW);
     const [execUserId, setExecUserId] = useState("");
     const [checkUserId, setCheckUserId] = useState("");
+    const [deadLineTime, setDeadLineTime] = useState<Moment | null>(null);
     const [execAward, setExecAward] = useState(1);
     const [checkAward, setCheckAward] = useState(1);
 
@@ -118,6 +123,14 @@ const IssueCreate = () => {
         }));
         if (!createRes) {
             return;
+        }
+        if (deadLineTime != null) {
+            await request(set_dead_line_time({
+                session_id: userStore.sessionId,
+                project_id: projectStore.curProjectId,
+                issue_id: createRes.issue_id,
+                dead_line_time: deadLineTime.startOf("day").valueOf(),
+            }));
         }
         //变更文件Owner
         await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_ISSUE, createRes.issue_id);
@@ -282,6 +295,12 @@ const IssueCreate = () => {
                                         setCheckUserId(v as string);
                                         return true;
                                     }} />
+                            </div>
+                        </div>
+                        <div className={s.info_item}>
+                            <span>截止时间</span>
+                            <div>
+                                <DatePicker style={{ width: "120px" }} allowClear onChange={value => setDeadLineTime(value)} />
                             </div>
                         </div>
                         {projectStore.isAdmin && (

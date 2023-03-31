@@ -24,6 +24,7 @@ pub mod project {
         SetMemberRoleNotice(notices_project::SetMemberRoleNotice),
         ReminderNotice(notices_project::ReminderNotice),
         UpdateShortNoteNotice(notices_project::UpdateShortNoteNotice),
+        UpdateAlarmStatNotice(notices_project::UpdateAlarmStatNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -109,6 +110,12 @@ pub mod project {
                 notices_project::UpdateShortNoteNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::UpdateShortNoteNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateAlarmStatNotice::type_url() {
+            if let Ok(notice) =
+                notices_project::UpdateAlarmStatNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::UpdateAlarmStatNotice(notice));
             }
         }
         None

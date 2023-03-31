@@ -22,7 +22,7 @@ import type { RemirrorContentType } from '@remirror/core';
 
 import type { FILE_OWNER_TYPE } from '@/api/fs';
 import { getExtensions } from './extensions';
-import type { InvalidContentHandler } from 'remirror';
+import type { InvalidContentHandler, RemirrorJSON } from 'remirror';
 import type { TocInfo } from './extensions/index';
 
 export interface UseCommonEditorAttrs {
@@ -44,7 +44,10 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
   let newContent = attrs.content;
   if (typeof newContent == 'string') {
     try {
-      newContent = JSON.parse(newContent);
+      newContent = JSON.parse(newContent) as RemirrorJSON;
+      if (newContent.type == undefined) {
+        newContent.type = "doc";
+      }
     } catch (err) { }
   }
   const onError: InvalidContentHandler = useCallback(({ json, invalidContent, transformers }) => {

@@ -47,7 +47,7 @@ class NoticeStore {
     const unlistenFn = await listen<NoticeType.AllNotice>('notice', (ev) => {
       try {
         const notice = ev.payload
-        console.log(notice);
+        console.log("notice", notice);
         if (notice.ProjectNotice !== undefined) {
           this.processProjectNotice(notice.ProjectNotice);
         } else if (notice.ProjectDocNotice !== undefined) {
@@ -345,6 +345,10 @@ class NoticeStore {
     } else if (notice.UpdateShortNoteNotice !== undefined) {
       if (notice.UpdateShortNoteNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.updateShortNote(notice.UpdateShortNoteNotice.project_id, notice.UpdateShortNoteNotice.member_user_id);
+      }
+    } else if (notice.UpdateAlarmStatNotice !== undefined) {
+      if (notice.UpdateAlarmStatNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        this.rootStore.projectStore.addAlarmVersion();
       }
     }
   }

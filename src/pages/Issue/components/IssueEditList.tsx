@@ -19,7 +19,7 @@ import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { EditSelect } from '../../../components/EditCell/EditSelect';
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
 import { EditText } from '@/components/EditCell/EditText';
-import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime, updateTitle } from './utils';
+import { cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime, updateTitle } from './utils';
 import { EditDate } from '@/components/EditCell/EditDate';
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
@@ -157,6 +157,22 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
           }, projectName);
         }}><ExportOutlined style={{ fontSize: "16px" }} /></a>);
       }
+    },
+    {
+      title: "截止时间",
+      dataIndex: "dead_line_time",
+      width: 120,
+      align: 'center',
+      render: (_, record) => <EditDate
+        editable={projectStore.isAdmin}
+        hasTimeStamp={record.has_dead_line_time}
+        timeStamp={record.dead_line_time}
+        onChange={async (value) => {
+          if (value === undefined) {
+            return await cancelDeadLineTime(userStore.sessionId, record.project_id, record.issue_id);
+          }
+          return await updateDeadLineTime(userStore.sessionId, record.project_id, record.issue_id, value);
+        }} showEditIcon={true} />,
     },
     {
       title: `级别`,
@@ -410,6 +426,16 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         }} showEditIcon={true} />
     },
     {
+      title: "重复打开次数",
+      dataIndex: "re_open_count",
+      width: 100,
+    },
+    {
+      title: "依赖我的任务数",
+      dataIndex: "depend_me_count",
+      width: 120,
+    },
+    {
       title: `${getIssueText(pathname)}创建者`,
       dataIndex: 'create_display_name',
       width: 100,
@@ -418,6 +444,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         return v ? v : '-';
       },
     },
+
   ];
   const columns: ColumnsTypes[] = columnsList.filter((item: ColumnsTypes) => !item.hideInTable);
 
@@ -426,7 +453,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       style={{ marginTop: '8px' }}
       rowKey={'issue_id'}
       columns={columns}
-      scroll={{ x: 1300, y: `${isFilter ? 'calc(100vh - 360px)' : 'calc(100vh - 302px)'}` }}
+      scroll={{ x: 1450, y: `${isFilter ? 'calc(100vh - 360px)' : 'calc(100vh - 302px)'}` }}
       dataSource={dataSource}
       pagination={false}
     />

@@ -28,7 +28,7 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
   const { editor, editorRef } = useSimpleEditor("请输入项目描述");
 
   const submit = async (values: { project_name: string }) => {
-    const content = editorRef.current?.getContent() ?? {};
+    const content = editorRef.current?.getContent() ?? { type: "doc" };
 
     const data: BasicProjectInfo = {
       project_name: values.project_name,

@@ -19,12 +19,14 @@ import SearchBar from '../SearchBar';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_NONE } from '@/api/project';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
+import AlarmHeader from './AlarmHeader';
 
-const SettingBtn = observer(() => {
+const RightFloat = observer(() => {
   const projectStore = useStores('projectStore');
 
   return (
-    <div className={s.setting_btn_wrap}>
+    <div className={s.right_float}>
+      <AlarmHeader />
       {projectStore.isAdmin && (
         <Tooltip title="项目设置" placement='left' color='orange' overlayInnerStyle={{ color: 'black', marginTop: "10px" }} open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}>
           <Button type="link" className={s.setting_btn} onClick={e => {
@@ -143,12 +145,12 @@ const TopNav = () => {
       </div>
       <span />
       <div className={s.right}>
-        {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><SettingBtn /></>)}
-        {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><SettingBtn /></>)}
-        {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>电子书库</div><SearchBar /><SettingBtn /></>)}
+        {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><RightFloat /></>)}
+        {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
+        {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>电子书库</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<>
           {projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE && <SearchBar />}
-          <SettingBtn />
+          <RightFloat />
         </>)}
 
       </div>
