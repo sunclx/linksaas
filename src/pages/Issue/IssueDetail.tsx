@@ -37,6 +37,7 @@ const IssueDetail = () => {
     const [nextIssueId, setNextIssueId] = useState("");
 
     const loadIssue = async () => {
+        setIssue(null);
         const res = await request(get_issue(userStore.sessionId, projectStore.curProjectId, issueId));
         if (res) {
             setIssue(res.info);
@@ -62,6 +63,10 @@ const IssueDetail = () => {
         calcPreAndNext();
         loadIssue();
     }, [issueId]);
+
+    useEffect(() => {
+        setIssueId(state.issueId);
+    }, [state.issueId]);
 
     return (<CardWrap>
         {issue != null && (<DetailsNav title={
@@ -119,7 +124,7 @@ const IssueDetail = () => {
         }
         <div className={s.content_wrap}>
             <div className={s.content_left}>
-                {issue != null && <IssueDetailLeft issue={issue} onUpdate={() => { loadIssue() }}/>}
+                {issue != null && <IssueDetailLeft issue={issue} onUpdate={() => { loadIssue() }} />}
             </div>
             <div className={s.content_rigth}>
                 {issue != null && <IssueDetailRight issue={issue} onUpdate={() => { loadIssue() }} dataVersion={dataVersion} setShowStageModal={() => setShowStageModal(true)} />}

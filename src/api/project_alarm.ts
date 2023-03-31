@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
+import type { ISSUE_TYPE } from './project_issue';
 
 
 export type ALARM_TYPE = number;
@@ -27,26 +28,32 @@ export type Config = {
 
 export type IssueDependHitInfo = {
     issue_id: string;
+    issue_type: ISSUE_TYPE;
 };
 
 export type IssueDependAlertInfo = {
     issue_id: string;
+    issue_type: ISSUE_TYPE;
 };
 
 export type IssueDelayHitInfo = {
     issue_id: string;
+    issue_type: ISSUE_TYPE;
 };
 
 export type IssueDelayAlertInfo = {
     issue_id: string;
+    issue_type: ISSUE_TYPE;
 };
 
 export type IssueReOpenHitInfo = {
     issue_id: string;
+    issue_type: ISSUE_TYPE;
 };
 
 export type IssueReOpenAlertInfo = {
     issue_id: string;
+    issue_type: ISSUE_TYPE;
 };
 
 export type ScriptErrorHitInfo = {
@@ -122,6 +129,8 @@ export type GetAlarmStateResponse = {
 export type ListAlarmRequest = {
     session_id: string;
     project_id: string;
+    include_hit: boolean;
+    include_alert: boolean;
     offset: number;
     limit: number;
 };
