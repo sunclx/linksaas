@@ -107,7 +107,8 @@ const CreateModal = () => {
                     </div>
                 </Form.Item>
                 <Form.Item label="标签">
-                    <Select mode="multiple" onChange={value => setTagIdList(value as string[])}>
+                    <Select mode="multiple" onChange={value => setTagIdList(value as string[])}
+                        placement="topLeft" placeholder="请选择对应的知识点标签">
                         {tagList.map(item => (
                             <Select.Option key={item.tag_id} value={item.tag_id}>
                                 <span style={{ backgroundColor: item.basic_info.tag_color, padding: "0px 10px" }}>{item.basic_info.tag_name}</span>
@@ -116,7 +117,8 @@ const CreateModal = () => {
                     </Select>
                 </Form.Item>
                 <Form.Item label="关键词">
-                    <Select mode="tags" onChange={value => setKeywordList((value as string[]).map(item => item.toLowerCase()))}>
+                    <Select mode="tags" onChange={value => setKeywordList((value as string[]).map(item => item.toLowerCase()))}
+                        placement="topLeft" placeholder="请设置知识点相关的关键词">
                         {ideaStore.keywordList.map(keyword => (
                             <Select.Option key={keyword} value={keyword}>{keyword}</Select.Option>
                         ))}

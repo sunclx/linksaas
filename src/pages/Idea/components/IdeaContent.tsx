@@ -264,7 +264,12 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                     {inEditTag == true && (
                         <>
                             <Select value={tagIdList} mode="multiple" style={{ width: "100%" }}
-                                onChange={value => setTagIdList(value as string[])}>
+                                onChange={value => {
+                                    if ((value as string[]).length > 0) {
+                                        setTagIdList(value as string[]);
+                                    }
+                                }}
+                                placement="topLeft">
                                 {ideaStore.tagList.map(tag => (
                                     <Select.Option key={tag.tag_id} value={tag.tag_id}>
                                         <span style={{ backgroundColor: tag.basic_info.tag_color, padding: "0px 4px" }}>{tag.basic_info.tag_name}</span>
@@ -305,7 +310,12 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                         <>
                             <Select value={keywordList} mode="tags"
                                 style={{ width: "100%" }}
-                                onChange={value => setKeywordList((value as string[]).map(item => item.toLowerCase()))}>
+                                onChange={value => {
+                                    if ((value as string[]).length > 0) {
+                                        setKeywordList((value as string[]).map(item => item.toLowerCase()));
+                                    }
+                                }}
+                                placement="topLeft">
                                 {ideaStore.keywordList.map(keyword => (
                                     <Select.Option key={keyword} value={keyword}>{keyword}</Select.Option>
                                 ))}
