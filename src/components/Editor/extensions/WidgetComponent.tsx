@@ -6,7 +6,6 @@ import { useCommands } from '@remirror/react';
 export type WidgetProps = NodeViewComponentProps & {
   widgetType: widgets.WIDGET_TYPE;
   widgetData: unknown;
-  collapse?: boolean;
 };
 
 export const Widget: React.FC<WidgetProps> = (props) => {
@@ -24,7 +23,6 @@ export const Widget: React.FC<WidgetProps> = (props) => {
         widgetData: data,
       });
     },
-    collapse: props.collapse || false,
   };
   switch (props.widgetType) {
     case widgets.WIDGET_TYPE_FUNNEL: {

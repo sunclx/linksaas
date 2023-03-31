@@ -96,7 +96,7 @@ const ContentPanel: React.FC<ContentPanelProps> = (props) => {
                 </>
             }>
             {inEdit == false && content == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-            {inEdit == false && content != null && <ReadOnlyEditor content={content.content} collapse={false} />}
+            {inEdit == false && content != null && <ReadOnlyEditor content={content.content} />}
             <div style={{ display: inEdit ? "block" : "none" }}>
                 {editor}
             </div>
