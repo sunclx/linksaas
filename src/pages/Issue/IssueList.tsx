@@ -14,8 +14,8 @@ import Filtration from "./components/Filtration";
 import type { FilterDataType } from "./components/Filtration";
 import { useSetState } from 'ahooks';
 import IssueEditList from "./components/IssueEditList";
-import { ASSGIN_USER_ALL, ASSGIN_USER_CHECK, ASSGIN_USER_EXEC, SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC, list as list_issue, get as get_issue, list_id as list_issue_id } from "@/api/project_issue";
-import type { IssueInfo, ListRequest, ListParam } from "@/api/project_issue";
+import { ASSGIN_USER_ALL, ASSGIN_USER_CHECK, ASSGIN_USER_EXEC, SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC, list as list_issue, get as get_issue, list_id as list_issue_id, ISSUE_STATE_PROCESS_OR_CHECK, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK } from "@/api/project_issue";
+import type { IssueInfo, ListRequest, ListParam, ISSUE_STATE } from "@/api/project_issue";
 import { request } from '@/utils/request';
 import StageModel from "./components/StageModel";
 import Pagination from "@/components/Pagination";
@@ -49,9 +49,17 @@ const IssueList = () => {
     const filterState: LinkIssueListState | undefined = location.state as LinkIssueListState | undefined;
     const [activeVal, setActiveVal] = useState<ISSUE_TAB_LIST_TYPE>(filterState ? ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL : ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME);
     const [isFilter, setIsFilter] = useState(true);
+    let defaultStateList: ISSUE_STATE[] = [];
+    if (filterState !== undefined && filterState.stateList !== undefined) {
+        defaultStateList = filterState.stateList;
+    } else {
+        if (activeVal == ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME) {
+            defaultStateList = [ISSUE_STATE_PROCESS_OR_CHECK];
+        }
+    }
     const [filterData, setFilterData] = useSetState<FilterDataType>({
         priority_list: [],
-        state_list: filterState?.stateList ?? [],
+        state_list: defaultStateList,
         exec_user_id_list: filterState?.execUserIdList ?? [],
         check_user_id_list: filterState?.checkUserIdList ?? [],
         software_version_list: [],
@@ -85,11 +93,18 @@ const IssueList = () => {
     };
 
     const loadIssueList = async () => {
+        let newFilterState = filterData.state_list;
+        if (newFilterState !== undefined && newFilterState.length > 0 && newFilterState.includes(ISSUE_STATE_PROCESS_OR_CHECK)) {
+            newFilterState = [ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK];
+        }
+        if (newFilterState == undefined) {
+            newFilterState = [];
+        }
         const listParam: ListParam = {
             filter_by_issue_type: true,
             issue_type: getIssue_type(location.pathname),
             filter_by_state: !!filterData.state_list?.length,
-            state_list: filterData.state_list!, //阶段
+            state_list: newFilterState, //阶段
             filter_by_create_user_id: activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_CREATE,
             create_user_id_list: [userStore.userInfo.userId],
             filter_by_assgin_user_id:
@@ -206,7 +221,20 @@ const IssueList = () => {
                     <Tabs
                         activeVal={activeVal}
                         list={tabList}
-                        onChang={setActiveVal}
+                        onChang={value => {
+                            setActiveVal(value);
+                            if (value == ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME) {
+                                setFilterData({
+                                    ...filterData,
+                                    state_list: [ISSUE_STATE_PROCESS_OR_CHECK],
+                                });
+                                setIsFilter(false);
+                                setTimeout(() => {
+                                    setIsFilter(true);
+                                }, 200);
+                            }
+
+                        }}
                         isFilter={isFilter}
                         setIsFilter={setIsFilter}
                     />

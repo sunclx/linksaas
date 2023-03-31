@@ -41,6 +41,7 @@ export type ProjectEvCfg = {
     remove_subscribe: boolean;
     watch_channel: boolean;
     un_watch_channel: boolean;
+    set_alarm_config: boolean;
 };
 
 export type BookShelfEvCfg = {
@@ -121,6 +122,8 @@ export type IssueEvCfg = {
     remove_sub_issue: boolean;
     add_dependence: boolean;
     remove_dependence: boolean;
+    set_dead_line_time: boolean;
+    cancel_dead_line_time: boolean;
 };
 
 export type RobotEvCfg = {

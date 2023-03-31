@@ -33,14 +33,14 @@ const DocComment: React.FC = () => {
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
     }));
-    if(res){
+    if (res) {
       setCommentCount(res.total_count);
       setCommentList(res.comment_list);
     }
   };
 
   const addComment = async () => {
-    const content = editorRef.current?.getContent() ?? {};
+    const content = editorRef.current?.getContent() ?? { type: "doc" };
     const res = await request(
       prjDocApi.add_comment({
         session_id: userStore.sessionId,

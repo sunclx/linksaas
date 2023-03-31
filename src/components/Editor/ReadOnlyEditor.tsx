@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Remirror, useRemirror, EditorComponent } from '@remirror/react';
 import type { RemirrorContentType } from '@remirror/core';
 import { getExtensions } from './extensions';
-import type { InvalidContentHandler } from 'remirror';
+import type { InvalidContentHandler, RemirrorJSON } from 'remirror';
 import { AllStyledComponent } from '@remirror/styles/emotion';
 import { ThemeProvider } from '@remirror/react';
 import { observer } from 'mobx-react';
@@ -25,8 +25,12 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) =>
   if (typeof content == 'string') {
     if (content.startsWith('{')) {
       try {
-        content = JSON.parse(content);
-      } catch (err) { }
+        content = JSON.parse(content) as RemirrorJSON;
+        if (content.type == undefined) {
+          content.type = "doc";
+        }
+      } catch (err) {
+      }
     }
   }
 

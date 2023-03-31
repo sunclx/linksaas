@@ -93,6 +93,43 @@ export async function cancelStartTime(sessionId: string, projectId: string, issu
 }
 
 
+export async function updateDeadLineTime(sessionId: string, projectId: string, issueId: string, deadLineTime: number): Promise<boolean> {
+    try {
+        const res = await issueApi.set_dead_line_time({
+            session_id: sessionId,
+            project_id: projectId,
+            issue_id: issueId,
+            dead_line_time: deadLineTime,
+        });
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+
+export async function cancelDeadLineTime(sessionId: string, projectId: string, issueId: string): Promise<boolean> {
+    try {
+        const res = await issueApi.cancel_dead_line_time({
+            session_id: sessionId,
+            project_id: projectId,
+            issue_id: issueId,
+        });
+        if (res.code == 0) {
+            return true
+        }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+
 export async function updateEndTime(sessionId: string, projectId: string, issueId: string, endTime: number): Promise<boolean> {
     try {
         const res = await issueApi.set_end_time(sessionId, projectId, issueId, endTime);

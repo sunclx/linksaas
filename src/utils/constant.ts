@@ -85,6 +85,10 @@ export const issueState = {
     label: '关闭',
     value: issueApi.ISSUE_STATE_CLOSE,
   },
+  [issueApi.ISSUE_STATE_PROCESS_OR_CHECK]: {
+    label: '处理或验收',
+    value: issueApi.ISSUE_STATE_PROCESS_OR_CHECK,
+  }
 };
 
 export const taskPriority = {

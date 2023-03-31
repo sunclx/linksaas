@@ -77,6 +77,11 @@ export namespace project {
     member_user_id: string;
   };
 
+  export type UpdateAlarmStatNotice = {
+    project_id: string;
+  };
+
+
   export type AllNotice = {
     UpdateProjectNotice?: UpdateProjectNotice;
     RemoveProjectNotice?: RemoveProjectNotice;
@@ -90,12 +95,13 @@ export namespace project {
     RemoveChannelMemberNotice?: RemoveChannelMemberNotice;
     NewMsgNotice?: NewMsgNotice;
     UpdateMsgNotice?: UpdateMsgNotice;
-    UserOnlineNotice?: UserOnlineNotice,
-    UserOfflineNotice?: UserOfflineNotice,
-    NewEventNotice?: NewEventNotice,
-    SetMemberRoleNotice?: SetMemberRoleNotice,
-    ReminderNotice?: ReminderNotice,
-    UpdateShortNoteNotice?: UpdateShortNoteNotice,
+    UserOnlineNotice?: UserOnlineNotice;
+    UserOfflineNotice?: UserOfflineNotice;
+    NewEventNotice?: NewEventNotice;
+    SetMemberRoleNotice?: SetMemberRoleNotice;
+    ReminderNotice?: ReminderNotice;
+    UpdateShortNoteNotice?: UpdateShortNoteNotice;
+    UpdateAlarmStatNotice?: UpdateAlarmStatNotice;
   };
 }
 

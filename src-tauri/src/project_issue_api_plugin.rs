@@ -1194,6 +1194,61 @@ async fn set_check_award<R: Runtime>(
     }
 }
 
+
+#[tauri::command]
+async fn set_dead_line_time<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetDeadLineTimeRequest,
+) -> Result<SetDeadLineTimeResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.set_dead_line_time(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_dead_line_time_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_dead_line_time".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
+#[tauri::command]
+async fn cancel_dead_line_time<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelDeadLineTimeRequest,
+) -> Result<CancelDeadLineTimeResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.cancel_dead_line_time(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_dead_line_time_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("cancel_dead_line_time".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 pub struct ProjectIssueApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -1243,6 +1298,8 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 list_depend_me,
                 set_exec_award,
                 set_check_award,
+                set_dead_line_time,
+                cancel_dead_line_time,
             ]),
         }
     }
