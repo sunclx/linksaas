@@ -148,7 +148,9 @@ const ViewServerScript: React.FC<WidgetProps> = (props) => {
     };
 
     useEffect(() => {
-        getSuiteInfoKey();
+        if (widgetData.scriptSuiteId != "") {
+            getSuiteInfoKey();
+        }
     }, [widgetData.scriptSuiteId]);
 
     return (

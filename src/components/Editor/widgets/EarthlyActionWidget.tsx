@@ -224,8 +224,12 @@ const ViewEarthlyAction: React.FC<WidgetProps> = (props) => {
     };
 
     useEffect(() => {
-        loadRepoInfo();
-        loadActionInfo();
+        if (widgetData.repoId != "") {
+            loadRepoInfo();
+        }
+        if (widgetData.actionId != "") {
+            loadActionInfo();
+        }
     }, []);
 
     return (
