@@ -633,6 +633,16 @@ const AddTable = () => {
   );
 };
 
+const AddDashboard = () => {
+  const commands = useCommands();
+
+  return (
+    <Tooltip title="信息面板">
+      <div className="dashboard-btn" onClick={() => commands.insertDashboard()} />
+    </Tooltip>
+  );
+};
+
 export interface NewCommItemParam {
   fsId: string;
   thumbWidth: number;
@@ -664,6 +674,7 @@ export const newCommItem = (param: NewCommItemParam) => {
         ...items,
         <AddCode key="code" />,
         <AddTable key="table" />,
+        <AddDashboard key="dashboard" />
       ]}
       separator={true} />
   );

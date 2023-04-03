@@ -3,6 +3,7 @@ import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 import { createBrowserHistory } from 'history';
 import moment from 'moment';
 import { BUG_DETAIL_SUFFIX, APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX, APP_PROJECT_KB_BOOK_SHELF_PATH } from './constant';
+import { nanoid } from 'nanoid'
 
 export const goBack = (/*history: { goBack: () => void }*/) => {
   createBrowserHistory().goBack();
@@ -37,7 +38,7 @@ export const getIssueDetailUrl = (pathname: string): string => {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_DETAIL_SUFFIX;
   } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_BOOK_SHELF_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_BOOK_SHELF_PATH + BUG_DETAIL_SUFFIX;
- 
+
   }
   return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_DETAIL_SUFFIX;
 };
@@ -47,7 +48,7 @@ export const getIssueCreateUrl = (pathname: string): string => {
     return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_CREATE_SUFFIX;
   } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_CREATE_SUFFIX;
-  } else if(pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
+  } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_BOOK_SHELF_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_BOOK_SHELF_PATH + BUG_CREATE_SUFFIX;
   }
   return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_CREATE_SUFFIX;
@@ -110,9 +111,7 @@ export const arrayToObject = (
   return obj;
 };
 
-let _globalId = 0;
 
 export const uniqId = () => {
-  _globalId++;
-  return _globalId.toFixed(0);
+  return nanoid();
 };

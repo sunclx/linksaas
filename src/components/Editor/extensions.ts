@@ -16,6 +16,7 @@ import {
   CodeExtension,
   KeywordExtension,
   TocExtension,
+  DashboardExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -71,6 +72,7 @@ export const getExtensions = (param?: {
     new IframeExtension(),
     new CodeExtension(),
     new MarkdownExtension({ copyAsMarkdown: false }),
+    new DashboardExtension(),
 
     // Marks
     new HeadingExtension({ defaultLevel: 3, levels: [1, 2, 3, 4, 5, 6] }),

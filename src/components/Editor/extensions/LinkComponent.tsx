@@ -149,7 +149,7 @@ export type EditLinkProps = NodeViewComponentProps & {
 export const EditLink: React.FC<EditLinkProps> = (props) => {
   useEffect(() => {
     props.updateAttributes({ link: props.link });
-  });
+  }, []);
 
   return (
     <Link

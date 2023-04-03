@@ -26,11 +26,11 @@ export class LinkExtension extends NodeExtension<LinkOptions> {
     }
     createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): NodeExtensionSpec {
         return {
+            ...override,
             inline: true,
             selectable: false,
             draggable: false,
             atom: true,
-            ...override,
             attrs: {
                 ...extra.defaults(),
                 link: { default: new LinkNoneInfo("") },
