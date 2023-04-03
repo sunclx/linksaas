@@ -623,6 +623,15 @@ const AddCode = () => {
   );
 };
 
+const AddTable = () => {
+  const commands = useCommands();
+
+  return (
+    <Tooltip title="表格">
+      <div className="table-btn" onClick={() => commands.createTable({ withHeaderRow: false })} />
+    </Tooltip>
+  );
+};
 
 export interface NewCommItemParam {
   fsId: string;
@@ -654,6 +663,7 @@ export const newCommItem = (param: NewCommItemParam) => {
       items={[
         ...items,
         <AddCode key="code" />,
+        <AddTable key="table" />,
       ]}
       separator={true} />
   );

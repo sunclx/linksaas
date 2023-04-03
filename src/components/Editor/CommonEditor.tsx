@@ -3,9 +3,8 @@ import { Remirror, useRemirror, EditorComponent } from '@remirror/react';
 import { ThemeProvider } from '@remirror/react';
 import Toolbar from './components/Toolbar';
 import FloatToolBar from './components/FloatToolbar';
-
 import { AllStyledComponent } from '@remirror/styles/emotion';
-
+import { TableComponents} from '@remirror/extension-react-tables';
 import {
   historyItem,
   clipboardItem,
@@ -106,6 +105,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
           )}
           <ImperativeHandle ref={editorRef} />
           <EditorComponent />
+          <TableComponents enableTableCellMenu={false}/>
         </Remirror>
       </AllStyledComponent>
     </ThemeProvider>
