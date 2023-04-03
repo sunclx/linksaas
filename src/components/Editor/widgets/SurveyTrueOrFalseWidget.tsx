@@ -73,7 +73,7 @@ const ViewSurveyTrueOrFalse: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <h2 className={style.title}>判断题</h2>
         <p className={style.content}>{data.content}</p>
         <div>

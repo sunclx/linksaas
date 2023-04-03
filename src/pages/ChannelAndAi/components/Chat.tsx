@@ -9,17 +9,21 @@ import {
   change_file_fs,
   get_reminder_info,
 } from '@/components/Editor';
-import { Modal } from 'antd';
+import { Modal,message } from 'antd';
 import { request } from '@/utils/request';
 import { send_msg, update_msg, MSG_LINK_NONE, LIST_CHAN_SCOPE_INCLUDE_ME } from '@/api/project_channel';
 import { FILE_OWNER_TYPE_CHANNEL } from '@/api/fs';
-import SendMsgBtn from './SendMsgBtn';
+import SendMsgBtn, { SEND_ACTION } from './SendMsgBtn';
+import { useHistory } from 'react-router-dom';
 
 const ChannelHeader = observer(() => {
+  const history = useHistory();
+
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
   const chatMsgStore = useStores('chatMsgStore');
   const userStore = useStores('userStore');
+  const linkAuxStore = useStores('linkAuxStore');
 
   const editorParam = {
     content: '',
@@ -53,7 +57,7 @@ const ChannelHeader = observer(() => {
     }, 200);
   }, [chatMsgStore.getEditMsg()]);
 
-  const sendContent = async () => {
+  const sendContent = async (action: SEND_ACTION) => {
     const chatJson = sendEditor.editorRef.current?.getContent() || {
       type: 'doc',
     };
@@ -80,6 +84,16 @@ const ChannelHeader = observer(() => {
       }),
     );
     sendEditor.editorRef.current?.clearContent();
+    if (action != SEND_ACTION.SEND_ACTION_NULL){
+      message.info("发送消息成功");
+    }
+    if (action == SEND_ACTION.SEND_ACTION_CREATE_REQUIRE_MENT) {
+      linkAuxStore.goToCreateRequirement(JSON.stringify(chatJson), projectStore.curProjectId, "", history);
+    } else if (action == SEND_ACTION.SEND_ACTION_CREATE_TASK) {
+      linkAuxStore.goToCreateTask(JSON.stringify(chatJson), projectStore.curProjectId, history);
+    } else if (action == SEND_ACTION.SEND_ACTION_CREATE_BUG) {
+      linkAuxStore.goToCreateBug(JSON.stringify(chatJson), projectStore.curProjectId, history);
+    }
   };
 
   const updateContent = async () => {
@@ -118,7 +132,7 @@ const ChannelHeader = observer(() => {
         channelStore.curChannel?.channelInfo.closed == false && (
           <div className={styles.chatInput + ' _chatContext'}>
             {sendEditor.editor}
-            <SendMsgBtn editorRef={sendEditor.editorRef} onSend={() => sendContent()} />
+            <SendMsgBtn editorRef={sendEditor.editorRef} onSend={action => sendContent(action)} />
           </div>
         )}
       {chatMsgStore.getEditMsg() != undefined && (

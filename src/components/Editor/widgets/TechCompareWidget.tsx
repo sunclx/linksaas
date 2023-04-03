@@ -143,7 +143,7 @@ const ViewTechCompare: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;
   return (
     <ErrorBoundary>
-      <EditorWrap className={s.editor_wrap} collapse={props.collapse}>
+      <EditorWrap className={s.editor_wrap}>
         <div>
           {data.title && (
             <Input

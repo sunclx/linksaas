@@ -36,7 +36,6 @@ import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 
 export const getExtensions = (param?: {
   setShowRemind?: (value: boolean) => void;
-  collapse?: boolean;
   fsId: string;
   thumbWidth: number;
   thumbHeight: number;
@@ -64,10 +63,10 @@ export const getExtensions = (param?: {
     new BulletListExtension(),
     new OrderedListExtension(),
     new TaskListExtension(),
-    new WidgetExtension({ collapse: param?.collapse }),
+    new WidgetExtension(),
     new ReminderUserExtension({ setShow: param?.setShowRemind }),
-    new IframeExtension({ collapse: param?.collapse }),
-    new CodeExtension({ collapse: param?.collapse }),
+    new IframeExtension(),
+    new CodeExtension(),
     new MarkdownExtension({ copyAsMarkdown: false }),
 
     // Marks

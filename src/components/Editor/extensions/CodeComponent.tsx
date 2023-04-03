@@ -358,13 +358,12 @@ export const EditCode: React.FC<EditCodeProps> = (props) => {
 export type ViewCodeProps = NodeViewComponentProps & {
   lang: string;
   code: string;
-  collapse?: boolean;
 };
 
 export const ViewCode: React.FC<ViewCodeProps> = (props) => {
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <CodeEditor
           value={props.code}
           language={props.lang}

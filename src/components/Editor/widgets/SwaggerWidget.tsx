@@ -50,7 +50,7 @@ const ViewSwagger: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <SwaggerUI spec={data.spec} />
       </EditorWrap>
     </ErrorBoundary>

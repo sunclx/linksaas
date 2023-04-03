@@ -95,7 +95,7 @@ const ViewMarkmap: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <svg ref={graphRef} style={{ height: '400px', width: '100%' }} />
       </EditorWrap>
     </ErrorBoundary>

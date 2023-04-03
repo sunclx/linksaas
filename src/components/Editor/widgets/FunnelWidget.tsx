@@ -234,7 +234,7 @@ const ViewFunnel: React.FC<WidgetProps> = (props) => {
   const itemHeight = Math.round(360 / itemLength);
   return (
     <ErrorBoundary>
-      <EditorWrap className={s.editor_wrap} collapse={props.collapse}>
+      <EditorWrap className={s.editor_wrap}>
         <div className={s.funnel_result}>
           {data.title && <div className={s.main_tit}>标题:{data.title}</div>}
           <ul>

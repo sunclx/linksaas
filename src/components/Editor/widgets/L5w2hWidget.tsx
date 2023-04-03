@@ -197,7 +197,7 @@ const View5w2h: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;
   return (
     <ErrorBoundary>
-      <EditorWrap className={s.editor_wrap} collapse={props.collapse}>
+      <EditorWrap className={s.editor_wrap}>
         {data.title && <h2 className={s.l5w2h_main_tit}>{data.title}</h2>}
         <div className={classNames(s.l5w2h_wrap, s.result)}>
           <div className={s.l5w2h_item}>

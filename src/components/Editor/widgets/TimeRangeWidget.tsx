@@ -37,7 +37,7 @@ const EditTimeRange: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap onChange={() => props.removeSelf()} collapse={props.collapse}>
+      <EditorWrap onChange={() => props.removeSelf()}>
         <div className={s.item_wrap}>
           <label className={s.title_label}>时间区间标题</label>
           <Input

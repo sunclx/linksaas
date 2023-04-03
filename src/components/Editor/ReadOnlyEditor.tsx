@@ -13,7 +13,6 @@ import type { TocInfo } from './extensions/index';
 
 export type ReadOnlyEditorProps = {
   content: RemirrorContentType;
-  collapse?: boolean;
   keywordList?: string[];
   keywordCallback?: (kwList: string[]) => void;
   tocCallback?: (tocList: TocInfo[]) => void;
@@ -21,7 +20,6 @@ export type ReadOnlyEditorProps = {
 
 export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) => {
   let content = props.content;
-  const collapse = props.collapse || false;
   if (typeof content == 'string') {
     if (content.startsWith('{')) {
       try {
@@ -40,7 +38,7 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) =>
   }, []);
 
   const extensions = getExtensions({
-    collapse, fsId: "",
+    fsId: "",
     thumbWidth: 200,
     thumbHeight: 150,
     ownerType: FILE_OWNER_TYPE_NONE,
