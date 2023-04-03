@@ -35,6 +35,8 @@ import {
   WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
   WIDGET_TYPE_SPRIT_REF,
+  WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
+  WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
 } from '../widgets/index';
 import type { HeadingExtensionAttributes } from '@remirror/extension-heading';
 import { redoDepth, undoDepth } from '@remirror/pm/history';
@@ -384,6 +386,20 @@ const ContentWidget = observer(() => {
             {
               key: WIDGET_TYPE_FUNNEL,
               label: '漏斗模型',
+            },
+          ],
+        },
+        {
+          key: "robot",
+          label: "自动化",
+          children: [
+            {
+              key: WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
+              label: "服务端脚本",
+            },
+            {
+              key: WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
+              label: "earthly脚本",
             },
           ],
         },

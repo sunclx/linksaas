@@ -15,6 +15,7 @@ export { MarkmapWidget } from './MarkmapWidget';
 export { SurveyChoiceWidget } from './SurveyChoiceWidget';
 export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
 export { RequirementRefWidget } from "./RequirementRefWidget";
+export { ServerScriptWidget } from "./ServerScriptWidget";
 
 import { funnelWidgetInitData } from './FunnelWidget';
 import { taskRefWidgetInitData, bugRefWidgetInitData } from './IssueRefWidget';
@@ -32,6 +33,7 @@ import { markmapWidgetInitData } from './MarkmapWidget';
 import { surveyChoiceWidgetInitData } from './SurveyChoiceWidget';
 import { surveyTrueOrFlaseWidgetInitData } from './SurveyTrueOrFalseWidget';
 import { requirementRefWidgetInitData } from './RequirementRefWidget';
+import { serverScriptWidgetInitData } from './ServerScriptWidget';
 
 export type WIDGET_TYPE = string;
 export const WIDGET_TYPE_FUNNEL: WIDGET_TYPE = "funnel";//漏斗分析法
@@ -51,7 +53,8 @@ export const WIDGET_TYPE_MERMAID: WIDGET_TYPE = "mermaid";
 export const WIDGET_TYPE_MARK_MAP: WIDGET_TYPE = "markMap";
 export const WIDGET_TYPE_SURVEY_CHOICE: WIDGET_TYPE = "surveyChoice"; //问卷选择题
 export const WIDGET_TYPE_SURVEY_TRUE_OR_FALSE: WIDGET_TYPE = "surveyTrueOrFalse"; //问卷对错题
-
+export const WIDGET_TYPE_ROBOT_SERVER_SCRIPT: WIDGET_TYPE = "serverScript"; //服务端脚本
+export const WIDGET_TYPE_ROBOT_EARTHLY_ACTION: WIDGET_TYPE = "earthlyAction"; //earthly命令
 
 export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_FUNNEL,
@@ -71,6 +74,8 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_MARK_MAP,
     WIDGET_TYPE_SURVEY_CHOICE,
     WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
+    WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
+    WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
 ];
 
 
@@ -93,3 +98,5 @@ WidgetInitDataMap.set(WIDGET_TYPE_MERMAID, mermaidWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_MARK_MAP, markmapWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_CHOICE, surveyChoiceWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_TRUE_OR_FALSE, surveyTrueOrFlaseWidgetInitData);
+WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_SERVER_SCRIPT, serverScriptWidgetInitData);
+WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_EARTHLY_ACTION, {}); //FIXME
