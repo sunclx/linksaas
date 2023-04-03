@@ -16,6 +16,7 @@ export { SurveyChoiceWidget } from './SurveyChoiceWidget';
 export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
 export { RequirementRefWidget } from "./RequirementRefWidget";
 export { ServerScriptWidget } from "./ServerScriptWidget";
+export { EarthlyActionWidget } from "./EarthlyActionWidget";
 
 import { funnelWidgetInitData } from './FunnelWidget';
 import { taskRefWidgetInitData, bugRefWidgetInitData } from './IssueRefWidget';
@@ -34,6 +35,7 @@ import { surveyChoiceWidgetInitData } from './SurveyChoiceWidget';
 import { surveyTrueOrFlaseWidgetInitData } from './SurveyTrueOrFalseWidget';
 import { requirementRefWidgetInitData } from './RequirementRefWidget';
 import { serverScriptWidgetInitData } from './ServerScriptWidget';
+import { earthlyActionWidgetInitData } from './EarthlyActionWidget';
 
 export type WIDGET_TYPE = string;
 export const WIDGET_TYPE_FUNNEL: WIDGET_TYPE = "funnel";//漏斗分析法
@@ -99,4 +101,4 @@ WidgetInitDataMap.set(WIDGET_TYPE_MARK_MAP, markmapWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_CHOICE, surveyChoiceWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_TRUE_OR_FALSE, surveyTrueOrFlaseWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_SERVER_SCRIPT, serverScriptWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_EARTHLY_ACTION, {}); //FIXME
+WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_EARTHLY_ACTION, earthlyActionWidgetInitData);

@@ -11,7 +11,7 @@ import { request } from '@/utils/request';
 import { useStores } from '@/hooks';
 import ExecModal from '@/pages/Script/components/ExecModal';
 import { useHistory } from 'react-router-dom';
-import { LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 
 interface WidgetData {
     scriptSuiteId: string;
@@ -176,7 +176,11 @@ const ViewServerScript: React.FC<WidgetProps> = (props) => {
                 {showExecModal == true && suiteInfo != null && (
                     <ExecModal scriptSuiteId={widgetData.scriptSuiteId} scriptSuiteName={widgetData.scriptSuiteName}
                         execParamDef={suiteInfo.exec_param_def}
-                        onCancel={() => setShowExecModal(false)} />
+                        onCancel={() => setShowExecModal(false)}
+                        onOk={(execId: string) => {
+                            setShowExecModal(false);
+                            linkAuxStore.goToLink(new LinkScriptExecInfo("", projectStore.curProjectId, widgetData.scriptSuiteId, execId), history);
+                        }} />
                 )}
             </EditorWrap>
         </ErrorBoundary>
