@@ -25,6 +25,7 @@ mod local_api;
 mod notice_decode;
 mod org_admin_api_plugin;
 mod project_admin_api_plugin;
+mod project_alarm_api_plugin;
 mod project_api_plugin;
 mod project_app_api_plugin;
 mod project_appraise_api_plugin;
@@ -53,7 +54,6 @@ mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
 mod user_kb_api_plugin;
-mod project_alarm_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -249,7 +249,7 @@ fn main() {
         .add_item(CustomMenuItem::new("check_update", "检查更新"))
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("exit_app", "退出"));
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
         .setup(|_app| {
             return tauri::async_runtime::block_on(async {
@@ -421,6 +421,38 @@ fn main() {
                 }
             }
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building  tauri application");
+    app.run(|app_handle, event| match event {
+        tauri::RunEvent::Updater(updater_event) => {
+            let win = app_handle.get_window("main");
+            match updater_event {
+                tauri::UpdaterEvent::DownloadProgress {
+                    chunk_length,
+                    content_length,
+                } => {
+                    if win.is_some() && content_length.is_some() {
+                        let content_length: u64 = content_length.unwrap();
+                        if content_length > 0 {
+                            if let Err(err) = win.unwrap().emit(
+                                "updateProgress",
+                                (chunk_length as f32) / (content_length as f32),
+                            ) {
+                                println!("{}", err);
+                            }
+                        }
+                    }
+                }
+                tauri::UpdaterEvent::Error(_) => {
+                    if win.is_some() {
+                        if let Err(err) = win.unwrap().emit("updateProgress", -1) {
+                            println!("{}", err);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        _ => {}
+    });
 }

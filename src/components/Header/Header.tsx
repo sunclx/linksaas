@@ -2,7 +2,7 @@ import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
 import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
-import { Layout } from 'antd';
+import { Layout, Progress, Space, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
@@ -11,6 +11,7 @@ import { remove_info_file } from '@/api/local_api';
 import ProjectQuickAccess from './ProjectQuickAccess';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
+import { listen } from '@tauri-apps/api/event';
 
 const { Header } = Layout;
 
@@ -25,6 +26,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const appStore = useStores('appStore');
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
+  const [updateProgress, setUpdateProgress] = useState(0);
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
@@ -63,7 +65,27 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
         setHasNewVersion(res.shouldUpdate);
       });
     }
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    const unlisten = listen<number>("updateProgress", ev => {
+      console.log(ev);
+      if (ev.payload >= 0) {
+        setUpdateProgress(oldValue => {
+          if (oldValue > 0.98) {
+            return 1.0;
+          }
+          return oldValue + ev.payload
+        });
+      } else {
+        message.error("更新出错");
+        setUpdateProgress(0);
+      }
+    })
+    return () => {
+      unlisten.then(f => f());
+    }
+  }, []);
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
       <div className={style.l} >
@@ -77,7 +99,13 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             e.preventDefault();
             check_update();
           }}>
-            <InfoCircleOutlined />&nbsp;有新版本
+            <Space size="small">
+              <InfoCircleOutlined />
+              {updateProgress == 0 && "有新版本"}
+              {updateProgress > 0 && (
+                <Progress type="line" percent={Math.ceil(updateProgress * 100)} showInfo={false} style={{ width: 50, paddingBottom: "16px" }} />
+              )}
+            </Space>
           </a>
         )}
         {appStore.simpleMode == false && (
