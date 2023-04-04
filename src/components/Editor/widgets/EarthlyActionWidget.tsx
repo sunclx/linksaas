@@ -136,7 +136,7 @@ const EditEarthlyAction: React.FC<WidgetProps> = (props) => {
     const [actionId, setActionId] = useState(widgetData.actionId);
     const [actionName, setActionName] = useState(widgetData.actionName);
 
-    const [showModal, setShowModal] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const saveData: WidgetData = {
