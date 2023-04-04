@@ -23,6 +23,7 @@ import type { FILE_OWNER_TYPE } from '@/api/fs';
 import { getExtensions } from './extensions';
 import type { InvalidContentHandler, RemirrorJSON } from 'remirror';
 import type { TocInfo } from './extensions/index';
+import TableCellMenu from './components/TableCellMenu';
 
 export interface UseCommonEditorAttrs {
   content: RemirrorContentType;
@@ -105,7 +106,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
           )}
           <ImperativeHandle ref={editorRef} />
           <EditorComponent />
-          <TableComponents enableTableCellMenu={false} />
+          <TableComponents tableCellMenuProps={{ Component: TableCellMenu }} />
         </Remirror>
       </AllStyledComponent>
     </ThemeProvider>
