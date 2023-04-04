@@ -8,22 +8,19 @@ import type { RobotInfo } from '@/api/robot';
 import { list as list_robot } from '@/api/robot';
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
-import { LinkScriptExecInfo } from "@/stores/linkAux";
-import { useHistory } from "react-router-dom";
 
 interface ExecModalProps {
     scriptSuiteId: string;
     scriptSuiteName: string;
     execParamDef: ExecParamDef;
     onCancel: () => void;
+    onOk: (execId: string) => void;
 }
 
 const ExecModal: React.FC<ExecModalProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    const linkAuxStore = useStores('linkAuxStore');
 
-    const history = useHistory();
     const [form] = Form.useForm();
 
     const initValues = {};
@@ -98,7 +95,7 @@ const ExecModal: React.FC<ExecModalProps> = (props) => {
                 argParamList.push(values[key]);
             }
         });
-        if (values["robotId"] == undefined){
+        if (values["robotId"] == undefined) {
             message.error("未选择执行服务器");
             return;
         }
@@ -112,7 +109,7 @@ const ExecModal: React.FC<ExecModalProps> = (props) => {
             },
             robot_id: values["robotId"],
         }));
-        linkAuxStore.goToLink(new LinkScriptExecInfo("", projectStore.curProjectId, props.scriptSuiteId, res.exec_id), history);
+        props.onOk(res.exec_id);
     }
 
     useEffect(() => {

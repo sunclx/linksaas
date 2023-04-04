@@ -61,6 +61,7 @@ export class ImageUploadExtension extends NodeExtension<ImageUploadOptions> {
         thumbHeight: { default: undefined },
         ownerType: { default: undefined },
         ownerId: { default: undefined },
+        showRawImage: { default: undefined },
       },
       parseDOM: [
         {
@@ -165,6 +166,7 @@ export class ImageUploadExtension extends NodeExtension<ImageUploadOptions> {
           thumbHeight={attrs.thumbHeight}
           ownerType={attrs.ownerType}
           ownerId={attrs.ownerId}
+          showRawImage={attrs.showRawImage}
         />
       );
     }
@@ -175,6 +177,7 @@ export class ImageUploadExtension extends NodeExtension<ImageUploadOptions> {
         fileName={attrs.fileName}
         fileId={attrs.fileId ?? ''}
         thumbFileId={attrs.thumbFileId ?? ''}
+        showRawImage={attrs.showRawImage}
       />
     );
   };
@@ -193,4 +196,6 @@ export interface ImageAttributes {
   thumbHeight?: number;
   ownerType?: FILE_OWNER_TYPE;
   ownerId?: string;
+  //额外属性
+  showRawImage?: boolean;
 }

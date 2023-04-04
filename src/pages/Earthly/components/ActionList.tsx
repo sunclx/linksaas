@@ -297,8 +297,8 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                 actionInfo={getActionInfo(execActionId)!}
                 onCancel={() => setExecActionId("")}
                 onOk={(execId: string) => {
-                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, props.repoId, execActionId, execId), history);
                     setExecActionId("");
+                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, props.repoId, execActionId, execId), history);
                 }} />}
         </div>
     );

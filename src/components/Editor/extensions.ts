@@ -16,6 +16,7 @@ import {
   CodeExtension,
   KeywordExtension,
   TocExtension,
+  DashboardExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -32,6 +33,9 @@ import { TextHighlightExtension } from '@remirror/extension-text-highlight';
 import { MarkdownExtension } from '@remirror/extension-markdown';
 import type { FILE_OWNER_TYPE } from '@/api/fs';
 import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
+import { ReactComponentExtension } from '@remirror/extension-react-component';
+import { TableExtension } from '@remirror/extension-react-tables';
+
 
 
 export const getExtensions = (param?: {
@@ -68,6 +72,7 @@ export const getExtensions = (param?: {
     new IframeExtension(),
     new CodeExtension(),
     new MarkdownExtension({ copyAsMarkdown: false }),
+    new DashboardExtension(),
 
     // Marks
     new HeadingExtension({ defaultLevel: 3, levels: [1, 2, 3, 4, 5, 6] }),
@@ -83,6 +88,9 @@ export const getExtensions = (param?: {
 
     new KeywordExtension({ keywordList: param?.keywordList ?? [], kwListCb: param?.keywordCallback }),
     new TocExtension({ tocCb: param?.tocCallback }),
+
+    new ReactComponentExtension(), 
+    new TableExtension()
   ];
 
   return () => retList;

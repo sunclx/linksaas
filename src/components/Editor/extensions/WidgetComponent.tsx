@@ -76,6 +76,12 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_REQUIRE_MENT_REF: {
       return <widgets.RequirementRefWidget {...widgetProps} />;
     }
+    case widgets.WIDGET_TYPE_ROBOT_SERVER_SCRIPT: {
+      return <widgets.ServerScriptWidget {...widgetProps} />
+    }
+    case widgets.WIDGET_TYPE_ROBOT_EARTHLY_ACTION: {
+      return <widgets.EarthlyActionWidget {...widgetProps} />
+    }
     default: {
       return <div>不支持的插件</div>;
     }
