@@ -338,7 +338,7 @@ const ViewRequirementRef: React.FC<WidgetProps> = (props) => {
     }, []);
 
     return (
-        <EditorWrap collapse={props.collapse}>
+        <EditorWrap>
             <div className={s.sync_wrap}>
                 <Button
                     className={s.sync}

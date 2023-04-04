@@ -120,7 +120,7 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
                         <Descriptions.Item label="应用权限" span={3}>
                             <AppPermPanel disable showTitle={false} perm={props.appInfo.app_perm} onChange={() => { }} />
                         </Descriptions.Item>
-                        <Descriptions.Item label="应用描述" span={3}><ReadOnlyEditor content={props.appInfo.base_info.app_desc} collapse={true} /></Descriptions.Item>
+                        <Descriptions.Item label="应用描述" span={3}><ReadOnlyEditor content={props.appInfo.base_info.app_desc} /></Descriptions.Item>
                     </Descriptions>
                 </Modal>
             )}

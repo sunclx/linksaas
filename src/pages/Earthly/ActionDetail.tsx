@@ -222,8 +222,8 @@ const ActionDetail = () => {
                 actionInfo={actionInfo!}
                 onCancel={() => setShowExecModal(false)}
                 onOk={(execId: string) => {
-                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, state.repoId, state.actionId, execId), history);
                     setShowExecModal(false);
+                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, state.repoId, state.actionId, execId), history);
                 }} />}
         </CardWrap>
     );

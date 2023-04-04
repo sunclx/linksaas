@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCommands } from '@remirror/react';
 import type { NodeViewComponentProps } from '@remirror/react';
-import { Progress, Image } from 'antd';
+import { Progress, Image, Switch } from 'antd';
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent, FILE_OWNER_TYPE } from '@/api/fs';
 import { save_tmp_file_base64, write_thumb_image_file, set_file_owner, write_file } from '@/api/fs';
@@ -25,6 +25,8 @@ export type EditImageProps = NodeViewComponentProps & {
   thumbHeight?: number;
   ownerType?: FILE_OWNER_TYPE;
   ownerId?: string;
+
+  showRawImage?: boolean;
 };
 
 export const EditImage: React.FC<EditImageProps> = observer((props) => {
@@ -37,9 +39,13 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
     deleteImageUpload((props.getPosition as () => number)());
   };
 
+  const [hover, setHover] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [thumbImgUrl, setThumbImgUrl] = useState('');
   const [imgUrl, setImgUrl] = useState('');
   const [thumbFileId, setThumbFileId] = useState('');
+  const [fileId, setFileId] = useState('');
+  const [showRawImage, setShowRawImage] = useState(props.showRawImage ?? false);
 
 
   //处理imageSrc数据
@@ -94,15 +100,18 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
   useEffect(() => {
     if (props.fileId !== '' && props.thumbFileId !== '') {
       if (appStore.isOsWindows) {
-        setImgUrl(`https://fs.localhost/${props.fsId}/${props.thumbFileId}/${props.fileName}`);
+        setThumbImgUrl(`https://fs.localhost/${props.fsId}/${props.thumbFileId}/${props.fileName}`);
+        setImgUrl(`https://fs.localhost/${props.fsId}/${props.fileId}/${props.fileName}`);
       } else {
-        setImgUrl(`fs://localhost/${props.fsId}/${props.thumbFileId}/${props.fileName}`);
+        setThumbImgUrl(`fs://localhost/${props.fsId}/${props.thumbFileId}/${props.fileName}`);
+        setImgUrl(`fs://localhost/${props.fsId}/${props.fileId}/${props.fileName}`);
       }
       props.updateAttributes({
         fileName: props.fileName,
         fsId: props.fsId,
         fileId: props.fileId,
         thumbFileId: props.thumbFileId,
+        showRawImage: showRawImage,
       });
       setProgress(100);
       return;
@@ -113,9 +122,9 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
         setThumbFileId(payload.file_id);
         setTimeout(() => {
           if (appStore.isOsWindows) {
-            setImgUrl(`https://fs.localhost/${props.fsId}/${payload.file_id}/${props.fileName}`);
+            setThumbImgUrl(`https://fs.localhost/${props.fsId}/${payload.file_id}/${props.fileName}`);
           } else {
-            setImgUrl(`fs://localhost/${props.fsId}/${payload.file_id}/${props.fileName}`);
+            setThumbImgUrl(`fs://localhost/${props.fsId}/${payload.file_id}/${props.fileName}`);
           }
         }, 200);
       }
@@ -127,13 +136,14 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
       }
       if (payload.cur_step >= payload.total_step) {
         if (payload.file_id != '') {
-          props.updateAttributes({
-            fileName: props.fileName,
-            fsId: props.fsId,
-            fileId: payload.file_id,
-            thumbFileId: thumbFileId,
-          });
-          setTimeout(() => setProgress(100), 200);
+          setFileId(payload.file_id);
+          setTimeout(() => setProgress(100), 200); setTimeout(() => {
+            if (appStore.isOsWindows) {
+              setImgUrl(`https://fs.localhost/${props.fsId}/${payload.file_id}/${props.fileName}`);
+            } else {
+              setImgUrl(`fs://localhost/${props.fsId}/${payload.file_id}/${props.fileName}`);
+            }
+          }, 200);
         }
       } else {
         setProgress((payload.cur_step * 100) / payload.total_step);
@@ -143,14 +153,45 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
       unListenFn.then((unListen) => unListen());
       unListenFn2.then((unListen) => unListen());
     };
-  },[props]);
+  }, [props]);
+
+  useEffect(() => {
+    if (fileId != "") {
+      props.updateAttributes({
+        fileName: props.fileName,
+        fsId: props.fsId,
+        fileId: fileId,
+        thumbFileId: thumbFileId,
+        showRawImage: showRawImage,
+      });
+    }
+  }, [thumbFileId, fileId, showRawImage]);
 
   return (
     <ErrorBoundary>
-      <div className={style.imgUpload}>
-        <div className={style.img}>
-          <Image src={imgUrl} preview={false} />
-        </div>
+      <div className={style.imgUpload} onMouseEnter={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        setHover(true);
+      }} onMouseLeave={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        setHover(false);
+      }}>
+        {hover && imgUrl != "" && (
+          <Switch checkedChildren="原图" unCheckedChildren="缩略图" className={style.switch} checked={showRawImage}
+            onClick={checked => setShowRawImage(checked)} />
+        )}
+        {showRawImage == false && (
+          <div className={style.img}>
+            <Image src={thumbImgUrl} preview={false} />
+          </div>
+        )}
+        {showRawImage == true && (
+          <div style={{ maxWidth: "100%" }}>
+            <Image src={imgUrl} preview={false} />
+          </div>
+        )}
 
         {progress < 100 ? (
           <div className={style.loading}>
@@ -186,6 +227,7 @@ export type ViewImageProps = NodeViewComponentProps & {
   fileName: string;
   fileId: string;
   thumbFileId: string;
+  showRawImage?: boolean;
 };
 
 export const ViewImage: React.FC<ViewImageProps> = (props) => {
@@ -200,18 +242,26 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
   return (
     <ErrorBoundary>
       <div className={style.imgUpload}>
-        <div className={style.img}>
-          <Image
-            preview={{
-              src: imageUrl,
-              mask: false,
-              wrapStyle: {
-                margin: "60px 60px 60px 60px"
-              },
-            }}
-            src={thumbImageUrl}
-          />
-        </div>
+        {props.showRawImage != true && (
+          <div className={style.img}>
+            <Image
+              preview={{
+                src: imageUrl,
+                mask: false,
+                wrapStyle: {
+                  margin: "60px 60px 60px 60px"
+                },
+              }}
+              src={thumbImageUrl}
+            />
+          </div>
+        )}
+        {props.showRawImage == true && (
+          <div style={{ maxWidth: "100%" }}>
+            <Image src={imageUrl} preview={false} />
+          </div>
+        )}
+
       </div>
     </ErrorBoundary>
   );

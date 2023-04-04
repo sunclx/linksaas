@@ -5,7 +5,7 @@ import DetailsNav from "@/components/DetailsNav";
 import { Tabs, Space, Popover, Modal } from "antd";
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkScriptSuiteSate } from "@/stores/linkAux";
-import { LinkScriptSuiteInfo } from "@/stores/linkAux";
+import { LinkScriptExecInfo, LinkScriptSuiteInfo } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import s from './ScriptDetail.module.less';
 import { request } from "@/utils/request";
@@ -276,7 +276,11 @@ const ScriptDetail = () => {
                         scriptSuiteId={scriptSuiteInfo.script_suite_id}
                         scriptSuiteName={scriptSuiteInfo.script_suite_name}
                         execParamDef={scriptSuiteInfo.exec_param_def}
-                        onCancel={() => setShowExecModal(false)} />
+                        onCancel={() => setShowExecModal(false)}
+                        onOk={(execId: string) => {
+                            setShowExecModal(false);
+                            linkAuxStore.goToLink(new LinkScriptExecInfo("", projectStore.curProjectId, scriptSuiteInfo.script_suite_id, execId), history);
+                        }} />
                 )}
                 {showRemoveModal == true && scriptSuiteInfo != null && (
                     <Modal open title="删除脚本"

@@ -278,7 +278,7 @@ const ViewMermaid: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <div ref={graphRef} />
       </EditorWrap>
     </ErrorBoundary>

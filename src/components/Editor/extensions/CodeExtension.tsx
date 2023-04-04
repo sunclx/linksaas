@@ -11,11 +11,9 @@ import type { NodeViewComponentProps } from '@remirror/react';
 import React from 'react';
 import { EditCode, ViewCode } from './CodeComponent';
 
-export interface CodeOptions {
-  collapse?: boolean;
-}
+export interface CodeOptions {}
 
-@extension<CodeOptions>({ defaultOptions: { collapse: false } })
+@extension<CodeOptions>({ defaultOptions: { } })
 export class CodeExtension extends NodeExtension<CodeOptions> {
   get name() {
     return 'code' as const;

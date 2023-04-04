@@ -144,7 +144,7 @@ const ViewOtsw: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap className={s.editor_wrap} collapse={props.collapse}>
+      <EditorWrap className={s.editor_wrap}>
         <h2 className={s.swot_main_tit}>{data.title ?? ''}</h2>
         <div className={classNames(s.swot_wrap, s.otsw)}>
           <div className={s.swot_item}>

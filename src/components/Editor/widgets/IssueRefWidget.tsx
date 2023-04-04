@@ -467,7 +467,7 @@ const ViewIssueRef: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <div className={s.sync_wrap}>
           <Button
             className={s.sync}

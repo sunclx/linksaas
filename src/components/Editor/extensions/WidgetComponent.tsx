@@ -6,7 +6,6 @@ import { useCommands } from '@remirror/react';
 export type WidgetProps = NodeViewComponentProps & {
   widgetType: widgets.WIDGET_TYPE;
   widgetData: unknown;
-  collapse?: boolean;
 };
 
 export const Widget: React.FC<WidgetProps> = (props) => {
@@ -24,7 +23,6 @@ export const Widget: React.FC<WidgetProps> = (props) => {
         widgetData: data,
       });
     },
-    collapse: props.collapse || false,
   };
   switch (props.widgetType) {
     case widgets.WIDGET_TYPE_FUNNEL: {
@@ -77,6 +75,12 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     }
     case widgets.WIDGET_TYPE_REQUIRE_MENT_REF: {
       return <widgets.RequirementRefWidget {...widgetProps} />;
+    }
+    case widgets.WIDGET_TYPE_ROBOT_SERVER_SCRIPT: {
+      return <widgets.ServerScriptWidget {...widgetProps} />
+    }
+    case widgets.WIDGET_TYPE_ROBOT_EARTHLY_ACTION: {
+      return <widgets.EarthlyActionWidget {...widgetProps} />
     }
     default: {
       return <div>不支持的插件</div>;

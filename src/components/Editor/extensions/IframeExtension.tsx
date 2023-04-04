@@ -11,11 +11,9 @@ import type { NodeViewComponentProps } from '@remirror/react';
 import React from 'react';
 import { EditIframe, ViewIframe } from './IframeComponent';
 
-export interface IframeOptions {
-  collapse?: boolean;
-}
+export interface IframeOptions {}
 
-@extension<IframeOptions>({ defaultOptions: { collapse: false } })
+@extension<IframeOptions>({ defaultOptions: { } })
 export class IframeExtension extends NodeExtension<IframeOptions> {
   get name() {
     return 'iframe' as const;

@@ -163,7 +163,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           )}
         </div>
         <div className='_readContext'>
-          <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} collapse={true} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />
+          <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />
         </div>
       </div>
       {chatMsgStore.listRefMsgId == msg.msg.msg_id && (

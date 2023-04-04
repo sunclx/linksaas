@@ -35,6 +35,8 @@ import {
   WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
   WIDGET_TYPE_SPRIT_REF,
+  WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
+  WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
 } from '../widgets/index';
 import type { HeadingExtensionAttributes } from '@remirror/extension-heading';
 import { redoDepth, undoDepth } from '@remirror/pm/history';
@@ -388,6 +390,20 @@ const ContentWidget = observer(() => {
           ],
         },
         {
+          key: "robot",
+          label: "自动化",
+          children: [
+            {
+              key: WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
+              label: "服务端脚本",
+            },
+            {
+              key: WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
+              label: "earthly脚本",
+            },
+          ],
+        },
+        {
           key: 'design',
           label: '软件设计',
           children: [
@@ -623,6 +639,25 @@ const AddCode = () => {
   );
 };
 
+const AddTable = () => {
+  const commands = useCommands();
+
+  return (
+    <Tooltip title="表格">
+      <div className="table-btn" onClick={() => commands.createTable({ withHeaderRow: false })} />
+    </Tooltip>
+  );
+};
+
+const AddDashboard = () => {
+  const commands = useCommands();
+
+  return (
+    <Tooltip title="信息面板">
+      <div className="dashboard-btn" onClick={() => commands.insertDashboard()} />
+    </Tooltip>
+  );
+};
 
 export interface NewCommItemParam {
   fsId: string;
@@ -654,6 +689,8 @@ export const newCommItem = (param: NewCommItemParam) => {
       items={[
         ...items,
         <AddCode key="code" />,
+        <AddTable key="table" />,
+        <AddDashboard key="dashboard" />
       ]}
       separator={true} />
   );

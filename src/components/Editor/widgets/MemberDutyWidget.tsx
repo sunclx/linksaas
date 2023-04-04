@@ -148,7 +148,7 @@ const ViewMemberDuty: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <div className={s.item_wrap}>
           <label className={s.title_label}>{data.title ?? ''}</label>
         </div>

@@ -13,11 +13,9 @@ import { Widget } from './WidgetComponent';
 import type { WIDGET_TYPE } from '../widgets';
 import { WidgetInitDataMap } from '../widgets';
 
-export interface WidgetOptions {
-  collapse?: boolean;
-}
+export interface WidgetOptions {}
 
-@extension<WidgetOptions>({ defaultOptions: { collapse: false } })
+@extension<WidgetOptions>({ defaultOptions: { } })
 export class WidgetExtension extends NodeExtension<WidgetOptions> {
   get name() {
     return 'widget' as const;
@@ -77,7 +75,6 @@ export class WidgetExtension extends NodeExtension<WidgetOptions> {
     return (
       <Widget
         {...props}
-        collapse={this.options.collapse}
         widgetType={attrs.widgetType}
         widgetData={attrs.widgetData}
       />

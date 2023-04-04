@@ -198,7 +198,7 @@ const ViewSurveyChoice: React.FC<WidgetProps> = (props) => {
 
   return (
     <ErrorBoundary>
-      <EditorWrap collapse={props.collapse}>
+      <EditorWrap>
         <h2 className={s.title}>{data.type === 'single' ? '单选题' : '多选题'}</h2>
         <p className={s.content}>{data.content}</p>
         {data.choiceList.map((item, index) => (

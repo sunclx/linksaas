@@ -61,9 +61,18 @@
 .remirror-editor ul {
   list-style: disc;
   padding-left: 30px;
+
   li {
     padding-top: 10px;
   }
+}
+
+.remirror-editor .remirror-table {
+  margin-left: 20px;
+}
+
+.remirror-editor.ProseMirror table {
+  width: calc(100% - 40px) !important;
 }
 
 .remirror-editor ol {
@@ -84,22 +93,22 @@
   display: flex;
 }
 
-.remirror-group > :not(:first-child) {
+.remirror-group> :not(:first-child) {
   margin-left: -1px;
 }
 
-.remirror-group > :not(:first-child):not(:last-child):not(.first-child):not(.last-child) {
+.remirror-group> :not(:first-child):not(:last-child):not(.first-child):not(.last-child) {
   border-radius: 0;
 }
 
-.remirror-group > :first-child:not(:last-child),
-.remirror-group > .first-child {
+.remirror-group> :first-child:not(:last-child),
+.remirror-group>.first-child {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-.remirror-group > :last-child:not(:first-child),
-.remirror-group > .last-child {
+.remirror-group> :last-child:not(:first-child),
+.remirror-group>.last-child {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -136,7 +145,7 @@
   overflow-y: auto;
 }
 
-.remirror-toolbar > *:not(:first-child) {
+.remirror-toolbar>*:not(:first-child) {
   margin: 0 0 0 0.5em;
 }
 
@@ -145,7 +154,7 @@
   flex-direction: column;
 }
 
-.remirror-toolbar[aria-orientation='vertical'] > *:not(:first-child) {
+.remirror-toolbar[aria-orientation='vertical']>*:not(:first-child) {
   margin: 0.5em 0 0;
 }
 
@@ -201,6 +210,8 @@
 .remirror-toolbar .table-draw,
 .remirror-toolbar .file-btn,
 .remirror-toolbar .code-btn,
+.remirror-toolbar .table-btn,
+.remirror-toolbar .dashboard-btn,
 .remirror-toolbar .bold-btn,
 .remirror-toolbar .bold-active-btn,
 .remirror-toolbar .italic-btn,
@@ -234,6 +245,7 @@
 .remirror-toolbar .undo-disable-btn {
   background-image: url(@/assets/editor/undo-disable.png);
   cursor: auto;
+
   &:hover {
     background-color: inherit;
   }
@@ -246,6 +258,7 @@
 .remirror-toolbar .redo-disable-btn {
   background-image: url(@/assets/editor/redo-disable.png);
   cursor: auto;
+
   &:hover {
     background-color: inherit;
   }
@@ -258,6 +271,7 @@
 .remirror-toolbar .copy-disable-btn {
   background-image: url(@/assets/editor/copy-disable.png);
   cursor: auto;
+
   &:hover {
     background-color: inherit;
   }
@@ -270,6 +284,7 @@
 .remirror-toolbar .cut-disable-btn {
   background-image: url(@/assets/editor/cut-disable.png);
   cursor: auto;
+
   &:hover {
     background-color: inherit;
   }
@@ -282,6 +297,7 @@
 .remirror-toolbar .paste-disable-btn {
   background-image: url(@/assets/editor/paste-disable.png);
   cursor: auto;
+
   &:hover {
     background-color: inherit;
   }
@@ -315,6 +331,10 @@
 
 .remirror-toolbar .table-btn {
   background-image: url(@/assets/editor/table.png);
+}
+
+.remirror-toolbar .dashboard-btn {
+  background-image: url(@/assets/editor/dashboard.png);
 }
 
 .remirror-toolbar .draw-btn {
@@ -439,6 +459,7 @@
   border-width: 0 1px 0 0;
 }
 
-.swagger-ui table thead tr td, .swagger-ui table thead tr th {
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th {
   width: 200px;
 }
