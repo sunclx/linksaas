@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import styles from './Chat.module.less';
@@ -9,7 +9,7 @@ import {
   change_file_fs,
   get_reminder_info,
 } from '@/components/Editor';
-import { Modal,message } from 'antd';
+import { Modal, message } from 'antd';
 import { request } from '@/utils/request';
 import { send_msg, update_msg, MSG_LINK_NONE, LIST_CHAN_SCOPE_INCLUDE_ME } from '@/api/project_channel';
 import { FILE_OWNER_TYPE_CHANNEL } from '@/api/fs';
@@ -25,6 +25,8 @@ const ChannelHeader = observer(() => {
   const userStore = useStores('userStore');
   const linkAuxStore = useStores('linkAuxStore');
 
+  const [sendOnHotKey, setSendOnHotKey] = useState(false);
+
   const editorParam = {
     content: '',
     fsId: projectStore.curProject?.channel_fs_id ?? '',
@@ -37,7 +39,19 @@ const ChannelHeader = observer(() => {
     channelMember: true,
   };
 
-  const sendEditor = useCommonEditor(editorParam);
+  const sendEditor = useCommonEditor({
+    ...editorParam, 
+    placeholder: "请输入......,可使用Ctrl+Enter发送内容",
+    eventsOption: {
+      keydown: e => {
+        if (e.ctrlKey && e.key == "Enter") {
+          setSendOnHotKey(true);
+          return true;
+        }
+        return false;
+      }
+    }
+  });
 
   const updateEditor = useCommonEditor(editorParam);
 
@@ -58,6 +72,7 @@ const ChannelHeader = observer(() => {
   }, [chatMsgStore.getEditMsg()]);
 
   const sendContent = async (action: SEND_ACTION) => {
+    setSendOnHotKey(false);
     const chatJson = sendEditor.editorRef.current?.getContent() || {
       type: 'doc',
     };
@@ -84,7 +99,7 @@ const ChannelHeader = observer(() => {
       }),
     );
     sendEditor.editorRef.current?.clearContent();
-    if (action != SEND_ACTION.SEND_ACTION_NULL){
+    if (action != SEND_ACTION.SEND_ACTION_NULL) {
       message.info("发送消息成功");
     }
     if (action == SEND_ACTION.SEND_ACTION_CREATE_REQUIRE_MENT) {
@@ -122,6 +137,12 @@ const ChannelHeader = observer(() => {
     await chatMsgStore.updateMsg(editMsg.msg.msg_id);
     chatMsgStore.setEditMsg(undefined);
   };
+
+  useEffect(() => {
+    if (sendOnHotKey) {
+      sendContent(SEND_ACTION.SEND_ACTION_NULL);
+    }
+  }, [sendOnHotKey]);
 
   return (
     <div className={styles.chat}>

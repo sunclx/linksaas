@@ -37,6 +37,8 @@ import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 import { ReactComponentExtension } from '@remirror/extension-react-component';
 import { TableExtension } from '@remirror/extension-react-tables';
 import { CalloutExtension } from '@remirror/extension-callout';
+import { EventsExtension } from '@remirror/extension-events';
+import type { EventsOptions } from '@remirror/extension-events';
 
 export const getExtensions = (param?: {
   setShowRemind?: (value: boolean) => void;
@@ -48,8 +50,17 @@ export const getExtensions = (param?: {
   keywordList?: string[];
   keywordCallback?: (kwList: string[]) => void;
   tocCallback?: (tocList: TocInfo[]) => void;
+  eventsOption?: EventsOptions;
 }) => {
+  const evExtension = new EventsExtension();
+  evExtension.addHandler("keydown", e => {
+    if (param?.eventsOption?.keydown !== undefined) {
+      return param.eventsOption.keydown(e);
+    }
+    return false;
+  });
   const retList = [
+    evExtension,
     // Nodes
     new ParagraphExtension(),
     new HardBreakExtension(),
@@ -91,9 +102,8 @@ export const getExtensions = (param?: {
     new KeywordExtension({ keywordList: param?.keywordList ?? [], kwListCb: param?.keywordCallback }),
     new TocExtension({ tocCb: param?.tocCallback }),
 
-    new ReactComponentExtension(), 
+    new ReactComponentExtension(),
     new TableExtension(),
-
   ];
 
   return () => retList;

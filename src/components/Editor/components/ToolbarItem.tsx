@@ -682,27 +682,27 @@ const AddCallout = () => {
 
   return (
     <Tooltip title="提示">
-      <Dropdown menu={{
+      <Dropdown placement='bottomCenter' menu={{
         items: [
           {
             key: "info",
-            label: "提示",
+            label: <div style={{ backgroundColor: "#eef6fc", width: "80px", textAlign: "center", padding: "4px 4px", color: "#3298dc", fontWeight: 700 }}>提示</div>,
           },
           {
             key: "warning",
-            label: "警告",
+            label: <div style={{ backgroundColor: "#fffbeb", width: "80px", textAlign: "center", padding: "4px 4px", color: "#ffdd57", fontWeight: 700 }}>警告</div>,
           },
           {
             key: "error",
-            label: "错误",
+            label: <div style={{ backgroundColor: "#feecf0", width: "80px", textAlign: "center", padding: "4px 4px", color: "#f14668", fontWeight: 700 }}>错误</div>,
           },
           {
             key: "success",
-            label: "成功",
+            label: <div style={{ backgroundColor: "#effaf3", width: "80px", textAlign: "center", padding: "4px 4px", color: "#48c774", fontWeight: 700 }}>成功</div>,
           },
           {
             key: "cancel",
-            label: "取消",
+            label: <div style={{ backgroundColor: "white", width: "80px", textAlign: "center", padding: "4px 4px", fontWeight: 700 }}>取消</div>,
             disabled: !(infoEnable || warningEnable || errorEnable || successEnable),
           },
         ],
@@ -724,7 +724,7 @@ const AddCallout = () => {
           }
         },
       }} >
-        <Button type="text" style={{ backgroundColor: hover ? "#d0d0d0" : "inherit", height: "25px" }}
+        <Button type="text" style={{ backgroundColor: hover ? "#d0d0d0" : "inherit", height: "25px", padding: "0px 0px", width: "35px" }}
           onMouseEnter={e => {
             e.stopPropagation();
             e.preventDefault();
@@ -773,7 +773,7 @@ export const newCommItem = (param: NewCommItemParam) => {
         <AddTable key="table" />,
         <AddDashboard key="dashboard" />,
         <AddKatex key="katex" />,
-        <AddCallout key="callout"/>,
+        <AddCallout key="callout" />,
       ]}
       separator={true} />
   );
