@@ -8,8 +8,8 @@ import {
 } from '@remirror/react';
 
 import React, { useEffect, useState } from 'react';
-import { Dropdown, Select, Menu, Tooltip } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Dropdown, Select, Menu, Tooltip, Button } from 'antd';
+import { DownOutlined, ExclamationOutlined } from '@ant-design/icons';
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { uniqId } from '@/utils/utils';
 import { request } from '@/utils/request';
@@ -659,6 +659,87 @@ const AddDashboard = () => {
   );
 };
 
+const AddKatex = () => {
+  const commands = useCommands();
+
+  return (
+    <Tooltip title="数学公式">
+      <div className="math-btn" onClick={() => commands.insertKatex()} />
+    </Tooltip>
+  );
+};
+
+const AddCallout = () => {
+  const { toggleCallout, updateCallout } = useCommands();
+  const active = useActive();
+
+  const [hover, setHover] = useState(false);
+
+  const infoEnable = active.callout({ type: "info" });
+  const warningEnable = active.callout({ type: "warning" });
+  const errorEnable = active.callout({ type: "error" });
+  const successEnable = active.callout({ type: "success" });
+
+  return (
+    <Tooltip title="提示">
+      <Dropdown menu={{
+        items: [
+          {
+            key: "info",
+            label: "提示",
+          },
+          {
+            key: "warning",
+            label: "警告",
+          },
+          {
+            key: "error",
+            label: "错误",
+          },
+          {
+            key: "success",
+            label: "成功",
+          },
+          {
+            key: "cancel",
+            label: "取消",
+            disabled: !(infoEnable || warningEnable || errorEnable || successEnable),
+          },
+        ],
+        onClick: (info) => {
+          if (info.key == "cancel") {
+            if (infoEnable) {
+              toggleCallout({ type: "info" });
+            } else if (warningEnable) {
+              toggleCallout({ type: "warning" });
+            } else if (errorEnable) {
+              toggleCallout({ type: "error" });
+            } else if (successEnable) {
+              toggleCallout({ type: "success" });
+            }
+          } else if (infoEnable || warningEnable || errorEnable || successEnable) {
+            updateCallout({ type: info.key });
+          } else {
+            toggleCallout({ type: info.key });
+          }
+        },
+      }} >
+        <Button type="text" style={{ backgroundColor: hover ? "#d0d0d0" : "inherit", height: "25px" }}
+          onMouseEnter={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            setHover(true);
+          }}
+          onMouseLeave={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            setHover(false);
+          }}><ExclamationOutlined /></Button>
+      </Dropdown>
+    </Tooltip>
+  );
+}
+
 export interface NewCommItemParam {
   fsId: string;
   thumbWidth: number;
@@ -690,7 +771,9 @@ export const newCommItem = (param: NewCommItemParam) => {
         ...items,
         <AddCode key="code" />,
         <AddTable key="table" />,
-        <AddDashboard key="dashboard" />
+        <AddDashboard key="dashboard" />,
+        <AddKatex key="katex" />,
+        <AddCallout key="callout"/>,
       ]}
       separator={true} />
   );

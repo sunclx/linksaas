@@ -135,7 +135,7 @@ export function get_reminder_info(state: RemirrorJSON): MsgReminderInfo {
 
 function calc_doc_state(textList: string[], extensionList: string[], state: RemirrorJSON) {
     for (const child of state.content ?? []) {
-        if (["code", "excaliDraw", "fileUpload", "iframe", "imageUpload", "link", "reminderUser", "widget", "dashboard"].includes(child.type)) {
+        if (["code", "excaliDraw", "fileUpload", "iframe", "imageUpload", "link", "reminderUser", "widget", "dashboard", "katex"].includes(child.type)) {
             extensionList.push(child.type);
         } else if (child.type == "text") {
             textList.push(child.text!)

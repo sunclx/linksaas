@@ -17,6 +17,7 @@ import {
   KeywordExtension,
   TocExtension,
   DashboardExtension,
+  KatexExtension,
 } from './extensions/index';
 import {
   BulletListExtension,
@@ -35,8 +36,7 @@ import type { FILE_OWNER_TYPE } from '@/api/fs';
 import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 import { ReactComponentExtension } from '@remirror/extension-react-component';
 import { TableExtension } from '@remirror/extension-react-tables';
-
-
+import { CalloutExtension } from '@remirror/extension-callout';
 
 export const getExtensions = (param?: {
   setShowRemind?: (value: boolean) => void;
@@ -73,6 +73,7 @@ export const getExtensions = (param?: {
     new CodeExtension(),
     new MarkdownExtension({ copyAsMarkdown: false }),
     new DashboardExtension(),
+    new KatexExtension(),
 
     // Marks
     new HeadingExtension({ defaultLevel: 3, levels: [1, 2, 3, 4, 5, 6] }),
@@ -85,12 +86,14 @@ export const getExtensions = (param?: {
     new FontSizeExtension({ defaultSize: '12', unit: 'px' }),
     new TextColorExtension(),
     new TextHighlightExtension(),
+    new CalloutExtension(),
 
     new KeywordExtension({ keywordList: param?.keywordList ?? [], kwListCb: param?.keywordCallback }),
     new TocExtension({ tocCb: param?.tocCallback }),
 
     new ReactComponentExtension(), 
-    new TableExtension()
+    new TableExtension(),
+
   ];
 
   return () => retList;
