@@ -110,7 +110,11 @@ class NoticeStore {
     } else if (notice.NewDocNotice !== undefined) {
       //skip
     } else if (notice.UpdateDocNotice !== undefined) {
-      //skip
+      if (notice.UpdateDocNotice.project_id == this.rootStore.projectStore.curProjectId) {
+        if (notice.UpdateDocNotice.doc_id == this.rootStore.docSpaceStore.curDocId) {
+          this.rootStore.docSpaceStore.updateCurDoc();
+        }
+      }
     } else if (notice.RemoveDocNotice !== undefined) {
       //skip
     } else if (notice.RecoverDocInRecycleNotice !== undefined) {

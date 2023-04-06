@@ -185,6 +185,17 @@ export default class DocSpaceStore {
         return undefined;
     }
 
+    async updateCurDoc() {
+        if (this._curDocId != "" && this._recycleBin == false && this.inEdit == false) {
+            const doc = await this.loadDoc(this._curDocId);
+            if (doc != undefined) {
+                runInAction(() => {
+                    this._curDoc = doc;
+                });
+            }
+        }
+    }
+
     async showDoc(docId: string, inEdit: boolean, forceReload: boolean = false) {
         if (this._docSpaceList.length == 0) {
             await this.loadDocSpace();

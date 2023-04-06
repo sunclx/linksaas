@@ -1,6 +1,6 @@
 import { useStores } from '@/hooks';
 import React, { useEffect } from 'react';
-import { Input, message, Space } from 'antd';
+import { Input, message, Popover, Space } from 'antd';
 import { useCommonEditor, change_file_fs, change_file_owner } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT_DOC, FILE_OWNER_TYPE_PROJECT } from '@/api/fs';
 import { request } from '@/utils/request';
@@ -15,13 +15,25 @@ import Button from '@/components/Button';
 import type { TocInfo } from '@/components/Editor/extensions/index';
 import DocTocPanel from './DocTocPanel';
 import classNames from 'classnames';
+import { MoreOutlined } from '@ant-design/icons';
+import EditPermModal from './SetPermModal';
 
 const WriteDoc: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');
+
   const [newTitle, setNewTitle] = useState(''); //新建文档时有空
   const [tocList, setTocList] = useState<TocInfo[]>([]);
+  const [docPerm, setDocPerm] = useState<docApi.DocPerm>(docSpaceStore.curDoc?.base_info.doc_perm ?? {
+    read_for_all: true,
+    extra_read_user_id_list: [],
+    write_for_all: true,
+    extra_write_user_id_list: [],
+  });
+  const [docPermChange, setDocPermChange] = useState(false);
+
+  const [showPermModal, setShowPermModal] = useState(false);
 
   const location = useLocation();
 
@@ -100,7 +112,7 @@ const WriteDoc: React.FC = () => {
       FILE_OWNER_TYPE_PROJECT_DOC,
       docSpaceStore.curDocId,
     );
-    const res = await request(
+    await request(
       docApi.update_doc_content({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
@@ -110,8 +122,14 @@ const WriteDoc: React.FC = () => {
         content: JSON.stringify(content),
       }),
     );
-    if (!res) {
-      return;
+    if (docPermChange) {
+      await request(docApi.update_doc_perm({
+        session_id: userStore.sessionId,
+        project_id: projectStore.curProjectId,
+        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? "",
+        doc_id: docSpaceStore.curDocId,
+        doc_perm: docPerm,
+      }));
     }
     docSpaceStore.showDoc(docSpaceStore.curDocId, false, true);
   };
@@ -149,12 +167,7 @@ const WriteDoc: React.FC = () => {
           title: newTitle,
           content: JSON.stringify(content),
           tag_list: [],
-          doc_perm: {
-            read_for_all: true,
-            extra_read_user_id_list: [],
-            write_for_all: true,
-            extra_write_user_id_list: [],
-          },
+          doc_perm: docPerm,
         },
       }),
     );
@@ -217,6 +230,17 @@ const WriteDoc: React.FC = () => {
             >
               保存
             </Button>
+            <Popover placement='bottom' trigger="click" content={
+              <div style={{ padding: "10px 10px" }}>
+                <Button type="link" onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowPermModal(true);
+                }}>设置权限</Button>
+              </div>
+            }>
+              <MoreOutlined />
+            </Popover>
           </Space>
         </div>
       </div>
@@ -226,6 +250,15 @@ const WriteDoc: React.FC = () => {
           <DocTocPanel tocList={tocList} />
         )}
       </div>
+      {showPermModal == true && <EditPermModal docPerm={docPerm} onCancel={() => setShowPermModal(false)}
+        onOk={(newPerm) => {
+          if (newPerm != null) {
+            setDocPerm(newPerm);
+            setDocPermChange(true);
+            setShowPermModal(false);
+            message.warn("权限在保存文档后才会生效");
+          }
+        }} />}
     </div>
   );
 };

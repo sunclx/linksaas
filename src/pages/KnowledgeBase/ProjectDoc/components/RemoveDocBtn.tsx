@@ -22,6 +22,7 @@ const RemoveDocBtn = () => {
     return (
         <>
             <Deletesvg
+                style={{ marginLeft: "15px" }}
                 onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();

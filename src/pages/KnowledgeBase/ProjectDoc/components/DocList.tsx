@@ -87,15 +87,10 @@ const DocList = () => {
                 </div>
             ),
         },
-        {
-            title: "创建于",
-            render: (_, record: prjDocApi.DocKey) => (<>
-                <UserPhoto logoUri={record.create_logo_uri} width="24px" height="24px" style={{ marginRight: "10px" }} />
-                {record.create_display_name}&nbsp;&nbsp;{moment(record.create_time).format("YYYY-MM-DD HH:mm")}
-            </>),
-        },
+
         {
             title: "最后修改",
+            width:200,
             render: (_, record: prjDocApi.DocKey) => (<>
                 <UserPhoto logoUri={record.update_logo_uri} width="24px" height="24px" style={{ marginRight: "10px" }} />
                 {record.update_display_name}&nbsp;&nbsp;{moment(record.update_time).format("YYYY-MM-DD HH:mm")}
