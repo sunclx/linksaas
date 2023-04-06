@@ -36,7 +36,7 @@ const EditServerScript: React.FC<WidgetProps> = (props) => {
 
     const [suiteName, setSuiteName] = useState(widgetData.scriptSuiteName);
     const [suiteId, setSuiteId] = useState(widgetData.scriptSuiteId);
-    const [showModal, setShowModal] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
     const [suiteInfoList, setSuiteInfoList] = useState<ScriptSuiteKey[]>([]);
     const [totalCount, setTotalCount] = useState(0);
