@@ -83,8 +83,9 @@ use local_api_rust::models::{
     ProjectProjectIdTestCaseReportEntryIdPostRequest,
 };
 use local_api_rust::{
-    Api, HelloGetResponse, ProjectProjectIdAiTokenGetResponse, ProjectProjectIdBugAllGetResponse,
-    ProjectProjectIdBugMyGetResponse, ProjectProjectIdBugRecordBugIdEventsGetResponse,
+    Api, HelloGetResponse, ProjectGetResponse, ProjectProjectIdAiTokenGetResponse,
+    ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
+    ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
     ProjectProjectIdChannelMyGetResponse, ProjectProjectIdChannelNotJoinGetResponse,
@@ -2035,5 +2036,39 @@ where
             body: json!({}),
             access_control_allow_origin: Some("*".into()),
         });
+    }
+
+    /// 获取项目列表
+    async fn project_get(&self, _context: &C) -> Result<ProjectGetResponse, ApiError> {
+        let res = super::project_api::list_project(&self.app).await;
+        if res.is_err() {
+            return Ok(ProjectGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            let mut project_list: Vec<local_api_rust::models::ProjectInfo> = Vec::new();
+            res.info_list.iter().for_each(|prj| {
+                project_list.push(local_api_rust::models::ProjectInfo {
+                    project_id: Some(prj.project_id.clone()),
+                    project_name: Some(prj.basic_info.as_ref().unwrap().project_name.clone()),
+                })
+            });
+            return Ok(ProjectGetResponse::Status200 {
+                body: project_list,
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
     }
 }

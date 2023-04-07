@@ -55,6 +55,38 @@ paths:
               schema:
                 type: string
                 example: hello linksaas
+  /project:
+    get:
+      tags:
+        - global
+      summary: 获取项目列表
+      description: 获取项目列表
+      operationId: projectGet
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/aiToken:
     get:
       tags:
@@ -1999,6 +2031,15 @@ components:
           type: integer
           description: 修改时间
           format: int64
+    ProjectInfo:
+      type: object
+      properties:
+        projectId:
+          type: string
+          description: 项目ID
+        projectName:
+          type: string
+          description: 项目名称
     SimpleMemberInfo:
       type: object
       properties:
@@ -2095,4 +2136,5 @@ components:
             - low
             - middle
             - high
+
 `;

@@ -25,7 +25,7 @@ html-escape = "0.2.13"
 http = "0.2.8"
 hyper = {version = "0.14", features = ["full"] }
 image = "0.24.1"
-local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", branch = "feature/remove_access_token"}
+local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", branch = "feature/list_prj"}
 mktemp = "0.5.0"
 prost = "0.9.0"
 proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branch = "feature/remove_access_token"}
