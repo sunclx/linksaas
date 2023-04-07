@@ -48,7 +48,7 @@ const ProjectOverview = () => {
             <MemberInfoPanel />
             <MyIssuePanel/>
             <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
-                <Collapse bordered={false} className={s.other_wrap}>
+                <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>
                     <Collapse.Panel key="localApi" header="本地接口" extra={
                         <Button
                             title={port == 0 ? "本地服务没有启动" : ""}

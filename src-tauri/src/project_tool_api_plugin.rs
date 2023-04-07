@@ -10,14 +10,12 @@ use tokio::{fs, io::AsyncWriteExt};
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct ProjectLinksaasYml {
     pub project_id: String,
-    pub access_token: String,
 }
 
 #[tauri::command]
 async fn set_git_hook(
     git_path: String,
     project_id: String,
-    access_token: String,
     post_commit_hook: bool,
 ) -> Result<(), String> {
     //检查是否是git目录
@@ -31,7 +29,6 @@ async fn set_git_hook(
     cfg_path.push(".linksaas.yml");
     let cfg = ProjectLinksaasYml {
         project_id: project_id,
-        access_token: access_token,
     };
     let yml_content = serde_yaml::to_string(&cfg);
     if yml_content.is_err() {
