@@ -187,17 +187,40 @@
   border: 1px solid #e0e0e0;
   border-radius: 4px;
 
-  .loading {
+  .delete {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 4px;
+    left: 4px;
+    z-index: 111;
+    padding: 4px 4px 0;
+    color: #fff;
     background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.5s;
   }
+
+  &:hover {
+    .delete {
+      opacity: 1;
+
+      &:hover {
+        color: #2997ff;
+      }
+    }
+  }
+}
+
+.katex {
+  display: inline-block;
+  position: relative;
+  width: calc(100% - 20px);
+  margin: 10px 10px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px 10px;
 
   .delete {
     position: absolute;

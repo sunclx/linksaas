@@ -17,6 +17,7 @@ interface SendMsgBtnProps {
 }
 
 const SendMsgBtn: React.FC<SendMsgBtnProps> = (props) => {
+
     return (
         <div className={styles.chatBtnWrap}>
             <Dropdown.Button type="primary" onClick={e => {

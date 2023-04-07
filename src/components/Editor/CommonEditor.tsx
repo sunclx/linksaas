@@ -24,6 +24,8 @@ import { getExtensions } from './extensions';
 import type { InvalidContentHandler, RemirrorJSON } from 'remirror';
 import type { TocInfo } from './extensions/index';
 import TableCellMenu from './components/TableCellMenu';
+import type { EventsOptions } from '@remirror/extension-events';
+
 
 export interface UseCommonEditorAttrs {
   content: RemirrorContentType;
@@ -36,6 +38,8 @@ export interface UseCommonEditorAttrs {
   showReminder: boolean;
   channelMember: boolean;
   tocCallback?: (tocList: TocInfo[]) => void;
+  eventsOption?: EventsOptions;
+  placeholder?: string;
 }
 
 export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
@@ -65,6 +69,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
       ownerType: attrs.ownerType,
       ownerId: attrs.ownerId,
       tocCallback: attrs.tocCallback,
+      eventsOption: attrs.eventsOption,
     }),
     content: newContent,
     stringHandler: 'html',
@@ -98,7 +103,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
   const editor = (
     <ThemeProvider>
       <AllStyledComponent>
-        <Remirror manager={manager} initialContent={state} placeholder="请输入......">
+        <Remirror manager={manager} initialContent={state} placeholder={attrs?.placeholder ?? "请输入......"}>
           <Toolbar items={toolbarItems} />
           <FloatToolBar />
           {attrs.showReminder && (

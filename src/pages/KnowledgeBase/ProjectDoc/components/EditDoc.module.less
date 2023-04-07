@@ -57,10 +57,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
     border-bottom: 1px solid #eaeaef;
-
     input {
       width: calc(100% - 10px);
       height: 40px;
@@ -118,13 +115,14 @@
   right: 10px;
   display: flex;
   align-items: center;
-  justify-content: right;
-  width: 300px;
+  justify-content: flex-end;
   height: 40px;
   color: #8b8787;
   font-size: 20px;
+  // border: 1px solid red;
 
   .isCollect {
+    display: inline-block;
     width: 20px;
     height: 19px;
     margin-right: 4px;
@@ -134,6 +132,7 @@
   }
 
   .no_Collect {
+    display: inline-block;
     width: 20px;
     height: 19px;
     margin-right: 4px;
@@ -143,7 +142,6 @@
   }
 
   svg {
-    margin-left: 15px;
     cursor: pointer;
 
     &:hover {

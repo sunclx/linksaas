@@ -43,7 +43,6 @@ const ReadDoc: React.FC = () => {
     }
   };
 
-
   return (
     <div className={s.editdoc_wrap}>
       {docSpaceStore.recycleBin && (
