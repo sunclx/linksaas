@@ -3,7 +3,7 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIdeaEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookMarkEvOptionList, bookShelfEvOptionList, calcBookMarkEvCfg, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookMarkEvCfgValues, genBookShelfEvCfgValues, genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIdeaEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -31,6 +31,7 @@ interface FormValue {
     requirementEvCfg: string[] | undefined;
     codeEvCfg: string[] | undefined;
     ideaEvCfg: string[] | undefined;
+    bookMarkEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -98,6 +99,10 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [ideaEvCfgCheckAll, setIdeaEvCfgCheckAll] = useState(ideaEvCfgValues.length == ideaEvOptionList.length);
     const [ideaEvCfgIndeterminate, setIdeaEvCfgIndeterminate] = useState(ideaEvCfgValues.length > 0 && ideaEvCfgValues.length < ideaEvOptionList.length);
 
+    const bookMarkEvCfgValues = genBookMarkEvCfgValues(props.subscribe.event_cfg.book_mark_ev_cfg);
+    const [bookMarkEvCfgCheckAll, setBookMarkEvCfgCheckAll] = useState(bookMarkEvCfgValues.length == bookMarkEvOptionList.length);
+    const [bookMarkEvCfgIndeterminate, setBookMarkEvCfgIndeterminate] = useState(bookMarkEvCfgValues.length > 0 && bookMarkEvCfgValues.length < bookMarkEvOptionList.length);
+
     const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -124,6 +129,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
+                book_mark_ev_cfg: calcBookMarkEvCfg(formValue.bookMarkEvCfg),
             },
         }));
         props.onOk();
@@ -536,6 +542,33 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
+
+                    <Form.Item label={<Checkbox indeterminate={bookMarkEvCfgIndeterminate} checked={bookMarkEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setBookMarkEvCfgIndeterminate(false);
+                        if (bookMarkEvCfgCheckAll) {
+                            setBookMarkEvCfgCheckAll(false);
+                            form.setFieldValue("bookMarkEvCfg", []);
+                        } else {
+                            setBookMarkEvCfgCheckAll(true);
+                            form.setFieldValue("bookMarkEvCfg", bookMarkEvOptionList.map(item => item.value));
+                        }
+                    }}>书签事件</Checkbox>} name="bookMarkEvCfg">
+                        <Checkbox.Group options={bookMarkEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setBookMarkEvCfgCheckAll(false);
+                                setBookMarkEvCfgIndeterminate(false);
+                            } else if (values.length == bookMarkEvOptionList.length) {
+                                setBookMarkEvCfgCheckAll(true);
+                                setBookMarkEvCfgIndeterminate(false);
+                            } else {
+                                setBookMarkEvCfgCheckAll(false);
+                                setBookMarkEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    
                 </Form>
             </div>
         </Modal>

@@ -36,6 +36,7 @@ mod project_code_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
 mod project_idea_api_plugin;
+mod project_bookmark_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
@@ -380,6 +381,7 @@ fn main() {
         .plugin(project_idea_api_plugin::ProjectIdeaApiPlugin::new())
         .plugin(project_tool_api_plugin::ProjectToolApiPlugin::new())
         .plugin(project_alarm_api_plugin::ProjectAlarmApiPlugin::new())
+        .plugin(project_bookmark_api_plugin::ProjectBookMarkApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

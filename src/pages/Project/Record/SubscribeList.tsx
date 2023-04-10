@@ -16,7 +16,7 @@ import {
     genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues,
     genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList, ideaEvOptionList, genIdeaEvCfgValues
+    requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, bookMarkEvOptionList, genBookMarkEvCfgValues
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
@@ -177,6 +177,9 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="知识点事件">
                                             <Checkbox.Group options={ideaEvOptionList} value={genIdeaEvCfgValues(item.event_cfg.idea_ev_cfg)} disabled={true} />
+                                        </Form.Item>
+                                        <Form.Item label="书签事件">
+                                            <Checkbox.Group options={bookMarkEvOptionList} value={genBookMarkEvCfgValues(item.event_cfg.book_mark_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                     </Form>
                                 </Card>

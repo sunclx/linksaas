@@ -1138,6 +1138,52 @@ pub mod idea {
     }
 }
 
+pub mod book_mark {
+    use prost::Message;
+    use proto_gen_rust::events_bookmark;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateCateEvent(events_bookmark::CreateCateEvent),
+        UpdateCateEvent(events_bookmark::UpdateCateEvent),
+        RemoveCateEvent(events_bookmark::RemoveCateEvent),
+        CreateBookMarkEvent(events_bookmark::CreateBookMarkEvent),
+        RemoveBookMarkEvent(events_bookmark::RemoveBookMarkEvent),
+        SetBookMarkCateEvent(events_bookmark::SetBookMarkCateEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_bookmark::CreateCateEvent::type_url() {
+            if let Ok(ev) = events_bookmark::CreateCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateCateEvent(ev));
+            }
+        } else if data.type_url == events_bookmark::UpdateCateEvent::type_url() {
+            if let Ok(ev) = events_bookmark::UpdateCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateCateEvent(ev));
+            }
+        } else if data.type_url == events_bookmark::RemoveCateEvent::type_url() {
+            if let Ok(ev) = events_bookmark::RemoveCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveCateEvent(ev));
+            }
+        } else if data.type_url == events_bookmark::CreateBookMarkEvent::type_url() {
+            if let Ok(ev) = events_bookmark::CreateBookMarkEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateBookMarkEvent(ev));
+            }
+        } else if data.type_url == events_bookmark::RemoveBookMarkEvent::type_url() {
+            if let Ok(ev) = events_bookmark::RemoveBookMarkEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveBookMarkEvent(ev));
+            }
+        } else if data.type_url == events_bookmark::SetBookMarkCateEvent::type_url() {
+            if let Ok(ev) = events_bookmark::SetBookMarkCateEvent::decode(data.value.as_slice()) {
+                return Some(Event::SetBookMarkCateEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -1156,6 +1202,7 @@ pub enum EventMessage {
     RequirementEvent(requirement::Event),
     CodeEvent(code::Event),
     IdeaEvent(idea::Event),
+    BookMarkEvent(book_mark::Event),
     NoopEvent(),
 }
 
@@ -1209,6 +1256,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = idea::decode_event(data) {
         return Some(EventMessage::IdeaEvent(ret));
+    }
+    if let Some(ret) = book_mark::decode_event(data) {
+        return Some(EventMessage::BookMarkEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

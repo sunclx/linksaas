@@ -215,6 +215,16 @@ export type IdeaEvCfg = {
     cancel_appraise: boolean;
 };
 
+export type BookMarkEvCfg = {
+    create_cate: boolean;
+    update_cate: boolean;
+    remove_cate: boolean;
+    create_book_mark: boolean;
+    remove_book_mark: boolean;
+    set_book_mark_cate: boolean;
+};
+
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     book_shelf_ev_cfg: BookShelfEvCfg;
@@ -231,6 +241,7 @@ export type EventCfg = {
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;
     idea_ev_cfg: IdeaEvCfg;
+    book_mark_ev_cfg: BookMarkEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -341,6 +352,16 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             remove_idea: false,
             set_appraise: false,
             cancel_appraise: false,
+        };
+    }
+    if (cfg.book_mark_ev_cfg == undefined) {
+        cfg.book_mark_ev_cfg = {
+            create_cate: false,
+            update_cate: false,
+            remove_cate: false,
+            create_book_mark: false,
+            remove_book_mark: false,
+            set_book_mark_cate: false,
         };
     }
     return cfg;
