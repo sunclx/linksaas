@@ -6,8 +6,6 @@ import s from "./BookMarkPanel.module.less";
 import type { CateInfo, BookMarkInfo } from "@/api/project_bookmark";
 import { list_cate, list_book_mark, remove_book_mark, set_book_mark_cate, get_book_mark } from "@/api/project_bookmark";
 import { request } from "@/utils/request";
-import type { LinkBookMarkCateState } from "@/stores/linkAux";
-import { useLocation } from "react-router-dom";
 import type { ColumnsType } from 'antd/lib/table';
 import { EditSelect } from "@/components/EditCell/EditSelect";
 
@@ -46,9 +44,6 @@ const BookMarkContent: React.FC<BookMarkContentProps> = (props) => {
 const PAGE_SIZE = 10;
 
 const BookMarkPanel = () => {
-    const location = useLocation();
-    const state: LinkBookMarkCateState = location.state as (LinkBookMarkCateState | undefined) ?? { cateId: "" };
-
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
@@ -85,7 +80,7 @@ const BookMarkPanel = () => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             filter_by_cate_id: true,
-            cate_id: state.cateId,
+            cate_id: projectStore.curBookMarkCateId,
             offset: PAGE_SIZE * curPage,
             limit: PAGE_SIZE,
         }));
@@ -163,11 +158,11 @@ const BookMarkPanel = () => {
         if (curPage != 0) {
             setCurPage(0);
         }
-    }, [state.cateId]);
+    }, [projectStore.curBookMarkCateId]);
 
     useEffect(() => {
         loadBookMarkList();
-    }, [curPage, state.cateId]);
+    }, [curPage, projectStore.curBookMarkCateId]);
 
     return (
         <div className={s.content_wrap}>

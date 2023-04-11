@@ -9,6 +9,9 @@ export type DocResultItem = {
     project_id: string;
     doc_space_id: string;
     doc_id: string;
+    title: string;
+    content: string;
+
 };
 
 export type ChannelResultItem = {
@@ -21,6 +24,16 @@ export type ChannelResultItem = {
 export type IssueResultItem = {
     project_id: string;
     issue_id: string;
+    title: string;
+    content: string;
+};
+
+export type BookMarkResultItem = {
+    project_id: string;
+    book_mark_id: string;
+    cate_id: string;
+    title: string;
+    content: string;
 };
 
 export type SearchProjectChannelRequest = {
@@ -87,8 +100,26 @@ export type SearchProjectDocResponse = {
     item_list: DocResultItem[],
 };
 
+export type SearchProjectBookMarkRequest = {
+    session_id: string;
+    filter_by_project_id: boolean;
+    project_id: string;
+    keyword: string;
+    filter_by_cate_id: boolean;
+    cate_id: string;
+    filter_by_time_range: boolean;
+    from_time_stamp: number;
+    to_time_stamp: number;
+    offset: number;
+    limit: number;
+};
 
-
+export type SearchProjectBookMarkResponse = {
+    code: number;
+    err_msg: string;
+    total_count: number;
+    item_list: BookMarkResultItem[];
+};
 
 //搜素频道
 export async function search_project_channel(request: SearchProjectChannelRequest): Promise<SearchProjectChannelResponse> {
@@ -113,6 +144,15 @@ export async function search_project_doc(request: SearchProjectDocRequest): Prom
     const cmd = 'plugin:search_api|search_project_doc';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<SearchProjectDocResponse>(cmd, {
+        request,
+    });
+}
+
+//搜索项目书签
+export async function search_project_book_mark(request: SearchProjectBookMarkRequest): Promise<SearchProjectBookMarkResponse> {
+    const cmd = 'plugin:search_api|search_project_book_mark';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SearchProjectBookMarkResponse>(cmd, {
         request,
     });
 }

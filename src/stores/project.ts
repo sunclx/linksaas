@@ -447,4 +447,16 @@ export default class ProjectStore {
       this._bookMarkCateVersion = this._bookMarkCateVersion + 1;
     });
   }
+
+  private _curBookMarkCateId: string = ""
+
+  get curBookMarkCateId(): string {
+    return this._curBookMarkCateId;
+  }
+
+  set curBookMarkCateId(val: string) {
+    runInAction(() => {
+      this._curBookMarkCateId = val;
+    });
+  }
 }

@@ -491,10 +491,6 @@ export type LinkIdeaPageState = {
   ideaId: string;
 }
 
-export type LinkBookMarkCateState = {
-  cateId: string;
-}
-
 class LinkAuxStore {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
@@ -647,10 +643,8 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != bookMarkCateLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(bookMarkCateLink.projectId);
       }
-      const state: LinkBookMarkCateState = {
-        cateId: bookMarkCateLink.cateId,
-      }
-      history.push(`${APP_PROJECT_KB_BOOK_MARK_PATH}?v=${uniqId()}`, state);
+      this.rootStore.projectStore.curBookMarkCateId = bookMarkCateLink.cateId;
+      history.push(`${APP_PROJECT_KB_BOOK_MARK_PATH}?v=${uniqId()}`);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ROBOT_METRIC) {
       const robotLink = link as LinkRobotMetricInfo;
       if (this.rootStore.projectStore.getProject(robotLink.projectId)?.setting.disable_server_agent == true) {

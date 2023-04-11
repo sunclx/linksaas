@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { useHistory, useLocation } from "react-router-dom";
-import { LinkBookMarkCateInfo, type LinkBookMarkCateState } from "@/stores/linkAux";
+import { useHistory } from "react-router-dom";
+import { LinkBookMarkCateInfo } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import type { CateInfo } from "@/api/project_bookmark";
@@ -136,8 +136,6 @@ const CateItem: React.FC<CateItemProps> = (props) => {
 
 const CatePanel = () => {
     const history = useHistory();
-    const location = useLocation();
-    const state: LinkBookMarkCateState = location.state as (LinkBookMarkCateState | undefined) ?? { cateId: "" };
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
@@ -173,7 +171,7 @@ const CatePanel = () => {
 
     useEffect(() => {
         loadCateList();
-    }, [state.cateId, location.search, projectStore.bookMarkCateVersion])
+    }, [projectStore.curBookMarkCateId, projectStore.bookMarkCateVersion])
 
     return (
         <Card title="书签分类" bordered={false}
@@ -193,7 +191,7 @@ const CatePanel = () => {
             }>
             <List>
                 <List.Item>
-                    <div className={classNames(s.item, state.cateId == "" ? s.active : "")}>
+                    <div className={classNames(s.item, projectStore.curBookMarkCateId == "" ? s.active : "")}>
                         <Button type="text" className={s.label} onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -203,7 +201,7 @@ const CatePanel = () => {
                 </List.Item>
                 {cateInfoList.map(cateInfo => (
                     <List.Item key={cateInfo.cate_id}>
-                        <CateItem cateInfo={cateInfo} curCateId={state.cateId} onUpdate={() => {
+                        <CateItem cateInfo={cateInfo} curCateId={projectStore.curBookMarkCateId} onUpdate={() => {
                             projectStore.addBookMarkCateVersion();
                         }}
                             onRemove={() => {
