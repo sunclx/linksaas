@@ -3,7 +3,7 @@ import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
 import * as es from './events_subscribe';
-import { LinkCodeCommentInfo, LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkIdeaPageInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkBookMarkCateInfo, LinkCodeCommentInfo, LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkIdeaPageInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -5058,7 +5058,8 @@ namespace book_mark {
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
     return [
-      new LinkNoneInfo(`TODO`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 书签分类`),
+      new LinkBookMarkCateInfo(inner.cate_name, ev.project_id, inner.cate_id),
     ];
   }
 
@@ -5075,7 +5076,9 @@ namespace book_mark {
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
     return [
-      new LinkNoneInfo(`TODO`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 书签分类`),
+      new LinkBookMarkCateInfo(inner.new_catename, ev.project_id, inner.cate_id),
+      new LinkNoneInfo(`原标题 ${inner.old_cate_name}`),
     ];
   }
 
@@ -5091,7 +5094,7 @@ namespace book_mark {
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
     return [
-      new LinkNoneInfo(`TODO`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 书签分类 ${inner.cate_name}`),
     ];
   }
 
@@ -5110,7 +5113,10 @@ namespace book_mark {
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
     return [
-      new LinkNoneInfo(`TODO`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 书签`),
+      new LinkExterneInfo(inner.title, inner.url),
+      new LinkNoneInfo("书签分类"),
+      new LinkBookMarkCateInfo(inner.cate_name, ev.project_id, inner.cate_id),
     ];
   }
 
@@ -5129,7 +5135,10 @@ namespace book_mark {
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
     return [
-      new LinkNoneInfo(`TODO`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 书签`),
+      new LinkExterneInfo(inner.title, inner.url),
+      new LinkNoneInfo("书签分类"),
+      new LinkBookMarkCateInfo(inner.cate_name, ev.project_id, inner.cate_id),
     ];
   }
 
@@ -5150,7 +5159,13 @@ namespace book_mark {
   ): LinkInfo[] {
     console.log(ev, skip_prj_name, inner);
     return [
-      new LinkNoneInfo(`TODO`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改 书签`),
+      new LinkExterneInfo(inner.title, inner.url),
+      new LinkNoneInfo("分类"),
+      new LinkNoneInfo("原分类"),
+      new LinkBookMarkCateInfo(inner.old_cate_name, ev.project_id, inner.old_cate_id),
+      new LinkNoneInfo("新分类"),
+      new LinkBookMarkCateInfo(inner.new_cate_name, ev.project_id, inner.new_cate_id),
     ];
   }
 
