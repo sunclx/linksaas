@@ -75,7 +75,8 @@ pub struct Server<C> {
 
 use local_api_rust::models::{
     DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdAiTokenGet200Response,
-    ProjectProjectIdBugAllGet200Response, ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
+    ProjectProjectIdBookMarkPostRequest, ProjectProjectIdBugAllGet200Response,
+    ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
     ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
@@ -84,8 +85,8 @@ use local_api_rust::models::{
 };
 use local_api_rust::{
     Api, HelloGetResponse, ProjectGetResponse, ProjectProjectIdAiTokenGetResponse,
-    ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
-    ProjectProjectIdBugRecordBugIdEventsGetResponse,
+    ProjectProjectIdBookMarkPostResponse, ProjectProjectIdBugAllGetResponse,
+    ProjectProjectIdBugMyGetResponse, ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
     ProjectProjectIdChannelMyGetResponse, ProjectProjectIdChannelNotJoinGetResponse,
@@ -2067,6 +2068,60 @@ where
             });
             return Ok(ProjectGetResponse::Status200 {
                 body: project_list,
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 新增项目书签
+    async fn project_project_id_book_mark_post(
+        &self,
+        project_id: String,
+        project_project_id_book_mark_post_request: Option<ProjectProjectIdBookMarkPostRequest>,
+        _context: &C,
+    ) -> Result<ProjectProjectIdBookMarkPostResponse, ApiError> {
+        if project_project_id_book_mark_post_request.is_none() {
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("wrong request".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let request = project_project_id_book_mark_post_request.unwrap();
+        if request.title.is_none() || request.url.is_none() || request.content.is_none() {
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("wrong request".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let title = request.title.unwrap();
+        let url = request.url.unwrap();
+        let content = request.content.unwrap();
+        let res =
+            super::bookmark_api::create_book_mark(&self.app, &project_id, &title, &url, &content)
+                .await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status200 {
+                body: json!({}),
                 access_control_allow_origin: Some("*".into()),
             });
         }

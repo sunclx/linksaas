@@ -1,5 +1,5 @@
 import { useStores } from '@/hooks';
-import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_BOOK_MARK_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
 import { Popover, Modal, Input, message } from 'antd';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
@@ -109,6 +109,21 @@ const KnowledgeBaseMenu = () => {
         }}
       >
         <DeleteOutlined /> <span className={s.sub_menu_head}>文档回收站</span>
+      </div>
+
+      <div
+        className={classNames(s.sub_menu_wrap, pathname.startsWith(APP_PROJECT_KB_BOOK_MARK_PATH) && s.active)}
+        onClick={() => {
+          if (docSpaceStore.inEdit) {
+            docSpaceStore.showCheckLeave(() => {
+              history.push(APP_PROJECT_KB_BOOK_MARK_PATH);
+            });
+            return;
+          }
+          history.push(APP_PROJECT_KB_BOOK_MARK_PATH);
+        }}
+      >
+        <BookOutlined /> <span className={s.sub_menu_head}>项目书签</span>
       </div>
       <div
         className={classNames(s.sub_menu_wrap, pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH) && s.active)}
