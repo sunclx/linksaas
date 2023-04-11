@@ -4,13 +4,10 @@ import React, { useState } from "react";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { FolderOpenOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { observer } from 'mobx-react';
-import { get_local_api_token, renew_local_api_token } from "@/api/project";
-import { request } from "@/utils/request";
 import { set_git_hook } from "@/api/project_tool";
 
 
 const GitHookToolModal = () => {
-    const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
     const [gitPath, setGitPath] = useState("");
@@ -28,16 +25,7 @@ const GitHookToolModal = () => {
     };
 
     const setHooks = async () => {
-        const tokenRes = await request(get_local_api_token(userStore.sessionId, projectStore.curProjectId));
-        if (tokenRes.token == "") {
-            if (!projectStore.isAdmin) {
-                message.error("项目访问令牌为空，请管理员生成项目访问令牌。")
-                return;
-            }
-            const renewRes = await request(renew_local_api_token(userStore.sessionId, projectStore.curProjectId));
-            tokenRes.token = renewRes.token;
-        }
-        await set_git_hook(gitPath, projectStore.curProjectId, tokenRes.token, postHook);
+        await set_git_hook(gitPath, projectStore.curProjectId, postHook);
         message.info("设置git hooks成果");
         projectStore.projectTool = null;
     };

@@ -75,7 +75,8 @@ pub struct Server<C> {
 
 use local_api_rust::models::{
     DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdAiTokenGet200Response,
-    ProjectProjectIdBugAllGet200Response, ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
+    ProjectProjectIdBookMarkPostRequest, ProjectProjectIdBugAllGet200Response,
+    ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
     ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
@@ -83,7 +84,8 @@ use local_api_rust::models::{
     ProjectProjectIdTestCaseReportEntryIdPostRequest,
 };
 use local_api_rust::{
-    Api, HelloGetResponse, ProjectProjectIdAiTokenGetResponse, ProjectProjectIdBugAllGetResponse,
+    Api, HelloGetResponse, ProjectGetResponse, ProjectProjectIdAiTokenGetResponse,
+    ProjectProjectIdBookMarkPostResponse, ProjectProjectIdBugAllGetResponse,
     ProjectProjectIdBugMyGetResponse, ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
@@ -107,7 +109,8 @@ use local_api_rust::{
     ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse,
     ProjectProjectIdTestCaseLangLangGetResponse, ProjectProjectIdTestCaseListEntryIdGetResponse,
     ProjectProjectIdTestCaseReportEntryIdPostResponse,
-    ProjectProjectIdTestCaseShowEntryIdGetResponse, ShowGetResponse, ProjectProjectIdToolsPostHookGetResponse,
+    ProjectProjectIdTestCaseShowEntryIdGetResponse, ProjectProjectIdToolsPostHookGetResponse,
+    ShowGetResponse,
 };
 use swagger::ApiError;
 
@@ -157,19 +160,10 @@ where
     async fn project_project_id_bug_all_get(
         &self,
         project_id: String,
-        access_token: String,
         offset: i32,
         limit: i32,
         _context: &C,
     ) -> Result<ProjectProjectIdBugAllGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdBugAllGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::issue_api::list_issue(
             &self.app,
             &project_id,
@@ -209,18 +203,9 @@ where
     async fn project_project_id_bug_my_get(
         &self,
         project_id: String,
-        access_token: String,
         state: String,
         _context: &C,
     ) -> Result<ProjectProjectIdBugMyGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdBugMyGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res =
             super::issue_api::list_my_issue(&self.app, &project_id, IssueType::Bug as i32, &state)
                 .await;
@@ -253,18 +238,8 @@ where
         &self,
         project_id: String,
         bug_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdBugRecordBugIdShowGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdBugRecordBugIdShowGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(ProjectProjectIdBugRecordBugIdShowGetResponse::Status500 {
@@ -304,20 +279,8 @@ where
         project_id: String,
         _doc_space_id: String,
         doc_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(
@@ -362,19 +325,10 @@ where
         &self,
         project_id: String,
         doc_space_id: String,
-        access_token: String,
         offset: i32,
         limit: i32,
         _context: &C,
     ) -> Result<ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdDocSpaceDocSpaceIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::doc_space_api::list_doc_key(
             &self.app,
             &project_id,
@@ -415,17 +369,8 @@ where
     async fn project_project_id_doc_space_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdDocSpaceGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdDocSpaceGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::doc_space_api::list_doc_space(&self.app, &project_id).await;
         if res.is_err() {
             return Ok(ProjectProjectIdDocSpaceGetResponse::Status500 {
@@ -466,7 +411,6 @@ where
     async fn project_project_id_event_get(
         &self,
         project_id: String,
-        access_token: String,
         from_time: i64,
         to_time: i64,
         offset: i32,
@@ -474,14 +418,6 @@ where
         user_id: Option<String>,
         _context: &C,
     ) -> Result<ProjectProjectIdEventGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdEventGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let mut member_user_id = String::from("");
         if let Some(user_id) = user_id {
             member_user_id = user_id;
@@ -527,19 +463,10 @@ where
     async fn project_project_id_task_all_get(
         &self,
         project_id: String,
-        access_token: String,
         offset: i32,
         limit: i32,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskAllGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTaskAllGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::issue_api::list_issue(
             &self.app,
             &project_id,
@@ -579,18 +506,9 @@ where
     async fn project_project_id_task_my_get(
         &self,
         project_id: String,
-        access_token: String,
         state: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskMyGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTaskMyGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res =
             super::issue_api::list_my_issue(&self.app, &project_id, IssueType::Task as i32, &state)
                 .await;
@@ -623,18 +541,8 @@ where
         &self,
         project_id: String,
         task_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskRecordTaskIdShowGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTaskRecordTaskIdShowGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(ProjectProjectIdTaskRecordTaskIdShowGetResponse::Status500 {
@@ -673,20 +581,8 @@ where
         &self,
         project_id: String,
         bug_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdBugRecordBugIdShortNoteGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdBugRecordBugIdShortNoteGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(
@@ -731,20 +627,8 @@ where
         &self,
         project_id: String,
         task_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(
@@ -788,18 +672,8 @@ where
     async fn project_project_id_member_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdMemberGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdMemberGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-
         let res = super::member_api::list_member(&self.app, &project_id).await;
         if res.is_err() {
             return Ok(ProjectProjectIdMemberGetResponse::Status500 {
@@ -830,20 +704,8 @@ where
         &self,
         project_id: String,
         member_user_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdMemberMemberUserIdShowGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdMemberMemberUserIdShowGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(
@@ -887,18 +749,8 @@ where
     async fn project_project_id_create_bug_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdCreateBugGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
@@ -937,18 +789,8 @@ where
         &self,
         project_id: String,
         doc_space_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdCreateDocDocSpaceIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
@@ -986,18 +828,8 @@ where
     async fn project_project_id_create_task_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdCreateTaskGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
@@ -1036,19 +868,8 @@ where
         &self,
         project_id: String,
         task_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskRecordTaskIdEventsGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdTaskRecordTaskIdEventsGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let res = super::event_api::list_event_by_ref(
             &self.app,
             &project_id,
@@ -1092,17 +913,8 @@ where
         &self,
         project_id: String,
         bug_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdBugRecordBugIdEventsGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdBugRecordBugIdEventsGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::event_api::list_event_by_ref(
             &self.app,
             &project_id,
@@ -1140,19 +952,8 @@ where
         &self,
         project_id: String,
         task_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let res = super::issue_api::list_sub_task(&self.app, &project_id, &task_id).await;
         if res.is_err() {
             return Ok(
@@ -1189,19 +990,8 @@ where
         &self,
         project_id: String,
         task_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTaskRecordTaskIdDependGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdTaskRecordTaskIdDependGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let my_dep_res = super::issue_api::list_my_depend(&self.app, &project_id, &task_id).await;
         let mut my_dep_list: Vec<IssueInfo> = Vec::new();
         if my_dep_res.is_err() {
@@ -1276,19 +1066,10 @@ where
         &self,
         project_id: String,
         channel_id: String,
-        access_token: String,
         limit: i32,
         ref_msg_id: Option<String>,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelMsgChannelIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let perm = super::access_check::get_perm(&self.app, &project_id).await;
         if perm.is_err() {
             return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
@@ -1337,17 +1118,8 @@ where
     async fn project_project_id_channel_my_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelMyGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let perm = super::access_check::get_perm(&self.app, &project_id).await;
         if perm.is_err() {
             return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
@@ -1393,17 +1165,8 @@ where
     async fn project_project_id_channel_not_join_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelNotJoinGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let perm = super::access_check::get_perm(&self.app, &project_id).await;
         if perm.is_err() {
             return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
@@ -1451,17 +1214,8 @@ where
     async fn project_project_id_channel_orphan_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelOrphanGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let perm = super::access_check::get_perm(&self.app, &project_id).await;
         if perm.is_err() {
             return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
@@ -1523,18 +1277,9 @@ where
     /// 列出生成测试代码支持的语言
     async fn project_project_id_test_case_lang_get(
         &self,
-        project_id: String,
-        access_token: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTestCaseLangGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTestCaseLangGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::testcase_api::list_lang(&self.app).await;
         if res.is_err() {
             return Ok(ProjectProjectIdTestCaseLangGetResponse::Status500 {
@@ -1567,19 +1312,8 @@ where
         lang: String,
         framework: String,
         entry_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let res = super::testcase_api::gen_test_code(
             &self.app,
             &project_id,
@@ -1621,19 +1355,10 @@ where
     /// 列出生成测试代码支持的框架
     async fn project_project_id_test_case_lang_lang_get(
         &self,
-        project_id: String,
+        _project_id: String,
         lang: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTestCaseLangLangGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTestCaseLangLangGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::testcase_api::list_frame_work(&self.app, &lang).await;
         if res.is_err() {
             return Ok(ProjectProjectIdTestCaseLangLangGetResponse::Status500 {
@@ -1664,17 +1389,8 @@ where
         &self,
         project_id: String,
         entry_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTestCaseListEntryIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTestCaseListEntryIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let mut real_entry_id = entry_id;
         if &real_entry_id == "__ROOT__" {
             real_entry_id = "".into();
@@ -1709,20 +1425,9 @@ where
         &self,
         project_id: String,
         entry_id: String,
-        access_token: String,
         request: Option<ProjectProjectIdTestCaseReportEntryIdPostRequest>,
         _context: &C,
     ) -> Result<ProjectProjectIdTestCaseReportEntryIdPostResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         if request.is_none() {
             return Ok(
                 ProjectProjectIdTestCaseReportEntryIdPostResponse::Status500 {
@@ -1981,17 +1686,8 @@ where
         &self,
         project_id: String,
         entry_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdTestCaseShowEntryIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let win = self.app.get_window("main");
         if win.is_none() {
             return Ok(ProjectProjectIdTestCaseShowEntryIdGetResponse::Status500 {
@@ -2035,19 +1731,8 @@ where
         project_id: String,
         _comment_thread_id: String,
         comment_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let res =
             super::project_code_api::remove_comment(&self.app, &project_id, &comment_id).await;
         if res.is_err() {
@@ -2086,19 +1771,8 @@ where
         project_id: String,
         _comment_thread_id: String,
         comment_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let res = super::project_code_api::get_comment(&self.app, &project_id, &comment_id).await;
         if res.is_err() {
             return Ok(
@@ -2147,20 +1821,9 @@ where
         project_id: String,
         _comment_thread_id: String,
         comment_id: String,
-        access_token: String,
         request: Option<ProjectProjectIdCodeCommentCommentThreadIdPutRequest>,
         _context: &C,
     ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         if request.is_none() {
             return Ok(
                 ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse::Status500 {
@@ -2221,19 +1884,8 @@ where
         &self,
         project_id: String,
         thread_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdCodeCommentCommentThreadIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         let res = super::project_code_api::list_comment(&self.app, &project_id, &thread_id).await;
         if res.is_err() {
             return Ok(
@@ -2270,20 +1922,9 @@ where
         &self,
         project_id: String,
         thread_id: String,
-        access_token: String,
         request: Option<ProjectProjectIdCodeCommentCommentThreadIdPutRequest>,
         _context: &C,
     ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(
-                ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("访问令牌错误".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
         if request.is_none() {
             return Ok(
                 ProjectProjectIdCodeCommentCommentThreadIdPutResponse::Status500 {
@@ -2345,17 +1986,8 @@ where
     async fn project_project_id_ai_token_get(
         &self,
         project_id: String,
-        access_token: String,
         _context: &C,
     ) -> Result<ProjectProjectIdAiTokenGetResponse, ApiError> {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
         let res = super::project_api::gen_ai_token(&self.app, &project_id).await;
         if res.is_err() {
             return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
@@ -2387,22 +2019,12 @@ where
     async fn project_project_id_tools_post_hook_get(
         &self,
         project_id: String,
-        access_token: String,
-        _context: &C) -> Result<ProjectProjectIdToolsPostHookGetResponse, ApiError>
-    {
-        if super::access_check::check_token(&self.app, &project_id, &access_token).await == false {
-            return Ok(ProjectProjectIdToolsPostHookGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("访问令牌错误".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        
+        _context: &C,
+    ) -> Result<ProjectProjectIdToolsPostHookGetResponse, ApiError> {
         let win = self.app.get_window("main");
         if win.is_some() {
             let win = win.unwrap();
-            if let Err(_) = win.emit("notice", new_git_post_hook_notice(project_id)){
+            if let Err(_) = win.emit("notice", new_git_post_hook_notice(project_id)) {
                 return Ok(ProjectProjectIdToolsPostHookGetResponse::Status500 {
                     body: ErrInfo {
                         err_msg: Some("发送通知失败".into()),
@@ -2417,4 +2039,91 @@ where
         });
     }
 
+    /// 获取项目列表
+    async fn project_get(&self, _context: &C) -> Result<ProjectGetResponse, ApiError> {
+        let res = super::project_api::list_project(&self.app).await;
+        if res.is_err() {
+            return Ok(ProjectGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectGetResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            let mut project_list: Vec<local_api_rust::models::ProjectInfo> = Vec::new();
+            res.info_list.iter().for_each(|prj| {
+                project_list.push(local_api_rust::models::ProjectInfo {
+                    project_id: Some(prj.project_id.clone()),
+                    project_name: Some(prj.basic_info.as_ref().unwrap().project_name.clone()),
+                })
+            });
+            return Ok(ProjectGetResponse::Status200 {
+                body: project_list,
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
+
+    /// 新增项目书签
+    async fn project_project_id_book_mark_post(
+        &self,
+        project_id: String,
+        project_project_id_book_mark_post_request: Option<ProjectProjectIdBookMarkPostRequest>,
+        _context: &C,
+    ) -> Result<ProjectProjectIdBookMarkPostResponse, ApiError> {
+        if project_project_id_book_mark_post_request.is_none() {
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("wrong request".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let request = project_project_id_book_mark_post_request.unwrap();
+        if request.title.is_none() || request.url.is_none() || request.content.is_none() {
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("wrong request".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let title = request.title.unwrap();
+        let url = request.url.unwrap();
+        let content = request.content.unwrap();
+        let res =
+            super::bookmark_api::create_book_mark(&self.app, &project_id, &title, &url, &content)
+                .await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        } else {
+            let res = res.unwrap();
+            if &res.err_msg != "" {
+                return Ok(ProjectProjectIdBookMarkPostResponse::Status500 {
+                    body: ErrInfo {
+                        err_msg: Some(res.err_msg),
+                    },
+                    access_control_allow_origin: Some("*".into()),
+                });
+            }
+            return Ok(ProjectProjectIdBookMarkPostResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+    }
 }

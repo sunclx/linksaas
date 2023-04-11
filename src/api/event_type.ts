@@ -16,7 +16,6 @@ import * as tc from '@/api/project_test_case';
 import moment from 'moment';
 import { APPRAISE_AGREE } from './project_idea';
 
-
 export function get_issue_type_str(issue_type: number): string {
   if (issue_type == pi.ISSUE_TYPE_BUG) {
     return '缺陷';
@@ -167,7 +166,7 @@ export namespace project {
     }
     return ret_list;
   }
-  
+
   export type CreateRoleEvent = {
     role_id: string;
     role_name: string;
@@ -204,7 +203,7 @@ export namespace project {
     }
     return ret_list;
   }
-  
+
   export type RemoveRoleEvent = {
     role_id: string;
     role_name: string;
@@ -5046,6 +5045,146 @@ namespace idea {
   }
 }
 
+namespace book_mark {
+  export type CreateCateEvent = {
+    cate_id: string;
+    cate_name: string;
+  }
+
+  function get_create_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateCateEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [
+      new LinkNoneInfo(`TODO`),
+    ];
+  }
+
+  export type UpdateCateEvent = {
+    cate_id: string;
+    old_cate_name: string;
+    new_catename: string;
+  };
+
+  function get_update_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateCateEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [
+      new LinkNoneInfo(`TODO`),
+    ];
+  }
+
+  export type RemoveCateEvent = {
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_remove_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveCateEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [
+      new LinkNoneInfo(`TODO`),
+    ];
+  }
+
+  export type CreateBookMarkEvent = {
+    book_mark_id: string;
+    title: string;
+    url: string;
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_create_bookmark_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateBookMarkEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [
+      new LinkNoneInfo(`TODO`),
+    ];
+  }
+
+  export type RemoveBookMarkEvent = {
+    book_mark_id: string;
+    title: string;
+    url: string;
+    cate_id: string;
+    cate_name: string;
+  };
+
+  function get_remove_bookmark_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveBookMarkEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [
+      new LinkNoneInfo(`TODO`),
+    ];
+  }
+
+  export type SetBookMarkCateEvent = {
+    book_mark_id: string;
+    title: string;
+    url: string;
+    old_cate_id: string;
+    old_cate_name: string;
+    new_cate_id: string;
+    new_cate_name: string;
+  }
+
+  function get_set_bookmark_cate_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: SetBookMarkCateEvent,
+  ): LinkInfo[] {
+    console.log(ev, skip_prj_name, inner);
+    return [
+      new LinkNoneInfo(`TODO`),
+    ];
+  }
+
+  export class AllBookMarkEvent {
+    CreateCateEvent?: CreateCateEvent;
+    UpdateCateEvent?: UpdateCateEvent;
+    RemoveCateEvent?: RemoveCateEvent;
+    CreateBookMarkEvent?: CreateBookMarkEvent;
+    RemoveBookMarkEvent?: RemoveBookMarkEvent;
+    SetBookMarkCateEvent?: SetBookMarkCateEvent;
+  }
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllBookMarkEvent,
+  ): LinkInfo[] {
+    if (inner.CreateCateEvent !== undefined) {
+      return get_create_cate_simple_content(ev, skip_prj_name, inner.CreateCateEvent);
+    } else if (inner.UpdateCateEvent !== undefined) {
+      return get_update_cate_simple_content(ev, skip_prj_name, inner.UpdateCateEvent);
+    } else if (inner.RemoveCateEvent !== undefined) {
+      return get_remove_cate_simple_content(ev, skip_prj_name, inner.RemoveCateEvent);
+    } else if (inner.CreateBookMarkEvent !== undefined) {
+      return get_create_bookmark_simple_content(ev, skip_prj_name, inner.CreateBookMarkEvent);
+    } else if (inner.RemoveBookMarkEvent !== undefined) {
+      return get_remove_bookmark_simple_content(ev, skip_prj_name, inner.RemoveBookMarkEvent);
+    } else if (inner.SetBookMarkCateEvent !== undefined) {
+      return get_set_bookmark_cate_simple_content(ev, skip_prj_name, inner.SetBookMarkCateEvent);
+    }
+    return [new LinkNoneInfo('未知事件')];
+  }
+}
+
 export class AllEvent {
   ProjectEvent?: project.AllProjectEvent;
   ProjectDocEvent?: project_doc.AllProjectDocEvent;
@@ -5063,6 +5202,7 @@ export class AllEvent {
   RequirementEvent?: requirement.AllRequirementEvent;
   CodeEvent?: code.AllCodeEvent;
   IdeaEvent?: idea.AllIdeaEvent;
+  BookMarkEvent?: book_mark.AllBookMarkEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -5096,8 +5236,10 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return requirement.get_simple_content_inner(ev, skip_prj_name, ev.event_data.RequirementEvent);
   } else if (ev.event_data.CodeEvent !== undefined) {
     return code.get_simple_content_inner(ev, skip_prj_name, ev.event_data.CodeEvent);
-  } else if (ev.event_data.IdeaEvent != undefined) {
+  } else if (ev.event_data.IdeaEvent !== undefined) {
     return idea.get_simple_content_inner(ev, skip_prj_name, ev.event_data.IdeaEvent);
+  } else if (ev.event_data.BookMarkEvent !== undefined) {
+    return book_mark.get_simple_content_inner(ev, skip_prj_name, ev.event_data.BookMarkEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

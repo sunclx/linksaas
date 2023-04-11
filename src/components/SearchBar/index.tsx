@@ -3,12 +3,12 @@ import { observer } from 'mobx-react';
 import s from './index.module.less';
 import { Button, DatePicker, Form, Input, Modal, Popover, Select } from "antd";
 import { useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_MARK_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type moment from 'moment';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { WebviewWindow } from '@tauri-apps/api/window';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB } from "@/api/project";
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB, LAYOUT_TYPE_NONE } from "@/api/project";
 
 
 
@@ -20,6 +20,9 @@ export const SEARCH_SCOPE_CUR_DOC_SPACE: SEARCH_SCOPE = "curDocSpace";
 export const SEARCH_SCOPE_ALL_DOC_SPACE: SEARCH_SCOPE = "allDocSpace";
 export const SEARCH_SCOPE_TASK: SEARCH_SCOPE = "task"
 export const SEARCH_SCOPE_BUG: SEARCH_SCOPE = "bug"
+export const SEARCH_SCOPE_CUR_BOOKMARK_CATE: SEARCH_SCOPE = "curBookMarkCate"
+export const SEARCH_SCOPE_ALL_BOOKMARK_CATE: SEARCH_SCOPE = "allBookMarkCate"
+
 
 
 interface SearchScopeItem {
@@ -49,18 +52,24 @@ const SearchBar = () => {
                     label: "当前频道",
                     value: SEARCH_SCOPE_CUR_CHANNEL,
                 });
+                setCurScope(SEARCH_SCOPE_CUR_CHANNEL);
+            } else {
+                setCurScope(SEARCH_SCOPE_ALL_CHANNEL);
             }
             tmpList.push({
                 label: "全部频道",
                 value: SEARCH_SCOPE_ALL_CHANNEL,
             });
-            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_CHAT) {
+            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_CHAT && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE) {
                 tmpList.push({
                     label: "全部文档空间",
                     value: SEARCH_SCOPE_ALL_DOC_SPACE,
                 });
+                tmpList.push({
+                    label: "全部书签分类",
+                    value: SEARCH_SCOPE_ALL_BOOKMARK_CATE,
+                });
             }
-            setCurScope(SEARCH_SCOPE_CUR_CHANNEL);
         }
         if (location.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
             if (docSpaceStore.curDocSpaceId != "") {
@@ -76,13 +85,39 @@ const SearchBar = () => {
                 label: "全部文档空间",
                 value: SEARCH_SCOPE_ALL_DOC_SPACE,
             });
-            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB) {
+            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE) {
+                tmpList.push({
+                    label: "全部频道",
+                    value: SEARCH_SCOPE_ALL_CHANNEL,
+                });
+            }
+            tmpList.push({
+                label: "全部书签分类",
+                value: SEARCH_SCOPE_ALL_BOOKMARK_CATE,
+            });
+        }
+        if (location.pathname.startsWith(APP_PROJECT_KB_BOOK_MARK_PATH)) {
+            tmpList.push({
+                label: "当前书签分类",
+                value: SEARCH_SCOPE_CUR_BOOKMARK_CATE
+            });
+            setCurScope(SEARCH_SCOPE_CUR_BOOKMARK_CATE);
+            tmpList.push({
+                label: "全部书签分类",
+                value: SEARCH_SCOPE_ALL_BOOKMARK_CATE,
+            });
+            tmpList.push({
+                label: "全部文档空间",
+                value: SEARCH_SCOPE_ALL_DOC_SPACE,
+            });
+            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE) {
                 tmpList.push({
                     label: "全部频道",
                     value: SEARCH_SCOPE_ALL_CHANNEL,
                 });
             }
         }
+
         tmpList.push({
             label: "任务",
             value: SEARCH_SCOPE_TASK,
@@ -120,6 +155,8 @@ const SearchBar = () => {
             scopeValue = channelStore.curChannelId;
         } else if (searchScope == SEARCH_SCOPE_CUR_DOC_SPACE) {
             scopeValue = docSpaceStore.curDocSpaceId;
+        } else if (searchScope == SEARCH_SCOPE_CUR_BOOKMARK_CATE) {
+            scopeValue = projectStore.curBookMarkCateId
         }
         let fromTime = ""
         let toTime = ""
@@ -204,6 +241,10 @@ const SearchBar = () => {
                             setDateRange([]);
                             setCurScope(scopeList[0].value);
                             setShowAdvanced(false);
+                        }} onOk={e=>{
+                            e.stopPropagation();
+                            e.preventDefault();
+                            showSearchResult(true);
                         }}>
                         <Form labelCol={{ span: 4 }}>
                             <Form.Item label="关键词">

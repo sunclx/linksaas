@@ -91,6 +91,33 @@ async fn search_project_doc<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn search_project_book_mark<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SearchProjectBookMarkRequest,
+) -> Result<SearchProjectBookMarkResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = SearchApiClient::new(chan.unwrap());
+    match client.search_project_book_mark(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == search_project_book_mark_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("search_project_book_mark".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 pub struct SearchApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -102,6 +129,7 @@ impl<R: Runtime> SearchApiPlugin<R> {
                 search_project_channel,
                 search_project_issue,
                 search_project_doc,
+                search_project_book_mark,
             ]),
         }
     }

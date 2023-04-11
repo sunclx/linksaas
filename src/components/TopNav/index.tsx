@@ -12,6 +12,7 @@ import {
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   PROJECT_SETTING_TAB,
   APP_PROJECT_OVERVIEW_PATH,
+  APP_PROJECT_KB_BOOK_MARK_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import { CommentOutlined, FileDoneOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
@@ -148,6 +149,7 @@ const TopNav = () => {
         {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>电子书库</div><SearchBar /><RightFloat /></>)}
+        {location.pathname.includes(APP_PROJECT_KB_BOOK_MARK_PATH) && (<><div className={s.doc_title}>项目书签</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<>
           {projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE && <SearchBar />}
           <RightFloat />

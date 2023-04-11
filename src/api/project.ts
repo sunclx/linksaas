@@ -104,23 +104,6 @@ export type ChangeOwnerResponse = {
   err_msg: string;
 };
 
-export type GetLocalApiTokenResponse = {
-  code: number;
-  err_msg: string;
-  token: string;
-};
-
-export type RemoveLocalApiTokenResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type RenewLocalApiTokenResponse = {
-  code: number;
-  err_msg: string;
-  token: string;
-};
-
 export type LocalApiPerm = {
   access_channel: boolean;
 }
@@ -289,48 +272,6 @@ export async function change_owner(session_id: string, project_id: string, membe
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ChangeOwnerResponse>(cmd, {
-    request,
-  });
-}
-
-//获取本地api token
-export async function get_local_api_token(session_id: string, project_id: string): Promise<GetLocalApiTokenResponse> {
-  const cmd = 'plugin:project_api|get_local_api_token';
-  const request = {
-    session_id,
-    project_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<GetLocalApiTokenResponse>(cmd, {
-    request,
-  });
-}
-
-//删除本地api token
-export async function remove_local_api_token(session_id: string, project_id: string): Promise<RemoveLocalApiTokenResponse> {
-  const cmd = 'plugin:project_api|remove_local_api_token';
-  const request = {
-    session_id,
-    project_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<RemoveLocalApiTokenResponse>(cmd, {
-    request,
-  });
-}
-
-//更新本地api token
-export async function renew_local_api_token(session_id: string, project_id: string): Promise<RenewLocalApiTokenResponse> {
-  const cmd = 'plugin:project_api|renew_local_api_token';
-  const request = {
-    session_id,
-    project_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<RenewLocalApiTokenResponse>(cmd, {
     request,
   });
 }

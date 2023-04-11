@@ -19,6 +19,7 @@ mod project_api;
 mod project_code_api;
 mod server;
 mod testcase_api;
+mod bookmark_api;
 
 #[derive(Default)]
 pub struct ServPort(Mutex<Option<i16>>);
@@ -151,8 +152,8 @@ pub fn call_git_post_hook() {
     let client = client.unwrap();
     let res = client
         .get(format!(
-            "http://{}/project/{}/tools/postHook?accessToken={}",
-            &addr, cfg.project_id, cfg.access_token
+            "http://{}/project/{}/tools/postHook",
+            &addr, cfg.project_id
         ))
         .send();
     if res.is_err() {
