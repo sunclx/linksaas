@@ -168,12 +168,12 @@ const CatePanel = () => {
         setNewCateName("");
         setShowAddModal(false);
         message.info("增加分类成功");
-        await loadCateList();
+        projectStore.addBookMarkCateVersion();
     };
 
     useEffect(() => {
         loadCateList();
-    }, [state.cateId, location.search])
+    }, [state.cateId, location.search, projectStore.bookMarkCateVersion])
 
     return (
         <Card title="书签分类" bordered={false}
@@ -203,8 +203,13 @@ const CatePanel = () => {
                 </List.Item>
                 {cateInfoList.map(cateInfo => (
                     <List.Item key={cateInfo.cate_id}>
-                        <CateItem cateInfo={cateInfo} curCateId={state.cateId} onUpdate={() => loadCateList()}
-                            onRemove={() => linkAuxStore.goToLink(new LinkBookMarkCateInfo("", projectStore.curProjectId, ""), history)}
+                        <CateItem cateInfo={cateInfo} curCateId={state.cateId} onUpdate={() => {
+                            projectStore.addBookMarkCateVersion();
+                        }}
+                            onRemove={() => {
+                                projectStore.addBookMarkCateVersion();
+                                linkAuxStore.goToLink(new LinkBookMarkCateInfo("", projectStore.curProjectId, ""), history);
+                            }}
                             onClick={() => linkAuxStore.goToLink(new LinkBookMarkCateInfo("", projectStore.curProjectId, cateInfo.cate_id), history)} />
                     </List.Item>))}
             </List>
