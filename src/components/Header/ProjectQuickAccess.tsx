@@ -7,7 +7,7 @@ import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
-import { LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
+import { LinkBookMarkCateInfo, LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
@@ -21,6 +21,7 @@ const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
 const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
 const MENU_KEY_CREATE_DOC = "create.doc";
 const MENU_KEY_KB_BOOK_SHELF = "kb.bookShelf";
+const MENU_KEY_KB_BOOK_MARK = "kb.bookMark";
 const MENU_KEY_SHOW_TOOL_BAR_IDEA = "toolbar.idea.show"
 const MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT = "toolbar.requirement.show";
 const MENU_KEY_CREATE_REQUIRE_MENT = "crate.requirement";
@@ -129,6 +130,10 @@ const ProjectQuickAccess = () => {
                                 label: "创建文档",
                             },
                         ],
+                    },
+                    {
+                        key: MENU_KEY_KB_BOOK_MARK,
+                        label: "项目书签"
                     },
                     {
                         key: MENU_KEY_KB_BOOK_SHELF,
@@ -328,6 +333,9 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_KB_BOOK_SHELF:
                 history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
+                break;
+            case MENU_KEY_KB_BOOK_MARK:
+                linkAuxStore.goToLink(new LinkBookMarkCateInfo("", projectStore.curProjectId, ""), history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_IDEA:
                 linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);

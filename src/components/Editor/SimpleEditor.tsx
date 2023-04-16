@@ -7,9 +7,6 @@ import { AllStyledComponent } from '@remirror/styles/emotion';
 import { LinkExtension } from './extensions/index';
 import type { InvalidContentHandler, RemirrorJSON } from 'remirror';
 import type { RemirrorContentType } from '@remirror/core';
-import { TableComponents } from '@remirror/extension-react-tables';
-import TableCellMenu from './components/TableCellMenu';
-
 
 export const useSimpleEditor = (placeholder: string, content: RemirrorContentType = "") => {
     const onError: InvalidContentHandler = useCallback(({ json, invalidContent, transformers }) => {
@@ -41,7 +38,6 @@ export const useSimpleEditor = (placeholder: string, content: RemirrorContentTyp
                 <Remirror manager={manager} initialContent={state} placeholder={placeholder}>
                     <ImperativeHandle ref={editorRef} />
                     <EditorComponent />
-                    <TableComponents tableCellMenuProps={{ Component: TableCellMenu }} />
                 </Remirror>
             </AllStyledComponent>
         </ThemeProvider>
