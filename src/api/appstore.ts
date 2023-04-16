@@ -62,8 +62,9 @@ export type AppFsPerm = {
     write_file: boolean;
 };
 
-export type  AppExtraPerm = {
+export type AppExtraPerm = {
     cross_origin_isolated: boolean;
+    open_browser: boolean;
 };
 
 export type AppPerm = {

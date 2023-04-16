@@ -93,6 +93,10 @@ const extraOptionList: CheckboxOptionType[] = [
         ),
         value: "cross_origin_isolated",
     },
+    {
+        label: "打开浏览器",
+        value: "open_browser",
+    },
 ];
 
 interface MinAppPermPanelProps {
@@ -155,6 +159,9 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
         if (props.perm.extra_perm.cross_origin_isolated) {
             tmpExtraValues.push("cross_origin_isolated");
         }
+        if (props.perm.extra_perm.open_browser) {
+            tmpExtraValues.push("open_browser");
+        }
     }
 
     const [netValues, setNetValues] = useState<string[]>(tmpNetValues);
@@ -164,7 +171,7 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
     const [fsValues, setFsValues] = useState<string[]>(tmpFsValues);
     const [extraValues, setExtraValues] = useState<string[]>(tmpExtraValues);
 
-    const calcPerm = (netPermList: string[], memberPermList: string[], issuePermList: string[], eventPermList: string[], fsPermList: string[],extraPermList: string[]) => {
+    const calcPerm = (netPermList: string[], memberPermList: string[], issuePermList: string[], eventPermList: string[], fsPermList: string[], extraPermList: string[]) => {
         const tempPerm: MinAppPerm = {
             net_perm: {
                 cross_domain_http: false,
@@ -188,7 +195,8 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
                 write_file: false,
             },
             extra_perm: {
-                cross_origin_isolated:false,
+                cross_origin_isolated: false,
+                open_browser: false,
             }
         };
         netPermList.forEach(permStr => {
@@ -231,47 +239,49 @@ const MinAppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
         extraPermList.forEach(permStr => {
             if (permStr == "cross_origin_isolated") {
                 tempPerm.extra_perm.cross_origin_isolated = true;
+            }else if(permStr == "open_browser"){
+                tempPerm.extra_perm.open_browser = true;
             }
         });
         props.onChange(tempPerm);
     };
 
     return (
-        <Card title={props.showTitle?"微应用权限":null} bordered={false}>
+        <Card title={props.showTitle ? "微应用权限" : null} bordered={false}>
             <Form labelCol={{ span: 5 }}>
                 <Form.Item label="网络权限">
                     <Checkbox.Group disabled={props.disable} options={netOptionList} value={netValues}
                         onChange={values => {
                             setNetValues(values as string[]);
-                            calcPerm(values as string[], memberValues, issueValues, eventValues, fsValues,extraValues);
+                            calcPerm(values as string[], memberValues, issueValues, eventValues, fsValues, extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="项目成员权限">
                     <Checkbox.Group disabled={props.disable} options={memberOptionList} value={memberValues}
                         onChange={values => {
                             setMemberValues(values as string[]);
-                            calcPerm(netValues, values as string[], issueValues, eventValues, fsValues,extraValues);
+                            calcPerm(netValues, values as string[], issueValues, eventValues, fsValues, extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="工单权限">
                     <Checkbox.Group disabled={props.disable} options={issueOptionList} value={issueValues}
                         onChange={values => {
                             setIssueValues(values as string[]);
-                            calcPerm(netValues, memberValues, values as string[], eventValues, fsValues,extraValues);
+                            calcPerm(netValues, memberValues, values as string[], eventValues, fsValues, extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="事件权限">
                     <Checkbox.Group disabled={props.disable} options={eventOptionList} value={eventValues}
                         onChange={values => {
                             setEventValues(values as string[]);
-                            calcPerm(netValues, memberValues, issueValues, values as string[], fsValues,extraValues);
+                            calcPerm(netValues, memberValues, issueValues, values as string[], fsValues, extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="本地文件权限">
                     <Checkbox.Group disabled={props.disable} options={fsOptionList} value={fsValues}
                         onChange={values => {
                             setFsValues(values as string[]);
-                            calcPerm(netValues, memberValues, issueValues, eventValues, values as string[],extraValues);
+                            calcPerm(netValues, memberValues, issueValues, eventValues, values as string[], extraValues);
                         }} />
                 </Form.Item>
                 <Form.Item label="其他权限">

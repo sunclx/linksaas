@@ -23,6 +23,7 @@ export type UserAppFsPerm = {
 
 export type UserAppExtraPerm = {
     cross_origin_isolated: boolean;
+    open_browser: boolean;
 };
 
 
