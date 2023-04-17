@@ -31,12 +31,12 @@ mod project_app_api_plugin;
 mod project_appraise_api_plugin;
 mod project_award_api_plugin;
 mod project_book_shelf_api_plugin;
+mod project_bookmark_api_plugin;
 mod project_channel_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
 mod project_idea_api_plugin;
-mod project_bookmark_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
@@ -57,6 +57,7 @@ mod user_app_api_plugin;
 mod user_kb_api_plugin;
 
 mod min_app_fs_plugin;
+mod min_app_shell_plugin;
 mod min_app_plugin;
 
 mod my_updater;
@@ -76,8 +77,15 @@ Object.defineProperty(window, "__TAURI_POST_MESSAGE__", {
         window.__TAURI_METADATA__ != undefined &&
         window.__TAURI_METADATA__.__currentWindow.label.startsWith("minApp:")
       ) {
-        if (message.cmd == "http") {
-          if (window.minApp !== undefined && window.minApp.crossHttp === true) {
+        if (message.cmd == "tauri") {
+          if (message.__tauriModule == "Http") {
+            if (window.minApp !== undefined && window.minApp.crossHttp === true) {
+              window.ipc.postMessage(JSON.stringify(message));
+              return;
+            } else {
+              return;
+            }
+          } else if (message.__tauriModule == "Clipboard") {
             window.ipc.postMessage(JSON.stringify(message));
             return;
           } else {
@@ -373,6 +381,7 @@ fn main() {
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .plugin(min_app_plugin::MinAppPlugin::new())
         .plugin(min_app_fs_plugin::MinAppFsPlugin::new())
+        .plugin(min_app_shell_plugin::MinAppShellPlugin::new())
         .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
         .plugin(appstore_api_plugin::AppstoreApiPlugin::new())
         .plugin(appstore_admin_api_plugin::AppstoreAdminApiPlugin::new())
