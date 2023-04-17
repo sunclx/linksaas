@@ -6,8 +6,11 @@ use hyper::server::conn::AddrStream;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Request, Response};
 use proto_gen_rust::project_app_api::project_app_api_client::ProjectAppApiClient;
-use proto_gen_rust::project_app_api::GetMinAppPermRequest;
 use proto_gen_rust::project_app_api::MinAppPerm;
+use proto_gen_rust::project_app_api::{
+    GetMinAppPermRequest, MinAppEventPerm, MinAppExtraPerm, MinAppFsPerm, MinAppIssuePerm,
+    MinAppMemberPerm, MinAppNetPerm,
+};
 use rand::Rng;
 use std::collections::HashMap;
 use std::convert::Infallible;
@@ -923,18 +926,72 @@ pub async fn get_min_app_perm<R: Runtime>(
         if (&chan).is_none() {
             return None;
         }
-        let mut client = ProjectAppApiClient::new(chan.unwrap());
-        let res = client
-            .get_min_app_perm(GetMinAppPermRequest {
-                session_id: get_session(app_handle).await,
-                project_id: project_id,
-                app_id: app_id.into(),
-            })
-            .await;
-        if res.is_err() {
-            return None;
+        if &project_id != "" {
+            let mut client = ProjectAppApiClient::new(chan.unwrap());
+            let res = client
+                .get_min_app_perm(GetMinAppPermRequest {
+                    session_id: get_session(app_handle).await,
+                    project_id: project_id,
+                    app_id: app_id.into(),
+                })
+                .await;
+            if res.is_err() {
+                return None;
+            }
+            return res.unwrap().into_inner().perm;
+        } else {
+            let mut client =
+                proto_gen_rust::user_app_api::user_app_api_client::UserAppApiClient::new(
+                    chan.unwrap(),
+                );
+            let res = client
+                .get_user_app_perm(proto_gen_rust::user_app_api::GetUserAppPermRequest {
+                    session_id: get_session(app_handle).await,
+                    app_id: app_id.into(),
+                })
+                .await;
+            if res.is_err() {
+                return None;
+            }
+            let perm = res.unwrap().into_inner().perm;
+            if perm.is_none() {
+                return None;
+            }
+            let perm = perm.unwrap();
+            if perm.net_perm.is_none() || perm.fs_perm.is_none() || perm.extra_perm.is_none() {
+                return None;
+            }
+            let net_perm = perm.net_perm.unwrap();
+            let fs_perm = perm.fs_perm.unwrap();
+            let extra_perm = perm.extra_perm.unwrap();
+            return Some(MinAppPerm {
+                net_perm: Some(MinAppNetPerm {
+                    cross_domain_http: net_perm.cross_domain_http,
+                }),
+                member_perm: Some(MinAppMemberPerm {
+                    list_member: false,
+                    list_goal_history: false,
+                }),
+                issue_perm: Some(MinAppIssuePerm {
+                    list_my_task: false,
+                    list_all_task: false,
+                    list_my_bug: false,
+                    list_all_bug: false,
+                }),
+                event_perm: Some(MinAppEventPerm {
+                    list_my_event: false,
+                    list_all_event: false,
+                }),
+                fs_perm: Some(MinAppFsPerm {
+                    read_file: fs_perm.read_file,
+                    write_file: fs_perm.write_file,
+                }),
+                extra_perm: Some(MinAppExtraPerm {
+                    cross_origin_isolated: extra_perm.cross_origin_isolated,
+                    open_browser: extra_perm.open_browser,
+                }),
+            });
         }
-        return res.unwrap().into_inner().perm;
     }
 }
 pub struct MinAppPlugin<R: Runtime> {
