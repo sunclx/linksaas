@@ -50,6 +50,7 @@ export type MinAppFsPerm = {
 
 export type MinAppExtraPerm = {
     cross_origin_isolated: boolean;
+    open_browser: boolean;
 };
 
 
