@@ -11,7 +11,6 @@ import DebugMinAppModal from './components/DebugMinAppModal';
 import { observer } from 'mobx-react';
 import AddAppModal from './components/AddAppModal';
 import AppItem from './components/AppItem';
-import AppStorePanel from './components/AppStorePanel';
 
 
 const AppStore: React.FC = () => {
@@ -51,18 +50,32 @@ const AppStore: React.FC = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  setShowAdd(true);
+                  //TODO
                 }}
               >
-                新增应用
+                前往应用市场
               </Button>
             )}
             <Popover placement='bottom' trigger="click" content={
-              <Button type="link" style={{ margin: "10px 10px" }} onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                setShowDebug(true);
-              }}>调试微应用</Button>
+              <Space direction="vertical" style={{ padding: "10px 0px" }}>
+                {projectStore.isAdmin && (
+                  <Button
+                    type="link" style={{ marginLeft: "10px" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setShowAdd(true);
+                    }}
+                  >
+                    新增应用
+                  </Button>
+                )}
+                <Button type="link" style={{ marginLeft: "10px" }} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowDebug(true);
+                }}>调试微应用</Button>
+              </Space>
             }>
               <MoreOutlined />
             </Popover>
@@ -87,9 +100,6 @@ const AppStore: React.FC = () => {
             <h3>说明</h3>
             <p>您可以把项目团队用到的研发系统地址添加在这里。</p>
           </div>
-          {projectStore.isAdmin && (
-            <AppStorePanel onAddApp={() => loadAppList()} />
-          )}
         </div>
       </div>
       {showAdd == true && (

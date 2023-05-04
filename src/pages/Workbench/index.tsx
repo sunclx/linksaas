@@ -112,6 +112,13 @@ const Workbench: React.FC = () => {
                   history.push(WORKBENCH_KB_DOC_SUFFIX, state);
                 }}>创建文档</Button>
             )}
+            {activeKey == "userApp" && (
+              <Button style={{ marginRight: "20px" }} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                //TODO
+              }}>前往应用市场</Button>
+            )}
           </>
         }>
         {projectStore.projectList.length > 0 && (
@@ -154,9 +161,6 @@ const Workbench: React.FC = () => {
           )}
         </Tabs.TabPane>
       </Tabs>
-      {/* <Card className={s.backlog_wrap} title="我的待办">
-        
-      </Card> */}
       {passwordModal && (
         <PasswordModal
           visible={passwordModal}
