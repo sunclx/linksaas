@@ -56,6 +56,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         },
         extra_perm: {
             cross_origin_isolated: false,
+            open_browser: false,
         }
     });
 

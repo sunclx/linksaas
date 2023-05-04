@@ -95,6 +95,10 @@ const extraOptionList: CheckboxOptionType[] = [
         ),
         value: "cross_origin_isolated",
     },
+    {
+        label: "打开浏览器",
+        value: "open_browser",
+    },
 ];
 
 interface AppPermPanelProps {
@@ -158,6 +162,9 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
         if (props.perm.extra_perm.cross_origin_isolated) {
             tmpExtraValues.push("cross_origin_isolated");
         }
+        if(props.perm.extra_perm.open_browser){
+            tmpExtraValues.push("open_browser");
+        }
     }
 
     const [netValues, setNetValues] = useState<string[]>(tmpNetValues);
@@ -192,6 +199,7 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
             },
             extra_perm: {
                 cross_origin_isolated: false,
+                open_browser: false,
             }
         };
         netPermList.forEach(permStr => {
@@ -234,6 +242,8 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
         extraPermList.forEach(permStr => {
             if (permStr == "cross_origin_isolated") {
                 tempPerm.extra_perm.cross_origin_isolated = true;
+            } else if (permStr == "open_browser") {
+                tempPerm.extra_perm.open_browser = true;
             }
         });
         props.onChange(tempPerm);
