@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import { USER_LOGIN_PATH, WORKBENCH_KB_DOC_SUFFIX, WORKBENCH_PATH, filterProjectItemList } from '@/utils/constant';
+import { PUB_RES_PATH, USER_LOGIN_PATH, WORKBENCH_KB_DOC_SUFFIX, WORKBENCH_PATH, filterProjectItemList } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import Card from './components/Card';
 import InfoCount from './components/InfoCount';
@@ -71,7 +71,7 @@ const Workbench: React.FC = () => {
         tabBarExtraContent={
           <>
             {activeKey == "myProject" && (
-              <Space size="large">
+              <Space size="small">
                 <Button type="default" onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -82,7 +82,7 @@ const Workbench: React.FC = () => {
                   e.preventDefault();
                   appStore.showJoinProject = true;
                 }}>加入项目</Button>
-                <Select value={projectStore.filterProjectType} style={{ width: "100px", marginLeft: "40px", marginRight: "20px" }}
+                <Select value={projectStore.filterProjectType} style={{ width: "100px", marginLeft: "20px", marginRight: "20px" }}
                   onSelect={value => {
                     runInAction(() => {
                       projectStore.filterProjectType = value;
@@ -112,10 +112,19 @@ const Workbench: React.FC = () => {
                   history.push(WORKBENCH_KB_DOC_SUFFIX, state);
                 }}>创建文档</Button>
             )}
+            {activeKey == "userApp" && (
+              <Button
+                type="link"
+                style={{ marginRight: "20px" }} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  history.push(`${PUB_RES_PATH}?tab=appStore`);
+                }}>前往应用市场</Button>
+            )}
           </>
         }>
         {projectStore.projectList.length > 0 && (
-          <Tabs.TabPane tab={<h2><IssuesCloseOutlined />&nbsp;我的待办</h2>} key="myIssue">
+          <Tabs.TabPane tab={<h2><IssuesCloseOutlined />我的待办</h2>} key="myIssue">
             {activeKey == "myIssue" && (
               <div className={s.content_wrap}>
                 {!userStore.isResetPassword && <Backlog onChange={count => setTotalMyIssueCount(count)} />}
@@ -124,7 +133,7 @@ const Workbench: React.FC = () => {
           </Tabs.TabPane>
         )}
         {projectStore.projectList.length > 0 && (
-          <Tabs.TabPane tab={<h2><FieldTimeOutlined />&nbsp;我的工作记录</h2>} key="myEvent">
+          <Tabs.TabPane tab={<h2><FieldTimeOutlined />我的工作记录</h2>} key="myEvent">
             {activeKey == "myEvent" && (
               <div className={s.content_wrap}>
                 <Record />
@@ -132,21 +141,21 @@ const Workbench: React.FC = () => {
             )}
           </Tabs.TabPane>
         )}
-        <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;我的知识库</h2>} key="userDoc">
+        <Tabs.TabPane tab={<h2><BookOutlined />我的知识库</h2>} key="userDoc">
           {activeKey == "userDoc" && (
             <div className={s.content_wrap}>
               <UserDocSpaceList onChange={kbSpace => setCurKbSpace(kbSpace)} spaceId={spaceId ?? userStore.userInfo.defaultKbSpaceId} />
             </div>
           )}
         </Tabs.TabPane>
-        <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;我的微应用</h2>} key="userApp">
+        <Tabs.TabPane tab={<h2><BookOutlined />我的微应用</h2>} key="userApp">
           {activeKey == "userApp" && (
             <div className={s.content_wrap}>
               <UserAppList />
             </div>
           )}
         </Tabs.TabPane>
-        <Tabs.TabPane tab={<h2><ProjectOutlined />&nbsp;我的项目</h2>} key="myProject">
+        <Tabs.TabPane tab={<h2><ProjectOutlined />我的项目</h2>} key="myProject">
           {activeKey == "myProject" && (
             <div className={s.content_wrap}>
               <MyProjectList />
@@ -154,9 +163,6 @@ const Workbench: React.FC = () => {
           )}
         </Tabs.TabPane>
       </Tabs>
-      {/* <Card className={s.backlog_wrap} title="我的待办">
-        
-      </Card> */}
       {passwordModal && (
         <PasswordModal
           visible={passwordModal}

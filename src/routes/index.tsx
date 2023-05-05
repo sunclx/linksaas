@@ -51,6 +51,7 @@ import {
   ADMIN_PATH_APPSTORE_APP_SUFFIX,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_KB_BOOK_MARK_PATH,
+  PUB_RES_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -90,6 +91,7 @@ import AppCateList from '@/pages/Admin/AppAdmin/AppCateList';
 import AppList from '@/pages/Admin/AppAdmin/AppList';
 import OverviewLayout from '@/layouts/OverviewLayout';
 import IdeaPage from '@/pages/Idea/IdeaPage';
+import PubRes from '@/pages/PubRes';
 
 
 
@@ -307,6 +309,12 @@ const routesConfig: IRouteConfig[] = [
         path: WORKBENCH_PATH,
         title: '工作台',
         component: Workbench,
+        exact: true,
+      },
+      {
+        path: PUB_RES_PATH,
+        title: "公共资源",
+        component: PubRes,
         exact: true,
       },
       {
