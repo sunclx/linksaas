@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { uniqId } from "@/utils/utils";
 import { listen } from '@tauri-apps/api/event';
-import type {FsProgressEvent } from '@/api/fs';
+import type { FsProgressEvent } from '@/api/fs';
 import { useStores } from "@/hooks";
-import { write_file,set_file_owner,FILE_OWNER_TYPE_PROJECT_EBOOK } from '@/api/fs';
+import { write_file, set_file_owner, FILE_OWNER_TYPE_PROJECT_EBOOK } from '@/api/fs';
 import { add_book } from '@/api/project_book_shelf';
 
 
@@ -36,10 +36,10 @@ const UploadBookModal: React.FC<UploadBookModalProps> = (props) => {
                 session_id: userStore.sessionId,
                 project_id: projectStore.curProjectId,
                 book_title: props.title,
-                book_desc: "",
                 file_id: uploadRes.file_id,
+                in_store: false,
             });
-            if(addRes.code != 0){
+            if (addRes.code != 0) {
                 props.onErr(addRes.err_msg);
                 return;
             }
@@ -52,9 +52,9 @@ const UploadBookModal: React.FC<UploadBookModalProps> = (props) => {
                 owner_id: addRes.book_id,
             });
             console.log(setRes);
-            if(setRes.code != 0){
+            if (setRes.code != 0) {
                 props.onErr(setRes.err_msg);
-                return ;
+                return;
             }
             props.onOk();
         } catch (e) {

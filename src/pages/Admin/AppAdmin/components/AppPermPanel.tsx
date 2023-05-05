@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import type { AppPerm } from "@/api/appstore";
 import type { CheckboxOptionType } from 'antd';
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { useLocation } from "react-router-dom";
-import { APP_PROJECT_PATH } from "@/utils/constant";
 
 
 const netOptionList: CheckboxOptionType[] = [
@@ -109,8 +107,6 @@ interface AppPermPanelProps {
 }
 
 const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
-    const location = useLocation();
-
     const tmpNetValues: string[] = [];
     const tmpMemberValues: string[] = [];
     const tmpIssueValues: string[] = [];

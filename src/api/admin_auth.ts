@@ -62,6 +62,16 @@ export type AppStorePerm = {
     remove_app: boolean;
 };
 
+export type BookStorePerm = {
+    read: boolean;
+    add_cate: boolean;
+    update_cate: boolean;
+    remove_cate: boolean;
+    add_book: boolean;
+    update_book: boolean;
+    remove_book: boolean;
+};
+
 
 export type AdminPermInfo = {
     org_perm: OrgPerm;
@@ -71,6 +81,7 @@ export type AdminPermInfo = {
     menu_perm: MenuPerm;
     ad_perm: AdPerm;
     app_store_perm: AppStorePerm;
+    book_store_perm: BookStorePerm;
 };
 
 export type PreAuthRequest = {
