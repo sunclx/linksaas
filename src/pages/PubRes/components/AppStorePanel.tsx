@@ -1,113 +1,12 @@
-import { Card, Form, List, Select, Image, Modal, Descriptions, Space, Button } from "antd";
+import { Card, Form, List, Select, Image } from "antd";
 import React, { useEffect, useState } from "react";
-import type { AppInfo, InstallInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
-import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS, get_install_info } from "@/api/appstore";
+import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
+import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS } from "@/api/appstore";
 import { request } from "@/utils/request";
 import { platform } from '@tauri-apps/api/os';
 import { useStores } from "@/hooks";
-import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
-import { ReadOnlyEditor } from "@/components/Editor";
+import AppInfoModal from "./AppInfoModal";
 
-
-interface AppInfoModalProps {
-    appInfo: AppInfo;
-    onCancel: () => void;
-}
-
-const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
-    const userStore = useStores("userStore");
-
-    const [installInfo, setInstallInfo] = useState<InstallInfo | null>(null);
-
-    const loadInstallInfo = async () => {
-        const res = await request(get_install_info({
-            session_id: userStore.sessionId,
-            app_id: props.appInfo.app_id,
-        }));
-        setInstallInfo(res.install_info);
-    };
-
-    useEffect(() => {
-        loadInstallInfo();
-    }, []);
-
-    return (
-        <Modal title={props.appInfo.base_info.app_name} open footer={null} onCancel={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            props.onCancel();
-        }} bodyStyle={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
-            <Descriptions bordered>
-                <Descriptions.Item label="一级分类">{props.appInfo.major_cate.cate_name}</Descriptions.Item>
-                <Descriptions.Item label="二级分类">{props.appInfo.minor_cate.cate_name}</Descriptions.Item>
-                <Descriptions.Item label="三级分类">{props.appInfo.sub_minor_cate.cate_name}</Descriptions.Item>
-                <Descriptions.Item span={3} label="应用权限">
-                    <AppPermPanel disable={true} showTitle={false} onChange={() => { }} perm={props.appInfo.app_perm} />
-                </Descriptions.Item>
-                <Descriptions.Item span={3} label="应用描述">
-                    <ReadOnlyEditor content={props.appInfo.base_info.app_desc} />
-                </Descriptions.Item>
-                <Descriptions.Item span={3} label="操作">
-                    {installInfo != null && (
-                        <Form labelCol={{ span: 6 }}>
-                            <Form.Item label="工作台">
-                                <Space>
-                                    {installInfo.user_install == true && (
-                                        <>
-                                            <Button type="link" onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                //TODO
-                                            }}>打开应用</Button>
-                                            <Button type="link" danger onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                //TODO
-                                            }}>删除应用</Button>
-                                        </>
-                                    )}
-                                    {installInfo.user_install == false && (
-                                        <Button type="link" disabled={!props.appInfo.user_app} onClick={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            //TODO
-                                        }}>安装应用</Button>
-                                    )}
-                                </Space>
-                            </Form.Item>
-                            {installInfo.project_list.map(prj => (
-                                <Form.Item label={`${prj.project_name}`} key={prj.project_id}>
-                                    {prj.has_install == true && (
-                                        <>
-                                            <Button type="link" onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                //TODO
-                                            }}>打开应用</Button>
-                                            <Button type="link" danger disabled={!prj.can_install} onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                //TODO
-                                            }}>删除应用</Button>
-                                        </>
-                                    )}
-                                    {prj.has_install == false && (
-                                        <Button type="link" disabled={!(props.appInfo.project_app && prj.can_install)} onClick={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            //TODO
-                                        }}>安装应用</Button>
-                                    )}
-                                </Form.Item>
-                            ))}
-                        </Form>
-                    )}
-
-                </Descriptions.Item>
-            </Descriptions>
-        </Modal>
-    )
-};
 
 const PAGE_SIZE = 20;
 

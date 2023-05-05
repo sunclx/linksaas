@@ -11,9 +11,13 @@ import DebugMinAppModal from './components/DebugMinAppModal';
 import { observer } from 'mobx-react';
 import AddAppModal from './components/AddAppModal';
 import AppItem from './components/AppItem';
+import { useHistory } from 'react-router-dom';
+import { PUB_RES_PATH } from '@/utils/constant';
 
 
 const AppStore: React.FC = () => {
+  const history = useHistory();
+
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
 
@@ -46,11 +50,12 @@ const AppStore: React.FC = () => {
           <Space size="middle">
             {projectStore.isAdmin && (
               <Button
-                type="primary"
+                type="link"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  //TODO
+                  projectStore.setCurProjectId("");
+                  history.push(`${PUB_RES_PATH}?tab=appStore`);
                 }}
               >
                 前往应用市场
