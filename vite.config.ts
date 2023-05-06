@@ -49,6 +49,7 @@ export default ({ command, mode }: ConfigEnv) => {
           shortNote: "short_note.html",
           searchResult: "search_result.html",
           localApi: "local_api.html",
+          book: "book.html",
         },
       },
       terserOptions: {

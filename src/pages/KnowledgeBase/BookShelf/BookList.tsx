@@ -13,6 +13,8 @@ import { request } from '@/utils/request';
 import Pagination from "@/components/Pagination";
 import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
+import { openBook } from "@/pages/Book/utils";
+import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 
 
 const PAGE_SIZE = 10;
@@ -23,9 +25,9 @@ interface UploadBookInfo {
 }
 
 const BookList = () => {
+    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    const bookShelfStore = useStores('bookShelfStore');
 
     const [uploadInfo, setUploadInfo] = useState<UploadBookInfo | null>(null);
     const [curPage, setCurPage] = useState(0);
@@ -101,14 +103,22 @@ const BookList = () => {
                     <a onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        bookShelfStore.setShowBook(record.book_id);
+                        let canShare = false;
+                        const layout = projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
+                        if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(layout)) {
+                            canShare = true;
+                        }
+                        openBook(userStore.userInfo.userId, projectStore.curProjectId, record.book_id, "",
+                            appStore.clientCfg?.book_store_fs_id ?? "", projectStore.curProject?.ebook_fs_id ?? "", canShare);
                     }}><LinkOutlined />{record.book_title}</a>
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setUpdateTitle(record.book_title);
-                        setUpdateBookId(record.book_id);
-                    }}><EditOutlined />修改书名</a>
+                    {record.in_store == false && (
+                        <a onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setUpdateTitle(record.book_title);
+                            setUpdateBookId(record.book_id);
+                        }}><EditOutlined />修改书名</a>
+                    )}
                 </Space>
             )
         },
@@ -134,15 +144,15 @@ const BookList = () => {
         <Card
             title={<h1 className={s.header}><BookOutlined /> 电子书库</h1>}
             bordered={false}
-            extra={<Button 
-                type="primary" 
-                style={{ height: "30px" }} 
+            extra={<Button
+                type="primary"
+                style={{ height: "30px" }}
                 disabled={!projectStore.isAdmin}
                 onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                showUploadFile();
-            }}>上传电子书</Button>}>
+                    e.stopPropagation();
+                    e.preventDefault();
+                    showUploadFile();
+                }}>上传电子书</Button>}>
             <div className={s.contentWrap}>
                 <Table dataSource={bookList} columns={columns} pagination={false} rowKey="book_id" />
                 {bookCount > PAGE_SIZE && (<div className={s.pagingWrap}>

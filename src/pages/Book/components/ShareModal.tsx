@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import type { MarkInfo } from '@/api/project_book_shelf';
 import { Modal, Select, message } from "antd";
-import { observer } from "mobx-react";
-import { useStores } from "@/hooks";
 import { is_empty_doc, useSimpleEditor } from "@/components/Editor";
 import { LinkBookMarkInfo } from "@/stores/linkAux";
-import { MSG_LINK_NONE, send_msg } from '@/api/project_channel';
+import { MSG_LINK_NONE, send_msg, list as list_channel } from '@/api/project_channel';
 import { request } from '@/utils/request';
+import { get_session } from "@/api/user";
+import type { ChannelInfo } from "@/api/project_channel";
 
 interface SendModalProps {
+    projectId: string;
     mark: MarkInfo | undefined;
     onClose: () => void;
 }
@@ -18,13 +19,26 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
         props.onClose();
     }
 
-    const userStore = useStores("userStore");
-    const channelStore = useStores("channelStore");
-    const projectStore = useStores("projectStore");
-
-    const [channelId, setChannelId] = useState(projectStore.curProject?.default_channel_id ?? "");
+    const [channelId, setChannelId] = useState("");
+    const [channelList, setChannelList] = useState<ChannelInfo[]>([]);
 
     const { editor, editorRef } = useSimpleEditor("", props.mark?.mark_content ?? "");
+
+    const loadChannelList = async () => {
+        const sessionId = await get_session();
+        const res = await request(list_channel({
+            session_id: sessionId,
+            project_id: props.projectId,
+            filter_by_closed: true,
+            closed: false,
+        }));
+        setChannelList(res.info_list.filter(ch => ch.readonly == false));
+        for (const ch of res.info_list) {
+            if (ch.system_channel && !ch.readonly) {
+                setChannelId(ch.channel_id);
+            }
+        }
+    };
 
     const sendMsg = async () => {
         const content = editorRef.current?.getContent() ?? { "type": "doc" };
@@ -32,7 +46,8 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
             message.warn("不能发送空的内容");
             return;
         }
-        await request(send_msg(userStore.sessionId, projectStore.curProjectId, channelId, {
+        const sessionId = await get_session();
+        await request(send_msg(sessionId, props.projectId, channelId, {
             msg_data: JSON.stringify(content),
             ref_msg_id: "",
             remind_info: {
@@ -56,6 +71,10 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
         }, 100);
     }, []);
 
+    useEffect(() => {
+        loadChannelList();
+    }, []);
+
     return (
         <Modal
             title="分享标注内容"
@@ -75,8 +94,8 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
                 value={channelId}
                 style={{ width: 200 }}
                 onChange={value => setChannelId(value)}>
-                {channelStore.channelList.filter(chan => chan.channelInfo.closed == false && chan.channelInfo.readonly == false).map(chan => (
-                    <Select.Option key={chan.channelInfo.channel_id} value={chan.channelInfo.channel_id}>{chan.channelInfo.basic_info.channel_name}</Select.Option>
+                {channelList.map(chan => (
+                    <Select.Option key={chan.channel_id} value={chan.channel_id}>{chan.basic_info.channel_name}</Select.Option>
                 ))}
             </Select>
             <div style={{ marginTop: 20 }}>
@@ -86,4 +105,4 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
     );
 };
 
-export default observer(ShareModal);
+export default ShareModal;
