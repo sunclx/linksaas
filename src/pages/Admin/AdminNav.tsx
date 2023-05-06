@@ -8,6 +8,8 @@ import { useHistory, useLocation } from "react-router-dom";
 import {
     ADMIN_PATH_APPSTORE_APP_SUFFIX,
     ADMIN_PATH_APPSTORE_CATE_SUFFIX,
+    ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
+    ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
     ADMIN_PATH_CLIENT_AD_SUFFIX,
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
     ADMIN_PATH_ORG_LIST_SUFFIX, ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
@@ -29,6 +31,7 @@ const AdminNav = () => {
     const [orgSelectedKeys, setOrgSelectedKeys] = useState<string[]>([]);
     const [clientCfgSelectedKeys, setClientCfgSelectedKeys] = useState<string[]>([]);
     const [appstoreSelectedKeys, setAppstoreSelectedKeys] = useState<string[]>([]);
+    const [bookstoreSelectedKeys, setBookstoreSelectedKeys] = useState<string[]>([]);
 
     useEffect(() => {
         setUserSelectedKeys([]);
@@ -62,7 +65,7 @@ const AdminNav = () => {
         } else if (location.pathname == ADMIN_PATH_CLIENT_AD_SUFFIX) {
             setClientCfgSelectedKeys(["ad_admin"]);
         }
-    }, [location.pathname])
+    }, [location.pathname]);
 
     useEffect(() => {
         setAppstoreSelectedKeys([]);
@@ -71,7 +74,16 @@ const AdminNav = () => {
         } else if (location.pathname == ADMIN_PATH_APPSTORE_APP_SUFFIX) {
             setAppstoreSelectedKeys(["app_app"]);
         }
-    }, [location.pathname])
+    }, [location.pathname]);
+
+    useEffect(() => {
+        setBookstoreSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_BOOKSTORE_CATE_SUFFIX) {
+            setBookstoreSelectedKeys(["book_cate"]);
+        } else if (location.pathname == ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX) {
+            setBookstoreSelectedKeys(["book_book"]);
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         get_admin_perm().then(res => setPermInfo(res));
@@ -92,7 +104,8 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore"]}>
+            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore"]}
+                style={{ height: "calc(100vh - 132px)", overflowY: "scroll", paddingBottom: "10px" }}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
                         {
@@ -184,6 +197,30 @@ const AdminNav = () => {
                             }
                         }}
                     />
+                </Collapse.Panel>
+                <Collapse.Panel header="书籍管理" key="bookstore">
+                    <Menu selectedKeys={bookstoreSelectedKeys} items={[
+                        {
+                            label: "管理类别",
+                            key: "book_cate",
+                            disabled: !(permInfo?.book_store_perm.read ?? false),
+                        },
+                        {
+                            label: "管理书籍",
+                            key: "book_book",
+                            disabled: !(permInfo?.book_store_perm.read ?? false),
+                        }
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "book_cate") {
+                                    history.push(ADMIN_PATH_BOOKSTORE_CATE_SUFFIX);
+                                } else if (e.selectedKeys[0] == "book_book") {
+                                    history.push(ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX);
+                                }
+                            }
+                        }} />
                 </Collapse.Panel>
                 <Collapse.Panel header="界面管理" key="clientCfg">
                     <Menu selectedKeys={clientCfgSelectedKeys} items={[

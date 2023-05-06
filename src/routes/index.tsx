@@ -52,6 +52,8 @@ import {
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_KB_BOOK_MARK_PATH,
   PUB_RES_PATH,
+  ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
+  ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -92,6 +94,8 @@ import AppList from '@/pages/Admin/AppAdmin/AppList';
 import OverviewLayout from '@/layouts/OverviewLayout';
 import IdeaPage from '@/pages/Idea/IdeaPage';
 import PubRes from '@/pages/PubRes';
+import BookCateList from '@/pages/Admin/BookAdmin/BookCateList';
+import BookList from '@/pages/Admin/BookAdmin/BookList';
 
 
 
@@ -462,7 +466,19 @@ const routesConfig: IRouteConfig[] = [
         title: "应用管理",
         component: AppList,
         exact: true,
-      }
+      },
+      {
+        path: ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
+        title: "书籍类别管理",
+        component: BookCateList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
+        title: "书籍管理",
+        component: BookList,
+        exact: true,
+      },
     ]
   },
 
