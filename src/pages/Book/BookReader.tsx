@@ -11,7 +11,7 @@ import type { Rendition, Contents, Location } from 'epubjs';
 import type Section from 'epubjs/types/section';
 import { readBinaryFile } from '@tauri-apps/api/fs';
 import type { Chapter } from "./utils";
-import { getTocHref, getTocId } from "./utils";
+import { getTocHref } from "./utils";
 import { convertToChapterList } from "./utils";
 import { BookOutlined, FontSizeOutlined, LoadingOutlined } from "@ant-design/icons";
 import s from './BookReader.module.less';
@@ -38,7 +38,6 @@ const BookReader = () => {
     const [chapterList, setChapterList] = useState<Chapter[]>([]);
     const [curChapter, setCurChapter] = useState("");
     const [showMarkId, setShowMarkId] = useState("");
-    const [noReloc, setNoReloc] = useState(false);
     const localStore = useLocalObservable(() => ({
         markList: [] as prjBookShelf.MarkInfo[] | userBookShelf.MarkInfo[],
     }));
@@ -197,16 +196,12 @@ const BookReader = () => {
 
         });
         rend.on("rendered", (section: Section) => {
-            setCurChapter(section.idref);
+            const newChapter = section.idref.replace(/[a-zA-Z_]*/, "");
+            if (curChapter != newChapter) {
+                setCurChapter(newChapter);
+            }
         });
         rend.on("relocated", function (loc: Location) {
-            if (noReloc) {
-                return;
-            }
-            const id = getTocId(loc.start.href, book.navigation.toc);
-            if (id != curChapter) {
-                setCurChapter(id);
-            }
             //TODO 改进性能
             if (projectId == "") {
                 request(userBookShelf.set_read_loc({
@@ -281,14 +276,10 @@ const BookReader = () => {
                                 bordered={false}
                                 placement="topRight"
                                 onChange={value => {
-                                    setNoReloc(true);
                                     const href = getTocHref(value, rendition?.book.navigation.toc ?? []);
-                                    setTimeout(() => {
-                                        rendition?.display(href).then(() => {
-                                            setCurChapter(value);
-                                        });
-                                    }, 100);
-                                    setTimeout(() => setNoReloc(false), 1000);
+                                    rendition?.display(href).then(() => {
+                                        setCurChapter(value);
+                                    });
                                 }} />
                         )}
                         {chapterList.length == 0 && (<span>&nbsp;&nbsp;<LoadingOutlined />加载中...</span>)}

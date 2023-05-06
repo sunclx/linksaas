@@ -21,7 +21,7 @@ function processConvertToChapter(retList: Chapter[], items: NavItem[]) {
     for (const item of items) {
         const chapter = {
             title: item.label.trim(),
-            value: item.id,
+            value: item.id.replace(/[a-zA-Z_]*/, ""),
             children: [],
         };
         if (item.subitems != undefined && item.subitems != null && item.subitems.length > 0) {
@@ -29,21 +29,6 @@ function processConvertToChapter(retList: Chapter[], items: NavItem[]) {
         }
         retList.push(chapter);
     }
-}
-
-export function getTocId(href: string, items: NavItem[]): string {
-    for (const item of items) {
-        if (item.subitems != undefined && item.subitems != null && item.subitems.length > 0) {
-            const id = getTocId(href, item.subitems);
-            if (id != "") {
-                return id;
-            }
-        }
-        if (item.href == href) {
-            return item.id;
-        }
-    }
-    return "";
 }
 
 export function getTocHref(id: string, items: NavItem[]): string {
@@ -54,7 +39,7 @@ export function getTocHref(id: string, items: NavItem[]): string {
                 return href;
             }
         }
-        if (item.id == id) {
+        if (item.id.replace(/[a-zA-Z_]*/, "") == id) {
             return item.href;
         }
     }
