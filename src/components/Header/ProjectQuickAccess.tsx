@@ -137,7 +137,7 @@ const ProjectQuickAccess = () => {
                     },
                     {
                         key: MENU_KEY_KB_BOOK_SHELF,
-                        label: "电子书库",
+                        label: "项目书籍",
                     },
                 ],
             });

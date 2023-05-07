@@ -12,7 +12,7 @@ import Backlog from './components/Backlog';
 import { Select, Space, Tabs } from 'antd';
 import { observer } from 'mobx-react';
 import Record from './components/Record';
-import { BookOutlined, FieldTimeOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
+import { BookOutlined, DoubleRightOutlined, FieldTimeOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
 import UserDocSpaceList from '../UserExtend/UserKb/UserDocSpaceList';
 import Button from '@/components/Button';
 import type { KbSpaceInfo } from '@/api/user_kb';
@@ -20,6 +20,7 @@ import type { UserDocState } from '../UserExtend/UserKb/UserDoc';
 import { runInAction } from 'mobx';
 import MyProjectList from './components/MyProjectList';
 import UserAppList from './components/UserAppList';
+import UserBookList from './components/UserBookList';
 
 
 const Workbench: React.FC = () => {
@@ -119,7 +120,16 @@ const Workbench: React.FC = () => {
                   e.stopPropagation();
                   e.preventDefault();
                   history.push(`${PUB_RES_PATH}?tab=appStore`);
-                }}>前往应用市场</Button>
+                }}>前往应用市场<DoubleRightOutlined /></Button>
+            )}
+            {activeKey == "userBook" && (
+              <Button
+                type="link"
+                style={{ marginRight: "20px" }} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  history.push(`${PUB_RES_PATH}?tab=bookStore`);
+                }}>前往书籍市场<DoubleRightOutlined /></Button>
             )}
           </>
         }>
@@ -141,17 +151,24 @@ const Workbench: React.FC = () => {
             )}
           </Tabs.TabPane>
         )}
-        <Tabs.TabPane tab={<h2><BookOutlined />我的知识库</h2>} key="userDoc">
-          {activeKey == "userDoc" && (
-            <div className={s.content_wrap}>
-              <UserDocSpaceList onChange={kbSpace => setCurKbSpace(kbSpace)} spaceId={spaceId ?? userStore.userInfo.defaultKbSpaceId} />
-            </div>
-          )}
-        </Tabs.TabPane>
         <Tabs.TabPane tab={<h2><BookOutlined />我的微应用</h2>} key="userApp">
           {activeKey == "userApp" && (
             <div className={s.content_wrap}>
               <UserAppList />
+            </div>
+          )}
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={<h2><BookOutlined />我的书籍</h2>} key="userBook">
+          {activeKey == "userBook" && (
+            <div className={s.content_wrap}>
+              <UserBookList />
+            </div>
+          )}
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={<h2><BookOutlined />我的文档</h2>} key="userDoc">
+          {activeKey == "userDoc" && (
+            <div className={s.content_wrap}>
+              <UserDocSpaceList onChange={kbSpace => setCurKbSpace(kbSpace)} spaceId={spaceId ?? userStore.userInfo.defaultKbSpaceId} />
             </div>
           )}
         </Tabs.TabPane>

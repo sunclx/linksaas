@@ -270,7 +270,7 @@ const AppCateList = () => {
 
     return (
         <Card title="应用类别"
-            style={{ height: "calc(100vh - 40px)", overflowY: "scroll" }}
+            bodyStyle={{ height: "calc(100vh - 90px)", overflowY: "scroll" }}
             extra={
                 <Button
                     disabled={!(permInfo?.app_store_perm.add_cate ?? false)}
@@ -366,18 +366,18 @@ const AppCateList = () => {
             )}
             {removeCateId != "" && (
                 <Modal open title="删除类别"
-                okText="删除"
-                okButtonProps={{ disabled: !((permInfo?.app_store_perm.remove_cate ?? false) && (cateName.trim().length > 0)),danger:true }}
-                onCancel={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setRemoveCateId("");
-                }}
-                onOk={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    removeCate();
-                }}
+                    okText="删除"
+                    okButtonProps={{ disabled: !((permInfo?.app_store_perm.remove_cate ?? false) && (cateName.trim().length > 0)), danger: true }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveCateId("");
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeCate();
+                    }}
                 >
                     是否删除类别&nbsp;{cateName}&nbsp;?
                 </Modal>

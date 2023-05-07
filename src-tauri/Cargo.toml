@@ -18,7 +18,6 @@ tauri-build = {version = "1.0.4", features = [] }
 async-trait = "0.1.26"
 base64 = "0.13.0"
 dirs = "4.0.0"
-epub = "1.2.4"
 futures = "0.3"
 futures-util = "0.3.21"
 html-escape = "0.2.13"
@@ -28,7 +27,7 @@ image = "0.24.1"
 local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", branch = "develop"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branch = "develop"}
+proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branch = "feature/books"}
 reqwest = {version = "0.11.12", features = ["blocking"] }
 rumqttc = "0.11.0"
 rust-string-random = "0.1.0"

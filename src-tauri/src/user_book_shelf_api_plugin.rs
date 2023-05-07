@@ -1,6 +1,6 @@
 use crate::notice_decode::new_wrong_session_notice;
-use proto_gen_rust::project_book_shelf_api::project_book_shelf_api_client::ProjectBookShelfApiClient;
-use proto_gen_rust::project_book_shelf_api::*;
+use proto_gen_rust::user_book_shelf_api::user_book_shelf_api_client::UserBookShelfApiClient;
+use proto_gen_rust::user_book_shelf_api::*;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
@@ -16,7 +16,7 @@ async fn add_book<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.add_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
@@ -42,13 +42,12 @@ async fn update_book<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.update_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_book_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_book".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -69,13 +68,12 @@ async fn list_book<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.list_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_book_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_book".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -96,13 +94,12 @@ async fn query_by_file_id<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.query_by_file_id(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == query_by_file_id_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("query_by_file_id".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("query_by_file_id".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -123,7 +120,7 @@ async fn get_book<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.get_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
@@ -149,13 +146,12 @@ async fn remove_book<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.remove_book(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_book_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("remove_book".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_book".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -176,7 +172,7 @@ async fn add_mark<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.add_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
@@ -202,13 +198,12 @@ async fn list_mark<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.list_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_mark_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_mark".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_mark".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -229,7 +224,7 @@ async fn get_mark<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.get_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
@@ -255,13 +250,12 @@ async fn remove_mark<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.remove_mark(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_mark_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("remove_mark".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_mark".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -282,13 +276,12 @@ async fn set_read_loc<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.set_read_loc(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_read_loc_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("set_read_loc".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_read_loc".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -309,13 +302,12 @@ async fn get_read_loc<R: Runtime>(
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
-    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    let mut client = UserBookShelfApiClient::new(chan.unwrap());
     match client.get_read_loc(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_read_loc_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("get_read_loc".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_read_loc".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -327,11 +319,11 @@ async fn get_read_loc<R: Runtime>(
 }
 
 
-pub struct ProjectBookShelfApiPlugin<R: Runtime> {
+pub struct UserBookShelfApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
 
-impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
+impl<R: Runtime> UserBookShelfApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
@@ -352,9 +344,9 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
     }
 }
 
-impl<R: Runtime> Plugin<R> for ProjectBookShelfApiPlugin<R> {
+impl<R: Runtime> Plugin<R> for UserBookShelfApiPlugin<R> {
     fn name(&self) -> &'static str {
-        "project_book_shelf_api"
+        "user_book_shelf_api"
     }
     fn initialization_script(&self) -> Option<String> {
         None

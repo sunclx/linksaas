@@ -9,7 +9,6 @@ import ChannelMemberStore from "./channelMember";
 import ChatMsgStore from "./chatMsg";
 import LinkAuxStore from './linkAux';
 import DocSpaceStore from './docSpace';
-import BookShelfStore from './bookShelf';
 import SpritStore from './sprit';
 import IssueStore from './issue';
 import IdeaStore from './idea';
@@ -26,7 +25,6 @@ export class RootStore {
   chatMsgStore: ChatMsgStore;
   linkAuxStore: LinkAuxStore;
   docSpaceStore: DocSpaceStore;
-  bookShelfStore: BookShelfStore;
   spritStore: SpritStore;
   issueStore: IssueStore;
   ideaStore: IdeaStore;
@@ -43,7 +41,6 @@ export class RootStore {
     this.chatMsgStore = new ChatMsgStore(this);
     this.linkAuxStore = new LinkAuxStore(this);
     this.docSpaceStore = new DocSpaceStore(this);
-    this.bookShelfStore = new BookShelfStore(this);
     this.spritStore = new SpritStore(this);
     this.issueStore = new IssueStore(this);
     this.ideaStore = new IdeaStore(this);
@@ -63,7 +60,6 @@ const _store = {
   chatMsgStore: rootStore.chatMsgStore,
   linkAuxStore: rootStore.linkAuxStore,
   docSpaceStore: rootStore.docSpaceStore,
-  bookShelfStore: rootStore.bookShelfStore,
   spritStore: rootStore.spritStore,
   issueStore: rootStore.issueStore,
   ideaStore: rootStore.ideaStore,

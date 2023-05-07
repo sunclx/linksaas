@@ -152,7 +152,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             user_app: userApp,
             project_app: projectApp,
         }));
-        //跳转文件owner
+        //设置文件owner
         if (iconFileId != "") {
             await request(set_file_owner({
                 session_id: sessionId,
