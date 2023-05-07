@@ -77,7 +77,7 @@ const BookStorePanel = () => {
                     </Form.Item>
                 </Form>
             }>
-            <List rowKey="book_id" dataSource={bookList} renderItem={book => (
+            <List rowKey="book_id" grid={{ gutter: 16 }} dataSource={bookList} renderItem={book => (
                 <List.Item style={{ cursor: "pointer" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();

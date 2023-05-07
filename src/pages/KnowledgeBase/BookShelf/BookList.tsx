@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { Card, message, Modal, Space, Image, Input, List, Popover } from "antd";
 import s from './BookList.module.less';
-import { BookOutlined, MoreOutlined } from "@ant-design/icons";
+import { BookOutlined, DoubleRightOutlined, MoreOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { list_book, update_book, remove_book } from '@/api/project_book_shelf';
@@ -15,6 +15,8 @@ import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT } fr
 import Epub from 'epubjs';
 import { readBinaryFile } from '@tauri-apps/api/fs';
 import logoPng from '@/assets/allIcon/logo.png';
+import { PUB_RES_PATH } from "@/utils/constant";
+import { useHistory } from "react-router-dom";
 
 const PAGE_SIZE = 12;
 
@@ -25,6 +27,8 @@ interface UploadBookInfo {
 }
 
 const BookList = () => {
+    const history = useHistory();
+
     const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
@@ -147,15 +151,39 @@ const BookList = () => {
         <Card
             title={<h1 className={s.header}><BookOutlined /> 项目书籍</h1>}
             bordered={false}
-            extra={<Button
-                type="primary"
-                style={{ height: "30px" }}
-                disabled={!projectStore.isAdmin}
-                onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    showUploadFile();
-                }}>上传电子书</Button>}>
+            extra={
+                <Space>
+                    <Button type="link" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        projectStore.setCurProjectId("");
+                        history.push(`${PUB_RES_PATH}?tab=bookStore`);
+                    }}>前往书籍市场<DoubleRightOutlined /></Button>
+                    <Popover trigger="click" placement="right" content={
+                        <div style={{ padding: "10px 10px" }}>
+                            <Button
+                                type="link"
+                                disabled={!projectStore.isAdmin}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    showUploadFile();
+                                }}>上传书籍</Button>
+                        </div>
+                    }>
+                        <MoreOutlined />
+                    </Popover>
+                    {/* <Button
+                        type="primary"
+                        style={{ height: "30px" }}
+                        disabled={!projectStore.isAdmin}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            showUploadFile();
+                        }}>上传电子书</Button> */}
+                </Space>
+            }>
             <div className={s.contentWrap}>
                 <List rowKey="book_id" dataSource={bookList} grid={{ gutter: 16 }} renderItem={book => (
                     <List.Item>

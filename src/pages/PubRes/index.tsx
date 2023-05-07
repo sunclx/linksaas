@@ -31,8 +31,8 @@ const PubRes = () => {
                         </div>
                     )}
                 </Tabs.TabPane>
-                <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;书籍</h2>} key="book">
-                    {activeKey == "book" && (
+                <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;书籍</h2>} key="bookStore">
+                    {activeKey == "bookStore" && (
                         <div className={s.content_wrap}>
                             <BookStorePanel/>
                         </div>
