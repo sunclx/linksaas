@@ -362,7 +362,7 @@ const routesConfig: IRouteConfig[] = [
               },
               {
                 path: APP_PROJECT_KB_BOOK_SHELF_PATH,
-                title: "电子书库",
+                title: "项目书籍",
                 component: BookShelf,
                 routes: getToolbarRoute(APP_PROJECT_KB_BOOK_SHELF_PATH),
               },
