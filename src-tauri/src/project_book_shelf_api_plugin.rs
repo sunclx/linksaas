@@ -6,8 +6,6 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
-use epub::doc::EpubDoc;
-
 #[tauri::command]
 async fn add_book<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -328,18 +326,6 @@ async fn get_read_loc<R: Runtime>(
     }
 }
 
-#[tauri::command]
-async fn parse_book_title(file_path: String) -> Result<String, String> {
-    let book = EpubDoc::new(&file_path);
-    if book.is_err() {
-        return Err(book.err().unwrap().to_string());
-    }
-    let book = book.unwrap();
-    if let Some(title) = book.mdata("title") {
-        return Ok(title);
-    }
-    return Ok("未知书名".into());
-}
 
 pub struct ProjectBookShelfApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
@@ -361,7 +347,6 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
                 remove_mark,
                 set_read_loc,
                 get_read_loc,
-                parse_book_title,
             ]),
         }
     }

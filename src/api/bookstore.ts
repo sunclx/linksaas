@@ -17,12 +17,23 @@ export type BookInfo = {
     cate_id: string;
     cate_name: string;
     file_id: string;
+    cover_file_id: string;
     create_time: number;
     update_time: number;
 };
 
-export type ProjectInstallInfo = {
+export type TocValue = {
+    level: number;
+    value: string;
+};
 
+export type BookExtraInfo = {
+    book_id: string;
+    desc: string;
+    toc_list: TocValue[];
+};
+
+export type ProjectInstallInfo = {
     project_id: string;
     project_name: string;
     has_install: boolean;
@@ -57,6 +68,16 @@ export type ListBookResponse = {
     book_list: BookInfo[];
 };
 
+export type GetBookExtraRequest = {
+    book_id: string;
+};
+
+export type GetBookExtraResponse = {
+    code: number;
+    err_msg: string;
+    extra_info: BookExtraInfo;
+};
+
 
 export type GetInstallInfoRequest = {
     session_id: string;
@@ -83,6 +104,15 @@ export async function list_book(request: ListBookRequest): Promise<ListBookRespo
     const cmd = 'plugin:bookstore_api|list_book';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListBookResponse>(cmd, {
+        request,
+    });
+}
+
+//获取书本详情
+export async function get_book_extra(request: GetBookExtraRequest): Promise<GetBookExtraResponse> {
+    const cmd = 'plugin:bookstore_api|get_book_extra';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetBookExtraResponse>(cmd, {
         request,
     });
 }

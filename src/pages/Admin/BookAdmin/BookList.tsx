@@ -99,6 +99,10 @@ const BookList = () => {
             ),
         },
         {
+            title: "封面",
+            render: (_, row) => row.cover_file_id == "" ? "无" : "有",
+        },
+        {
             title: "类别",
             render: (_, row) => (
                 <Select value={row.cate_id} style={{ width: "100px" }}

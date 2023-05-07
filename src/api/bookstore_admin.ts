@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
+import { TocValue } from './bookstore';
 
 export type AdminAddCateRequest = {
     admin_session_id: string;
@@ -40,6 +41,7 @@ export type AdminAddBookRequest = {
     book_title: string;
     cate_id: string;
     file_id: string;
+    cover_file_id: string;
 };
 
 export type AdminAddBookResponse = {
@@ -61,6 +63,17 @@ export type AdminUpdateBookResponse = {
     err_msg: string;
 };
 
+export type AdminSetBookExtraRequest = {
+    admin_session_id: string;
+    book_id: string;
+    desc: string;
+    toc_list: TocValue[];
+};
+
+export type AdminSetBookExtraResponse = {
+    code: number;
+    err_msg: string;
+}
 
 export type AdminRemoveBookRequest = {
     admin_session_id: string;
@@ -113,6 +126,15 @@ export async function update_book(request: AdminUpdateBookRequest): Promise<Admi
     const cmd = 'plugin:bookstore_admin_api|update_book';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminUpdateBookResponse>(cmd, {
+        request,
+    });
+}
+
+//设置额外信息
+export async function set_book_extra(request: AdminSetBookExtraRequest): Promise<AdminSetBookExtraResponse> {
+    const cmd = 'plugin:bookstore_admin_api|set_book_extra';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AdminSetBookExtraResponse>(cmd, {
         request,
     });
 }

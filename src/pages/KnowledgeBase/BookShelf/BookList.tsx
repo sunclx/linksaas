@@ -5,7 +5,7 @@ import s from './BookList.module.less';
 import { BookOutlined, EditOutlined, LinkOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
-import { parse_book_title, list_book, update_book } from '@/api/project_book_shelf';
+import { list_book, update_book } from '@/api/project_book_shelf';
 import UploadBookModal from "./components/UploadBookModal";
 import { useStores } from "@/hooks";
 import type { BookInfo } from '@/api/project_book_shelf';
@@ -15,13 +15,15 @@ import type { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 import { openBook } from "@/pages/Book/utils";
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
-
+import Epub from 'epubjs';
+import { readBinaryFile } from '@tauri-apps/api/fs';
 
 const PAGE_SIZE = 10;
 
 interface UploadBookInfo {
     filePath: string;
     title: string;
+    coverDataBase64: string;
 }
 
 const BookList = () => {
@@ -51,8 +53,22 @@ const BookList = () => {
             return;
         }
         try {
-            const title = await parse_book_title(bookFile as string);
-            setUploadInfo({ filePath: bookFile as string, title: title });
+            const data = await readBinaryFile(bookFile as string);
+            const book = Epub(data.buffer);
+            await book.ready;
+            const meta = await book.loaded.metadata;
+            const coverUrl = await book.loaded.cover;
+            const title = meta.title == "" ? "未知名称" : meta.title;
+            let coverFileBase64 = "";
+            if ((coverUrl ?? "") != "") {
+                let base64Data = await book.archive.getBase64(coverUrl);
+                const index = base64Data.indexOf("base64,");
+                if (index != -1) {
+                    base64Data = base64Data.substring(index + "base64,".length);
+                }
+                coverFileBase64 = base64Data;
+            }
+            setUploadInfo({ filePath: bookFile as string, title: title, coverDataBase64: coverFileBase64 });
         } catch (e: unknown) {
             console.log(e);
             message.error(e as string);
@@ -166,6 +182,7 @@ const BookList = () => {
             {uploadInfo != null && (<UploadBookModal
                 filePath={uploadInfo.filePath}
                 title={uploadInfo.title}
+                coverDataBase64={uploadInfo.coverDataBase64}
                 onErr={errMsg => {
                     message.error(errMsg);
                     setUploadInfo(null);

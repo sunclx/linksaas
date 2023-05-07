@@ -4,6 +4,7 @@ export type BookInfo = {
     book_id: string;
     book_title: string;
     file_loc_id: string;
+    cover_file_id: string;
     create_time: number;
     last_read_time: number;
     in_store: boolean;
@@ -21,6 +22,7 @@ export type AddBookRequest = {
     session_id: string;
     book_title: string;
     file_id: string;
+    cover_file_id: string;
     in_store: boolean;
 };
 

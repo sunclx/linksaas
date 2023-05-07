@@ -47,6 +47,26 @@ async fn list_book<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_book_extra<R: Runtime>(
+    app_handle: AppHandle<R>,
+    _window: Window<R>,
+    request: GetBookExtraRequest,
+) -> Result<GetBookExtraResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = BookstoreApiClient::new(chan.unwrap());
+    match client.get_book_extra(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn get_install_info<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -73,8 +93,6 @@ async fn get_install_info<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
-
-
 pub struct BookstoreApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -85,6 +103,7 @@ impl<R: Runtime> BookstoreApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 list_cate,
                 list_book,
+                get_book_extra,
                 get_install_info,
             ]),
         }

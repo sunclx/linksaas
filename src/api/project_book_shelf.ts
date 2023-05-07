@@ -4,6 +4,7 @@ export type BookInfo = {
     book_id: string;
     book_title: string;
     file_loc_id: string;
+    cover_file_id: string;
     create_user_id: string;
     create_display_name: string;
     create_logo_uri: string;
@@ -16,6 +17,7 @@ export type AddBookRequest = {
     project_id: string;
     book_title: string;
     file_id: string;
+    cover_file_id: string;
     in_store: boolean;
 };
 
@@ -224,15 +226,6 @@ export async function remove_book(request: RemoveBookRequest): Promise<RemoveBoo
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveBookResponse>(cmd, {
         request,
-    });
-}
-
-//解析epub文件获取标题
-export async function parse_book_title(filePath: string): Promise<string> {
-    const cmd = 'plugin:project_book_shelf_api|parse_book_title';
-    console.log(`%c${cmd}`, 'color:#0f0;', filePath);
-    return invoke<string>(cmd, {
-        filePath,
     });
 }
 
