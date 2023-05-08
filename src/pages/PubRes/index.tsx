@@ -6,13 +6,22 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
 import BookStorePanel from './components/BookStorePanel';
+import { useStores } from '@/hooks';
 
 const PubRes = () => {
     const location = useLocation();
     const history = useHistory();
+    const appStore = useStores('appStore');
 
     const urlParams = new URLSearchParams(location.search);
-    const tab = urlParams.get('tab') ?? "appStore";
+    let tab = urlParams.get('tab') ?? "";
+    if (tab == "") {
+        if (appStore.clientCfg?.enable_pub_app_store == true) {
+            tab = "appStore"
+        } else if (appStore.clientCfg?.enable_pub_book_store == true) {
+            tab = "bookStore"
+        }
+    }
 
     const [activeKey, setActiveKey] = useState(tab);
 
@@ -24,20 +33,24 @@ const PubRes = () => {
                     setActiveKey(key);
                     history.push(`${PUB_RES_PATH}?tab=${key}`);
                 }}>
-                <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用</h2>} key="appStore">
-                    {activeKey == "appStore" && (
-                        <div className={s.content_wrap}>
-                            <AppStorePanel />
-                        </div>
-                    )}
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;书籍</h2>} key="bookStore">
-                    {activeKey == "bookStore" && (
-                        <div className={s.content_wrap}>
-                            <BookStorePanel/>
-                        </div>
-                    )}
-                </Tabs.TabPane>
+                {appStore.clientCfg?.enable_pub_app_store == true && (
+                    <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用</h2>} key="appStore">
+                        {activeKey == "appStore" && (
+                            <div className={s.content_wrap}>
+                                <AppStorePanel />
+                            </div>
+                        )}
+                    </Tabs.TabPane>
+                )}
+                {appStore.clientCfg?.enable_pub_book_store == true && (
+                    <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;书籍</h2>} key="bookStore">
+                        {activeKey == "bookStore" && (
+                            <div className={s.content_wrap}>
+                                <BookStorePanel />
+                            </div>
+                        )}
+                    </Tabs.TabPane>
+                )}
             </Tabs>
         </div>
     );
