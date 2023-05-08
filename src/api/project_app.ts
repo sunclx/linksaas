@@ -74,6 +74,18 @@ export type ListResponse = {
     app_list: App[];
 };
 
+export type QueryInStoreRequest = {
+    session_id: string;
+    project_id: string;
+    app_id_in_store: string;
+};
+
+export type QueryInStoreResponse = {
+    code: number;
+    err_msg: string;
+    app_id_list: string[];
+};
+
 export type AddRequest = {
     session_id: string;
     basic_info: BasicApp;
@@ -137,6 +149,15 @@ export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:project_app_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListResponse>(cmd, {
+        request,
+    });
+}
+
+//通过应用市场ID查询应用ID
+export async function query_in_store(request: QueryInStoreRequest): Promise<QueryInStoreResponse> {
+    const cmd = 'plugin:project_app_api|query_in_store';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<QueryInStoreResponse>(cmd, {
         request,
     });
 }

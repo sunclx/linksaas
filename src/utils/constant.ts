@@ -2,6 +2,7 @@ import * as issueApi from '@/api/project_issue';
 
 export const USER_LOGIN_PATH = '/user/login';
 export const WORKBENCH_PATH = '/app/workbench';
+export const PUB_RES_PATH = '/app/pubres';
 export const WORKBENCH_KB_DOC_SUFFIX = "/app/workbench/kb/doc";
 
 export const EXTRA_MENU_PATH = '/app/extra_menu';
@@ -47,6 +48,9 @@ export const ADMIN_PATH_PROJECT_CREATE_SUFFIX = '/admin/project/create';
 
 export const ADMIN_PATH_APPSTORE_CATE_SUFFIX = '/admin/appstore/cate';
 export const ADMIN_PATH_APPSTORE_APP_SUFFIX = '/admin/appstore/app';
+
+export const ADMIN_PATH_BOOKSTORE_CATE_SUFFIX = '/admin/bookstore/cate';
+export const ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX = '/admin/bookstore/book';
 
 export const ADMIN_PATH_ORG_LIST_SUFFIX = '/admin/org/list';
 

@@ -4,18 +4,21 @@ export type BookInfo = {
     book_id: string;
     book_title: string;
     file_loc_id: string;
+    cover_file_id: string;
     create_user_id: string;
     create_display_name: string;
     create_logo_uri: string;
     create_time: number;
+    in_store: boolean;
 };
 
 export type AddBookRequest = {
     session_id: string;
     project_id: string;
     book_title: string;
-    book_desc: string;
     file_id: string;
+    cover_file_id: string;
+    in_store: boolean;
 };
 
 export type AddBookResponse = {
@@ -48,6 +51,18 @@ export type ListBookResponse = {
     err_msg: string;
     total_count: number;
     info_list: BookInfo[];
+};
+
+export type QueryByFileIdRequest = {
+    session_id: string;
+    project_id: string;
+    file_id_in_store: string;
+};
+
+export type QueryByFileIdResponse = {
+    code: number;
+    err_msg: string;
+    book_id_list: string[];
 };
 
 export type GetBookRequest = {
@@ -187,6 +202,15 @@ export async function list_book(request: ListBookRequest): Promise<ListBookRespo
     });
 }
 
+//通过文件查询从市场来的书本ID
+export async function query_by_file_id(request: QueryByFileIdRequest): Promise<QueryByFileIdResponse> {
+    const cmd = 'plugin:project_book_shelf_api|query_by_file_id';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<QueryByFileIdResponse>(cmd, {
+        request,
+    });
+}
+
 //获取单个书本
 export async function get_book(request: GetBookRequest): Promise<GetBookResponse> {
     const cmd = 'plugin:project_book_shelf_api|get_book';
@@ -202,15 +226,6 @@ export async function remove_book(request: RemoveBookRequest): Promise<RemoveBoo
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveBookResponse>(cmd, {
         request,
-    });
-}
-
-//解析epub文件获取标题
-export async function parse_book_title(filePath: string): Promise<string> {
-    const cmd = 'plugin:project_book_shelf_api|parse_book_title';
-    console.log(`%c${cmd}`, 'color:#0f0;', filePath);
-    return invoke<string>(cmd, {
-        filePath,
     });
 }
 

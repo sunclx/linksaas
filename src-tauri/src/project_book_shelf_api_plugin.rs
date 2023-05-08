@@ -1,13 +1,10 @@
 use crate::notice_decode::new_wrong_session_notice;
 use proto_gen_rust::project_book_shelf_api::project_book_shelf_api_client::ProjectBookShelfApiClient;
 use proto_gen_rust::project_book_shelf_api::*;
-
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
-
-use epub::doc::EpubDoc;
 
 #[tauri::command]
 async fn add_book<R: Runtime>(
@@ -79,6 +76,33 @@ async fn list_book<R: Runtime>(
             if inner_resp.code == list_book_response::Code::WrongSession as i32 {
                 if let Err(err) =
                     window.emit("notice", new_wrong_session_notice("list_book".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn query_by_file_id<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: QueryByFileIdRequest,
+) -> Result<QueryByFileIdResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectBookShelfApiClient::new(chan.unwrap());
+    match client.query_by_file_id(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == query_by_file_id_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("query_by_file_id".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -302,18 +326,6 @@ async fn get_read_loc<R: Runtime>(
     }
 }
 
-#[tauri::command]
-async fn parse_book_title(file_path: String) -> Result<String, String> {
-    let book = EpubDoc::new(&file_path);
-    if book.is_err() {
-        return Err(book.err().unwrap().to_string());
-    }
-    let book = book.unwrap();
-    if let Some(title) = book.mdata("title") {
-        return Ok(title);
-    }
-    return Ok("未知书名".into());
-}
 
 pub struct ProjectBookShelfApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
@@ -326,6 +338,7 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
                 add_book,
                 update_book,
                 list_book,
+                query_by_file_id,
                 get_book,
                 remove_book,
                 add_mark,
@@ -334,7 +347,6 @@ impl<R: Runtime> ProjectBookShelfApiPlugin<R> {
                 remove_mark,
                 set_read_loc,
                 get_read_loc,
-                parse_book_title,
             ]),
         }
     }

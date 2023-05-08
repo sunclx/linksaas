@@ -112,6 +112,18 @@ export type CatePath = {
     sub_minor_cate_id: string;
 };
 
+export type ProjectInstallInfo = {
+    project_id: string;
+    project_name: string;
+    has_install: boolean;
+    can_install: boolean;
+};
+
+export type InstallInfo = {
+    user_install: boolean;
+    project_list: ProjectInstallInfo[];
+};
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ListMajorCateRequest = {};
 
@@ -177,6 +189,17 @@ export type GetAppResponse = {
     app_info: AppInfo;
 };
 
+export type GetInstallInfoRequest = {
+    session_id: string;
+    app_id: string;
+};
+
+export type GetInstallInfoResponse = {
+    code: number;
+    err_msg: string;
+    install_info: InstallInfo;
+};
+
 
 //列出一级分类
 export async function list_major_cate(request: ListMajorCateRequest): Promise<ListMajorCateResponse> {
@@ -232,6 +255,15 @@ export async function get_app(request: GetAppRequest): Promise<GetAppResponse> {
     const cmd = 'plugin:appstore_api|get_app';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetAppResponse>(cmd, {
+        request,
+    });
+}
+
+//获取应用的安装情况
+export async function get_install_info(request: GetInstallInfoRequest): Promise<GetInstallInfoResponse> {
+    const cmd = 'plugin:appstore_api|get_install_info';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetInstallInfoResponse>(cmd, {
         request,
     });
 }

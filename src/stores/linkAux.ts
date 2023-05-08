@@ -29,6 +29,7 @@ import {
 import { open } from '@tauri-apps/api/shell';
 import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
 import { uniqId } from '@/utils/utils';
+import { openBook } from '@/pages/Book/utils';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -701,14 +702,17 @@ class LinkAuxStore {
       history.push(this.genUrl(execLink.projectId, pathname, REPO_ACTION_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
       const bookMarkLink = link as LinkBookMarkInfo;
-      if (this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT) {
-        return;
+      let canShare = false;
+      const layout = this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
+      if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(layout) && bookMarkLink.projectId != "") {
+        canShare = true;
       }
       if (this.rootStore.projectStore.curProjectId != bookMarkLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(bookMarkLink.projectId);
       }
-      this.rootStore.bookShelfStore.setShowBook(bookMarkLink.bookId, bookMarkLink.markId);
-      history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
+      openBook(this.rootStore.userStore.userInfo.userId, bookMarkLink.projectId, bookMarkLink.bookId, bookMarkLink.markId,
+        this.rootStore.appStore.clientCfg?.book_store_fs_id ?? "", this.rootStore.projectStore.curProject?.ebook_fs_id ?? "",
+        canShare);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
       if (this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_sprit == true) {

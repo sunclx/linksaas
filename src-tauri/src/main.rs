@@ -55,6 +55,9 @@ mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
 mod user_kb_api_plugin;
+mod bookstore_api_plugin;
+mod bookstore_admin_api_plugin;
+mod user_book_shelf_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_shell_plugin;
@@ -391,6 +394,9 @@ fn main() {
         .plugin(project_tool_api_plugin::ProjectToolApiPlugin::new())
         .plugin(project_alarm_api_plugin::ProjectAlarmApiPlugin::new())
         .plugin(project_bookmark_api_plugin::ProjectBookMarkApiPlugin::new())
+        .plugin(bookstore_api_plugin::BookstoreApiPlugin::new())
+        .plugin(bookstore_admin_api_plugin::BookstoreAdminApiPlugin::new())
+        .plugin(user_book_shelf_api_plugin::UserBookShelfApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

@@ -11,7 +11,7 @@ import adImg from '@/assets/allIcon/ad.png';
 import ProjectList from './ProjectList';
 import { GlobalOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
-import { EXTRA_MENU_PATH, WORKBENCH_PATH } from '@/utils/constant';
+import { EXTRA_MENU_PATH, PUB_RES_PATH, WORKBENCH_PATH } from '@/utils/constant';
 
 
 const LeftMenu: React.FC = () => {
@@ -57,6 +57,23 @@ const LeftMenu: React.FC = () => {
         </div>
         <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
         <ProjectList />
+        <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />
+        <div className={`${cls.workbench_menu} ${location.pathname.startsWith(PUB_RES_PATH) ? cls.active_menu : ""}`}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (docSpaceStore.inEdit) {
+              docSpaceStore.showCheckLeave(() => {
+                history.push(PUB_RES_PATH);
+                projectStore.setCurProjectId("");
+              });
+              return;
+            }
+            history.push(PUB_RES_PATH);
+            projectStore.setCurProjectId("");
+          }}>
+          <GlobalOutlined />&nbsp;公共资源
+        </div>
         {(appStore.clientCfg?.item_list.length ?? 0) > 0 && <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />}
         {appStore.clientCfg?.item_list.map(extraItem => (
           <div key={extraItem.menu_id}

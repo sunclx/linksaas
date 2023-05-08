@@ -51,6 +51,9 @@ import {
   ADMIN_PATH_APPSTORE_APP_SUFFIX,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_KB_BOOK_MARK_PATH,
+  PUB_RES_PATH,
+  ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
+  ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -90,6 +93,9 @@ import AppCateList from '@/pages/Admin/AppAdmin/AppCateList';
 import AppList from '@/pages/Admin/AppAdmin/AppList';
 import OverviewLayout from '@/layouts/OverviewLayout';
 import IdeaPage from '@/pages/Idea/IdeaPage';
+import PubRes from '@/pages/PubRes';
+import BookCateList from '@/pages/Admin/BookAdmin/BookCateList';
+import BookList from '@/pages/Admin/BookAdmin/BookList';
 
 
 
@@ -310,6 +316,12 @@ const routesConfig: IRouteConfig[] = [
         exact: true,
       },
       {
+        path: PUB_RES_PATH,
+        title: "公共资源",
+        component: PubRes,
+        exact: true,
+      },
+      {
         path: WORKBENCH_KB_DOC_SUFFIX,
         title: "知识库文档",
         component: UserDoc,
@@ -350,7 +362,7 @@ const routesConfig: IRouteConfig[] = [
               },
               {
                 path: APP_PROJECT_KB_BOOK_SHELF_PATH,
-                title: "电子书库",
+                title: "项目书籍",
                 component: BookShelf,
                 routes: getToolbarRoute(APP_PROJECT_KB_BOOK_SHELF_PATH),
               },
@@ -454,7 +466,19 @@ const routesConfig: IRouteConfig[] = [
         title: "应用管理",
         component: AppList,
         exact: true,
-      }
+      },
+      {
+        path: ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
+        title: "书籍类别管理",
+        component: BookCateList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
+        title: "书籍管理",
+        component: BookList,
+        exact: true,
+      },
     ]
   },
 

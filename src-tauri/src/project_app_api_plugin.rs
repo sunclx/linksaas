@@ -32,6 +32,32 @@ async fn list<R: Runtime>(
 }
 
 #[tauri::command]
+async fn query_in_store<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: QueryInStoreRequest,
+) -> Result<QueryInStoreResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectAppApiClient::new(chan.unwrap());
+    match client.query_in_store(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == query_in_store_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("query_in_store".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
+#[tauri::command]
 async fn add<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -173,6 +199,7 @@ impl<R: Runtime> ProjectAppApiPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 list,
+                query_in_store,
                 add,
                 remove,
                 get_token_url,

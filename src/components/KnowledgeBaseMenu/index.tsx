@@ -137,7 +137,7 @@ const KnowledgeBaseMenu = () => {
           history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
         }}
       >
-        <BookOutlined /> <span className={s.sub_menu_head}>电子书库</span>
+        <BookOutlined /> <span className={s.sub_menu_head}>项目书籍</span>
       </div>
       {showAddModal && (
         <Modal

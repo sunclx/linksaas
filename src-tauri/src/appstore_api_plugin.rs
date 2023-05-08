@@ -1,3 +1,4 @@
+use crate::notice_decode::new_wrong_session_notice;
 use proto_gen_rust::appstore_api::appstore_api_client::AppstoreApiClient;
 use proto_gen_rust::appstore_api::*;
 use tauri::{
@@ -125,6 +126,34 @@ async fn get_cate_path<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn get_install_info<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetInstallInfoRequest,
+) -> Result<GetInstallInfoResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = AppstoreApiClient::new(chan.unwrap());
+    match client.get_install_info(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_install_info_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_install_info".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct AppstoreApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -139,6 +168,7 @@ impl<R: Runtime> AppstoreApiPlugin<R> {
                 list_app,
                 get_app,
                 get_cate_path,
+                get_install_info,
             ]),
         }
     }

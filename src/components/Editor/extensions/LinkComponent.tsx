@@ -22,6 +22,7 @@ import { get_doc_key } from '@/api/project_doc';
 import { LinkOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { get_script_suite_key } from '@/api/robot_script';
 import { get_requirement } from '@/api/project_requirement';
+import { get_session } from '@/api/user';
 
 const Link: React.FC<{
   link: LinkInfo;
@@ -35,17 +36,17 @@ const Link: React.FC<{
     insertText(link.linkContent);
   };
 
-  const userStore = useStores('userStore');
   const [title, setTitle] = useState('');
 
   const loadData = async () => {
     if (title != '') {
       return;
     }
+    const sessionId = await get_session();
     if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CHANNEL) {
       const channelLink = link as unknown as LinkChannelInfo;
       const res = await request(
-        get_channel(userStore.sessionId, channelLink.projectId, channelLink.channelId),
+        get_channel(sessionId, channelLink.projectId, channelLink.channelId),
       );
       if (res) {
         setTitle('频道:' + res.info.basic_info.channel_name);
@@ -53,7 +54,7 @@ const Link: React.FC<{
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as unknown as LinkRequirementInfo;
       const res = await request(get_requirement({
-        session_id: userStore.sessionId,
+        session_id: sessionId,
         project_id: reqLink.projectId,
         requirement_id: reqLink.requirementId,
       }));
@@ -63,14 +64,14 @@ const Link: React.FC<{
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TASK) {
       const taskLink = link as unknown as LinkTaskInfo;
       const res = await request(
-        get_issue(userStore.sessionId, taskLink.projectId, taskLink.issueId),
+        get_issue(sessionId, taskLink.projectId, taskLink.issueId),
       );
       if (res) {
         setTitle('任务:' + res.info.basic_info.title);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BUG) {
       const bugLink = link as unknown as LinkBugInfo;
-      const res = await request(get_issue(userStore.sessionId, bugLink.projectId, bugLink.issueId));
+      const res = await request(get_issue(sessionId, bugLink.projectId, bugLink.issueId));
       if (res) {
         setTitle('缺陷:' + res.info.basic_info.title);
       }
@@ -78,7 +79,7 @@ const Link: React.FC<{
       const docLink = link as unknown as LinkDocInfo;
       const res = await request(
         get_doc_key({
-          session_id: userStore.sessionId,
+          session_id: sessionId,
           project_id: docLink.projectId,
           doc_space_id: '',
           doc_id: docLink.docId,
@@ -90,7 +91,7 @@ const Link: React.FC<{
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
       const scriptSuiteLink = link as unknown as LinkScriptSuiteInfo;
       const res = await request(get_script_suite_key({
-        session_id: userStore.sessionId,
+        session_id: sessionId,
         project_id: scriptSuiteLink.projectId,
         script_suite_id: scriptSuiteLink.scriptSuiteId,
       }));

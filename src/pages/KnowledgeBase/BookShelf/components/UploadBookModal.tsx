@@ -3,15 +3,17 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { uniqId } from "@/utils/utils";
 import { listen } from '@tauri-apps/api/event';
-import type {FsProgressEvent } from '@/api/fs';
+import type { FsProgressEvent } from '@/api/fs';
 import { useStores } from "@/hooks";
-import { write_file,set_file_owner,FILE_OWNER_TYPE_PROJECT_EBOOK } from '@/api/fs';
+import { write_file, set_file_owner, FILE_OWNER_TYPE_PROJECT_EBOOK, write_file_base64 } from '@/api/fs';
 import { add_book } from '@/api/project_book_shelf';
+import { request } from "@/utils/request";
 
 
 interface UploadBookModalProps {
     filePath: string;
     title: string;
+    coverDataBase64: string;
     onOk: () => void;
     onErr: (errMsg: string) => void;
 }
@@ -26,36 +28,38 @@ const UploadBookModal: React.FC<UploadBookModalProps> = (props) => {
     const uploadFile = async () => {
         try {
             //上传文件
-            const uploadRes = await write_file(userStore.sessionId, projectStore.curProject?.ebook_fs_id ?? "", props.filePath, trackId);
-            if (uploadRes.code != 0) {
-                props.onErr(uploadRes.err_msg);
-                return;
+            let coverFileId = "";
+            if (props.coverDataBase64 != "") {
+                const coverRes = await request(write_file_base64(userStore.sessionId, projectStore.curProject?.ebook_fs_id ?? "", "cover.png", props.coverDataBase64, ""));
+                coverFileId = coverRes.file_id;
             }
+            const uploadRes = await request(write_file(userStore.sessionId, projectStore.curProject?.ebook_fs_id ?? "", props.filePath, trackId));
             //增加书籍
-            const addRes = await add_book({
+            const addRes = await request(add_book({
                 session_id: userStore.sessionId,
                 project_id: projectStore.curProjectId,
                 book_title: props.title,
-                book_desc: "",
                 file_id: uploadRes.file_id,
-            });
-            if(addRes.code != 0){
-                props.onErr(addRes.err_msg);
-                return;
-            }
+                cover_file_id: coverFileId,
+                in_store: false,
+            }));
             //设置文件owner
-            const setRes = await set_file_owner({
+            if(coverFileId != ""){
+                await set_file_owner({
+                    session_id: userStore.sessionId,
+                    fs_id: projectStore.curProject?.ebook_fs_id ?? "",
+                    file_id: coverFileId,
+                    owner_type: FILE_OWNER_TYPE_PROJECT_EBOOK,
+                    owner_id: addRes.book_id,
+                });
+            }
+            await set_file_owner({
                 session_id: userStore.sessionId,
                 fs_id: projectStore.curProject?.ebook_fs_id ?? "",
                 file_id: uploadRes.file_id,
                 owner_type: FILE_OWNER_TYPE_PROJECT_EBOOK,
                 owner_id: addRes.book_id,
             });
-            console.log(setRes);
-            if(setRes.code != 0){
-                props.onErr(setRes.err_msg);
-                return ;
-            }
             props.onOk();
         } catch (e) {
             console.log(e);
