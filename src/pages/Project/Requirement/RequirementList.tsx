@@ -12,7 +12,7 @@ import {
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { AddCateModal, RemoveCateModal, UpdateCateModal } from "./components/CateModal";
-import { LinkOutlined, MoreOutlined } from "@ant-design/icons";
+import { MoreOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { ColumnsType } from 'antd/lib/table';
 import Pagination from "@/components/Pagination";
@@ -96,12 +96,7 @@ const RequirementList = () => {
             title: "需求标题",
             width: 250,
             render: (_, row: RequirementInfo) => (
-                <Space size="middle">
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, row.requirement_id), history);
-                    }}><LinkOutlined /></a>
+                <Space size="middle" style={{ lineHeight: "28px" }}>
                     <EditText editable={true} content={row.base_info.title}
                         onChange={async (value: string) => {
                             const title = value.trim();
@@ -124,7 +119,9 @@ const RequirementList = () => {
                                 console.log(e);
                             }
                             return false;
-                        }} showEditIcon={true} />
+                        }} showEditIcon={true} onClick={() => {
+                            linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, row.requirement_id), history);
+                        }} />
 
                 </Space>
             ),
@@ -166,7 +163,7 @@ const RequirementList = () => {
         },
         {
             title: "状态",
-            width: 100,
+            width: 120,
             render: (_, row: RequirementInfo) => (
                 <EditSelect editable={projectStore.isAdmin} curValue={row.closed ? 1 : 0} itemList={[
                     {
@@ -200,18 +197,6 @@ const RequirementList = () => {
                     }
                     return true;
                 }} showEditIcon={true} allowClear={false} />
-            ),
-        },
-        {
-            title: "操作",
-            render: (_, row: RequirementInfo) => (
-                <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        //跳转到详情页
-                        linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, row.requirement_id), history);
-                    }}>查看</Button>
             ),
         },
         {

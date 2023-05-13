@@ -66,30 +66,21 @@ const DirContent: React.FC<DirContentProps> = (props) => {
                             return false;
                         }
                         return false;
-                    }} showEditIcon={true} />
+                    }} showEditIcon={true} onClick={() => {
+                        linkAuxStore.goToTestCaseList({ entryId: record.entry_id }, history);
+                    }} />
                 </Space>
             ),
         },
         {
             title: "操作",
-            width: 150,
+            width: 60,
             render: (_, record: Entry) => (
-                <>
-                    <Button type="link"
-                        style={{ minWidth: "10px", padding: "0px 0px" }}
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToTestCaseList({ entryId: record.entry_id }, history);
-                        }}>
-                        查看{record.entry_type == ENTRY_TYPE_DIR ? "目录" : "用例"}
-                    </Button>
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setMoveEntryId(record.entry_id);
-                    }}>移动到</Button>
-                </>
+                <Button type="link" style={{minWidth:0,padding:"0px 0px"}} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setMoveEntryId(record.entry_id);
+                }}>移动到</Button>
             ),
         },
         {

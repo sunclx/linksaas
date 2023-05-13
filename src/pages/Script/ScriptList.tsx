@@ -10,8 +10,7 @@ import { request } from "@/utils/request";
 import type { ScriptSuiteKey } from "@/api/robot_script";
 import { list_script_suite_key } from "@/api/robot_script";
 import type { ColumnsType } from 'antd/es/table';
-import { LinkOutlined } from "@ant-design/icons";
-import { Space, Table } from "antd";
+import { Table } from "antd";
 import Pagination from "@/components/Pagination";
 import { LinkScriptSuiteInfo } from "@/stores/linkAux";
 import moment from 'moment';
@@ -49,7 +48,7 @@ const ScriptList = () => {
                     e.stopPropagation();
                     e.preventDefault();
                     linkAuxStore.goToLink(new LinkScriptSuiteInfo("", projectStore.curProjectId, record.script_suite_id, false, 0, "scriptContent"), history);
-                }}><LinkOutlined />{record.script_suite_name}</a>
+                }}>{record.script_suite_name}</a>
             ),
         },
         {
@@ -64,20 +63,13 @@ const ScriptList = () => {
         },
         {
             title: "操作",
-            width: 200,
+            width: 80,
             render: (_, record: ScriptSuiteKey) => (
-                <Space size="large">
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        linkAuxStore.goToLink(new LinkScriptSuiteInfo("", projectStore.curProjectId, record.script_suite_id, false, 0, "scriptContent"), history);
-                    }}>查看详情</a>
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        linkAuxStore.goToLink(new LinkScriptSuiteInfo("", projectStore.curProjectId, record.script_suite_id, false, 0, "execList"), history);
-                    }}>查看执行记录</a>
-                </Space>
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    linkAuxStore.goToLink(new LinkScriptSuiteInfo("", projectStore.curProjectId, record.script_suite_id, false, 0, "execList"), history);
+                }}>查看执行记录</a>
             ),
         },
         {
