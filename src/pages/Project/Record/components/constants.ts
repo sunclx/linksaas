@@ -1553,6 +1553,14 @@ export const spritEvOptionList: CheckboxOptionType[] = [
         value: "remove",
     },
     {
+        label: "关注迭代",
+        value: "watch",
+    },
+    {
+        label: "取消关注迭代",
+        value: "unWatch",
+    },
+    {
         label: "关联文档",
         value: "linkDoc",
     },
@@ -1579,6 +1587,8 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
         cancel_link_doc: false,
         link_channel: false,
         cancel_link_channel: false,
+        watch: false,
+        un_watch: false,
     };
     if (values == undefined) {
         return ret;
@@ -1598,6 +1608,10 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
             ret.link_channel = true;
         } else if (value == "cancelLinkChannel") {
             ret.cancel_link_channel = true;
+        } else if (value == "watch") {
+            ret.watch = true;
+        } else if (value == "unWatch") {
+            ret.un_watch = true;
         }
     });
     return ret;
@@ -1625,6 +1639,12 @@ export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
     }
     if (cfg.cancel_link_channel) {
         retList.push("cancelLinkChannel");
+    }
+    if (cfg.watch) {
+        retList.push("watch");
+    }
+    if (cfg.un_watch) {
+        retList.push("unWatch");
     }
     return retList;
 };

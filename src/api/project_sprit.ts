@@ -34,6 +34,7 @@ export type SpritInfo = {
   update_logo_uri: string;
   link_channel_id: string;
   link_channel_title: string;
+  my_watch: boolean;
 };
 
 export type BurnDownInfo = {
@@ -131,6 +132,18 @@ export type ListBurnDownResponse = {
   info_list: BurnDownInfo[];
 };
 
+export type WatchResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type UnWatchResponse = {
+  code: number;
+  err_msg: string;
+};
+
+
+
 //创建迭代
 export async function create(
   session_id: string,
@@ -174,6 +187,8 @@ export async function update(
 export async function list(
   session_id: string,
   project_id: string,
+  filter_by_watch: boolean,
+  watch_value: boolean,
   offset: number,
   limit: number,
 ): Promise<ListResponse> {
@@ -181,6 +196,8 @@ export async function list(
   const request = {
     session_id,
     project_id,
+    filter_by_watch,
+    watch: watch_value,
     offset,
     limit,
   };
@@ -225,6 +242,44 @@ export async function remove(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RemoveResponse>(cmd, {
+    request,
+  });
+}
+
+//关注迭代
+export async function watch(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+): Promise<WatchResponse> {
+  const cmd = 'plugin:project_sprit_api|watch';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<WatchResponse>(cmd, {
+    request,
+  });
+}
+
+//取消关注迭代
+export async function un_watch(
+  session_id: string,
+  project_id: string,
+  sprit_id: string,
+): Promise<UnWatchResponse> {
+  const cmd = 'plugin:project_sprit_api|un_watch';
+  const request = {
+    session_id,
+    project_id,
+    sprit_id,
+  };
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<UnWatchResponse>(cmd, {
     request,
   });
 }

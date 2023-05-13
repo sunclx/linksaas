@@ -38,6 +38,7 @@ const SpritList = () => {
             list_sprit(
                 userStore.sessionId,
                 projectStore.curProjectId,
+                false, false,
                 curPage * PAGE_SIZE, PAGE_SIZE));
         setTotalCount(res.total_count);
         setSpritList(res.info_list);
@@ -153,7 +154,7 @@ const SpritList = () => {
                 </div>
             </div>
             {spritStore.showCreateSprit == true && <ModifySpritModal
-                onCancel={() => spritStore.showCreateSprit=false}
+                onCancel={() => spritStore.showCreateSprit = false}
                 onOk={() => {
                     if (curPage != 0) {
                         setCurPage(0);
