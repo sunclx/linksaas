@@ -1,26 +1,24 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export type LAYOUT_TYPE = number;
-export const LAYOUT_TYPE_CHAT_AND_KB: LAYOUT_TYPE = 0;  //沟通 知识库
-export const LAYOUT_TYPE_KB_AND_CHAT: LAYOUT_TYPE = 1;  //知识库 沟通
-export const LAYOUT_TYPE_CHAT: LAYOUT_TYPE = 2;         //沟通
-export const LAYOUT_TYPE_KB: LAYOUT_TYPE = 3;           //知识库
-export const LAYOUT_TYPE_NONE: LAYOUT_TYPE = 4;         //关闭 沟通和知识库 
-
-
 export type BasicProjectInfo = {
   project_name: string;
   project_desc: string;
 };
 
 export type Setting = {
-  layout_type: LAYOUT_TYPE;
   disable_member_appraise: boolean;
   disable_test_case: boolean;
-  disable_sprit: boolean;
   disable_server_agent: boolean;
   disable_ext_event: boolean;
   disable_app_store: boolean;
+
+  disable_chat: boolean;
+  disable_kb: boolean;
+  disable_work_plan: boolean;
+
+  //后续删除字段
+  layout_type: number;
+  disable_sprit: boolean;
 };
 
 type CreateResponse = {

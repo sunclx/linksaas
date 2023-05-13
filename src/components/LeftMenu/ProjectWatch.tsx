@@ -8,7 +8,6 @@ import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } fro
 import { LinkChannelInfo, LinkDocInfo } from "@/stores/linkAux";
 import { useHistory, useLocation } from "react-router-dom";
 import { CommentOutlined, FileOutlined } from "@ant-design/icons";
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 
 const ProjectWatch = () => {
     const location = useLocation();
@@ -21,7 +20,7 @@ const ProjectWatch = () => {
 
     return (
         <div className={s.content_wrap}>
-            {[LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) && (
+            {!projectStore.curProject?.setting.disable_chat && (
                 <>
                     {
                         channelStore.channelList.filter(item => item.channelInfo.my_watch).map(item => (
@@ -38,7 +37,7 @@ const ProjectWatch = () => {
                     }
                 </>
             )}
-            {[LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) && (
+            {!projectStore.curProject?.setting.disable_kb && (
                 <>
                     {docSpaceStore.curWatchDocList.map(item => (
                         <div key={item.doc_id}>

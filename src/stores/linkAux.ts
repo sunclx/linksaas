@@ -22,12 +22,10 @@ import {
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
   SCRIPT_EXEC_RESULT_SUFFIX,
-  SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
 } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from '@/api/project';
 import { uniqId } from '@/utils/utils';
 import { openBook } from '@/pages/Book/utils';
 
@@ -506,7 +504,7 @@ class LinkAuxStore {
     const pathname = history.location.pathname;
     if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CHANNEL) {
       const channelLink = link as LinkChannelInfo;
-      if (this.rootStore.projectStore.getProject(channelLink.projectId)?.setting.layout_type == LAYOUT_TYPE_KB) {
+      if (this.rootStore.projectStore.getProject(channelLink.projectId)?.setting.disable_chat) {
         return;
       }
       if (remoteCheck) {
@@ -612,7 +610,7 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
-      if (this.rootStore.projectStore.getProject(docLink.projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT) {
+      if (this.rootStore.projectStore.getProject(docLink.projectId)?.setting.disable_kb) {
         return;
       }
       if (remoteCheck) {
@@ -703,8 +701,7 @@ class LinkAuxStore {
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
       const bookMarkLink = link as LinkBookMarkInfo;
       let canShare = false;
-      const layout = this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
-      if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(layout) && bookMarkLink.projectId != "") {
+      if (this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.disable_chat == false && bookMarkLink.projectId != "") {
         canShare = true;
       }
       if (this.rootStore.projectStore.curProjectId != bookMarkLink.projectId) {
@@ -715,16 +712,17 @@ class LinkAuxStore {
         canShare);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
-      if (this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_sprit == true) {
+      if (this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_work_plan == true) {
         return;
       }
       if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
       }
-      const state: LinkSpritState = {
-        spritId: spritLink.spritId,
-      };
-      history.push(this.genUrl(spritLink.projectId, pathname, SPRIT_DETAIL_SUFFIX), state);
+      // const state: LinkSpritState = {
+      //   spritId: spritLink.spritId,
+      // };
+      // history.push(this.genUrl(spritLink.projectId, pathname, SPRIT_DETAIL_SUFFIX), state);
+      //TODO
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY) {
       const entryLink = link as LinkTestCaseEntryInfo;
       if (this.rootStore.projectStore.getProject(entryLink.projectId)?.setting.disable_test_case == true) {
@@ -783,10 +781,13 @@ class LinkAuxStore {
       }
       this.rootStore.projectStore.setCodeCommentInfo(commentLink.threadId, commentLink.commentId);
       if (!history.location.pathname.startsWith(APP_PROJECT_PATH)) {
-        if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+        //TODO work plan
+        if (this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.disable_kb == false) {
           history.push(APP_PROJECT_KB_DOC_PATH);
-        } else {
+        } else if (this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.disable_chat == false) {
           history.push(APP_PROJECT_CHAT_PATH);
+        } else {
+          history.push(APP_PROJECT_OVERVIEW_PATH);
         }
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_IDEA_PAGE) {
@@ -811,7 +812,7 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    if (this.rootStore.projectStore.getProject(projectId)?.setting.layout_type == LAYOUT_TYPE_CHAT) {
+    if (this.rootStore.projectStore.getProject(projectId)?.setting.disable_kb) {
       return;
     }
     if (projectId != this.rootStore.projectStore.curProjectId) {
@@ -905,18 +906,19 @@ class LinkAuxStore {
 
   //跳转到迭代列表
   goToSpritList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_sprit == true) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_work_plan == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/sprit"));
+    // history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/sprit"));
+    //TODO
   }
 
   //跳转到测试用例列表页
   goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_sprit == true) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_test_case == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
@@ -927,7 +929,7 @@ class LinkAuxStore {
 
   //跳转到测试结果列表页
   goToTestCaseResultList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_sprit == true) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_test_case == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
@@ -1044,10 +1046,13 @@ class LinkAuxStore {
     if (projectInfo == undefined) {
       return APP_PROJECT_CHAT_PATH + newSuffix;
     }
-    if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectInfo.setting.layout_type)) {
+    //TODO work plan
+    if (projectInfo.setting.disable_kb == false) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
-    } else {
+    } else if (projectInfo.setting.disable_chat == false) {
       return APP_PROJECT_CHAT_PATH + newSuffix;
+    } else {
+      return APP_PROJECT_OVERVIEW_PATH + newSuffix;
     }
   }
 }

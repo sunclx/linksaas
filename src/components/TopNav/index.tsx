@@ -13,11 +13,11 @@ import {
   PROJECT_SETTING_TAB,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_KB_BOOK_MARK_PATH,
+  APP_PROJECT_WORK_PLAN_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
-import { CommentOutlined, FileDoneOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
+import { CommentOutlined, FileDoneOutlined, FlagOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
 import SearchBar from '../SearchBar';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_NONE } from '@/api/project';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import AlarmHeader from './AlarmHeader';
@@ -48,11 +48,19 @@ const TopNav = () => {
 
   const docSpaceStore = useStores('docSpaceStore');
   const projectStore = useStores('projectStore');
+  const spritStore = useStores('spritStore');
+
+  const workPanlTabPanel = (<Tabs.TabPane tab={
+    <Tooltip title="主界面: 工作计划面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
+      placement="left" color="orange" overlayInnerStyle={{ color: 'black' }}>
+      <span className={activeKey == APP_PROJECT_WORK_PLAN_PATH ? s.tab_work_plan_active : s.tab_work_plan}><FlagOutlined />工作计划</span>
+    </Tooltip>
+  } key={APP_PROJECT_WORK_PLAN_PATH} />);
 
   const chatTabPanel = (
     <Tabs.TabPane tab={
       <Tooltip title="主界面: 沟通面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-        placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB_AND_CHAT ? "right" : "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
+        placement="right" color="orange" overlayInnerStyle={{ color: 'black' }}>
         <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_chat_active : s.tab_chat}><CommentOutlined />沟通</span>
       </Tooltip>
     } key={APP_PROJECT_CHAT_PATH} />);
@@ -60,23 +68,16 @@ const TopNav = () => {
   const kbTabPanel = (
     <Tabs.TabPane tab={
       <Tooltip title="主界面: 知识库面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-        placement={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_CHAT_AND_KB ? "right" : "left"} color="orange" overlayInnerStyle={{ color: 'black' }}>
+        placement="top" color="orange" overlayInnerStyle={{ color: 'black' }}>
         <span className={activeKey == APP_PROJECT_KB_PATH ? s.tab_kb_active : s.tab_kb}><FileDoneOutlined />知识库</span>
       </Tooltip>
     } key={APP_PROJECT_KB_PATH} />);
 
-  const getTabCls = (): string => {
-    if (projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_NONE) {
-      return s.none;
-    } else if ([LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
-      return s.single;
-    } else {
-      return s.multi;
-    }
-  };
 
   useEffect(() => {
-    if (location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+    if (location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
+      setActiveKey(APP_PROJECT_WORK_PLAN_PATH);
+    } else if (location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       setActiveKey(APP_PROJECT_CHAT_PATH);
     } else if (location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
       setActiveKey(APP_PROJECT_KB_PATH);
@@ -89,13 +90,16 @@ const TopNav = () => {
     <div className={s.topnav}>
       <div>
         <Tabs
-          className={classNames(s.tabs, getTabCls())}
+          className={classNames(s.tabs)}
           activeKey={activeKey}
           onChange={(key) => {
             if (docSpaceStore.inEdit) {
               docSpaceStore.showCheckLeave(() => {
                 setActiveKey(key);
-                if (key == APP_PROJECT_CHAT_PATH) {
+                if (key == APP_PROJECT_WORK_PLAN_PATH) {
+                  spritStore.setcurSpritId("");
+                  history.push(APP_PROJECT_WORK_PLAN_PATH);
+                } else if (key == APP_PROJECT_CHAT_PATH) {
                   history.push(APP_PROJECT_CHAT_PATH);
                 } else if (key == APP_PROJECT_KB_PATH) {
                   docSpaceStore.showDocList("", false);
@@ -107,7 +111,10 @@ const TopNav = () => {
               return;
             }
             setActiveKey(key);
-            if (key == APP_PROJECT_CHAT_PATH) {
+            if (key == APP_PROJECT_WORK_PLAN_PATH) {
+              spritStore.setcurSpritId("");
+              history.push(APP_PROJECT_WORK_PLAN_PATH);
+            } else if (key == APP_PROJECT_CHAT_PATH) {
               history.push(APP_PROJECT_CHAT_PATH);
             } else if (key == APP_PROJECT_KB_PATH) {
               docSpaceStore.showDocList("", false);
@@ -117,44 +124,32 @@ const TopNav = () => {
             }
           }}
         >
-          {projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_CHAT_AND_KB && (
-            <>
-              {chatTabPanel}
-              {kbTabPanel}
-            </>
+          {!projectStore.curProject?.setting.disable_work_plan && (
+            <>{workPanlTabPanel}</>
           )}
-          {projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB_AND_CHAT && (
-            <>
-              {kbTabPanel}
-              {chatTabPanel}
-            </>
+
+          {!projectStore.curProject?.setting.disable_kb && (
+            <>{kbTabPanel}</>
           )}
-          {projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_CHAT && (
-            <>
-              {chatTabPanel}
-            </>
+          {!projectStore.curProject?.setting.disable_chat && (
+            <>{chatTabPanel}</>
           )}
-          {projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB && (
-            <>
-              {kbTabPanel}
-            </>
-          )}
+
           <Tabs.TabPane tab={
             <span className={activeKey == APP_PROJECT_OVERVIEW_PATH ? s.tab_overview_active : s.tab_overview}><FundProjectionScreenOutlined />项目概览</span>
           } key={APP_PROJECT_OVERVIEW_PATH} />);
         </Tabs>
       </div>
-      <span />
+      {(location.pathname.includes(APP_PROJECT_CHAT_PATH) || location.pathname.includes(APP_PROJECT_KB_DOC_PATH)) && (<span />)}
       <div className={s.right}>
         {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>项目书籍</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_MARK_PATH) && (<><div className={s.doc_title}>项目书签</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<>
-          {projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE && <SearchBar />}
+          {(!projectStore.curProject?.setting.disable_chat || !projectStore.curProject?.setting.disable_kb || !projectStore.curProject?.setting.disable_work_plan) && <SearchBar />}
           <RightFloat />
         </>)}
-
       </div>
     </div>
   );

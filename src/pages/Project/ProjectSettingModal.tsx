@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, Checkbox, Form, Input, Modal, Radio, Select, Space, Switch, Tabs, Tooltip, message } from "antd";
+import { Card, Checkbox, Form, Input, Modal, Select, Space, Switch, Tabs, Tooltip, message } from "antd";
 import { useStores } from "@/hooks";
-import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB, LAYOUT_TYPE_NONE } from "@/api/project";
-import type { LAYOUT_TYPE } from "@/api/project";
 import { update_setting, set_ai_gateway } from "@/api/project";
 import { request } from "@/utils/request";
 import { useHistory, useLocation } from "react-router-dom";
@@ -22,10 +20,12 @@ const ProjectSettingModal = () => {
     const [activeKey, setActiveKey] = useState("layout");
 
     //界面设置相关参数
-    const [layoutType, setLayoutType] = useState<LAYOUT_TYPE>(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB);
+    const [disableWorkPlan, setDisableWorkPlan] = useState(projectStore.curProject?.setting.disable_work_plan ?? false);
+    const [disableChat, setDisableChat] = useState(projectStore.curProject?.setting.disable_chat ?? false);
+    const [disableKb, setDisableKb] = useState(projectStore.curProject?.setting.disable_kb ?? false);
+
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
     const [disableTestCase, setDisableTestCase] = useState(projectStore.curProject?.setting.disable_test_case ?? false);
-    const [disableSprit, setDisableSprit] = useState(projectStore.curProject?.setting.disable_sprit ?? false);
     const [disableServerAgent, setDisableServerAgent] = useState(projectStore.curProject?.setting.disable_server_agent ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
@@ -144,13 +144,17 @@ const ProjectSettingModal = () => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             setting: {
-                layout_type: layoutType,
+                disable_work_plan: disableWorkPlan,
+                disable_chat: disableChat,
+                disable_kb: disableKb,
                 disable_member_appraise: disableMemberAppraise,
                 disable_test_case: disableTestCase,
-                disable_sprit: disableSprit,
                 disable_server_agent: disableServerAgent,
                 disable_ext_event: disableExtEvent,
                 disable_app_store: disableAppStore,
+
+                layout_type: 0,
+                disable_sprit: false,
             },
         }));
         await projectStore.updateProject(projectStore.curProjectId);
@@ -159,11 +163,11 @@ const ProjectSettingModal = () => {
         //特殊处理
         if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
             //do nothing
-        } else if (layoutType == LAYOUT_TYPE_CHAT && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+        } else if (!disableChat && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
             history.push(APP_PROJECT_CHAT_PATH);
-        } else if (layoutType == LAYOUT_TYPE_KB && !location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
+        } else if (!disableKb && !location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
             history.push(APP_PROJECT_KB_DOC_PATH);
-        } else if (layoutType == LAYOUT_TYPE_NONE && !location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
+        } else if (!location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
             history.push(APP_PROJECT_OVERVIEW_PATH);
         }
     };
@@ -200,18 +204,20 @@ const ProjectSettingModal = () => {
                 <Tabs.TabPane key="layout" tab="界面布局">
                     <Form labelCol={{ span: 4 }}>
                         <Form.Item label="主界面">
-                            <Radio.Group value={layoutType} onChange={e => {
-                                e.stopPropagation();
-                                setLayoutType(e.target.value);
-                            }}>
-                                <Space direction="vertical">
-                                    <Radio value={LAYOUT_TYPE_CHAT_AND_KB}>显示沟通和知识库</Radio>
-                                    <Radio value={LAYOUT_TYPE_KB_AND_CHAT}>显示知识库和沟通</Radio>
-                                    <Radio value={LAYOUT_TYPE_CHAT}>只显示沟通</Radio>
-                                    <Radio value={LAYOUT_TYPE_KB}>只显示知识库</Radio>
-                                    <Radio value={LAYOUT_TYPE_NONE}>只保留项目概览</Radio>
-                                </Space>
-                            </Radio.Group>
+                            <Space direction="vertical">
+                                <Checkbox checked={disableWorkPlan} onChange={e => {
+                                    e.stopPropagation();
+                                    setDisableWorkPlan(e.target.checked);
+                                }}>关闭工作计划</Checkbox>
+                                <Checkbox checked={disableKb} onChange={e => {
+                                    e.stopPropagation();
+                                    setDisableKb(e.target.checked);
+                                }}>关闭知识库</Checkbox>
+                                <Checkbox checked={disableChat} onChange={e => {
+                                    e.stopPropagation();
+                                    setDisableChat(e.target.checked);
+                                }}>关闭沟通</Checkbox>
+                            </Space>
                         </Form.Item>
                         <Form.Item label="右侧工具栏">
                             <Space direction="vertical">
@@ -223,10 +229,6 @@ const ProjectSettingModal = () => {
                                     e.stopPropagation();
                                     setDisableTestCase(e.target.checked);
                                 }}>关闭测试用例入口</Checkbox>
-                                <Checkbox checked={disableSprit} onChange={e => {
-                                    e.stopPropagation();
-                                    setDisableSprit(e.target.checked);
-                                }}>关闭迭代入口</Checkbox>
                                 <Checkbox checked={disableServerAgent} onChange={e => {
                                     e.stopPropagation();
                                     setDisableServerAgent(e.target.checked);

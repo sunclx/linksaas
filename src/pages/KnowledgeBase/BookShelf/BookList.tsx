@@ -11,7 +11,6 @@ import { useStores } from "@/hooks";
 import type { BookInfo } from '@/api/project_book_shelf';
 import { request } from '@/utils/request';
 import { openBook } from "@/pages/Book/utils";
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 import Epub from 'epubjs';
 import { readBinaryFile } from '@tauri-apps/api/fs';
 import logoPng from '@/assets/allIcon/logo.png';
@@ -225,8 +224,7 @@ const BookList = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 let canShare = false;
-                                const layout = projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
-                                if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(layout)) {
+                                if (!projectStore.curProject?.setting.disable_chat) {
                                     canShare = true;
                                 }
                                 openBook(userStore.userInfo.userId, projectStore.curProjectId, book.book_id, "",
