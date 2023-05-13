@@ -151,20 +151,24 @@ const Workbench: React.FC = () => {
             )}
           </Tabs.TabPane>
         )}
-        <Tabs.TabPane tab={<h2><BookOutlined />我的微应用</h2>} key="userApp">
-          {activeKey == "userApp" && (
-            <div className={s.content_wrap}>
-              <UserAppList />
-            </div>
-          )}
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={<h2><BookOutlined />我的书籍</h2>} key="userBook">
-          {activeKey == "userBook" && (
-            <div className={s.content_wrap}>
-              <UserBookList />
-            </div>
-          )}
-        </Tabs.TabPane>
+        {appStore.clientCfg?.enable_pub_app_store == true && (
+          <Tabs.TabPane tab={<h2><BookOutlined />我的微应用</h2>} key="userApp">
+            {activeKey == "userApp" && (
+              <div className={s.content_wrap}>
+                <UserAppList />
+              </div>
+            )}
+          </Tabs.TabPane>
+        )}
+        {appStore.clientCfg?.enable_pub_book_store == true && (
+          <Tabs.TabPane tab={<h2><BookOutlined />我的书籍</h2>} key="userBook">
+            {activeKey == "userBook" && (
+              <div className={s.content_wrap}>
+                <UserBookList />
+              </div>
+            )}
+          </Tabs.TabPane>
+        )}
         <Tabs.TabPane tab={<h2><BookOutlined />我的文档</h2>} key="userDoc">
           {activeKey == "userDoc" && (
             <div className={s.content_wrap}>

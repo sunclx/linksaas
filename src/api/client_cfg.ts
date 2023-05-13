@@ -38,6 +38,8 @@ export type GetCfgResponse = {
   can_register: boolean;
   enable_admin: boolean;
   enable_search: boolean;
+  enable_pub_app_store: boolean;
+  enable_pub_book_store: boolean;
   app_store_fs_id: string;
   book_store_fs_id: string;
 };

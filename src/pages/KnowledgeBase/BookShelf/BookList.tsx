@@ -153,39 +153,44 @@ const BookList = () => {
             bordered={false}
             extra={
                 <Space>
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        projectStore.setCurProjectId("");
-                        history.push(`${PUB_RES_PATH}?tab=bookStore`);
-                    }}>前往书籍市场<DoubleRightOutlined /></Button>
-                    <Popover trigger="click" placement="right" content={
-                        <div style={{ padding: "10px 10px" }}>
-                            <Button
-                                type="link"
-                                disabled={!projectStore.isAdmin}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    showUploadFile();
-                                }}>上传书籍</Button>
-                        </div>
-                    }>
-                        <MoreOutlined />
-                    </Popover>
-                    {/* <Button
-                        type="primary"
-                        style={{ height: "30px" }}
-                        disabled={!projectStore.isAdmin}
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            showUploadFile();
-                        }}>上传电子书</Button> */}
+                    {appStore.clientCfg?.enable_pub_book_store == true && (
+                        <>
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                projectStore.setCurProjectId("");
+                                history.push(`${PUB_RES_PATH}?tab=bookStore`);
+                            }}>前往书籍市场<DoubleRightOutlined /></Button>
+                            <Popover trigger="click" placement="right" content={
+                                <div style={{ padding: "10px 10px" }}>
+                                    <Button
+                                        type="link"
+                                        disabled={!projectStore.isAdmin}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            showUploadFile();
+                                        }}>上传书籍</Button>
+                                </div>
+                            }>
+                                <MoreOutlined />
+                            </Popover>
+                        </>
+                    )}
+                    {appStore.clientCfg?.enable_pub_book_store == false && (
+                        <Button
+                            type="primary"
+                            disabled={!projectStore.isAdmin}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                showUploadFile();
+                            }}>上传书籍</Button>
+                    )}
                 </Space>
             }>
             <div className={s.contentWrap}>
-                <List rowKey="book_id" dataSource={bookList} grid={{ gutter: 16 }} renderItem={book => (
+                <List rowKey="book_id" dataSource={bookList} grid={{ gutter: 16 }} style={{ overflow: "hidden" }} renderItem={book => (
                     <List.Item>
                         <Card
                             title={<h2 title={book.book_title} style={{ width: "140px", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{book.book_title}</h2>}

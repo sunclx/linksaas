@@ -19,6 +19,7 @@ const AppStore: React.FC = () => {
   const history = useHistory();
 
   const userStore = useStores('userStore');
+  const appStore = useStores('appStore');
   const projectStore = useStores('projectStore');
 
   const [appList, setAppList] = useState([] as AppInfo[]);
@@ -49,21 +50,32 @@ const AppStore: React.FC = () => {
           <h2>应用列表</h2>
           <Space size="middle">
             {projectStore.isAdmin && (
-              <Button
-                type="link"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  projectStore.setCurProjectId("");
-                  history.push(`${PUB_RES_PATH}?tab=appStore`);
-                }}
-              >
-                前往应用市场
-              </Button>
+              <>
+                {appStore.clientCfg?.enable_pub_app_store == true && (
+                  <Button
+                    type="link"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      projectStore.setCurProjectId("");
+                      history.push(`${PUB_RES_PATH}?tab=appStore`);
+                    }}
+                  >
+                    前往应用市场
+                  </Button>
+                )}
+                {appStore.clientCfg?.enable_pub_app_store == false && (
+                  <Button type="primary" onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowAdd(true);
+                  }}>新增应用</Button>
+                )}
+              </>
             )}
             <Popover placement='bottom' trigger="click" content={
               <Space direction="vertical" style={{ padding: "10px 0px" }}>
-                {projectStore.isAdmin && (
+                {projectStore.isAdmin && appStore.clientCfg?.enable_pub_app_store == true && (
                   <Button
                     type="link" style={{ marginLeft: "10px" }}
                     onClick={(e) => {
