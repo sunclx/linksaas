@@ -4,8 +4,8 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC } from '@/api/project_issue';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, list as list_issue, get as get_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
-import type { SpritDocInfo } from '@/api/project_sprit';
-import { list_link_doc, get_link_doc } from '@/api/project_sprit';
+import type { SpritDocInfo, SpritInfo } from '@/api/project_sprit';
+import { list_link_doc, get_link_doc, list as list_sprit } from '@/api/project_sprit';
 
 export default class SpritStore {
     constructor(rootStore: RootStore) {
@@ -35,7 +35,7 @@ export default class SpritStore {
         return this._spritDocList;
     }
 
-    async setcurSpritId(val: string) {
+    async setCurSpritId(val: string) {
         if (val == this._curSpritId) {
             return;
         }
@@ -116,9 +116,9 @@ export default class SpritStore {
         const tmpTaskList = this._taskList.slice();
         const tmpBugList = this._bugList.slice();
         for (const issue of issueList) {
-            if (issue.issue_type == ISSUE_TYPE_TASK) {
+            if ((issue.issue_type == ISSUE_TYPE_TASK) && (tmpTaskList.findIndex(item => item.issue_id == issue.issue_id) == -1)) {
                 tmpTaskList.unshift(issue);
-            } else if (issue.issue_type == ISSUE_TYPE_BUG) {
+            } else if ((issue.issue_type == ISSUE_TYPE_BUG) && (tmpBugList.findIndex(item => item.issue_id == issue.issue_id) == -1)) {
                 tmpBugList.unshift(issue);
             }
         }
@@ -138,6 +138,7 @@ export default class SpritStore {
             this._bugList = tmpBugList;
         });
     }
+
     async onNewIssue(issueId: string) {
         const res = await request(get_issue(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, issueId));
         if (res.info.issue_type == ISSUE_TYPE_TASK) {
@@ -245,6 +246,23 @@ export default class SpritStore {
     set showCreateSprit(val: boolean) {
         runInAction(() => {
             this._showCreateSprit = val;
+        });
+    }
+
+    //当前关注的迭代列表
+    private _curWatchList: SpritInfo[] = [];
+
+    get curWatchList(): SpritInfo[] {
+        return this._curWatchList;
+    }
+
+    async loadCurWatchList(projectId: string) {
+        runInAction(() => {
+            this._curWatchList = [];
+        });
+        const res = await request(list_sprit(this.rootStore.userStore.sessionId, projectId, true, true, 0, 100));
+        runInAction(() => {
+            this._curWatchList = res.info_list;
         });
     }
 }

@@ -352,13 +352,11 @@ const CloseIssueColumn = observer(() => {
 const KanbanPanel = () => {
     return (
         <DndProvider backend={HTML5Backend}>
-            <div className={s.panel_wrap}>
-                <div className={s.kanban_column_list}>
-                    <PlanIssueColumn />
-                    <ProcessIssueColumn />
-                    <CheckIssueColumn />
-                    <CloseIssueColumn />
-                </div>
+            <div className={s.kanban_column_list}>
+                <PlanIssueColumn />
+                <ProcessIssueColumn />
+                <CheckIssueColumn />
+                <CloseIssueColumn />
             </div>
         </DndProvider>
     );

@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import CardWrap from '@/components/CardWrap';
-import DetailsNav from "@/components/DetailsNav";
 import { useHistory, useLocation } from "react-router-dom";
-import type { LinkSpritState } from "@/stores/linkAux";
 import { LinkChannelInfo } from "@/stores/linkAux";
 import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
-import { DeleteOutlined } from "@ant-design/icons";
-import { message, Modal, Tabs, Tag } from 'antd';
+import { DeleteOutlined, LeftOutlined } from "@ant-design/icons";
+import { Card, message, Modal, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
@@ -30,7 +27,6 @@ const SpritDetail = () => {
     const channelStore = useStores('channelStore');
 
     const location = useLocation();
-    const state = location.state as LinkSpritState;
     const tabStr = new URLSearchParams(location.search).get('tab');
     const activeKey = tabStr == null || tabStr == "" ? "issue" : tabStr;
 
@@ -40,16 +36,18 @@ const SpritDetail = () => {
     const [showRemoveModal, setShowRemoveModal] = useState(false);
 
     const loadSpritInfo = async () => {
-        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, state.spritId));
+        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
         setSpritInfo(res.info);
-        await spritStore.setcurSpritId(state.spritId);
     };
 
     const removeSprit = async () => {
-        await request(remove_sprit(userStore.sessionId, projectStore.curProjectId, state.spritId));
-        message.info("删除迭代成功");
+        await request(remove_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        message.info("删除工作计划成功");
         setShowRemoveModal(false);
-        linkAuxStore.goToSpritList(history);
+        await spritStore.setCurSpritId("");
+        if (spritInfo?.my_watch) {
+            spritStore.loadCurWatchList(projectStore.curProjectId);
+        }
     };
 
     useEffect(() => {
@@ -57,14 +55,27 @@ const SpritDetail = () => {
     }, [activeKey]);
 
     return (
-        <CardWrap>
-            <DetailsNav title={`迭代 ${spritInfo?.basic_info.title ?? ""}`} >
-                {projectStore.isAdmin && <Button type="default" danger onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowRemoveModal(true);
-                }}><DeleteOutlined />删除迭代</Button>}
-            </DetailsNav>
+        <Card bordered={false}
+            style={{ marginRight: "60px" }}
+            bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll" }}
+            title={
+                <h2 className={s.head}>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        spritStore.setCurSpritId("").then(() => history.goBack());
+                    }}><LeftOutlined /></a>
+                    &nbsp;工作计划{spritInfo?.basic_info.title ?? ""}
+                </h2>} extra={
+                    <>
+                        {projectStore.isAdmin && <Button type="default" danger onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowRemoveModal(true);
+                        }}><DeleteOutlined />删除工作计划</Button>}
+                    </>
+                }>
+
             <div className={s.sprit_wrap}>
                 <div className={s.info_wrap}>
                     <div className={s.label}>时间区间：</div>
@@ -148,15 +159,15 @@ const SpritDetail = () => {
                     )}
                 </div>
             </div>
-            <div className={s.content_wrap}>
+            <div>
                 <Tabs
                     activeKey={activeKey}
                     type="card"
                     onChange={value => {
-                        history.push(`${location.pathname}?tab=${value}`, state);
+                        history.push(`${location.pathname}?tab=${value}`);
                     }}>
                     <Tabs.TabPane tab="任务/缺陷" key="issue">
-                        {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                        {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="看板" key="kanban">
                         {activeKey == "kanban" && <KanbanPanel />}
@@ -179,7 +190,7 @@ const SpritDetail = () => {
             </div>
             {showRemoveModal == true && (
                 <Modal
-                    title="删除迭代"
+                    title="删除工作计划"
                     open
                     onCancel={e => {
                         e.stopPropagation();
@@ -191,10 +202,10 @@ const SpritDetail = () => {
                         e.preventDefault();
                         removeSprit();
                     }}>
-                    删除迭代后，相关任务和缺陷会被设置成未关联迭代状态。
+                    删除工作计划后，相关任务和缺陷会被设置成未关联工作计划状态。
                 </Modal>
             )}
-        </CardWrap>
+        </Card>
     );
 };
 

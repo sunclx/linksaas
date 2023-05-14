@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import s from './Panel.module.less';
 import RcGantt from 'rc-gantt';
 import type { Gantt } from 'rc-gantt';
 import { useStores } from "@/hooks";
@@ -114,11 +113,11 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
         };
         setTaskList([spritTask]);
         const diffDay = moment().diff(moment(props.startTime)) / 1000 / 3600 / 24;
-        if (diffDay > 240){
+        if (diffDay > 240) {
             setUnit("halfYear");
-        }else if (diffDay > 120){
+        } else if (diffDay > 120) {
             setUnit("quarter");
-        }else if (diffDay > 40) {
+        } else if (diffDay > 40) {
             setUnit("month");
         } else if (diffDay > 20) {
             setUnit("week");
@@ -126,7 +125,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
     }, [spritStore.taskList, spritStore.bugList]);
 
     return (
-        <div className={s.panel_wrap}>
+        <div style={{ height: "calc(100vh - 290px)" }}>
             <RcGantt
                 unit={unit}
                 showBackToday={true}

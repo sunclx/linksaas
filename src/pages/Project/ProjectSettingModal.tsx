@@ -205,6 +205,10 @@ const ProjectSettingModal = () => {
                     <Form labelCol={{ span: 4 }}>
                         <Form.Item label="主界面">
                             <Space direction="vertical">
+                                <Checkbox checked={disableChat} onChange={e => {
+                                    e.stopPropagation();
+                                    setDisableChat(e.target.checked);
+                                }}>关闭沟通</Checkbox>
                                 <Checkbox checked={disableWorkPlan} onChange={e => {
                                     e.stopPropagation();
                                     setDisableWorkPlan(e.target.checked);
@@ -213,10 +217,6 @@ const ProjectSettingModal = () => {
                                     e.stopPropagation();
                                     setDisableKb(e.target.checked);
                                 }}>关闭知识库</Checkbox>
-                                <Checkbox checked={disableChat} onChange={e => {
-                                    e.stopPropagation();
-                                    setDisableChat(e.target.checked);
-                                }}>关闭沟通</Checkbox>
                             </Space>
                         </Form.Item>
                         <Form.Item label="右侧工具栏">

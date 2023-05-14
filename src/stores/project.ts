@@ -62,6 +62,7 @@ export default class ProjectStore {
         this.rootStore.ideaStore.loadKeyword(val),
         this.rootStore.ideaStore.loadTagList(val),
         this.rootStore.docSpaceStore.loadCurWatchDocList(val),
+        this.rootStore.spritStore.loadCurWatchList(val),
       ]);
 
       await this.rootStore.channelStore.loadChannelList(val);

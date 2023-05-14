@@ -13,6 +13,7 @@ import {
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_PATH,
+  APP_PROJECT_WORK_PLAN_PATH,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
   REPO_ACTION_ACTION_DETAIL_SUFFIX,
@@ -464,10 +465,6 @@ export type LinkEarthlyExecState = {
   execId: string;
 }
 
-export type LinkSpritState = {
-  spritId: string;
-}
-
 export type LinkTestCaseEntryState = {
   entryId: string;
 }
@@ -718,11 +715,8 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
       }
-      // const state: LinkSpritState = {
-      //   spritId: spritLink.spritId,
-      // };
-      // history.push(this.genUrl(spritLink.projectId, pathname, SPRIT_DETAIL_SUFFIX), state);
-      //TODO
+      await this.rootStore.spritStore.setCurSpritId(spritLink.spritId);
+      history.push(APP_PROJECT_WORK_PLAN_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY) {
       const entryLink = link as LinkTestCaseEntryInfo;
       if (this.rootStore.projectStore.getProject(entryLink.projectId)?.setting.disable_test_case == true) {
@@ -904,18 +898,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/robot"));
   }
 
-  //跳转到迭代列表
-  goToSpritList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_work_plan == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    // history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/sprit"));
-    //TODO
-  }
-
   //跳转到测试用例列表页
   goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_test_case == true) {
@@ -1033,7 +1015,9 @@ class LinkAuxStore {
     if (suffix.indexOf("?") == -1) {
       newSuffix = `${suffix}?v=${uniqId()}`
     }
-    if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+    if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
+      return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
+    } else if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
       return APP_PROJECT_CHAT_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
@@ -1046,11 +1030,13 @@ class LinkAuxStore {
     if (projectInfo == undefined) {
       return APP_PROJECT_CHAT_PATH + newSuffix;
     }
-    //TODO work plan
-    if (projectInfo.setting.disable_kb == false) {
-      return APP_PROJECT_KB_DOC_PATH + newSuffix;
-    } else if (projectInfo.setting.disable_chat == false) {
+
+    if (projectInfo.setting.disable_chat == false) {
       return APP_PROJECT_CHAT_PATH + newSuffix;
+    } else if (projectInfo.setting.disable_work_plan == false) {
+      return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
+    } else if (projectInfo.setting.disable_kb == false) {
+      return APP_PROJECT_KB_DOC_PATH + newSuffix;
     } else {
       return APP_PROJECT_OVERVIEW_PATH + newSuffix;
     }
