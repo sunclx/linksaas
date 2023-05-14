@@ -6,7 +6,7 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
 import { LinkBookMarkCateInfo, LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
@@ -16,6 +16,7 @@ const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧�
 const MENU_KEY_MEMBER_PREFIX = "member:";
 const MENU_KEY_CREATE_CHANNEL = "create.channel";
 const MENU_KEY_CHANNEL_PREFIX = "channel:";
+const MENU_KEY_WORK_PLAN = "workPlan";
 const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
 const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
 const MENU_KEY_CREATE_DOC = "create.doc";
@@ -50,6 +51,7 @@ const ProjectQuickAccess = () => {
     const projectStore = useStores('projectStore');
     const docSpaceStore = useStores('docSpaceStore');
     const appStore = useStores('appStore');
+    const spritStore = useStores('spritStore');
 
     const history = useHistory();
 
@@ -102,6 +104,12 @@ const ProjectQuickAccess = () => {
                         }))
                     },
                 ],
+            });
+        }
+        if (!projectStore.curProject?.setting.disable_work_plan) {
+            tmpItems.push({
+                key: MENU_KEY_WORK_PLAN,
+                label: "工作计划",
             });
         }
         if (!projectStore.curProject?.setting.disable_kb) {
@@ -293,6 +301,10 @@ const ProjectQuickAccess = () => {
             case MENU_KEY_CREATE_CHANNEL:
                 history.push(APP_PROJECT_CHAT_PATH);
                 channelStore.showCreateChannel = true;
+                break;
+            case MENU_KEY_WORK_PLAN:
+                spritStore.setCurSpritId("");
+                history.push(APP_PROJECT_WORK_PLAN_PATH);
                 break;
             case MENU_KEY_KB_DOC_SPACE:
                 history.push(APP_PROJECT_KB_DOC_PATH);

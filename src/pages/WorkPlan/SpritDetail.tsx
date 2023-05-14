@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
 import { LinkChannelInfo } from "@/stores/linkAux";
-import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel } from "@/api/project_sprit";
+import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel, watch, un_watch } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
-import { DeleteOutlined, LeftOutlined } from "@ant-design/icons";
-import { Card, message, Modal, Tabs, Tag } from 'antd';
+import { LeftOutlined, MoreOutlined } from "@ant-design/icons";
+import { Card, message, Modal, Popover, Space, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
@@ -18,6 +18,7 @@ import LinkDocPanel from "./components/LinkDocPanel";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
+import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -27,11 +28,11 @@ const SpritDetail = () => {
     const channelStore = useStores('channelStore');
 
     const location = useLocation();
-    const tabStr = new URLSearchParams(location.search).get('tab');
-    const activeKey = tabStr == null || tabStr == "" ? "issue" : tabStr;
+    const tabStr = new URLSearchParams(location.search).get('tab') ?? "";
 
     const history = useHistory();
 
+    const [activeKey, setActiveKey] = useState("");
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
 
@@ -50,9 +51,34 @@ const SpritDetail = () => {
         }
     };
 
+    const watchSprit = async () => {
+        await request(watch(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        if (spritInfo != null) {
+            setSpritInfo({ ...spritInfo, my_watch: true });
+        }
+        await spritStore.loadCurWatchList(projectStore.curProjectId);
+    };
+
+    const unWatchSprit = async () => {
+        await request(un_watch(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        if (spritInfo != null) {
+            setSpritInfo({ ...spritInfo, my_watch: false });
+        }
+        await spritStore.loadCurWatchList(projectStore.curProjectId);
+    };
+
     useEffect(() => {
-        loadSpritInfo();
-    }, [activeKey]);
+        if (spritStore.curSpritId != "") {
+            setActiveKey("issue");
+            loadSpritInfo();
+        }
+    }, [spritStore.curSpritId]);
+
+    useEffect(() => {
+        if (tabStr != "") {
+            setActiveKey(tabStr);
+        }
+    }, [tabStr]);
 
     return (
         <Card bordered={false}
@@ -63,17 +89,39 @@ const SpritDetail = () => {
                     <a onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        spritStore.setCurSpritId("").then(() => history.goBack());
+                        spritStore.setCurSpritId("");
+                        history.push(APP_PROJECT_WORK_PLAN_PATH);
                     }}><LeftOutlined /></a>
-                    &nbsp;工作计划{spritInfo?.basic_info.title ?? ""}
+                    &nbsp;{spritInfo?.basic_info.title ?? ""}
                 </h2>} extra={
-                    <>
-                        {projectStore.isAdmin && <Button type="default" danger onClick={e => {
+                    <Space>
+                        <a onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setShowRemoveModal(true);
-                        }}><DeleteOutlined />删除工作计划</Button>}
-                    </>
+                            if (spritInfo != null) {
+                                if (spritInfo.my_watch) {
+                                    unWatchSprit();
+                                } else {
+                                    watchSprit();
+                                }
+                            }
+                        }}>
+                            <i className={spritInfo?.my_watch ? s.isCollect : s.noCollect} />
+                        </a>
+                        {projectStore.isAdmin && (
+                            <Popover trigger="click" placement="bottom" content={
+                                <div style={{ padding: "10px 10px" }}>
+                                    <Button type="link" danger onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowRemoveModal(true);
+                                    }}>删除工作计划</Button>
+                                </div>
+                            }>
+                                <MoreOutlined />
+                            </Popover>
+                        )}
+                    </Space>
                 }>
 
             <div className={s.sprit_wrap}>
@@ -148,7 +196,7 @@ const SpritDetail = () => {
                             }} showEditIcon={!projectStore.curProject?.setting.disable_chat} allowClear={false} />
                         {((spritInfo?.link_channel_id.length ?? 0) > 0) && (
                             <Button type="link" style={{ marginLeft: "20px" }}
-                                disabled={!projectStore.curProject?.setting.disable_chat}
+                                disabled={projectStore.curProject?.setting.disable_chat}
                                 onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
