@@ -355,7 +355,7 @@ const ContentWidget = observer(() => {
             },
             {
               key: WIDGET_TYPE_SPRIT_REF,
-              label: '引用迭代'
+              label: '引用工作计划'
             }
           ],
         },

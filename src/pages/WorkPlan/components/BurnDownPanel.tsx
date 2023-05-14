@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import s from './Panel.module.less';
 import { observer, useLocalObservable } from 'mobx-react';
 import type { SpritInfo } from "@/api/project_sprit";
 import { list_burn_down, update_burn_down } from "@/api/project_sprit";
@@ -288,7 +287,7 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
     }, [spritStore.bugList, spritStore.taskList, dataVersion]);
 
     return (
-        <div className={s.panel_wrap}>
+        <div>
             <Card title="统计表" bordered={false}>
                 <Table rowKey="memberUserId" columns={columns} dataSource={localStore.burnDownInfoList} pagination={false}
                     scroll={{ x: "max-content" }} />

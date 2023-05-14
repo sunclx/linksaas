@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import s from './Panel.module.less';
 import { observer } from 'mobx-react';
 import Button from "@/components/Button";
 import { useStores } from "@/hooks";
@@ -74,7 +73,7 @@ const LinkDocPanel = () => {
     ];
 
     return (
-        <div className={s.panel_wrap}>
+        <div>
             <Card bordered={false} extra={
                 <Button
                     onClick={e => {

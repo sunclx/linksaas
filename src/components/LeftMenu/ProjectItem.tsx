@@ -189,19 +189,19 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                 {item.project_id !== projectStore.curProjectId &&
                     <Badge count={item.project_status.total_count} className={cls.badge} />
                 }
-                
+
                 <span className={cls.name} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     if (docSpaceStore.inEdit) {
                         docSpaceStore.showCheckLeave(() => {
                             projectStore.setCurProjectId(item.project_id).then(() => {
-                                if(!item.setting.disable_work_plan){
+                                if (!item.setting.disable_chat) {
+                                    history.push(APP_PROJECT_CHAT_PATH);
+                                } else if (!item.setting.disable_work_plan) {
                                     history.push(APP_PROJECT_WORK_PLAN_PATH);
                                 } else if (!item.setting.disable_kb) {
                                     history.push(APP_PROJECT_KB_DOC_PATH);
-                                }else if (!item.setting.disable_chat) {
-                                    history.push(APP_PROJECT_CHAT_PATH);
                                 } else if (item.setting.disable_chat && item.setting.disable_kb && item.setting.disable_work_plan) {
                                     history.push(APP_PROJECT_OVERVIEW_PATH);
                                 }
@@ -210,12 +210,12 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                         return;
                     }
                     projectStore.setCurProjectId(item.project_id).then(() => {
-                        if(!item.setting.disable_work_plan){
+                        if (!item.setting.disable_chat) {
+                            history.push(APP_PROJECT_CHAT_PATH);
+                        } else if (!item.setting.disable_work_plan) {
                             history.push(APP_PROJECT_WORK_PLAN_PATH);
                         } else if (!item.setting.disable_kb) {
                             history.push(APP_PROJECT_KB_DOC_PATH);
-                        }else if (!item.setting.disable_chat) {
-                            history.push(APP_PROJECT_CHAT_PATH);
                         } else if (item.setting.disable_chat && item.setting.disable_kb && item.setting.disable_work_plan) {
                             history.push(APP_PROJECT_OVERVIEW_PATH);
                         }

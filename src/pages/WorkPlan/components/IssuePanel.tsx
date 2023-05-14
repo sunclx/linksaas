@@ -52,6 +52,7 @@ const renderTitle = (
     return (
         <div>
             <Button
+                style={{ minWidth: 0, padding: "0px 0px" }}
                 type="link"
                 disabled={linkAuxStore == undefined}
                 onClick={(e) => {
@@ -213,7 +214,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
             dataIndex: ['basic_info', 'title'],
             width: 200,
             fixed: true,
-            render: (v: string, row: IssueInfo) =>
+            render: (_, row: IssueInfo) =>
                 renderTitle(row, projectStore.curProjectId, linkAuxStore, spritStore.taskList.map(task => task.issue_id), spritStore.bugList.map(bug => bug.issue_id), history),
         },
         {
@@ -409,7 +410,7 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
     ];
 
     return (
-        <div className={s.panel_wrap}>
+        <div>
             {spritStore.allTimeReady == false && <Space className={s.tip}><InfoCircleOutlined />所有任务/缺陷设置好执行人,开始时间，结束时间，预估工时和剩余工时后才能访问 甘特图 和 统计信息。</Space>}
             <Card title="任务列表" bordered={false} extra={
                 <Button type="primary" onClick={e => {

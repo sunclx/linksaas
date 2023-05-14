@@ -1,12 +1,22 @@
 import React from 'react';
 import s from "./index.module.less";
 import { observer } from 'mobx-react';
+import { useStores } from '@/hooks';
+import SpritList from './SpritList';
+import SpritDetail from './SpritDetail';
 
 
 const WorkPlan = () => {
+    const spritStore = useStores('spritStore');
+
     return (
         <div className={s.work_plan_wrap}>
-            工作计划
+            {spritStore.curSpritId == "" && (
+                <SpritList/>
+            )}
+            {spritStore.curSpritId != "" && (
+                <SpritDetail/>
+            )}
         </div>
     );
 };

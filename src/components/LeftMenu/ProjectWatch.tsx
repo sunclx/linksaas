@@ -4,10 +4,10 @@ import { useStores } from "@/hooks";
 import { Badge } from "antd";
 import s from "./ProjectWatch.module.less";
 import classNames from 'classnames';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
-import { LinkChannelInfo, LinkDocInfo } from "@/stores/linkAux";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
+import { LinkChannelInfo, LinkDocInfo, LinkSpritInfo } from "@/stores/linkAux";
 import { useHistory, useLocation } from "react-router-dom";
-import { CommentOutlined, FileOutlined } from "@ant-design/icons";
+import { CommentOutlined, FileOutlined, FlagOutlined } from "@ant-design/icons";
 
 const ProjectWatch = () => {
     const location = useLocation();
@@ -17,6 +17,7 @@ const ProjectWatch = () => {
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
     const docSpaceStore = useStores('docSpaceStore');
+    const spritStore = useStores('spritStore');
 
     return (
         <div className={s.content_wrap}>
@@ -37,6 +38,25 @@ const ProjectWatch = () => {
                     }
                 </>
             )}
+
+            {!projectStore.curProject?.setting.disable_work_plan && (
+                <>
+                    {
+                        spritStore.curWatchList.map(item => (
+                            <div key={item.sprit_id}>
+                                <span className={classNames(s.title, (spritStore.curSpritId == item.sprit_id && location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) ? s.title_active : "")}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        linkAuxStore.goToLink(new LinkSpritInfo("", item.project_id, item.sprit_id), history);
+                                    }}><span className={s.collect} /><FlagOutlined />&nbsp;{item.basic_info.title}</span>
+                            </div>
+                        ))
+
+                    }
+                </>
+            )}
+
             {!projectStore.curProject?.setting.disable_kb && (
                 <>
                     {docSpaceStore.curWatchDocList.map(item => (
