@@ -82,6 +82,7 @@ const CreateModal = () => {
 
     return (
         <Modal open title="创建知识点"
+        width={600}
             okText="创建" okButtonProps={{ disabled: title.trim() == "" || keywordList.length == 0 }}
             onCancel={e => {
                 e.stopPropagation();
@@ -93,7 +94,7 @@ const CreateModal = () => {
                 e.preventDefault();
                 createIdea();
             }}>
-            <Form labelCol={{ span: 4 }}>
+            <Form labelCol={{ span: 2 }}>
                 <Form.Item label="标题">
                     <Input value={title} onChange={e => {
                         e.stopPropagation();
