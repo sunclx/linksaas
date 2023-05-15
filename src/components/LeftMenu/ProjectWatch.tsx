@@ -4,11 +4,10 @@ import { useStores } from "@/hooks";
 import { Badge } from "antd";
 import s from "./ProjectWatch.module.less";
 import classNames from 'classnames';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
-import { LinkChannelInfo, LinkDocInfo } from "@/stores/linkAux";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
+import { LinkChannelInfo, LinkDocInfo, LinkSpritInfo } from "@/stores/linkAux";
 import { useHistory, useLocation } from "react-router-dom";
-import { CommentOutlined, FileOutlined } from "@ant-design/icons";
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
+import { CommentOutlined, FileOutlined, FlagOutlined } from "@ant-design/icons";
 
 const ProjectWatch = () => {
     const location = useLocation();
@@ -18,10 +17,11 @@ const ProjectWatch = () => {
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
     const docSpaceStore = useStores('docSpaceStore');
+    const spritStore = useStores('spritStore');
 
     return (
         <div className={s.content_wrap}>
-            {[LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) && (
+            {!projectStore.curProject?.setting.disable_chat && (
                 <>
                     {
                         channelStore.channelList.filter(item => item.channelInfo.my_watch).map(item => (
@@ -38,7 +38,26 @@ const ProjectWatch = () => {
                     }
                 </>
             )}
-            {[LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) && (
+
+            {!projectStore.curProject?.setting.disable_work_plan && (
+                <>
+                    {
+                        spritStore.curWatchList.map(item => (
+                            <div key={item.sprit_id}>
+                                <span className={classNames(s.title, (spritStore.curSpritId == item.sprit_id && location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) ? s.title_active : "")}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        linkAuxStore.goToLink(new LinkSpritInfo("", item.project_id, item.sprit_id), history);
+                                    }}><span className={s.collect} /><FlagOutlined />&nbsp;{item.basic_info.title}</span>
+                            </div>
+                        ))
+
+                    }
+                </>
+            )}
+
+            {!projectStore.curProject?.setting.disable_kb && (
                 <>
                     {docSpaceStore.curWatchDocList.map(item => (
                         <div key={item.doc_id}>

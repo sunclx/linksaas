@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import s from './Panel.module.less';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from "@/hooks";
 import { ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE, ISSUE_STATE_PROCESS } from "@/api/project_issue";
@@ -237,7 +236,7 @@ const StatPanel = () => {
     }, [spritStore.taskList, spritStore.bugList]);
 
     return (
-        <div className={s.panel_wrap}>
+        <div>
             <Table rowKey="memberUserId" dataSource={statInfoList} columns={columns} pagination={false} />
         </div>
     );

@@ -8,12 +8,12 @@ export interface EditTextProps {
     content: string;
     onChange: (content: string) => Promise<boolean>;
     showEditIcon: boolean;
+    onClick?: () => void;
 }
 
 export const EditText: React.FC<EditTextProps> = (props) => {
     const [inEdit, setInEdit] = useState(false);
     const [content, setContent] = useState(props.content);
-
 
     return (
         <span onClick={e => {
@@ -24,9 +24,19 @@ export const EditText: React.FC<EditTextProps> = (props) => {
             }
         }}>
             {!inEdit && (
-                <span title={content} style={{ cursor: props.editable ? "pointer" : "default" }}>{content == "" ? "-" : content}
+                <span title={content} style={{ cursor: props.editable ? "pointer" : "default" }}>
+                    {content == "" ? "-" : <>
+                        {props.onClick === undefined && content}
+                        {props.onClick !== undefined && (
+                            <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                props.onClick!();
+                            }}>{content}</a>
+                        )}
+                    </>}
                     {props.editable && props.showEditIcon &&
-                        <a><EditOutlined /></a>
+                        <a style={{ marginLeft: "12px" }}><EditOutlined /></a>
                     }
                 </span>)}
             {inEdit && (

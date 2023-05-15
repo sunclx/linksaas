@@ -16,7 +16,6 @@ import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, USER_LOGIN_PATH } from '@/utils/constant';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_NONE } from '@/api/project';
 
 
 class NoticeStore {
@@ -210,12 +209,12 @@ class NoticeStore {
           this.rootStore.docSpaceStore.showCheckLeave(() => {
             this.rootStore.projectStore.setCurProjectId(projectId).then(() => {
               this.rootStore.projectStore.showPostHookModal = true;
-              const layoutType = this.rootStore.projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
-              if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_CHAT].includes(layoutType)) {
-                this.history.push(APP_PROJECT_CHAT_PATH);
-              } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(layoutType)) {
+              //TODO work plan
+              if (this.rootStore.projectStore.curProject?.setting.disable_kb == false) {
                 this.history.push(APP_PROJECT_KB_DOC_PATH);
-              } else if (layoutType == LAYOUT_TYPE_NONE) {
+              } else if (this.rootStore.projectStore.curProject?.setting.disable_chat == false) {
+                this.history.push(APP_PROJECT_CHAT_PATH);
+              } else {
                 this.history.push(APP_PROJECT_OVERVIEW_PATH);
               }
             });
@@ -223,12 +222,12 @@ class NoticeStore {
         } else {
           await this.rootStore.projectStore.setCurProjectId(projectId);
           this.rootStore.projectStore.showPostHookModal = true;
-          const layoutType = this.rootStore.projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB;
-          if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_CHAT].includes(layoutType)) {
-            this.history.push(APP_PROJECT_CHAT_PATH);
-          } else if ([LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(layoutType)) {
+          //TODO work plan
+          if (this.rootStore.projectStore.curProject?.setting.disable_kb == false) {
             this.history.push(APP_PROJECT_KB_DOC_PATH);
-          } else if (layoutType == LAYOUT_TYPE_NONE) {
+          } else if (this.rootStore.projectStore.curProject?.setting.disable_chat == false) {
+            this.history.push(APP_PROJECT_CHAT_PATH);
+          } else {
             this.history.push(APP_PROJECT_OVERVIEW_PATH);
           }
         }

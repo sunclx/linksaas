@@ -43,7 +43,7 @@ export const EditSelect: React.FC<EditSelectProps> = (props) => {
             }
         }}>
             {!inEdit && (<>{getCurValue()}{props.editable && props.showEditIcon &&
-                <a><EditOutlined /></a>
+                <a style={{ marginLeft: "12px" }}><EditOutlined /></a>
             }</>)}
             {inEdit && (<Select
                 allowClear={props.allowClear}

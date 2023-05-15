@@ -8,7 +8,6 @@ import { useStores } from "@/hooks";
 import type moment from 'moment';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { WebviewWindow } from '@tauri-apps/api/window';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_KB, LAYOUT_TYPE_NONE } from "@/api/project";
 
 
 
@@ -60,7 +59,7 @@ const SearchBar = () => {
                 label: "全部频道",
                 value: SEARCH_SCOPE_ALL_CHANNEL,
             });
-            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_CHAT && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE) {
+            if (!projectStore.curProject?.setting.disable_kb) {
                 tmpList.push({
                     label: "全部文档空间",
                     value: SEARCH_SCOPE_ALL_DOC_SPACE,
@@ -85,7 +84,7 @@ const SearchBar = () => {
                 label: "全部文档空间",
                 value: SEARCH_SCOPE_ALL_DOC_SPACE,
             });
-            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE) {
+            if (!projectStore.curProject?.setting.disable_chat) {
                 tmpList.push({
                     label: "全部频道",
                     value: SEARCH_SCOPE_ALL_CHANNEL,
@@ -110,7 +109,7 @@ const SearchBar = () => {
                 label: "全部文档空间",
                 value: SEARCH_SCOPE_ALL_DOC_SPACE,
             });
-            if (projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_NONE) {
+            if (!projectStore.curProject?.setting.disable_chat) {
                 tmpList.push({
                     label: "全部频道",
                     value: SEARCH_SCOPE_ALL_CHANNEL,

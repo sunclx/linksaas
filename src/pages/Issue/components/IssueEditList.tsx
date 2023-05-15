@@ -58,38 +58,26 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: 'ID',
       dataIndex: 'issue_index',
       ellipsis: true,
-      width: 70,
+      width: 40,
       fixed: true,
-      render: (v: IssueInfo['issue_index'], record: IssueInfo) => {
-        return (
-          <span
-            style={{ cursor: 'pointer', display: "inline-block", paddingTop: "5px", paddingBottom: "5px" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (record.issue_type == ISSUE_TYPE_TASK) {
-                linkAuxStore.goToLink(new LinkTaskInfo("", record.project_id, record.issue_id, issueIdList), history);
-              } else if (record.issue_type == ISSUE_TYPE_BUG) {
-                linkAuxStore.goToLink(new LinkBugInfo("", record.project_id, record.issue_id, issueIdList), history);
-              }
-            }}
-          >
-            <a><LinkOutlined />&nbsp;{v}</a>
-          </span>
-        );
-      },
     },
     {
       title: `${getIssueText(pathname)}名称`,
-      width: 300,
+      width: 340,
       ellipsis: true,
       dataIndex: ['basic_info', 'title'],
       fixed: true,
       render: (v: string, record: IssueInfo) => {
         return (
-          <div>
+          <div style={{ lineHeight: "28px" }}>
             <EditText editable={true} content={v} showEditIcon={true} onChange={async (value) => {
               return await updateTitle(userStore.sessionId, record.project_id, record.issue_id, value);
+            }} onClick={() => {
+              if (record.issue_type == ISSUE_TYPE_TASK) {
+                linkAuxStore.goToLink(new LinkTaskInfo("", record.project_id, record.issue_id, issueIdList), history);
+              } else if (record.issue_type == ISSUE_TYPE_BUG) {
+                linkAuxStore.goToLink(new LinkBugInfo("", record.project_id, record.issue_id, issueIdList), history);
+              }
             }} />
             <a
               style={{
@@ -138,9 +126,9 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       ),
     },
     {
-      title: "桌面便签",
+      title: "便签",
       dataIndex: "issue_index",
-      width: 70,
+      width: 40,
       render: (_, record: IssueInfo) => {
         let projectName = "";
         projectStore.projectList.forEach(prj => {
@@ -173,6 +161,49 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
           }
           return await updateDeadLineTime(userStore.sessionId, record.project_id, record.issue_id, value);
         }} showEditIcon={true} />,
+    },
+    {
+      title: `${getIsTask(pathname) ? '任务' : '当前'}阶段`,
+      dataIndex: 'state',
+      width: 100,
+      align: 'center',
+      render: (val: number, row: IssueInfo) => {
+        const v = issueState[val];
+        let cursor = "auto";
+        let tips = "";
+        if (row.user_issue_perm.next_state_list.length > 0) {
+          cursor = "pointer";
+        } else {
+          if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
+            (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
+          )) {
+            tips = "请等待同事更新状态"
+          }
+        }
+        return (
+          <div
+            tabIndex={0}
+            style={{
+              background: `rgb(${getStateColor(val)} / 20%)`,
+              width: '60px',
+              borderRadius: '50px',
+              textAlign: 'center',
+              color: `rgb(${getStateColor(val)})`,
+              cursor: `${cursor}`,
+              margin: '0 auto',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (row.user_issue_perm.next_state_list.length > 0) {
+                showStage(row.issue_id);
+              }
+            }}
+          >
+            <Tooltip title={tips}>{v.label}</Tooltip>
+            {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
+          </div>
+        );
+      },
     },
     {
       title: `级别`,
@@ -241,49 +272,6 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
           },
         });
       }} />,
-    },
-    {
-      title: `${getIsTask(pathname) ? '任务' : '当前'}阶段`,
-      dataIndex: 'state',
-      width: 100,
-      align: 'center',
-      render: (val: number, row: IssueInfo) => {
-        const v = issueState[val];
-        let cursor = "auto";
-        let tips = "";
-        if (row.user_issue_perm.next_state_list.length > 0) {
-          cursor = "pointer";
-        } else {
-          if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
-            (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
-          )) {
-            tips = "请等待同事更新状态"
-          }
-        }
-        return (
-          <div
-            tabIndex={0}
-            style={{
-              background: `rgb(${getStateColor(val)} / 20%)`,
-              width: '60px',
-              borderRadius: '50px',
-              textAlign: 'center',
-              color: `rgb(${getStateColor(val)})`,
-              cursor: `${cursor}`,
-              margin: '0 auto',
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (row.user_issue_perm.next_state_list.length > 0) {
-                showStage(row.issue_id);
-              }
-            }}
-          >
-            <Tooltip title={tips}>{v.label}</Tooltip>
-            {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
-          </div>
-        );
-      },
     },
     {
       title: '处理人',

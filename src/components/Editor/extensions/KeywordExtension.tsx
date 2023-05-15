@@ -80,7 +80,9 @@ export class KeywordExtension extends PlainExtension<KeywordOptions> {
                     }
                 }
                 if (match) {
-                    matchKwList.push(keyword);
+                    if (!matchKwList.includes(keyword)) {
+                        matchKwList.push(keyword);
+                    }
                 }
             }
             return false;

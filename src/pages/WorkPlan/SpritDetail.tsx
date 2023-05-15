@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import CardWrap from '@/components/CardWrap';
-import DetailsNav from "@/components/DetailsNav";
 import { useHistory, useLocation } from "react-router-dom";
-import type { LinkSpritState } from "@/stores/linkAux";
 import { LinkChannelInfo } from "@/stores/linkAux";
-import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel } from "@/api/project_sprit";
+import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel, watch, un_watch } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
-import { DeleteOutlined } from "@ant-design/icons";
-import { message, Modal, Tabs, Tag } from 'antd';
+import { LeftOutlined, MoreOutlined } from "@ant-design/icons";
+import { Card, message, Modal, Popover, Space, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
@@ -19,9 +16,9 @@ import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
 import LinkDocPanel from "./components/LinkDocPanel";
 import { EditSelect } from "@/components/EditCell/EditSelect";
-import { LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB } from "@/api/project";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
+import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -31,41 +28,102 @@ const SpritDetail = () => {
     const channelStore = useStores('channelStore');
 
     const location = useLocation();
-    const state = location.state as LinkSpritState;
-    const tabStr = new URLSearchParams(location.search).get('tab');
-    const activeKey = tabStr == null || tabStr == "" ? "issue" : tabStr;
+    const tabStr = new URLSearchParams(location.search).get('tab') ?? "";
 
     const history = useHistory();
 
+    const [activeKey, setActiveKey] = useState("");
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
 
     const loadSpritInfo = async () => {
-        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, state.spritId));
+        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
         setSpritInfo(res.info);
-        await spritStore.setcurSpritId(state.spritId);
     };
 
     const removeSprit = async () => {
-        await request(remove_sprit(userStore.sessionId, projectStore.curProjectId, state.spritId));
-        message.info("删除迭代成功");
+        await request(remove_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        message.info("删除工作计划成功");
         setShowRemoveModal(false);
-        linkAuxStore.goToSpritList(history);
+        await spritStore.setCurSpritId("");
+        if (spritInfo?.my_watch) {
+            spritStore.loadCurWatchList(projectStore.curProjectId);
+        }
+    };
+
+    const watchSprit = async () => {
+        await request(watch(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        if (spritInfo != null) {
+            setSpritInfo({ ...spritInfo, my_watch: true });
+        }
+        await spritStore.loadCurWatchList(projectStore.curProjectId);
+    };
+
+    const unWatchSprit = async () => {
+        await request(un_watch(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        if (spritInfo != null) {
+            setSpritInfo({ ...spritInfo, my_watch: false });
+        }
+        await spritStore.loadCurWatchList(projectStore.curProjectId);
     };
 
     useEffect(() => {
-        loadSpritInfo();
-    }, [activeKey]);
+        if (spritStore.curSpritId != "") {
+            setActiveKey("issue");
+            loadSpritInfo();
+        }
+    }, [spritStore.curSpritId]);
+
+    useEffect(() => {
+        if (tabStr != "") {
+            setActiveKey(tabStr);
+        }
+    }, [tabStr]);
 
     return (
-        <CardWrap>
-            <DetailsNav title={`迭代 ${spritInfo?.basic_info.title ?? ""}`} >
-                {projectStore.isAdmin && <Button type="default" danger onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowRemoveModal(true);
-                }}><DeleteOutlined />删除迭代</Button>}
-            </DetailsNav>
+        <Card bordered={false}
+            style={{ marginRight: "60px" }}
+            bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll" }}
+            title={
+                <h2 className={s.head}>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        spritStore.setCurSpritId("");
+                        history.push(APP_PROJECT_WORK_PLAN_PATH);
+                    }}><LeftOutlined /></a>
+                    &nbsp;{spritInfo?.basic_info.title ?? ""}
+                </h2>} extra={
+                    <Space>
+                        <a onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (spritInfo != null) {
+                                if (spritInfo.my_watch) {
+                                    unWatchSprit();
+                                } else {
+                                    watchSprit();
+                                }
+                            }
+                        }}>
+                            <i className={spritInfo?.my_watch ? s.isCollect : s.noCollect} />
+                        </a>
+                        {projectStore.isAdmin && (
+                            <Popover trigger="click" placement="bottom" content={
+                                <div style={{ padding: "10px 10px" }}>
+                                    <Button type="link" danger onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowRemoveModal(true);
+                                    }}>删除工作计划</Button>
+                                </div>
+                            }>
+                                <MoreOutlined />
+                            </Popover>
+                        )}
+                    </Space>
+                }>
+
             <div className={s.sprit_wrap}>
                 <div className={s.info_wrap}>
                     <div className={s.label}>时间区间：</div>
@@ -92,7 +150,7 @@ const SpritDetail = () => {
                     {spritInfo !== null && (<div>
                         <EditSelect
                             width="150px"
-                            editable={projectStore.isAdmin && projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB}
+                            editable={projectStore.isAdmin && !projectStore.curProject?.setting.disable_chat}
                             curValue={spritInfo?.link_channel_id ?? ""}
                             itemList={[
                                 { value: "", label: "-", color: "black" },
@@ -135,10 +193,10 @@ const SpritDetail = () => {
                                     console.log(e);
                                 }
                                 return false;
-                            }} showEditIcon={projectStore.curProject?.setting.layout_type != LAYOUT_TYPE_KB} allowClear={false} />
+                            }} showEditIcon={!projectStore.curProject?.setting.disable_chat} allowClear={false} />
                         {((spritInfo?.link_channel_id.length ?? 0) > 0) && (
                             <Button type="link" style={{ marginLeft: "20px" }}
-                                disabled={projectStore.curProject?.setting.layout_type == LAYOUT_TYPE_KB}
+                                disabled={projectStore.curProject?.setting.disable_chat}
                                 onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
@@ -149,20 +207,20 @@ const SpritDetail = () => {
                     )}
                 </div>
             </div>
-            <div className={s.content_wrap}>
+            <div>
                 <Tabs
                     activeKey={activeKey}
                     type="card"
                     onChange={value => {
-                        history.push(`${location.pathname}?tab=${value}`, state);
+                        history.push(`${location.pathname}?tab=${value}`);
                     }}>
                     <Tabs.TabPane tab="任务/缺陷" key="issue">
-                        {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={state.spritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                        {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="看板" key="kanban">
                         {activeKey == "kanban" && <KanbanPanel />}
                     </Tabs.TabPane>
-                    {[LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB) && (
+                    {!projectStore.curProject?.setting.disable_kb && (
                         <Tabs.TabPane tab="相关文档" key="linkDoc">
                             {activeKey == "linkDoc" && <LinkDocPanel />}
                         </Tabs.TabPane>
@@ -180,7 +238,7 @@ const SpritDetail = () => {
             </div>
             {showRemoveModal == true && (
                 <Modal
-                    title="删除迭代"
+                    title="删除工作计划"
                     open
                     onCancel={e => {
                         e.stopPropagation();
@@ -192,10 +250,10 @@ const SpritDetail = () => {
                         e.preventDefault();
                         removeSprit();
                     }}>
-                    删除迭代后，相关任务和缺陷会被设置成未关联迭代状态。
+                    删除工作计划后，相关任务和缺陷会被设置成未关联工作计划状态。
                 </Modal>
             )}
-        </CardWrap>
+        </Card>
     );
 };
 

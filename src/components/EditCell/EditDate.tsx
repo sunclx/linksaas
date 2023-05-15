@@ -29,7 +29,7 @@ export const EditDate: React.FC<EditDateProps> = (props) => {
             {!inEdit && (
                 <span style={{ cursor: props.editable ? "pointer" : "default" }}>{hasTimeStamp ? moment(timeStamp).format("YYYY-MM-DD") : "-"}
                     {props.editable && props.showEditIcon &&
-                        <a><EditOutlined /></a>
+                        <a style={{ marginLeft: "12px" }}><EditOutlined /></a>
                     }
                 </span>
             )}

@@ -2,6 +2,10 @@
   -webkit-user-select: text;
   user-select: text;
 }
+.remirror-theme .ProseMirror p, .remirror-theme .ProseMirror h1, .remirror-theme .ProseMirror h2, .remirror-theme .ProseMirror h3, .remirror-theme .ProseMirror h4, .remirror-theme .ProseMirror h4, .remirror-theme .ProseMirror h5, .remirror-theme .ProseMirror h6, .remirror-theme .ProseMirror span {
+  margin: 0;
+  margin-bottom: var(--rmr-space-2); 
+}
 
 .remirror-readonly {
   .remirror-editor.ProseMirror {
@@ -80,13 +84,8 @@
   padding-left: 30px;
 }
 
-
 .remirror-floating-popover {
   z-index: 100;
-}
-
-.remirror-editor p {
-  margin-bottom: 0.5em !important;
 }
 
 .remirror-group {
@@ -170,7 +169,6 @@
 
 
 .remirror-floating-popover {
-  // padding: 5px 10px !important;
   background: #fff;
   border: 1px solid #6e6e6e;
   border-radius: 3px;

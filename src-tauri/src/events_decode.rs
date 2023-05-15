@@ -277,6 +277,8 @@ pub mod sprit {
         CreateEvent(events_sprit::CreateEvent),
         UpdateEvent(events_sprit::UpdateEvent),
         RemoveEvent(events_sprit::RemoveEvent),
+        WatchEvent(events_sprit::WatchEvent),
+        UnWatchEvent(events_sprit::UnWatchEvent),
         LinkDocEvent(events_sprit::LinkDocEvent),
         CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
         LinkChannelEvent(events_sprit::LinkChannelEvent),
@@ -295,6 +297,14 @@ pub mod sprit {
         } else if data.type_url == events_sprit::RemoveEvent::type_url() {
             if let Ok(ev) = events_sprit::RemoveEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveEvent(ev));
+            }
+        } else if data.type_url == events_sprit::WatchEvent::type_url() {
+            if let Ok(ev) = events_sprit::WatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::WatchEvent(ev));
+            }
+        } else if data.type_url == events_sprit::UnWatchEvent::type_url() {
+            if let Ok(ev) = events_sprit::UnWatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnWatchEvent(ev));
             }
         } else if data.type_url == events_sprit::LinkDocEvent::type_url() {
             if let Ok(ev) = events_sprit::LinkDocEvent::decode(data.value.as_slice()) {

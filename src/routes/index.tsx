@@ -43,7 +43,6 @@ import {
   ROBOT_METRIC_SUFFIX,
   SCRIPT_CREATE_SUFFIX,
   SCRIPT_EXEC_RESULT_SUFFIX,
-  SPRIT_DETAIL_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
   WORKBENCH_PATH,
@@ -54,6 +53,7 @@ import {
   PUB_RES_PATH,
   ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
   ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
+  APP_PROJECT_WORK_PLAN_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -66,8 +66,6 @@ import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import BookMark from '@/pages/KnowledgeBase/BookMark';
-import SpritList from '@/pages/Project/Sprit/SpritList';
-import SpritDetail from '@/pages/Project/Sprit/SpritDetail';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import EntryList from '@/pages/TestCase/EntryList';
 import ResultList from '@/pages/TestCase/ResultList';
@@ -96,6 +94,7 @@ import IdeaPage from '@/pages/Idea/IdeaPage';
 import PubRes from '@/pages/PubRes';
 import BookCateList from '@/pages/Admin/BookAdmin/BookCateList';
 import BookList from '@/pages/Admin/BookAdmin/BookList';
+import WorkPlanLayout from '@/layouts/WorkPlanLayout';
 
 
 
@@ -192,18 +191,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/testcase/result",
       title: "测试用例结果列表",
       component: ResultList,
-      exact: true,
-    },
-    {
-      path: prefix + "/sprit",
-      title: "迭代列表",
-      component: SpritList,
-      exact: true,
-    },
-    {
-      path: prefix + SPRIT_DETAIL_SUFFIX,
-      title: "迭代详情",
-      component: SpritDetail,
       exact: true,
     },
     {
@@ -337,6 +324,12 @@ const routesConfig: IRouteConfig[] = [
         title: '项目',
         component: ProjectLayout,
         routes: [
+          {
+            path: APP_PROJECT_WORK_PLAN_PATH,
+            title: "工作计划",
+            component: WorkPlanLayout,
+            routes: getToolbarRoute(APP_PROJECT_WORK_PLAN_PATH),
+          },
           {
             path: APP_PROJECT_CHAT_PATH,
             title: '沟通',

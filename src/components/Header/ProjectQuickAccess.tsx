@@ -6,17 +6,17 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
 import { LinkBookMarkCateInfo, LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
-import { LAYOUT_TYPE_CHAT, LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB, LAYOUT_TYPE_KB_AND_CHAT } from "@/api/project";
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
 const MENU_KEY_MEMBER_PREFIX = "member:";
 const MENU_KEY_CREATE_CHANNEL = "create.channel";
 const MENU_KEY_CHANNEL_PREFIX = "channel:";
+const MENU_KEY_WORK_PLAN = "workPlan";
 const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
 const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
 const MENU_KEY_CREATE_DOC = "create.doc";
@@ -32,8 +32,6 @@ const MENU_KEY_SHOW_TOOL_BAR_BUG_MY = "toolbar.bug.my.show";
 const MENU_KEY_SHOW_TOOL_BAR_BUG_ALL = "toolbar.bug.all.show";
 const MENU_KEY_CREATE_BUG = "create.bug";
 const MENU_KEY_SHOW_TOOL_BAR_TEST_CASE = "toolbar.testcase.show";
-const MENU_KEY_SHOW_TOOL_BAR_SPRIT = "toolbar.sprit.show";
-const MENU_KEY_CREATE_SPRIT = "create.sprit";
 const MENU_KEY_SHOW_TOOL_BAR_ROBOT = "toolbar.robot.show";
 const MENU_KEY_SHOW_TOOL_BAR_SCRIPT = "toolbar.script.show";
 const MENU_KEY_SHOW_TOOL_BAR_EARTHLY = "toolbar.earthly.show";
@@ -52,8 +50,8 @@ const ProjectQuickAccess = () => {
     const linkAuxStore = useStores('linkAuxStore');
     const projectStore = useStores('projectStore');
     const docSpaceStore = useStores('docSpaceStore');
-    const spritStore = useStores('spritStore');
     const appStore = useStores('appStore');
+    const spritStore = useStores('spritStore');
 
     const history = useHistory();
 
@@ -88,7 +86,7 @@ const ProjectQuickAccess = () => {
             });
         }
         tmpItems.push(memberItem);
-        if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_CHAT].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+        if (!projectStore.curProject?.setting.disable_chat) {
             tmpItems.push({
                 key: "channel",
                 label: "沟通",
@@ -108,7 +106,13 @@ const ProjectQuickAccess = () => {
                 ],
             });
         }
-        if ([LAYOUT_TYPE_CHAT_AND_KB, LAYOUT_TYPE_KB_AND_CHAT, LAYOUT_TYPE_KB].includes(projectStore.curProject?.setting.layout_type ?? LAYOUT_TYPE_CHAT_AND_KB)) {
+        if (!projectStore.curProject?.setting.disable_work_plan) {
+            tmpItems.push({
+                key: MENU_KEY_WORK_PLAN,
+                label: "工作计划",
+            });
+        }
+        if (!projectStore.curProject?.setting.disable_kb) {
             tmpItems.push({
                 key: "kb",
                 label: "知识库",
@@ -200,22 +204,6 @@ const ProjectQuickAccess = () => {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_TEST_CASE,
                 label: "测试用例",
-            });
-        }
-        if (projectStore.curProject?.setting.disable_sprit != true) {
-            tmpItems.push({
-                key: "sprit",
-                label: "迭代",
-                children: [
-                    {
-                        key: MENU_KEY_SHOW_TOOL_BAR_SPRIT,
-                        label: "查看迭代列表",
-                    },
-                    {
-                        key: MENU_KEY_CREATE_SPRIT,
-                        label: "创建迭代",
-                    }
-                ]
             });
         }
         if (projectStore.curProject?.setting.disable_server_agent != true) {
@@ -314,6 +302,10 @@ const ProjectQuickAccess = () => {
                 history.push(APP_PROJECT_CHAT_PATH);
                 channelStore.showCreateChannel = true;
                 break;
+            case MENU_KEY_WORK_PLAN:
+                spritStore.setCurSpritId("");
+                history.push(APP_PROJECT_WORK_PLAN_PATH);
+                break;
             case MENU_KEY_KB_DOC_SPACE:
                 history.push(APP_PROJECT_KB_DOC_PATH);
                 if (appStore.simpleMode) {
@@ -374,13 +366,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_TEST_CASE:
                 linkAuxStore.goToTestCaseList({ entryId: "" }, history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_SPRIT:
-                linkAuxStore.goToSpritList(history);
-                break;
-            case MENU_KEY_CREATE_SPRIT:
-                linkAuxStore.goToSpritList(history);
-                spritStore.showCreateSprit = true;
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_ROBOT:
                 linkAuxStore.goToRobotList(history);

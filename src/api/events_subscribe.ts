@@ -143,6 +143,8 @@ export type SpritEvCfg = {
     cancel_link_doc: boolean;
     link_channel: boolean;
     cancel_link_channel: boolean;
+    watch: boolean;
+    un_watch: boolean;
 }
 
 export type TestCaseEvCfg = {
