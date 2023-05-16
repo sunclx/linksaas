@@ -125,7 +125,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
     }, [spritStore.taskList, spritStore.bugList]);
 
     return (
-        <div style={{ height: "calc(100vh - 290px)" }}>
+        <div style={{ height: "calc(100vh - 270px)" }}>
             <RcGantt
                 unit={unit}
                 showBackToday={true}

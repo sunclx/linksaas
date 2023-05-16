@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Card, Popover, Space, Table, Tooltip } from "antd";
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
-import { EditOutlined, ExclamationCircleOutlined, InfoCircleOutlined, LinkOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, ExclamationCircleOutlined, InfoCircleOutlined, LinkOutlined, MoreOutlined } from "@ant-design/icons";
 import type { ISSUE_TYPE, IssueInfo } from "@/api/project_issue";
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from "@/api/project_issue";
 import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
@@ -413,15 +413,32 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
         <div>
             {spritStore.allTimeReady == false && <Space className={s.tip}><InfoCircleOutlined />所有任务/缺陷设置好执行人,开始时间，结束时间，预估工时和剩余工时后才能访问 甘特图 和 统计信息。</Space>}
             <Card title="任务列表" bordered={false} extra={
-                <Button type="primary" onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setAddIssueType(ISSUE_TYPE_TASK);
-                }}
-                    title={projectStore.isAdmin ? "" : "只有管理员可以添加任务"}
-                    disabled={!projectStore.isAdmin}>
-                    <PlusOutlined />添加任务
-                </Button>}>
+                <Space size="middle">
+                    <Button type="primary" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setAddIssueType(ISSUE_TYPE_TASK);
+                    }}
+                        title={projectStore.isAdmin ? "" : "只有管理员可以关联任务"}
+                        disabled={!projectStore.isAdmin}>
+                        选择任务
+                    </Button>
+                    <Popover placement="bottom" trigger="click" content={
+                        <div style={{ padding: "10px 10px" }}>
+                            <Button type="link"
+                                title={projectStore.isAdmin ? "" : "只有管理员可以关联任务"}
+                                disabled={!projectStore.isAdmin}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    linkAuxStore.goToCreateTask("", projectStore.curProjectId, history, props.spritId);
+                                }}
+                            >添加任务</Button>
+                        </div>
+                    }>
+                        <MoreOutlined />
+                    </Popover>
+                </Space>}>
                 <Table
                     rowKey="issue_id"
                     dataSource={spritStore.taskList}
@@ -431,15 +448,32 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                 />
             </Card>
             <Card title="缺陷列表" bordered={false} extra={
-                <Button type="primary" onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setAddIssueType(ISSUE_TYPE_BUG);
-                }}
-                    title={projectStore.isAdmin ? "" : "只有管理员可以添加缺陷"}
-                    disabled={!projectStore.isAdmin}>
-                    <PlusOutlined />添加缺陷
-                </Button>}>
+                <Space size="middle">
+                    <Button type="primary" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setAddIssueType(ISSUE_TYPE_BUG);
+                    }}
+                        title={projectStore.isAdmin ? "" : "只有管理员可以关联缺陷"}
+                        disabled={!projectStore.isAdmin}>
+                        选择缺陷
+                    </Button>
+                    <Popover placement="bottom" trigger="click" content={
+                        <div style={{ padding: "10px 10px" }}>
+                            <Button type="link"
+                                title={projectStore.isAdmin ? "" : "只有管理员可以关联缺陷"}
+                                disabled={!projectStore.isAdmin}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    linkAuxStore.goToCreateBug("", projectStore.curProjectId, history, props.spritId);
+                                }}
+                            >添加缺陷</Button>
+                        </div>
+                    }>
+                        <MoreOutlined />
+                    </Popover>
+                </Space>}>
                 <Table
                     rowKey="issue_id"
                     dataSource={spritStore.bugList}

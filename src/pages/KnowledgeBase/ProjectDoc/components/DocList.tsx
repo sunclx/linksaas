@@ -59,6 +59,38 @@ const DocList = () => {
         }
     };
 
+    const unWatchDoc = async (docSpaceId: string, docId: string) => {
+        await request(prjDocApi.un_watch_doc({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            doc_space_id: docSpaceId,
+            doc_id: docId,
+        }));
+        const tmpList = docKeyList.slice();
+        const index = tmpList.findIndex(item => item.doc_id == docId);
+        if (index != -1) {
+            tmpList[index].my_watch = false;
+            setDocKeyList(tmpList);
+        }
+        await docSpaceStore.loadCurWatchDocList(projectStore.curProjectId);
+    }
+
+    const watchDoc = async (docSpaceId: string, docId: string) => {
+        await request(prjDocApi.watch_doc({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            doc_space_id: docSpaceId,
+            doc_id: docId,
+        }));
+        const tmpList = docKeyList.slice();
+        const index = tmpList.findIndex(item => item.doc_id == docId);
+        if (index != -1) {
+            tmpList[index].my_watch = true;
+            setDocKeyList(tmpList);
+        }
+        await docSpaceStore.loadCurWatchDocList(projectStore.curProjectId);
+    };
+
     const getSpaceName = () => {
         if (docSpaceStore.recycleBin) {
             return (<h1 className={s.header}><DeleteOutlined /> 文档回收站</h1>);
@@ -73,24 +105,37 @@ const DocList = () => {
 
     const columns: ColumnsType<prjDocApi.DocKey> = [
         {
+            title: "",
+            width: 20,
+            render: (_, record: prjDocApi.DocKey) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (record.my_watch) {
+                        unWatchDoc(record.doc_space_id, record.doc_id);
+                    } else {
+                        watchDoc(record.doc_space_id, record.doc_id);
+                    }
+                }}>
+                    {!docSpaceStore.recycleBin && <span className={record.my_watch ? s.isCollect : s.noCollect} />}
+                </a>
+            ),
+        },
+        {
             title: "文档标题",
             dataIndex: "title",
             width: 300,
             render: (_, record: prjDocApi.DocKey) => (
-                <div className={s.docTitle}>
-                    {!docSpaceStore.recycleBin && <span className={record.my_watch ? s.isCollect : s.no_Collect} />}
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        docSpaceStore.showDoc(record.doc_id, false);
-                    }}>{record.title}</a>
-                </div>
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    docSpaceStore.showDoc(record.doc_id, false);
+                }}>{record.title}</a>
             ),
         },
-
         {
             title: "最后修改",
-            width:200,
+            width: 200,
             render: (_, record: prjDocApi.DocKey) => (<>
                 <UserPhoto logoUri={record.update_logo_uri} width="24px" height="24px" style={{ marginRight: "10px" }} />
                 {record.update_display_name}&nbsp;&nbsp;{moment(record.update_time).format("YYYY-MM-DD HH:mm")}
@@ -141,7 +186,7 @@ const DocList = () => {
             extra={genExtra()}
         >
             <div className={s.contentWrap}>
-                <Table dataSource={docKeyList} columns={columns} pagination={false} rowKey="doc_id"/>
+                <Table dataSource={docKeyList} columns={columns} pagination={false} rowKey="doc_id" />
                 {docCount > PAGE_SIZE && (<div className={s.pagingWrap}>
                     <div className={s.paging} >
                         <Pagination current={curPage + 1} total={docCount} pageSize={PAGE_SIZE}

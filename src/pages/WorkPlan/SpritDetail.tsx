@@ -83,7 +83,7 @@ const SpritDetail = () => {
     return (
         <Card bordered={false}
             style={{ marginRight: "60px" }}
-            bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll" }}
+            bodyStyle={{ height: "calc(100vh - 134px)", overflowY: "scroll", overflowX: "hidden"}}
             title={
                 <h2 className={s.head}>
                     <a onClick={e => {
@@ -92,7 +92,17 @@ const SpritDetail = () => {
                         spritStore.setCurSpritId("");
                         history.push(APP_PROJECT_WORK_PLAN_PATH);
                     }}><LeftOutlined /></a>
-                    &nbsp;{spritInfo?.basic_info.title ?? ""}
+                    &nbsp;{spritInfo?.basic_info.title ?? ""}&nbsp;
+                    {spritInfo != null && (
+                        <span>
+                            (
+                            {moment(spritInfo.basic_info.start_time).format("YYYY-MM-DD")}
+                            &nbsp;至&nbsp;
+                            {moment(spritInfo.basic_info.end_time).format("YYYY-MM-DD")}
+                            )
+                        </span>
+                    )}
+
                 </h2>} extra={
                     <Space>
                         <a onClick={e => {
@@ -125,16 +135,6 @@ const SpritDetail = () => {
                 }>
 
             <div className={s.sprit_wrap}>
-                <div className={s.info_wrap}>
-                    <div className={s.label}>时间区间：</div>
-                    {spritInfo != null && (
-                        <div>
-                            {moment(spritInfo.basic_info.start_time).format("YYYY-MM-DD")}
-                            &nbsp;至&nbsp;
-                            {moment(spritInfo.basic_info.end_time).format("YYYY-MM-DD")}
-                        </div>
-                    )}
-                </div>
                 {(spritInfo?.basic_info.non_work_day_list.length ?? 0) > 0 && (
                     <div className={s.info_wrap}>
                         <div className={s.label}>非工作日：</div>
@@ -146,7 +146,7 @@ const SpritDetail = () => {
                     </div>
                 )}
                 <div className={s.info_wrap}>
-                    <div className={s.label}>关联频道：</div>
+                    <div className={s.label} style={{ lineHeight: "28px" }}>关联频道：</div>
                     {spritInfo !== null && (<div>
                         <EditSelect
                             width="150px"
@@ -214,24 +214,24 @@ const SpritDetail = () => {
                     onChange={value => {
                         history.push(`${location.pathname}?tab=${value}`);
                     }}>
-                    <Tabs.TabPane tab="任务/缺陷" key="issue">
+                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
                         {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="看板" key="kanban">
+                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
                         {activeKey == "kanban" && <KanbanPanel />}
                     </Tabs.TabPane>
                     {!projectStore.curProject?.setting.disable_kb && (
-                        <Tabs.TabPane tab="相关文档" key="linkDoc">
+                        <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>相关文档</span>} key="linkDoc">
                             {activeKey == "linkDoc" && <LinkDocPanel />}
                         </Tabs.TabPane>
                     )}
-                    <Tabs.TabPane tab="甘特图" key="gantt" disabled={!spritStore.allTimeReady}>
+                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
                         {activeKey == "gantt" && spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="燃尽图" key="burnDown" disabled={!spritStore.allTimeReady}>
+                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>燃尽图</span>} key="burnDown" disabled={!spritStore.allTimeReady}>
                         {activeKey == "burnDown" && spritInfo != null && <BurnDownPanel spritInfo={spritInfo} />}
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="统计信息" key="statistics" disabled={!spritStore.allTimeReady}>
+                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>统计信息</span>} key="statistics" disabled={!spritStore.allTimeReady}>
                         {activeKey == "statistics" && <StatPanel />}
                     </Tabs.TabPane>
                 </Tabs>

@@ -429,6 +429,7 @@ export type LinkIssueState = {
   issueId: string;
   content: string;
   contextIssueIdList?: string[];
+  spritId?: string;
 };
 
 export type LinkIssueListState = {
@@ -826,7 +827,7 @@ class LinkAuxStore {
   }
 
   //跳转到创建任务
-  async goToCreateTask(content: string, projectId: string, history: History) {
+  async goToCreateTask(content: string, projectId: string, history: History, spritId: string | undefined = undefined) {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
@@ -837,11 +838,12 @@ class LinkAuxStore {
       issueId: '',
       content: content,
       contextIssueIdList: [],
+      spritId: spritId,
     } as LinkIssueState);
   }
 
   //跳转到创建缺陷
-  async goToCreateBug(content: string, projectId: string, history: History) {
+  async goToCreateBug(content: string, projectId: string, history: History, spritId: string | undefined = undefined) {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
@@ -852,6 +854,7 @@ class LinkAuxStore {
       issueId: '',
       content: content,
       contextIssueIdList: [],
+      spritId: spritId,
     } as LinkIssueState);
   }
 
