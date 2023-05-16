@@ -6,6 +6,7 @@ import { useStores } from '@/hooks';
 
 const RemoveDocBtn = () => {
     const [showModal, setShowModal] = useState(false);
+    const [hover, setHover] = useState(false);
     const docSpaceStore = useStores('docSpaceStore');
 
     const onRemove = () => {
@@ -22,7 +23,17 @@ const RemoveDocBtn = () => {
     return (
         <>
             <Deletesvg
-                style={{ marginLeft: "15px" }}
+                onMouseEnter={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setHover(true);
+                }}
+                onMouseLeave={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setHover(false);
+                }}
+                style={{ marginLeft: "15px", color: hover ? "red" : undefined }}
                 onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
