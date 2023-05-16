@@ -111,7 +111,8 @@ const IssueCard: React.FC<IssueCardProps> = observer((props) => {
                             percent={Math.round((props.issue.estimate_minutes - props.issue.remain_minutes) / props.issue.estimate_minutes * 100)}
                             size="small"
                             showInfo={false} />
-                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <div style={{ display: "flex", justifyContent: "flex-end",paddingBottom:"10px" }}>
+                            {props.issue.remain_minutes > props.issue.estimate_minutes && <WarningOutlined style={{ fontSize: "16px", paddingRight: "6px", color: "red" }} />}
                             {(props.issue.remain_minutes / 60).toFixed(1)}小时(剩余)&nbsp;/&nbsp;{(props.issue.estimate_minutes / 60).toFixed(1)}小时(预估)
                         </div>
                     </div>
