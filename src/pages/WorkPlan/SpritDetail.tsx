@@ -92,7 +92,17 @@ const SpritDetail = () => {
                         spritStore.setCurSpritId("");
                         history.push(APP_PROJECT_WORK_PLAN_PATH);
                     }}><LeftOutlined /></a>
-                    &nbsp;{spritInfo?.basic_info.title ?? ""}
+                    &nbsp;{spritInfo?.basic_info.title ?? ""}&nbsp;
+                    {spritInfo != null && (
+                        <span>
+                            (
+                            {moment(spritInfo.basic_info.start_time).format("YYYY-MM-DD")}
+                            &nbsp;至&nbsp;
+                            {moment(spritInfo.basic_info.end_time).format("YYYY-MM-DD")}
+                            )
+                        </span>
+                    )}
+
                 </h2>} extra={
                     <Space>
                         <a onClick={e => {
@@ -125,16 +135,6 @@ const SpritDetail = () => {
                 }>
 
             <div className={s.sprit_wrap}>
-                <div className={s.info_wrap}>
-                    <div className={s.label}>时间区间：</div>
-                    {spritInfo != null && (
-                        <div>
-                            {moment(spritInfo.basic_info.start_time).format("YYYY-MM-DD")}
-                            &nbsp;至&nbsp;
-                            {moment(spritInfo.basic_info.end_time).format("YYYY-MM-DD")}
-                        </div>
-                    )}
-                </div>
                 {(spritInfo?.basic_info.non_work_day_list.length ?? 0) > 0 && (
                     <div className={s.info_wrap}>
                         <div className={s.label}>非工作日：</div>
@@ -146,7 +146,7 @@ const SpritDetail = () => {
                     </div>
                 )}
                 <div className={s.info_wrap}>
-                    <div className={s.label}>关联频道：</div>
+                    <div className={s.label} style={{ lineHeight: "28px" }}>关联频道：</div>
                     {spritInfo !== null && (<div>
                         <EditSelect
                             width="150px"
