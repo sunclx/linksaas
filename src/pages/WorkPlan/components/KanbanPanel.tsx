@@ -10,7 +10,7 @@ import { Card, Empty, Popover, Progress, Space, Tag } from "antd";
 import { request } from "@/utils/request";
 import { bugLevel, bugPriority, taskPriority } from "@/utils/constant";
 import UserPhoto from "@/components/Portrait/UserPhoto";
-import { EditOutlined, ExportOutlined } from "@ant-design/icons";
+import { EditOutlined, ExportOutlined, WarningOutlined } from "@ant-design/icons";
 import { showShortNote } from "@/utils/short_note";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
@@ -106,9 +106,27 @@ const IssueCard: React.FC<IssueCardProps> = observer((props) => {
                 </div>
                 <h4>{props.issue.basic_info.title}</h4>
                 {props.issue.estimate_minutes > 0 && props.issue.remain_minutes != -1 && props.issue.state == ISSUE_STATE_PROCESS && (
-                    <div><Progress percent={Math.round((props.issue.estimate_minutes - props.issue.remain_minutes) / props.issue.estimate_minutes * 100)} size="small" /></div>
+                    <div>
+                        <Progress
+                            percent={Math.round((props.issue.estimate_minutes - props.issue.remain_minutes) / props.issue.estimate_minutes * 100)}
+                            size="small"
+                            showInfo={false} />
+                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                            {(props.issue.remain_minutes/60).toFixed(1)}小时(剩余)&nbsp;/&nbsp;{(props.issue.estimate_minutes/60).toFixed(1)}小时(预估)
+                        </div>
+                    </div>
                 )}
                 <div>
+                    {props.issue.exec_user_id == "" && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", color: "red" }}>
+                            <span><WarningOutlined />&nbsp;未设置执行人</span>
+                        </Tag>
+                    )}
+                    {props.issue.check_user_id == "" && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                            <span><WarningOutlined />&nbsp;未设置检查人</span>
+                        </Tag>
+                    )}
                     {props.issue.issue_type == ISSUE_TYPE_TASK && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
                             <span style={{ color: taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].color }}>

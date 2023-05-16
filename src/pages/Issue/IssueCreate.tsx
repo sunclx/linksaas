@@ -7,12 +7,12 @@ import { useHistory, useLocation } from "react-router-dom";
 import s from './IssueCreate.module.less';
 import { DatePicker, Input, Select, Space, Tooltip, message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
-import type { LinkIssueState } from "@/stores/linkAux";
+import { LinkSpritInfo, type LinkIssueState } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_ISSUE, FILE_OWNER_TYPE_PROJECT } from "@/api/fs";
 import Button from "@/components/Button";
 import {
-    assign_check_user, assign_exec_user, BUG_LEVEL_MINOR, BUG_PRIORITY_LOW, create as create_issue, set_dead_line_time,
+    assign_check_user, assign_exec_user, BUG_LEVEL_MINOR, BUG_PRIORITY_LOW, create as create_issue, set_dead_line_time, link_sprit,
     ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, set_check_award, set_exec_award, TASK_PRIORITY_LOW
 } from '@/api/project_issue';
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
@@ -155,20 +155,25 @@ const IssueCreate = () => {
             }));
         }
         message.info(`创建${getIssueText(location.pathname)}成功`);
-        if (getIsTask(location.pathname)) {
-            linkAuxStore.goToTaskList({
-                stateList: [],
-                execUserIdList: [],
-                checkUserIdList: [],
-            }, history);
+        if (state?.spritId != undefined && projectStore.isAdmin) {
+            //关联迭代(工作计划)
+            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, createRes.issue_id, state?.spritId));
+            linkAuxStore.goToLink(new LinkSpritInfo("", projectStore.curProjectId, state?.spritId), history);
         } else {
-            linkAuxStore.goToBugList({
-                stateList: [],
-                execUserIdList: [],
-                checkUserIdList: [],
-            }, history);
+            if (getIsTask(location.pathname)) {
+                linkAuxStore.goToTaskList({
+                    stateList: [],
+                    execUserIdList: [],
+                    checkUserIdList: [],
+                }, history);
+            } else {
+                linkAuxStore.goToBugList({
+                    stateList: [],
+                    execUserIdList: [],
+                    checkUserIdList: [],
+                }, history);
+            }
         }
-
     }
 
     return (
