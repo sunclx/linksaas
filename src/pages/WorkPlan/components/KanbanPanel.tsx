@@ -105,14 +105,14 @@ const IssueCard: React.FC<IssueCardProps> = observer((props) => {
                     </Space>
                 </div>
                 <h4>{props.issue.basic_info.title}</h4>
-                {props.issue.estimate_minutes > 0 && props.issue.remain_minutes != -1 && props.issue.state == ISSUE_STATE_PROCESS && (
+                {props.issue.estimate_minutes > 0 && props.issue.remain_minutes >= 0 && props.issue.state == ISSUE_STATE_PROCESS && (
                     <div>
                         <Progress
                             percent={Math.round((props.issue.estimate_minutes - props.issue.remain_minutes) / props.issue.estimate_minutes * 100)}
                             size="small"
                             showInfo={false} />
                         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                            {(props.issue.remain_minutes/60).toFixed(1)}小时(剩余)&nbsp;/&nbsp;{(props.issue.estimate_minutes/60).toFixed(1)}小时(预估)
+                            {(props.issue.remain_minutes / 60).toFixed(1)}小时(剩余)&nbsp;/&nbsp;{(props.issue.estimate_minutes / 60).toFixed(1)}小时(预估)
                         </div>
                     </div>
                 )}
@@ -125,6 +125,11 @@ const IssueCard: React.FC<IssueCardProps> = observer((props) => {
                     {props.issue.check_user_id == "" && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
                             <span><WarningOutlined />&nbsp;未设置检查人</span>
+                        </Tag>
+                    )}
+                    {props.issue.state == ISSUE_STATE_PROCESS && props.issue.estimate_minutes <= 0 && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                            <span><WarningOutlined />&nbsp;未设置预估时间</span>
                         </Tag>
                     )}
                     {props.issue.issue_type == ISSUE_TYPE_TASK && (
@@ -161,8 +166,10 @@ const PlanIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column}>
-            <Card title="规划中" headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}>
-                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} />}
+            <Card title="规划中" style={{ border: "2px solid #e4e4e8", borderBottom: "none" }}
+                headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
+                bodyStyle={{ minHeight: "calc(100vh - 200px)" }}>
+                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} description="" />}
                 {issueList?.map(item => (
                     <IssueCard issue={item} key={item.issue_id} />
                 ))}
@@ -205,8 +212,10 @@ const ProcessIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title="进行中" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit" }} headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}>
-                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} />}
+            <Card title="进行中" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
+                headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
+                bodyStyle={{ minHeight: "calc(100vh - 200px)" }}>
+                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} description="" />}
                 {issueList?.map(item => (
                     <IssueCard issue={item} key={item.issue_id} />
                 ))}
@@ -249,8 +258,10 @@ const CheckIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title="检查中" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit" }} headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}>
-                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} />}
+            <Card title="检查中" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
+                headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
+                bodyStyle={{ minHeight: "calc(100vh - 200px)" }}>
+                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} description="" />}
                 {issueList?.map(item => (
                     <IssueCard issue={item} key={item.issue_id} />
                 ))}
@@ -290,8 +301,10 @@ const CloseIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title="完成" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit" }} headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}>
-                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} />}
+            <Card title="完成" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
+                headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
+                bodyStyle={{ minHeight: "calc(100vh - 200px)" }}>
+                {issueList?.length == 0 && <Empty style={{ marginTop: '10%' }} description="" />}
                 {issueList?.map(item => (
                     <IssueCard issue={item} key={item.issue_id} />
                 ))}
