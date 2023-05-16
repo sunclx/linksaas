@@ -73,6 +73,7 @@ use tauri::{
 };
 use tokio::fs;
 
+// linksaas://comment/xzx6nmp5WuyhT6lHgIwkZ
 const INIT_SCRIPT: &str = r#"
 Object.defineProperty(window, "__TAURI_POST_MESSAGE__", {
     value: (message) => {
