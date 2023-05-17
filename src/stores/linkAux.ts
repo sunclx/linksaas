@@ -983,6 +983,17 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appstore"));
   }
 
+  //跳转到知识点列表
+  goToIdeaList(history: History) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_chat == true && this.rootStore.projectStore.curProject?.setting.disable_kb == true) {
+      return;
+    }
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/idea"));
+  }
+
   //跳转到创建服务端脚本页面
   goToCreateScript(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
