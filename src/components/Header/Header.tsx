@@ -8,7 +8,6 @@ import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
 import { ArrowsAltOutlined, BugOutlined, BulbOutlined, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
-import ProjectQuickAccess from './ProjectQuickAccess';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
@@ -89,7 +88,6 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   return (
     <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
       <div className={style.l} >
-        {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == false && <ProjectQuickAccess />}
         {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
       </div>
       <div className={style.r}>

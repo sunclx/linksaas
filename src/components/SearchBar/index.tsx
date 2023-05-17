@@ -209,7 +209,7 @@ const SearchBar = () => {
                         }
                     }
                 }}
-                    addonAfter={<SearchOutlined onClick={e => {
+                    suffix={<SearchOutlined onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         if (keyword.trim() != "") {
@@ -217,8 +217,8 @@ const SearchBar = () => {
                         }
                     }} />}
                     value={keyword}
-                    className={s.keyword}
-                    placeholder="搜索......" />
+                    style={{ width: keyword.trim() == "" ? "100px" : "200px" }}
+                    placeholder="请搜索..." />
                 <Popover placement="bottom" trigger="click" content={
                     <div style={{ padding: "10px 10px" }}>
                         <Button type="link" onClick={e => {
@@ -240,7 +240,7 @@ const SearchBar = () => {
                             setDateRange([]);
                             setCurScope(scopeList[0].value);
                             setShowAdvanced(false);
-                        }} onOk={e=>{
+                        }} onOk={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             showSearchResult(true);

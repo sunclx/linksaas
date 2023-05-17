@@ -21,6 +21,7 @@ import SearchBar from '../SearchBar';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import AlarmHeader from './AlarmHeader';
+import ProjectQuickAccess from './ProjectQuickAccess';
 
 const RightFloat = observer(() => {
   const projectStore = useStores('projectStore');
@@ -145,6 +146,7 @@ const TopNav = () => {
           } key={APP_PROJECT_OVERVIEW_PATH} />);
         </Tabs>
       </div>
+      <ProjectQuickAccess/>
       {(location.pathname.includes(APP_PROJECT_CHAT_PATH) || location.pathname.includes(APP_PROJECT_KB_DOC_PATH)) && (<span />)}
       <div className={s.right}>
         {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><RightFloat /></>)}
