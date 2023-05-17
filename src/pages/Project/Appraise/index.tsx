@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import CardWrap from '@/components/CardWrap';
-import { Tabs } from 'antd';
+import { Space, Tabs } from 'antd';
 import Button from '@/components/Button';
 import styles from './index.module.less';
 import { observer, useLocalObservable } from 'mobx-react';
@@ -54,19 +54,15 @@ const Appraise: React.FC = observer(() => {
   }
 
   return (
-    <CardWrap>
-
-      <div className={styles.wrap}>
-
-        <div className={styles.title}>
-          <h2>成员互评</h2>
-          <Button type="primary" onClick={() => create()} disabled={memberStore.memberList.length < 2}>
+    <CardWrap title="成员互评" extra={
+      <Space>
+        <Button type="primary" onClick={() => create()} disabled={memberStore.memberList.length < 2}>
             发起互评
           </Button>
-        </div>
-
+      </Space>
+    }>
+      <div className={styles.wrap}>
         {renderTabs()}
-
       </div>
 
       {localStore.showCreateModal && <CreateAppraise

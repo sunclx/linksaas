@@ -1,15 +1,19 @@
 import React, { useEffect } from 'react';
 import AccessTable from './components/AccessTable';
 import { observer, useLocalObservable } from 'mobx-react';
-import { message, Collapse } from 'antd';
+import { message, Collapse, Space } from 'antd';
 import CardWrap from '@/components/CardWrap';
 import style from './index.module.less';
-import ExternalList from './components/ExternalList';
 import * as API from '@/api/external_events';
 import { request } from '@/utils/request';
 import { platform } from './common';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useStores } from '@/hooks';
+import Button from '@/components/Button';
+import iconGitee from '@/assets/allIcon/icon-gitee.png';
+import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
+import { runInAction } from 'mobx';
+import AddModal from './components/AddModal';
 
 const { Panel } = Collapse;
 
@@ -24,6 +28,12 @@ const ProjectInvite: React.FC = () => {
   const projectStore = useStores('projectStore');
 
   const localStore = useLocalObservable(() => ({
+    newEventSource: null as API.EVENT_SOURCE | null,
+    setNewEventSource(evs: API.EVENT_SOURCE | null) {
+      runInAction(() => {
+        this.newEventSource = evs;
+      });
+    },
     externalList: [] as ListItem[],
     externalListTotal: 0,
     activeKey: [] as string[],
@@ -85,17 +95,25 @@ const ProjectInvite: React.FC = () => {
   }, []);
 
   return (
-    <CardWrap title="第三方接入">
+    <CardWrap title="第三方接入" extra={
+      <Space >
+        <Button type="default" onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          localStore.setNewEventSource(API.EVENT_SOURCE_GITLAB);
+        }}>
+          <img src={iconGitlab} style={{ width: "20px", marginRight: "10px" }} />连接GitLab
+        </Button>
+        <Button type="default" onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          localStore.setNewEventSource(API.EVENT_SOURCE_GITEE);
+        }}>
+          <img src={iconGitee} style={{ width: "20px", marginRight: "10px" }} />连接Gitee
+        </Button>
+      </Space>
+    }>
       <div className={style.access}>
-        <h3>快速接入</h3>
-        <ExternalList
-          sessionId={userStore.sessionId}
-          projectId={projectStore.curProjectId}
-          onChange={() => {
-            localStore.getExternalList();
-          }}
-        />
-        <h3>已接入（{localStore.externalListTotal}）</h3>
         <Collapse
           activeKey={localStore.activeKey}
           bordered={false}
@@ -131,6 +149,13 @@ const ProjectInvite: React.FC = () => {
           ))}
         </Collapse>
       </div>
+      {localStore.newEventSource != null && (
+        <AddModal eventSource={localStore.newEventSource} onCancel={() => localStore.setNewEventSource(null)}
+          onOk={() => {
+            localStore.getExternalList();
+            localStore.setNewEventSource(null);
+          }} />
+      )}
     </CardWrap>
   );
 };

@@ -6,7 +6,7 @@ import addIcon from '@/assets/image/addIcon.png';
 import Button from "@/components/Button";
 import { useStores } from "@/hooks";
 import AddRobotModal from "./components/AddRobotModal";
-import { Modal, Table, message } from "antd";
+import { Modal, Space, Table, message } from "antd";
 import type { RobotInfo } from '@/api/robot';
 import {
     list as list_robot,
@@ -238,67 +238,68 @@ const RobotList = () => {
         loadRobot();
     }, [projectStore.curProjectId, curPage]);
 
-    return (<CardWrap>
-        <div className={s.robot_wrap}>
-            <div style={{ marginRight: '20px' }}>
-                <div className={s.title}>
-                    <h2>服务器代理列表</h2>
-                    <Button
-                        type="primary"
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setShowAddModal(true);
-                        }}
-                        disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
-                    >
-                        <img src={addIcon} alt="" />
-                        创建服务器代理
-                    </Button>
+    return (
+        <CardWrap title="服务器代理列表" extra={
+            <Space>
+                <Button
+                    type="primary"
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowAddModal(true);
+                    }}
+                    disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
+                >
+                    <img src={addIcon} alt="" />
+                    创建服务器代理
+                </Button>
+            </Space>
+        }>
+            <div className={s.robot_wrap}>
+                <div style={{ marginRight: '20px' }}>
+                    <Table
+                        rowKey={"robot_id"}
+                        dataSource={robotList}
+                        columns={columns}
+                        pagination={false}
+                        scroll={{ x: 800, y: 'calc(100vh - 290px)' }} />
+                    <Pagination current={curPage + 1} total={totalCount} pageSize={PAGE_SIZE} onChange={page => setCurPage(page - 1)} />
                 </div>
-                <Table
-                    rowKey={"robot_id"}
-                    dataSource={robotList}
-                    columns={columns}
-                    pagination={false}
-                    scroll={{ x: 800, y: 'calc(100vh - 260px)' }} />
-                <Pagination current={curPage + 1} total={totalCount} pageSize={PAGE_SIZE} onChange={page => setCurPage(page - 1)} />
             </div>
-        </div>
-        {showAddModal && <AddRobotModal onCancel={() => setShowAddModal(false)} onOk={() => {
-            if (curPage != 0) {
-                setCurPage(0);
-            } else {
-                loadRobot();
-            }
-            setShowAddModal(false);
-        }} />}
-        {useage != null && <UseageModal
-            projectId={projectStore.curProjectId}
-            robotId={useage.robotId}
-            serverAddr={useage.serverAddr}
-            token={useage.token}
-            onCancel={() => {
-                setUseage(null);
+            {showAddModal && <AddRobotModal onCancel={() => setShowAddModal(false)} onOk={() => {
+                if (curPage != 0) {
+                    setCurPage(0);
+                } else {
+                    loadRobot();
+                }
+                setShowAddModal(false);
             }} />}
-        {removeRobotInfo != null && (
-            <Modal
-                title={`删除服务器代理${removeRobotInfo.basic_info.name}`}
-                open={true}
-                onCancel={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setRemoveRobotInfo(null);
-                }}
-                onOk={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    removeRobot();
-                }}
-            >
-                是否删除服务器代理{removeRobotInfo.basic_info.name}?
-            </Modal>)}
-    </CardWrap>)
+            {useage != null && <UseageModal
+                projectId={projectStore.curProjectId}
+                robotId={useage.robotId}
+                serverAddr={useage.serverAddr}
+                token={useage.token}
+                onCancel={() => {
+                    setUseage(null);
+                }} />}
+            {removeRobotInfo != null && (
+                <Modal
+                    title={`删除服务器代理${removeRobotInfo.basic_info.name}`}
+                    open={true}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveRobotInfo(null);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeRobot();
+                    }}
+                >
+                    是否删除服务器代理{removeRobotInfo.basic_info.name}?
+                </Modal>)}
+        </CardWrap>)
 };
 
 export default observer(RobotList);
