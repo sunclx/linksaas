@@ -44,80 +44,70 @@ const AppStore: React.FC = () => {
   }, [projectStore.curProjectId]);
 
   return (
-    <CardWrap title="更多应用" halfContent>
-      <div className={s.appStore}>
-        <div className={s.appStoreHd}>
-          <h2>应用列表</h2>
-          <Space size="middle">
-            {projectStore.isAdmin && (
-              <>
-                {appStore.clientCfg?.enable_pub_app_store == true && (
-                  <Button
-                    type="link"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      projectStore.setCurProjectId("");
-                      history.push(`${PUB_RES_PATH}?tab=appStore`);
-                    }}
-                  >
-                    前往应用市场
-                  </Button>
-                )}
-                {appStore.clientCfg?.enable_pub_app_store == false && (
-                  <Button type="primary" onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowAdd(true);
-                  }}>新增应用</Button>
-                )}
-              </>
-            )}
-            <Popover placement='bottom' trigger="click" content={
-              <Space direction="vertical" style={{ padding: "10px 0px" }}>
-                {projectStore.isAdmin && appStore.clientCfg?.enable_pub_app_store == true && (
-                  <Button
-                    type="link" style={{ marginLeft: "10px" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setShowAdd(true);
-                    }}
-                  >
-                    新增应用
-                  </Button>
-                )}
-                <Button type="link" style={{ marginLeft: "10px" }} onClick={e => {
+    <CardWrap title="更多应用" halfContent extra={
+      <Space size="middle">
+        {projectStore.isAdmin && (
+          <>
+            {appStore.clientCfg?.enable_pub_app_store == true && (
+              <Button
+                type="link"
+                onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  setShowDebug(true);
-                }}>调试微应用</Button>
-              </Space>
-            }>
-              <MoreOutlined />
-            </Popover>
-
-          </Space>
-        </div>
-        <div className={s.appStoreBd}>
-          <List
-            grid={{
-              gutter: 16,
-              column: 4,
-            }}
-            dataSource={appList}
-            renderItem={(item) => (
-              <List.Item key={item.app_id}>
-                <AppItem appInfo={item} onRemove={() => loadAppList()} />
-              </List.Item>
+                  projectStore.setCurProjectId("");
+                  history.push(`${PUB_RES_PATH}?tab=appStore`);
+                }}
+              >
+                前往应用市场
+              </Button>
             )}
-          />
-
-          <div className={s.info}>
-            <h3>说明</h3>
-            <p>您可以把项目团队用到的研发系统地址添加在这里。</p>
-          </div>
-        </div>
+            {appStore.clientCfg?.enable_pub_app_store == false && (
+              <Button type="primary" onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setShowAdd(true);
+              }}>新增应用</Button>
+            )}
+          </>
+        )}
+        <Popover placement='bottom' trigger="click" content={
+          <Space direction="vertical" style={{ padding: "10px 0px" }}>
+            {projectStore.isAdmin && appStore.clientCfg?.enable_pub_app_store == true && (
+              <Button
+                type="link" style={{ marginLeft: "10px" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowAdd(true);
+                }}
+              >
+                新增应用
+              </Button>
+            )}
+            <Button type="link" style={{ marginLeft: "10px" }} onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              setShowDebug(true);
+            }}>调试微应用</Button>
+          </Space>
+        }>
+          <MoreOutlined />
+        </Popover>
+      </Space>
+    }>
+      <div className={s.appStore}>
+        <List
+          grid={{
+            gutter: 16,
+            column: 4,
+          }}
+          dataSource={appList}
+          renderItem={(item) => (
+            <List.Item key={item.app_id}>
+              <AppItem appInfo={item} onRemove={() => loadAppList()} />
+            </List.Item>
+          )}
+        />
       </div>
       {showAdd == true && (
         <AddAppModal onCancel={() => setShowAdd(false)} onOk={() => {
