@@ -217,7 +217,7 @@ const SearchBar = () => {
                         }
                     }} />}
                     value={keyword}
-                    style={{ width: keyword.trim() == "" ? "100px" : "200px" }}
+                    style={{ width: "200px" }}
                     placeholder="请搜索..." />
                 <Popover placement="bottom" trigger="click" content={
                     <div style={{ padding: "10px 10px" }}>

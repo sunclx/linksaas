@@ -15,6 +15,7 @@ import { send_msg, update_msg, MSG_LINK_NONE, LIST_CHAN_SCOPE_INCLUDE_ME } from 
 import { FILE_OWNER_TYPE_CHANNEL } from '@/api/fs';
 import SendMsgBtn, { SEND_ACTION } from './SendMsgBtn';
 import { useHistory } from 'react-router-dom';
+import ChannelDetailModal from './ChannelDetailModal';
 
 const ChannelHeader = observer(() => {
   const history = useHistory();
@@ -40,7 +41,7 @@ const ChannelHeader = observer(() => {
   };
 
   const sendEditor = useCommonEditor({
-    ...editorParam, 
+    ...editorParam,
     placeholder: "请输入......,可使用Ctrl+Enter发送内容",
     eventsOption: {
       keydown: e => {
@@ -177,6 +178,7 @@ const ChannelHeader = observer(() => {
           </div>
         </Modal>
       )}
+      {channelStore.showDetailChannelId != "" && <ChannelDetailModal />}
     </div>
   );
 });

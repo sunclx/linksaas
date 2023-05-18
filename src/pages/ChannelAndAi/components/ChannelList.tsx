@@ -20,6 +20,7 @@ import type { WebChannelInfo } from '@/stores/channel';
 import { Modal, Popover, message } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
 import { PROJECT_CHAT_TYPE } from '@/utils/constant';
+import { UserOutlined } from '@ant-design/icons';
 
 
 const ChannelList = observer(() => {
@@ -29,8 +30,6 @@ const ChannelList = observer(() => {
   const projectStore = useStores('projectStore');
 
   const [closeChannelId, setCloseChannelId] = useState("");
-  const [exitChannelId, setExitChannelId] = useState("");
-  const [updateChannelId, setUpdateChannelId] = useState("");
   const [joinChannelId, setJoinChannelId] = useState("");
   const [removeChannelId, setRemoveChannelId] = useState("");
   const [hoverChannelId, setHoverChannelId] = useState("");
@@ -70,7 +69,7 @@ const ChannelList = observer(() => {
     // 退出频道
     const exitChannel = () => {
       if (!permission.canExit) return;
-      setExitChannelId(channelId);
+      channelStore.exitChannelId = channelId;
     }
 
     // 关闭频道
@@ -83,7 +82,7 @@ const ChannelList = observer(() => {
     //更新频道
     const updateChannel = () => {
       if (!permission.canUpdate) return;
-      setUpdateChannelId(channelId);
+      channelStore.updateChannelId = channelId;
     }
     const joinChannel = () => {
       setJoinChannelId(channelId);
@@ -100,6 +99,17 @@ const ChannelList = observer(() => {
       <div
         className={styles.contextmenu}
       >
+        <div
+          className={styles.item}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            channelStore.showDetailChannelId = channelId;
+          }}
+        >
+          查看成员
+        </div>
+        <div className={styles.divider} />
         {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (
           <>
             <div
@@ -193,23 +203,26 @@ const ChannelList = observer(() => {
       {channelStore.channelList.length > 0 && channelStore.filterChannelList.map((item: WebChannelInfo) => {
         return (
           <div
+            key={item.channelInfo.channel_id}
             className={
               styles.menu_item + ' ' +
               (item.channelInfo.closed ? styles.closed : '') + ' ' +
               ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
             }
-            key={item.channelInfo.channel_id}
+
             onMouseEnter={e => {
               e.stopPropagation();
               e.preventDefault();
               setHoverChannelId(item.channelInfo.channel_id);
             }}
           >
-            <div className={styles.menu_box} onClick={() => {
+            <div className={styles.menu_box}>
+              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
                 chatMsgStore.listRefMsgId = "";
                 channelStore.curChannelId = item.channelInfo.channel_id;
               }}>
-              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')} >
                 {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (<span className={item.channelInfo.my_watch ? styles.isCollect : styles.noCollect} onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -221,10 +234,16 @@ const ChannelList = observer(() => {
                 }} />)}
                 <span>#{item.channelInfo.basic_info.channel_name}</span>
               </div>
-              <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="left">
+              {hoverChannelId == item.channelInfo.channel_id && !(item.channelInfo.system_channel && item.channelInfo.readonly) && (
+                <UserOutlined style={{ color: "#bbb", fontSize: "16px", cursor: "pointer" }} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  channelStore.showDetailChannelId = item.channelInfo.channel_id;
+                }} />
+              )}
+              <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="bottom" trigger="click">
                 {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel && <i className={styles.more} />}
               </Popover>
-
             </div>
             {item.unreadMsgCount > 0 && (
               <div className={styles.menu_news}>
@@ -255,22 +274,23 @@ const ChannelList = observer(() => {
       </Modal>
       }
 
-      {exitChannelId != "" && <Modal
+      {channelStore.exitChannelId != "" && <Modal
         title='警告'
         open={true}
+        okButtonProps={{ danger: true }}
         onOk={async (): Promise<void> => {
-          const res = await request(leave_channel(sessionId, projectStore.curProjectId, exitChannelId));
+          const res = await request(leave_channel(sessionId, projectStore.curProjectId, channelStore.exitChannelId));
           if (res) {
-            channelStore.removeChannel(exitChannelId);
+            channelStore.removeChannel(channelStore.exitChannelId);
           }
-          setExitChannelId("");
+          channelStore.exitChannelId = "";
         }}
         onCancel={() => {
-          setExitChannelId("");
+          channelStore.exitChannelId = "";
         }}
         okText='退出频道'
       >
-        <p>是否确认退出当前频道？</p>
+        <p>是否确认退出频道 {channelStore.getChannel(channelStore.exitChannelId)?.channelInfo.basic_info.channel_name ?? ""}？</p>
       </Modal>}
 
       {joinChannelId != "" && <Modal
@@ -291,13 +311,13 @@ const ChannelList = observer(() => {
         <p>是否确认加入当前频道？</p>
       </Modal>}
 
-      {updateChannelId != "" && <ActionMember
+      {channelStore.updateChannelId != "" && <ActionMember
         visible={true}
         type={ActionMemberType.UPDATE_CHANNEL}
-        channelId={updateChannelId}
+        channelId={channelStore.updateChannelId}
         onChange={(value: boolean) => {
           if (!value) {
-            setUpdateChannelId("");
+            channelStore.updateChannelId = "";
           }
         }}
         title="更新频道"

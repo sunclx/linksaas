@@ -52,8 +52,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
     <div className={styles.member_info}>
       <div className={styles.info}>
         <div className={styles.cover}>
-          <UserPhoto logoUri={member?.member.logo_uri ?? ""} className={styles.avatar} />
-          <div className={member?.member.online ? styles.icon_online : styles.icon_offline} />
+          <UserPhoto logoUri={member?.member.logo_uri ?? ""} className={styles.avatar} style={{ filter: member?.member.online === true ? "grayscale(0%)" : "grayscale(100%)" }} />
         </div>
         <div className={styles.bd}>
           <div className={styles.title}>
@@ -89,7 +88,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
               </li>
               {okr.key_result_list.map((kr, krIndex) => (
                 <li className={styles.item} key={`kr-${krIndex}`}>
-                  <div className={styles.title} style={{paddingLeft:"10px"}}>关键结果{krIndex + 1}</div>
+                  <div className={styles.title} style={{ paddingLeft: "10px" }}>关键结果{krIndex + 1}</div>
                   <div className={styles.cont}>
                     <div>{kr}</div>
                   </div>
