@@ -1,30 +1,9 @@
 .wrap {
-  padding: 20px 30px;
+  padding: 10px 20px 10px 20px;
   display: flex;
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-}
-.title {
-  display: flex;
-  justify-content: space-between;
-  h2 {
-    margin: 0 0 16px;
-    color: #2c2d2e;
-    font-weight: 550;
-    line-height: 30px;
-    flex: 1;
-  }
-  > button {
-    width: 72px;
-    height: 38px;
-    border-radius: 8px;
-    font-size: 12px;
-    margin-right: 20px;
-    img {
-      vertical-align: baseline;
-    }
-  }
 }
 
 .tabs {
@@ -33,8 +12,9 @@
   flex-direction: column;
 
   .tab_pane{
-    height: calc(100vh - 200px);
+    height: calc(100vh - 220px);
     overflow-y: scroll;
+    // border:1px solid red;
   }
 
   :global(.ant-tabs-content-holder){

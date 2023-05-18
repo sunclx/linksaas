@@ -21,6 +21,7 @@ import StageModel from "./components/StageModel";
 import Pagination from "@/components/Pagination";
 import Dropdown from "antd/lib/dropdown";
 import BatchCreate from "./components/BatchCreate";
+import { Space } from "antd";
 
 const tabList = [
     {
@@ -178,46 +179,44 @@ const IssueList = () => {
     }, [curPage, activeVal, filterData, projectStore.curProjectId])
 
     return (
-        <CardWrap>
+        <CardWrap title={`${getIssueText(location.pathname)}列表`} extra={
+            <Space>
+                {getIsTask(location.pathname) == true && <Dropdown.Button
+                    className={s.btn}
+                    type="primary"
+                    menu={{
+                        items: [
+                            {
+                                label: "批量创建",
+                                key: "batch"
+                            }
+                        ],
+                        onClick: (e) => {
+                            if (e.key == "batch") {
+                                setShowBatchModal(true);
+                            }
+                        },
+                    }}
+                    onClick={() => push(getIssueCreateUrl(location.pathname))}
+                    disabled={projectStore.curProject?.closed}
+                >
+                    <img src={addIcon} alt="" />
+                    创建{getIssueText(location.pathname)}
+                </Dropdown.Button>
+                }
+                {getIsTask(location.pathname) == false && <Button
+                    className={s.btn}
+                    type="primary"
+                    onClick={() => push(getIssueCreateUrl(location.pathname))}
+                    disabled={projectStore.curProject?.closed}
+                >
+                    <img src={addIcon} alt="" />
+                    创建{getIssueText(location.pathname)}
+                </Button>
+                }
+            </Space>}>
             <div className={s.task_wrap}>
                 <div style={{ marginRight: '20px' }}>
-                    <div className={s.title}>
-                        <h2>{getIssueText(location.pathname)}列表</h2>
-                        {getIsTask(location.pathname) == true && <Dropdown.Button
-                            className={s.btn}
-                            type="primary"
-                            menu={{
-                                items: [
-                                    {
-                                        label: "批量创建",
-                                        key: "batch"
-                                    }
-                                ],
-                                onClick: (e) => {
-                                    if (e.key == "batch") {
-                                        setShowBatchModal(true);
-                                    }
-                                },
-                            }}
-                            onClick={() => push(getIssueCreateUrl(location.pathname))}
-                            disabled={projectStore.curProject?.closed}
-                        >
-                            <img src={addIcon} alt="" />
-                            创建{getIssueText(location.pathname)}
-                        </Dropdown.Button>
-                        }
-                        {getIsTask(location.pathname) == false && <Button
-                            className={s.btn}
-                            type="primary"
-                            onClick={() => push(getIssueCreateUrl(location.pathname))}
-                            disabled={projectStore.curProject?.closed}
-                        >
-                            <img src={addIcon} alt="" />
-                            创建{getIssueText(location.pathname)}
-                        </Button>
-                        }
-
-                    </div>
                     <Tabs
                         activeVal={activeVal}
                         list={tabList}

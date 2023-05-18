@@ -11,6 +11,7 @@ type CardWrapProps = {
   style?: React.CSSProperties;
   halfContent?: boolean;
   children?: React.ReactNode;
+  extra?: React.ReactNode;
 };
 
 const CardWrap: FC<CardWrapProps> = (props) => {
@@ -28,17 +29,17 @@ const CardWrap: FC<CardWrapProps> = (props) => {
     : '';
 
   let backUrl = "";
-  if(pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)){
+  if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
     backUrl = APP_PROJECT_WORK_PLAN_PATH;
-  }else if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
+  } else if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
     backUrl = APP_PROJECT_CHAT_PATH;
   } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     backUrl = APP_PROJECT_KB_DOC_PATH;
-  } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
     backUrl = APP_PROJECT_KB_BOOK_SHELF_PATH;
-  }else if(pathname.startsWith(APP_PROJECT_KB_BOOK_MARK_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_MARK_PATH)) {
     backUrl = APP_PROJECT_KB_BOOK_MARK_PATH;
-  } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
     backUrl = APP_PROJECT_OVERVIEW_PATH;
   }
 
@@ -50,6 +51,9 @@ const CardWrap: FC<CardWrapProps> = (props) => {
       {title && (
         <div className={s.title}>
           <h2>{title}</h2>
+          {props.extra!== undefined && (
+            <>{props.extra}</>
+          )}
         </div>
       )}
       <div className={`${s.child} ${title && s.isTitle}`}>{props.children}</div>

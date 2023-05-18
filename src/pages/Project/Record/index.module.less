@@ -1,15 +1,12 @@
-.record {
-  position: relative;
-}
-
 .header {
   display: flex;
-  padding: 26px;
+  margin-top: 10px;
 
   .btn {
     margin: 0 0 0 35px;
     border-radius: 6px;
   }
+
   .subscribe_btn {
     position: absolute;
     right: 20px;
@@ -18,8 +15,10 @@
 }
 
 .recordList {
-  padding: 0 26px;
   background: #fff;
+  height: calc(100vh - 220px);
+  overflow-y: scroll;
+  // border: 1px solid red;
 
   :global(.ant-collapse-item) {
     border: none !important;

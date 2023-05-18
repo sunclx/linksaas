@@ -258,16 +258,16 @@ const RequirementList = () => {
     }, [curPage, curCateId, keyword, hasLinkIssue, filterClosed, sortType])
 
     return (
-        <CardWrap>
+        <CardWrap title="需求列表" extra={
+            <Space>
+                <Button disabled={!projectStore.isAdmin} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, curCateId, history);
+                }}>创建需求</Button>
+            </Space>
+        }>
             <div className={s.content_wrap}>
-                <div className={s.title}>
-                    <h2>需求列表</h2>
-                    <Button disabled={!projectStore.isAdmin} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, curCateId, history);
-                    }}>创建需求</Button>
-                </div>
                 <div className={s.panel_wrap}>
                     <div className={s.left_panel_wrap}>
                         <Card title={<h2 className={s.head}>需求分类</h2>} bordered={false}

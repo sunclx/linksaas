@@ -9,6 +9,7 @@
   border-top: none;
   border-radius: 10px 0 0 10px;
   box-shadow: 0 4px 18px 0 rgba(154, 168, 178, 0.28);
+
   .packup {
     position: absolute;
     top: 16px;
@@ -22,29 +23,38 @@
     border: 1px solid #f4f4f6;
     border-radius: 8px 0 0 8px;
     cursor: pointer;
+
     svg {
       width: 14px;
       height: 10px;
     }
+
     &:hover {
       color: #2997ff;
     }
   }
+
   .child {
     height: 100%;
+
     &.isTitle {
       height: calc(100% - 56px);
       overflow: auto;
     }
   }
+
   .title {
+    display: flex;
+    justify-content: flex-end;
     border-bottom: 1px solid #f0f0f5;
+    padding-right: 20px;
     h2 {
       margin: 0;
       padding: 16px 0 16px 30px;
       color: #2c2d2e;
       font-weight: 700;
       font-size: 14px;
+      flex: 1;
     }
   }
 }

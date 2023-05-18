@@ -9,14 +9,15 @@ import MemberSelect from '@/components/MemberSelect';
 import Calendar from './components/Calendar';
 import { timeToDateString } from '@/utils/utils';
 import moment from 'moment';
-import { Collapse, Button, Modal, Input, message } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
+import { Collapse, Modal, Input, message, Space, Popover } from 'antd';
+import { CaretRightOutlined, MoreOutlined } from '@ant-design/icons';
 import { PLATFORM } from './common';
 import { useStores } from '@/hooks';
 import { runInAction } from 'mobx';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { LinkEventState } from '@/stores/linkAux';
 import UserPhoto from '@/components/Portrait/UserPhoto';
+import Button from '@/components/Button';
 
 const { Panel } = Collapse;
 
@@ -151,31 +152,9 @@ const ProjectRecord: React.FC = () => {
   }, [localStore.memberUserId, localStore.date, localStore.myDayAddonVersion]);
 
   return (
-    <CardWrap title="工作记录" className={style.record}>
-      <div className={style.header}>
-        <Calendar
-          sessionId={userStore.sessionId}
-          projectId={projectStore.curProjectId}
-          currentDate={localStore.date}
-          memberUserId={localStore.memberUserId}
-          onChange={(date) => {
-            runInAction(() => {
-              localStore.date = moment(date);
-            });
-          }}
-        />
-
-        <MemberSelect
-          all
-          onChange={(e) => {
-            runInAction(() => {
-              localStore.memberUserId = e;
-            });
-          }}
-          label={'操作用户'}
-        />
+    <CardWrap title='工作记录' extra={
+      <Space>
         <Button
-          className={style.btn}
           type="primary"
           disabled={moment().diff(localStore.date) > 7 * 24 * 3600 * 1000}
           onClick={(e) => {
@@ -195,88 +174,122 @@ const ProjectRecord: React.FC = () => {
         >
           补充工作记录
         </Button>
-        <Button className={style.subscribe_btn} type="link" onClick={e=>{
-          e.stopPropagation();
-          e.preventDefault();
-          linkAuxStore.goToEventSubscribeList(history);
-        }}>研发事件订阅</Button>
-      </div>
-
-      <Collapse
-        activeKey={localStore.activeKey}
-        bordered={false}
-        expandIcon={({ isActive }) => (
-          <CaretRightOutlined style={{ color: '#A8ACB3' }} rotate={isActive ? 90 : 0} />
+        {projectStore.isAdmin && (
+          <Popover trigger="click" placement='bottom' content={
+            <div style={{ padding: "10px 10px" }}>
+              <Button className={style.subscribe_btn} type="link" onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                linkAuxStore.goToEventSubscribeList(history);
+              }}>研发事件订阅</Button>
+            </div>
+          }>
+            <MoreOutlined />
+          </Popover>
         )}
-        className={style.recordList}
-      >
-        {localStore.recordList.map((item) => (
-          <Panel
-            header={
-              <div
-                onClick={() => {
-                  localStore.setActiveKey(item.user_id);
-                }}
-                className={style.userInfo}
-              >
-                <UserPhoto logoUri={item.cur_logo_uri ?? ''} />
-                <span className={style.name}>{item.cur_user_display_name}</span>
-                <span className={style.countList}>
-                  {Object.keys(item.count).map((key) => (
-                    <span key={key}>
+
+      </Space>
+    }>
+      <div style={{ margin: "0px 20px" }}>
+        <div className={style.header}>
+          <Calendar
+            sessionId={userStore.sessionId}
+            projectId={projectStore.curProjectId}
+            currentDate={localStore.date}
+            memberUserId={localStore.memberUserId}
+            onChange={(date) => {
+              runInAction(() => {
+                localStore.date = moment(date);
+              });
+            }}
+          />
+
+          <MemberSelect
+            all
+            onChange={(e) => {
+              runInAction(() => {
+                localStore.memberUserId = e;
+              });
+            }}
+            label={'操作用户'}
+          />
+        </div>
+
+        <Collapse
+          activeKey={localStore.activeKey}
+          bordered={false}
+          expandIcon={({ isActive }) => (
+            <CaretRightOutlined style={{ color: '#A8ACB3' }} rotate={isActive ? 90 : 0} />
+          )}
+          className={style.recordList}
+        >
+          {localStore.recordList.map((item) => (
+            <Panel
+              header={
+                <div
+                  onClick={() => {
+                    localStore.setActiveKey(item.user_id);
+                  }}
+                  className={style.userInfo}
+                >
+                  <UserPhoto logoUri={item.cur_logo_uri ?? ''} />
+                  <span className={style.name}>{item.cur_user_display_name}</span>
+                  <span className={style.countList}>
+                    {Object.keys(item.count).map((key) => (
+                      <span key={key}>
+                        <img
+                          className={style.icon}
+                          src={Number(key) > 99 ? PLATFORM[key]?.icon : PLATFORM[0]?.icon}
+                          alt=""
+                        />
+                        {item.count[key]}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              }
+              key={item.user_id}
+            >
+              <div className={style.record}>
+                {item.subList.map((item2) => (
+                  <div className={style.recordItem} key={item2.event_id}>
+                    <EventCom
+                      key={item2.event_id}
+                      item={item2}
+                      skipProjectName={true}
+                      skipLink={false}
+                      showMoreLink={false}
+                      showSource={true}
+                    >
                       <img
                         className={style.icon}
-                        src={Number(key) > 99 ? PLATFORM[key]?.icon : PLATFORM[0]?.icon}
+                        src={
+                          item2.event_type > 99
+                            ? PLATFORM[item2.event_type]?.icon
+                            : PLATFORM[0]?.icon
+                        }
                         alt=""
                       />
-                      {item.count[key]}
-                    </span>
-                  ))}
-                </span>
-              </div>
-            }
-            key={item.user_id}
-          >
-            <div className={style.record}>
-              {item.subList.map((item2) => (
-                <div className={style.recordItem} key={item2.event_id}>
-                  <EventCom
-                    key={item2.event_id}
-                    item={item2}
-                    skipProjectName={true}
-                    skipLink={false}
-                    showMoreLink={false}
-                    showSource={true}
-                  >
-                    <img
-                      className={style.icon}
-                      src={
-                        item2.event_type > 99
-                          ? PLATFORM[item2.event_type]?.icon
-                          : PLATFORM[0]?.icon
-                      }
-                      alt=""
-                    />
-                    <span className={style.time}>{timeToDateString(item2.event_time)}</span>
-                    <span>{item2.user_display_name}</span>
-                  </EventCom>
-                </div>
-              ))}
-              {item.addonInfo && (
-                <div className={style.extInfo}>
-                  <h3 className={style.title}>补充工作记录:</h3>
-                  <div className={style.content}>
-                    <pre>
-                      {item.addonInfo.content}
-                    </pre>
+                      <span className={style.time}>{timeToDateString(item2.event_time)}</span>
+                      <span>{item2.user_display_name}</span>
+                    </EventCom>
                   </div>
-                </div>
-              )}
-            </div>
-          </Panel>
-        ))}
-      </Collapse>
-
+                ))}
+                {item.addonInfo && (
+                  <div className={style.extInfo}>
+                    <h3 className={style.title}>补充工作记录:</h3>
+                    <div className={style.content}>
+                      <pre>
+                        {item.addonInfo.content}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Panel>
+          ))}
+        </Collapse>
+      </div>
       {localStore.showAddon && (
         <Modal
           title={`补充${localStore.date.format('YYYY年MM月DD日')}工作记录`}

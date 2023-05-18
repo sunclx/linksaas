@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-type EVENT_SOURCE = number;
+export type EVENT_SOURCE = number;
 
 export const EVENT_SOURCE_GITLAB: EVENT_SOURCE = 0;
 export const EVENT_SOURCE_GITHUB: EVENT_SOURCE = 1;

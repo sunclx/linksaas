@@ -13,7 +13,7 @@ import moment from 'moment';
 import Pagination from "@/components/Pagination";
 import ActionList from "./components/ActionList";
 import { DeleteOutlined } from "@ant-design/icons";
-import { Modal } from "antd";
+import { Modal, Space } from "antd";
 
 
 const PAGE_SIZE = 10;
@@ -66,25 +66,25 @@ const RepoList = () => {
         loadRepo();
     }, [curPage, projectStore.curProjectId])
 
-    return <CardWrap>
+    return <CardWrap title="代码仓库列表" extra={
+        <Space>
+            <Button
+                type="primary"
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowAddModal(true);
+
+                }}
+                disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
+            >
+                <img src={addIcon} alt="" />
+                添加代码仓库
+            </Button>
+        </Space>
+    }>
         <div className={s.repo_wrap}>
             <div style={{ marginRight: '20px' }}>
-                <div className={s.title}>
-                    <h2>代码仓库列表</h2>
-                    <Button
-                        type="primary"
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setShowAddModal(true);
-
-                        }}
-                        disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
-                    >
-                        <img src={addIcon} alt="" />
-                        添加代码仓库
-                    </Button>
-                </div>
                 <div>
                     <p><b>使用前提：</b>服务器代理最低版本在0.1.1，并且在机器上安装了<a target="_blank" href="https://earthly.dev/" rel="noreferrer">earthly</a>。</p>
                 </div>

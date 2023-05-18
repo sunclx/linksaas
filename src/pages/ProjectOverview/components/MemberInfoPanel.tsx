@@ -88,7 +88,7 @@ const MemberInfoPanel = () => {
 
     return (
         <>
-            <Collapse bordered={true} className={s.member_list_wrap}>
+            <Collapse bordered={true} className={s.member_list_wrap} defaultActiveKey="memberInfo">
                 <Collapse.Panel key="memberInfo" header={<h1 className={s.head}>成员信息</h1>} extra={
                     <>
                         {!(projectStore.curProject?.closed) && projectStore.isAdmin && appStore.clientCfg?.can_invite && (
@@ -151,7 +151,7 @@ const MemberInfoPanel = () => {
                                 </Button>
                             </Descriptions.Item>
                             <Descriptions.Item label="其他信息" span={3}>
-                                <Collapse bordered={false} className={s.extra_info}>
+                                <Collapse bordered={false} className={s.extra_info} defaultActiveKey="okr">
                                     <Collapse.Panel key="okr" header="成员目标">
                                         <GoalList memberUserId={member.member.member_user_id} />
                                     </Collapse.Panel>

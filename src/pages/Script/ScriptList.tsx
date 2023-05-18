@@ -10,7 +10,7 @@ import { request } from "@/utils/request";
 import type { ScriptSuiteKey } from "@/api/robot_script";
 import { list_script_suite_key } from "@/api/robot_script";
 import type { ColumnsType } from 'antd/es/table';
-import { Table } from "antd";
+import { Space, Table } from "antd";
 import Pagination from "@/components/Pagination";
 import { LinkScriptSuiteInfo } from "@/stores/linkAux";
 import moment from 'moment';
@@ -103,20 +103,20 @@ const ScriptList = () => {
     }, [projectStore.curProjectId, curPage]);
 
     return (
-        <CardWrap>
+        <CardWrap title="服务端脚本列表" extra={
+            <Space>
+                <Button onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    linkAuxStore.goToCreateScript(history);
+                }} disabled={!projectStore.isAdmin}>
+                    <img src={addIcon} alt="" />
+                    创建服务端脚本
+                </Button>
+            </Space>
+        }>
             <div className={s.content_wrap}>
                 <div style={{ marginRight: '20px' }}>
-                    <div className={s.title}>
-                        <h2>服务端脚本列表</h2>
-                        <Button onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToCreateScript(history);
-                        }} disabled={!projectStore.isAdmin}>
-                            <img src={addIcon} alt="" />
-                            创建服务端脚本
-                        </Button>
-                    </div>
                     <div className={s.script_list}>
                         <Table rowKey="script_suite_id" columns={columns} dataSource={scriptSuiteKeyList}
                             pagination={false} scroll={{ x: 1200 }} />
@@ -125,7 +125,6 @@ const ScriptList = () => {
                     </div>
                 </div>
             </div>
-            1111
         </CardWrap>
     );
 };

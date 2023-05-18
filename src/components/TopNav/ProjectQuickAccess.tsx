@@ -1,5 +1,5 @@
-import { DownOutlined } from "@ant-design/icons";
-import { Dropdown, Space } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
+import { Dropdown } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { MenuProps } from 'antd';
@@ -409,11 +409,8 @@ const ProjectQuickAccess = () => {
     }, [projectStore.curProject?.setting, projectStore.curProjectId, memberStore.memberList, channelStore.channelList]);
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
-            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 0px" }}>
-                <Space>
-                    快捷菜单
-                    <DownOutlined />
-                </Space>
+            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 0px" }} title="项目快捷菜单">
+                <MenuOutlined />
             </a>
         </Dropdown >
     );
