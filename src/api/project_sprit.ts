@@ -144,7 +144,7 @@ export type UnWatchResponse = {
 
 
 
-//创建迭代
+//创建工作计划
 export async function create(
   session_id: string,
   project_id: string,
@@ -162,7 +162,7 @@ export async function create(
   });
 }
 
-//更新迭代信息
+//更新工作计划信息
 export async function update(
   session_id: string,
   project_id: string,
@@ -183,7 +183,7 @@ export async function update(
   });
 }
 
-//列出迭代信息
+//列出工作计划信息
 export async function list(
   session_id: string,
   project_id: string,
@@ -208,7 +208,7 @@ export async function list(
   });
 }
 
-//获取单个迭代信息
+//获取单个工作计划信息
 export async function get(
   session_id: string,
   project_id: string,
@@ -227,7 +227,7 @@ export async function get(
   });
 }
 
-//删除迭代信息
+//删除工作计划信息
 export async function remove(
   session_id: string,
   project_id: string,
@@ -246,7 +246,7 @@ export async function remove(
   });
 }
 
-//关注迭代
+//关注工作计划
 export async function watch(
   session_id: string,
   project_id: string,
@@ -265,7 +265,7 @@ export async function watch(
   });
 }
 
-//取消关注迭代
+//取消关注工作计划
 export async function un_watch(
   session_id: string,
   project_id: string,

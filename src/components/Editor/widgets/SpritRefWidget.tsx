@@ -229,7 +229,7 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
             <EditorWrap onChange={() => props.removeSelf()}>
                 <Card extra={
                     <Select style={{ width: 200 }}
-                        placeholder="请选择迭代" value={curSpritId} onChange={(spritId: string) => {
+                        placeholder="请选择工作计划" value={curSpritId} onChange={(spritId: string) => {
                             setCurSpritId(spritId);
                             const saveData: WidgetData = {
                                 spritId: spritId,
@@ -401,7 +401,7 @@ const ViewSpritRef: React.FC<WidgetProps> = (props) => {
                 {spritInfo != null && (
                     <div className={s.sprit_info_wrap}>
                         <div className={s.sprit_info}>
-                            <div className={s.label}>迭代名称:</div>
+                            <div className={s.label}>工作计划名称:</div>
                             <div><a onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();

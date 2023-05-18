@@ -237,7 +237,7 @@ export default class SpritStore {
         return true;
     }
 
-    //创建迭代标记
+    //创建工作计划标记
     private _showCreateSprit = false;
 
     get showCreateSprit(): boolean {
@@ -249,7 +249,7 @@ export default class SpritStore {
         });
     }
 
-    //当前关注的迭代列表
+    //当前关注的工作计划列表
     private _curWatchList: SpritInfo[] = [];
 
     get curWatchList(): SpritInfo[] {

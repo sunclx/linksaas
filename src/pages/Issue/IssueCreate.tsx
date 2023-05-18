@@ -156,7 +156,7 @@ const IssueCreate = () => {
         }
         message.info(`创建${getIssueText(location.pathname)}成功`);
         if (state?.spritId != undefined && projectStore.isAdmin) {
-            //关联迭代(工作计划)
+            //关联工作计划(工作计划)
             await request(link_sprit(userStore.sessionId, projectStore.curProjectId, createRes.issue_id, state?.spritId));
             linkAuxStore.goToLink(new LinkSpritInfo("", projectStore.curProjectId, state?.spritId), history);
         } else {

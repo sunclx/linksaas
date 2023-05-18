@@ -988,7 +988,7 @@ export namespace project_doc {
 
 namespace sprit {
   /*
-   * 迭代相关的事件定义
+   * 工作计划相关的事件定义
    */
   export type CreateEvent = {
     sprit_id: string;
@@ -1003,9 +1003,9 @@ namespace sprit {
     inner: CreateEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建工作计划`),
       new LinkSpritInfo(inner.title, ev.project_id, inner.sprit_id),
-      new LinkNoneInfo(`迭代时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
+      new LinkNoneInfo(`工作计划时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
     ];
   }
 
@@ -1025,7 +1025,7 @@ namespace sprit {
     inner: UpdateEvent,
   ): LinkInfo[] {
     const ret_list = [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新工作计划`),
       new LinkSpritInfo(inner.new_title, ev.project_id, inner.sprit_id),
     ];
     if (inner.old_title != inner.new_title) {
@@ -1057,7 +1057,7 @@ namespace sprit {
     inner: RemoveEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除工作计划`),
       new LinkNoneInfo(inner.title),
       new LinkNoneInfo(`(${moment(inner.start_time).format("YYYY-MM-DD")}-${moment(inner.end_time).format("YYYY-MM-DD")})`),
     ];
@@ -1076,9 +1076,9 @@ namespace sprit {
     inner: WatchEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注工作计划`),
       new LinkSpritInfo(inner.title, ev.project_id, inner.sprit_id),
-      new LinkNoneInfo(`迭代时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
+      new LinkNoneInfo(`工作计划时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
     ];
   }
 
@@ -1095,9 +1095,9 @@ namespace sprit {
     inner: UnWatchEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消关注迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消关注工作计划`),
       new LinkSpritInfo(inner.title, ev.project_id, inner.sprit_id),
-      new LinkNoneInfo(`迭代时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
+      new LinkNoneInfo(`工作计划时间 ${moment(inner.start_time).format("YYYY-MM-DD")} 至 ${moment(inner.end_time).format("YYYY-MM-DD")}`),
     ];
   }
 
@@ -1114,7 +1114,7 @@ namespace sprit {
     inner: LinkDocEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联工作计划`),
       new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
       new LinkNoneInfo("和文档"),
       new LinkDocInfo(inner.doc_title, ev.project_id, "", inner.doc_id),
@@ -1134,7 +1134,7 @@ namespace sprit {
     inner: CancelLinkDocEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消工作计划`),
       new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
       new LinkNoneInfo("和文档"),
       new LinkDocInfo(inner.doc_title, ev.project_id, "", inner.doc_id),
@@ -1156,7 +1156,7 @@ namespace sprit {
     inner: LinkChannelEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联工作计划`),
       new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
       new LinkNoneInfo("和频道"),
       new LinkChannelInfo(inner.channel_title, ev.project_id, inner.channel_id),
@@ -1176,7 +1176,7 @@ namespace sprit {
     inner: CancelLinkChannelEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消迭代`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消工作计划`),
       new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
       new LinkNoneInfo("和频道"),
       new LinkChannelInfo(inner.channel_title, ev.project_id, inner.channel_id),
@@ -1677,7 +1677,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
     }
-    ret_list.push(new LinkNoneInfo('到迭代'));
+    ret_list.push(new LinkNoneInfo('到工作计划'));
     ret_list.push(new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id))
     return ret_list;
   }
@@ -1704,7 +1704,7 @@ namespace issue {
     } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
       ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
     }
-    ret_list.push(new LinkNoneInfo('到迭代'));
+    ret_list.push(new LinkNoneInfo('到工作计划'));
     ret_list.push(new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id))
     return ret_list;
   }
