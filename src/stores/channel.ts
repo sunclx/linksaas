@@ -286,6 +286,41 @@ class ChannelStore {
       });
     }
   }
+
+  //更新和退出频道
+  private _updateChannelId = "";
+  private _exitChannelId = "";
+  private _showDetailChannelId = "";
+
+  get updateChannelId(): string {
+    return this._updateChannelId;
+  }
+
+  get exitChannelId(): string {
+    return this._exitChannelId;
+  }
+
+  get showDetailChannelId(): string {
+    return this._showDetailChannelId;
+  }
+
+  set updateChannelId(val: string) {
+    runInAction(() => {
+      this._updateChannelId = val;
+    });
+  }
+
+  set exitChannelId(val: string) {
+    runInAction(() => {
+      this._exitChannelId = val;
+    });
+  }
+
+  set showDetailChannelId(val: string) {
+    runInAction(() => {
+      this._showDetailChannelId = val;
+    });
+  }
 }
 
 export default ChannelStore;

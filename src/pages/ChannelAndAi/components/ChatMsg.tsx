@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { WebMsg } from '@/stores/chatMsg';
 import { MSG_LINK_BUG, MSG_LINK_TASK, MSG_LINK_CHANNEL, SENDER_TYPE_ROBOT, MSG_LINK_ROBOT_METRIC } from '@/api/project_channel';
 import type { MSG_LINK_TYPE } from '@/api/project_channel';
@@ -32,6 +32,8 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
   const history = useHistory();
 
   const [matchKeywordList, setMatchKeywordList] = useState<string[]>([]);
+
+  const msgRef = useRef<HTMLDivElement>(null);
 
   const goToDest = () => {
     if (msg.msg.basic_msg.link_type == MSG_LINK_TASK) {
@@ -70,9 +72,24 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
     }
     return "";
   };
+
+  useEffect(() => {
+    if (!(msgRef.current != null && chatMsgStore.scrollTargetMsgId == msg.msg.msg_id)) {
+      return;
+    }
+    for (const ts of [100, 200, 500, 1000, 2000, 5000, 10000]) {
+      setTimeout(() => {
+        if (msgRef.current != null && chatMsgStore.scrollTargetMsgId == msg.msg.msg_id) {
+          msgRef.current.scrollIntoView(chatMsgStore.scrollTargetTop);
+        }
+      }, ts);
+    }
+  }, [msgRef, chatMsgStore.scrollTargetMsgId]);
+
   return (
     <>
       <div
+        ref={msgRef}
         className={styles.chatItem}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
