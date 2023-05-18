@@ -1,86 +1,51 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import ChatMsg from './ChatMsg';
 import styles from './ChatMsgList.module.less';
 import { LIST_MSG_TYPE_BEFORE, LIST_MSG_TYPE_AFTER } from '@/api/project_channel';
-import { runInAction } from 'mobx';
 
 const ChatMsgList = () => {
   const chatMsgStore = useStores('chatMsgStore');
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
-  const chatListElRef: React.MutableRefObject<HTMLDivElement | null> = useRef(null);
 
   const readonly = channelStore.curChannel?.channelInfo.closed || channelStore.curChannel?.channelInfo.readonly;
   const [keepLastTimer, setKeepLastTimer] = useState<NodeJS.Timer | null>(null);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (chatListElRef.current != null) {
-        const bottomDis =
-          chatListElRef.current.scrollHeight -
-          chatListElRef.current.clientHeight -
-          chatListElRef.current.scrollTop;
-        if (
-          chatMsgStore.msgList.map(item => item.msg.msg_id).includes(chatMsgStore.lastMsgId) && (
-            bottomDis < 200 ||
-            chatMsgStore.listRefMsgId == ''
-          )
-        ) {
-          chatListElRef.current.scrollTop =
-            chatListElRef.current.scrollHeight - chatListElRef.current.clientHeight;
-        } else if (chatMsgStore.listRefMsgId != "") {
-          chatListElRef.current.scrollTop =
-            chatListElRef.current.scrollHeight - chatListElRef.current.clientHeight;
+
+  const onScroll = async (el: HTMLDivElement) => {
+    if (el.scrollHeight <= el.clientHeight) {
+      return;
+    }
+    setTimeout(() => {
+      chatMsgStore.setScrollTarget("", false);
+    }, 200);
+    //检查是否滚动到底部
+    if (el.scrollHeight - el.clientHeight - el.scrollTop < 10) {
+      if (chatMsgStore.containLastMsg) {
+        chatMsgStore.autoScroll = true;
+      } else {
+        await chatMsgStore.loadMoreMsg(projectStore.curProjectId, channelStore.curChannelId, LIST_MSG_TYPE_AFTER);
+        if (chatMsgStore.containLastMsg) {
+          chatMsgStore.autoScroll = true;
         }
       }
-    }, 100);
-    setKeepLastTimer(timer);
-    return () => {
-      clearInterval(timer);
-    };
-  }, [chatMsgStore.lastMsgId, channelStore.curChannelId]);
-
-
-  const onScroll = () => {
-    if (chatListElRef.current != null) {
-      const bottomDis =
-        chatListElRef.current.scrollHeight -
-        chatListElRef.current.clientHeight -
-        chatListElRef.current.scrollTop;
-      if (bottomDis > 200 && chatListElRef.current.clientHeight != 0) {
-        runInAction(() => {
-          chatMsgStore.skipNewMsgByUi = true;
-        });
-      } else {
-        chatMsgStore.skipNewMsgByUi = false;
-      }
-      if (chatMsgStore.listRefMsgId !== '') {
-        return;
-      }
-      if (chatListElRef.current.scrollTop < 10) {
-        setTimeout(() => {
-          chatMsgStore.loadMoreMsg(
-            projectStore.curProjectId,
-            channelStore.curChannelId,
-            LIST_MSG_TYPE_BEFORE,
-          );
-        }, 300);
-      } else if (bottomDis < 10) {
-        setTimeout(() => {
-          chatMsgStore.loadMoreMsg(
-            projectStore.curProjectId,
-            channelStore.curChannelId,
-            LIST_MSG_TYPE_AFTER,
-          );
-        }, 300);
-      }
+    } else if (el.scrollTop < 10) {
+      chatMsgStore.autoScroll = false;
+      await chatMsgStore.loadMoreMsg(projectStore.curProjectId, channelStore.curChannelId, LIST_MSG_TYPE_BEFORE);
+    } else {
+      chatMsgStore.autoScroll = false;
     }
   };
+
   return (
     <div className={styles.chatListWrap}>
-      <div ref={chatListElRef} className={styles.chatList} onScroll={() => onScroll()} onMouseMove={() => {
+      <div className={styles.chatList} onScroll={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        onScroll(e.currentTarget);
+      }} onMouseMove={() => {
         if (keepLastTimer != null) {
           clearInterval(keepLastTimer);
           setKeepLastTimer(null);

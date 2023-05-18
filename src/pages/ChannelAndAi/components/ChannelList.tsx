@@ -207,7 +207,6 @@ const ChannelList = observer(() => {
           >
             <div className={styles.menu_box} onClick={() => {
                 chatMsgStore.listRefMsgId = "";
-                chatMsgStore.replayRefMsgId = "";
                 channelStore.curChannelId = item.channelInfo.channel_id;
               }}>
               <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')} >

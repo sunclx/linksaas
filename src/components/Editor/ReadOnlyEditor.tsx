@@ -72,7 +72,7 @@ export const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = observer((props) =>
     <div className="remirror-readonly">
       <ThemeProvider>
         <AllStyledComponent>
-          <Remirror manager={manager} initialContent={state} editable={false} >
+          <Remirror manager={manager} initialContent={state} editable={false}>
             <ImperativeHandle ref={editorRef} />
             <EditorComponent />
           </Remirror>
