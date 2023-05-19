@@ -93,7 +93,6 @@ const ChannelHeader = observer(() => {
     await request(
       send_msg(userStore.sessionId, projectStore.curProjectId, channelStore.curChannelId, {
         msg_data: JSON.stringify(chatJson),
-        ref_msg_id: '',
         remind_info: remindInfo,
         link_type: MSG_LINK_NONE,
         link_dest_id: '',
@@ -130,7 +129,6 @@ const ChannelHeader = observer(() => {
     const remindInfo = get_reminder_info(chatJson);
     await request(update_msg(userStore.sessionId, projectStore.curProjectId, channelStore.curChannelId, editMsg.msg.msg_id, {
       msg_data: JSON.stringify(chatJson),
-      ref_msg_id: '',
       remind_info: remindInfo,
       link_type: MSG_LINK_NONE,
       link_dest_id: '',

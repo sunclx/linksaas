@@ -155,6 +155,10 @@ const ProjectSettingModal = () => {
 
                 layout_type: 0,
                 disable_sprit: false,
+
+                min_pure_text_len_in_chat: 0,
+                disable_widget_in_chat: false,
+                allow_reply_in_days: 0,
             },
         }));
         await projectStore.updateProject(projectStore.curProjectId);

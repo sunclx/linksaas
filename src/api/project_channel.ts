@@ -124,7 +124,6 @@ export type MsgReminderInfo = {
 
 export type BasicMsg = {
   msg_data: string;
-  ref_msg_id: string;
   remind_info: MsgReminderInfo;
   link_type: MSG_LINK_TYPE;
   link_dest_id: string;
@@ -164,11 +163,19 @@ export type Msg = {
   sender_logo_uri: string;
   sender_display_name: string;
   link_dest_title: string;
-  ///引用的消息
-  ref_msg_data: string;
-  ref_user_logo_uri: string;
-  ref_user_display_name: string;
+  reply_count: number;
 };
+
+export type ReplyMsg = {
+  reply_msg_id: string;
+  msg_id: string;
+  content: string;
+  time_stamp: number;
+  sender_user_id: string;
+  sender_logo_uri: string;
+  sender_display_name: string;
+};
+
 
 export type GetMsgResponse = {
   code: number;
@@ -275,6 +282,49 @@ export type UnWatchResponse = {
   err_msg: string;
 };
 
+
+export type AddReplyMsgRequest = {
+  session_id: string;
+  project_id: string;
+  channel_id: string;
+  msg_id: string;
+  content: string;
+};
+
+export type AddReplyMsgResponse = {
+  code: number;
+  err_msg: string;
+  reply_msg_id: string;
+};
+
+export type RemoveReplyMsgRequest = {
+  session_id: string;
+  project_id: string;
+  channel_id: string;
+  msg_id: string;
+  reply_msg_id: string;
+};
+
+export type RemoveReplyMsgResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type ListReplyMsgRequest = {
+  session_id: string;
+  project_id: string;
+  channel_id: string;
+  msg_id: string;
+  offset: number;
+  limit: number;
+};
+
+export type ListReplyMsgResponse = {
+  code: number;
+  err_msg: string;
+  total_count: number;
+  reply_msg_list: ReplyMsg[];
+};
 
 
 //创建频道
@@ -643,7 +693,7 @@ export async function watch(request: WatchRequest): Promise<WatchResponse> {
   const cmd = 'plugin:project_channel_api|watch';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<WatchResponse>(cmd, {
-      request,
+    request,
   });
 }
 
@@ -652,6 +702,33 @@ export async function un_watch(request: UnWatchRequest): Promise<UnWatchResponse
   const cmd = 'plugin:project_channel_api|un_watch';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<UnWatchResponse>(cmd, {
-      request,
+    request,
+  });
+}
+
+//新增回复消息
+export async function add_reply_msg(request: AddReplyMsgRequest): Promise<AddReplyMsgResponse> {
+  const cmd = 'plugin:project_channel_api|add_reply_msg';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<AddReplyMsgResponse>(cmd, {
+    request,
+  });
+}
+
+//删除回复消息
+export async function remove_reply_msg(request: RemoveReplyMsgRequest): Promise<RemoveReplyMsgResponse> {
+  const cmd = 'plugin:project_channel_api|remove_reply_msg';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<RemoveReplyMsgResponse>(cmd, {
+    request,
+  });
+}
+
+//列出回复消息
+export async function list_reply_msg(request: ListReplyMsgRequest): Promise<ListReplyMsgResponse> {
+  const cmd = 'plugin:project_channel_api|list_reply_msg';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListReplyMsgResponse>(cmd, {
+    request,
   });
 }

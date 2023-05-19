@@ -49,7 +49,6 @@ const ShareModal: React.FC<SendModalProps> = (props) => {
         const sessionId = await get_session();
         await request(send_msg(sessionId, props.projectId, channelId, {
             msg_data: JSON.stringify(content),
-            ref_msg_id: "",
             remind_info: {
                 reminder_all: false,
                 extra_reminder_list: [],
