@@ -452,7 +452,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             setSpritEvCfgCheckAll(true);
                             form.setFieldValue("spritEvCfg", spritEvOptionList.map(item => item.value));
                         }
-                    }}>迭代事件</Checkbox>} name="spritEvCfg">
+                    }}>工作计划事件</Checkbox>} name="spritEvCfg">
                         <Checkbox.Group options={spritEvOptionList} onChange={values => {
                             if (values.length == 0) {
                                 setSpritEvCfgCheckAll(false);

@@ -1075,11 +1075,11 @@ export const issueEvOptionList: CheckboxOptionType[] = [
         value: "changeState",
     },
     {
-        label: "关联迭代",
+        label: "关联工作计划",
         value: "linkSprit",
     },
     {
-        label: "取消关联迭代",
+        label: "取消关联工作计划",
         value: "cancelLinkSprit",
     },
     {
@@ -1541,23 +1541,23 @@ export const genRobotEvCfgValues = (cfg: RobotEvCfg): string[] => {
 
 export const spritEvOptionList: CheckboxOptionType[] = [
     {
-        label: "创建迭代",
+        label: "创建工作计划",
         value: "create",
     },
     {
-        label: "更新迭代",
+        label: "更新工作计划",
         value: "update",
     },
     {
-        label: "删除迭代",
+        label: "删除工作计划",
         value: "remove",
     },
     {
-        label: "关注迭代",
+        label: "关注工作计划",
         value: "watch",
     },
     {
-        label: "取消关注迭代",
+        label: "取消关注工作计划",
         value: "unWatch",
     },
     {

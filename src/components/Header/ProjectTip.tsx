@@ -71,7 +71,7 @@ const ProjectTip = () => {
                     e.stopPropagation();
                     e.preventDefault();
                     history.push(APP_PROJECT_OVERVIEW_PATH);
-                }}>项目橄榄</a>中的程序信息栏，点击新建目标(OKR)来创建目标。</p>
+                }}>项目概览</a>中的程序信息栏，点击新建目标(OKR)来创建目标。</p>
             </>),
             enable: true,
         },

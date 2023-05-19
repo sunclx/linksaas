@@ -95,7 +95,7 @@ const SpritList = () => {
                 </a>),
         },
         {
-            title: "迭代名称",
+            title: "工作计划名称",
             width: 200,
             render: (_, record: SpritInfo) => <a onClick={e => {
                 e.stopPropagation();

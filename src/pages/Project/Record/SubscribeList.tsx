@@ -166,7 +166,7 @@ const SubscribeList = () => {
                                         <Form.Item label="服务器事件">
                                             <Checkbox.Group options={robotEvOptionList} value={genRobotEvCfgValues(item.event_cfg.robot_ev_cfg)} disabled={true} />
                                         </Form.Item>
-                                        <Form.Item label="迭代事件">
+                                        <Form.Item label="工作计划事件">
                                             <Checkbox.Group options={spritEvOptionList} value={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="测试用例事件">

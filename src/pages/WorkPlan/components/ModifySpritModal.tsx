@@ -47,11 +47,11 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
     const createSprit = async () => {
         const formValue = form.getFieldsValue() as FormValue;
         if (formValue.title == undefined || formValue.title.trim() == "") {
-            message.error("迭代名称不能为空");
+            message.error("工作计划名称不能为空");
             return;
         }
         if (formValue.dateRange == undefined) {
-            message.error("请设置迭代时间区间");
+            message.error("请设置工作计划时间区间");
             return;
         }
         await request(create_sprit(userStore.sessionId, projectStore.curProjectId, {
@@ -66,11 +66,11 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
     const updateSprit = async () => {
         const formValue = form.getFieldsValue() as FormValue;
         if (formValue.title == undefined || formValue.title.trim() == "") {
-            message.error("迭代名称不能为空");
+            message.error("工作计划名称不能为空");
             return;
         }
         if (formValue.dateRange == undefined) {
-            message.error("请设置迭代时间区间");
+            message.error("请设置工作计划时间区间");
             return;
         }
         await request(update_sprit(userStore.sessionId, projectStore.curProjectId,
@@ -107,7 +107,7 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
 
     return (
         <Modal
-            title={`${props.spritId == undefined?"创建":"修改"}迭代`}
+            title={`${props.spritId == undefined?"创建":"修改"}工作计划`}
             open
             onCancel={e => {
                 e.stopPropagation();
@@ -124,7 +124,7 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                 }
             }}>
             <Form form={form} labelCol={{ span: 4 }}>
-                <Form.Item name="title" label="迭代名称" rules={[{ required: true }]}>
+                <Form.Item name="title" label="工作计划名称" rules={[{ required: true }]}>
                     <Input />
                 </Form.Item>
                 <Form.Item name="dateRange" label="时间区间" rules={[{ required: true }]}>

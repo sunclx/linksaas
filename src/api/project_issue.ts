@@ -47,7 +47,7 @@ export type SORT_KEY = number;
 export const SORT_KEY_UPDATE_TIME: SORT_KEY = 0;
 export const SORT_KEY_CREATE_TIME: SORT_KEY = 1;
 export const SORT_KEY_STATE: SORT_KEY = 2;
-export const SORT_KEY_SPRIT: SORT_KEY = 3; //只显示关联迭代的
+export const SORT_KEY_SPRIT: SORT_KEY = 3; //只显示关联工作计划的
 export const SORT_KEY_START_TIME: SORT_KEY = 4; //只显示有开始时间的
 export const SORT_KEY_END_TIME: SORT_KEY = 5; //只显示有结束时间的
 export const SORT_KEY_ESTIMATE_MINUTES: SORT_KEY = 6; //只显示有预估工时的
@@ -827,7 +827,7 @@ export async function list_attr_value(
   });
 }
 
-//关联工单到某个迭代
+//关联工单到某个工作计划
 export async function link_sprit(
   session_id: string,
   project_id: string,
@@ -848,7 +848,7 @@ export async function link_sprit(
   });
 }
 
-//取消关联工单到某个迭代
+//取消关联工单到某个工作计划
 export async function cancel_link_sprit(
   session_id: string,
   project_id: string,

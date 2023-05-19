@@ -31,10 +31,11 @@ class ChatMsgStore {
     }
     rootStore: RootStore;
     private _msgList: WebMsg[] = [];
-    replayRefMsgId: string = "";
     private _lastMsgId = "";
     private _listRefMsgId = "";
-    skipNewMsgByUi = false;
+    private _autoScroll = false;
+    private _scrollTargetMsgId = "";
+    private _scrollTargetTop = false;
 
     get lastMsgId(): string {
         return this._lastMsgId;
@@ -50,11 +51,37 @@ class ChatMsgStore {
     set listRefMsgId(val: string) {
         runInAction(() => {
             this._listRefMsgId = val;
+            this._scrollTargetMsgId = val;
+            this._scrollTargetTop = false;
         });
     }
 
     get listRefMsgId(): string {
         return this._listRefMsgId;
+    }
+
+    set autoScroll(val: boolean) {
+        if (val == this._autoScroll) {
+            return;
+        }
+        runInAction(() => {
+            this._autoScroll = val;
+        });
+    }
+
+    get scrollTargetMsgId(): string {
+        return this._scrollTargetMsgId;
+    }
+
+    get scrollTargetTop(): boolean {
+        return this._scrollTargetTop;
+    }
+
+    setScrollTarget(msgId: string, top: boolean) {
+        runInAction(() => {
+            this._scrollTargetMsgId = msgId;
+            this._scrollTargetTop = top;
+        });
     }
 
     get containLastMsg(): boolean {
@@ -67,7 +94,6 @@ class ChatMsgStore {
         if (projectId == "" || channelId == "") {
             runInAction(() => {
                 this._msgList = [];
-                this.skipNewMsgByUi = false;
             });
             return;
         }
@@ -76,7 +102,6 @@ class ChatMsgStore {
         }
         runInAction(() => {
             this._msgList = [];
-            this.skipNewMsgByUi = false;
         });
 
         const res = await request(list_msg({
@@ -92,6 +117,14 @@ class ChatMsgStore {
             runInAction(() => {
                 this._msgList = res.msg_list.map(item => new WebMsg(item));
                 this._lastMsgId = res.last_msg_id;
+            });
+        }
+        //设置自动滚动
+        if (res.msg_list.filter(item => item.msg_id == res.last_msg_id).length > 0) {
+            runInAction(() => {
+                this._autoScroll = true;
+                this._scrollTargetMsgId = res.last_msg_id;
+                this._scrollTargetTop = false;
             });
         }
         //清空当前频道未读状态
@@ -111,7 +144,7 @@ class ChatMsgStore {
         if ((this._msgList.length > 0) && (this._msgList.filter(item => item.msg.msg_id == this._lastMsgId).length == 0)) {
             return;
         }
-        if (this.skipNewMsgByUi) {
+        if (this._autoScroll == false) {
             return;
         }
         //找到最新的msgId
@@ -144,8 +177,12 @@ class ChatMsgStore {
                     this._msgList.shift();
                 }
                 this._lastMsgId = res.last_msg_id;
+                //跳转到最后一条消息
+                this._scrollTargetMsgId = res.last_msg_id;
+                this._scrollTargetTop = false;
             });
         }
+
         //清空当前频道未读状态
         if (this._msgList.filter(item => item.msg.msg_id == this._lastMsgId).length > 0 &&
             (this.rootStore.channelStore.curChannel?.unreadMsgCount || 0) > 0) {
@@ -160,6 +197,9 @@ class ChatMsgStore {
             return;
         }
         if (projectId != this.rootStore.projectStore.curProjectId || channelId != this.rootStore.channelStore.curChannelId) {
+            return;
+        }
+        if (this._listRefMsgId != "") {
             return;
         }
         let curRefMsgId = "";
@@ -208,6 +248,10 @@ class ChatMsgStore {
                     }
                 }
                 this._lastMsgId = res.last_msg_id;
+                if (listMsgType == LIST_MSG_TYPE_BEFORE) {
+                    this._scrollTargetMsgId = curRefMsgId;
+                    this._scrollTargetTop = true;
+                }
             });
         }
         //清空当前频道未读状态

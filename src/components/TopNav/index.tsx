@@ -4,7 +4,6 @@ import { useState } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import ChannelHeader from '@/pages/ChannelAndAi/components/ChannelHeader';
 import {
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_CHAT_PATH,
@@ -146,10 +145,10 @@ const TopNav = () => {
           } key={APP_PROJECT_OVERVIEW_PATH} />);
         </Tabs>
       </div>
-      <ProjectQuickAccess/>
-      {(location.pathname.includes(APP_PROJECT_CHAT_PATH) || location.pathname.includes(APP_PROJECT_KB_DOC_PATH)) && (<span />)}
+      <ProjectQuickAccess />
+      {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<span />)}
       <div className={s.right}>
-        {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><ChannelHeader /><SearchBar /><RightFloat /></>)}
+        {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_WORK_PLAN_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>项目书籍</div><SearchBar /><RightFloat /></>)}
