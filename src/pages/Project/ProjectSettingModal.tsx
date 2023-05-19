@@ -657,7 +657,7 @@ const ProjectSettingModal = () => {
                 </Tabs.TabPane>
                 {projectStore.curProject?.setting.disable_chat === false && (
                     <Tabs.TabPane key="chat" tab="沟通设置" disabled={disableTabs}>
-                        {activeKey == "chat" && <ChatSettingPanel onChange={value => setDisableTabs(value)} title="AI助理" />}
+                        {activeKey == "chat" && <ChatSettingPanel onChange={value => setDisableTabs(value)} title="沟通设置" />}
                     </Tabs.TabPane>
                 )}
                 {projectStore.curProject?.setting.disable_chat === false && (

@@ -8,6 +8,7 @@ import {
   is_empty_doc,
   change_file_fs,
   get_reminder_info,
+  get_content_state,
 } from '@/components/Editor';
 import { Modal, message } from 'antd';
 import { request } from '@/utils/request';
@@ -35,7 +36,7 @@ const ChannelHeader = observer(() => {
     ownerId: channelStore.curChannelId,
     historyInToolbar: false,
     clipboardInToolbar: false,
-    widgetInToolbar: true,
+    widgetInToolbar: !(projectStore.curProject?.setting.disable_widget_in_chat ?? false),
     showReminder: true,
     channelMember: true,
   };
@@ -80,6 +81,14 @@ const ChannelHeader = observer(() => {
     if (is_empty_doc(chatJson)) {
       return;
     }
+    if ((projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0) > 0) {
+      const stat = get_content_state(chatJson);
+      if (stat.extensionCount == 0 && stat.charCount < (projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0)) {
+        message.warn(`纯文本长度小于${(projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0)}(每5个字母或数字算一个长度)`);
+        message.warn("短文本内容可以直接在对应消息上回复");
+        return;
+      }
+    }
 
     await change_file_fs(
       chatJson,
@@ -119,6 +128,16 @@ const ChannelHeader = observer(() => {
     const chatJson = updateEditor.editorRef.current?.getContent() || {
       type: 'doc',
     };
+    if (is_empty_doc(chatJson)) {
+      return;
+    }
+    if ((projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0) > 0) {
+      const stat = get_content_state(chatJson);
+      if (stat.extensionCount == 0 && stat.charCount < (projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0)) {
+        message.warn(`纯文本长度小于${(projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0)}(每5个字母或数字算一个长度)`);
+        return;
+      }
+    }
     await change_file_fs(
       chatJson,
       projectStore.curProject?.channel_fs_id ?? '',

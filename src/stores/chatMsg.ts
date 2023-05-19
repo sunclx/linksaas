@@ -228,8 +228,10 @@ class ChatMsgStore {
             }
             runInAction(() => {
                 //去除重复的id
+                let hasAddMsg = false;
                 res.msg_list.forEach(item => {
                     if (!(curMsgIdSet.has(item.msg_id))) {
+                        hasAddMsg = true
                         if (listMsgType == LIST_MSG_TYPE_BEFORE) {
                             this._msgList.unshift(new WebMsg(item));
                         } else if (listMsgType == LIST_MSG_TYPE_AFTER) {
@@ -248,7 +250,7 @@ class ChatMsgStore {
                     }
                 }
                 this._lastMsgId = res.last_msg_id;
-                if (listMsgType == LIST_MSG_TYPE_BEFORE) {
+                if (listMsgType == LIST_MSG_TYPE_BEFORE && hasAddMsg) {
                     this._scrollTargetMsgId = curRefMsgId;
                     this._scrollTargetTop = true;
                 }
