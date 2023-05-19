@@ -77,7 +77,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
     if (!(msgRef.current != null && chatMsgStore.scrollTargetMsgId == msg.msg.msg_id)) {
       return;
     }
-    for (const ts of [100, 200, 500, 1000, 2000, 5000, 10000]) {
+    for (const ts of [100, 200, 500, 1000]) {
       setTimeout(() => {
         if (msgRef.current != null && chatMsgStore.scrollTargetMsgId == msg.msg.msg_id) {
           msgRef.current.scrollIntoView(chatMsgStore.scrollTargetTop);
