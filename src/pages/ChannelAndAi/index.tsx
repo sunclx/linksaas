@@ -1,27 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import Chat from './components/Chat';
-import { Collapse, Layout, Popover } from 'antd';
+import { Collapse, Layout, Popover, Space } from 'antd';
 import { observer } from 'mobx-react';
 import styles from './index.module.less';
 import { useStores } from '@/hooks';
 import ChannelList from './components/ChannelList';
 import ActionMember, { ActionMemberType } from './components/ActionMember';
 import { RenderMoreMenu } from './components/ChannelPanel';
-import { SettingOutlined } from '@ant-design/icons';
+import { CloseOutlined, EyeOutlined, SettingOutlined } from '@ant-design/icons';
 import AiAssistantList from './components/AiAssistantList';
 import { PROJECT_CHAT_TYPE, PROJECT_SETTING_TAB } from '@/utils/constant';
 import AiAssistant from './components/AiAssistant';
+import ReplayMsgList from './components/ReplayMsgList';
 
 const { Sider, Content } = Layout;
 
 const ChannelAndAi = () => {
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
+  const chatMsgStore = useStores('chatMsgStore');
   const [activeKey, setActiveKey] = useState("channel");
 
-  useEffect(() => { 
-    setActiveKey("channel");
-  }, [projectStore.curProjectId, channelStore.filterChannelList]);
+  useEffect(() => {
+    if (chatMsgStore.replayTargetMsgId != "") {
+      setActiveKey("msgThread");
+    } else {
+      setActiveKey("channel");
+    }
+  }, [projectStore.curProjectId, channelStore.filterChannelList, chatMsgStore.replayTargetMsgId]);
 
   return (
     <Layout className={styles.layout}>
@@ -39,7 +45,6 @@ const ChannelAndAi = () => {
               <Popover
                 placement="bottomLeft"
                 content={<RenderMoreMenu />}
-                transitionName=""
                 overlayClassName="popover"
               >
                 <a className={styles.more} onClick={e => {
@@ -69,11 +74,27 @@ const ChannelAndAi = () => {
                   e.stopPropagation();
                   e.preventDefault();
                   projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_AI;
-                }} />
+                }} title='设置' />
               )}
             </div>
           }>
             <AiAssistantList />
+          </Collapse.Panel>
+          <Collapse.Panel header="消息会话" key="msgThread" extra={
+            <Space size="large">
+              <EyeOutlined style={{ color: "#777", fontSize: "14px", width: "14px", height: "14px", padding: "3px" }} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                chatMsgStore.setScrollTarget(chatMsgStore.replayTargetMsgId, true);
+              }} title='定位消息' />
+              <CloseOutlined style={{ color: "#777", fontSize: "14px", width: "14px", height: "14px", padding: "3px" }} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                chatMsgStore.replayTargetMsgId = "";
+              }} title='退出消息会话' />
+            </Space>
+          }>
+            <ReplayMsgList />
           </Collapse.Panel>
         </Collapse>
       </Sider>

@@ -598,9 +598,7 @@ async fn watch<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == watch_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("watch".into()))
-                {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("watch".into())) {
                     println!("{:?}", err);
                 }
             }
@@ -625,8 +623,89 @@ async fn un_watch<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == un_watch_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("un_watch".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn add_reply_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: AddReplyMsgRequest,
+) -> Result<AddReplyMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.add_reply_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == add_reply_msg_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("un_watch".into()))
+                    window.emit("notice", new_wrong_session_notice("add_reply_msg".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_reply_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveReplyMsgRequest,
+) -> Result<RemoveReplyMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.remove_reply_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_reply_msg_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_reply_msg".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_reply_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListReplyMsgRequest,
+) -> Result<ListReplyMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChannelApiClient::new(chan.unwrap());
+    match client.list_reply_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_reply_msg_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_reply_msg".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -669,6 +748,9 @@ impl<R: Runtime> ProjectChannelApiPlugin<R> {
                 remove_by_admin,
                 watch,
                 un_watch,
+                add_reply_msg,
+                remove_reply_msg,
+                list_reply_msg,
             ]),
         }
     }

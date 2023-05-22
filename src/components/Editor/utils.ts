@@ -158,3 +158,34 @@ export function is_empty_doc(state: RemirrorJSON): boolean {
     }
     return true;
 }
+
+export interface ContentState {
+    charCount: number;
+    extensionCount: number;
+}
+
+
+export function get_content_state(state: RemirrorJSON): ContentState {
+    const textList: string[] = [];
+    const extensionList: string[] = [];
+    calc_doc_state(textList, extensionList, state);
+    let charCount = 0;
+    for (const text of textList) {
+        for (let i = 0; i < text.length; i++) {
+            const c = text.charAt(i);
+            if (c >= "a" && c <= "z") {
+                charCount += 0.2;
+            } else if (c >= "A" && c <= "Z") {
+                charCount += 0.2;
+            } else if (c >= "0" && c <= "9") {
+                charCount += 0.2;
+            } else if (/[\u4e00-\u9fa5]/.test(c)) {
+                charCount += 1;
+            }
+        }
+    }
+    return {
+        charCount: Math.ceil(charCount),
+        extensionCount: extensionList.length,
+    };
+}

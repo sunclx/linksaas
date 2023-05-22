@@ -91,7 +91,6 @@ pub fn convert_msg_list(msg_list: Vec<Msg>) -> Vec<models::MsgInfo> {
         let basic_msg = msg.basic_msg.clone().unwrap_or_else(|| {
             return BasicMsg {
                 msg_data: "".into(),
-                ref_msg_id: "".into(),
                 remind_info: None,
                 link_type: 0,
                 link_dest_id: "".into(),

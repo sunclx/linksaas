@@ -36,6 +36,8 @@ class ChatMsgStore {
     private _autoScroll = false;
     private _scrollTargetMsgId = "";
     private _scrollTargetTop = false;
+    private _replayTargetMsgId = "";
+    private _replayMsgCount = 0;
 
     get lastMsgId(): string {
         return this._lastMsgId;
@@ -84,6 +86,26 @@ class ChatMsgStore {
         });
     }
 
+    get replayTargetMsgId(): string {
+        return this._replayTargetMsgId;
+    }
+
+    set replayTargetMsgId(val: string) {
+        runInAction(() => {
+            this._replayTargetMsgId = val;
+        });
+    }
+
+    get replayMsgCount(): number {
+        return this._replayMsgCount;
+    }
+
+    set replayMsgCount(val: number) {
+        runInAction(() => {
+            this._replayMsgCount = val;
+        });
+    }
+
     get containLastMsg(): boolean {
         const result = this._msgList.filter(item => item.msg.msg_id == this._lastMsgId).length > 0;
         console.log(`contain last msg result ${result}`);
@@ -94,6 +116,7 @@ class ChatMsgStore {
         if (projectId == "" || channelId == "") {
             runInAction(() => {
                 this._msgList = [];
+                this._replayTargetMsgId = "";
             });
             return;
         }
@@ -102,6 +125,7 @@ class ChatMsgStore {
         }
         runInAction(() => {
             this._msgList = [];
+            this._replayTargetMsgId = "";
         });
 
         const res = await request(list_msg({
@@ -228,8 +252,10 @@ class ChatMsgStore {
             }
             runInAction(() => {
                 //去除重复的id
+                let hasAddMsg = false;
                 res.msg_list.forEach(item => {
                     if (!(curMsgIdSet.has(item.msg_id))) {
+                        hasAddMsg = true
                         if (listMsgType == LIST_MSG_TYPE_BEFORE) {
                             this._msgList.unshift(new WebMsg(item));
                         } else if (listMsgType == LIST_MSG_TYPE_AFTER) {
@@ -248,7 +274,7 @@ class ChatMsgStore {
                     }
                 }
                 this._lastMsgId = res.last_msg_id;
-                if (listMsgType == LIST_MSG_TYPE_BEFORE) {
+                if (listMsgType == LIST_MSG_TYPE_BEFORE && hasAddMsg) {
                     this._scrollTargetMsgId = curRefMsgId;
                     this._scrollTargetTop = true;
                 }
@@ -289,6 +315,9 @@ class ChatMsgStore {
             if (index != -1) {
                 runInAction(() => {
                     this._msgList[index].msg = res.msg;
+                    if (msgId == this._replayTargetMsgId) {
+                        this._replayMsgCount = res.msg.reply_count;
+                    }
                 });
             }
         }

@@ -11,6 +11,7 @@ import { PROJECT_CHAT_TYPE } from "@/utils/constant";
 const AiAssistantList = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const chatMsgStore = useStores('chatMsgStore');
 
     const loadAiCap = async () => {
         const tokenRes = await request(gen_ai_token({
@@ -34,7 +35,7 @@ const AiAssistantList = () => {
     }, [projectStore.curProjectId]);
 
     return (
-        <ul className={s.ai_list_wrap}>
+        <ul className={s.ai_list_wrap} style={{ height: chatMsgStore.replayTargetMsgId != "" ? "calc(100vh - 202px)" : "calc(100vh - 170px)" }}>
             {projectStore.projectAiCap == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
             {projectStore.projectAiCap != null && (
                 <>
