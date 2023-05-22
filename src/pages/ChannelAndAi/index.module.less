@@ -4,10 +4,12 @@
 }
 
 .sider {
-  height: 100%;
+  height: calc(100vh - 86px);
+  overflow: hidden;
   margin-right: 60px;
   background-color: #fff;
   border-left: 1px solid #eaeaef;
+  // border: 1px solid red;
 }
 
 .content {
@@ -17,9 +19,6 @@
 }
 
 .panel {
-  height: calc(100vh - 80px);
-  overflow: hidden;
-  
   :global(.ant-collapse-content .ant-collapse-content-box) {
     padding: 0px 0px;
   }

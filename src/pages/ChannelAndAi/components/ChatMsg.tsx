@@ -4,14 +4,14 @@ import { MSG_LINK_BUG, MSG_LINK_TASK, MSG_LINK_CHANNEL, SENDER_TYPE_ROBOT, MSG_L
 import type { MSG_LINK_TYPE } from '@/api/project_channel';
 import { observer } from 'mobx-react';
 import { runInAction } from 'mobx';
-import { Popover, Space } from 'antd';
+import { Badge, Popover, Space } from 'antd';
 import { useStores } from '@/hooks';
 import { useHistory } from 'react-router-dom';
 import { LinkTaskInfo, LinkBugInfo, LinkChannelInfo, LinkRobotMetricInfo, LinkIdeaPageInfo } from '@/stores/linkAux';
 import { ReadOnlyEditor } from '@/components/Editor';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import styles from './ChatMsg.module.less';
-import { BulbFilled, LinkOutlined } from '@ant-design/icons';
+import { BulbFilled, CommentOutlined, LinkOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { CloseOutlined } from '@ant-design/icons';
 import Button from '@/components/Button';
@@ -91,6 +91,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
       <div
         ref={msgRef}
         className={styles.chatItem}
+        style={{ backgroundColor: chatMsgStore.replayTargetMsgId == msg.msg.msg_id ? "snow" : undefined }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >
@@ -114,9 +115,11 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               <span className={styles.chatTime}>&nbsp;&nbsp;{moment(msg.msg.update_time).format("YYYY-MM-DD HH:mm:ss")}</span>
             </>
           )}
+
           {matchKeywordList.length > 0 && (
-            <Popover placement='right'
+            <Popover placement='left'
               title="相关知识点"
+              trigger="hover"
               overlayStyle={{ width: 150 }}
               content={
                 <div style={{ maxHeight: "calc(100vh - 300px)", padding: "10px 10px" }}>
@@ -132,6 +135,16 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               <BulbFilled style={{ color: "orange", paddingRight: "10px" }} />
             </Popover>
           )}
+          <span className={styles.threadInfo} onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            chatMsgStore.replayTargetMsgId = msg.msg.msg_id;
+            chatMsgStore.replayMsgCount = msg.msg.reply_count;
+          }}>
+            <Badge size="small" offset={[20, 7]} count={msg.msg.reply_count} color={msg.hovered ? "orange" : "#888"}>
+              <CommentOutlined style={{ fontSize: "16px", color: msg.hovered ? "orange" : "#888" }} />
+            </Badge>
+          </span>
           {msg.msg.basic_msg.link_dest_id != "" && (
             <span className={styles.linkInfo}>
               来自{getLinkType(msg.msg.basic_msg.link_type)}:
