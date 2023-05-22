@@ -16,8 +16,7 @@ import {
   LIST_CHAN_SCOPE_ORPHAN
 } from '@/api/project_channel';
 import { request } from '@/utils/request';
-import type { WebChannelInfo } from '@/stores/channel';
-import { Modal, Popover, message } from 'antd';
+import { List, Modal, Popover, message } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
 import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 import { UserOutlined } from '@ant-design/icons';
@@ -195,64 +194,66 @@ const ChannelList = observer(() => {
   };
 
   return (
-    <div className={styles.menu} onMouseLeave={e => {
-      e.stopPropagation();
-      e.preventDefault();
-      setHoverChannelId("");
-    }}>
-      {channelStore.channelList.length > 0 && channelStore.filterChannelList.map((item: WebChannelInfo) => {
-        return (
-          <div
-            key={item.channelInfo.channel_id}
-            className={
-              styles.menu_item + ' ' +
-              (item.channelInfo.closed ? styles.closed : '') + ' ' +
-              ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
-            }
+    <div className={styles.menu}
+      style={{ height: chatMsgStore.replayTargetMsgId != "" ? "calc(100vh - 202px)" : "calc(100vh - 162px)" }}
+      onMouseLeave={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        setHoverChannelId("");
+      }}>
+      {channelStore.channelList.length > 0 && (
+        <List dataSource={channelStore.filterChannelList} renderItem={item => (
+          <List.Item key={item.channelInfo.channel_id} style={{ padding: "0px 0px", margin: "0px 0px" }}>
+            <div
+              className={
+                styles.menu_item + ' ' +
+                (item.channelInfo.closed ? styles.closed : '') + ' ' +
+                ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
+              }
 
-            onMouseEnter={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              setHoverChannelId(item.channelInfo.channel_id);
-            }}
-          >
-            <div className={styles.menu_box}>
-              <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')} onClick={e => {
+              onMouseEnter={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                chatMsgStore.listRefMsgId = "";
-                channelStore.curChannelId = item.channelInfo.channel_id;
-              }}>
-                {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (<span className={item.channelInfo.my_watch ? styles.isCollect : styles.noCollect} onClick={e => {
+                setHoverChannelId(item.channelInfo.channel_id);
+              }}
+            >
+              <div className={styles.menu_box}>
+                <div className={styles.menu_title + ' ' + (item.channelInfo.system_channel ? styles.system : '')} onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (item.channelInfo.my_watch) {
-                    unWatchChannel(item.channelInfo.channel_id);
-                  } else {
-                    watchChannel(item.channelInfo.channel_id);
-                  }
-                }} />)}
-                <span>#{item.channelInfo.basic_info.channel_name}</span>
+                  chatMsgStore.listRefMsgId = "";
+                  channelStore.curChannelId = item.channelInfo.channel_id;
+                }}>
+                  {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (<span className={item.channelInfo.my_watch ? styles.isCollect : styles.noCollect} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (item.channelInfo.my_watch) {
+                      unWatchChannel(item.channelInfo.channel_id);
+                    } else {
+                      watchChannel(item.channelInfo.channel_id);
+                    }
+                  }} />)}
+                  <span>#{item.channelInfo.basic_info.channel_name}</span>
+                </div>
+                {hoverChannelId == item.channelInfo.channel_id && !(item.channelInfo.system_channel && item.channelInfo.readonly) && (
+                  <UserOutlined style={{ color: "#bbb", fontSize: "16px", cursor: "pointer" }} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    channelStore.showDetailChannelId = item.channelInfo.channel_id;
+                  }} />
+                )}
+                <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="bottom" trigger="click">
+                  {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel && <i className={styles.more} />}
+                </Popover>
               </div>
-              {hoverChannelId == item.channelInfo.channel_id && !(item.channelInfo.system_channel && item.channelInfo.readonly) && (
-                <UserOutlined style={{ color: "#bbb", fontSize: "16px", cursor: "pointer" }} onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  channelStore.showDetailChannelId = item.channelInfo.channel_id;
-                }} />
+              {item.unreadMsgCount > 0 && (
+                <div className={styles.menu_news}>
+                  {item.unreadMsgCount > 999 ? '999+' : Math.floor(item.unreadMsgCount)}
+                </div>
               )}
-              <Popover content={genMoreMenu(item.channelInfo.channel_id)} placement="bottom" trigger="click">
-                {hoverChannelId == item.channelInfo.channel_id && !item.channelInfo.system_channel && <i className={styles.more} />}
-              </Popover>
             </div>
-            {item.unreadMsgCount > 0 && (
-              <div className={styles.menu_news}>
-                {item.unreadMsgCount > 999 ? '999+' : Math.floor(item.unreadMsgCount)}
-              </div>
-            )}
-          </div>
-        )
-      }
+          </List.Item>
+        )} />
       )}
 
       {closeChannelId != "" && <Modal
