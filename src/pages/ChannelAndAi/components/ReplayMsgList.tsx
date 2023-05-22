@@ -119,26 +119,27 @@ const ReplayMsgList = () => {
                 </>
             )}
 
-            <h3 style={{ fontSize: "20px", marginTop: "10px" }}>会话列表</h3>
-            <List rowKey="reply_msg_id" dataSource={replyMsgList} renderItem={replyMsg => (
-                <Card style={{ width: "100%", marginBottom: "10px" }}
-                    title={<div>
-                        <UserPhoto logoUri={replyMsg.sender_logo_uri} style={{ width: "20px", borderRadius: "10px", marginRight: "10px" }} />
-                        {replyMsg.sender_display_name}
-                        <div style={{ paddingLeft: "30px" }}>{moment(replyMsg.time_stamp).format("YYYY-MM-DD HH:mm")}</div>
-                    </div>}>
-                    {replyMsg.content}
-                    {(projectStore.isAdmin || replyMsg.sender_user_id == userStore.userInfo.userId) && (
-                        <div className={s.btns}>
-                            <Button type="link" danger style={{ padding: "0px 0px", minWidth: "0px" }} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                removeReplyMsg(replyMsg.reply_msg_id);
-                            }}>删除</Button>
-                        </div>
-                    )}
-                </Card>
-            )} pagination={totalCount == 0 ? false : { current: curPage + 1, total: totalCount, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1) }} />
+            <List rowKey="reply_msg_id" dataSource={replyMsgList}
+                style={{ paddingTop: "10px", borderTop: "1px dotted #eee", marginTop: "10px" }}
+                renderItem={replyMsg => (
+                    <Card style={{ width: "100%", marginBottom: "10px" }}
+                        title={<div>
+                            <UserPhoto logoUri={replyMsg.sender_logo_uri} style={{ width: "20px", borderRadius: "10px", marginRight: "10px" }} />
+                            {replyMsg.sender_display_name}
+                            <div style={{ paddingLeft: "30px" }}>{moment(replyMsg.time_stamp).format("YYYY-MM-DD HH:mm")}</div>
+                        </div>}>
+                        {replyMsg.content}
+                        {(projectStore.isAdmin || replyMsg.sender_user_id == userStore.userInfo.userId) && (
+                            <div className={s.btns}>
+                                <Button type="link" danger style={{ padding: "0px 0px", minWidth: "0px" }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    removeReplyMsg(replyMsg.reply_msg_id);
+                                }}>删除</Button>
+                            </div>
+                        )}
+                    </Card>
+                )} pagination={totalCount == 0 ? false : { current: curPage + 1, total: totalCount, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1) }} />
         </div>
     );
 };

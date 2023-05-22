@@ -211,7 +211,7 @@ const ChatSettingPanel: React.FC<PanelProps> = observer((props) => {
             }>
             <Form labelCol={{ span: 9 }}>
                 <Form.Item label="纯文本内容最小长度" help={
-                    <span>0&nbsp;表示不做限制,汉字以字符计数，数字和英文累计5个字符算一个计数。</span>
+                    <div>0&nbsp;表示不做限制。<br/>汉字以字符计数。<br/>数字和英文累计5个字符算一个计数。</div>
                 }>
                     <InputNumber controls={false} value={minPureTextLen} precision={0} min={0}
                         onChange={value => {
