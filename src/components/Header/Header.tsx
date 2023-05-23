@@ -109,10 +109,10 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           </a>
         )}
 
-        {appStore.simpleMode == false && projectStore.curProjectId != "" && (
+        {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
           <ProjectTipList />
         )}
-        {appStore.simpleMode == false && projectStore.curProjectId != "" && (
+        {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
           <ProjectUseTip />
         )}
         {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
