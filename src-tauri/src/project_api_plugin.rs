@@ -346,6 +346,35 @@ async fn gen_ai_token<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn update_tip_list<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateTipListRequest,
+) -> Result<UpdateTipListResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.update_tip_list(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_tip_list_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_tip_list".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
 pub struct ProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -367,6 +396,7 @@ impl<R: Runtime> ProjectApiPlugin<R> {
                 update_setting,
                 set_ai_gateway,
                 gen_ai_token,
+                update_tip_list,
             ]),
         }
     }

@@ -11,6 +11,8 @@ use tonic::transport::{Channel, Endpoint};
 mod admin_auth_api_plugin;
 mod appstore_admin_api_plugin;
 mod appstore_api_plugin;
+mod bookstore_admin_api_plugin;
+mod bookstore_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod events_admin_api_plugin;
@@ -32,6 +34,7 @@ mod project_appraise_api_plugin;
 mod project_award_api_plugin;
 mod project_book_shelf_api_plugin;
 mod project_bookmark_api_plugin;
+mod project_bulletin_api_plugin;
 mod project_channel_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
@@ -54,14 +57,12 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
-mod user_kb_api_plugin;
-mod bookstore_api_plugin;
-mod bookstore_admin_api_plugin;
 mod user_book_shelf_api_plugin;
+mod user_kb_api_plugin;
 
 mod min_app_fs_plugin;
-mod min_app_shell_plugin;
 mod min_app_plugin;
+mod min_app_shell_plugin;
 
 mod my_updater;
 
@@ -398,6 +399,7 @@ fn main() {
         .plugin(bookstore_api_plugin::BookstoreApiPlugin::new())
         .plugin(bookstore_admin_api_plugin::BookstoreAdminApiPlugin::new())
         .plugin(user_book_shelf_api_plugin::UserBookShelfApiPlugin::new())
+        .plugin(project_bulletin_api_plugin::ProjectBulletinApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

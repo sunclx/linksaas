@@ -55,14 +55,14 @@ const TopNav = () => {
   const chatTabPanel = (
     <Tabs.TabPane tab={
       <Tooltip title="主界面: 沟通面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-        placement="left" color="orange" overlayInnerStyle={{ color: 'black' }}>
+        placement="left" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
         <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_chat_active : s.tab_chat}><CommentOutlined />沟通</span>
       </Tooltip>
     } key={APP_PROJECT_CHAT_PATH} />);
 
   const workPanlTabPanel = (<Tabs.TabPane tab={
     <Tooltip title="主界面: 工作计划面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-      placement="top" color="orange" overlayInnerStyle={{ color: 'black' }}>
+      placement="top" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
       <span className={activeKey == APP_PROJECT_WORK_PLAN_PATH ? s.tab_work_plan_active : s.tab_work_plan}><FlagOutlined />工作计划</span>
     </Tooltip>
   } key={APP_PROJECT_WORK_PLAN_PATH} />);
@@ -70,7 +70,7 @@ const TopNav = () => {
   const kbTabPanel = (
     <Tabs.TabPane tab={
       <Tooltip title="主界面: 知识库面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-        placement="right" color="orange" overlayInnerStyle={{ color: 'black' }}>
+        placement="right" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
         <span className={activeKey == APP_PROJECT_KB_PATH ? s.tab_kb_active : s.tab_kb}><FileDoneOutlined />知识库</span>
       </Tooltip>
     } key={APP_PROJECT_KB_PATH} />);

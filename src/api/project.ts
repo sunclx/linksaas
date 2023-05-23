@@ -68,10 +68,12 @@ export type ProjectInfo = {
   min_app_fs_id: string;
   require_ment_fs_id: string;
   idea_fs_id: string;
+  bulletin_fs_id: string;
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;
   ai_gateway_addr: string;
+  tip_list?: string[];
 };
 
 export type ListResponse = {
@@ -154,6 +156,18 @@ export type GenAiTokenResponse = {
   err_msg: string;
   token: string;
 };
+
+export type UpdateTipListRequest = {
+  session_id: string;
+  project_id: string;
+  tip_list: string[];
+};
+
+export type UpdateTipListResponse = {
+  code: number;
+  err_msg: string;
+};
+
 
 //创建项目
 export async function create(
@@ -328,6 +342,15 @@ export async function set_ai_gateway(request: SetAiGatewayRequest): Promise<SetA
 //生成AI网关令牌
 export async function gen_ai_token(request: GenAiTokenRequest): Promise<GenAiTokenResponse> {
   const cmd = 'plugin:project_api|gen_ai_token';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<GenAiTokenResponse>(cmd, {
+    request,
+  });
+}
+
+//更新技巧集合
+export async function update_tip_list(request: UpdateTipListRequest): Promise<UpdateTipListResponse> {
+  const cmd = 'plugin:project_api|update_tip_list';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<GenAiTokenResponse>(cmd, {
     request,
