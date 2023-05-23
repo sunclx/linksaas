@@ -93,7 +93,7 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
     return (
         <Modal open title={props.inEdit ? "更新公告" : "查看公告"} footer={props.inEdit ? undefined : null}
             okText="更新" okButtonProps={{ disabled: title.trim() == "" }}
-            width="calc(100vw - 400px)"
+            width="calc(100vw - 600px)"
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -104,7 +104,7 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
                 e.preventDefault();
                 updateBulletin();
             }}>
-            <Form labelCol={{ span: 1 }}>
+            <Form labelCol={{ span: 2 }}>
                 <Form.Item label="标题">
                     <Input value={title} onChange={e => {
                         e.stopPropagation();
@@ -176,7 +176,7 @@ const CreateModal: React.FC<CreateModalProps> = observer((props) => {
 
     return (
         <Modal title="创建公告" open okText="创建" okButtonProps={{ disabled: title.trim() == "" }}
-            width="calc(100vw - 400px)"
+            width="calc(100vw - 600px)"
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -187,7 +187,7 @@ const CreateModal: React.FC<CreateModalProps> = observer((props) => {
                 e.preventDefault();
                 createBulletin();
             }}>
-            <Form labelCol={{ span: 1 }}>
+            <Form labelCol={{ span: 2 }}>
                 <Form.Item label="标题">
                     <Input value={title} onChange={e => {
                         e.stopPropagation();
@@ -258,7 +258,7 @@ const BulletinListPanel = () => {
             ),
         },
         {
-            title: "创建者",
+            title: "发布者",
             width: 150,
             render: (_, row: BulletinInfoKey) => (
                 <div>
@@ -268,7 +268,7 @@ const BulletinListPanel = () => {
             ),
         },
         {
-            title: "创建时间",
+            title: "发布时间",
             width: 150,
             render: (_, row: BulletinInfoKey) => moment(row.create_time).format("YYYY-MM-DD HH:mm"),
         },
