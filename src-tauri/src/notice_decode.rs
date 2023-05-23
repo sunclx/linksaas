@@ -25,6 +25,9 @@ pub mod project {
         ReminderNotice(notices_project::ReminderNotice),
         UpdateShortNoteNotice(notices_project::UpdateShortNoteNotice),
         UpdateAlarmStatNotice(notices_project::UpdateAlarmStatNotice),
+        CreateBulletinNotice(notices_project::CreateBulletinNotice),
+        UpdateBulletinNotice(notices_project::UpdateBulletinNotice),
+        RemoveBulletinNotice(notices_project::RemoveBulletinNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -116,6 +119,21 @@ pub mod project {
                 notices_project::UpdateAlarmStatNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::UpdateAlarmStatNotice(notice));
+            }
+        } else if data.type_url == notices_project::CreateBulletinNotice::type_url() {
+            if let Ok(notice) = notices_project::CreateBulletinNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::CreateBulletinNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateBulletinNotice::type_url() {
+            if let Ok(notice) = notices_project::UpdateBulletinNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::UpdateBulletinNotice(notice));
+            }
+        } else if data.type_url == notices_project::RemoveBulletinNotice::type_url() {
+            if let Ok(notice) = notices_project::RemoveBulletinNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::RemoveBulletinNotice(notice));
             }
         }
         None
