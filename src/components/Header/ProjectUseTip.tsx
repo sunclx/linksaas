@@ -28,7 +28,7 @@ interface TipInfo {
     enable: boolean;
 }
 
-const ProjectTip = () => {
+const ProjectUseTip = () => {
     const history = useHistory();
 
     const appStore = useStores('appStore');
@@ -442,4 +442,4 @@ const ProjectTip = () => {
     );
 };
 
-export default observer(ProjectTip);
+export default observer(ProjectUseTip);

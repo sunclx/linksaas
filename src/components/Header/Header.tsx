@@ -11,7 +11,8 @@ import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
-import ProjectTip from './ProjectTip';
+import ProjectUseTip from './ProjectUseTip';
+import ProjectTipList from './ProjectTipList';
 
 const { Header } = Layout;
 
@@ -109,7 +110,10 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
         )}
 
         {appStore.simpleMode == false && projectStore.curProjectId != "" && (
-          <ProjectTip />
+          <ProjectTipList />
+        )}
+        {appStore.simpleMode == false && projectStore.curProjectId != "" && (
+          <ProjectUseTip />
         )}
         {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
           <div
