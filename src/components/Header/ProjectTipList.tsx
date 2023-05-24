@@ -17,9 +17,10 @@ const ProjectTipList = () => {
             setTipList([]);
         } else {
             setTipList(projectStore.curProject?.tip_list ?? []);
-            setTipIndex(0);
+            const len = (projectStore.curProject?.tip_list ?? []).length;
+            setTipIndex(Math.floor((Math.random() * len)));
         }
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId, projectStore.curProject?.tip_list]);
 
     useEffect(() => {
         const t = setInterval(() => {
@@ -29,6 +30,7 @@ const ProjectTipList = () => {
                 return value;
             });
             if (tmpList.length > 0) {
+
                 setTipIndex(value => {
                     if (value + 1 >= tmpList.length) {
                         return 0;
