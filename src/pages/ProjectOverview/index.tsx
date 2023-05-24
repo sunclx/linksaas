@@ -9,6 +9,7 @@ import { WebviewWindow } from '@tauri-apps/api/window';
 import { get_port } from "@/api/local_api";
 import MemberInfoPanel from "./components/MemberInfoPanel";
 import MyIssuePanel from "./components/MyIssuePanel";
+import BulletinListPanel from "./components/BulletinListPanel";
 
 
 const ProjectOverview = () => {
@@ -45,8 +46,9 @@ const ProjectOverview = () => {
     return (
         <div className={s.overview_wrap}>
             <ProjectInfoPanel />
+            <BulletinListPanel />
             <MemberInfoPanel />
-            <MyIssuePanel/>
+            <MyIssuePanel />
             <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
                 <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>
                     <Collapse.Panel key="localApi" header="本地接口" extra={

@@ -28,6 +28,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
   const chatMsgStore = useStores('chatMsgStore');
   const linkAuxStore = useStores('linkAuxStore');
   const ideaStore = useStores('ideaStore');
+  const channelStore = useStores('channelStore');
 
   const history = useHistory();
 
@@ -116,7 +117,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
             </>
           )}
 
-          {matchKeywordList.length > 0 && (
+          {!(channelStore.curChannel?.channelInfo.system_channel == true && channelStore.curChannel?.channelInfo.readonly == true) && matchKeywordList.length > 0 && (
             <Popover placement='left'
               title="相关知识点"
               trigger="hover"
@@ -135,16 +136,18 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               <BulbFilled style={{ color: "orange", paddingRight: "10px" }} />
             </Popover>
           )}
-          <span className={styles.threadInfo} onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            chatMsgStore.replayTargetMsgId = msg.msg.msg_id;
-            chatMsgStore.replayMsgCount = msg.msg.reply_count;
-          }}>
-            <Badge size="small" offset={[20, 7]} count={msg.msg.reply_count} color={msg.hovered ? "orange" : "#888"}>
-              <CommentOutlined style={{ fontSize: "16px", color: msg.hovered ? "orange" : "#888" }} />
-            </Badge>
-          </span>
+          {!(channelStore.curChannel?.channelInfo.system_channel == true && channelStore.curChannel?.channelInfo.readonly == true) && (
+            <span className={styles.threadInfo} onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              chatMsgStore.replayTargetMsgId = msg.msg.msg_id;
+              chatMsgStore.replayMsgCount = msg.msg.reply_count;
+            }}>
+              <Badge size="small" offset={[20, 7]} count={msg.msg.reply_count} color={msg.hovered ? "orange" : "#888"}>
+                <CommentOutlined style={{ fontSize: "16px", color: msg.hovered ? "orange" : "#888" }} />
+              </Badge>
+            </span>
+          )}
           {msg.msg.basic_msg.link_dest_id != "" && (
             <span className={styles.linkInfo}>
               来自{getLinkType(msg.msg.basic_msg.link_type)}:
@@ -193,7 +196,15 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
           )}
         </div>
         <div className='_readContext'>
-          <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => setMatchKeywordList(kwList)} />
+          {channelStore.curChannel?.channelInfo.system_channel == true && channelStore.curChannel?.channelInfo.readonly == true && (
+            <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} />
+          )}
+          {!(channelStore.curChannel?.channelInfo.system_channel == true && channelStore.curChannel?.channelInfo.readonly == true) && (
+            <ReadOnlyEditor content={msg.msg.basic_msg.msg_data} keywordList={ideaStore.keywordList} keywordCallback={(kwList) => {
+              setMatchKeywordList(kwList);
+            }} />
+          )}
+
         </div>
       </div>
       {chatMsgStore.listRefMsgId == msg.msg.msg_id && (

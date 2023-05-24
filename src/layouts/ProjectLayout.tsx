@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import MemberInfoModal from '@/pages/ChannelAndAi/components/MemberInfoModal';
 import CodeCommentThreadModal from '@/pages/Project/Code/CodeCommentThreadModal';
-import ProjectSettingModal from '@/pages/Project/ProjectSettingModal';
+import ProjectSettingModal from '@/pages/Project/Setting/ProjectSettingModal';
 import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';
 import ProjectTool from '@/pages/Project/ProjectTool';
 import GitPostHookModal from '@/pages/Project/ProjectTool/GitPostHookModal';

@@ -81,6 +81,21 @@ export namespace project {
     project_id: string;
   };
 
+  export type CreateBulletinNotice = {
+    project_id: string;
+    bulletin_id: string;
+  }
+  ///更新公告
+  export type UpdateBulletinNotice = {
+    project_id: string;
+    bulletin_id: string;
+  }
+  ///删除公告
+  export type RemoveBulletinNotice = {
+    project_id: string;
+    bulletin_id: string;
+  }
+
 
   export type AllNotice = {
     UpdateProjectNotice?: UpdateProjectNotice;
@@ -102,6 +117,9 @@ export namespace project {
     ReminderNotice?: ReminderNotice;
     UpdateShortNoteNotice?: UpdateShortNoteNotice;
     UpdateAlarmStatNotice?: UpdateAlarmStatNotice;
+    CreateBulletinNotice?: CreateBulletinNotice;
+    UpdateBulletinNotice?: UpdateBulletinNotice;
+    RemoveBulletinNotice?: RemoveBulletinNotice;
   };
 }
 

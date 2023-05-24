@@ -353,6 +353,12 @@ class NoticeStore {
       if (notice.UpdateAlarmStatNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.projectStore.addAlarmVersion();
       }
+    } else if (notice.CreateBulletinNotice !== undefined) {
+      this.rootStore.projectStore.incBulletinVersion(notice.CreateBulletinNotice.project_id);
+    } else if (notice.UpdateBulletinNotice !== undefined) {
+      this.rootStore.projectStore.incBulletinVersion(notice.UpdateBulletinNotice.project_id);
+    } else if (notice.RemoveBulletinNotice !== undefined) {
+      this.rootStore.projectStore.incBulletinVersion(notice.RemoveBulletinNotice.project_id);
     }
   }
 

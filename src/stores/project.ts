@@ -22,6 +22,7 @@ export class WebProjectStatus {
   undone_appraise_count: number = 0;
   new_event_count: number = 0; //启动软件以来的新事件数
 
+
   get total_count(): number {
     return (
       this.unread_msg_count +
@@ -35,6 +36,7 @@ export class WebProjectStatus {
 
 export type WebProjectInfo = ProjectInfo & {
   project_status: WebProjectStatus;
+  bulletin_version: number;
 };
 
 export default class ProjectStore {
@@ -113,6 +115,7 @@ export default class ProjectStore {
       return {
         ...info,
         project_status: new WebProjectStatus(),
+        bulletin_version: 0,
       };
     });
     const prjMap: Map<string, WebProjectInfo> = new Map();
@@ -281,7 +284,7 @@ export default class ProjectStore {
     const res = await request(getProject(this.rootStore.userStore.sessionId, projectId));
     if (res) {
       const status = await this.clacProjectStatus(projectId);
-      const prj = { ...res.info, project_status: status };
+      const prj = { ...res.info, project_status: status, bulletin_version: 0 };
       runInAction(() => {
         this._projectMap.set(prj.project_id, prj);
         const tmpList = this._projectList.slice()
@@ -294,6 +297,18 @@ export default class ProjectStore {
         this._projectList = tmpList;
       });
     }
+  }
+
+  incBulletinVersion(projectId: string) {
+    const tmpList = this._projectList.slice();
+    runInAction(() => {
+      const index = tmpList.findIndex(prj => prj.project_id == projectId);
+      if (index != -1) {
+        tmpList[index].bulletin_version += 1;
+        this._projectMap.set(tmpList[index].project_id, tmpList[index]);
+        this._projectList = tmpList;
+      }
+    });
   }
 
   removeProject(projecId: string, history: History) {
