@@ -247,10 +247,13 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
             <Image
               preview={{
                 src: imageUrl,
-                mask: false,
-                wrapStyle: {
-                  margin: "60px 60px 60px 60px"
+                bodyStyle: {
+                  margin: "80px 60px"
                 },
+                maskStyle:{
+                  margin: "40px 60px"
+                },
+                zIndex: 9999,
               }}
               src={thumbImageUrl}
             />
