@@ -24,10 +24,10 @@ const DocList = () => {
     const [docCount, setDocCount] = useState(0);
     const [docKeyList, setDocKeyList] = useState<prjDocApi.DocKey[]>([]);
     const [listParam, setListParam] = useState<prjDocApi.ListDocParam>({
-        filter_by_tag: false,
-        tag_list: [],
         filter_by_watch: false,
         watch: false,
+        filter_by_tag_id: false,
+        tag_id_list: [],
     });
 
     const loadDocKey = async () => {
@@ -151,17 +151,17 @@ const DocList = () => {
                         <Switch onChange={checked => {
                             if (checked) {
                                 setListParam({
-                                    filter_by_tag: false,
-                                    tag_list: [],
                                     filter_by_watch: true,
                                     watch: true,
+                                    filter_by_tag_id: false,
+                                    tag_id_list: [],
                                 });
                             } else {
                                 setListParam({
-                                    filter_by_tag: false,
-                                    tag_list: [],
                                     filter_by_watch: false,
                                     watch: false,
+                                    filter_by_tag_id: false,
+                                    tag_id_list: [],
                                 });
                             }
                         }} />

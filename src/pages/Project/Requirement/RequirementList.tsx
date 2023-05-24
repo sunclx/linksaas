@@ -85,6 +85,8 @@ const RequirementList = () => {
             has_link_issue: hasLinkIssue == null ? false : hasLinkIssue,
             filter_by_closed: filterClosed != null,
             closed: filterClosed == null ? false : filterClosed,
+            filter_by_tag_id_list: false,
+            tag_id_list: [],
             sort_type: sortType,
         }));
         setTotalCount(res.total_count);
@@ -112,6 +114,7 @@ const RequirementList = () => {
                                     base_info: {
                                         title: title,
                                         content: row.base_info.content,
+                                        tag_id_list: [],
                                     },
                                 }));
                                 return true;

@@ -146,6 +146,8 @@ const IssueList = () => {
             bug_priority_list: !getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级,
             filter_by_title_keyword: false,
             title_keyword: "",
+            filter_by_tag_id_list: false,
+            tag_id_list: [],
         };
         const req: ListRequest = {
             session_id: userStore.sessionId,

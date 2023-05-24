@@ -37,6 +37,7 @@ const BatchCreate: React.FC<BatchCreateProps> = (props) => {
                     basic_info: {
                         title: title,
                         content: JSON.stringify({ type: "doc" }),
+                        tag_id_list:[],
                     },
                     extra_info: {
                         ExtraTaskInfo: getIsTask(location.pathname) ? {

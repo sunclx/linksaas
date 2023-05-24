@@ -25,7 +25,15 @@ export type CateInfo = {
 export type BaseRequirementInfo = {
     title: string;
     content: string;
+    tag_id_list: string[];
 };
+
+export type RequirementTag = {
+    tag_id: string;
+    tag_name: string;
+    bg_color: string;
+};
+
 
 export type RequirementInfo = {
     requirement_id: string;
@@ -43,6 +51,7 @@ export type RequirementInfo = {
     update_display_name: string;
     update_logo_uri: string;
     closed: boolean;
+    tag_info_list: RequirementTag[];
 
     kano_excite_value: number;//兴奋型
     kano_expect_value: number;//期望型
@@ -174,6 +183,8 @@ export type ListRequirementRequest = {
     has_link_issue: boolean;
     filter_by_closed: boolean;
     closed: boolean;
+    filter_by_tag_id_list: boolean;
+    tag_id_list: string[];
 
     offset: number;
     limit: number;

@@ -46,10 +46,10 @@ pub async fn list_doc_key(
             filter_by_doc_space_id: true,
             doc_space_id: doc_space_id.clone(),
             list_param: Some(ListDocParam {
-                filter_by_tag: false,
-                tag_list: Vec::new(),
                 filter_by_watch: false,
                 watch: false,
+                filter_by_tag_id: false,
+                tag_id_list: Vec::new(),
             }),
             offset: offset,
             limit: limit,

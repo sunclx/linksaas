@@ -212,6 +212,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       bug_level_list: [],
       filter_by_title_keyword: keyword != '',
       title_keyword: keyword,
+      filter_by_tag_id_list: false,
+      tag_id_list: [],
     };
     if (tab == 'task') {
       request(
@@ -257,10 +259,10 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       filter_by_doc_space_id: curDocSpaceId != "",
       doc_space_id: curDocSpaceId,
       list_param: {
-        filter_by_tag: false,
-        tag_list: [],
         filter_by_watch: false,
         watch: false,
+        filter_by_tag_id: false,
+        tag_id_list: [],
       },
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
@@ -303,6 +305,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
       sort_type: REQ_SORT_UPDATE_TIME,//FIXME
+      filter_by_tag_id_list: false,
+      tag_id_list: [],
     })).then(res => {
       setTotalCount(res.total_count);
       setRequirementList(res.requirement_list);

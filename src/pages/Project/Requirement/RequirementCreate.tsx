@@ -88,6 +88,7 @@ const RequirementCreate = () => {
             base_info: {
                 title: title,
                 content: JSON.stringify(content),
+                tag_id_list: [],
             },
             cate_id: curCateId,
         }));

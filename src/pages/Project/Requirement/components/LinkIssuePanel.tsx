@@ -3,7 +3,8 @@ import { observer } from 'mobx-react';
 import { Button, Card, Dropdown, Table, message } from 'antd';
 import { LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import AddTaskOrBug from '@/components/Editor/components/AddTaskOrBug';
-import { LinkInfo, LinkTaskInfo } from '@/stores/linkAux';
+import type { LinkInfo } from '@/stores/linkAux';
+import { LinkTaskInfo } from '@/stores/linkAux';
 import { link_issue, unlink_issue, list_issue_link } from '@/api/project_requirement';
 import { request } from '@/utils/request';
 import { useStores } from '@/hooks';
@@ -41,7 +42,7 @@ const renderState = (val: number) => {
 
 const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
     const history = useHistory();
-    
+
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
