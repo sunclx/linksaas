@@ -93,7 +93,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                             <div>
                                 <EditSelect
                                     allowClear={false}
-                                    editable={true}
+                                    editable={props.issue.user_issue_perm.can_update}
                                     curValue={props.issue.extra_info.ExtraBugInfo!.level}
                                     itemList={bugLvSelectItems} onChange={async (value) => {
                                         return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
@@ -109,7 +109,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                             <div>
                                 <EditSelect
                                     allowClear={false}
-                                    editable={true}
+                                    editable={props.issue.user_issue_perm.can_update}
                                     curValue={props.issue.extra_info.ExtraBugInfo!.priority}
                                     itemList={bugPrioritySelectItems}
                                     onChange={async (value) => {
@@ -126,7 +126,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                         <div className={s.basic_info}>
                             <span>软件版本</span>
                             <div>
-                                <EditText editable={true}
+                                <EditText editable={props.issue.user_issue_perm.can_update}
                                     content={props.issue.extra_info.ExtraBugInfo?.software_version ?? ""}
                                     onChange={async (value: string) => {
                                         return await updateExtraInfo(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, {
@@ -146,7 +146,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                         <span>优先级</span>
                         <div><EditSelect
                             allowClear={false}
-                            editable={true}
+                            editable={props.issue.user_issue_perm.can_update}
                             curValue={props.issue.extra_info.ExtraTaskInfo!.priority}
                             itemList={taskPrioritySelectItems}
                             onChange={async (value) => {
@@ -199,7 +199,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     <span>截止时间</span>
                     <div>
                         <EditDate
-                            editable={projectStore.isAdmin}
+                            editable={projectStore.isAdmin && props.issue.user_issue_perm.can_update}
                             hasTimeStamp={props.issue.has_dead_line_time}
                             timeStamp={props.issue.dead_line_time}
                             onChange={async (value) => {

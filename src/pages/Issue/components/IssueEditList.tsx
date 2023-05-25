@@ -70,7 +70,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       render: (v: string, record: IssueInfo) => {
         return (
           <div style={{ lineHeight: "28px" }}>
-            <EditText editable={true} content={v} showEditIcon={true} onChange={async (value) => {
+            <EditText editable={record.user_issue_perm.can_update} content={v} showEditIcon={true} onChange={async (value) => {
               return await updateTitle(userStore.sessionId, record.project_id, record.issue_id, value);
             }} onClick={() => {
               if (record.issue_type == ISSUE_TYPE_TASK) {
@@ -151,8 +151,8 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       dataIndex: "dead_line_time",
       width: 120,
       align: 'center',
-      render: (_, record) => <EditDate
-        editable={projectStore.isAdmin}
+      render: (_, record: IssueInfo) => <EditDate
+        editable={projectStore.isAdmin && record.user_issue_perm.can_update}
         hasTimeStamp={record.has_dead_line_time}
         timeStamp={record.dead_line_time}
         onChange={async (value) => {
@@ -212,7 +212,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       dataIndex: ['extra_info', 'ExtraBugInfo', 'level'],
       render: (v: number, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={true}
+        editable={record.user_issue_perm.can_update}
         curValue={v}
         itemList={bugLvSelectItems}
         onChange={async (value) => {
@@ -236,7 +236,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'center',
       render: (val: number, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={true}
+        editable={record.user_issue_perm.can_update}
         curValue={val}
         itemList={getIsTask(pathname) ? taskPrioritySelectItems : bugPrioritySelectItems}
         onChange={async (value) => {
@@ -264,7 +264,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       ellipsis: true,
       dataIndex: ['extra_info', 'ExtraBugInfo', 'software_version'],
       hideInTable: getIsTask(pathname),
-      render: (_, record: IssueInfo) => <EditText editable={true} content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={true} onChange={async (value) => {
+      render: (_, record: IssueInfo) => <EditText editable={record.user_issue_perm.can_update} content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={true} onChange={async (value) => {
         return await updateExtraInfo(userStore.sessionId, record.project_id, record.issue_id, {
           ExtraBugInfo: {
             ...record.extra_info.ExtraBugInfo!,

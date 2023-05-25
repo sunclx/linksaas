@@ -70,7 +70,7 @@ const IssueDetail = () => {
 
     return (<CardWrap>
         {issue != null && (<DetailsNav title={
-            <EditText editable={true} content={issue?.basic_info.title ?? ""} onChange={async (value: string) => {
+            <EditText editable={issue.user_issue_perm.can_update ?? false} content={issue?.basic_info.title ?? ""} onChange={async (value: string) => {
                 return await updateTitle(userStore.sessionId, issue.project_id, issue.issue_id, value);
             }} showEditIcon={true} />
         }>
