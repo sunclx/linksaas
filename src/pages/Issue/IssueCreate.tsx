@@ -109,6 +109,7 @@ const IssueCreate = () => {
             basic_info: {
                 title: title,
                 content: JSON.stringify(content),
+                tag_id_list:[],
             },
             extra_info: {
                 ExtraTaskInfo: getIsTask(location.pathname) ? {

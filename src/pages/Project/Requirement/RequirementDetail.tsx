@@ -89,6 +89,7 @@ const RequirementDetail = () => {
                                 base_info: {
                                     title: title,
                                     content: requirementInfo.base_info.content,
+                                    tag_id_list: requirementInfo.base_info.tag_id_list,
                                 },
                             }));
                             await loadRequirementInfo();

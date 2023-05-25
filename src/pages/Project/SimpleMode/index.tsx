@@ -54,6 +54,8 @@ const SimpleModePanel = () => {
                 to_update_time: 0,
                 filter_by_title_keyword: false,
                 title_keyword: "",
+                filter_by_tag_id_list: false,
+                tag_id_list: [],
                 ///任务相关
                 filter_by_task_priority: false,
                 task_priority_list: [],
@@ -94,6 +96,7 @@ const SimpleModePanel = () => {
             basic_info: {
                 title: title.trim(),
                 content: "{}",
+                tag_id_list: [],
             },
             extra_info: {
                 ExtraTaskInfo: addIssueType == ISSUE_TYPE_TASK ? {
@@ -129,7 +132,7 @@ const SimpleModePanel = () => {
                     </Select>
                 </div>
             </div>
-            <Collapse bordered={true} className={s.collapse} defaultActiveKey={["task", "bug"]} style={{paddingRight:"10px"}}>
+            <Collapse bordered={true} className={s.collapse} defaultActiveKey={["task", "bug"]} style={{ paddingRight: "10px" }}>
                 <Collapse.Panel key="task" header="待处理任务" extra={
                     <Button onClick={e => {
                         e.stopPropagation();

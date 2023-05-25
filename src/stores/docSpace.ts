@@ -307,10 +307,10 @@ export default class DocSpaceStore {
             filter_by_doc_space_id: false,
             doc_space_id: "",
             list_param: {
-                filter_by_tag: false,
-                tag_list: [],
                 filter_by_watch: true,
                 watch: true,
+                filter_by_tag_id: false,
+                tag_id_list: [],
             },
             offset: 0,
             limit: 99,

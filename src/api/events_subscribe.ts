@@ -61,6 +61,7 @@ export type DocEvCfg = {
     watch_doc: boolean;
     un_watch_doc: boolean;
     move_doc: boolean;
+    update_tag: boolean;
 };
 
 export type EarthlyEvCfg = {
@@ -124,6 +125,7 @@ export type IssueEvCfg = {
     remove_dependence: boolean;
     set_dead_line_time: boolean;
     cancel_dead_line_time: boolean;
+    update_tag: boolean;
 };
 
 export type RobotEvCfg = {
@@ -193,7 +195,7 @@ export type RequirementEvCfg = {
     open_requirement: boolean;
     set_kano_info: boolean;
     set_four_q_info: boolean;
-
+    update_tag: boolean;
 };
 
 export type CodeEvCfg = {
@@ -410,6 +412,7 @@ export async function list(request: ListRequest): Promise<ListResponse> {
                 open_requirement: false,
                 set_kano_info: false,
                 set_four_q_info: false,
+                update_tag: false,
             };
         }
     }

@@ -172,7 +172,7 @@ const SpritList = () => {
             bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll" }}
             extra={
                 <Form layout="inline">
-                    <Form.Item label="只看我的关注">
+                    <Form.Item label="我的关注">
                         <Switch checked={filterByWatch} onChange={checked => {
                             setFilterByWatch(checked);
                         }} />

@@ -19,8 +19,17 @@ import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { EditSelect } from '../../../components/EditCell/EditSelect';
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
 import { EditText } from '@/components/EditCell/EditText';
-import { cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime, updateTitle } from './utils';
+import {
+  cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes,
+  cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser,
+  updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser,
+  updateExtraInfo, updateRemainMinutes, updateStartTime, updateTitle
+} from './utils';
 import { EditDate } from '@/components/EditCell/EditDate';
+import type { TagInfo } from "@/api/project";
+import { EditTag } from '@/components/EditCell/EditTag';
+import { update_tag_id_list } from "@/api/project_issue";
+import { request } from '@/utils/request';
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
   dataIndex: string | string[];
@@ -32,6 +41,7 @@ type IssueEditListProps = {
   isFilter: boolean;
   dataSource: IssueInfo[];
   issueIdList: string[];
+  tagDefList: TagInfo[];
   onChange: (issueId: string) => void;
   showStage: (issueId: string) => void;
 };
@@ -40,6 +50,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
   isFilter,
   dataSource,
   issueIdList,
+  tagDefList,
   onChange,
   showStage,
 }) => {
@@ -70,7 +81,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       render: (v: string, record: IssueInfo) => {
         return (
           <div style={{ lineHeight: "28px" }}>
-            <EditText editable={true} content={v} showEditIcon={true} onChange={async (value) => {
+            <EditText editable={record.user_issue_perm.can_update} content={v} showEditIcon={true} onChange={async (value) => {
               return await updateTitle(userStore.sessionId, record.project_id, record.issue_id, value);
             }} onClick={() => {
               if (record.issue_type == ISSUE_TYPE_TASK) {
@@ -150,9 +161,9 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: "截止时间",
       dataIndex: "dead_line_time",
       width: 120,
-      align: 'center',
-      render: (_, record) => <EditDate
-        editable={projectStore.isAdmin}
+      align: 'left',
+      render: (_, record: IssueInfo) => <EditDate
+        editable={projectStore.isAdmin && record.user_issue_perm.can_update}
         hasTimeStamp={record.has_dead_line_time}
         timeStamp={record.dead_line_time}
         onChange={async (value) => {
@@ -208,11 +219,11 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
     {
       title: `级别`,
       width: 100,
-      align: 'center',
+      align: 'left',
       dataIndex: ['extra_info', 'ExtraBugInfo', 'level'],
       render: (v: number, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={true}
+        editable={record.user_issue_perm.can_update}
         curValue={v}
         itemList={bugLvSelectItems}
         onChange={async (value) => {
@@ -233,10 +244,10 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         'priority',
       ],
       width: 120,
-      align: 'center',
+      align: 'left',
       render: (val: number, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={true}
+        editable={record.user_issue_perm.can_update}
         curValue={val}
         itemList={getIsTask(pathname) ? taskPrioritySelectItems : bugPrioritySelectItems}
         onChange={async (value) => {
@@ -260,11 +271,11 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
     {
       title: `软件版本`,
       width: 150,
-      align: 'center',
+      align: 'left',
       ellipsis: true,
       dataIndex: ['extra_info', 'ExtraBugInfo', 'software_version'],
       hideInTable: getIsTask(pathname),
-      render: (_, record: IssueInfo) => <EditText editable={true} content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={true} onChange={async (value) => {
+      render: (_, record: IssueInfo) => <EditText editable={record.user_issue_perm.can_update} content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={true} onChange={async (value) => {
         return await updateExtraInfo(userStore.sessionId, record.project_id, record.issue_id, {
           ExtraBugInfo: {
             ...record.extra_info.ExtraBugInfo!,
@@ -277,7 +288,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: '处理人',
       dataIndex: 'exec_display_name',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (_, row: IssueInfo) => <EditSelect
         allowClear={false}
         editable={row.user_issue_perm.can_assign_exec_user}
@@ -295,7 +306,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: '验收人',
       dataIndex: 'check_display_name',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (_, row: IssueInfo) => <EditSelect
         allowClear={false}
         editable={row.user_issue_perm.can_assign_check_user}
@@ -310,6 +321,24 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         }} showEditIcon={true} />,
     },
     {
+      title: "标签",
+      dataIndex: ["basic_info", "tag_id_list"],
+      width: 200,
+      render: (_, row: IssueInfo) => (
+        <EditTag editable={row.user_issue_perm.can_update} tagIdList={row.basic_info.tag_id_list} tagDefList={tagDefList}
+          onChange={(tagIdList: string[]) => {
+            request(update_tag_id_list({
+              session_id: userStore.sessionId,
+              project_id: row.project_id,
+              issue_id: row.issue_id,
+              tag_id_list: tagIdList,
+            })).then(() => {
+              onChange(row.issue_id);
+            });
+          }} />
+      ),
+    },
+    {
       title: (<span>
         处理贡献&nbsp;
         <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
@@ -318,7 +347,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       </span>),
       dataIndex: 'exec_award_point',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (v: number, row: IssueInfo) => <EditSelect
         allowClear={false}
         editable={row.user_issue_perm.can_set_award}
@@ -337,7 +366,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       </span>),
       dataIndex: 'check_award_point',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (v: number, row: IssueInfo) => <EditSelect
         allowClear={false}
         editable={row.user_issue_perm.can_set_award}
@@ -351,7 +380,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: '预估开始时间',
       dataIndex: 'start_time',
       width: 120,
-      align: 'center',
+      align: 'left',
       render: (_, record) => <EditDate
         editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
         hasTimeStamp={record.has_start_time}
@@ -367,7 +396,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: '预估完成时间',
       dataIndex: 'end_time',
       width: 120,
-      align: 'center',
+      align: 'left',
       render: (_, record) => <EditDate
         editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
         hasTimeStamp={record.has_end_time}
@@ -383,7 +412,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: '预估工时',
       dataIndex: 'estimate_minutes',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (_, record: IssueInfo) => <EditSelect
         allowClear={false}
         editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
@@ -400,7 +429,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: '剩余工时',
       dataIndex: 'remain_minutes',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (_, record: IssueInfo) => <EditSelect
         allowClear={true}
         editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
@@ -427,7 +456,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: `${getIssueText(pathname)}创建者`,
       dataIndex: 'create_display_name',
       width: 100,
-      align: 'center',
+      align: 'left',
       render: (v) => {
         return v ? v : '-';
       },
@@ -441,7 +470,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       style={{ marginTop: '8px' }}
       rowKey={'issue_id'}
       columns={columns}
-      scroll={{ x: 1450, y: `${isFilter ? 'calc(100vh - 360px)' : 'calc(100vh - 302px)'}` }}
+      scroll={{ x: 1650, y: `${isFilter ? 'calc(100vh - 360px)' : 'calc(100vh - 302px)'}` }}
       dataSource={dataSource}
       pagination={false}
     />

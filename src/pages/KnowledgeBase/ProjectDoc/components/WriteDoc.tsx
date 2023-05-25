@@ -146,13 +146,13 @@ const WriteDoc: React.FC = () => {
         base_info: {
           title: newTitle,
           content: JSON.stringify(content),
-          tag_list: [],
           doc_perm: {
             read_for_all: true,
             extra_read_user_id_list: [],
             write_for_all: true,
             extra_write_user_id_list: [],
           },
+          tag_id_list: [],
         },
       }),
     );

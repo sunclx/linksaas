@@ -13,6 +13,7 @@ import { getIsTask } from '@/utils/utils';
 import BugPrioritySelect from '../../../components/BugPrioritySelect';
 import BugLevelSelect from '../../../components/BugLevelSelect';
 import { ISSUE_TAB_LIST_TYPE } from './constant';
+import type { TagInfo } from "@/api/project";
 
 export interface FilterDataType {
   priority_list?: number[];
@@ -21,11 +22,13 @@ export interface FilterDataType {
   check_user_id_list?: string[];
   software_version_list: string[];
   level_list?: number[];
+  tag_id?: string;
 };
 
 type FiltrationProps = {
   setFilterData: (val: FilterDataType) => void;
   activeVal: ISSUE_TAB_LIST_TYPE;
+  tagDefList: TagInfo[];
   filterData: FilterDataType;
 };
 
@@ -58,6 +61,7 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
       check_user_id_list: [],
       software_version_list: [],
       level_list: [],
+      tag_id: "",
     });
     form.setFieldsValue({
       priority: null,
@@ -65,6 +69,7 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
       exec_user: null,
       check_user: null,
       version: null,
+      tag_id: "",
     });
   };
 
@@ -75,7 +80,7 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
         layout="inline"
         form={form}
         onFieldsChange={() => {
-          const { priority, stage, exec_user, check_user, version, level } = form.getFieldsValue();
+          const { priority, stage, exec_user, check_user, version, level, tag_id } = form.getFieldsValue();
           setFilterData({
             priority_list: priority != null ? [priority] : [],
             state_list: stage != null ? [stage] : [],
@@ -83,6 +88,7 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
             check_user_id_list: check_user ? [check_user] : [],
             software_version_list: version ? [version] : [],
             level_list: level != null ? [level] : [],
+            tag_id: tag_id ?? "",
           });
         }}
       >
@@ -106,23 +112,34 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
 
         <MemberSelect
           name={'exec_user'}
-          style={{ width: 120 }}
+          style={{ width: 100 }}
           placeholder="处理人："
           memberUserId={execUserId}
           disabled={activeVal !== ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL}
+          allowClear
         />
         <MemberSelect
           name={'check_user'}
-          style={{ width: 120 }}
+          style={{ width: 100 }}
           placeholder="验收人："
           memberUserId={checkUserId}
           disabled={activeVal !== ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL}
+          allowClear
         />
         {!getIsTask(pathname) && (
           <Form.Item name="version">
             <Input placeholder="软件版本：" style={{ width: 100 }} allowClear />
           </Form.Item>
         )}
+        <Form.Item name="tag_id">
+          <Select value={props.filterData.tag_id ?? ""} style={{ width: 100 }} placeholder="标签:" allowClear>
+            {props.tagDefList.map(tagDef => (
+              <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
+                <span style={{ padding: "2px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
       </Form>
 
       <Button

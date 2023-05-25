@@ -179,6 +179,8 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       bug_level_list: [],
       filter_by_title_keyword: keyword != '',
       title_keyword: keyword,
+      filter_by_tag_id_list: false,
+      tag_id_list: [],
     };
 
     const res = await request(
@@ -214,6 +216,8 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
       sort_type: REQ_SORT_UPDATE_TIME,//FIXME
+      filter_by_tag_id_list: false,
+      tag_id_list: [],
     }));
     if (reqRes.total_count == 0) {
       setDataSource([]);

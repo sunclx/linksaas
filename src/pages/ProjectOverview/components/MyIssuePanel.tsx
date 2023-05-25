@@ -22,6 +22,9 @@ import { issueState } from "@/utils/constant";
 import { getMemberSelectItems, getStateColor } from "@/pages/Issue/components/utils";
 import { EditDate } from "@/components/EditCell/EditDate";
 import Button from "@/components/Button";
+import { EditTag } from "@/components/EditCell/EditTag";
+import type { TagInfo } from "@/api/project";
+import { list_tag, TAG_SCOPRE_ALL } from "@/api/project";
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
     issueType?: ISSUE_TYPE;
@@ -37,6 +40,18 @@ const MyTaskPanel = () => {
 
     const [taskList, setTaskList] = useState<IssueInfo[]>([]);
     const [bugList, setBugList] = useState<IssueInfo[]>([]);
+    const [taskTagDefList, setTaskTagDefList] = useState<TagInfo[] | null>(null);
+    const [bugTagDefList, setBugTagDefList] = useState<TagInfo[] | null>(null);
+
+    const loadTagDefList = async () => {
+        const res = await request(list_tag({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            tag_scope_type: TAG_SCOPRE_ALL,
+        }));
+        setTaskTagDefList(res.tag_info_list.filter(tag => tag.use_in_task));
+        setBugTagDefList(res.tag_info_list.filter(tag => tag.use_in_bug));
+    };
 
     const loadMyIssue = async () => {
         const res = await request(list_issue({
@@ -62,6 +77,8 @@ const MyTaskPanel = () => {
                 to_update_time: 0,
                 filter_by_title_keyword: false,
                 title_keyword: "",
+                filter_by_tag_id_list: false,
+                tag_id_list: [],
                 ///任务相关
                 filter_by_task_priority: false,
                 task_priority_list: [],
@@ -161,7 +178,7 @@ const MyTaskPanel = () => {
         {
             title: `级别`,
             width: 100,
-            align: 'center',
+            align: 'left',
             dataIndex: ['extra_info', 'ExtraBugInfo', 'level'],
             render: (v: number) => <EditSelect
                 allowClear={false}
@@ -176,7 +193,7 @@ const MyTaskPanel = () => {
         {
             title: '优先级',
             width: 120,
-            align: 'center',
+            align: 'left',
             render: (_, record: IssueInfo) => {
                 const val = record.issue_type == ISSUE_TYPE_TASK ? record.extra_info.ExtraTaskInfo?.priority : record.extra_info.ExtraBugInfo?.priority;
                 const items = record.issue_type == ISSUE_TYPE_TASK ? taskPrioritySelectItems : bugPrioritySelectItems;
@@ -194,7 +211,7 @@ const MyTaskPanel = () => {
         {
             title: `软件版本`,
             width: 150,
-            align: 'center',
+            align: 'left',
             ellipsis: true,
             dataIndex: ['extra_info', 'ExtraBugInfo', 'software_version'],
             issueType: ISSUE_TYPE_BUG,
@@ -238,7 +255,7 @@ const MyTaskPanel = () => {
             title: '处理人',
             dataIndex: 'exec_display_name',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (_, row: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={false}
@@ -252,7 +269,7 @@ const MyTaskPanel = () => {
             title: '验收人',
             dataIndex: 'check_display_name',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (_, row: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={false}
@@ -263,6 +280,32 @@ const MyTaskPanel = () => {
                 }} showEditIcon={false} />,
         },
         {
+            title: "标签",
+            dataIndex: ["basic_info", "tag_id_list"],
+            width: 200,
+            render: (_, row: IssueInfo) => (
+                <>
+                    {taskTagDefList != null && (
+                        <EditTag editable={false} tagIdList={row.basic_info.tag_id_list} tagDefList={taskTagDefList} onChange={() => { }} />
+                    )}
+                </>
+            ),
+            issueType: ISSUE_TYPE_TASK,
+        },
+        {
+            title: "标签",
+            dataIndex: ["basic_info", "tag_id_list"],
+            width: 200,
+            render: (_, row: IssueInfo) => (
+                <>
+                    {bugTagDefList != null && (
+                        <EditTag editable={false} tagIdList={row.basic_info.tag_id_list} tagDefList={bugTagDefList} onChange={() => { }} />
+                    )}
+                </>
+            ),
+            issueType: ISSUE_TYPE_BUG,
+        },
+        {
             title: (<span>
                 处理贡献&nbsp;
                 <Tooltip title={`当前事项关闭后，会给处理人增加的项目贡献值`} trigger="click">
@@ -271,7 +314,7 @@ const MyTaskPanel = () => {
             </span>),
             dataIndex: 'exec_award_point',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (v: number, row: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={row.user_issue_perm.can_set_award}
@@ -290,7 +333,7 @@ const MyTaskPanel = () => {
             </span>),
             dataIndex: 'check_award_point',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (v: number) => <EditSelect
                 allowClear={false}
                 editable={false}
@@ -304,7 +347,7 @@ const MyTaskPanel = () => {
             title: '预估开始时间',
             dataIndex: 'start_time',
             width: 120,
-            align: 'center',
+            align: 'left',
             render: (_, record) => <EditDate
                 editable={false}
                 hasTimeStamp={record.has_start_time}
@@ -317,7 +360,7 @@ const MyTaskPanel = () => {
             title: '预估完成时间',
             dataIndex: 'end_time',
             width: 120,
-            align: 'center',
+            align: 'left',
             render: (_, record) => <EditDate
                 editable={false}
                 hasTimeStamp={record.has_end_time}
@@ -330,7 +373,7 @@ const MyTaskPanel = () => {
             title: '预估工时',
             dataIndex: 'estimate_minutes',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (_, record: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={false}
@@ -344,7 +387,7 @@ const MyTaskPanel = () => {
             title: '剩余工时',
             dataIndex: 'remain_minutes',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (_, record: IssueInfo) => <EditSelect
                 allowClear={true}
                 editable={false}
@@ -358,7 +401,7 @@ const MyTaskPanel = () => {
             title: '创建者',
             dataIndex: 'create_display_name',
             width: 100,
-            align: 'center',
+            align: 'left',
             render: (v) => {
                 return v ? v : '-';
             },
@@ -370,6 +413,10 @@ const MyTaskPanel = () => {
     useEffect(() => {
         loadMyIssue();
     }, [projectStore.curProjectId, memberStore.myUnDoneIssueCount]);
+
+    useEffect(() => {
+        loadTagDefList();
+    }, [projectStore.curProjectId]);
 
     return (
         <>

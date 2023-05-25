@@ -25,6 +25,13 @@ export type CateInfo = {
 export type BaseRequirementInfo = {
     title: string;
     content: string;
+    tag_id_list: string[];
+};
+
+export type RequirementTag = {
+    tag_id: string;
+    tag_name: string;
+    bg_color: string;
 };
 
 export type RequirementInfo = {
@@ -43,6 +50,7 @@ export type RequirementInfo = {
     update_display_name: string;
     update_logo_uri: string;
     closed: boolean;
+    tag_info_list: RequirementTag[];
 
     kano_excite_value: number;//兴奋型
     kano_expect_value: number;//期望型
@@ -174,6 +182,8 @@ export type ListRequirementRequest = {
     has_link_issue: boolean;
     filter_by_closed: boolean;
     closed: boolean;
+    filter_by_tag_id_list: boolean;
+    tag_id_list: string[];
 
     offset: number;
     limit: number;
@@ -420,6 +430,18 @@ export type GetFourQInfoResponse = {
     four_q_info: FourQInfo;
 };
 
+export type UpdateTagIdListRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    tag_id_list: string[];
+};
+
+export type UpdateTagIdListResponse = {
+    code: number;
+    err_msg: string;
+};
+
 
 //创建需求分类
 export async function create_cate(request: CreateCateRequest): Promise<CreateCateResponse> {
@@ -498,6 +520,15 @@ export async function update_requirement(request: UpdateRequirementRequest): Pro
     const cmd = 'plugin:project_requirement_api|update_requirement';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateRequirementResponse>(cmd, {
+        request,
+    });
+}
+
+//更新标签
+export async function update_tag_id_list(request: UpdateTagIdListRequest): Promise<UpdateTagIdListResponse> {
+    const cmd = 'plugin:project_requirement_api|update_tag_id_list';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateTagIdListResponse>(cmd, {
         request,
     });
 }

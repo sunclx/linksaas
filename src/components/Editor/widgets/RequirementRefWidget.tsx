@@ -85,6 +85,8 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
             sort_type: REQ_SORT_UPDATE_TIME,//FIXME
+            filter_by_tag_id_list: false,
+            tag_id_list: [],
         }));
         setTotalCount(res.total_count);
         setRequirementList(res.requirement_list);

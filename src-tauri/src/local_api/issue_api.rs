@@ -56,6 +56,8 @@ pub async fn list_my_issue(
                 bug_priority_list: Vec::new(),
                 filter_by_bug_level: false,
                 bug_level_list: Vec::new(),
+                filter_by_tag_id_list: false,
+                tag_id_list: Vec::new(),
             }),
             sort_type: SortType::Dsc as i32,
             sort_key: SortKey::UpdateTime as i32,
@@ -114,6 +116,8 @@ pub async fn list_issue(
                 bug_priority_list: Vec::new(),
                 filter_by_bug_level: false,
                 bug_level_list: Vec::new(),
+                filter_by_tag_id_list: false,
+                tag_id_list: Vec::new(),
             }),
             sort_type: SortType::Dsc as i32,
             sort_key: SortKey::UpdateTime as i32,
@@ -207,6 +211,7 @@ pub fn convert_to_issue_list(issue_list: Vec<IssueInfo>) -> Vec<ModelIssueInfo> 
             return BasicIssueInfo {
                 title: "".into(),
                 content: "".into(),
+                tag_id_list: Vec::new(),
             };
         });
         let mut issue_type = "";
@@ -275,6 +280,7 @@ pub fn convert_to_bug_list(issue_list: Vec<IssueInfo>) -> Vec<BugInfo> {
                 return BasicIssueInfo {
                     title: "".into(),
                     content: "".into(),
+                    tag_id_list: Vec::new(),
                 };
             });
             let mut state = "";
@@ -347,6 +353,7 @@ pub fn convert_to_task_list(issue_list: Vec<IssueInfo>) -> Vec<TaskInfo> {
                 return BasicIssueInfo {
                     title: "".into(),
                     content: "".into(),
+                    tag_id_list: Vec::new(),
                 };
             });
             let mut state = "";

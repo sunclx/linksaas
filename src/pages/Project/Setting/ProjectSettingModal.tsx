@@ -8,6 +8,7 @@ import ChatSettingPanel from "./components/ChatSettingPanel";
 import AiSettingPanel from "./components/AiSettingPanel";
 import AlarmSettingPanel from "./components/AlarmSettingPanel";
 import TipListSettingPanel from "./components/TipListSettingPanel";
+import TagListSettingPanel from "./components/TagListSettingPanel";
 
 
 const ProjectSettingModal = () => {
@@ -27,6 +28,8 @@ const ProjectSettingModal = () => {
             setActiveKey("alarm");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_TIPLIST) {
             setActiveKey("tips");
+        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST) {
+            setActiveKey("tags");
         }
     }, [projectStore.showProjectSetting]);
 
@@ -35,6 +38,7 @@ const ProjectSettingModal = () => {
         <Modal open mask={false} footer={null}
             title={`${projectStore.curProject?.basic_info.project_name ?? ""} 项目设置`}
             bodyStyle={{ paddingTop: 0, overflowY: "hidden" }}
+            width={"600px"}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -55,8 +59,10 @@ const ProjectSettingModal = () => {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_AI;
                     } else if (key == "alarm") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_ALARM;
-                    } else if(key == "tips") {
+                    } else if (key == "tips") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TIPLIST;
+                    } else if (key == "tags") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
                     }
                 }}>
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
@@ -77,6 +83,9 @@ const ProjectSettingModal = () => {
                 </Tabs.TabPane>
                 <Tabs.TabPane key="tips" tab="经验集锦" disabled={disableTabs}>
                     {activeKey == "tips" && <TipListSettingPanel onChange={value => setDisableTabs(value)} title="经验集锦" />}
+                </Tabs.TabPane>
+                <Tabs.TabPane key="tags" tab="标签设置" disabled={disableTabs}>
+                    {activeKey == "tags" && <TagListSettingPanel onChange={value => setDisableTabs(value)} title="标签设置" />}
                 </Tabs.TabPane>
             </Tabs>
         </Modal>

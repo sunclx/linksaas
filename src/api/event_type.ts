@@ -832,6 +832,32 @@ export namespace project_doc {
     return ret_list;
   }
 
+  export type TagInfo = {
+    tag_id: string;
+    tag_name: string;
+  };
+
+  export type UpdateTagEvent = {
+    doc_space_id: string;
+    doc_space_name: string;
+    doc_id: string;
+    title: string;
+    old_tag_list: TagInfo[];
+    new_tag_list: TagInfo[];
+  };
+
+  function get_update_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateTagEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在文档空间 ${inner.doc_space_name} 修改文档`),
+      new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
+      new LinkNoneInfo(`新标签 ${inner.new_tag_list.map(tag => tag.tag_name).join(",")} 旧标签 ${inner.old_tag_list.map(tag => tag.tag_name).join(",")}`),
+    ];
+  }
+
   export type MoveDocToRecycleEvent = {
     doc_space_id: string;
     doc_space_name: string;
@@ -947,6 +973,7 @@ export namespace project_doc {
     RemoveSpaceEvent?: RemoveSpaceEvent;
     CreateDocEvent?: CreateDocEvent;
     UpdateDocEvent?: UpdateDocEvent;
+    UpdateTagEvent?: UpdateTagEvent;
     MoveDocToRecycleEvent?: MoveDocToRecycleEvent;
     MoveDocEvent?: MoveDocEvent;
     RemoveDocEvent?: RemoveDocEvent;
@@ -969,6 +996,8 @@ export namespace project_doc {
       return get_create_doc_simple_content(ev, skip_prj_name, inner.CreateDocEvent);
     } else if (inner.UpdateDocEvent !== undefined) {
       return get_update_doc_simple_content(ev, skip_prj_name, inner.UpdateDocEvent);
+    } else if (inner.UpdateTagEvent !== undefined) {
+      return get_update_tag_simple_content(ev, skip_prj_name, inner.UpdateTagEvent);
     } else if (inner.MoveDocToRecycleEvent !== undefined) {
       return get_move_doc_to_recycle_simple_content(ev, skip_prj_name, inner.MoveDocToRecycleEvent);
     } else if (inner.MoveDocEvent !== undefined) {
@@ -1558,6 +1587,37 @@ namespace issue {
     return ret_list;
   }
 
+  export type TagInfo = {
+    tag_id: string;
+    tag_name: string;
+  };
+
+  export type UpdateTagEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    old_tag_list: TagInfo[];
+    new_tag_list: TagInfo[];
+  }
+
+  function get_update_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateTagEvent,
+  ): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const ret_list = [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+      ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+      ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+    ret_list.push(new LinkNoneInfo(`新标签 ${inner.new_tag_list.map(tag => tag.tag_name).join(",")} 旧标签 ${inner.old_tag_list.map(tag => tag.tag_name).join(",")}`));
+    return ret_list;
+  }
+
   export type RemoveEvent = {
     issue_id: string;
     issue_type: number;
@@ -2111,6 +2171,7 @@ namespace issue {
   export class AllIssueEvent {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
+    UpdateTagEvent?: UpdateTagEvent;
     RemoveEvent?: RemoveEvent;
     AssignExecUserEvent?: AssignExecUserEvent;
     AssignCheckUserEvent?: AssignCheckUserEvent;
@@ -2134,6 +2195,7 @@ namespace issue {
     SetDeadLineTimeEvent?: SetDeadLineTimeEvent;
     CancelDeadLineTimeEvent?: CancelDeadLineTimeEvent;
   }
+
   export function get_simple_content_inner(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -2143,6 +2205,8 @@ namespace issue {
       return get_create_simple_content(ev, skip_prj_name, inner.CreateEvent);
     } else if (inner.UpdateEvent !== undefined) {
       return get_update_simple_content(ev, skip_prj_name, inner.UpdateEvent);
+    } else if (inner.UpdateTagEvent !== undefined) {
+      return get_update_tag_simple_content(ev, skip_prj_name, inner.UpdateTagEvent);
     } else if (inner.RemoveEvent !== undefined) {
       return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
     } else if (inner.AssignExecUserEvent !== undefined) {
@@ -4585,6 +4649,32 @@ namespace requirement {
     ];
   }
 
+  export type TagInfo = {
+    tag_id: string;
+    tag_name: string;
+  };
+
+  export type UpdateTagEvent = {
+    requirement_id: string;
+    title: string;
+    cate_id: string;
+    cate_name: string;
+    old_tag_list: TagInfo[];
+    new_tag_list: TagInfo[];
+  };
+
+  function get_update_tag_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateTagEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 修改需求`),
+      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
+      new LinkNoneInfo(`新标签 ${inner.new_tag_list.map(tag => tag.tag_name).join(",")} 旧标签 ${inner.old_tag_list.map(tag => tag.tag_name).join(",")}`),
+    ];
+  }
+
   export type SetRequirementCateEvent = {
     requirement_id: string;
     title: string;
@@ -4738,6 +4828,7 @@ namespace requirement {
     RemoveCateEvent?: RemoveCateEvent;
     CreateRequirementEvent?: CreateRequirementEvent;
     UpdateRequirementEvent?: UpdateRequirementEvent;
+    UpdateTagEvent?: UpdateTagEvent;
     SetRequirementCateEvent?: SetRequirementCateEvent;
     RemoveRequirementEvent?: RemoveRequirementEvent;
     LinkIssueEvent?: LinkIssueEvent;
@@ -4754,41 +4845,31 @@ namespace requirement {
   ): LinkInfo[] {
     if (inner.CreateCateEvent !== undefined) {
       return get_create_cate_simple_content(ev, skip_prj_name, inner.CreateCateEvent);
-    }
-    if (inner.UpdateCateEvent !== undefined) {
+    } else if (inner.UpdateCateEvent !== undefined) {
       return get_update_cate_simple_content(ev, skip_prj_name, inner.UpdateCateEvent);
-    }
-    if (inner.RemoveCateEvent !== undefined) {
+    } else if (inner.RemoveCateEvent !== undefined) {
       return get_remove_cate_simple_content(ev, skip_prj_name, inner.RemoveCateEvent);
-    }
-    if (inner.CreateRequirementEvent !== undefined) {
+    } else if (inner.CreateRequirementEvent !== undefined) {
       return get_create_req_simple_content(ev, skip_prj_name, inner.CreateRequirementEvent);
-    }
-    if (inner.UpdateRequirementEvent !== undefined) {
+    } else if (inner.UpdateRequirementEvent !== undefined) {
       return get_update_req_simple_content(ev, skip_prj_name, inner.UpdateRequirementEvent);
-    }
-    if (inner.SetRequirementCateEvent !== undefined) {
+    } else if (inner.UpdateTagEvent !== undefined) {
+      return get_update_tag_simple_content(ev, skip_prj_name, inner.UpdateTagEvent);
+    } else if (inner.SetRequirementCateEvent !== undefined) {
       return get_set_req_cate_simple_content(ev, skip_prj_name, inner.SetRequirementCateEvent);
-    }
-    if (inner.RemoveRequirementEvent !== undefined) {
+    } else if (inner.RemoveRequirementEvent !== undefined) {
       return get_remove_req_simple_content(ev, skip_prj_name, inner.RemoveRequirementEvent);
-    }
-    if (inner.LinkIssueEvent !== undefined) {
+    } else if (inner.LinkIssueEvent !== undefined) {
       return get_link_issue_simple_content(ev, skip_prj_name, inner.LinkIssueEvent);
-    }
-    if (inner.UnlinkIssueEvent !== undefined) {
+    } else if (inner.UnlinkIssueEvent !== undefined) {
       return get_unlink_issue_simple_content(ev, skip_prj_name, inner.UnlinkIssueEvent);
-    }
-    if (inner.CloseRequirementEvent !== undefined) {
+    } else if (inner.CloseRequirementEvent !== undefined) {
       return get_close_req_simple_content(ev, skip_prj_name, inner.CloseRequirementEvent);
-    }
-    if (inner.OpenRequirementEvent !== undefined) {
+    } else if (inner.OpenRequirementEvent !== undefined) {
       return get_open_req_simple_content(ev, skip_prj_name, inner.OpenRequirementEvent);
-    }
-    if (inner.SetKanoInfoEvent !== undefined) {
+    } else if (inner.SetKanoInfoEvent !== undefined) {
       return get_set_kano_simple_content(ev, skip_prj_name, inner.SetKanoInfoEvent);
-    }
-    if (inner.SetFourQInfoEvent !== undefined) {
+    } else if (inner.SetFourQInfoEvent !== undefined) {
       return get_set_four_q_simple_content(ev, skip_prj_name, inner.SetFourQInfoEvent);
     }
     return [new LinkNoneInfo('未知事件')];
