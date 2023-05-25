@@ -22,6 +22,9 @@ import Pagination from "@/components/Pagination";
 import Dropdown from "antd/lib/dropdown";
 import BatchCreate from "./components/BatchCreate";
 import { Space } from "antd";
+import type { TagInfo } from "@/api/project";
+import { list_tag, TAG_SCOPRE_TASK, TAG_SCOPRE_BUG } from "@/api/project";
+
 
 const tabList = [
     {
@@ -65,6 +68,7 @@ const IssueList = () => {
         check_user_id_list: filterState?.checkUserIdList ?? [],
         software_version_list: [],
         level_list: [],
+        tag_id: "",
     });
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
     const [issueIdList, setIssueIdList] = useState<string[]>([]);
@@ -72,6 +76,8 @@ const IssueList = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [stageIssue, setStageIssue] = useState<IssueInfo | undefined>(undefined);
     const [showBatchModal, setShowBatchModal] = useState(false);
+
+    const [tagDefList, setTagDefList] = useState<TagInfo[] | null>(null);
 
     const updateIssue = async (issueId: string) => {
         const tmpList = issueList.slice();
@@ -146,8 +152,8 @@ const IssueList = () => {
             bug_priority_list: !getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级,
             filter_by_title_keyword: false,
             title_keyword: "",
-            filter_by_tag_id_list: false,
-            tag_id_list: [],
+            filter_by_tag_id_list: (filterData.tag_id ?? "") != "",
+            tag_id_list: (filterData.tag_id ?? "") == "" ? [] : [filterData.tag_id!],
         };
         const req: ListRequest = {
             session_id: userStore.sessionId,
@@ -176,9 +182,23 @@ const IssueList = () => {
         }
     };
 
+    const loadTagDefList = async () => {
+        const tagScope = getIsTask(location.pathname) ? TAG_SCOPRE_TASK : TAG_SCOPRE_BUG;
+        const res = await request(list_tag({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            tag_scope_type: tagScope,
+        }));
+        setTagDefList(res.tag_info_list);
+    };
+
     useEffect(() => {
         loadIssueList();
-    }, [curPage, activeVal, filterData, projectStore.curProjectId])
+    }, [curPage, activeVal, filterData, projectStore.curProjectId]);
+
+    useEffect(() => {
+        loadTagDefList();
+    }, [projectStore.curProjectId]);
 
     return (
         <CardWrap title={`${getIssueText(location.pathname)}列表`} extra={
@@ -239,9 +259,13 @@ const IssueList = () => {
                         isFilter={isFilter}
                         setIsFilter={setIsFilter}
                     />
-                    {isFilter && <Filtration setFilterData={setFilterData} activeVal={activeVal} filterData={filterData} />}
+                    {isFilter && tagDefList != null && <Filtration setFilterData={setFilterData} activeVal={activeVal} filterData={filterData} tagDefList={tagDefList} />}
                 </div>
-                <IssueEditList isFilter={isFilter} dataSource={issueList} issueIdList={issueIdList} onChange={issueId => updateIssue(issueId)} showStage={issueId => showStage(issueId)} />
+                {tagDefList != null && (
+                    <IssueEditList isFilter={isFilter} dataSource={issueList}
+                        issueIdList={issueIdList} onChange={issueId => updateIssue(issueId)} showStage={issueId => showStage(issueId)}
+                        tagDefList={tagDefList} />
+                )}
                 <Pagination
                     total={totalCount}
                     pageSize={PAGE_SIZE}
