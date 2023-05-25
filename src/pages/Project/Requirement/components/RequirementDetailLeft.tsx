@@ -52,7 +52,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
             base_info: {
                 title: props.requirement.base_info.title,
                 content: JSON.stringify(data),
-                tag_id_list: [],
+                tag_id_list: props.requirement.base_info.tag_id_list,
             },
         }));
         if (res) {

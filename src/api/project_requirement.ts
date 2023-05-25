@@ -34,7 +34,6 @@ export type RequirementTag = {
     bg_color: string;
 };
 
-
 export type RequirementInfo = {
     requirement_id: string;
     cate_id: string;
