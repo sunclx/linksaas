@@ -177,7 +177,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       title: `${getIsTask(pathname) ? '任务' : '当前'}阶段`,
       dataIndex: 'state',
       width: 100,
-      align: 'left',
+      align: 'center',
       render: (val: number, row: IssueInfo) => {
         const v = issueState[val];
         let cursor = "auto";
@@ -198,7 +198,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
               background: `rgb(${getStateColor(val)} / 20%)`,
               width: '60px',
               borderRadius: '50px',
-              textAlign: 'left',
+              textAlign: 'center',
               color: `rgb(${getStateColor(val)})`,
               cursor: `${cursor}`,
               margin: '0 auto',

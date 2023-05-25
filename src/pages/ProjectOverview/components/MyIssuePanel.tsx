@@ -223,7 +223,7 @@ const MyTaskPanel = () => {
             title: '当前阶段',
             dataIndex: 'state',
             width: 100,
-            align: 'left',
+            align: 'center',
             render: (val: number, row: IssueInfo) => {
                 const v = issueState[val];
                 let tips = "";
@@ -241,7 +241,7 @@ const MyTaskPanel = () => {
                             background: `rgb(${getStateColor(val)} / 20%)`,
                             width: '60px',
                             borderRadius: '50px',
-                            textAlign: 'left',
+                            textAlign: 'center',
                             color: `rgb(${getStateColor(val)})`,
                             margin: '0 auto',
                         }}
