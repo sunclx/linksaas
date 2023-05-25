@@ -62,6 +62,7 @@ export const SORT_KEY_BUG_LEVEL: SORT_KEY = 42;
 type BasicIssueInfo = {
   title: string;
   content: string;
+  tag_id_list: string[];
 };
 
 export type ExtraTaskInfo = {
@@ -169,6 +170,9 @@ export type ListParam = {
   to_update_time: number;
   filter_by_title_keyword: boolean;
   title_keyword: string;
+  filter_by_tag_id_list: boolean;
+  tag_id_list: string[];
+
   ///任务相关
   filter_by_task_priority: boolean;
   task_priority_list: TASK_PRIORITY[];
@@ -199,7 +203,15 @@ type UserIssuePerm = {
   can_opt_dependence: boolean;
   can_opt_sub_issue: boolean;
   can_set_award: boolean;
+  can_update: boolean;
 };
+
+export type IssueTag = {
+  tag_id: string;
+  tag_name: string;
+  bg_color: string;
+};
+
 
 export type IssueInfo = {
   issue_id: string;
@@ -221,6 +233,7 @@ export type IssueInfo = {
   msg_count: number;
   depend_me_count: number;
   re_open_count: number;
+  tag_info_list: IssueTag[];
 
   ///计划相关字段
   has_start_time: boolean;
@@ -632,6 +645,14 @@ export type CancelDeadLineTimeResponse = {
   err_msg: string;
 };
 
+export type UpdateTagIdListRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  tag_id_list: string[];
+}
+
+
 
 //创建工单，根据类型区分是任务还是缺陷
 export async function create(request: CreateRequest): Promise<CreateResponse> {
@@ -683,6 +704,15 @@ export async function remove(
 //更新工单
 export async function update(request: UpdateRequest): Promise<UpdateResponse> {
   const cmd = 'plugin:project_issue_api|update';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateResponse>(cmd, {
+    request,
+  });
+}
+
+//更新标签
+export async function update_tag_id_list(request: UpdateTagIdListRequest): Promise<UpdateResponse> {
+  const cmd = 'plugin:project_issue_api|update_tag_id_list';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<UpdateResponse>(cmd, {
     request,

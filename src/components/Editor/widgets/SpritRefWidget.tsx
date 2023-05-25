@@ -54,6 +54,8 @@ const listIssueBySprit = async (sessionId: string, projectId: string, spritId: s
             to_update_time: 0,
             filter_by_title_keyword: false,
             title_keyword: "",
+            filter_by_tag_id_list: false,
+            tag_id_list: [],
             ///任务相关
             filter_by_task_priority: false,
             task_priority_list: [],

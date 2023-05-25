@@ -4,6 +4,12 @@ export type BaseDocSpace = {
     title: string;
 };
 
+export type DocTag = {
+    tag_id: string;
+    tag_name: string;
+    bg_color: string;
+};
+
 export type DocKey = {
     doc_space_id: string;
     project_id: string;
@@ -12,7 +18,8 @@ export type DocKey = {
     create_time: number;
     update_time: number;
     create_user_id: string;
-    tag_list: string[];
+    // tag_list: string[];
+    tag_info_list: DocTag[];
     msg_count: number;
     update_user_id: string;
     create_display_name: string;
@@ -33,7 +40,8 @@ export type DocPerm = {
 export type BaseDoc = {
     title: string;
     content: string;
-    tag_list: string[];
+    // tag_list: string[];
+    tag_id_list: string[];
     doc_perm: DocPerm;
 };
 
@@ -56,14 +64,18 @@ export type Doc = {
     update_display_name: string;
     update_logo_uri: string;
     my_watch: boolean;
+    tag_info_list: DocTag[];
     user_perm: UserPerm;
 };
 
 export type ListDocParam = {
-    filter_by_tag: boolean;
-    tag_list: string[];
+    // filter_by_tag: boolean;
+    // tag_list: string[];
     filter_by_watch: boolean;
     watch: boolean;
+    filter_by_tag_id: boolean;
+    tag_id_list: string[];
+
 };
 
 export type DocKeyHistory = {
@@ -233,32 +245,17 @@ export type UpdateDocContentResponse = {
     err_msg: string;
 };
 
-
-export type UpdateDocTagsRequest = {
+export type UpdateTagIdListRequest = {
     session_id: string;
     project_id: string;
     doc_space_id: string;
     doc_id: string;
-    tag_list: string[];
+    tag_id_list: string[];
 };
 
-export type UpdateDocTagsResponse = {
+export type UpdateTagIdListResponse = {
     code: number;
     err_msg: string;
-};
-
-
-export type ListDocTagsRequest = {
-    session_id: string;
-    project_id: string;
-    filter_by_doc_space_id: boolean;
-    doc_space_id: string;
-};
-
-export type ListDocTagsResponse = {
-    code: number;
-    err_msg: string;
-    tag_list: string[];
 };
 
 export type ListDocKeyRequest = {
@@ -619,29 +616,20 @@ export async function update_doc_content(request: UpdateDocContentRequest): Prom
     });
 }
 
-//更新文档标签
-export async function update_doc_tags(request: UpdateDocTagsRequest): Promise<UpdateDocTagsResponse> {
-    const cmd = 'plugin:project_doc_api|update_doc_tags';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdateDocTagsResponse>(cmd, {
-        request,
-    });
-}
-
-//列出所有文档标签
-export async function list_doc_tags(request: ListDocTagsRequest): Promise<ListDocTagsResponse> {
-    const cmd = 'plugin:project_doc_api|list_doc_tags';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListDocTagsResponse>(cmd, {
-        request,
-    });
-}
-
 //列出文档key
 export async function list_doc_key(request: ListDocKeyRequest): Promise<ListDocKeyResponse> {
     const cmd = 'plugin:project_doc_api|list_doc_key';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListDocKeyResponse>(cmd, {
+        request,
+    });
+}
+
+//更新标签
+export async function update_tag_id_list(request: UpdateTagIdListRequest): Promise<UpdateTagIdListResponse> {
+    const cmd = 'plugin:project_doc_api|update_tag_id_list';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateTagIdListResponse>(cmd, {
         request,
     });
 }

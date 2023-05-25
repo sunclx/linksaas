@@ -1,5 +1,12 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type TAG_SCOPRE_TYPE = number;
+export const TAG_SCOPRE_ALL: TAG_SCOPRE_TYPE = 0;
+export const TAG_SCOPRE_DOC: TAG_SCOPRE_TYPE = 1;
+export const TAG_SCOPRE_TASK: TAG_SCOPRE_TYPE = 2;
+export const TAG_SCOPRE_BUG: TAG_SCOPRE_TYPE = 3;
+export const TAG_SCOPRE_REQ: TAG_SCOPRE_TYPE = 4;
+
 export type BasicProjectInfo = {
   project_name: string;
   project_desc: string;
@@ -25,18 +32,18 @@ export type Setting = {
   disable_sprit: boolean;
 };
 
-type CreateResponse = {
+export type CreateResponse = {
   code: number;
   err_msg: string;
   project_id: string;
 };
 
-type UpdateResponse = {
+export type UpdateResponse = {
   code: number;
   err_msg: string;
 };
 
-type UserProjectPerm = {
+export type UserProjectPerm = {
   can_open: boolean;
   can_close: boolean;
   can_update: boolean;
@@ -46,6 +53,18 @@ type UserProjectPerm = {
   can_remove: boolean;
   can_admin: boolean;
 };
+
+export type TagInfo = {
+  tag_id: string;
+  tag_name: string;
+  create_time: number;
+  bg_color: string;
+  use_in_doc: boolean;
+  use_in_task: boolean;
+  use_in_bug: boolean;
+  use_in_req: boolean;
+};
+
 
 export type ProjectInfo = {
   project_id: string;
@@ -167,6 +186,65 @@ export type UpdateTipListResponse = {
   code: number;
   err_msg: string;
 };
+
+export type AddTagRequest = {
+  session_id: string;
+  project_id: string;
+  tag_name: string;
+  bg_color: string;
+  use_in_doc: boolean;
+  use_in_task: boolean;
+  use_in_bug: boolean;
+  use_in_req: boolean;
+};
+
+export type AddTagResponse = {
+  code: number;
+  err_msg: string;
+  tag_id: string;
+};
+
+export type UpdateTagRequest = {
+  session_id: string;
+  project_id: string;
+  tag_id: string;
+  tag_name: string;
+  bg_color: string;
+  use_in_doc: boolean;
+  use_in_task: boolean;
+  use_in_bug: boolean;
+  use_in_req: boolean;
+};
+
+export type UpdateTagResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type RemoveTagRequest = {
+  session_id: string;
+  project_id: string;
+  tag_id: string;
+};
+
+export type RemoveTagResponse = {
+  code: number;
+  err_msg: string;
+};
+
+
+export type ListTagRequest = {
+  session_id: string;
+  project_id: string;
+  tag_scope_type: TAG_SCOPRE_TYPE;
+};
+
+export type ListTagResponse = {
+  code: number;
+  err_msg: string;
+  tag_info_list: TagInfo[];
+};
+
 
 
 //创建项目
@@ -353,6 +431,42 @@ export async function update_tip_list(request: UpdateTipListRequest): Promise<Up
   const cmd = 'plugin:project_api|update_tip_list';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<GenAiTokenResponse>(cmd, {
+    request,
+  });
+}
+
+//增加标签
+export async function add_tag(request: AddTagRequest): Promise<AddTagResponse> {
+  const cmd = 'plugin:project_api|add_tag';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<AddTagResponse>(cmd, {
+    request,
+  });
+}
+
+//更新标签
+export async function update_tag(request: UpdateTagRequest): Promise<UpdateTagResponse> {
+  const cmd = 'plugin:project_api|update_tag';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateTagResponse>(cmd, {
+    request,
+  });
+}
+
+//删除标签
+export async function remove_tag(request: RemoveTagRequest): Promise<RemoveTagResponse> {
+  const cmd = 'plugin:project_api|remove_tag';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<RemoveTagResponse>(cmd, {
+    request,
+  });
+}
+
+//列出标签
+export async function list_tag(request: ListTagRequest): Promise<ListTagResponse> {
+  const cmd = 'plugin:project_api|list_tag';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListTagResponse>(cmd, {
     request,
   });
 }

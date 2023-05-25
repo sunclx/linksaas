@@ -45,6 +45,8 @@ export default class IssueStore {
                 to_update_time: 0,
                 filter_by_title_keyword: false,
                 title_keyword: "",
+                filter_by_tag_id_list: false,
+                tag_id_list: [],
                 ///任务相关
                 filter_by_task_priority: false,
                 task_priority_list: [],
@@ -63,9 +65,9 @@ export default class IssueStore {
         };
         const res = await request(issueApi.list(req));
         runInAction(() => {
-            if(issueType == issueApi.ISSUE_TYPE_TASK){
+            if (issueType == issueApi.ISSUE_TYPE_TASK) {
                 this._prjTodoTaskList = res.info_list;
-            }else if (issueType == issueApi.ISSUE_TYPE_BUG) {
+            } else if (issueType == issueApi.ISSUE_TYPE_BUG) {
                 this._prjTodoBugList = res.info_list;
             }
         });

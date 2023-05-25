@@ -375,6 +375,119 @@ async fn update_tip_list<R: Runtime>(
 }
 
 
+#[tauri::command]
+async fn add_tag<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: AddTagRequest,
+) -> Result<AddTagResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.add_tag(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == add_tag_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("add_tag".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn update_tag<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateTagRequest,
+) -> Result<UpdateTagResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.update_tag(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_tag_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_tag".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_tag<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveTagRequest,
+) -> Result<RemoveTagResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.remove_tag(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_tag_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_tag".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_tag<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListTagRequest,
+) -> Result<ListTagResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectApiClient::new(chan.unwrap());
+    match client.list_tag(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_tag_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_tag".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
 pub struct ProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -397,6 +510,10 @@ impl<R: Runtime> ProjectApiPlugin<R> {
                 set_ai_gateway,
                 gen_ai_token,
                 update_tip_list,
+                add_tag,
+                update_tag,
+                remove_tag,
+                list_tag,
             ]),
         }
     }

@@ -7,7 +7,8 @@ import { Card, Form, Input, Menu, Popover, Select, Space, Table, message } from 
 import type { CateInfo, RequirementInfo, REQ_SORT_TYPE } from '@/api/project_requirement';
 import {
     list_cate, list_requirement, update_requirement, set_requirement_cate, open_requirement, close_requirement,
-    REQ_SORT_UPDATE_TIME, REQ_SORT_CREATE_TIME, REQ_SORT_KANO, REQ_SORT_URGENT, REQ_SORT_IMPORTANT
+    REQ_SORT_UPDATE_TIME, REQ_SORT_CREATE_TIME, REQ_SORT_KANO, REQ_SORT_URGENT, REQ_SORT_IMPORTANT,
+    update_tag_id_list
 } from '@/api/project_requirement';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -20,6 +21,9 @@ import moment from 'moment';
 import { EditText } from "@/components/EditCell/EditText";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { LinkRequirementInfo } from "@/stores/linkAux";
+import type { TagInfo } from "@/api/project";
+import { list_tag, TAG_SCOPRE_REQ } from "@/api/project";
+import { EditTag } from "@/components/EditCell/EditTag";
 
 const PAGE_SIZE = 10;
 
@@ -44,6 +48,18 @@ const RequirementList = () => {
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [reqInfoList, setReqInfoList] = useState<RequirementInfo[]>([]);
+
+    const [tagDefList, setTagDefList] = useState<TagInfo[]>([]);
+    const [filterTagId, setFilterTagId] = useState<string | null>(null);
+
+    const loadTagDefList = async () => {
+        const res = await request(list_tag({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            tag_scope_type: TAG_SCOPRE_REQ,
+        }));
+        setTagDefList(res.tag_info_list);
+    };
 
     const loadCateList = async () => {
         const res = await request(list_cate({
@@ -85,6 +101,8 @@ const RequirementList = () => {
             has_link_issue: hasLinkIssue == null ? false : hasLinkIssue,
             filter_by_closed: filterClosed != null,
             closed: filterClosed == null ? false : filterClosed,
+            filter_by_tag_id_list: (filterTagId ?? "") != "",
+            tag_id_list: (filterTagId ?? "") == "" ? [] : [filterTagId!],
             sort_type: sortType,
         }));
         setTotalCount(res.total_count);
@@ -112,6 +130,7 @@ const RequirementList = () => {
                                     base_info: {
                                         title: title,
                                         content: row.base_info.content,
+                                        tag_id_list: row.base_info.tag_id_list,
                                     },
                                 }));
                                 return true;
@@ -159,6 +178,39 @@ const RequirementList = () => {
                         }
                         return false;
                     }} showEditIcon={true} allowClear={false} />
+            ),
+        },
+        {
+            title: "标签",
+            width: 200,
+            render: (_, row: RequirementInfo) => (
+                <>
+                    {tagDefList != null && (
+                        <EditTag editable={projectStore.isAdmin} tagIdList={row.base_info.tag_id_list} tagDefList={tagDefList}
+                            onChange={(tagIdList: string[]) => {
+                                request(update_tag_id_list({
+                                    session_id: userStore.sessionId,
+                                    project_id: row.project_id,
+                                    requirement_id: row.requirement_id,
+                                    tag_id_list: tagIdList,
+                                })).then(() => {
+                                    const tmpList = reqInfoList.slice();
+                                    const index = tmpList.findIndex(item => item.requirement_id == row.requirement_id);
+                                    if (index != -1) {
+                                        tmpList[index].base_info.tag_id_list = tagIdList;
+                                        tmpList[index].tag_info_list = tagDefList.filter(tag => tagIdList.includes(tag.tag_id)).map(tag => (
+                                            {
+                                                tag_id: tag.tag_id,
+                                                tag_name: tag.tag_name,
+                                                bg_color: tag.bg_color,
+                                            }
+                                        ));
+                                        setReqInfoList(tmpList);
+                                    }
+                                });
+                            }} />
+                    )}
+                </>
             ),
         },
         {
@@ -251,11 +303,14 @@ const RequirementList = () => {
 
     useEffect(() => {
         loadCateList();
+        loadTagDefList();
     }, [projectStore.curProjectId]);
 
     useEffect(() => {
         loadReqInfoList();
-    }, [curPage, curCateId, keyword, hasLinkIssue, filterClosed, sortType])
+    }, [curPage, curCateId, keyword, hasLinkIssue, filterClosed, sortType, filterTagId]);
+
+
 
     return (
         <CardWrap title="需求列表" extra={
@@ -336,23 +391,35 @@ const RequirementList = () => {
                         <Card bordered={false}
                             extra={<Space>
                                 <Form layout="inline">
-                                    <Form.Item label="需求标题">
-                                        <Input value={keyword} style={{ width: 100 }} onChange={e => {
+                                    <Form.Item>
+                                        <Input value={keyword} style={{ width: 150 }} onChange={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
-                                            setKeyword(e.target.value);
-                                        }} />
+                                            setKeyword(e.target.value ?? "");
+                                        }} placeholder="标题:" allowClear />
                                     </Form.Item>
-                                    <Form.Item label="任务关联">
-                                        <Select style={{ width: 100 }} value={hasLinkIssue} onChange={value => setHasLinkIssue(value)}>
-                                            <Select.Option value={null}>全部</Select.Option>
+                                    <Form.Item>
+                                        <Select style={{ width: 100 }} value={hasLinkIssue} onChange={value => setHasLinkIssue(value ?? null)}
+                                            placeholder="任务关联:" allowClear>
                                             <Select.Option value={true}>有关联</Select.Option>
                                             <Select.Option value={false}>无关联</Select.Option>
                                         </Select>
                                     </Form.Item>
-                                    <Form.Item label="状态">
-                                        <Select style={{ width: 100 }} value={filterClosed} onChange={value => setFilterClosed(value)}>
-                                            <Select.Option value={null}>全部状态</Select.Option>
+                                    <Form.Item>
+                                        {tagDefList != null && (
+                                            <Select style={{ width: 100 }} value={filterTagId} onChange={value => setFilterTagId(value ?? null)}
+                                                placeholder="标签" allowClear>
+                                                {tagDefList.map(tag => (
+                                                    <Select.Option key={tag.tag_id} value={tag.tag_id}>
+                                                        <span style={{ padding: "2px 4px", backgroundColor: tag.bg_color }}>{tag.tag_name}</span>
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item>
+                                        <Select style={{ width: 100 }} value={filterClosed} onChange={value => setFilterClosed(value ?? null)}
+                                            placeholder="状态:" allowClear>
                                             <Select.Option value={false}>打开状态</Select.Option>
                                             <Select.Option value={true}>关闭状态</Select.Option>
                                         </Select>
@@ -369,7 +436,7 @@ const RequirementList = () => {
                                 </Form>
                             </Space>}>
                             <div className={s.table_wrap}>
-                                <Table rowKey="requirement_id" columns={columns} dataSource={reqInfoList} pagination={false} scroll={{ x: 1700 }} />
+                                <Table rowKey="requirement_id" columns={columns} dataSource={reqInfoList} pagination={false} scroll={{ x: 1900 }} />
                                 <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
                             </div>
                         </Card>
