@@ -645,6 +645,14 @@ export type CancelDeadLineTimeResponse = {
   err_msg: string;
 };
 
+export type UpdateTagIdListRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  tag_id_list: string[];
+}
+
+
 
 //创建工单，根据类型区分是任务还是缺陷
 export async function create(request: CreateRequest): Promise<CreateResponse> {
@@ -696,6 +704,15 @@ export async function remove(
 //更新工单
 export async function update(request: UpdateRequest): Promise<UpdateResponse> {
   const cmd = 'plugin:project_issue_api|update';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UpdateResponse>(cmd, {
+    request,
+  });
+}
+
+//更新标签
+export async function update_tag_id_list(request: UpdateTagIdListRequest): Promise<UpdateResponse> {
+  const cmd = 'plugin:project_issue_api|update_tag_id_list';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<UpdateResponse>(cmd, {
     request,

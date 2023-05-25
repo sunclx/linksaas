@@ -431,6 +431,18 @@ export type GetFourQInfoResponse = {
     four_q_info: FourQInfo;
 };
 
+export type UpdateTagIdListRequest = {
+    session_id: string;
+    project_id: string;
+    requirement_id: string;
+    tag_id_list: string[];
+};
+
+export type UpdateTagIdListResponse = {
+    code: number;
+    err_msg: string;
+};
+
 
 //创建需求分类
 export async function create_cate(request: CreateCateRequest): Promise<CreateCateResponse> {
@@ -509,6 +521,15 @@ export async function update_requirement(request: UpdateRequirementRequest): Pro
     const cmd = 'plugin:project_requirement_api|update_requirement';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateRequirementResponse>(cmd, {
+        request,
+    });
+}
+
+//更新标签
+export async function update_tag_id_list(request: UpdateTagIdListRequest): Promise<UpdateTagIdListResponse> {
+    const cmd = 'plugin:project_requirement_api|update_tag_id_list';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateTagIdListResponse>(cmd, {
         request,
     });
 }

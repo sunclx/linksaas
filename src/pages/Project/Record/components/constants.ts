@@ -437,6 +437,10 @@ export const docEvOptionList: CheckboxOptionType[] = [
         value: "updateDoc",
     },
     {
+        label: "更新标签",
+        value: "updateTag"
+    },
+    {
         label: "移动到回收站",
         value: "moveDocToRecycle",
     },
@@ -475,6 +479,7 @@ export const calcDocEvCfg = (values: string[] | undefined): DocEvCfg => {
         watch_doc: false,
         un_watch_doc: false,
         move_doc: false,
+        update_tag: false,
     };
     if (values == undefined) {
         return ret;
@@ -502,6 +507,8 @@ export const calcDocEvCfg = (values: string[] | undefined): DocEvCfg => {
             ret.un_watch_doc = true;
         } else if (value == "moveDoc") {
             ret.move_doc = true;
+        } else if (value == "updateTag") {
+            ret.update_tag = true;
         }
     });
     return ret;
@@ -541,6 +548,9 @@ export const genDocEvCfgValues = (cfg: DocEvCfg): string[] => {
     }
     if (cfg.move_doc) {
         retList.push("moveDoc");
+    }
+    if (cfg.update_tag) {
+        retList.push("updateTag");
     }
     return retList;
 }
@@ -1059,6 +1069,10 @@ export const issueEvOptionList: CheckboxOptionType[] = [
         value: "update",
     },
     {
+        label: "更新标签",
+        value: "updateTag",
+    },
+    {
         label: "删除工单",
         value: "remove",
     },
@@ -1174,6 +1188,7 @@ export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
         remove_dependence: false,
         set_dead_line_time: false,
         cancel_dead_line_time: false,
+        update_tag: false,
     };
     if (values == undefined) {
         return ret;
@@ -1227,6 +1242,8 @@ export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
             ret.set_dead_line_time = true;
         } else if (value == "cancelDeadLineTime") {
             ret.cancel_dead_line_time = true;
+        } else if (value == "updateTag") {
+            ret.update_tag = true;
         }
     });
     return ret;
@@ -1306,6 +1323,9 @@ export const genIssueEvCfgValues = (cfg: IssueEvCfg): string[] => {
     if (cfg.cancel_dead_line_time) {
         retList.push("cancelDeadLineTime");
     }
+    if (cfg.update_tag) {
+        retList.push("updateTag");
+    }
     return retList;
 };
 
@@ -1329,6 +1349,10 @@ export const requirementEvOptionList: CheckboxOptionType[] = [
     {
         label: "更新需求",
         value: "update_requirement",
+    },
+    {
+        label: "更新标签",
+        value: "update_tag",
     },
     {
         label: "移动需求",
@@ -1379,6 +1403,7 @@ export const calcRequirementEvCfg = (values: string[] | undefined): RequirementE
         open_requirement: false,
         set_kano_info: false,
         set_four_q_info: false,
+        update_tag: false,
     };
     if (values == undefined) {
         return ret;
@@ -1410,6 +1435,8 @@ export const calcRequirementEvCfg = (values: string[] | undefined): RequirementE
             ret.set_kano_info = true;
         } else if (value == "set_four_q_info") {
             ret.set_four_q_info = true;
+        } else if (value == "update_tag") {
+            ret.update_tag = true;
         }
     });
     return ret;
@@ -1455,6 +1482,9 @@ export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
     }
     if (cfg.set_four_q_info) {
         retList.push("set_four_q_info");
+    }
+    if (cfg.update_tag) {
+        retList.push("update_tag");
     }
     return retList;
 }

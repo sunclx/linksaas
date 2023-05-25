@@ -215,6 +215,7 @@ pub mod project_doc {
         RecoverDocEvent(events_doc::RecoverDocEvent),
         WatchDocEvent(events_doc::WatchDocEvent),
         UnWatchDocEvent(events_doc::UnWatchDocEvent),
+        UpdateTagEvent(events_doc::UpdateTagEvent),
     }
     pub fn decode_event(data: &Any) -> Option<Event> {
         if data.type_url == events_doc::CreateSpaceEvent::type_url() {
@@ -260,6 +261,10 @@ pub mod project_doc {
         } else if data.type_url == events_doc::UnWatchDocEvent::type_url() {
             if let Ok(ev) = events_doc::UnWatchDocEvent::decode(data.value.as_slice()) {
                 return Some(Event::UnWatchDocEvent(ev));
+            }
+        } else if data.type_url == events_doc::UpdateTagEvent::type_url() {
+            if let Ok(ev) = events_doc::UpdateTagEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateTagEvent(ev));
             }
         }
         None
@@ -458,6 +463,8 @@ pub mod issue {
 
         SetDeadLineTimeEvent(events_issue::SetDeadLineTimeEvent),
         CancelDeadLineTimeEvent(events_issue::CancelDeadLineTimeEvent),
+
+        UpdateTagEvent(events_issue::UpdateTagEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -557,6 +564,10 @@ pub mod issue {
         } else if data.type_url == events_issue::CancelDeadLineTimeEvent::type_url() {
             if let Ok(ev) = events_issue::CancelDeadLineTimeEvent::decode(data.value.as_slice()) {
                 return Some(Event::CancelDeadLineTimeEvent(ev));
+            }
+        } else if data.type_url == events_issue::UpdateTagEvent::type_url() {
+            if let Ok(ev) = events_issue::UpdateTagEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateTagEvent(ev));
             }
         }
         None
@@ -965,6 +976,7 @@ pub mod requirement {
         OpenRequirementEvent(events_requirement::OpenRequirementEvent),
         SetKanoInfoEvent(events_requirement::SetKanoInfoEvent),
         SetFourQInfoEvent(events_requirement::SetFourQInfoEvent),
+        UpdateTagEvent(events_requirement::UpdateTagEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -1035,6 +1047,10 @@ pub mod requirement {
         } else if data.type_url == events_requirement::SetFourQInfoEvent::type_url() {
             if let Ok(ev) = events_requirement::SetFourQInfoEvent::decode(data.value.as_slice()) {
                 return Some(Event::SetFourQInfoEvent(ev));
+            }
+        } else if data.type_url == events_requirement::UpdateTagEvent::type_url() {
+            if let Ok(ev) = events_requirement::UpdateTagEvent::decode(data.value.as_slice()){
+                return Some(Event::UpdateTagEvent(ev));
             }
         }
         None
