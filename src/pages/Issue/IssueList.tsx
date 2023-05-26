@@ -198,7 +198,7 @@ const IssueList = () => {
 
     useEffect(() => {
         loadTagDefList();
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId,projectStore.curProject?.tag_version]);
 
     return (
         <CardWrap title={`${getIssueText(location.pathname)}列表`} extra={

@@ -28,6 +28,9 @@ pub mod project {
         CreateBulletinNotice(notices_project::CreateBulletinNotice),
         UpdateBulletinNotice(notices_project::UpdateBulletinNotice),
         RemoveBulletinNotice(notices_project::RemoveBulletinNotice),
+        AddTagNotice(notices_project::AddTagNotice),
+        UpdateTagNotice(notices_project::UpdateTagNotice),
+        RemoveTagNotice(notices_project::RemoveTagNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -134,6 +137,18 @@ pub mod project {
             if let Ok(notice) = notices_project::RemoveBulletinNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::RemoveBulletinNotice(notice));
+            }
+        } else if data.type_url == notices_project::AddTagNotice::type_url() {
+            if let Ok(notice) = notices_project::AddTagNotice::decode(data.value.as_slice()) {
+                return Some(Notice::AddTagNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateTagNotice::type_url() {
+            if let Ok(notice) = notices_project::UpdateTagNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateTagNotice(notice));
+            }
+        } else if data.type_url == notices_project::RemoveTagNotice::type_url() {
+            if let Ok(notice) = notices_project::RemoveTagNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RemoveTagNotice(notice));
             }
         }
         None
