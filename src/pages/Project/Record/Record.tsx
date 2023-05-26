@@ -19,6 +19,7 @@ import type { LinkEventState } from '@/stores/linkAux';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import Button from '@/components/Button';
 import EventDescModal from './components/EventDescModal';
+import ExportModal from './components/ExportModal';
 
 const { Panel } = Collapse;
 
@@ -195,11 +196,12 @@ const ProjectRecord: React.FC = () => {
               e.preventDefault();
               localStore.setShowEventList(true);
             }}>研发事件大全</Button>
-            <Button type="link" onClick={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              localStore.setShowExportModal(true);
-            }}>导出研发事件</Button>
+            <Button type="link" disabled={!projectStore.isAdmin}
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                localStore.setShowExportModal(true);
+              }}>导出研发事件</Button>
             <Button className={style.subscribe_btn} type="link" disabled={!projectStore.isAdmin}
               onClick={e => {
                 e.stopPropagation();
@@ -352,6 +354,7 @@ const ProjectRecord: React.FC = () => {
         </Modal>
       )}
       {localStore.showEventList && <EventDescModal onCancel={() => localStore.setShowEventList(false)} />}
+      {localStore.showExportModal && <ExportModal onCancel={() => localStore.setShowExportModal(false)} />}
     </CardWrap>
   );
 };

@@ -97,8 +97,9 @@
       },
       "fs": {
         "readFile": true,
+        "writeFile": true,
         "scope": [
-          "$HOME/.linksaas/**"
+          "**"
         ]
       }
     },
