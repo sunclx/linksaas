@@ -18,6 +18,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import type { LinkEventState } from '@/stores/linkAux';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import Button from '@/components/Button';
+import EventDescModal from './components/EventDescModal';
 
 const { Panel } = Collapse;
 
@@ -52,6 +53,8 @@ const ProjectRecord: React.FC = () => {
     myDayAddonVersion: 0,
     activeKey: [] as string[],
     recordList: [] as RecordType[],
+    showEventList: false,
+    showExportModal: false,
     setActiveKey(user_id: string) {
       const index = this.activeKey.findIndex((value) => value === user_id);
 
@@ -143,6 +146,16 @@ const ProjectRecord: React.FC = () => {
         this.mapUserRecordList(resp);
       }
     },
+    setShowEventList(val: boolean) {
+      runInAction(() => {
+        this.showEventList = val;
+      });
+    },
+    setShowExportModal(val: boolean) {
+      runInAction(() => {
+        this.showExportModal = val;
+      });
+    }
   }));
 
   useEffect(() => {
@@ -174,19 +187,30 @@ const ProjectRecord: React.FC = () => {
         >
           补充工作记录
         </Button>
-        {projectStore.isAdmin && (
-          <Popover trigger="click" placement='bottom' content={
-            <div style={{ padding: "10px 10px" }}>
-              <Button className={style.subscribe_btn} type="link" onClick={e => {
+
+        <Popover trigger="click" placement='bottom' content={
+          <Space style={{ padding: "10px 10px" }} direction='vertical'>
+            <Button type="link" onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              localStore.setShowEventList(true);
+            }}>研发事件大全</Button>
+            <Button type="link" onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              localStore.setShowExportModal(true);
+            }}>导出研发事件</Button>
+            <Button className={style.subscribe_btn} type="link" disabled={!projectStore.isAdmin}
+              onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 linkAuxStore.goToEventSubscribeList(history);
-              }}>研发事件订阅</Button>
-            </div>
-          }>
-            <MoreOutlined />
-          </Popover>
-        )}
+              }}>订阅研发事件</Button>
+          </Space>
+        }>
+          <MoreOutlined />
+        </Popover>
+
 
       </Space>
     }>
@@ -327,6 +351,7 @@ const ProjectRecord: React.FC = () => {
           />
         </Modal>
       )}
+      {localStore.showEventList && <EventDescModal onCancel={() => localStore.setShowEventList(false)} />}
     </CardWrap>
   );
 };
