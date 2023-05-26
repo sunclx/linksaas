@@ -359,6 +359,12 @@ class NoticeStore {
       this.rootStore.projectStore.incBulletinVersion(notice.UpdateBulletinNotice.project_id);
     } else if (notice.RemoveBulletinNotice !== undefined) {
       this.rootStore.projectStore.incBulletinVersion(notice.RemoveBulletinNotice.project_id);
+    } else if (notice.AddTagNotice !== undefined) {
+      this.rootStore.projectStore.incTagVersion(notice.AddTagNotice.project_id);
+    } else if (notice.UpdateTagNotice !== undefined) {
+      this.rootStore.projectStore.incTagVersion(notice.UpdateTagNotice.project_id);
+    } else if (notice.RemoveTagNotice !== undefined) {
+      this.rootStore.projectStore.incTagVersion(notice.RemoveTagNotice.project_id);
     }
   }
 

@@ -113,6 +113,7 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
         }
         await loadTagList();
         setHasChange(false);
+        projectStore.incTagVersion(projectStore.curProjectId);
         message.info("保存成功");
     };
 

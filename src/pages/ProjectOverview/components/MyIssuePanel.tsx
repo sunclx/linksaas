@@ -416,7 +416,7 @@ const MyTaskPanel = () => {
 
     useEffect(() => {
         loadTagDefList();
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId,projectStore.curProject?.tag_version]);
 
     return (
         <>

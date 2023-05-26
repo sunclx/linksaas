@@ -303,8 +303,11 @@ const RequirementList = () => {
 
     useEffect(() => {
         loadCateList();
-        loadTagDefList();
     }, [projectStore.curProjectId]);
+
+    useEffect(() => {
+        loadTagDefList();
+    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     useEffect(() => {
         loadReqInfoList();

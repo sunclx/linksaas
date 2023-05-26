@@ -229,7 +229,7 @@ const DocList = () => {
 
     useEffect(() => {
         loadTagDefList();
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId,projectStore.curProject?.tag_version]);
 
     return (
         <Card
