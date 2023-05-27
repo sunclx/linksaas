@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCommands } from '@remirror/react';
 
 import { FloatingWrapper } from '@remirror/react';
@@ -18,6 +18,8 @@ export const Reminder: React.FC<ReminderProps> = (props) => {
   const channelMemberStore = useStores('channelMemberStore');
   const commands = useCommands();
 
+  const [searchValue, setSearchValue] = useState("");
+
   const memberList = () => {
     if (props.channelMember) {
       const memberUserIdLsit = channelMemberStore.channelMemberList.map(
@@ -32,7 +34,6 @@ export const Reminder: React.FC<ReminderProps> = (props) => {
 
   const changeUser = (all: boolean, memberUserId: string, displayName: string) => {
     commands.insertReminderUser(all, memberUserId, displayName);
-
     commands.insertText(' ');
   };
   return (
@@ -45,15 +46,17 @@ export const Reminder: React.FC<ReminderProps> = (props) => {
       <Select
         showSearch
         defaultOpen
+        autoFocus
         suffixIcon={false}
-        bordered={false}
+        onSearch={value => setSearchValue(value ?? "")}
+        autoClearSearchValue
         style={{ width: 200, padding: 0 }}
-        dropdownClassName={s.reminder_dropdown}
+        popupClassName={s.reminder_dropdown}
         dropdownRender={() => {
           return (
             <div className={s.reminder_modal}>
               <div className={s.user_wrap}>
-                {memberList().map((item) => {
+                {memberList().filter(item => item.member.display_name.includes(searchValue)).map((item) => {
                   return (
                     <div
                       className={s.reminder_item}
@@ -81,24 +84,7 @@ export const Reminder: React.FC<ReminderProps> = (props) => {
             </div>
           );
         }}
-      >
-        {/* <Select.OptGroup label="指定@成员" className="bbbbb">
-        {memberList().map((item) => {
-          return (
-            <Select.Option
-              className={s.reminder_item}
-              key={item.member.member_user_id}
-              value={item.member.display_name}
-            >
-              {item.member.display_name}
-            </Select.Option>
-          );
-        })}
-        </Select.OptGroup>
-        <Select.Option key="all" value="全部" className="ccccc">
-          全部
-      </Select.Option*/}
-      </Select>
+      />
     </FloatingWrapper>
   );
 };
