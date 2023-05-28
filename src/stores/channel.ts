@@ -109,11 +109,13 @@ class ChannelStore {
       return;
     }
     runInAction(() => {
-      const index = this._channelList.findIndex(item => item.channelInfo.channel_id == channelId);
+      const tmpList = this._channelList.slice();
+      const index = tmpList.findIndex(item => item.channelInfo.channel_id == channelId);
       if (index != -1) {
-        this._channelList[index].unreadMsgCount = statRes.stat!.unread_msg_count;
         chanInfo.unreadMsgCount = statRes.stat!.unread_msg_count;
+        tmpList[index] = chanInfo;
         this._channelMap.set(channelId, chanInfo);
+        this._channelList = tmpList;
       }
     });
   }
