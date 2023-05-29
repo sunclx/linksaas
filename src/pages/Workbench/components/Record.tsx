@@ -9,7 +9,7 @@ import React from 'react';
 import style from './record.module.less';
 import moment from 'moment';
 import type * as API from '@/api/events';
-import { PLATFORM } from '@/pages/Project/Record/common';
+import { EVENT_ICON_LIST } from '@/pages/Project/Record/common';
 import { useStores } from '@/hooks';
 import { Empty } from 'antd';
 
@@ -62,7 +62,7 @@ const Record: FC = () => {
                     <img
                       className={style.icon}
                       src={
-                        item2.event_type > 99 ? PLATFORM[item2.event_type]?.icon : PLATFORM[0]?.icon
+                        item2.event_type > 99 ? EVENT_ICON_LIST[item2.event_type]?.icon : EVENT_ICON_LIST[0]?.icon
                       }
                       alt=""
                     />

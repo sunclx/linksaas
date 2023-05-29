@@ -6,7 +6,7 @@ import moment from 'moment';
 import * as API from '@/api/events';
 import { request } from '@/utils/request';
 import { observer, useLocalObservable } from 'mobx-react';
-import { PLATFORM } from '../common';
+import { EVENT_ICON_LIST } from '../common';
 
 const Calendar: React.FC<{
   type?: string;
@@ -67,18 +67,10 @@ const Calendar: React.FC<{
       const map: Record<string, { count: number; event_type: number }[]> = {};
       list.forEach(({ count, day, event_type }) => {
         if (map[day]) {
-          if (event_type < 100) {
-            const index = map[day].findIndex((item) => item.event_type === 0);
-            if (index === -1) {
-              map[day].push({ count, event_type: 0 });
-            } else {
-              map[day][index].count += count;
-            }
-          } else {
             map[day].push({ count, event_type });
-          }
+          
         } else {
-          map[day] = event_type < 100 ? [{ count, event_type: 0 }] : [{ count, event_type }];
+          map[day] = [{ count, event_type }];
         }
       });
 
@@ -169,7 +161,7 @@ const Calendar: React.FC<{
                     <div className="ant-picker-calendar-date-content">
                       {fData?.map((item) => (
                         <div key={item.event_type} className={style.event}>
-                          <img src={PLATFORM[item.event_type]?.icon} alt="" />
+                          <img src={EVENT_ICON_LIST[item.event_type]?.icon} alt="" />
                           {item.count}
                         </div>
                       ))}

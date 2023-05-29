@@ -99,7 +99,6 @@ class MemberStore {
         return item;
       });
     }
-    console.log("xxxxxx", memberList);
     runInAction(() => {
       this._memberList = memberList;
       this.syncToMap();
