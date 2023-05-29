@@ -237,6 +237,7 @@ const ProjectRecord: React.FC = () => {
                 localStore.memberUserId = e;
               });
             }}
+            defaultValue={state?.memberUserId ?? ""}
             label={'操作用户'}
           />
         </div>
