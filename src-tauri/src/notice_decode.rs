@@ -31,6 +31,7 @@ pub mod project {
         AddTagNotice(notices_project::AddTagNotice),
         UpdateTagNotice(notices_project::UpdateTagNotice),
         RemoveTagNotice(notices_project::RemoveTagNotice),
+        UpdateSpritNotice(notices_project::UpdateSpritNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -149,6 +150,10 @@ pub mod project {
         } else if data.type_url == notices_project::RemoveTagNotice::type_url() {
             if let Ok(notice) = notices_project::RemoveTagNotice::decode(data.value.as_slice()) {
                 return Some(Notice::RemoveTagNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateSpritNotice::type_url() {
+            if let Ok(notice) = notices_project::UpdateSpritNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateSpritNotice(notice));
             }
         }
         None
@@ -409,7 +414,7 @@ pub mod idea {
             if let Ok(notice) = notices_idea::KeywordChangeNotice::decode(data.value.as_slice()) {
                 return Some(Notice::KeywordChangeNotice(notice));
             }
-        } 
+        }
         None
     }
 }

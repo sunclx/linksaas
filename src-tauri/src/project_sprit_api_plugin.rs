@@ -171,7 +171,8 @@ async fn un_watch<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == un_watch_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("un_watch".into())) {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("un_watch".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -386,9 +387,176 @@ async fn list_burn_down<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_burn_down_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_burn_down".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn set_summary_state<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetSummaryStateRequest,
+) -> Result<SetSummaryStateResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.set_summary_state(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_summary_state_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit(
                     "notice",
-                    new_wrong_session_notice("list_burn_down".into()),
+                    new_wrong_session_notice("set_summary_state".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn add_summary_item<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: AddSummaryItemRequest,
+) -> Result<AddSummaryItemResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.add_summary_item(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == add_summary_item_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("add_summary_item".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn update_summary_item<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateSummaryItemRequest,
+) -> Result<UpdateSummaryItemResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.update_summary_item(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_summary_item_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_summary_item".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_summary_item<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListSummaryItemRequest,
+) -> Result<ListSummaryItemResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.list_summary_item(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_summary_item_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_summary_item".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_summary_item<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveSummaryItemRequest,
+) -> Result<RemoveSummaryItemResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.remove_summary_item(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_summary_item_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_summary_item".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn group_summary_item<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GroupSummaryItemRequest,
+) -> Result<GroupSummaryItemResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectSpritApiClient::new(chan.unwrap());
+    match client.group_summary_item(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == group_summary_item_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("group_summary_item".into()),
                 ) {
                     println!("{:?}", err);
                 }
@@ -422,6 +590,12 @@ impl<R: Runtime> ProjectSpritApiPlugin<R> {
                 cancel_link_channel,
                 update_burn_down,
                 list_burn_down,
+                set_summary_state,
+                add_summary_item,
+                update_summary_item,
+                list_summary_item,
+                remove_summary_item,
+                group_summary_item,
             ]),
         }
     }

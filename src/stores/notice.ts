@@ -175,7 +175,7 @@ class NoticeStore {
       if (this.rootStore.projectStore.curProjectId === notice.KeywordChangeNotice.project_id) {
         this.rootStore.ideaStore.updateKeyword(notice.KeywordChangeNotice.add_keyword_list, notice.KeywordChangeNotice.remove_keyword_list);
       }
-    } 
+    }
   }
 
   private async processClientNotice(notice: NoticeType.client.AllNotice) {
@@ -353,6 +353,10 @@ class NoticeStore {
       this.rootStore.projectStore.incTagVersion(notice.UpdateTagNotice.project_id);
     } else if (notice.RemoveTagNotice !== undefined) {
       this.rootStore.projectStore.incTagVersion(notice.RemoveTagNotice.project_id);
+    } else if (notice.UpdateSpritNotice !== undefined) {
+      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == this.rootStore.spritStore.curSpritId) {
+        this.rootStore.spritStore.incCurSpritVersion();
+      }
     }
   }
 

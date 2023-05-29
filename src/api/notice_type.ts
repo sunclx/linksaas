@@ -111,6 +111,11 @@ export namespace project {
     tag_id: string;
   };
 
+  export type UpdateSpritNotice = {
+    project_id: string;
+    sprit_id: string;
+  };
+
   export type AllNotice = {
     UpdateProjectNotice?: UpdateProjectNotice;
     RemoveProjectNotice?: RemoveProjectNotice;
@@ -137,6 +142,7 @@ export namespace project {
     AddTagNotice?: AddTagNotice;
     UpdateTagNotice?: UpdateTagNotice;
     RemoveTagNotice?: RemoveTagNotice;
+    UpdateSpritNotice?: UpdateSpritNotice;
   };
 }
 
