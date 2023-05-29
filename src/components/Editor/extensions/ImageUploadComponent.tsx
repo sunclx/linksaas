@@ -248,10 +248,10 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
               preview={{
                 src: imageUrl,
                 bodyStyle: {
-                  margin: "80px 60px"
+                  margin: "40px 60px 0px 200px"
                 },
                 maskStyle:{
-                  margin: "40px 60px"
+                  margin: "40px 60px 0px 200px"
                 },
                 zIndex: 9999,
               }}
