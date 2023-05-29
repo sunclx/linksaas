@@ -1861,18 +1861,6 @@ export const genCodeEvCfgValues = (cfg: CodeEvCfg): string[] => {
 
 export const ideaEvOptionList: CheckboxOptionType[] = [
     {
-        label: "增加标签",
-        value: "create_tag",
-    },
-    {
-        label: "更新标签",
-        value: "update_tag",
-    },
-    {
-        label: "删除标签",
-        value: "remove_tag",
-    },
-    {
         label: "增加知识点",
         value: "create_idea",
     },
@@ -1912,9 +1900,6 @@ export const ideaEvOptionList: CheckboxOptionType[] = [
 
 export const calcIdeaEvCfg = (values: string[] | undefined): IdeaEvCfg => {
     const ret: IdeaEvCfg = {
-        create_tag: false,
-        update_tag: false,
-        remove_tag: false,
         create_idea: false,
         update_idea_content: false,
         update_idea_tag: false,
@@ -1929,13 +1914,7 @@ export const calcIdeaEvCfg = (values: string[] | undefined): IdeaEvCfg => {
         return ret;
     }
     values.forEach(value => {
-        if (value == "create_tag") {
-            ret.create_tag = true;
-        } else if (value == "update_tag") {
-            ret.update_tag = true;
-        } else if (value == "remove_tag") {
-            ret.remove_tag = true;
-        } else if (value == "create_idea") {
+        if (value == "create_idea") {
             ret.create_idea = true;
         } else if (value == "update_idea_content") {
             ret.update_idea_content = true;
@@ -1960,15 +1939,6 @@ export const calcIdeaEvCfg = (values: string[] | undefined): IdeaEvCfg => {
 
 export const genIdeaEvCfgValues = (cfg: IdeaEvCfg): string[] => {
     const retList: string[] = [];
-    if (cfg.create_tag) {
-        retList.push("create_tag");
-    }
-    if (cfg.update_tag) {
-        retList.push("update_tag");
-    }
-    if (cfg.remove_tag) {
-        retList.push("remove_tag");
-    }
     if (cfg.create_idea) {
         retList.push("create_idea");
     }

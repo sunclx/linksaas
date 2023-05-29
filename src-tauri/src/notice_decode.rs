@@ -402,9 +402,6 @@ pub mod idea {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         KeywordChangeNotice(notices_idea::KeywordChangeNotice),
-        CreateTagNotice(notices_idea::CreateTagNotice),
-        UpdateTagNotice(notices_idea::UpdateTagNotice),
-        RemoveTagNotice(notices_idea::RemoveTagNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -412,19 +409,7 @@ pub mod idea {
             if let Ok(notice) = notices_idea::KeywordChangeNotice::decode(data.value.as_slice()) {
                 return Some(Notice::KeywordChangeNotice(notice));
             }
-        } else if data.type_url == notices_idea::CreateTagNotice::type_url() {
-            if let Ok(notice) = notices_idea::CreateTagNotice::decode(data.value.as_slice()) {
-                return Some(Notice::CreateTagNotice(notice));
-            }
-        } else if data.type_url == notices_idea::UpdateTagNotice::type_url() {
-            if let Ok(notice) = notices_idea::UpdateTagNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateTagNotice(notice));
-            }
-        } else if data.type_url == notices_idea::RemoveTagNotice::type_url() {
-            if let Ok(notice) = notices_idea::RemoveTagNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RemoveTagNotice(notice));
-            }
-        }
+        } 
         None
     }
 }

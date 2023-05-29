@@ -175,19 +175,7 @@ class NoticeStore {
       if (this.rootStore.projectStore.curProjectId === notice.KeywordChangeNotice.project_id) {
         this.rootStore.ideaStore.updateKeyword(notice.KeywordChangeNotice.add_keyword_list, notice.KeywordChangeNotice.remove_keyword_list);
       }
-    } else if (notice.CreateTagNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.CreateTagNotice.project_id) {
-        await this.rootStore.ideaStore.updateTag(notice.CreateTagNotice.tag_id);
-      }
-    } else if (notice.UpdateTagNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.UpdateTagNotice.project_id) {
-        await this.rootStore.ideaStore.updateTag(notice.UpdateTagNotice.tag_id);
-      }
-    } else if (notice.RemoveTagNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.RemoveTagNotice.project_id) {
-        this.rootStore.ideaStore.removeTag(notice.RemoveTagNotice.tag_id);
-      }
-    }
+    } 
   }
 
   private async processClientNotice(notice: NoticeType.client.AllNotice) {

@@ -6,6 +6,9 @@ export const TAG_SCOPRE_DOC: TAG_SCOPRE_TYPE = 1;
 export const TAG_SCOPRE_TASK: TAG_SCOPRE_TYPE = 2;
 export const TAG_SCOPRE_BUG: TAG_SCOPRE_TYPE = 3;
 export const TAG_SCOPRE_REQ: TAG_SCOPRE_TYPE = 4;
+export const TAG_SCOPRE_IDEA: TAG_SCOPRE_TYPE = 5;
+export const TAG_SCOPRE_SPRIT_SUMMARY: TAG_SCOPRE_TYPE = 6;
+
 
 export type BasicProjectInfo = {
   project_name: string;
@@ -63,6 +66,8 @@ export type TagInfo = {
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
+  use_in_idea: boolean;
+  use_in_sprit_summary: boolean;
 };
 
 
@@ -196,6 +201,8 @@ export type AddTagRequest = {
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
+  use_in_idea: boolean;
+  use_in_sprit_summary: boolean;
 };
 
 export type AddTagResponse = {
@@ -214,6 +221,8 @@ export type UpdateTagRequest = {
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
+  use_in_idea: boolean;
+  use_in_sprit_summary: boolean;
 };
 
 export type UpdateTagResponse = {

@@ -1096,9 +1096,6 @@ pub mod idea {
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
     pub enum Event {
-        CreateTagEvent(events_idea::CreateTagEvent),
-        UpdateTagEvent(events_idea::UpdateTagEvent),
-        RemoveTagEvent(events_idea::RemoveTagEvent),
         CreateIdeaEvent(events_idea::CreateIdeaEvent),
         UpdateIdeaContentEvent(events_idea::UpdateIdeaContentEvent),
         UpdateIdeaTagEvent(events_idea::UpdateIdeaTagEvent),
@@ -1111,19 +1108,7 @@ pub mod idea {
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_idea::CreateTagEvent::type_url() {
-            if let Ok(ev) = events_idea::CreateTagEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateTagEvent(ev));
-            }
-        } else if data.type_url == events_idea::UpdateTagEvent::type_url() {
-            if let Ok(ev) = events_idea::UpdateTagEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateTagEvent(ev));
-            }
-        } else if data.type_url == events_idea::RemoveTagEvent::type_url() {
-            if let Ok(ev) = events_idea::RemoveTagEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveTagEvent(ev));
-            }
-        } else if data.type_url == events_idea::CreateIdeaEvent::type_url() {
+        if data.type_url == events_idea::CreateIdeaEvent::type_url() {
             if let Ok(ev) = events_idea::CreateIdeaEvent::decode(data.value.as_slice()) {
                 return Some(Event::CreateIdeaEvent(ev));
             }
