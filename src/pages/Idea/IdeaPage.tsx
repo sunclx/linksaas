@@ -36,13 +36,13 @@ const IdeaPage = () => {
 
     return (
         <CardWrap title="项目知识点" extra={
-            <Space>
+            <Space size="middle">
                 <Button onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     ideaStore.setShowCreateIdea("", "");
                 }}>创建知识点</Button>
-                <Popover placement="right" trigger="click" content={
+                <Popover placement="bottom" trigger="click" content={
                     <div style={{ padding: "10px 10px" }}>
                         <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {
                             e.stopPropagation();

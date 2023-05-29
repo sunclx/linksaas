@@ -19,11 +19,12 @@ import type { IssueInfo, ListRequest, ListParam, ISSUE_STATE } from "@/api/proje
 import { request } from '@/utils/request';
 import StageModel from "./components/StageModel";
 import Pagination from "@/components/Pagination";
-import Dropdown from "antd/lib/dropdown";
 import BatchCreate from "./components/BatchCreate";
-import { Space } from "antd";
+import { Popover, Space } from "antd";
 import type { TagInfo } from "@/api/project";
 import { list_tag, TAG_SCOPRE_TASK, TAG_SCOPRE_BUG } from "@/api/project";
+import { PROJECT_SETTING_TAB } from "@/utils/constant";
+import { MoreOutlined } from "@ant-design/icons";
 
 
 const tabList = [
@@ -198,35 +199,12 @@ const IssueList = () => {
 
     useEffect(() => {
         loadTagDefList();
-    }, [projectStore.curProjectId,projectStore.curProject?.tag_version]);
+    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <CardWrap title={`${getIssueText(location.pathname)}列表`} extra={
-            <Space>
-                {getIsTask(location.pathname) == true && <Dropdown.Button
-                    className={s.btn}
-                    type="primary"
-                    menu={{
-                        items: [
-                            {
-                                label: "批量创建",
-                                key: "batch"
-                            }
-                        ],
-                        onClick: (e) => {
-                            if (e.key == "batch") {
-                                setShowBatchModal(true);
-                            }
-                        },
-                    }}
-                    onClick={() => push(getIssueCreateUrl(location.pathname))}
-                    disabled={projectStore.curProject?.closed}
-                >
-                    <img src={addIcon} alt="" />
-                    创建{getIssueText(location.pathname)}
-                </Dropdown.Button>
-                }
-                {getIsTask(location.pathname) == false && <Button
+            <Space size="middle">
+                <Button
                     className={s.btn}
                     type="primary"
                     onClick={() => push(getIssueCreateUrl(location.pathname))}
@@ -235,7 +213,26 @@ const IssueList = () => {
                     <img src={addIcon} alt="" />
                     创建{getIssueText(location.pathname)}
                 </Button>
-                }
+                <Popover placement="bottom" trigger="click" content={
+                    <div style={{ padding: "10px 10px" }}>
+                        <Space direction="vertical">
+                            {getIsTask(location.pathname) == true && (
+                                <Button type="link" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowBatchModal(true);
+                                }}>批量创建</Button>
+                            )}
+                            <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
+                            }}>管理标签</Button>
+                        </Space>
+                    </div>
+                }>
+                    <MoreOutlined className={s.more} />
+                </Popover>
             </Space>}>
             <div className={s.task_wrap}>
                 <div style={{ marginRight: '20px' }}>
