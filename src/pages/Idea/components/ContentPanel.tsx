@@ -12,11 +12,15 @@ import { runInAction } from "mobx";
 import type { LinkIdeaPageState } from "@/stores/linkAux";
 import { LinkIdeaPageInfo } from "@/stores/linkAux";
 import Button from "@/components/Button";
+import type { TagInfo } from "@/api/project";
 
+interface ContentPanelProps {
+    tagDefList: TagInfo[];
+}
 
 const PAGE_SIZE = 10;
 
-const ContentPanel = () => {
+const ContentPanel: React.FC<ContentPanelProps> = (props) => {
     const history = useHistory();
     const location = useLocation();
 
@@ -132,7 +136,7 @@ const ContentPanel = () => {
             <div className={s.content_list}>
                 <List dataSource={localStore.ideaList} split={false} renderItem={item => (
                     <List.Item key={item.idea_id}>
-                        <IdeaContent idea={item} onChange={() => updateIdea(item.idea_id)} onRemove={() => loadIdeaList()} />
+                        <IdeaContent idea={item} tagDefList={props.tagDefList} onChange={() => updateIdea(item.idea_id)} onRemove={() => loadIdeaList()} />
                     </List.Item>
                 )} pagination={{
                     total: totalCount,

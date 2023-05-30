@@ -15,6 +15,7 @@ export default class SpritStore {
     rootStore: RootStore;
 
     private _curSpritId: string = "";
+    private _curSpritVersion: number = 0;
     private _taskList: IssueInfo[] = [];
     private _bugList: IssueInfo[] = [];
     private _spritDocList: SpritDocInfo[] = [];
@@ -35,13 +36,24 @@ export default class SpritStore {
         return this._spritDocList;
     }
 
+    get curSpritVersion(): number {
+        return this._curSpritVersion;
+    }
+
+    incCurSpritVersion() {
+        runInAction(() => {
+            this._curSpritVersion += 1;
+        });
+    }
+
     async setCurSpritId(val: string) {
         if (val == this._curSpritId) {
             return;
         }
         runInAction(() => {
+            this._curSpritVersion = 0;
             this._taskList = [];
-            this._bugList = []
+            this._bugList = [];
         });
         if (val != "") {
             await this.loadIssue(val, ISSUE_TYPE_TASK);

@@ -4877,53 +4877,6 @@ namespace requirement {
 }
 
 namespace idea {
-  export type CreateTagEvent = {
-    tag_id: string;
-    tag_name: string;
-  };
-
-  function get_create_tag_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateTagEvent,
-  ): LinkInfo[] {
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 知识点标签`),
-      new LinkIdeaPageInfo(inner.tag_name, ev.project_id, inner.tag_id, []),
-    ];
-  }
-
-  export type UpdateTagEvent = {
-    tag_id: string;
-    old_tag_name: string;
-    new_tag_name: string;
-  };
-
-  function get_update_tag_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UpdateTagEvent,
-  ): LinkInfo[] {
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点标签`),
-      new LinkIdeaPageInfo(inner.new_tag_name, ev.project_id, inner.tag_id, []),
-      new LinkNoneInfo(`原标签 ${inner.old_tag_name}`),
-    ];
-  }
-
-  export type RemoveTagEvent = {
-    tag_id: string;
-    tag_name: string;
-  };
-
-  function get_remove_tag_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveTagEvent,
-  ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 知识点标签 ${inner.tag_name}`)];
-  }
-
   export type IdeaTag = {
     tag_id: string;
     tag_name: string;
@@ -5114,9 +5067,6 @@ namespace idea {
   }
 
   export class AllIdeaEvent {
-    CreateTagEvent?: CreateTagEvent;
-    UpdateTagEvent?: UpdateTagEvent;
-    RemoveTagEvent?: RemoveTagEvent;
     CreateIdeaEvent?: CreateIdeaEvent;
     UpdateIdeaContentEvent?: UpdateIdeaContentEvent;
     UpdateIdeaTagEvent?: UpdateIdeaTagEvent;
@@ -5132,43 +5082,27 @@ namespace idea {
     skip_prj_name: boolean,
     inner: AllIdeaEvent,
   ): LinkInfo[] {
-    if (inner.CreateTagEvent !== undefined) {
-      return get_create_tag_simple_content(ev, skip_prj_name, inner.CreateTagEvent);
-    }
-    if (inner.UpdateTagEvent !== undefined) {
-      return get_update_tag_simple_content(ev, skip_prj_name, inner.UpdateTagEvent);
-    }
-    if (inner.RemoveTagEvent !== undefined) {
-      return get_remove_tag_simple_content(ev, skip_prj_name, inner.RemoveTagEvent);
-    }
     if (inner.CreateIdeaEvent !== undefined) {
       return get_create_idea_simple_content(ev, skip_prj_name, inner.CreateIdeaEvent);
-    }
-    if (inner.UpdateIdeaContentEvent !== undefined) {
+    } else if (inner.UpdateIdeaContentEvent !== undefined) {
       return get_update_idea_content_simple_content(ev, skip_prj_name, inner.UpdateIdeaContentEvent);
-    }
-    if (inner.UpdateIdeaTagEvent !== undefined) {
+    } else if (inner.UpdateIdeaTagEvent !== undefined) {
       return get_update_idea_tag_simple_content(ev, skip_prj_name, inner.UpdateIdeaTagEvent);
-    }
-    if (inner.UpdateIdeaKeywordEvent !== undefined) {
+    } else if (inner.UpdateIdeaKeywordEvent !== undefined) {
       return get_update_idea_keyword_simple_content(ev, skip_prj_name, inner.UpdateIdeaKeywordEvent);
-    }
-    if (inner.LockIdeaEvent !== undefined) {
+    } else if (inner.LockIdeaEvent !== undefined) {
       return get_lock_idea_simple_content(ev, skip_prj_name, inner.LockIdeaEvent);
-    }
-    if (inner.UnlockIdeaEvent !== undefined) {
+    } else if (inner.UnlockIdeaEvent !== undefined) {
       return get_unlock_idea_simple_content(ev, skip_prj_name, inner.UnlockIdeaEvent);
-    }
-    if (inner.RemoveIdeaEvent !== undefined) {
+    } else if (inner.RemoveIdeaEvent !== undefined) {
       return get_remove_idea_simple_content(ev, skip_prj_name, inner.RemoveIdeaEvent);
-    }
-    if (inner.SetAppraiseEvent !== undefined) {
+    } else if (inner.SetAppraiseEvent !== undefined) {
       return get_set_appraise_simple_content(ev, skip_prj_name, inner.SetAppraiseEvent);
-    }
-    if (inner.CancelAppraiseEvent !== undefined) {
+    } else if (inner.CancelAppraiseEvent !== undefined) {
       return get_cancel_appraise_simple_content(ev, skip_prj_name, inner.CancelAppraiseEvent);
+    } else {
+      return [new LinkNoneInfo('未知事件')];
     }
-    return [new LinkNoneInfo('未知事件')];
   }
 }
 

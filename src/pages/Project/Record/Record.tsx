@@ -11,7 +11,7 @@ import { timeToDateString } from '@/utils/utils';
 import moment from 'moment';
 import { Collapse, Modal, Input, message, Space, Popover } from 'antd';
 import { CaretRightOutlined, MoreOutlined } from '@ant-design/icons';
-import { PLATFORM } from './common';
+import { EVENT_ICON_LIST } from './common';
 import { useStores } from '@/hooks';
 import { runInAction } from 'mobx';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -79,21 +79,15 @@ const ProjectRecord: React.FC = () => {
       data.event_list.forEach((item) => {
         if (map[item.user_id]) {
           map[item.user_id].push(item);
-          if (item.event_type < 99) {
-            eventTypeMap[item.user_id][0] = eventTypeMap[item.user_id][0]
-              ? eventTypeMap[item.user_id][0] + 1
-              : 1;
-          } else {
-            eventTypeMap[item.user_id][item.event_type] = eventTypeMap[item.user_id][
-              item.event_type
-            ]
-              ? eventTypeMap[item.user_id][item.event_type] + 1
-              : 1;
-          }
+          eventTypeMap[item.user_id][item.event_type] = eventTypeMap[item.user_id][
+            item.event_type
+          ]
+            ? eventTypeMap[item.user_id][item.event_type] + 1
+            : 1;
         } else {
           map[item.user_id] = [item];
           eventTypeMap[item.user_id] = {
-            [item.event_type < 99 ? 0 : item.event_type]: 1,
+            [item.event_type]: 1,
           };
 
           this.activeKey.push(item.user_id);
@@ -237,6 +231,7 @@ const ProjectRecord: React.FC = () => {
                 localStore.memberUserId = e;
               });
             }}
+            defaultValue={state?.memberUserId ?? ""}
             label={'操作用户'}
           />
         </div>
@@ -265,7 +260,7 @@ const ProjectRecord: React.FC = () => {
                       <span key={key}>
                         <img
                           className={style.icon}
-                          src={Number(key) > 99 ? PLATFORM[key]?.icon : PLATFORM[0]?.icon}
+                          src={EVENT_ICON_LIST[key]?.icon}
                           alt=""
                         />
                         {item.count[key]}
@@ -289,11 +284,7 @@ const ProjectRecord: React.FC = () => {
                     >
                       <img
                         className={style.icon}
-                        src={
-                          item2.event_type > 99
-                            ? PLATFORM[item2.event_type]?.icon
-                            : PLATFORM[0]?.icon
-                        }
+                        src={EVENT_ICON_LIST[item2.event_type]?.icon}
                         alt=""
                       />
                       <span className={style.time}>{timeToDateString(item2.event_time)}</span>

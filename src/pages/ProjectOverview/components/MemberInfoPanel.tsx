@@ -1,4 +1,4 @@
-import { Collapse, Descriptions, Modal, Popover, Select, Space, message } from "antd";
+import { Collapse, Descriptions, Modal, Select, Space, Tabs, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import Button from "@/components/Button";
@@ -11,10 +11,13 @@ import { list_role, set_member_role, remove_member } from '@/api/project_member'
 import { request } from "@/utils/request";
 import { change_owner } from "@/api/project";
 import UserPhoto from "@/components/Portrait/UserPhoto";
-import MemberInfo from "@/pages/ChannelAndAi/components/MemberInfo";
 import s from "./MemberInfoPanel.module.less";
 import type { AwardState } from '@/api/project_award';
 import { list_state } from '@/api/project_award';
+import { ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS } from "@/api/project_issue";
+import { useHistory } from "react-router-dom";
+import EventCom from "@/components/EventCom";
+import moment from "moment";
 
 const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
     if (state == undefined) {
@@ -22,7 +25,7 @@ const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
     } else {
         return (
             <div style={{ paddingRight: "20px" }}>
-                <Space size="large">
+                <Space direction="vertical">
                     <span>上月贡献:&nbsp;{state.last_month_point}</span>
                     <span>本月贡献:&nbsp;{state.cur_month_point}</span>
                     <span>上周贡献:&nbsp;{state.last_weak_point}</span>
@@ -34,15 +37,19 @@ const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
 };
 
 const MemberInfoPanel = () => {
+    const history = useHistory();
+
     const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
     const projectStore = useStores('projectStore');
     const appStore = useStores('appStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [roleList, setRoleList] = useState<RoleInfo[]>([]);
     const [removeMemberUserId, setRemoveMemberUserId] = useState("");
     const [ownerMemberUserId, setOwnerMemberUserId] = useState("");
     const [awardStateList, setAwardStateList] = useState<AwardState[]>([]);
+    const [activeKey, setActiveKey] = useState(userStore.userInfo.userId);
 
     const loadRoleList = async () => {
         const res = await request(list_role(userStore.sessionId, projectStore.curProjectId));
@@ -99,70 +106,137 @@ const MemberInfoPanel = () => {
                         )}
                     </>
                 }>
-                    {memberStore.memberList.map(member => (
-                        <Descriptions bordered key={member.member.member_user_id} style={{ marginBottom: "10px" }}>
-                            <Descriptions.Item label="用户名称">
-                                <Popover
-                                    placement="right"
-                                    trigger="click"
-                                    content={<MemberInfo memberId={member.member.member_user_id} showLink hideMemberInfo={() => { }} />}>
-                                    <a>
-                                        <UserPhoto logoUri={member.member.logo_uri} style={{ width: "24px", height: "24px", borderRadius: "24px", marginRight: "10px" }} />
-                                        {member.member.display_name}</a>
-                                </Popover>
-                            </Descriptions.Item>
-                            <Descriptions.Item label="用户角色">
-                                {member.member.is_project_owner ? (
-                                    <span>超级管理员</span>
-                                ) : (
-                                    <Select value={member.member.role_id}
-                                        style={{ width: 100 }}
-                                        disabled={!projectStore.isAdmin} onChange={value => {
-                                            if (value == "") {
-                                                setOwnerMemberUserId(member.member.member_user_id);
-                                            } else {
-                                                updateMemberRole(member.member.member_user_id, value);
-                                            }
-                                        }}>
-                                        {projectStore.curProject?.owner_user_id == userStore.userInfo.userId && (
-                                            <Select.Option value="">超级管理员</Select.Option>
-                                        )}
-                                        {roleList.map(item => (
-                                            <Select.Option value={item.role_id} key={item.role_id}>
-                                                {item.basic_info.role_name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                )}
+                    <Tabs tabPosition="left" activeKey={activeKey} onChange={value => setActiveKey(value)}>
+                        {memberStore.memberList.map(member => (
+                            <Tabs.TabPane key={member.member.member_user_id} tab={
+                                <Space>
+                                    <UserPhoto logoUri={member.member.logo_uri} style={{ width: "24px", height: "24px", borderRadius: "24px" }} />
+                                    <div style={{ width: "80px", overflowX: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", textAlign: "left" }}>{member.member.display_name}</div>
+                                </Space>
+                            }>
+                                {activeKey == member.member.member_user_id && (
+                                    <Descriptions bordered column={2}>
+                                        <Descriptions.Item label="用户角色">
+                                            {member.member.is_project_owner ? (
+                                                <span>超级管理员</span>
+                                            ) : (
+                                                <Select value={member.member.role_id}
+                                                    style={{ width: 100 }}
+                                                    disabled={!projectStore.isAdmin} onChange={value => {
+                                                        if (value == "") {
+                                                            setOwnerMemberUserId(member.member.member_user_id);
+                                                        } else {
+                                                            updateMemberRole(member.member.member_user_id, value);
+                                                        }
+                                                    }}>
+                                                    {projectStore.curProject?.owner_user_id == userStore.userInfo.userId && (
+                                                        <Select.Option value="">超级管理员</Select.Option>
+                                                    )}
+                                                    {roleList.map(item => (
+                                                        <Select.Option value={item.role_id} key={item.role_id}>
+                                                            {item.basic_info.role_name}
+                                                        </Select.Option>
+                                                    ))}
+                                                </Select>
+                                            )}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="操作">
+                                            <Button
+                                                type="link"
+                                                disabled={!projectStore.isAdmin}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    setRemoveMemberUserId(member.member.member_user_id);
+                                                }}
+                                            >
+                                                <MinusCircleOutlined />
+                                                移除
+                                            </Button>
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="未执行任务">
+                                            {member.issue_member_state?.task_un_exec_count ?? 0}
+                                            {(member.issue_member_state?.task_un_exec_count ?? 0) > 0 && (
+                                                <a style={{ marginLeft: "10px" }} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    linkAuxStore.goToTaskList({
+                                                        stateList: [ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK],
+                                                        execUserIdList: [member?.member.member_user_id ?? ""],
+                                                        checkUserIdList: [],
+                                                    }, history);
+                                                }}>查看详情</a>
+                                            )}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="未检查任务">
+                                            {member.issue_member_state?.task_un_check_count ?? 0}
+                                            {(member.issue_member_state?.task_un_check_count ?? 0) > 0 && (
+                                                <a style={{ marginLeft: "10px" }} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    linkAuxStore.goToTaskList({
+                                                        stateList: [ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK],
+                                                        execUserIdList: [],
+                                                        checkUserIdList: [member?.member.member_user_id ?? ""],
+                                                    }, history);
+                                                }}>查看详情</a>
+                                            )}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="未处理缺陷">
+                                            {member.issue_member_state?.bug_un_exec_count ?? 0}
+                                            {(member.issue_member_state?.bug_un_exec_count ?? 0) > 0 && (
+                                                <a style={{ marginLeft: "10px" }} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    linkAuxStore.goToBugList({
+                                                        stateList: [ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK],
+                                                        execUserIdList: [member?.member.member_user_id ?? ""],
+                                                        checkUserIdList: [],
+                                                    }, history);
+                                                }}>查看详情</a>
+                                            )}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="未复查缺陷">
+                                            {member.issue_member_state?.bug_un_check_count ?? 0}
+                                            {(member.issue_member_state?.bug_un_check_count ?? 0) > 0 && (
+                                                <a style={{ marginLeft: "10px" }} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    linkAuxStore.goToBugList({
+                                                        stateList: [ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK],
+                                                        execUserIdList: [],
+                                                        checkUserIdList: [member?.member.member_user_id ?? ""],
+                                                    }, history);
+                                                }}>查看详情</a>
+                                            )}
+                                        </Descriptions.Item>
+                                        {member?.last_event && (
+                                            <Descriptions.Item label="工作状态" span={2}>
+                                                <span>{moment(member?.last_event?.event_time).format("YYYY-MM-DD HH:mm:ss")}</span>
+                                                <EventCom key={member.last_event.event_id} item={member.last_event!}
+                                                    skipProjectName={true} skipLink={true}
+                                                    showMoreLink={true} onLinkClick={() => { }} />
 
-                            </Descriptions.Item>
-                            <Descriptions.Item label="操作">
-                                <Button
-                                    type="link"
-                                    disabled={!projectStore.isAdmin}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setRemoveMemberUserId(member.member.member_user_id);
-                                    }}
-                                >
-                                    <MinusCircleOutlined />
-                                    移除
-                                </Button>
-                            </Descriptions.Item>
-                            <Descriptions.Item label="其他信息" span={3}>
-                                <Collapse bordered={false} className={s.extra_info} defaultActiveKey="okr">
-                                    <Collapse.Panel key="okr" header="成员目标">
-                                        <GoalList memberUserId={member.member.member_user_id} />
-                                    </Collapse.Panel>
-                                    <Collapse.Panel key="award" header="成员贡献"
-                                        extra={<MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />}>
-                                        <AwardList memberUserId={member.member.member_user_id} />
-                                    </Collapse.Panel>
-                                </Collapse>
-                            </Descriptions.Item>
-                        </Descriptions>
-                    ))}
+                                            </Descriptions.Item>
+                                        )}
+
+                                        <Descriptions.Item label="成员目标" span={2} contentStyle={{ padding: "0px 0px" }}>
+                                            <GoalList memberUserId={member.member.member_user_id} />
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label={
+                                            <Space direction="vertical">
+                                                <span>成员贡献</span>
+                                                <MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />
+                                            </Space>
+                                        } span={2} contentStyle={{ padding: "0px 0px" }}>
+
+                                            <AwardList memberUserId={member.member.member_user_id} />
+                                        </Descriptions.Item>
+                                    </Descriptions>
+                                )}
+                            </Tabs.TabPane>
+                        ))}
+                    </Tabs>
                 </Collapse.Panel>
             </Collapse >
             {ownerMemberUserId != "" && (

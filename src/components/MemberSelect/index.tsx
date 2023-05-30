@@ -19,7 +19,7 @@ const MemberSelect: React.FC<MemberSelectProps> = observer(({ all, memberUserId,
 
   let defaultValue = undefined;
   if (all !== undefined && all) {
-    defaultValue = '';
+    defaultValue = props.defaultValue ?? "";
   } else {
     if (memberUserId != undefined && memberUserId != "") {
       defaultValue = memberUserId;

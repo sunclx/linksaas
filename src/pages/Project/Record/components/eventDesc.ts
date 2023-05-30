@@ -775,52 +775,6 @@ const extEventList: EventDesc[] = [
 
 const ideaEventList: EventDesc[] = [
     {
-        id: "CreateTagEvent",
-        name: "创建知识点标签",
-        attrList: [
-            {
-                key: "tag_id",
-                desc: "知识点标签ID"
-            },
-            {
-                key: "tag_name",
-                desc: "知识点标签名称"
-            },
-        ]
-    },
-    {
-        id: "UpdateTagEvent",
-        name: "修改知识点标签",
-        attrList: [
-            {
-                key: "tag_id",
-                desc: "知识点标签ID"
-            },
-            {
-                key: "old_tag_name",
-                desc: "旧知识点标签名称"
-            },
-            {
-                key: "new_tag_name",
-                desc: "新知识点标签名称"
-            },
-        ]
-    },
-    {
-        id: "RemoveTagEvent",
-        name: "删除知识点标签",
-        attrList: [
-            {
-                key: "tag_id",
-                desc: "知识点标签ID"
-            },
-            {
-                key: "tag_name",
-                desc: "知识点标签名称"
-            },
-        ]
-    },
-    {
         id: "CreateIdeaEvent",
         name: "创建知识点",
         attrList: [
