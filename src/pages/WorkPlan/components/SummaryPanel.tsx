@@ -10,6 +10,7 @@ import type { TagInfo } from "@/api/project";
 import { list_tag, TAG_SCOPRE_SPRIT_SUMMARY } from "@/api/project";
 import { CheckOutlined, CloseOutlined, EditOutlined, ExportOutlined, LeftOutlined, MoreOutlined, RightOutlined } from "@ant-design/icons";
 import UserPhoto from "@/components/Portrait/UserPhoto";
+import { PROJECT_SETTING_TAB } from "@/utils/constant";
 
 interface SummaryGroup {
     groupId: string;
@@ -44,7 +45,7 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
     };
 
     return (
-        <Modal title="增加意见" open okText="增加" okButtonProps={{ disabled: content.trim() == "" }}
+        <Modal title="增加建议" open okText="增加" okButtonProps={{ disabled: content.trim() == "" }}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -57,7 +58,7 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
             }}>
             <Form>
                 {props.tagDefList.length > 0 && (
-                    <Form.Item label="意见类型">
+                    <Form.Item label="建议类型">
                         <Select value={tagId} onChange={value => setTagId(value ?? "")} allowClear>
                             {props.tagDefList.map(tagDef => (
                                 <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
@@ -68,7 +69,7 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
                     </Form.Item>
                 )}
 
-                <Form.Item label="意见内容">
+                <Form.Item label="建议内容">
                     <Input.TextArea value={content} autoSize={{ minRows: 5, maxRows: 5 }}
                         onChange={e => {
                             e.stopPropagation();
@@ -145,7 +146,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                         setShowRemoveModal(true);
-                                    }}>删除意见</Button>
+                                    }}>删除建议</Button>
                                 </div>
                             }>
                                 <MoreOutlined />
@@ -172,12 +173,14 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
                 </Space>
             }>
             {inEdit == false && (
-                <pre style={{ wordBreak: "break-all" }}>{content}</pre>
+                <pre style={{ wordBreak: "break-all", fontSize: "24px", whiteSpace: "pre-line" }}>
+                    {content}
+                </pre>
             )}
             {inEdit == true && (
                 <Form>
                     {props.tagDefList.length > 0 && (
-                        <Form.Item label="意见类型">
+                        <Form.Item label="建议类型">
                             <Select value={tagId} onChange={value => {
                                 setTagId(value ?? "");
                                 setHasChange(true);
@@ -202,7 +205,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
                 </Form>
             )}
             {showRemoveModal == true && (
-                <Modal title="删除意见" open
+                <Modal title="删除建议" open
                     okText="删除" okButtonProps={{ danger: true }}
                     onCancel={e => {
                         e.stopPropagation();
@@ -214,7 +217,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
                         e.preventDefault();
                         removeSummaryItem();
                     }}>
-                    是否删除意见?
+                    是否删除建议?
                 </Modal>
             )}
         </Card>
@@ -298,7 +301,7 @@ const GroupCard: React.FC<GroupCardProps> = observer((props) => {
                     {props.groupItem.summaryList[curSummaryIndex].create_display_name}
                 </h3>
                 {props.groupItem.summaryList.length > 1 && (
-                    <Button type="text" style={{ minWidth: "0px", padding: "0px 0px", height: "20px", fontSize: "14px", marginBottom: "6px" }} title="拆分当前意见"
+                    <Button type="text" style={{ minWidth: "0px", padding: "0px 0px", height: "20px", fontSize: "14px", marginBottom: "6px" }} title="拆分当前建议"
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -306,7 +309,9 @@ const GroupCard: React.FC<GroupCardProps> = observer((props) => {
                         }}><ExportOutlined /></Button>
                 )}
             </div>
-            <pre style={{ wordBreak: "break-all" }}>{props.groupItem.summaryList[curSummaryIndex].content}</pre>
+            <pre style={{ wordBreak: "break-all", fontSize: "24px", whiteSpace: "pre-line" }}>
+                {props.groupItem.summaryList[curSummaryIndex].content}
+            </pre>
         </Card>
     );
 });
@@ -426,7 +431,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
                         setSummaryState(e.target.value);
                     }} />
                 {props.state == SUMMARY_SHOW && (
-                    <span>总结阶段，不能再提交和修改意见。</span>
+                    <span>总结阶段，不能再提交和修改建议。</span>
                 )}
             </Space>
         } bordered={false} extra={
@@ -436,7 +441,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
                         <Select.Option value="">空标签</Select.Option>
                         {tagDefList.map(tagDef => (
                             <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
-                                <span>{tagDef.tag_name}</span>
+                                <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
                             </Select.Option>
                         ))}
                     </Select>
@@ -446,15 +451,26 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowAddModal(true);
-                    }}>新增意见</Button>
+                    }}>新增建议</Button>
                 )}
                 {props.state == SUMMARY_SHOW && (
                     <Button disabled={groupList.filter(g => g.checked).length < 2} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         mergeGroup();
-                    }}>合并意见</Button>
+                    }}>合并建议</Button>
                 )}
+                <Popover trigger="click" placement="bottom" content={
+                    <div style={{ padding: "10px 10px" }}>
+                        <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
+                        }}>管理标签</Button>
+                    </div>
+                }>
+                    <MoreOutlined />
+                </Popover>
             </Space>
         }>
             {props.state == SUMMARY_COLLECT && (
