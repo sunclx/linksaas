@@ -31,6 +31,7 @@ pub mod project {
         AddTagNotice(notices_project::AddTagNotice),
         UpdateTagNotice(notices_project::UpdateTagNotice),
         RemoveTagNotice(notices_project::RemoveTagNotice),
+        UpdateSpritNotice(notices_project::UpdateSpritNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -149,6 +150,10 @@ pub mod project {
         } else if data.type_url == notices_project::RemoveTagNotice::type_url() {
             if let Ok(notice) = notices_project::RemoveTagNotice::decode(data.value.as_slice()) {
                 return Some(Notice::RemoveTagNotice(notice));
+            }
+        } else if data.type_url == notices_project::UpdateSpritNotice::type_url() {
+            if let Ok(notice) = notices_project::UpdateSpritNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateSpritNotice(notice));
             }
         }
         None
@@ -402,27 +407,12 @@ pub mod idea {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         KeywordChangeNotice(notices_idea::KeywordChangeNotice),
-        CreateTagNotice(notices_idea::CreateTagNotice),
-        UpdateTagNotice(notices_idea::UpdateTagNotice),
-        RemoveTagNotice(notices_idea::RemoveTagNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
         if data.type_url == notices_idea::KeywordChangeNotice::type_url() {
             if let Ok(notice) = notices_idea::KeywordChangeNotice::decode(data.value.as_slice()) {
                 return Some(Notice::KeywordChangeNotice(notice));
-            }
-        } else if data.type_url == notices_idea::CreateTagNotice::type_url() {
-            if let Ok(notice) = notices_idea::CreateTagNotice::decode(data.value.as_slice()) {
-                return Some(Notice::CreateTagNotice(notice));
-            }
-        } else if data.type_url == notices_idea::UpdateTagNotice::type_url() {
-            if let Ok(notice) = notices_idea::UpdateTagNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateTagNotice(notice));
-            }
-        } else if data.type_url == notices_idea::RemoveTagNotice::type_url() {
-            if let Ok(notice) = notices_idea::RemoveTagNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RemoveTagNotice(notice));
             }
         }
         None

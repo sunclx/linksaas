@@ -4,11 +4,13 @@ import { Form, Input, Modal, Select, message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_IDEA, FILE_OWNER_TYPE_PROJECT } from "@/api/fs";
-import type { IdeaTag } from "@/api/project_idea";
-import { list_tag, create_idea } from "@/api/project_idea";
+import { create_idea } from "@/api/project_idea";
 import { request } from "@/utils/request";
 import { useHistory } from "react-router-dom";
 import { LinkIdeaPageInfo } from "@/stores/linkAux";
+import type { TagInfo } from "@/api/project";
+import { list_tag, TAG_SCOPRE_IDEA } from "@/api/project";
+
 
 const CreateModal = () => {
     const history = useHistory();
@@ -30,7 +32,7 @@ const CreateModal = () => {
         channelMember: false,
     });
 
-    const [tagList, setTagList] = useState<IdeaTag[]>([]);
+    const [tagList, setTagList] = useState<TagInfo[]>([]);
 
     const [title, setTitle] = useState(ideaStore.createTitle);
     const [tagIdList, setTagIdList] = useState<string[]>([]);
@@ -40,8 +42,9 @@ const CreateModal = () => {
         const res = await request(list_tag({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
+            tag_scope_type: TAG_SCOPRE_IDEA,
         }));
-        setTagList(res.tag_list);
+        setTagList(res.tag_info_list);
     };
 
     const createIdea = async () => {
@@ -78,11 +81,11 @@ const CreateModal = () => {
 
     useEffect(() => {
         loadTagList();
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <Modal open title="创建知识点"
-        width={600}
+            width={600}
             okText="创建" okButtonProps={{ disabled: title.trim() == "" || keywordList.length == 0 }}
             onCancel={e => {
                 e.stopPropagation();
@@ -112,7 +115,7 @@ const CreateModal = () => {
                         placement="topLeft" placeholder="请选择对应的知识点标签">
                         {tagList.map(item => (
                             <Select.Option key={item.tag_id} value={item.tag_id}>
-                                <span style={{ backgroundColor: item.basic_info.tag_color, padding: "0px 10px" }}>{item.basic_info.tag_name}</span>
+                                <span style={{ backgroundColor: item.bg_color, padding: "4px 4px" }}>{item.tag_name}</span>
                             </Select.Option>
                         ))}
                     </Select>

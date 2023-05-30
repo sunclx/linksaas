@@ -205,9 +205,6 @@ export type CodeEvCfg = {
 };
 
 export type IdeaEvCfg = {
-    create_tag: boolean;
-    update_tag: boolean;
-    remove_tag: boolean;
     create_idea: boolean;
     update_idea_content: boolean;
     update_idea_tag: boolean;
@@ -344,9 +341,6 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
     }
     if (cfg.idea_ev_cfg == undefined) {
         cfg.idea_ev_cfg = {
-            create_tag: false,
-            update_tag: false,
-            remove_tag: false,
             create_idea: false,
             update_idea_content: false,
             update_idea_tag: false,

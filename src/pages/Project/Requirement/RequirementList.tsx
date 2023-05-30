@@ -24,6 +24,7 @@ import { LinkRequirementInfo } from "@/stores/linkAux";
 import type { TagInfo } from "@/api/project";
 import { list_tag, TAG_SCOPRE_REQ } from "@/api/project";
 import { EditTag } from "@/components/EditCell/EditTag";
+import { PROJECT_SETTING_TAB } from "@/utils/constant";
 
 const PAGE_SIZE = 10;
 
@@ -317,12 +318,23 @@ const RequirementList = () => {
 
     return (
         <CardWrap title="需求列表" extra={
-            <Space>
+            <Space size="middle">
                 <Button disabled={!projectStore.isAdmin} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, curCateId, history);
                 }}>创建需求</Button>
+                <Popover placement="bottom" trigger="click" content={
+                    <div style={{ padding: "10px 10px" }}>
+                        <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
+                        }}>管理标签</Button>
+                    </div>
+                }>
+                    <MoreOutlined className={s.more} />
+                </Popover>
             </Space>
         }>
             <div className={s.content_wrap}>

@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import * as prjDocApi from "@/api/project_doc";
 import { request } from '@/utils/request';
-import { Pagination, Card, Table, Form, Switch, message, Select } from 'antd';
-import { DeleteOutlined, FileTextOutlined } from "@ant-design/icons";
+import { Pagination, Card, Table, Form, Switch, message, Select, Space, Popover } from 'antd';
+import { DeleteOutlined, FileTextOutlined, MoreOutlined } from "@ant-design/icons";
 import type { ColumnsType } from 'antd/es/table';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from 'moment';
@@ -13,6 +13,7 @@ import Button from "@/components/Button";
 import type { TagInfo } from "@/api/project";
 import { TAG_SCOPRE_DOC, list_tag } from "@/api/project";
 import { EditTag } from "@/components/EditCell/EditTag";
+import { PROJECT_SETTING_TAB } from "@/utils/constant";
 
 
 const PAGE_SIZE = 10;
@@ -196,30 +197,44 @@ const DocList = () => {
     const genExtra = () => (
         <>
             {!docSpaceStore.recycleBin &&
-                (<Form layout="inline">
-                    <Form.Item label="我的关注">
-                        <Switch onChange={checked => {
-                            setFilterWatch(checked);
-                        }} />
-                    </Form.Item>
-                    {tagDefList.length > 0 && (
-                        <Form.Item label="标签">
-                            <Select style={{ width: "100px" }} value={filterTagId} onChange={value => setFilterTagId(value ?? "")} allowClear>
-                                {tagDefList.map(tagDef => (
-                                    <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
-                                        <span style={{ padding: "2px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    )}
-
-                    <Button type="primary" style={{ height: "30px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        docSpaceStore.showDoc("", true);
-                    }}>新建文档</Button>
-                </Form>)}
+                (
+                    <Space size="middle">
+                        <Form layout="inline">
+                            <Form.Item label="我的关注">
+                                <Switch onChange={checked => {
+                                    setFilterWatch(checked);
+                                }} />
+                            </Form.Item>
+                            {tagDefList.length > 0 && (
+                                <Form.Item label="标签">
+                                    <Select style={{ width: "100px" }} value={filterTagId} onChange={value => setFilterTagId(value ?? "")} allowClear>
+                                        {tagDefList.map(tagDef => (
+                                            <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
+                                                <span style={{ padding: "2px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            )}
+                        </Form>
+                        <Button type="primary" style={{ height: "30px" }} onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            docSpaceStore.showDoc("", true);
+                        }}>新建文档</Button>
+                        <Popover placement="bottom" trigger="click" content={
+                            <div style={{ padding: "10px 10px" }}>
+                                <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
+                                }}>管理标签</Button>
+                            </div>
+                        }>
+                            <MoreOutlined className={s.more} />
+                        </Popover>
+                    </Space>
+                )}
         </>
     );
 
@@ -229,7 +244,7 @@ const DocList = () => {
 
     useEffect(() => {
         loadTagDefList();
-    }, [projectStore.curProjectId,projectStore.curProject?.tag_version]);
+    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <Card

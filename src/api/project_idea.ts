@@ -13,21 +13,6 @@ export const KEYWORD_SEARCH_AND: KEYWORD_SEARCH_TYPE = 0;
 export const KEYWORD_SEARCH_OR: KEYWORD_SEARCH_TYPE = 1;
 
 
-export type BasicIdeaTag = {
-    tag_name: string;
-    tag_color: string;
-};
-
-export type IdeaTag = {
-    tag_id: string;
-    basic_info: BasicIdeaTag;
-    create_user_id: string;
-    create_display_name: string;
-    create_logo_uri: string;
-    create_time: number;
-    update_time: number;
-};
-
 export type BasicIdea = {
     title: string;
     content: string;
@@ -42,16 +27,16 @@ export type UserPerm = {
     can_appraise: boolean;
 };
 
-export type SimpleIdeaTag = {
+export type IdeaTag  = {
     tag_id: string;
     tag_name: string;
-    tag_color: string;
+    bg_color: string;
 };
 
 export type Idea = {
     idea_id: string;
     basic_info: BasicIdea;
-    tag_list: SimpleIdeaTag[];
+    tag_info_list: IdeaTag[];
     agree_count: number;
     disagree_count: number;
     locked: boolean;
@@ -83,66 +68,6 @@ export type Appraise = {
     appraise_type: APPRAISE_TYPE;
     time_stamp: number;
 };
-
-export type CreateTagRequest = {
-    session_id: string;
-    project_id: string;
-    basic_info: BasicIdeaTag;
-};
-
-export type CreateTagResponse = {
-    code: number;
-    err_msg: string;
-    tag_id: string;
-};
-
-
-export type UpdateTagRequest = {
-    session_id: string;
-    project_id: string;
-    tag_id: string;
-    basic_info: BasicIdeaTag;
-};
-
-export type UpdateTagResponse = {
-    code: number;
-    err_msg: string;
-};
-
-export type RemoveTagRequest = {
-    session_id: string;
-    project_id: string;
-    tag_id: string;
-};
-
-export type RemoveTagResponse = {
-    code: number;
-    err_msg: string;
-};
-
-export type GetTagRequest = {
-    session_id: string;
-    project_id: string;
-    tag_id: string;
-};
-
-export type GetTagResponse = {
-    code: number;
-    err_msg: string;
-    tag: IdeaTag;
-};
-
-export type ListTagRequest = {
-    session_id: string;
-    project_id: string;
-};
-
-export type ListTagResponse = {
-    code: number;
-    err_msg: string;
-    tag_list: IdeaTag[];
-};
-
 
 export type CreateIdeaRequest = {
     session_id: string;
@@ -309,50 +234,6 @@ export type ListAppraiseResponse = {
     code: number;
     err_msg: string;
     appraise_list: Appraise[];
-}
-
-//创建标签
-export async function create_tag(request: CreateTagRequest): Promise<CreateTagResponse> {
-    const cmd = 'plugin:project_idea_api|create_tag';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<CreateTagResponse>(cmd, {
-        request,
-    });
-}
-
-//修改标签
-export async function update_tag(request: UpdateTagRequest): Promise<UpdateTagResponse> {
-    const cmd = 'plugin:project_idea_api|update_tag';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdateTagResponse>(cmd, {
-        request,
-    });
-}
-
-//删除标签
-export async function remove_tag(request: RemoveTagRequest): Promise<RemoveTagResponse> {
-    const cmd = 'plugin:project_idea_api|remove_tag';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<RemoveTagResponse>(cmd, {
-        request,
-    });
-}
-
-//获取单个标签
-export async function get_tag(request: GetTagRequest): Promise<GetTagResponse> {
-    const cmd = 'plugin:project_idea_api|get_tag';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetTagResponse>(cmd, {
-        request,
-    });
-}
-//列出标签
-export async function list_tag(request: ListTagRequest): Promise<ListTagResponse> {
-    const cmd = 'plugin:project_idea_api|list_tag';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListTagResponse>(cmd, {
-        request,
-    });
 }
 
 //创建点子

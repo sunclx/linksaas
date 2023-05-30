@@ -38,7 +38,7 @@ const ProjectSettingModal = () => {
         <Modal open mask={false} footer={null}
             title={`${projectStore.curProject?.basic_info.project_name ?? ""} 项目设置`}
             bodyStyle={{ paddingTop: 0, overflowY: "hidden" }}
-            width={"600px"}
+            width={"700px"}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
