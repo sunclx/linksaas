@@ -49,6 +49,13 @@ export type BurnDownInfo = {
   remain_minutes: number;
 };
 
+export type SummaryTag = {
+  tag_id: string;
+  tag_name: string;
+  bg_color: string;
+};
+
+
 export type SummaryItemInfo = {
   summary_item_id: string;
   content: string;
@@ -57,6 +64,7 @@ export type SummaryItemInfo = {
   create_logo_uri: string;
   create_time: number;
   group_id: string;
+  tag_info: SummaryTag;
 };
 
 export type ListResponse = {
@@ -173,6 +181,7 @@ export type AddSummaryItemRequest = {
   session_id: string;
   project_id: string;
   sprit_id: string;
+  tag_id: string;
   content: string;
 }
 
@@ -187,6 +196,7 @@ export type UpdateSummaryItemRequest = {
   project_id: string;
   summary_item_id: string;
   sprit_id: string;
+  tag_id: string;
   content: string;
 };
 
@@ -199,6 +209,8 @@ export type ListSummaryItemRequest = {
   session_id: string;
   project_id: string;
   sprit_id: string;
+  filter_by_tag_id: boolean;
+  tag_id: string;
 };
 
 export type ListSummaryItemResponse = {

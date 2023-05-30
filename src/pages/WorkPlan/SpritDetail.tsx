@@ -19,6 +19,8 @@ import { EditSelect } from "@/components/EditCell/EditSelect";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
 import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
+import SummaryPanel from "./components/SummaryPanel";
+
 
 const SpritDetail = () => {
     const userStore = useStores('userStore');
@@ -75,6 +77,12 @@ const SpritDetail = () => {
     }, [spritStore.curSpritId]);
 
     useEffect(() => {
+        if (spritStore.curSpritId != "") {
+            loadSpritInfo();
+        }
+    }, [spritStore.curSpritVersion]);
+
+    useEffect(() => {
         if (tabStr != "") {
             setActiveKey(tabStr);
         }
@@ -83,7 +91,7 @@ const SpritDetail = () => {
     return (
         <Card bordered={false}
             style={{ marginRight: "60px" }}
-            bodyStyle={{ height: "calc(100vh - 134px)", overflowY: "scroll", overflowX: "hidden"}}
+            bodyStyle={{ height: "calc(100vh - 134px)", overflowY: "scroll", overflowX: "hidden" }}
             title={
                 <h2 className={s.head}>
                     <a onClick={e => {
@@ -233,6 +241,9 @@ const SpritDetail = () => {
                     </Tabs.TabPane>
                     <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>统计信息</span>} key="statistics" disabled={!spritStore.allTimeReady}>
                         {activeKey == "statistics" && <StatPanel />}
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>工作总结</span>} key="summary">
+                        {activeKey == "summary" && spritInfo != null && <SummaryPanel state={spritInfo.summary_state} />}
                     </Tabs.TabPane>
                 </Tabs>
             </div>
