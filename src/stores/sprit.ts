@@ -181,6 +181,7 @@ export default class SpritStore {
     }
 
     async updateIssue(issueId: string) {
+        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx", issueId);
         const taskIndex = this._taskList.findIndex(item => item.issue_id == issueId);
         const bugIndex = this._bugList.findIndex(item => item.issue_id == issueId);
         if (taskIndex == -1 && bugIndex == -1) {

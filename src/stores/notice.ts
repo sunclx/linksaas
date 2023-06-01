@@ -414,7 +414,9 @@ class NoticeStore {
       }
     }
     else if (notice.UpdateIssueStateNotice !== undefined) {
+      console.log("1111111111111111111");
       this.rootStore.projectStore.updateProjectIssueCount(notice.UpdateIssueStateNotice.project_id);
+      console.log("2222222222222222222");
       await this.rootStore.spritStore.updateIssue(notice.UpdateIssueStateNotice.issue_id);
       if (notice.UpdateIssueStateNotice.project_id == this.rootStore.projectStore.curProjectId) {
         if (notice.UpdateIssueStateNotice.exec_user_id != "") {

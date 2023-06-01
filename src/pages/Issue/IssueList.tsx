@@ -47,6 +47,7 @@ const IssueList = () => {
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const spritStore = useStores('spritStore');
     const linkAuxStore = useStores('linkAuxStore');
 
     const filterState: LinkIssueListState = location.state as LinkIssueListState ?? {
@@ -334,6 +335,7 @@ const IssueList = () => {
                     updateIssue(stageIssue.issue_id).then(() => {
                         setStageIssue(undefined)
                     });
+                    spritStore.updateIssue(stageIssue.issue_id);
                 }}
             />}
             {showBatchModal == true && <BatchCreate
