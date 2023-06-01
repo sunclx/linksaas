@@ -15,6 +15,7 @@ import BugLevelSelect from '../../../components/BugLevelSelect';
 import type { TagInfo } from "@/api/project";
 import { ISSUE_TAB_LIST_TYPE, type LinkIssueListState } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
+import { ISSUE_STATE_PROCESS_OR_CHECK } from '@/api/project_issue';
 
 type FiltrationProps = {
   tagDefList: TagInfo[];
@@ -24,20 +25,22 @@ const { Option } = Select;
 
 const Filtration: FC<FiltrationProps> = observer((props) => {
   const location = useLocation();
+  const userStore = useStores('userStore');
   const history = useHistory();
   const linkAuxStore = useStores('linkAuxStore');
 
   const [form] = Form.useForm();
 
   const filterState: LinkIssueListState = location.state as LinkIssueListState ?? {
-    stateList: [],
-    execUserIdList: [],
-    checkUserIdList: [],
-    tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME,
     priorityList: [],
     softwareVersionList: [],
     levelList: [],
     tagId: "",
+    stateList: [ISSUE_STATE_PROCESS_OR_CHECK],
+    execUserIdList: [userStore.userInfo.userId],
+    checkUserIdList: [userStore.userInfo.userId],
+    tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME,
+    curPage: 0,
   };
 
   const removalFilter = () => {

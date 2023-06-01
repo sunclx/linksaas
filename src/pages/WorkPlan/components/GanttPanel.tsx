@@ -144,7 +144,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
         const spritTask: GanttTask = {
             id: spritStore.curSpritId,
             type: "project",
-            name: props.spritName,
+            name: `${props.spritName}(${moment(props.startTime).format("YYYY-MM-DD")}至${moment(props.endTime).format("YYYY-MM-DD")})`,
             start: moment(props.startTime).startOf("day").toDate(),
             end: moment(props.endTime).endOf("day").toDate(),
             progress: Math.floor((1 - totalRemain / totalEstimate) * 100),
@@ -155,8 +155,8 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
     return (
         <div style={{ height: (spritStore.taskList.length + spritStore.bugList.length) * 40 + 400 }}>
             {taskList.length > 0 && (
-                <Gantt tasks={taskList} viewMode={ViewMode.Day} locale="CHINA" listCellWidth="" TooltipContent={TooltipContent}
-                    rowHeight={40}
+                <Gantt tasks={taskList} viewMode={ViewMode.Day} locale="chi" listCellWidth="" TooltipContent={TooltipContent}
+                    rowHeight={40} rtl={false} preStepsCount={1}
                     onClick={task => {
                         if (spritStore.taskList.map(item => item.issue_id).includes(task.id)) {
                             linkAuxStore.goToLink(new LinkTaskInfo("", projectStore.curProjectId, task.id, spritStore.taskList.map(item => item.issue_id)), history);
