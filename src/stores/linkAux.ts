@@ -431,10 +431,22 @@ export type LinkIssueState = {
   spritId?: string;
 };
 
+export enum ISSUE_TAB_LIST_TYPE {
+  ISSUE_TAB_LIST_ALL, //全部
+  ISSUE_TAB_LIST_ASSGIN_ME, //指派给我
+  ISSUE_TAB_LIST_MY_CREATE, //由我创建
+}
+
 export type LinkIssueListState = {
   stateList: ISSUE_STATE[];
   execUserIdList: string[];
   checkUserIdList: string[];
+  tabType?: ISSUE_TAB_LIST_TYPE;
+  priorityList?: number[];
+  softwareVersionList?: string[];
+  levelList?: number[];
+  tagId?: string;
+  curPage?: number;
 };
 
 export type LinkDocState = {
@@ -878,13 +890,38 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
+    if (state != undefined && state?.tabType == undefined) {
+      state.tabType = ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME;
+    }
+    if (state != undefined && state.priorityList == undefined) {
+      state.priorityList = [];
+    }
+    if (state != undefined && state.curPage == undefined) {
+      state.curPage = 0;
+    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/task"), state);
   }
 
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState | undefined, history: History) {
+    console.log("22222222222222222", state);
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
+    }
+    if (state != undefined && state?.tabType == undefined) {
+      state.tabType = ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME;
+    }
+    if (state != undefined && state.priorityList == undefined) {
+      state.priorityList = [];
+    }
+    if (state != undefined && state.softwareVersionList == undefined) {
+      state.softwareVersionList = [];
+    }
+    if (state != undefined && state.levelList == undefined) {
+      state.levelList = [];
+    }
+    if (state != undefined && state.curPage == undefined) {
+      state.curPage = 0;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/bug"), state);
   }

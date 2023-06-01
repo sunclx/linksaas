@@ -2,13 +2,6 @@ import type { EditSelectItem } from "../../../components/EditCell/EditSelect";
 import * as issueApi from '@/api/project_issue';
 
 
-export enum ISSUE_TAB_LIST_TYPE {
-    ISSUE_TAB_LIST_ALL, //全部
-    ISSUE_TAB_LIST_ASSGIN_ME, //指派给我
-    ISSUE_TAB_LIST_MY_CREATE, //由我创建
-}
-
-
 export const bugLvSelectItems: EditSelectItem[] = [
     {
         value: issueApi.BUG_LEVEL_MINOR,
