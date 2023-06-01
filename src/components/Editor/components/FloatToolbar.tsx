@@ -362,7 +362,7 @@ const formatItem = (
 
 const FloatToolBar = () => {
   return (
-    <FloatingWrapper displayArrow={true} positioner="selection" placement="top" renderOutsideEditor={true}>
+    <FloatingWrapper displayArrow={true} positioner="selection" placement="top">
       <Toolbar items={[headAndLinkItem, fontItem, formatItem]} />
     </FloatingWrapper>
   );

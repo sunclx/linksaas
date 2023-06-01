@@ -1,9 +1,9 @@
-import type { ISSUE_TAB_LIST_TYPE } from './constant';
 import type { FC } from 'react';
 import React from 'react';
 import s from './Tabs.module.less';
 import filterIcon from '@/assets/image/filterIcon.png';
 import noFilterIcon from '@/assets/image/noFilterIcon.png';
+import type { ISSUE_TAB_LIST_TYPE } from '@/stores/linkAux';
 
 type TabsProps = {
   list: { name: string; value: ISSUE_TAB_LIST_TYPE }[];

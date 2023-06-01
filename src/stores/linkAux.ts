@@ -35,32 +35,31 @@ import { openBook } from '@/pages/Book/utils';
  */
 
 export enum LINK_TARGET_TYPE {
-  LINK_TARGET_PROJECT,
-  LINK_TARGET_CHANNEL,
-  LINK_TARGET_EVENT,
-  LINK_TARGET_DOC,
-  LINK_TARGET_APP,
-  LINK_TARGET_SPRIT,
-  LINK_TARGET_TASK,
-  LINK_TARGET_BUG,
-  LINK_TARGET_APPRAISE,
-  LINK_TARGET_USER_KB,
-  LINK_TARGET_ROBOT_METRIC,
-  LINK_TARGET_EARTHLY_ACTION,
-  LINK_TARGET_EARTHLY_EXEC,
-  LINK_TARGET_BOOK_MARK,
-  LINK_TARGET_TEST_CASE_ENTRY,
-  LINK_TARGET_SCRIPT_SUITE,
-  LINK_TARGET_SCRIPT_EXEC,
-  LINK_TARGET_REQUIRE_MENT,
-  LINK_TARGET_CODE_COMMENT,
-  LINK_TARGET_BOOK_MARK_CATE,
+  LINK_TARGET_PROJECT = 0,
+  LINK_TARGET_CHANNEL = 1,
+  LINK_TARGET_EVENT = 2,
+  LINK_TARGET_DOC = 3,
+  LINK_TARGET_APP = 4,
+  LINK_TARGET_SPRIT = 5,
+  LINK_TARGET_TASK = 6,
+  LINK_TARGET_BUG = 7,
+  LINK_TARGET_APPRAISE = 8,
+  LINK_TARGET_USER_KB = 9,
+  LINK_TARGET_ROBOT_METRIC = 10,
+  LINK_TARGET_EARTHLY_ACTION = 11,
+  LINK_TARGET_EARTHLY_EXEC = 12,
+  LINK_TARGET_BOOK_MARK = 13,
+  LINK_TARGET_TEST_CASE_ENTRY = 14,
+  LINK_TARGET_SCRIPT_SUITE = 15,
+  LINK_TARGET_SCRIPT_EXEC = 16,
+  LINK_TARGET_REQUIRE_MENT = 17,
+  LINK_TARGET_CODE_COMMENT = 18,
+  LINK_TARGET_BOOK_MARK_CATE = 19,
+  LINK_TARGET_IDEA_PAGE = 20,
 
-  LINK_TARGET_NONE,
-  LINK_TARGET_IMAGE,
-  LINK_TARGET_EXTERNE,
-
-  LINK_TARGET_IDEA_PAGE,
+  LINK_TARGET_NONE = 100,
+  LINK_TARGET_IMAGE = 101,
+  LINK_TARGET_EXTERNE = 102,
 }
 
 export interface LinkInfo {
@@ -432,10 +431,22 @@ export type LinkIssueState = {
   spritId?: string;
 };
 
+export enum ISSUE_TAB_LIST_TYPE {
+  ISSUE_TAB_LIST_ALL, //全部
+  ISSUE_TAB_LIST_ASSGIN_ME, //指派给我
+  ISSUE_TAB_LIST_MY_CREATE, //由我创建
+}
+
 export type LinkIssueListState = {
   stateList: ISSUE_STATE[];
   execUserIdList: string[];
   checkUserIdList: string[];
+  tabType?: ISSUE_TAB_LIST_TYPE;
+  priorityList?: number[];
+  softwareVersionList?: string[];
+  levelList?: number[];
+  tagId?: string;
+  curPage?: number;
 };
 
 export type LinkDocState = {
@@ -879,13 +890,38 @@ class LinkAuxStore {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
+    if (state != undefined && state?.tabType == undefined) {
+      state.tabType = ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME;
+    }
+    if (state != undefined && state.priorityList == undefined) {
+      state.priorityList = [];
+    }
+    if (state != undefined && state.curPage == undefined) {
+      state.curPage = 0;
+    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/task"), state);
   }
 
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState | undefined, history: History) {
+    console.log("22222222222222222", state);
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
+    }
+    if (state != undefined && state?.tabType == undefined) {
+      state.tabType = ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME;
+    }
+    if (state != undefined && state.priorityList == undefined) {
+      state.priorityList = [];
+    }
+    if (state != undefined && state.softwareVersionList == undefined) {
+      state.softwareVersionList = [];
+    }
+    if (state != undefined && state.levelList == undefined) {
+      state.levelList = [];
+    }
+    if (state != undefined && state.curPage == undefined) {
+      state.curPage = 0;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/bug"), state);
   }
