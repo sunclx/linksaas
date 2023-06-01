@@ -157,6 +157,11 @@ const Backlog: React.FC<BacklogProps> = (props) => {
       },
     },
     {
+      title: '所属项目',
+      width: 100,
+      render: (_, record: IssueInfo) => projectStore.getProject(record.project_id)?.basic_info.project_name ?? "",
+    },
+    {
       title: `名称`,
       ellipsis: true,
       dataIndex: ['basic_info', 'title'],
@@ -203,7 +208,6 @@ const Backlog: React.FC<BacklogProps> = (props) => {
     {
       title: '优先级',
       width: 100,
-      align: 'center',
       render: (row: IssueInfo) => {
         return RenderSelectOpt(
           issueTypeIsTask(row)
@@ -223,42 +227,31 @@ const Backlog: React.FC<BacklogProps> = (props) => {
       title: '处理人',
       dataIndex: 'exec_display_name',
       width: 100,
-      align: 'center',
       render: (v: string, row: IssueInfo) => renderName(row.exec_user_id, v),
     },
     {
       title: '验收人',
       dataIndex: 'check_display_name',
       width: 100,
-      align: 'center',
       render: (v: string, row: IssueInfo) => renderName(row.check_user_id, v),
     },
     {
       title: '剩余工时',
       dataIndex: 'remain_minutes',
       width: 100,
-      align: 'center',
       render: (v: number, record: IssueInfo) => renderManHour(record.has_remain_minutes, v),
     },
     {
       title: '预估工时',
       dataIndex: 'estimate_minutes',
       width: 100,
-      align: 'center',
       render: (v: number, record: IssueInfo) => renderManHour(record.has_estimate_minutes, v),
     },
     {
       title: '预估完成时间',
       dataIndex: 'end_time',
       width: 120,
-      align: 'center',
       render: (v: number, record: IssueInfo) => renderEndTime(record.has_end_time, v),
-    },
-    {
-      title: '所属项目',
-      dataIndex: 'create_display_name',
-      width: 150,
-      align: 'center',
     },
   ];
 
