@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import RcGantt from 'rc-gantt';
-import type { Gantt } from 'rc-gantt';
 import { useStores } from "@/hooks";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
-import { ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS } from "@/api/project_issue";
+import type { IssueInfo } from "@/api/project_issue";
+import { ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK } from "@/api/project_issue";
 import { issueState, ISSUE_STATE_COLOR_ENUM } from "@/utils/constant";
-import { Space } from "antd";
-import { LinkOutlined } from "@ant-design/icons";
+import type { Task as GanttTask } from 'gantt-task-react';
+import { Gantt, ViewMode, } from 'gantt-task-react';
+import "gantt-task-react/dist/index.css";
+import { Descriptions } from "antd";
 
 const getColor = (v: number) => {
     switch (v) {
@@ -44,6 +45,47 @@ const renderState = (val: number) => {
     );
 };
 
+const TooltipContent: React.FC<{
+    task: GanttTask;
+    fontSize: string;
+    fontFamily: string;
+}> = observer((props) => {
+    const spritStore = useStores('spritStore');
+
+    const [issue, setIssue] = useState<IssueInfo | null>(null);
+
+    useEffect(() => {
+        let index = spritStore.taskList.findIndex(item => item.issue_id == props.task.id);
+        if (index != -1) {
+            setIssue(spritStore.taskList[index]);
+            return;
+        }
+        index = spritStore.bugList.findIndex(item => item.issue_id == props.task.id);
+        if (index != -1) {
+            setIssue(spritStore.bugList[index]);
+            return;
+        }
+    }, [props.task.id]);
+    return (
+        <div style={{ backgroundColor: "white", padding: "10px 10px" ,border:"1px solid #e4e4e8"}}>
+            {issue !== null && (
+                <Descriptions title={`${issue.issue_type == ISSUE_TYPE_TASK ? "任务" : "缺陷"}:${issue.basic_info.title}`} bordered={true}>
+                    <Descriptions.Item label="阶段">{renderState(issue.state)}</Descriptions.Item>
+                    <Descriptions.Item label="预估时间">{(issue.estimate_minutes / 60).toFixed(1)}小时</Descriptions.Item>
+                    <Descriptions.Item label="剩余时间">{(issue.remain_minutes / 60).toFixed(1)}小时</Descriptions.Item>
+                    <Descriptions.Item label="预估开始时间">{moment(issue.start_time).format("YYYY-MM-DD")}</Descriptions.Item>
+                    <Descriptions.Item label="预估结束时间">{moment(issue.end_time).format("YYYY-MM-DD")}</Descriptions.Item>
+                    <Descriptions.Item label="截止时间">
+                        {issue.has_dead_line_time == true && moment(issue.dead_line_time).format("YYYY-MM-DD")}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="创建者">{issue.create_display_name}</Descriptions.Item>
+                    <Descriptions.Item label="执行者">{issue.exec_display_name}</Descriptions.Item>
+                    <Descriptions.Item label="检查者">{issue.check_display_name}</Descriptions.Item>
+                </Descriptions>
+            )}
+        </div>
+    );
+});
 
 interface GanttPanelProps {
     spritName: string;
@@ -53,105 +95,76 @@ interface GanttPanelProps {
 
 const GanttPanel: React.FC<GanttPanelProps> = (props) => {
     const spritStore = useStores('spritStore');
-    const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
 
     const history = useHistory();
 
-    const [taskList, setTaskList] = useState<Record<string, any>[]>([]);
-    const [unit, setUnit] = useState<Gantt.Sight>("day");
+    const [taskList, setTaskList] = useState<GanttTask[]>([]);
+
+    const calcName = (issue: IssueInfo): string => {
+        const parts: string[] = [`状态:${issueState[issue.state].label}`];
+        if (issue.exec_display_name != "") {
+            parts.push("执行者:" + issue.exec_display_name);
+        }
+        if (issue.check_display_name != "") {
+            parts.push("检查者:" + issue.check_display_name)
+        }
+        return `${issue.issue_type == ISSUE_TYPE_TASK ? "任务" : "缺陷"}:${issue.basic_info.title}(${parts.join(",")})`;
+    }
 
     useEffect(() => {
-        const tmpList: Record<string, any>[] = [];
+        const tmpList: GanttTask[] = [];
+        let totalEstimate = 0;
+        let totalRemain = 0;
         for (const task of spritStore.taskList) {
             tmpList.push({
-                name: <a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToLink(new LinkTaskInfo("", task.project_id, task.issue_id), history);
-                }}><LinkOutlined key="icon" />&nbsp;任务：{task.basic_info.title}</a>,
-                startDate: moment(task.start_time).format("YYYY-MM-DD"),
-                endDate: moment(task.end_time).format("YYYY-MM-DD"),
-                execDisplayName: task.exec_display_name,
-                myExec: userStore.userInfo.userId == task.exec_user_id,
-                checkDisplayName: task.check_display_name,
-                myCheck: userStore.userInfo.userId == task.check_user_id,
-                state: renderState(task.state),
-                disabled: true,
-                estimateHour: (task.estimate_minutes / 60).toFixed(1) + "小时",
-                remainHour: (task.remain_minutes / 60).toFixed(1) + "小时",
+                id: task.issue_id,
+                type: "task",
+                name: calcName(task),
+                start: moment(task.start_time).startOf("day").toDate(),
+                end: moment(task.end_time).endOf("day").toDate(),
+                progress: Math.floor((1 - task.remain_minutes / task.estimate_minutes) * 100),
             });
+            totalEstimate += task.estimate_minutes;
+            totalRemain += task.remain_minutes;
         }
         for (const bug of spritStore.bugList) {
             tmpList.push({
-                name: <a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToLink(new LinkBugInfo("", bug.project_id, bug.issue_id), history);
-                }}><LinkOutlined key="icon" />&nbsp;缺陷：{bug.basic_info.title}</a>,
-                startDate: moment(bug.start_time).format("YYYY-MM-DD"),
-                endDate: moment(bug.end_time).format("YYYY-MM-DD"),
-                execDisplayName: bug.exec_display_name,
-                myExec: userStore.userInfo.userId == bug.exec_user_id,
-                checkDisplayName: bug.check_display_name,
-                myCheck: userStore.userInfo.userId == bug.check_user_id,
-                state: renderState(bug.state),
-                disabled: true,
-                estimateHour: (bug.estimate_minutes / 60).toFixed(1) + "小时",
-                remainHour: (bug.remain_minutes / 60).toFixed(1) + "小时",
+                id: bug.issue_id,
+                type: "task",
+                name: calcName(bug),
+                start: moment(bug.start_time).startOf("day").toDate(),
+                end: moment(bug.end_time).endOf("day").toDate(),
+                progress: Math.floor((1 - bug.remain_minutes / bug.estimate_minutes) * 100),
             });
+            totalEstimate += bug.estimate_minutes;
+            totalRemain += bug.remain_minutes;
         }
-        const spritTask: Record<string, any> = {
-            key: "",
-            name: props.spritName,
-            startDate: moment(props.startTime).format("YYYY-MM-DD"),
-            endDate: moment(props.endTime).format("YYYY-MM-DD"),
-            execDisplayName: "",
-            state: "",
-            disabled: true,
-            children: tmpList,
+        const spritTask: GanttTask = {
+            id: spritStore.curSpritId,
+            type: "project",
+            name: `${props.spritName}(${moment(props.startTime).format("YYYY-MM-DD")}至${moment(props.endTime).format("YYYY-MM-DD")})`,
+            start: moment(props.startTime).startOf("day").toDate(),
+            end: moment(props.endTime).endOf("day").toDate(),
+            progress: Math.floor((1 - totalRemain / totalEstimate) * 100),
         };
-        setTaskList([spritTask]);
-        const diffDay = moment().diff(moment(props.startTime)) / 1000 / 3600 / 24;
-        if (diffDay > 240) {
-            setUnit("halfYear");
-        } else if (diffDay > 120) {
-            setUnit("quarter");
-        } else if (diffDay > 40) {
-            setUnit("month");
-        } else if (diffDay > 20) {
-            setUnit("week");
-        }
+        setTaskList([spritTask, ...tmpList]);
     }, [spritStore.taskList, spritStore.bugList]);
 
     return (
-        <div style={{ height: "calc(100vh - 270px)" }}>
-            <RcGantt
-                unit={unit}
-                showBackToday={true}
-                data={taskList}
-                tableCollapseAble={false}
-                renderLeftText={() => <span />}
-                renderRightText={(item) => {
-                    return (<div style={{ display: "flex", backgroundColor: "#e4e4e8", padding: "2px 10px", borderRadius: "10px" }}>
-                        {item.record.children == undefined &&
-                            <Space>
-                                <div>{item.record.name}</div> |
-                                <div style={{ display: "flex" }}>状态：{item.record.state} </div> |
-                                <div >执行：{item.record.execDisplayName}{item.record.myExec && <span style={{ color: "red" }}>(我)</span>}</div>
-                                {item.record.checkDisplayName != "" && (<div>检查：{item.record.checkDisplayName}{item.record.myCheck && <span style={{ color: "red" }}>(我)</span>}</div>)} |
-                                <div>预估工时：{item.record.estimateHour}</div> |
-                                <div>剩余时间：{item.record.remainHour}</div>
-                            </Space>
+        <div style={{ height: (spritStore.taskList.length + spritStore.bugList.length) * 40 + 400 }}>
+            {taskList.length > 0 && (
+                <Gantt tasks={taskList} viewMode={ViewMode.Day} locale="chi" listCellWidth="" TooltipContent={TooltipContent}
+                    rowHeight={40} rtl={false} preStepsCount={1}
+                    onClick={task => {
+                        if (spritStore.taskList.map(item => item.issue_id).includes(task.id)) {
+                            linkAuxStore.goToLink(new LinkTaskInfo("", projectStore.curProjectId, task.id, spritStore.taskList.map(item => item.issue_id)), history);
+                        } else {
+                            linkAuxStore.goToLink(new LinkBugInfo("", projectStore.curProjectId, task.id, spritStore.bugList.map(item => item.issue_id)), history);
                         }
-                    </div>);
-                }}
-                columns={[]}
-                disabled={true}
-                onUpdate={async () => {
-                    return false
-                }}
-            />
+                    }} />
+            )}
         </div>
     );
 }

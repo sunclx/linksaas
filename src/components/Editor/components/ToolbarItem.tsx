@@ -682,7 +682,7 @@ const AddCallout = () => {
 
   return (
     <Tooltip title="提示">
-      <Dropdown placement='bottomCenter' menu={{
+      <Dropdown placement='bottom' menu={{
         items: [
           {
             key: "info",

@@ -8,14 +8,10 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useStores } from "@/hooks";
 import Tabs from './components/Tabs';
 import addIcon from '@/assets/image/addIcon.png';
-import type { LinkIssueListState } from '@/stores/linkAux';
-import { ISSUE_TAB_LIST_TYPE } from './components/constant';
-import Filtration from "./components/Filtration";
-import type { FilterDataType } from "./components/Filtration";
-import { useSetState } from 'ahooks';
+import { ISSUE_TAB_LIST_TYPE, type LinkIssueListState } from '@/stores/linkAux';
 import IssueEditList from "./components/IssueEditList";
 import { ASSGIN_USER_ALL, ASSGIN_USER_CHECK, ASSGIN_USER_EXEC, SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC, list as list_issue, get as get_issue, list_id as list_issue_id, ISSUE_STATE_PROCESS_OR_CHECK, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK } from "@/api/project_issue";
-import type { IssueInfo, ListRequest, ListParam, ISSUE_STATE } from "@/api/project_issue";
+import type { IssueInfo, ListRequest, ListParam } from "@/api/project_issue";
 import { request } from '@/utils/request';
 import StageModel from "./components/StageModel";
 import Pagination from "@/components/Pagination";
@@ -25,6 +21,7 @@ import type { TagInfo } from "@/api/project";
 import { list_tag, TAG_SCOPRE_TASK, TAG_SCOPRE_BUG } from "@/api/project";
 import { PROJECT_SETTING_TAB } from "@/utils/constant";
 import { MoreOutlined } from "@ant-design/icons";
+import Filtration from "./components/Filtration";
 
 
 const tabList = [
@@ -46,39 +43,34 @@ const PAGE_SIZE = 10;
 
 const IssueList = () => {
     const location = useLocation();
-    const { push } = useHistory();
+    const history = useHistory();
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const spritStore = useStores('spritStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
-    const filterState: LinkIssueListState | undefined = location.state as LinkIssueListState | undefined;
-    const [activeVal, setActiveVal] = useState<ISSUE_TAB_LIST_TYPE>(filterState ? ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL : ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME);
+    const filterState: LinkIssueListState = location.state as LinkIssueListState ?? {
+        priorityList: [],
+        softwareVersionList: [],
+        levelList: [],
+        tagId: "",
+        stateList: [ISSUE_STATE_PROCESS_OR_CHECK],
+        execUserIdList: [userStore.userInfo.userId],
+        checkUserIdList: [userStore.userInfo.userId],
+        tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME,
+        curPage: 0,
+    };
     const [isFilter, setIsFilter] = useState(true);
-    let defaultStateList: ISSUE_STATE[] = [];
-    if (filterState !== undefined && filterState.stateList !== undefined) {
-        defaultStateList = filterState.stateList;
-    } else {
-        if (activeVal == ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME) {
-            defaultStateList = [ISSUE_STATE_PROCESS_OR_CHECK];
-        }
-    }
-    const [filterData, setFilterData] = useSetState<FilterDataType>({
-        priority_list: [],
-        state_list: defaultStateList,
-        exec_user_id_list: filterState?.execUserIdList ?? [],
-        check_user_id_list: filterState?.checkUserIdList ?? [],
-        software_version_list: [],
-        level_list: [],
-        tag_id: "",
-    });
+
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
     const [issueIdList, setIssueIdList] = useState<string[]>([]);
-    const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [stageIssue, setStageIssue] = useState<IssueInfo | undefined>(undefined);
     const [showBatchModal, setShowBatchModal] = useState(false);
 
     const [tagDefList, setTagDefList] = useState<TagInfo[] | null>(null);
+    const [lastState, setLastState] = useState<LinkIssueListState | null>(null);
 
     const updateIssue = async (issueId: string) => {
         const tmpList = issueList.slice();
@@ -101,7 +93,8 @@ const IssueList = () => {
     };
 
     const loadIssueList = async () => {
-        let newFilterState = filterData.state_list;
+        setLastState(filterState);
+        let newFilterState = filterState.stateList.slice();
         if (newFilterState !== undefined && newFilterState.length > 0 && newFilterState.includes(ISSUE_STATE_PROCESS_OR_CHECK)) {
             newFilterState = [ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK];
         }
@@ -111,27 +104,19 @@ const IssueList = () => {
         const listParam: ListParam = {
             filter_by_issue_type: true,
             issue_type: getIssue_type(location.pathname),
-            filter_by_state: !!filterData.state_list?.length,
+            filter_by_state: newFilterState.length > 0,
             state_list: newFilterState, //阶段
-            filter_by_create_user_id: activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_CREATE,
+            filter_by_create_user_id: filterState.tabType === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_CREATE,
             create_user_id_list: [userStore.userInfo.userId],
-            filter_by_assgin_user_id:
-                activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME
-                    ? true
-                    : filterData.exec_user_id_list?.length || filterData.check_user_id_list?.length
-                        ? true
-                        : false,
-            assgin_user_id_list:
-                activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME
-                    ? [userStore.userInfo.userId]
-                    : [...filterData.exec_user_id_list!, ...filterData.check_user_id_list!],
+            filter_by_assgin_user_id: filterState.execUserIdList.length > 0 || filterState.checkUserIdList.length > 0,
+            assgin_user_id_list: [...filterState.execUserIdList, ...filterState.checkUserIdList],
             assgin_user_type:
-                activeVal === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME ||
-                    (filterData.exec_user_id_list?.length && filterData.check_user_id_list?.length)
+                filterState.tabType === ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME ||
+                    (filterState.execUserIdList.length > 0 && filterState.checkUserIdList.length > 0)
                     ? ASSGIN_USER_ALL
-                    : filterData.exec_user_id_list?.length
+                    : filterState.execUserIdList.length > 0
                         ? ASSGIN_USER_EXEC
-                        : filterData.check_user_id_list?.length
+                        : filterState.checkUserIdList.length > 0
                             ? ASSGIN_USER_CHECK
                             : ASSGIN_USER_ALL,
             filter_by_sprit_id: false,
@@ -142,26 +127,26 @@ const IssueList = () => {
             filter_by_update_time: false,
             from_update_time: 0,
             to_update_time: 0,
-            filter_by_task_priority: getIsTask(location.pathname) && !!filterData.priority_list?.length,
-            task_priority_list: getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级
+            filter_by_task_priority: getIsTask(location.pathname) && (filterState.priorityList?.length ?? 0) > 0,
+            task_priority_list: getIsTask(location.pathname) ? (filterState.priorityList ?? []) : [], // 优先级
             filter_by_software_version:
-                !getIsTask(location.pathname) && !!filterData.software_version_list?.length,
-            software_version_list: !getIsTask(location.pathname) ? filterData.software_version_list! : [],
-            filter_by_bug_level: !getIsTask(location.pathname) && !!filterData.level_list?.length,
-            bug_level_list: !getIsTask(location.pathname) ? filterData.level_list! : [],
-            filter_by_bug_priority: !getIsTask(location.pathname) && !!filterData.priority_list?.length,
-            bug_priority_list: !getIsTask(location.pathname) ? filterData.priority_list! : [], // 优先级,
+                !getIsTask(location.pathname) && (filterState.softwareVersionList ?? []).length > 0,
+            software_version_list: !getIsTask(location.pathname) ? (filterState.softwareVersionList ?? []) : [],
+            filter_by_bug_level: !getIsTask(location.pathname) && (filterState.levelList ?? []).length > 0,
+            bug_level_list: !getIsTask(location.pathname) ? (filterState.levelList ?? []) : [],
+            filter_by_bug_priority: !getIsTask(location.pathname) && (filterState.priorityList?.length ?? 0) > 0,
+            bug_priority_list: !getIsTask(location.pathname) ? (filterState.priorityList ?? []) : [], // 优先级,
             filter_by_title_keyword: false,
             title_keyword: "",
-            filter_by_tag_id_list: (filterData.tag_id ?? "") != "",
-            tag_id_list: (filterData.tag_id ?? "") == "" ? [] : [filterData.tag_id!],
+            filter_by_tag_id_list: (filterState.tagId ?? "") != "",
+            tag_id_list: (filterState.tagId ?? "") == "" ? [] : [filterState.tagId!],
         };
         const req: ListRequest = {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             sort_type: SORT_TYPE_DSC, // SORT_TYPE_DSC SORT_TYPE_ASC
             sort_key: SORT_KEY_UPDATE_TIME,
-            offset: curPage * PAGE_SIZE,
+            offset: (filterState.curPage ?? 0) * PAGE_SIZE,
             limit: PAGE_SIZE,
             list_param: listParam,
         };
@@ -193,9 +178,50 @@ const IssueList = () => {
         setTagDefList(res.tag_info_list);
     };
 
+    const isSameArray = (a: unknown[], b: unknown[]): boolean => {
+        if (a.length != b.length) {
+            return false;
+        }
+        for (const av of a) {
+            if (!b.includes(av)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
     useEffect(() => {
-        loadIssueList();
-    }, [curPage, activeVal, filterData, projectStore.curProjectId]);
+        let hasChange = false;
+        if (lastState == null) {
+            hasChange = true;
+        } else {
+            if (!isSameArray(lastState.stateList, filterState.stateList)) {
+                hasChange = true;
+            } else if (!isSameArray(lastState.execUserIdList, filterState.execUserIdList)) {
+                hasChange = true;
+            } else if (!isSameArray(lastState.checkUserIdList, filterState.checkUserIdList)) {
+                hasChange = true;
+            } else if (!isSameArray(lastState.priorityList ?? [], filterState.priorityList ?? [])) {
+                hasChange = true;
+            } else if (!isSameArray(lastState.softwareVersionList ?? [], filterState.softwareVersionList ?? [])) {
+                hasChange = true;
+            } else if (!isSameArray(lastState.levelList ?? [], filterState.levelList ?? [])) {
+                hasChange = true;
+            } else if (lastState.tabType != filterState.tabType) {
+                hasChange = true;
+            } else if (lastState.tagId != filterState.tagId) {
+                hasChange = true;
+            } else if (lastState.curPage != filterState.curPage) {
+                hasChange = true;
+            }
+        }
+        if (hasChange) {
+            loadIssueList();
+        }
+    }, [projectStore.curProjectId, filterState.stateList, filterState.execUserIdList,
+    filterState.checkUserIdList, filterState.tabType, filterState.priorityList,
+    filterState.softwareVersionList, filterState.levelList, filterState.tagId, filterState.curPage
+    ]);
 
     useEffect(() => {
         loadTagDefList();
@@ -207,7 +233,7 @@ const IssueList = () => {
                 <Button
                     className={s.btn}
                     type="primary"
-                    onClick={() => push(getIssueCreateUrl(location.pathname))}
+                    onClick={() => history.push(getIssueCreateUrl(location.pathname))}
                     disabled={projectStore.curProject?.closed}
                 >
                     <img src={addIcon} alt="" />
@@ -237,26 +263,51 @@ const IssueList = () => {
             <div className={s.task_wrap}>
                 <div style={{ marginRight: '20px' }}>
                     <Tabs
-                        activeVal={activeVal}
+                        activeVal={filterState.tabType ?? ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME}
                         list={tabList}
                         onChang={value => {
-                            setActiveVal(value);
                             if (value == ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME) {
-                                setFilterData({
-                                    ...filterData,
-                                    state_list: [ISSUE_STATE_PROCESS_OR_CHECK],
-                                });
-                                setIsFilter(false);
-                                setTimeout(() => {
-                                    setIsFilter(true);
-                                }, 200);
+                                if (getIsTask(location.pathname)) {
+                                    linkAuxStore.goToTaskList({
+                                        stateList: [ISSUE_STATE_PROCESS_OR_CHECK],
+                                        execUserIdList: [userStore.userInfo.userId],
+                                        checkUserIdList: [userStore.userInfo.userId],
+                                        tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME,
+                                        curPage: 0,
+                                    }, history);
+                                } else {
+                                    linkAuxStore.goToBugList({
+                                        stateList: [ISSUE_STATE_PROCESS_OR_CHECK],
+                                        execUserIdList: [userStore.userInfo.userId],
+                                        checkUserIdList: [userStore.userInfo.userId],
+                                        tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME,
+                                        curPage: 0,
+                                    }, history);
+                                }
+                            } else {
+                                if (getIsTask(location.pathname)) {
+                                    linkAuxStore.goToTaskList({
+                                        stateList: [],
+                                        execUserIdList: [],
+                                        checkUserIdList: [],
+                                        tabType: value,
+                                        curPage: 0,
+                                    }, history);
+                                } else {
+                                    linkAuxStore.goToBugList({
+                                        stateList: [],
+                                        execUserIdList: [],
+                                        checkUserIdList: [],
+                                        tabType: value,
+                                        curPage: 0,
+                                    }, history);
+                                }
                             }
-
                         }}
                         isFilter={isFilter}
                         setIsFilter={setIsFilter}
                     />
-                    {isFilter && tagDefList != null && <Filtration setFilterData={setFilterData} activeVal={activeVal} filterData={filterData} tagDefList={tagDefList} />}
+                    {isFilter && tagDefList != null && <Filtration tagDefList={tagDefList} />}
                 </div>
                 {tagDefList != null && (
                     <IssueEditList isFilter={isFilter} dataSource={issueList}
@@ -266,8 +317,14 @@ const IssueList = () => {
                 <Pagination
                     total={totalCount}
                     pageSize={PAGE_SIZE}
-                    current={curPage + 1}
-                    onChange={(page: number) => setCurPage(page - 1)}
+                    current={(filterState.curPage ?? 0) + 1}
+                    onChange={(page: number) => {
+                        if (getIsTask(location.pathname)) {
+                            linkAuxStore.goToTaskList({ ...filterState, curPage: page - 1 }, history);
+                        } else {
+                            linkAuxStore.goToBugList({ ...filterState, curPage: page - 1 }, history);
+                        }
+                    }}
                 />
             </div>
 
@@ -278,30 +335,36 @@ const IssueList = () => {
                     updateIssue(stageIssue.issue_id).then(() => {
                         setStageIssue(undefined)
                     });
+                    spritStore.updateIssue(stageIssue.issue_id);
                 }}
             />}
             {showBatchModal == true && <BatchCreate
                 onCancel={() => setShowBatchModal(false)}
                 onOk={() => {
-                    setFilterData({
-                        priority_list: [],
-                        state_list: [],
-                        exec_user_id_list: [],
-                        check_user_id_list: [],
-                        software_version_list: [],
-                        level_list: [],
-                    });
-                    setIsFilter(false);
-                    if (activeVal != ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL) {
-                        setActiveVal(ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL);
-                    } else {
-                        if (curPage > 0) {
-                            setCurPage(0);
-                        } else {
-                            loadIssueList();
-                        }
-                    }
                     setShowBatchModal(false);
+                    if (getIsTask(location.pathname)) {
+                        linkAuxStore.goToTaskList({
+                            stateList: [],
+                            execUserIdList: [],
+                            checkUserIdList: [],
+                            tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL,
+                            priorityList: [],
+                            softwareVersionList: [],
+                            levelList: [],
+                            tagId: "",
+                        }, history);
+                    } else {
+                        linkAuxStore.goToTaskList({
+                            stateList: [],
+                            execUserIdList: [],
+                            checkUserIdList: [],
+                            tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL,
+                            priorityList: [],
+                            softwareVersionList: [],
+                            levelList: [],
+                            tagId: "",
+                        }, history);
+                    }
                 }}
             />}
         </CardWrap >

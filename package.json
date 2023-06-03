@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.2.29",
+  "version": "0.2.30",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@linksaas.pro>",
@@ -45,6 +45,7 @@
     "classnames": "^2.3.1",
     "dayjs": "^1.11.1",
     "epubjs": "^0.3.93",
+    "gantt-task-react": "^0.3.9",
     "indexof": "^0.0.1",
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21",
@@ -58,7 +59,6 @@
     "moment": "^2.29.3",
     "nanoid": "^4.0.2",
     "randomcolor": "^0.6.2",
-    "rc-gantt": "^0.1.10",
     "react": "^18.1.0",
     "react-color": "^2.19.3",
     "react-cropper": "^2.1.8",

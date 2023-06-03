@@ -27,6 +27,7 @@ const IssueDetail = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
+    const spritStore = useStores('spritStore');
 
     const [issueId, setIssueId] = useState(state.issueId);
     const [issue, setIssue] = useState<IssueInfo | null>(null);
@@ -172,6 +173,7 @@ const IssueDetail = () => {
                     loadIssue().then(() => {
                         setShowStageModal(false);
                     });
+                    spritStore.updateIssue(issue.issue_id);
                 }}
             />)}
     </CardWrap>);
