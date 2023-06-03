@@ -809,7 +809,11 @@ class LinkAuxStore {
       history.push(this.genUrl(ideaPageLink.projectId, pathname, "/idea"), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
-      await open(externLink.destUrl);
+      let destUrl = externLink.destUrl;
+      if (!destUrl.includes("://")) {
+        destUrl = "https://" + destUrl;
+      }
+      await open(destUrl);
     }
   }
 
