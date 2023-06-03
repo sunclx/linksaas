@@ -221,7 +221,6 @@ const BookReader = () => {
                 }));
             }
         });
-
     };
 
     const loadBook = async () => {
@@ -261,6 +260,19 @@ const BookReader = () => {
         }
     };
 
+    const goToTarget = async (target: string) => {
+        if (rendition == null) {
+            return;
+        }
+        for (let i = 0; i < 99; i++) {
+            if (target == rendition.location.start.cfi) {
+                break;
+            }
+            await rendition.display(target);
+        }
+
+    };
+
     useEffect(() => {
         loadBook();
     }, []);
@@ -288,25 +300,29 @@ const BookReader = () => {
                         )}
                         {chapterList.length == 0 && (<span>&nbsp;&nbsp;<LoadingOutlined />加载中...</span>)}
                     </div>
-                    <BookOutlined style={{ cursor: "pointer" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowMarkList(true);
-                    }} />
-                    <div>
-                        <FontSizeOutlined />
-                        <Select
-                            value={fontSize}
-                            bordered={false}
-                            onChange={value => {
-                                rendition?.themes.fontSize(`${value}px`);
-                                setFontSize(value);
-                            }}>
-                            {[12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38].map(value => (
-                                <Select.Option key={value} label={value} value={value}>{value}</Select.Option>
-                            ))}
-                        </Select>
-                    </div>
+                    {rendition != null && (
+                        <>
+                            <BookOutlined style={{ cursor: "pointer" }} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setShowMarkList(true);
+                            }} />
+                            <div>
+                                <FontSizeOutlined />
+                                <Select
+                                    value={fontSize}
+                                    bordered={false}
+                                    onChange={value => {
+                                        rendition?.themes.fontSize(`${value}px`);
+                                        setFontSize(value);
+                                    }}>
+                                    {[12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38].map(value => (
+                                        <Select.Option key={value} label={value} value={value}>{value}</Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+                        </>
+                    )}
                 </Space>
 
             </div>
@@ -358,7 +374,7 @@ const BookReader = () => {
                 </Modal>
             )
             }
-            {showMarkList == true && (
+            {showMarkList == true && rendition != null && (
                 <Modal open title="标注列表" footer={null} width="370px"
                     bodyStyle={{ height: "calc(100vh - 200px)", overflowY: "scroll" }}
                     onCancel={e => {
@@ -372,7 +388,15 @@ const BookReader = () => {
                         onClick={(tmpMarkId) => {
                             const index = localStore.markList.findIndex(mark => mark.mark_id == tmpMarkId);
                             if (index != -1) {
-                                rendition?.display(localStore.markList[index].cfi_range);
+                                const parts = localStore.markList[index].cfi_range.split(",")
+                                if (parts.length == 3) {
+                                    parts.pop();
+                                }
+                                let target = parts.join("");
+                                if (!target.endsWith(")")) {
+                                    target += ")";
+                                }
+                                goToTarget(target);
                             }
                         }}
                         projectId={projectId}
