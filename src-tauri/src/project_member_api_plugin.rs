@@ -436,6 +436,60 @@ pub async fn remove_goal<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
+
+#[tauri::command]
+pub async fn lock_goal<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: LockGoalRequest,
+) -> Result<LockGoalResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.lock_goal(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == lock_goal_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("lock_goal".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+pub async fn unlock_goal<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UnlockGoalRequest,
+) -> Result<UnlockGoalResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.unlock_goal(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == unlock_goal_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("unlock_goal".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 pub struct ProjectMemberApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -459,6 +513,8 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
                 update_goal,
                 list_goal,
                 remove_goal,
+                lock_goal,
+                unlock_goal,
             ]),
         }
     }

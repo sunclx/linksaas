@@ -481,6 +481,8 @@ export namespace project {
 
   export type CreateGoalEvent = {
     goal_id: string;
+    from_time: number;
+    to_time: number;
   };
 
   function get_create_goal_simple_content(
@@ -488,14 +490,16 @@ export namespace project {
     skip_prj_name: boolean,
     inner: CreateGoalEvent
   ): LinkInfo[] {
-    console.log(inner);
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建了新目标`),
+      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
   export type UpdateGoalEvent = {
     goal_id: string;
+    from_time: number;
+    to_time: number;
   };
 
   function get_update_goal_simple_content(
@@ -503,9 +507,69 @@ export namespace project {
     skip_prj_name: boolean,
     inner: UpdateGoalEvent
   ): LinkInfo[] {
-    console.log(inner);
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新了目标`),
+      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+    ];
+  }
+
+  export type RemoveGoalEvent = {
+    goal_id: string;
+    from_time: number;
+    to_time: number;
+    member_user_id: string;
+    member_display_name: string;
+  };
+
+  function get_remove_goal_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveGoalEvent
+  ): LinkInfo[] {
+    console.log(inner);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除了成员${inner.member_display_name}的目标`),
+      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+    ];
+  }
+
+  export type LockGoalEvent = {
+    goal_id: string;
+    from_time: number;
+    to_time: number;
+    member_user_id: string;
+    member_display_name: string;
+  }
+
+  function get_lock_goal_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: LockGoalEvent
+  ): LinkInfo[] {
+    console.log(inner);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 锁定了成员${inner.member_display_name}的目标`),
+      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+    ];
+  }
+
+  export type UnlockGoalEvent = {
+    goal_id: string;
+    from_time: number;
+    to_time: number;
+    member_user_id: string;
+    member_display_name: string;
+  }
+
+  function get_unlock_goal_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnlockGoalEvent
+  ): LinkInfo[] {
+    console.log(inner);
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 解锁了成员${inner.member_display_name}的目标`),
+      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
@@ -638,6 +702,9 @@ export namespace project {
     RemoveProjectAppEvent?: RemoveProjectAppEvent;
     CreateGoalEvent?: CreateGoalEvent;
     UpdateGoalEvent?: UpdateGoalEvent;
+    RemoveGoalEvent?: RemoveGoalEvent;
+    LockGoalEvent?: LockGoalEvent;
+    UnlockGoalEvent?: UnlockGoalEvent;
     ChangeOwnerEvent?: ChangeOwnerEvent;
     CreateEventSubscribeEvent?: CreateEventSubscribeEvent;
     UpdateEventSubscribeEvent?: UpdateEventSubscribeEvent;
@@ -719,6 +786,12 @@ export namespace project {
       return get_create_goal_simple_content(ev, skip_prj_name, inner.CreateGoalEvent);
     } else if (inner.UpdateGoalEvent !== undefined) {
       return get_update_goal_simple_content(ev, skip_prj_name, inner.UpdateGoalEvent);
+    } else if (inner.RemoveGoalEvent !== undefined) {
+      return get_remove_goal_simple_content(ev, skip_prj_name, inner.RemoveGoalEvent);
+    } else if (inner.LockGoalEvent !== undefined) {
+      return get_lock_goal_simple_content(ev, skip_prj_name, inner.LockGoalEvent);
+    } else if (inner.UnlockGoalEvent !== undefined) {
+      return get_unlock_goal_simple_content(ev, skip_prj_name, inner.UnlockGoalEvent);
     } else if (inner.ChangeOwnerEvent !== undefined) {
       return get_change_owner_simple_content(ev, skip_prj_name, inner.ChangeOwnerEvent);
     } else if (inner.CreateEventSubscribeEvent !== undefined) {

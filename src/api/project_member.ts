@@ -103,6 +103,7 @@ export type GoalInfo = {
   update_time: number;
   member_display_name: string;
   member_logo_uri: string;
+  lock: boolean;
 };
 
 
@@ -168,6 +169,27 @@ export type RemoveGoalResponse = {
   err_msg: string;
 }
 
+export type LockGoalRequest = {
+  session_id: string;
+  project_id: string;
+  goal_id: string;
+};
+
+export type LockGoalResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type UnlockGoalRequest = {
+  session_id: string;
+  project_id: string;
+  goal_id: string;
+};
+
+export type UnlockGoalResponse = {
+  code: number;
+  err_msg: string;
+};
 
 //生成加入项目邀请码
 export async function gen_invite(
@@ -405,6 +427,26 @@ export async function remove_goal(request: RemoveGoalRequest): Promise<RemoveGoa
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RemoveGoalResponse>(cmd, {
+    request,
+  });
+}
+
+//锁定目标
+export async function lock_goal(request: LockGoalRequest): Promise<LockGoalResponse> {
+  const cmd = 'plugin:project_member_api|lock_goal';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<LockGoalResponse>(cmd, {
+    request,
+  });
+}
+
+//解锁目标
+export async function unlock_goal(request: UnlockGoalRequest): Promise<UnlockGoalResponse> {
+  const cmd = 'plugin:project_member_api|unlock_goal';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<UnlockGoalResponse>(cmd, {
     request,
   });
 }
