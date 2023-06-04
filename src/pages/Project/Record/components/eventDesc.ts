@@ -966,7 +966,7 @@ const testCaseEventList: EventDesc[] = [
         ]
     },
     {
-        id: "MoveEntryEvent ",
+        id: "MoveEntryEvent",
         name: "移动节点",
         attrList: [
             {
@@ -992,7 +992,7 @@ const testCaseEventList: EventDesc[] = [
         ]
     },
     {
-        id: "UpdateEntryTitleEvent ",
+        id: "UpdateEntryTitleEvent",
         name: "更新节点标题",
         attrList: [
             {
@@ -1515,7 +1515,7 @@ const scriptEventList: EventDesc[] = [
     },
     {
         id: "UpdateReadPermEvent",
-        name: "新文件读取权限 ",
+        name: "新文件读取权限",
         attrList: [
             {
                 key: "script_suite_id",
@@ -1743,7 +1743,7 @@ const robotEventList: EventDesc[] = [
         ]
     },
     {
-        id: "RemoveEvent ",
+        id: "RemoveEvent",
         name: "删除服务器代理",
         attrList: [
             {
@@ -2504,17 +2504,111 @@ const projectEventList: EventDesc[] = [
             {
                 key: "goal_id",
                 desc: "目标ID",
-            }
+            },
+            {
+                key: "from_time",
+                desc: "开始时间",
+            },
+            {
+                key: "to_time",
+                desc: "结束时间",
+            },
         ]
     },
     {
-        id: "UpdateGoalEvent ",
+        id: "UpdateGoalEvent",
         name: "修改目标",
         attrList: [
             {
                 key: "goal_id",
                 desc: "目标ID",
-            }
+            },
+            {
+                key: "from_time",
+                desc: "开始时间",
+            },
+            {
+                key: "to_time",
+                desc: "结束时间",
+            },
+        ]
+    },
+    {
+        id: "RemoveGoalEvent",
+        name: "删除目标",
+        attrList: [
+            {
+                key: "goal_id",
+                desc: "目标ID",
+            },
+            {
+                key: "from_time",
+                desc: "开始时间",
+            },
+            {
+                key: "to_time",
+                desc: "结束时间",
+            },
+            {
+                key: "member_user_id",
+                desc: "成员ID",
+            },
+            {
+                key: "member_display_name",
+                desc: "成员名称",
+            },
+        ]
+    },
+    {
+        id: "LockGoalEvent",
+        name: "锁定目标",
+        attrList: [
+            {
+                key: "goal_id",
+                desc: "目标ID",
+            },
+            {
+                key: "from_time",
+                desc: "开始时间",
+            },
+            {
+                key: "to_time",
+                desc: "结束时间",
+            },
+            {
+                key: "member_user_id",
+                desc: "成员ID",
+            },
+            {
+                key: "member_display_name",
+                desc: "成员名称",
+            },
+        ]
+    },
+    {
+        id: "UnlockGoalEvent",
+        name: "解锁目标",
+        attrList: [
+            {
+                key: "goal_id",
+                desc: "目标ID",
+            },
+            {
+                key: "from_time",
+                desc: "开始时间",
+            },
+            {
+                key: "to_time",
+                desc: "结束时间",
+            },
+            {
+                key: "member_user_id",
+                desc: "成员ID",
+            },
+            {
+                key: "member_display_name",
+                desc: "成员名称",
+            },
         ]
     },
     {
@@ -3106,7 +3200,7 @@ const issueEventList: EventDesc[] = [
         ]
     },
     {
-        id: "RemoveDependenceEvent ",
+        id: "RemoveDependenceEvent",
         name: "删除依赖依赖",
         attrList: [
             {

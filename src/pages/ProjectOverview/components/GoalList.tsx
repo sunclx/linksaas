@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { Card, DatePicker, Input, List, Modal, Space, message } from "antd";
 import type { BasicGoalInfo, Okr, GoalInfo } from '@/api/project_member';
-import { create_goal, update_goal, list_goal, remove_goal } from '@/api/project_member';
+import { create_goal, update_goal, list_goal, remove_goal, lock_goal, unlock_goal } from '@/api/project_member';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Pagination from "@/components/Pagination";
@@ -10,7 +10,7 @@ import type { Moment } from 'moment';
 import moment from 'moment';
 import { uniqId } from "@/utils/utils";
 import s from "./GoalList.module.less";
-import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { LockOutlined, MinusCircleOutlined, PlusCircleOutlined, UnlockOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
 
 interface KeyResultWrap {
@@ -37,7 +37,7 @@ interface GoalItemProps {
     onCancel?: () => void;
 }
 
-const GoalItem: React.FC<GoalItemProps> = (props) => {
+const GoalItem: React.FC<GoalItemProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const memberStore = useStores('memberStore');
@@ -248,6 +248,30 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
         props.onChange();
     }
 
+    const lockGoal = async () => {
+        if (props.goal == undefined) {
+            return;
+        }
+        await request(lock_goal({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            goal_id: props.goal.goal_id,
+        }));
+        props.onChange();
+    };
+
+    const unlockGoal = async () => {
+        if (props.goal == undefined) {
+            return;
+        }
+        await request(unlock_goal({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            goal_id: props.goal.goal_id,
+        }));
+        props.onChange();
+    };
+
     const editItem = (
         <>
             {editGoal != null && (
@@ -353,42 +377,67 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
         );
     } else {
         return (
-            <Card className={s.goal_wrap} extra={
-                (props.goal != undefined && (userStore.userInfo.userId != props.goal.member_user_id || moment().diff(props.goal.create_time, "days") > 3)) ? null : (
+            <Card className={s.goal_wrap}
+                title={
                     <>
-                        {editGoal == null && props.goal != undefined && userStore.userInfo.userId == props.goal.member_user_id && props.goal.goal_id == memberStore.getMember(props.goal.member_user_id)?.member.last_goal_id && (
-                            <Button onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                genEditGoal();
-                            }}>修改</Button>
+                        {props.goal.lock == true && (
+                            <Button type="text" style={{ minWidth: 0, padding: "0px 0px", fontSize: "20px" }} disabled={!projectStore.isAdmin}
+                                title="目标已被锁定，无法进行修改和删除。"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.stopPropagation();
+                                    unlockGoal();
+                                }}><LockOutlined /></Button>
                         )}
-                        {editGoal == null && props.goal != undefined && userStore.userInfo.userId == props.goal.member_user_id &&
-                            props.goal.goal_id != memberStore.getMember(props.goal.member_user_id)?.member.last_goal_id &&
-                            moment().diff(props.goal.create_time, "days") <= 3 && (
-                                <Button danger onClick={e => {
+                        {props.goal.lock == false && (
+                            <Button type="text" style={{ minWidth: 0, padding: "0px 0px", fontSize: "20px" }} disabled={!projectStore.isAdmin}
+                                onClick={e => {
                                     e.stopPropagation();
-                                    e.preventDefault();
-                                    setShowRemoveGoal(true);
-                                }}>删除</Button>
-                            )}
-                        {editGoal != null && (
-                            <Space>
-                                <Button type="default" onClick={e => {
                                     e.stopPropagation();
-                                    e.preventDefault();
-                                    setEditGoal(null);
-                                }}>取消</Button>
-                                <Button onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    saveGoal();
-                                }}>更新</Button>
-                            </Space>
+                                    lockGoal();
+                                }}> <UnlockOutlined /></Button>
                         )}
                     </>
-                )
-            }>
+                }
+                extra={
+                    <>
+                        {props.goal != undefined && (
+                            <>
+                                {editGoal == null && props.goal != undefined && userStore.userInfo.userId == props.goal.member_user_id && props.goal.goal_id == memberStore.getMember(props.goal.member_user_id)?.member.last_goal_id && (
+                                    <Button
+                                        disabled={!(props.goal.member_user_id == userStore.userInfo.userId && props.goal.lock == false)}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            genEditGoal();
+                                        }}>修改</Button>
+                                )}
+                                {editGoal == null && props.goal != undefined && props.goal.goal_id != memberStore.getMember(props.goal.member_user_id)?.member.last_goal_id && (
+                                    <Button danger disabled={props.goal.lock || !(projectStore.isAdmin || userStore.userInfo.userId == props.goal.member_user_id)}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowRemoveGoal(true);
+                                        }}>删除</Button>
+                                )}
+                                {editGoal != null && (
+                                    <Space>
+                                        <Button type="default" onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setEditGoal(null);
+                                        }}>取消</Button>
+                                        <Button onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            saveGoal();
+                                        }}>更新</Button>
+                                    </Space>
+                                )}
+                            </>
+                        )}
+                    </>
+                }>
                 {editGoal == null && props.goal != undefined && (
                     <div>
                         <div>
@@ -436,7 +485,7 @@ const GoalItem: React.FC<GoalItemProps> = (props) => {
             </Card >
         );
     }
-};
+});
 
 const PAGE_SIZE = 3;
 
