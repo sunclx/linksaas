@@ -348,12 +348,13 @@ export default class ProjectStore {
     const curProject = this.curProject;
     if (curProject !== undefined) {
       if (curProject.owner_user_id == this.rootStore.userStore.userInfo.userId) {
-        return true
+        return true;
       }
     }
     const member = this.rootStore.memberStore.getMember(this.rootStore.userStore.userInfo.userId);
+    console.log("xxxxx", member);
     if (member !== undefined) {
-      return member.member.can_admin
+      return member.member.can_admin;
     }
     return false;
   }

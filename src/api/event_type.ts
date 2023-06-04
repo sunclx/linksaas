@@ -492,7 +492,7 @@ export namespace project {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建了新目标`),
-      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+      new LinkNoneInfo(inner.from_time > 0 ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
@@ -509,7 +509,7 @@ export namespace project {
   ): LinkInfo[] {
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新了目标`),
-      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+      new LinkNoneInfo(inner.from_time > 0 ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
@@ -529,7 +529,7 @@ export namespace project {
     console.log(inner);
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除了成员${inner.member_display_name}的目标`),
-      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+      new LinkNoneInfo(inner.from_time > 0 ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
@@ -549,7 +549,7 @@ export namespace project {
     console.log(inner);
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 锁定了成员${inner.member_display_name}的目标`),
-      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+      new LinkNoneInfo(inner.from_time > 0 ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
@@ -569,7 +569,7 @@ export namespace project {
     console.log(inner);
     return [
       new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 解锁了成员${inner.member_display_name}的目标`),
-      new LinkNoneInfo(inner.from_time != inner.to_time ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
+      new LinkNoneInfo(inner.from_time > 0 ? `(${moment(inner.from_time).format("YYYY-MM-DD")}至${moment(inner.to_time).format("YYYY-MM-DD")})` : ""),
     ];
   }
 
