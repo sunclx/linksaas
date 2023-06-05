@@ -375,7 +375,7 @@ const BookReader = () => {
             )
             }
             {showMarkList == true && rendition != null && (
-                <Modal open title="标注列表" footer={null} width="370px"
+                <Modal open title="标注列表" footer={null} width="390px"
                     bodyStyle={{ height: "calc(100vh - 200px)", overflowY: "scroll" }}
                     onCancel={e => {
                         e.stopPropagation();
