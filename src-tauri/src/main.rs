@@ -66,6 +66,8 @@ mod min_app_shell_plugin;
 
 mod my_updater;
 
+mod local_repo_plugin;
+
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
 use tauri::{
@@ -178,6 +180,15 @@ fn get_cache_dir() -> Option<String> {
     None
 }
 
+fn get_user_dir() -> Option<String> {
+    if let Some(mut home_dir) = dirs::home_dir() {
+        home_dir.push(".linksaas");
+        home_dir.push("user");
+        return Some(home_dir.to_str().unwrap().into());
+    }
+    None
+}
+
 fn get_tmp_dir() -> Option<String> {
     if let Some(mut home_dir) = dirs::home_dir() {
         home_dir.push(".linksaas");
@@ -205,6 +216,14 @@ async fn init_local_storage() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     if let Some(tmp_dir) = get_tmp_dir() {
+        let meta = fs::metadata((&tmp_dir).as_str()).await;
+        if meta.is_err() {
+            if let Err(err) = fs::create_dir_all((&tmp_dir).as_str()).await {
+                return Err(Box::new(err));
+            }
+        }
+    }
+    if let Some(tmp_dir) = get_user_dir() {
         let meta = fs::metadata((&tmp_dir).as_str()).await;
         if meta.is_err() {
             if let Err(err) = fs::create_dir_all((&tmp_dir).as_str()).await {
@@ -400,6 +419,7 @@ fn main() {
         .plugin(bookstore_admin_api_plugin::BookstoreAdminApiPlugin::new())
         .plugin(user_book_shelf_api_plugin::UserBookShelfApiPlugin::new())
         .plugin(project_bulletin_api_plugin::ProjectBulletinApiPlugin::new())
+        .plugin(local_repo_plugin::LocalRepoPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

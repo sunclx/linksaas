@@ -28,7 +28,9 @@
         "icons/icon.ico"
       ],
       "resources": [],
-      "externalBin": [],
+      "externalBin": [
+        "bin/gitspy"
+      ],
       "copyright": "",
       "category": "DeveloperTool",
       "shortDescription": "",
@@ -67,7 +69,16 @@
         "all": true
       },
       "shell": {
-        "open": ".*"
+        "sidecar":true,
+        "open": ".*",
+        "scope": [
+          {
+            "name": "bin/gitspy",
+            "sidecar": true,
+            "args": true
+          }
+        ]
+
       },
       "dialog": {
         "all": true
