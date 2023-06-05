@@ -1,5 +1,5 @@
 import React from "react";
-import { Descriptions, Modal, Table, Tabs } from "antd";
+import { Collapse, Descriptions, Modal, Table, Tabs } from "antd";
 import type { EventAttr } from "./eventDesc";
 import { eventGroupList } from "./eventDesc";
 import type { ColumnsType } from 'antd/lib/table';
@@ -34,17 +34,21 @@ const EventDescModal: React.FC<EventDescModalProps> = (props) => {
                     <Tabs.TabPane key={eventGroup.id} tab={eventGroup.name}>
                         <div key={eventGroup.id} style={{ maxHeight: "calc(100vh - 400px)", overflowY: "scroll" }}>
                             <p>事件分组ID:&nbsp;{eventGroup.id}</p>
-                            {eventGroup.eventDescList.map(eventDesc => (
-                                <Descriptions key={eventDesc.id} title={eventDesc.name == "" ? eventDesc.id : eventDesc.name} bordered column={1}
-                                    style={{ paddingBottom: "10px", marginBottom: "10px", borderBottom: "1px solid #e4e4e8" }}>
-                                    <Descriptions.Item label="id" labelStyle={{ width: "80px" }}>{eventDesc.id}</Descriptions.Item>
-                                    {eventDesc.attrList.length > 0 && (
-                                        <Descriptions.Item label="属性">
-                                            <Table rowKey="key" dataSource={eventDesc.attrList} columns={columns} pagination={false} />
-                                        </Descriptions.Item>
-                                    )}
-                                </Descriptions>
-                            ))}
+                            <Collapse accordion defaultActiveKey={eventGroup.eventDescList[0].id}>
+                                {eventGroup.eventDescList.map(eventDesc => (
+                                    <Collapse.Panel key={eventDesc.id} header={eventDesc.name == "" ? eventDesc.id : eventDesc.name}>
+                                        <Descriptions key={eventDesc.id} bordered column={1}
+                                            style={{ paddingBottom: "10px", marginBottom: "10px", borderBottom: "1px solid #e4e4e8" }}>
+                                            <Descriptions.Item label="id" labelStyle={{ width: "80px" }}>{eventDesc.id}</Descriptions.Item>
+                                            {eventDesc.attrList.length > 0 && (
+                                                <Descriptions.Item label="属性">
+                                                    <Table rowKey="key" dataSource={eventDesc.attrList} columns={columns} pagination={false} />
+                                                </Descriptions.Item>
+                                            )}
+                                        </Descriptions>
+                                    </Collapse.Panel>
+                                ))}
+                            </Collapse>
                         </div>
                     </Tabs.TabPane>
                 ))}
