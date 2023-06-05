@@ -1,4 +1,4 @@
-use crate::user_api_plugin::get_user_id_inner;
+use crate::user_api_plugin::get_user_id;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
@@ -29,13 +29,17 @@ async fn load_data(user_id: &String) -> Result<Vec<LocalRepoInfo>, String> {
     if f.is_err() {
         return Err(f.err().unwrap().to_string());
     }
-    let f = f.unwrap();
+    let mut f = f.unwrap();
     let mut data = Vec::new();
     let result = f.read_to_end(&mut data).await;
     if result.is_err() {
         return Err(result.err().unwrap().to_string());
     }
     let json_str = String::from_utf8(data);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
     let repo_list = serde_json::from_str(&json_str);
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap().to_string());
@@ -51,7 +55,7 @@ async fn save_data(user_id: &String, repo_list: &Vec<LocalRepoInfo>) -> Result<(
     let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
     file_path.push(user_id);
     if !file_path.exists() {
-        let result = fs::create_dir_all(file_path.as_ref()).await;
+        let result = fs::create_dir_all(&file_path).await;
         if result.is_err() {
             return Err(result.err().unwrap().to_string());
         }
@@ -61,7 +65,7 @@ async fn save_data(user_id: &String, repo_list: &Vec<LocalRepoInfo>) -> Result<(
     if f.is_err() {
         return Err(f.err().unwrap().to_string());
     }
-    let f = f.unwrap();
+    let mut f = f.unwrap();
     let json_str = serde_json::to_string(&repo_list);
     if json_str.is_err() {
         return Err(json_str.err().unwrap().to_string());
@@ -82,7 +86,7 @@ async fn add_repo<R: Runtime>(
     name: String,
     path: String,
 ) -> Result<(), String> {
-    let user_id = get_user_id_inner(&app_handle).await;
+    let user_id = get_user_id(app_handle.clone()).await;
     let repo_list = load_data(&user_id).await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
@@ -102,10 +106,39 @@ async fn add_repo<R: Runtime>(
     return save_data(&user_id, &repo_list).await;
 }
 
+#[tauri::command]
+async fn update_repo<R: Runtime>(
+    app_handle: AppHandle<R>,
+    id: String,
+    name: String,
+    path: String,
+) -> Result<(), String> {
+    let user_id = get_user_id(app_handle.clone()).await;
+    let repo_list = load_data(&user_id).await;
+    if repo_list.is_err() {
+        return Err(repo_list.err().unwrap());
+    }
+    let repo_list = repo_list.unwrap();
+    let mut new_repo_list = Vec::new();
+    for repo in &repo_list {
+        if repo.id == id {
+            new_repo_list.push(LocalRepoInfo {
+                id: id.clone(),
+                name: name.clone(),
+                path: path.clone(),
+            });
+        } else {
+            new_repo_list.push(repo.clone());
+        }
+    }
+
+    return save_data(&user_id, &new_repo_list).await;
+}
+
 //删除本地仓库
 #[tauri::command]
 async fn remove_repo<R: Runtime>(app_handle: AppHandle<R>, id: String) -> Result<(), String> {
-    let user_id = get_user_id_inner(&app_handle).await;
+    let user_id = get_user_id(app_handle.clone()).await;
     let repo_list = load_data(&user_id).await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
@@ -117,16 +150,15 @@ async fn remove_repo<R: Runtime>(app_handle: AppHandle<R>, id: String) -> Result
             new_repo_list.push(repo.clone());
         }
     }
-    return save_data(&user_id, &repo_list).await;
+    return save_data(&user_id, &new_repo_list).await;
 }
 
 //列出本地仓库
 #[tauri::command]
-async fn list_repo<R: Runtime>(app_handle: AppHandle<R>)-> Result<Vec<LocalRepoInfo>, String> {
-    let user_id = get_user_id_inner(&app_handle).await;
+async fn list_repo<R: Runtime>(app_handle: AppHandle<R>) -> Result<Vec<LocalRepoInfo>, String> {
+    let user_id = get_user_id(app_handle.clone()).await;
     return load_data(&user_id).await;
 }
-
 
 pub struct LocalRepoPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
@@ -137,8 +169,9 @@ impl<R: Runtime> LocalRepoPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 add_repo,
+                update_repo,
                 remove_repo,
-                list_repo,
+                list_repo
             ]),
         }
     }

@@ -12,7 +12,7 @@ import Backlog from './components/Backlog';
 import { Select, Space, Tabs } from 'antd';
 import { observer } from 'mobx-react';
 import Record from './components/Record';
-import { BookOutlined, DoubleRightOutlined, FieldTimeOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
+import { BookOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
 import UserDocSpaceList from '../UserExtend/UserKb/UserDocSpaceList';
 import Button from '@/components/Button';
 import type { KbSpaceInfo } from '@/api/user_kb';
@@ -21,6 +21,8 @@ import { runInAction } from 'mobx';
 import MyProjectList from './components/MyProjectList';
 import UserAppList from './components/UserAppList';
 import UserBookList from './components/UserBookList';
+import SetLocalRepoModal from './components/SetLocalRepoModal';
+import LocalRepoList from './components/LocalRepoLIst';
 
 
 const Workbench: React.FC = () => {
@@ -43,6 +45,8 @@ const Workbench: React.FC = () => {
   const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
   const [activeKey, setActiveKey] = useState(tab);
   const [curKbSpace, setCurKbSpace] = useState<KbSpaceInfo | null>(null);
+  const [showAddRepoModal, setShowAddRepoModal] = useState(false);
+  const [repoDataVersion, setRepoDataVersion] = useState(0);
 
   useMemo(() => {
     projectStore.setCurProjectId('');
@@ -131,6 +135,15 @@ const Workbench: React.FC = () => {
                   history.push(`${PUB_RES_PATH}?tab=bookStore`);
                 }}>前往书籍市场<DoubleRightOutlined /></Button>
             )}
+            {activeKey == "localRepo" && (
+              <Button style={{ marginRight: "20px" }} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setShowAddRepoModal(true);
+              }}>
+                添加本地仓库
+              </Button>
+            )}
           </>
         }>
         {projectStore.projectList.length > 0 && (
@@ -151,6 +164,13 @@ const Workbench: React.FC = () => {
             )}
           </Tabs.TabPane>
         )}
+        <Tabs.TabPane tab={<h2><FolderOutlined />本地仓库</h2>} key="localRepo">
+          {activeKey == "localRepo" && (
+            <div className={s.content_wrap}>
+              <LocalRepoList repoVersion={repoDataVersion} onChange={() => setRepoDataVersion(repoDataVersion + 1)} />
+            </div>
+          )}
+        </Tabs.TabPane>
         {appStore.clientCfg?.enable_pub_app_store == true && (
           <Tabs.TabPane tab={<h2><BookOutlined />我的微应用</h2>} key="userApp">
             {activeKey == "userApp" && (
@@ -200,6 +220,12 @@ const Workbench: React.FC = () => {
             setPasswordModal(false);
           }}
         />
+      )}
+      {showAddRepoModal == true && (
+        <SetLocalRepoModal onCancel={() => setShowAddRepoModal(false)} onOk={() => {
+          setRepoDataVersion(repoDataVersion + 1);
+          setShowAddRepoModal(false);
+        }} />
       )}
     </div>
   );
