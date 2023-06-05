@@ -470,7 +470,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       style={{ marginTop: '8px' }}
       rowKey={'issue_id'}
       columns={columns}
-      scroll={{ x: 1650, y: `${isFilter ? 'calc(100vh - 374px)' : 'calc(100vh - 316px)'}` }}
+      scroll={{ x: 1650, y: `${isFilter ? 'calc(100vh - 400px)' : 'calc(100vh - 340px)'}` }}
       dataSource={dataSource}
       pagination={false}
     />

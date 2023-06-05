@@ -17,7 +17,6 @@ interface MarkListProps {
 }
 
 const MarkList: React.FC<MarkListProps> = (props) => {
-
     const [sendMarkId, setSendMarkId] = useState("");
 
     return (<div className={s.mark_list_wrap}>

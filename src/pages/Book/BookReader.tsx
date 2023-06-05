@@ -5,7 +5,7 @@ import { request } from '@/utils/request';
 import { observer, useLocalObservable } from 'mobx-react';
 import { get_cache_file } from '@/api/fs';
 import DownloadBookModal from "./components/DownloadBookModal";
-import { message, Modal, Popover, Select, Space, TreeSelect } from 'antd';
+import { message, Modal, Select, Space, TreeSelect } from 'antd';
 import Epub from 'epubjs';
 import type { Rendition, Contents, Location } from 'epubjs';
 import type Section from 'epubjs/types/section';
@@ -18,6 +18,7 @@ import s from './BookReader.module.less';
 import MarkList from "./components/MarkList";
 import { get_session } from "@/api/user";
 import { useLocation } from "react-router-dom";
+import ShareModal from "./components/ShareModal";
 
 const BookReader = () => {
     const location = useLocation();
@@ -38,6 +39,8 @@ const BookReader = () => {
     const [chapterList, setChapterList] = useState<Chapter[]>([]);
     const [curChapter, setCurChapter] = useState("");
     const [showMarkId, setShowMarkId] = useState("");
+    const [showMarkList, setShowMarkList] = useState(false);
+    const [sendMarkId, setSendMarkId] = useState("");
     const localStore = useLocalObservable(() => ({
         markList: [] as prjBookShelf.MarkInfo[] | userBookShelf.MarkInfo[],
     }));
@@ -257,6 +260,19 @@ const BookReader = () => {
         }
     };
 
+    const goToTarget = async (target: string) => {
+        if (rendition == null) {
+            return;
+        }
+        for (let i = 0; i < 99; i++) {
+            if (target == rendition.location.start.cfi) {
+                break;
+            }
+            await rendition.display(target);
+        }
+
+    };
+
     useEffect(() => {
         loadBook();
     }, []);
@@ -284,37 +300,29 @@ const BookReader = () => {
                         )}
                         {chapterList.length == 0 && (<span>&nbsp;&nbsp;<LoadingOutlined />加载中...</span>)}
                     </div>
-                    <Popover content={
-                        <MarkList
-                            markList={localStore.markList}
-                            onRemove={(tmpMarkId) => setShowMarkId(tmpMarkId)}
-                            onClick={(tmpMarkId) => {
-                                const index = localStore.markList.findIndex(mark => mark.mark_id == tmpMarkId);
-                                if (index != -1) {
-                                    rendition?.display(localStore.markList[index].cfi_range);
-                                }
-                            }}
-                            projectId={projectId}
-                            userId={userId}
-                            canShare={canShareStr.trim() != ""} />}
-                        trigger="click"
-                        placement="leftBottom">
-                        <BookOutlined />
-                    </Popover>
-                    <div>
-                        <FontSizeOutlined />
-                        <Select
-                            value={fontSize}
-                            bordered={false}
-                            onChange={value => {
-                                rendition?.themes.fontSize(`${value}px`);
-                                setFontSize(value);
-                            }}>
-                            {[12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38].map(value => (
-                                <Select.Option key={value} label={value} value={value}>{value}</Select.Option>
-                            ))}
-                        </Select>
-                    </div>
+                    {rendition != null && (
+                        <>
+                            <BookOutlined style={{ cursor: "pointer" }} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setShowMarkList(true);
+                            }} />
+                            <div>
+                                <FontSizeOutlined />
+                                <Select
+                                    value={fontSize}
+                                    bordered={false}
+                                    onChange={value => {
+                                        rendition?.themes.fontSize(`${value}px`);
+                                        setFontSize(value);
+                                    }}>
+                                    {[12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38].map(value => (
+                                        <Select.Option key={value} label={value} value={value}>{value}</Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+                        </>
+                    )}
                 </Space>
 
             </div>
@@ -351,10 +359,56 @@ const BookReader = () => {
                         removeMark();
                     }}
                 >
-                    {localStore.markList.filter(mark => mark.mark_id == showMarkId).map(item => (<p key={item.mark_id}>内容：{item.mark_content}</p>))}
+                    {localStore.markList.filter(mark => mark.mark_id == showMarkId).map(item => (
+                        <div key={item.mark_id}>
+                            内容：{item.mark_content}
+                            {canShareStr.trim() != "" && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setSendMarkId(showMarkId);
+                                }}>分享给同事</a>
+                            )}
+                        </div>
+                    ))}
                 </Modal>
             )
             }
+            {showMarkList == true && rendition != null && (
+                <Modal open title="标注列表" footer={null} width="370px"
+                    bodyStyle={{ height: "calc(100vh - 200px)", overflowY: "scroll" }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowMarkList(false);
+                    }}>
+                    <MarkList
+                        markList={localStore.markList}
+                        onRemove={(tmpMarkId) => setShowMarkId(tmpMarkId)}
+                        onClick={(tmpMarkId) => {
+                            const index = localStore.markList.findIndex(mark => mark.mark_id == tmpMarkId);
+                            if (index != -1) {
+                                const parts = localStore.markList[index].cfi_range.split(",")
+                                if (parts.length == 3) {
+                                    parts.pop();
+                                }
+                                let target = parts.join("");
+                                if (!target.endsWith(")")) {
+                                    target += ")";
+                                }
+                                goToTarget(target);
+                            }
+                        }}
+                        projectId={projectId}
+                        userId={userId}
+                        canShare={canShareStr.trim() != ""} />
+                </Modal>
+            )}
+            {sendMarkId != "" && (
+                <ShareModal mark={localStore.markList.find(item => item.mark_id = sendMarkId) as prjBookShelf.MarkInfo | undefined}
+                    onClose={() => setSendMarkId("")} projectId={projectId} />
+            )}
+
         </div >
     );
 }
