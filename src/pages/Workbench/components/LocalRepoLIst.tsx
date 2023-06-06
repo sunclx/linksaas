@@ -7,6 +7,7 @@ import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, TagOut
 import SetLocalRepoModal from "./SetLocalRepoModal";
 import moment from "moment";
 import type { ColumnsType } from 'antd/lib/table';
+import { WebviewWindow } from '@tauri-apps/api/window';
 
 interface LocalRepoPanelProps {
     repoVersion: number;
@@ -61,7 +62,7 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
 
     const columns: ColumnsType<LocalRepoCommitInfo> = [
         {
-            title: "id",
+            title: "",
             width: 60,
             render: (_, row: LocalRepoCommitInfo) => (
                 <span title={row.id}>{row.id.substring(0, 8)}</span>
@@ -69,8 +70,17 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
         },
         {
             title: "提交备注",
-            dataIndex: "summary",
             width: 200,
+            render: (_, row: LocalRepoCommitInfo) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    new WebviewWindow(`commit:${row.id}`, {
+                        url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${row.id}&summary=${encodeURIComponent(row.summary)}&commiter=${encodeURIComponent(row.commiter)}`,
+                        title: `${props.repo.name}(commit:${row.id.substring(0, 8)})`
+                    })
+                }}>{row.summary}</a>
+            ),
         },
         {
             title: "提交时间",

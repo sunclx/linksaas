@@ -50,6 +50,7 @@ export default ({ command, mode }: ConfigEnv) => {
           searchResult: "search_result.html",
           localApi: "local_api.html",
           book: "book.html",
+          gitDiff: "git_diff.html",
         },
       },
       terserOptions: {
