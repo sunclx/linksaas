@@ -22,7 +22,7 @@ import MyProjectList from './components/MyProjectList';
 import UserAppList from './components/UserAppList';
 import UserBookList from './components/UserBookList';
 import SetLocalRepoModal from './components/SetLocalRepoModal';
-import LocalRepoList from './components/LocalRepoLIst';
+import LocalRepoList from './components/LocalRepoList';
 
 
 const Workbench: React.FC = () => {

@@ -40,6 +40,40 @@ export type LocalRepoCommitInfo = {
     email: string;
 };
 
+export type LocalRepoFileDiffInfo = {
+    old_file_name: string;
+    old_content: string;
+    new_file_name: string;
+    new_content: string;
+};
+
+export type LocalRepoStatItem = {
+    commit_count: number;
+    total_add_count: number;
+    total_del_count: number;
+};
+
+export type LocalRepoDayStatItem = {
+    day_str: string;
+    commit_count: number;
+    add_count: number;
+    del_count: number;
+};
+
+export type LocalRepoCommiterStatItem = {
+    commiter: string;
+    stat: LocalRepoStatItem,
+    day_stat_list: LocalRepoDayStatItem[];
+};
+
+export type LocalRepoAnalyseInfo = {
+    global_stat: LocalRepoStatItem;
+    effect_add_count: number;
+    effect_del_count: number;
+    commiter_stat_list: LocalRepoCommiterStatItem[];
+}
+
+
 export async function add_repo(id: string, name: string, path: string): Promise<void> {
     return invoke<void>("plugin:local_repo|add_repo", {
         id,
@@ -99,6 +133,24 @@ export async function list_repo_tag(path: string): Promise<LocalRepoTagInfo[]> {
 
 export async function list_repo_commit(path: string, branch: string): Promise<LocalRepoCommitInfo[]> {
     const command = Command.sidecar('bin/gitspy', ["--git-path", path, "list-commit", branch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return JSON.parse(result.stdout);
+}
+
+export async function get_commit_change(path: string, commitId: string): Promise<LocalRepoFileDiffInfo[]> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "get-change", commitId]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return JSON.parse(result.stdout);
+}
+
+export async function analyse(path: string, branch: string, fromTime: number, toTime: number): Promise<LocalRepoAnalyseInfo> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "analyse", branch, (fromTime / 1000).toFixed(0), (toTime / 1000).toFixed(0)]);
     const result = await command.execute();
     if (result.code != 0) {
         throw new Error(result.stderr);
