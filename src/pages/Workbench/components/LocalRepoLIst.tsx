@@ -54,7 +54,7 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                 e.preventDefault();
                 props.onCancel();
             }}>
-            <Card bordered={false} bodyStyle={{ height: "calc(100vh - 400px)", overflowY: "scroll" }}
+            <Card bordered={false} bodyStyle={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}
                 extra={
                     <Form layout="inline">
                         <Form.Item label="分支">
