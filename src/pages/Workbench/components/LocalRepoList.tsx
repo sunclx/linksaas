@@ -10,6 +10,7 @@ import { WebviewWindow } from '@tauri-apps/api/window';
 import moment, { type Moment } from "moment";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
+
 interface AnalyseRepoModalProps {
     repo: LocalRepoInfo;
     onCancel: () => void;
