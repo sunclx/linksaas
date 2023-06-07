@@ -1,13 +1,116 @@
-import { Button, Card, Collapse, Empty, Form, List, Popover, Select, Space, Table, Tabs, message } from "antd";
+import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions } from "antd";
 import React, { useEffect, useState } from "react";
-import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo } from "@/api/local_repo";
-import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit } from "@/api/local_repo";
+import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo } from "@/api/local_repo";
+import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse } from "@/api/local_repo";
 import { open as open_dir } from '@tauri-apps/api/shell';
 import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
-import moment from "moment";
 import type { ColumnsType } from 'antd/lib/table';
 import { WebviewWindow } from '@tauri-apps/api/window';
+import moment, { type Moment } from "moment";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+
+interface AnalyseRepoModalProps {
+    repo: LocalRepoInfo;
+    onCancel: () => void;
+}
+const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
+    const [fromTime, setFromTime] = useState<Moment>(moment().subtract(7, "days").startOf("day"));
+    const [toTime, setToTime] = useState<Moment>(moment().endOf("day"));
+    const [analyseInfo, setAnalyseInfo] = useState<LocalRepoAnalyseInfo | null>(null);
+    const [branchList, setBranchList] = useState<LocalRepoBranchInfo[]>([]);
+    const [branch, setBranch] = useState("");
+
+    const calcAnalyseInfo = async () => {
+        if (branch == "") {
+            return;
+        }
+        setAnalyseInfo(null);
+        const res = await analyse(props.repo.path, branch, fromTime.valueOf(), toTime.valueOf());
+        setAnalyseInfo(res);
+    };
+
+    const loadBranchList = async () => {
+        const res = await list_repo_branch(props.repo.path);
+        setBranchList(res);
+        if (res.length > 0) {
+            setBranch(res[0].name);
+        }
+    };
+
+    useEffect(() => {
+        calcAnalyseInfo();
+    }, [fromTime, toTime, branch]);
+
+    useEffect(() => {
+        loadBranchList();
+    }, []);
+
+    return (
+        <Modal open title={`${props.repo.name}统计数据`} footer={null}
+            bodyStyle={{ padding: "0px 0px" }} width={600}
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onCancel();
+            }}>
+            <Card bordered={false} bodyStyle={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}
+                extra={
+                    <Form layout="inline">
+                        <Form.Item label="分支">
+                            <Select style={{ width: "100px" }} value={branch} onChange={value => setBranch(value)}>
+                                {branchList.map(item => (
+                                    <Select.Option key={item.name} value={item.name}>{item.name}</Select.Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item label="时间区间">
+                            <DatePicker.RangePicker value={[fromTime, toTime]}
+                                popupStyle={{ zIndex: 4000 }}
+                                onChange={values => {
+                                    if (values?.length == 2) {
+                                        setFromTime(values[0]!.startOf("day"));
+                                        setToTime(values[1]!.endOf("day"));
+                                    }
+                                }} />
+                        </Form.Item>
+                    </Form>
+                }>
+                {analyseInfo == null && (
+                    <Spin tip="统计中..." style={{ paddingLeft: "270px" }} />
+                )}
+                {analyseInfo != null && (
+                    <>
+                        <Descriptions title={`总体统计(提交${analyseInfo.global_stat.commit_count}次)`} column={2} bordered={true}>
+                            <Descriptions.Item label="累计新增">{analyseInfo.global_stat.total_add_count}行</Descriptions.Item>
+                            <Descriptions.Item label="累计删除">{analyseInfo.global_stat.total_del_count}行</Descriptions.Item>
+                            <Descriptions.Item label="有效新增">{analyseInfo.effect_add_count}行</Descriptions.Item>
+                            <Descriptions.Item label="有效删除">{analyseInfo.effect_del_count}行</Descriptions.Item>
+                        </Descriptions>
+                        {analyseInfo.commiter_stat_list.map(item => (
+                            <div key={item.commiter}>
+                                <Descriptions title={`${item.commiter} 相关统计(提交${item.stat.commit_count}次)`} column={2} bordered={true}
+                                    style={{ marginTop: "10px" }}>
+                                    <Descriptions.Item label="累计新增">{item.stat.total_add_count}行</Descriptions.Item>
+                                    <Descriptions.Item label="累计删除">{item.stat.total_del_count}行</Descriptions.Item>
+                                </Descriptions>
+                                <BarChart height={300} width={560} data={item.day_stat_list}>
+                                    <XAxis dataKey="day_str" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="add_count" fill="green" />
+                                    <Bar dataKey="del_count" fill="red" />
+                                    <Bar dataKey="commit_count" fill="black" />
+                                </BarChart>
+                            </div>
+                        ))}
+                    </>
+                )}
+            </Card>
+        </Modal>
+    );
+};
 
 interface LocalRepoPanelProps {
     repoVersion: number;
@@ -144,7 +247,14 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                         </Space>
                         <br />
                         <Space size="small">
-                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} {item.commit_summary}
+                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                new WebviewWindow(`commit:${item.commit_id}`, {
+                                    url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
+                                    title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`
+                                })
+                            }}>{item.commit_summary}</a>
                         </Space>
                     </List.Item>
                 )} />
@@ -157,7 +267,14 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                         </Space>
                         <br />
                         <Space size="small">
-                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} {item.commit_summary}
+                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                new WebviewWindow(`commit:${item.commit_id}`, {
+                                    url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
+                                    title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`
+                                })
+                            }}>{item.commit_summary}</a>
                         </Space>
                     </List.Item>
                 )} />
@@ -189,6 +306,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
     const [repoList, setRepoList] = useState<LocalRepoInfo[]>([]);
     const [activeKey, setActiveKey] = useState("");
     const [editRepo, setEditRepo] = useState<LocalRepoInfo | null>(null);
+    const [analyseRepo, setAnalyseRepo] = useState<LocalRepoInfo | null>(null);
 
     const loadRepoList = async () => {
         try {
@@ -253,6 +371,13 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
                                                         e.stopPropagation();
                                                         e.preventDefault();
+                                                        setAnalyseRepo(repo);
+                                                    }}>
+                                                        统计数据
+                                                    </Button>
+                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
                                                         props.onChange();
                                                     }}>
                                                         刷新
@@ -284,6 +409,9 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                     setEditRepo(null);
                     props.onChange();
                 }} />
+            )}
+            {analyseRepo != null && (
+                <AnalyseRepoModal repo={analyseRepo} onCancel={() => setAnalyseRepo(null)} />
             )}
         </>
     );
