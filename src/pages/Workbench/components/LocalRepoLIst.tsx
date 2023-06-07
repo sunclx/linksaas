@@ -88,7 +88,7 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                         </Descriptions>
                         {analyseInfo.commiter_stat_list.map(item => (
                             <Descriptions key={item.commiter} title={`${item.commiter} 相关统计(提交${item.stat.commit_count}次)`} column={2} bordered={true}
-                            style={{marginTop:"10px"}}>
+                                style={{ marginTop: "10px" }}>
                                 <Descriptions.Item label="累计新增">{item.stat.total_add_count}行</Descriptions.Item>
                                 <Descriptions.Item label="累计删除">{item.stat.total_del_count}行</Descriptions.Item>
                             </Descriptions>
@@ -235,7 +235,14 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                         </Space>
                         <br />
                         <Space size="small">
-                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} {item.commit_summary}
+                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                new WebviewWindow(`commit:${item.commit_id}`, {
+                                    url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
+                                    title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`
+                                })
+                            }}>{item.commit_summary}</a>
                         </Space>
                     </List.Item>
                 )} />
@@ -248,7 +255,14 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                         </Space>
                         <br />
                         <Space size="small">
-                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} {item.commit_summary}
+                            <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                new WebviewWindow(`commit:${item.commit_id}`, {
+                                    url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
+                                    title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`
+                                })
+                            }}>{item.commit_summary}</a>
                         </Space>
                     </List.Item>
                 )} />
