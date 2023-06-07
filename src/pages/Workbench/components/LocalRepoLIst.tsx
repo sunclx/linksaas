@@ -8,6 +8,7 @@ import SetLocalRepoModal from "./SetLocalRepoModal";
 import type { ColumnsType } from 'antd/lib/table';
 import { WebviewWindow } from '@tauri-apps/api/window';
 import moment, { type Moment } from "moment";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
 interface AnalyseRepoModalProps {
     repo: LocalRepoInfo;
@@ -87,11 +88,22 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                             <Descriptions.Item label="有效删除">{analyseInfo.effect_del_count}行</Descriptions.Item>
                         </Descriptions>
                         {analyseInfo.commiter_stat_list.map(item => (
-                            <Descriptions key={item.commiter} title={`${item.commiter} 相关统计(提交${item.stat.commit_count}次)`} column={2} bordered={true}
-                                style={{ marginTop: "10px" }}>
-                                <Descriptions.Item label="累计新增">{item.stat.total_add_count}行</Descriptions.Item>
-                                <Descriptions.Item label="累计删除">{item.stat.total_del_count}行</Descriptions.Item>
-                            </Descriptions>
+                            <div key={item.commiter}>
+                                <Descriptions title={`${item.commiter} 相关统计(提交${item.stat.commit_count}次)`} column={2} bordered={true}
+                                    style={{ marginTop: "10px" }}>
+                                    <Descriptions.Item label="累计新增">{item.stat.total_add_count}行</Descriptions.Item>
+                                    <Descriptions.Item label="累计删除">{item.stat.total_del_count}行</Descriptions.Item>
+                                </Descriptions>
+                                <BarChart height={300} width={560} data={item.day_stat_list}>
+                                    <XAxis dataKey="day_str" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="add_count" fill="green" />
+                                    <Bar dataKey="del_count" fill="red" />
+                                    <Bar dataKey="commit_count" fill="black" />
+                                </BarChart>
+                            </div>
                         ))}
                     </>
                 )}

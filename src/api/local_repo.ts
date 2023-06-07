@@ -53,9 +53,17 @@ export type LocalRepoStatItem = {
     total_del_count: number;
 };
 
+export type LocalRepoDayStatItem = {
+    day_str: string;
+    commit_count: number;
+    add_count: number;
+    del_count: number;
+};
+
 export type LocalRepoCommiterStatItem = {
     commiter: string;
     stat: LocalRepoStatItem,
+    day_stat_list: LocalRepoDayStatItem[];
 };
 
 export type LocalRepoAnalyseInfo = {
