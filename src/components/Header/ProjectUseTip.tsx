@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { AlertTwoTone, DislikeOutlined, ExportOutlined, LikeOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
+import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import ReqBtn from '@/assets/allIcon/icon-req.png';
 import IdeaBtn from '@/assets/allIcon/icon-idea.png';
 import ScriptBtn from '@/assets/allIcon/icon-script.png';
@@ -286,18 +286,6 @@ const ProjectUseTip = () => {
                     e.preventDefault();
                     linkAuxStore.goToEventList(history);
                 }}>工作记录面板</a>, 来了解同事的工作情况。</p>
-            </>),
-            enable: true,
-        },
-        {
-            title: "使用githooks加快任务状态变更",
-            content: (<>
-                <p>我们可以利用git的POST_COMMIT hook，在每次commit后，提示用户修改任务/缺陷状态。</p>
-                <p>你可以通过<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    projectStore.projectTool = PROJECT_TOOL_TYPE.PROJECT_TOOL_GIT_HOOk;
-                }}>设置GitHooks</a>来修改git仓库的hook。</p>
             </>),
             enable: true,
         },

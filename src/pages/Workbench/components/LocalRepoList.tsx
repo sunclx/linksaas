@@ -1,15 +1,94 @@
-import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions } from "antd";
+import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions, Checkbox, Tooltip as AntTooltip } from "antd";
 import React, { useEffect, useState } from "react";
 import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo } from "@/api/local_repo";
 import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse } from "@/api/local_repo";
 import { open as open_dir } from '@tauri-apps/api/shell';
-import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, TagOutlined } from "@ant-design/icons";
+import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
 import type { ColumnsType } from 'antd/lib/table';
 import { WebviewWindow } from '@tauri-apps/api/window';
 import moment, { type Moment } from "moment";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { useStores } from "@/hooks";
+import { observer } from "mobx-react";
+import { get_git_hook, set_git_hook } from "@/api/project_tool";
 
+interface LinkProjectModalProps {
+    repo: LocalRepoInfo;
+    onCancel: () => void;
+}
+
+const LinkProjectModal: React.FC<LinkProjectModalProps> = observer((props) => {
+    const projectStore = useStores('projectStore');
+    const [linkProjectId, setLinkProjectId] = useState<string | null>(null);
+    const [postHook, setPostHook] = useState(false);
+    const [hasChange, setHasChange] = useState(false);
+
+    const loadLinkInfo = async () => {
+        const linkInfo = await get_git_hook(props.repo.path);
+        console.log(linkInfo);
+        for (const project of projectStore.projectList) {
+            if (project.closed) {
+                continue;
+            }
+            if (linkInfo.yaml_content.includes(project.project_id)) {
+                setLinkProjectId(project.project_id);
+                break;
+            }
+        }
+        setPostHook(linkInfo.post_commit_hook);
+    };
+    const setGitHook = async () => {
+        await set_git_hook(props.repo.path, linkProjectId ?? "", postHook);
+        message.info("设置成功");
+        props.onCancel();
+    };
+
+    useEffect(() => {
+        loadLinkInfo();
+    }, []);
+
+    return (
+        <Modal open title="关联项目"
+            okText="设置" okButtonProps={{ disabled: !hasChange }}
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onCancel();
+            }}
+            onOk={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setGitHook();
+            }}>
+            <Form>
+                <Form.Item label="项目">
+                    <Select value={linkProjectId} onChange={value => {
+                        setLinkProjectId(value ?? null);
+                        if ((value ?? null) == null) {
+                            setPostHook(false);
+                        }
+                        setHasChange(true);
+                    }} allowClear>
+                        {projectStore.projectList.filter(prj => prj.closed == false).map(item => (
+                            <Select.Option key={item.project_id} value={item.project_id}>{item.basic_info.project_name}</Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="hooks">
+                    <Checkbox checked={postHook} onChange={e => {
+                        e.stopPropagation();
+                        setPostHook(e.target.checked);
+                        setHasChange(true);
+                    }} disabled={linkProjectId == null}>
+                        POST_COMMIT 唤醒应用&nbsp;
+                        <AntTooltip title="在运行git comment命令后，唤起应用界面进行通知同事和变更任务/缺陷。"><QuestionCircleOutlined /></AntTooltip>
+                    </Checkbox>
+                </Form.Item>
+            </Form>
+        </Modal>
+    )
+});
 
 interface AnalyseRepoModalProps {
     repo: LocalRepoInfo;
@@ -336,7 +415,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
     const [activeKey, setActiveKey] = useState("");
     const [editRepo, setEditRepo] = useState<LocalRepoInfo | null>(null);
     const [analyseRepo, setAnalyseRepo] = useState<LocalRepoInfo | null>(null);
-
+    const [linkProjectRepo, setLinkProjectRepo] = useState<LocalRepoInfo | null>(null);
     const loadRepoList = async () => {
         try {
             const res = await list_repo();
@@ -411,6 +490,13 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                                     }}>
                                                         刷新
                                                     </Button>
+                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        setLinkProjectRepo(repo);
+                                                    }}>
+                                                        关联项目
+                                                    </Button>
                                                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
                                                         danger
                                                         onClick={e => {
@@ -441,6 +527,9 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
             )}
             {analyseRepo != null && (
                 <AnalyseRepoModal repo={analyseRepo} onCancel={() => setAnalyseRepo(null)} />
+            )}
+            {linkProjectRepo !== null && (
+                <LinkProjectModal repo={linkProjectRepo} onCancel={() => setLinkProjectRepo(null)} />
             )}
         </>
     );
