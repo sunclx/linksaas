@@ -6,7 +6,7 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_TOOL_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { LinkBookMarkCateInfo, LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow } from '@tauri-apps/api/window';
@@ -40,7 +40,6 @@ const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
 const MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS = "toolbar.extEvents.show";
 const MENU_KEY_SHOW_TOOL_BAR_APP = "toolbar.app.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
-const MENU_KEY_SHOW_TOOL_GIT_HOOk = "tool.gitHook.show";
 
 
 
@@ -257,16 +256,6 @@ const ProjectQuickAccess = () => {
                 }
             ]
         });
-        tmpItems.push({
-            key: "projectTool",
-            label: "项目工具",
-            children: [
-                {
-                    key: MENU_KEY_SHOW_TOOL_GIT_HOOk,
-                    label: "设置GitHooks",
-                },
-            ]
-        });
         setItems(tmpItems);
     };
 
@@ -390,9 +379,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_LOCAL_API_DEBUG:
                 await openApiConsole();
-                break;
-            case MENU_KEY_SHOW_TOOL_GIT_HOOk:
-                projectStore.projectTool = PROJECT_TOOL_TYPE.PROJECT_TOOL_GIT_HOOk;
                 break;
         }
         if (info.key.startsWith(MENU_KEY_MEMBER_PREFIX)) {
