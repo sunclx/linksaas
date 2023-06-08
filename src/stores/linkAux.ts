@@ -990,7 +990,7 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appraise"));
   }
 
-  //跳转到代码仓库列表
+  //跳转到CI/CD代码仓库
   goToRepoList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
       return;

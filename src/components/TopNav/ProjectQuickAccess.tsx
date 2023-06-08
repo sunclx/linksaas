@@ -216,7 +216,7 @@ const ProjectQuickAccess = () => {
             });
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_EARTHLY,
-                label: "代码仓库列表",
+                label: "CI/CD",
             });
         }
         tmpItems.push({
