@@ -1,4 +1,4 @@
-import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions, Checkbox, Tooltip as AntTooltip } from "antd";
+import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions, Checkbox, Tooltip as AntTooltip, Divider } from "antd";
 import React, { useEffect, useState } from "react";
 import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo } from "@/api/local_repo";
 import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse } from "@/api/local_repo";
@@ -497,6 +497,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                                     }}>
                                                         关联项目
                                                     </Button>
+                                                    <Divider style={{ margin: "0px 0px" }} />
                                                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
                                                         danger
                                                         onClick={e => {
