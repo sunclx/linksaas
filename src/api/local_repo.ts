@@ -47,10 +47,19 @@ export type LocalRepoFileDiffInfo = {
     new_content: string;
 };
 
+export type LocalRepoAnalyseCommitInfo = {
+    commit_id: string;
+    summary: string;
+    add_count: number;
+    del_count: number;
+};
+
 export type LocalRepoStatItem = {
     commit_count: number;
     total_add_count: number;
     total_del_count: number;
+    min_commit: LocalRepoAnalyseCommitInfo;
+    max_commit: LocalRepoAnalyseCommitInfo;
 };
 
 export type LocalRepoDayStatItem = {

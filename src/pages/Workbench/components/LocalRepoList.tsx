@@ -87,6 +87,20 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                             <Descriptions.Item label="累计删除">{analyseInfo.global_stat.total_del_count}行</Descriptions.Item>
                             <Descriptions.Item label="有效新增">{analyseInfo.effect_add_count}行</Descriptions.Item>
                             <Descriptions.Item label="有效删除">{analyseInfo.effect_del_count}行</Descriptions.Item>
+                            {analyseInfo.global_stat.min_commit.commit_id != "" && (
+                                <>
+                                    <Descriptions.Item label="最小提交" span={2}>{analyseInfo.global_stat.min_commit.summary}</Descriptions.Item>
+                                    <Descriptions.Item label="最小提交新增">{analyseInfo.global_stat.min_commit.add_count}</Descriptions.Item>
+                                    <Descriptions.Item label="最小提交删除">{analyseInfo.global_stat.min_commit.del_count}</Descriptions.Item>
+                                </>
+                            )}
+                            {analyseInfo.global_stat.max_commit.commit_id != "" && (
+                                <>
+                                    <Descriptions.Item label="最大提交" span={2}>{analyseInfo.global_stat.max_commit.summary}</Descriptions.Item>
+                                    <Descriptions.Item label="最大提交新增">{analyseInfo.global_stat.max_commit.add_count}</Descriptions.Item>
+                                    <Descriptions.Item label="最大提交删除">{analyseInfo.global_stat.max_commit.del_count}</Descriptions.Item>
+                                </>
+                            )}
                         </Descriptions>
                         {analyseInfo.commiter_stat_list.map(item => (
                             <div key={item.commiter}>
@@ -94,6 +108,20 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                                     style={{ marginTop: "10px" }}>
                                     <Descriptions.Item label="累计新增">{item.stat.total_add_count}行</Descriptions.Item>
                                     <Descriptions.Item label="累计删除">{item.stat.total_del_count}行</Descriptions.Item>
+                                    {item.stat.min_commit.commit_id != "" && (
+                                        <>
+                                            <Descriptions.Item label="最小提交" span={2}>{item.stat.min_commit.summary}</Descriptions.Item>
+                                            <Descriptions.Item label="最小提交新增">{item.stat.min_commit.add_count}</Descriptions.Item>
+                                            <Descriptions.Item label="最小提交删除">{item.stat.min_commit.del_count}</Descriptions.Item>
+                                        </>
+                                    )}
+                                    {item.stat.max_commit.commit_id != "" && (
+                                        <>
+                                            <Descriptions.Item label="最大提交" span={2}>{item.stat.max_commit.summary}</Descriptions.Item>
+                                            <Descriptions.Item label="最大提交新增">{item.stat.max_commit.add_count}</Descriptions.Item>
+                                            <Descriptions.Item label="最大提交删除">{item.stat.max_commit.del_count}</Descriptions.Item>
+                                        </>
+                                    )}
                                 </Descriptions>
                                 <BarChart height={300} width={560} data={item.day_stat_list}>
                                     <XAxis dataKey="day_str" />
