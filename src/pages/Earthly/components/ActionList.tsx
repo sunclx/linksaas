@@ -11,11 +11,11 @@ import ActionModal from "./ActionModal";
 import { OPT_TYPE } from "./ActionModal";
 import { request } from '@/utils/request';
 import type { ColumnsType } from 'antd/es/table';
-import ExecModal from "./ExecModal";
-import { LinkEarthlyActionInfo, LinkEarthlyExecInfo } from "@/stores/linkAux";
+import { LinkEarthlyActionInfo } from "@/stores/linkAux";
 import { useHistory } from "react-router-dom";
 import EditRobotList from "./EditRobotList";
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { LinkOutlined } from "@ant-design/icons";
 
 
 interface ActionListProps {
@@ -42,7 +42,6 @@ const ActionList: React.FC<ActionListProps> = (props) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [removeActionId, setRemoveActionId] = useState("");
     const [updateActionId, setUpdateActionId] = useState("");
-    const [execActionId, setExecActionId] = useState("");
 
     const getRepoDomain = () => {
         if (props.repoUrl.includes("@") && props.repoUrl.includes(":")) {
@@ -87,14 +86,6 @@ const ActionList: React.FC<ActionListProps> = (props) => {
         return "";
     };
 
-    const getActionInfo = (actionId: string) => {
-        const index = actionList.findIndex(item => item.action_id == actionId);
-        if (index != -1) {
-            return actionList[index];
-        }
-        return null;
-    }
-
     const removeAction = async () => {
         const res = await request(remove_action({
             session_id: userStore.sessionId,
@@ -111,8 +102,15 @@ const ActionList: React.FC<ActionListProps> = (props) => {
     const columns: ColumnsType<ActionInfo> = [
         {
             title: "命令名称",
-            width: 80,
+            width: 100,
             dataIndex: ["basic_info", "action_name"],
+            render: (_, record: ActionInfo) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
+                }}><LinkOutlined />&nbsp;{record.basic_info.action_name}</a>
+            ),
         },
         {
             title: "本地路径",
@@ -142,19 +140,14 @@ const ActionList: React.FC<ActionListProps> = (props) => {
         },
         {
             title: "执行记录",
-            width: 150,
+            width: 60,
             render: (_, record: ActionInfo) => (
-                <span>
-                    {record.exec_count}
-                    <Button type="link"
-                        style={{ minWidth: "0px" }}
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
-                        }}>查看</Button>
-                </span>
-            )
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
+                }}>{record.exec_count}</a>
+            ),
         },
         {
             title: "操作",
@@ -162,11 +155,6 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             render: (_, record: ActionInfo) => (
                 <div>
                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setExecActionId(record.action_id);
-                    }}>执行</Button>
-                    <Button type="link" style={{ minWidth: "0px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setUpdateActionId(record.action_id);
@@ -265,7 +253,7 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                     添加命令
                 </Button>
             }>
-                <Table rowKey="action_id" dataSource={actionList} columns={columns} pagination={false} />
+                <Table rowKey="action_id" dataSource={actionList} columns={columns} pagination={false}/>
             </Card>
             {showCreateModal && <ActionModal repoId={props.repoId} optType={OPT_TYPE.OPT_CREATE} onCancel={() => setShowCreateModal(false)} onOk={() => {
                 loadAction();
@@ -292,14 +280,6 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                     是否删除命令 {getActionName(removeActionId)}?
                 </Modal>
             )}
-            {execActionId != "" && <ExecModal
-                repoId={props.repoId}
-                actionInfo={getActionInfo(execActionId)!}
-                onCancel={() => setExecActionId("")}
-                onOk={(execId: string) => {
-                    setExecActionId("");
-                    linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId, props.repoId, execActionId, execId), history);
-                }} />}
         </div>
     );
 };
