@@ -7,6 +7,7 @@ import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent } from '@/api/fs';
 import { open as shell_open } from '@tauri-apps/api/shell';
 import { useStores } from "@/hooks";
+import { DownloadOutlined } from "@ant-design/icons";
 
 
 interface DownladArtifactProps {
@@ -64,7 +65,7 @@ const DownladArtifact: React.FC<DownladArtifactProps> = (props) => {
                 e.stopPropagation();
                 e.preventDefault();
                 setDownload(true);
-            }}>{props.fileName}</a>
+            }}><DownloadOutlined />&nbsp;{props.fileName}</a>
             {download && progress < 100 && <Progress percent={Math.ceil(progress)} size="small" />}
         </div>
     );
