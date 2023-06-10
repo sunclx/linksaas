@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.11
+  version: 0.1.12
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -34,8 +34,6 @@ tags:
     description: 项目中AI相关接口
   - name: projectTool
     description: 项目中工具相关接口
-  - name: projectBookMark
-    description: 项目书签相关接口
 paths:
   /hello:
     get:
@@ -114,53 +112,6 @@ paths:
                   token:
                     type: string
                     description: Ai token
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/bookMark:
-    post:
-      tags:
-        - projectBookMark
-      summary: 新增项目书签
-      description: 新增项目书签
-      operationId: projectProjectIdBookMarkPost
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  description: 网页标题
-                url:
-                  type: string
-                  description: 网页地址
-                content:
-                  type: string
-                  description: 网页内容
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
           headers:

@@ -81,10 +81,6 @@ export const EVENT_ICON_LIST = {
     title: 'idea',
     icon: ideaIcon,
   },
-  [API.EVENT_TYPE_BOOK_MARK]: {
-    title: 'linksaas',
-    icon: iconApp,
-  },
   [API.EVENT_TYPE_GITLAB]: {
     title: 'GitLab',
     icon: iconGitlab,
