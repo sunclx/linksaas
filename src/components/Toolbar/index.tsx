@@ -135,7 +135,7 @@ const Toolbar: React.FC = observer(() => {
           <Item
             id="repo"
             pathname={pathname}
-            title="代码仓库列表"
+            title="CI/CD"
           />
         </>
       )}

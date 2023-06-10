@@ -153,7 +153,7 @@ const ProjectUseTip = () => {
                     e.stopPropagation();
                     e.preventDefault();
                     linkAuxStore.goToRepoList(history);
-                }}>代码仓库列表</a>。</p>
+                }}>CI/CD</a>。</p>
                 <p>注意：需要管理员先在<a onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();

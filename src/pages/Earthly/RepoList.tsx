@@ -66,7 +66,7 @@ const RepoList = () => {
         loadRepo();
     }, [curPage, projectStore.curProjectId])
 
-    return <CardWrap title="代码仓库列表" extra={
+    return <CardWrap title="CI/CD" extra={
         <Space>
             <Button
                 type="primary"
