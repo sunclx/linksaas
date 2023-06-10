@@ -147,12 +147,3 @@ export async function search_project_doc(request: SearchProjectDocRequest): Prom
         request,
     });
 }
-
-//搜索项目书签
-export async function search_project_book_mark(request: SearchProjectBookMarkRequest): Promise<SearchProjectBookMarkResponse> {
-    const cmd = 'plugin:search_api|search_project_book_mark';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<SearchProjectBookMarkResponse>(cmd, {
-        request,
-    });
-}

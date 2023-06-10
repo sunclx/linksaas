@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import s from './index.module.less';
 import { Button, DatePicker, Form, Input, Modal, Popover, Select } from "antd";
 import { useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_MARK_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type moment from 'moment';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
@@ -19,8 +19,6 @@ export const SEARCH_SCOPE_CUR_DOC_SPACE: SEARCH_SCOPE = "curDocSpace";
 export const SEARCH_SCOPE_ALL_DOC_SPACE: SEARCH_SCOPE = "allDocSpace";
 export const SEARCH_SCOPE_TASK: SEARCH_SCOPE = "task"
 export const SEARCH_SCOPE_BUG: SEARCH_SCOPE = "bug"
-export const SEARCH_SCOPE_CUR_BOOKMARK_CATE: SEARCH_SCOPE = "curBookMarkCate"
-export const SEARCH_SCOPE_ALL_BOOKMARK_CATE: SEARCH_SCOPE = "allBookMarkCate"
 
 
 
@@ -64,10 +62,6 @@ const SearchBar = () => {
                     label: "全部文档空间",
                     value: SEARCH_SCOPE_ALL_DOC_SPACE,
                 });
-                tmpList.push({
-                    label: "全部书签分类",
-                    value: SEARCH_SCOPE_ALL_BOOKMARK_CATE,
-                });
             }
         }
         if (location.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
@@ -80,31 +74,6 @@ const SearchBar = () => {
             } else {
                 setCurScope(SEARCH_SCOPE_ALL_DOC_SPACE);
             }
-            tmpList.push({
-                label: "全部文档空间",
-                value: SEARCH_SCOPE_ALL_DOC_SPACE,
-            });
-            if (!projectStore.curProject?.setting.disable_chat) {
-                tmpList.push({
-                    label: "全部频道",
-                    value: SEARCH_SCOPE_ALL_CHANNEL,
-                });
-            }
-            tmpList.push({
-                label: "全部书签分类",
-                value: SEARCH_SCOPE_ALL_BOOKMARK_CATE,
-            });
-        }
-        if (location.pathname.startsWith(APP_PROJECT_KB_BOOK_MARK_PATH)) {
-            tmpList.push({
-                label: "当前书签分类",
-                value: SEARCH_SCOPE_CUR_BOOKMARK_CATE
-            });
-            setCurScope(SEARCH_SCOPE_CUR_BOOKMARK_CATE);
-            tmpList.push({
-                label: "全部书签分类",
-                value: SEARCH_SCOPE_ALL_BOOKMARK_CATE,
-            });
             tmpList.push({
                 label: "全部文档空间",
                 value: SEARCH_SCOPE_ALL_DOC_SPACE,
@@ -154,9 +123,7 @@ const SearchBar = () => {
             scopeValue = channelStore.curChannelId;
         } else if (searchScope == SEARCH_SCOPE_CUR_DOC_SPACE) {
             scopeValue = docSpaceStore.curDocSpaceId;
-        } else if (searchScope == SEARCH_SCOPE_CUR_BOOKMARK_CATE) {
-            scopeValue = projectStore.curBookMarkCateId
-        }
+        } 
         let fromTime = ""
         let toTime = ""
         if (dateRange.length == 2 && simpleMode == false) {

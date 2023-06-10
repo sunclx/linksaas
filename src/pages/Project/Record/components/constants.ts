@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg,
-    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, BookMarkEvCfg
+    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -1995,84 +1995,6 @@ export const genIdeaEvCfgValues = (cfg: IdeaEvCfg): string[] => {
     }
     if (cfg.cancel_appraise) {
         retList.push("cancel_appraise");
-    }
-    return retList;
-}
-
-export const bookMarkEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "创建书签分类",
-        value: "create_cate",
-    },
-    {
-        label: "更新书签分类",
-        value: "update_cate",
-    },
-    {
-        label: "删除书签分类",
-        value: "remove_cate",
-    },
-    {
-        label: "创建书签",
-        value: "create_book_mark",
-    },
-    {
-        label: "删除书签",
-        value: "remove_book_mark",
-    },
-    {
-        label: "设置书签分类",
-        value: "set_book_mark_cate",
-    },
-]
-
-export const calcBookMarkEvCfg = (values: string[] | undefined): BookMarkEvCfg => {
-    const ret: BookMarkEvCfg = {
-        create_cate: false,
-        update_cate: false,
-        remove_cate: false,
-        create_book_mark: false,
-        remove_book_mark: false,
-        set_book_mark_cate: false,
-    }
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "create_cate") {
-            ret.create_cate = true;
-        } else if (value == "update_cate") {
-            ret.update_cate = true;
-        } else if (value == "remove_cate") {
-            ret.remove_cate = true;
-        } else if (value == "create_book_mark") {
-            ret.create_book_mark = true;
-        } else if (value == "remove_book_mark") {
-            ret.remove_book_mark = true;
-        } else if (value == "set_book_mark_cate") {
-            ret.set_book_mark_cate = true;
-        }
-    });
-    return ret;
-}
-
-export const genBookMarkEvCfgValues = (cfg: BookMarkEvCfg): string[] => {
-    const retList: string[] = [];
-
-    if (cfg.create_cate) {
-        retList.push("create_cate");
-    }
-    if (cfg.update_cate) {
-        retList.push("update_cate");
-    }
-    if (cfg.remove_cate) {
-        retList.push("remove_cate");
-    }
-    if (cfg.create_book_mark) {
-        retList.push("create_book_mark");
-    }
-    if (cfg.set_book_mark_cate) {
-        retList.push("set_book_mark_cate");
     }
     return retList;
 }
