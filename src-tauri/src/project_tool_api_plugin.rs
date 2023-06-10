@@ -12,6 +12,41 @@ pub struct ProjectLinksaasYml {
     pub project_id: String,
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct ProjectLinkInfo {
+    pub yaml_content: String,
+    pub post_commit_hook: bool,
+}
+
+#[tauri::command]
+async fn get_git_hook(git_path: String) -> Result<ProjectLinkInfo, String> {
+    //检查是否是git目录
+    let mut base_path = PathBuf::from(&git_path);
+    base_path.push(".git");
+    if base_path.exists() == false || base_path.is_dir() == false {
+        return Err("not git repo".into());
+    }
+    let mut cfg_path = PathBuf::from(&git_path);
+    cfg_path.push(".linksaas.yml");
+    if cfg_path.exists() == false {
+        return Ok(ProjectLinkInfo {
+            yaml_content: "".into(),
+            post_commit_hook: false,
+        });
+    }
+    let yaml_content = fs::read_to_string(&cfg_path).await;
+    if yaml_content.is_err() {
+        return Err(yaml_content.err().unwrap().to_string());
+    }
+    let mut post_commit_path = base_path;
+    post_commit_path.push("hooks");
+    post_commit_path.push("post-commit");
+    return Ok(ProjectLinkInfo {
+        yaml_content: yaml_content.unwrap(),
+        post_commit_hook: post_commit_path.exists(),
+    });
+}
+
 #[tauri::command]
 async fn set_git_hook(
     git_path: String,
@@ -56,7 +91,7 @@ async fn set_git_hook(
         }
         let prog_path = prog_path.unwrap();
 
-       return save_post_hook(&post_commit_path, &prog_path).await;
+        return save_post_hook(&post_commit_path, &prog_path).await;
     }
     Ok(())
 }
@@ -120,7 +155,6 @@ async fn save_post_hook(file_path: &PathBuf, prog_path: &PathBuf) -> Result<(), 
     Ok(())
 }
 
-
 pub struct ProjectToolApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -128,7 +162,7 @@ pub struct ProjectToolApiPlugin<R: Runtime> {
 impl<R: Runtime> ProjectToolApiPlugin<R> {
     pub fn new() -> Self {
         Self {
-            invoke_handler: Box::new(tauri::generate_handler![set_git_hook]),
+            invoke_handler: Box::new(tauri::generate_handler![get_git_hook, set_git_hook]),
         }
     }
 }
