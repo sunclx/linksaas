@@ -33,7 +33,6 @@ mod project_app_api_plugin;
 mod project_appraise_api_plugin;
 mod project_award_api_plugin;
 mod project_book_shelf_api_plugin;
-mod project_bookmark_api_plugin;
 mod project_bulletin_api_plugin;
 mod project_channel_api_plugin;
 mod project_code_api_plugin;
@@ -414,7 +413,6 @@ fn main() {
         .plugin(project_idea_api_plugin::ProjectIdeaApiPlugin::new())
         .plugin(project_tool_api_plugin::ProjectToolApiPlugin::new())
         .plugin(project_alarm_api_plugin::ProjectAlarmApiPlugin::new())
-        .plugin(project_bookmark_api_plugin::ProjectBookMarkApiPlugin::new())
         .plugin(bookstore_api_plugin::BookstoreApiPlugin::new())
         .plugin(bookstore_admin_api_plugin::BookstoreAdminApiPlugin::new())
         .plugin(user_book_shelf_api_plugin::UserBookShelfApiPlugin::new())

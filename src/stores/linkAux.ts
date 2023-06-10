@@ -8,7 +8,6 @@ import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
   APP_PROJECT_CHAT_PATH,
-  APP_PROJECT_KB_BOOK_MARK_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_OVERVIEW_PATH,
@@ -54,7 +53,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_SCRIPT_EXEC = 16,
   LINK_TARGET_REQUIRE_MENT = 17,
   LINK_TARGET_CODE_COMMENT = 18,
-  LINK_TARGET_BOOK_MARK_CATE = 19,
+  // LINK_TARGET_BOOK_MARK_CATE = 19,
   LINK_TARGET_IDEA_PAGE = 20,
 
   LINK_TARGET_NONE = 100,
@@ -312,19 +311,6 @@ export class LinkBookMarkInfo {
   projectId: string;
   bookId: string;
   markId: string;
-}
-
-export class LinkBookMarkCateInfo {
-  constructor(content: string, projectId: string, cateId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK_CATE;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.cateId = cateId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  cateId: string;
 }
 
 
@@ -646,13 +632,6 @@ class LinkAuxStore {
       this.rootStore.docSpaceStore.fromLink = true;
       await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
       history.push(APP_PROJECT_KB_DOC_PATH);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK_CATE) {
-      const bookMarkCateLink = link as LinkBookMarkCateInfo;
-      if (this.rootStore.projectStore.curProjectId != bookMarkCateLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(bookMarkCateLink.projectId);
-      }
-      this.rootStore.projectStore.curBookMarkCateId = bookMarkCateLink.cateId;
-      history.push(`${APP_PROJECT_KB_BOOK_MARK_PATH}?v=${uniqId()}`);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ROBOT_METRIC) {
       const robotLink = link as LinkRobotMetricInfo;
       if (this.rootStore.projectStore.getProject(robotLink.projectId)?.setting.disable_server_agent == true) {
