@@ -23,6 +23,9 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
     const [debugPerm, setDebugPerm] = useState<MinAppPerm>({
         net_perm: {
             cross_domain_http: false,
+            proxy_redis: false,
+            proxy_mysql: false,
+            proxy_mongo: false,
         },
         member_perm: {
             list_member: false,

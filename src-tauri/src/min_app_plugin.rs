@@ -967,6 +967,9 @@ pub async fn get_min_app_perm<R: Runtime>(
             return Some(MinAppPerm {
                 net_perm: Some(MinAppNetPerm {
                     cross_domain_http: net_perm.cross_domain_http,
+                    proxy_redis: net_perm.proxy_redis,
+                    proxy_mysql: net_perm.proxy_mysql,
+                    proxy_mongo: net_perm.proxy_mongo,
                 }),
                 member_perm: Some(MinAppMemberPerm {
                     list_member: false,

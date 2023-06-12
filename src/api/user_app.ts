@@ -14,6 +14,9 @@ export type App = {
 
 export type UserAppNetPerm = {
     cross_domain_http: boolean;
+    proxy_redis: boolean;
+    proxy_mysql: boolean;
+    proxy_mongo: boolean;
 };
 
 export type UserAppFsPerm = {
