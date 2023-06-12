@@ -14,7 +14,6 @@ export const APP_PROJECT_CHAT_PATH = '/app/project/chat';
 export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
 export const APP_PROJECT_KB_BOOK_SHELF_PATH = '/app/project/kb/book_shelf';
-export const APP_PROJECT_KB_BOOK_MARK_PATH = '/app/project/kb/book_mark';
 export const APP_PROJECT_OVERVIEW_PATH = '/app/project/overview';
 
 export const TASK_DETAIL_SUFFIX = '/task/detail';

@@ -1,7 +1,7 @@
 import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { bookMarkEvOptionList, bookShelfEvOptionList, calcBookMarkEvCfg, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
@@ -31,7 +31,6 @@ interface FormValue {
     requirementEvCfg: string[] | undefined;
     codeEvCfg: string[] | undefined;
     ideaEvCfg: string[] | undefined;
-    bookMarkEvCfg: string[] | undefined;
 }
 
 
@@ -88,9 +87,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [ideaEvCfgCheckAll, setIdeaEvCfgCheckAll] = useState(false);
     const [ideaEvCfgIndeterminate, setIdeaEvCfgIndeterminate] = useState(false);
 
-    const [bookMarkEvCfgCheckAll, setBookMarkEvCfgCheckAll] = useState(false);
-    const [bookMarkEvCfgIndeterminate, setBookMarkEvCfgIndeterminate] = useState(false);
-
     const createSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -129,7 +125,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
-                book_mark_ev_cfg: calcBookMarkEvCfg(formValue.bookMarkEvCfg),
             },
         }));
         props.onOk();
@@ -538,32 +533,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setIdeaEvCfgCheckAll(false);
                                 setIdeaEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-
-                    <Form.Item label={<Checkbox indeterminate={bookMarkEvCfgIndeterminate} checked={bookMarkEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setBookMarkEvCfgIndeterminate(false);
-                        if (bookMarkEvCfgCheckAll) {
-                            setBookMarkEvCfgCheckAll(false);
-                            form.setFieldValue("bookMarkEvCfg", []);
-                        } else {
-                            setBookMarkEvCfgCheckAll(true);
-                            form.setFieldValue("bookMarkEvCfg", bookMarkEvOptionList.map(item => item.value));
-                        }
-                    }}>书签事件</Checkbox>} name="bookMarkEvCfg">
-                        <Checkbox.Group options={bookMarkEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setBookMarkEvCfgCheckAll(false);
-                                setBookMarkEvCfgIndeterminate(false);
-                            } else if (values.length == bookMarkEvOptionList.length) {
-                                setBookMarkEvCfgCheckAll(true);
-                                setBookMarkEvCfgIndeterminate(false);
-                            } else {
-                                setBookMarkEvCfgCheckAll(false);
-                                setBookMarkEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

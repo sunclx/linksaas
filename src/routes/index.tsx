@@ -49,7 +49,6 @@ import {
   ADMIN_PATH_APPSTORE_CATE_SUFFIX,
   ADMIN_PATH_APPSTORE_APP_SUFFIX,
   APP_PROJECT_OVERVIEW_PATH,
-  APP_PROJECT_KB_BOOK_MARK_PATH,
   PUB_RES_PATH,
   ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
   ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
@@ -65,7 +64,6 @@ import EarthlyExecResult from '@/pages/Earthly/ExecResult';
 import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
-import BookMark from '@/pages/KnowledgeBase/BookMark';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import EntryList from '@/pages/TestCase/EntryList';
 import ResultList from '@/pages/TestCase/ResultList';
@@ -346,12 +344,6 @@ const routesConfig: IRouteConfig[] = [
                 title: "文档空间",
                 component: ProjectDoc,
                 routes: getToolbarRoute(APP_PROJECT_KB_DOC_PATH),
-              },
-              {
-                path: APP_PROJECT_KB_BOOK_MARK_PATH,
-                title: "项目书签",
-                component: BookMark,
-                routes: getToolbarRoute(APP_PROJECT_KB_BOOK_MARK_PATH),
               },
               {
                 path: APP_PROJECT_KB_BOOK_SHELF_PATH,

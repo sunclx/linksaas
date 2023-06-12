@@ -21,7 +21,7 @@ export const EVENT_TYPE_SCRIPT: EVENT_TYPE = 13;        //服务端脚本
 export const EVENT_TYPE_REQUIRE_MENT: EVENT_TYPE = 14; //需求
 export const EVENT_TYPE_CODE: EVENT_TYPE = 15; //代码相关
 export const EVENT_TYPE_IDEA: EVENT_TYPE = 16; //知识点相关
-export const EVENT_TYPE_BOOK_MARK: EVENT_TYPE = 17; //书签相关
+// export const EVENT_TYPE_BOOK_MARK: EVENT_TYPE = 17; //书签相关
 
 export const EVENT_TYPE_GITLAB: EVENT_TYPE = 100; //gitlab事件
 export const EVENT_TYPE_GITHUB: EVENT_TYPE = 101; //github事件

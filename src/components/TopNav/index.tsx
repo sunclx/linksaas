@@ -11,7 +11,6 @@ import {
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   PROJECT_SETTING_TAB,
   APP_PROJECT_OVERVIEW_PATH,
-  APP_PROJECT_KB_BOOK_MARK_PATH,
   APP_PROJECT_WORK_PLAN_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
@@ -152,7 +151,6 @@ const TopNav = () => {
         {location.pathname.includes(APP_PROJECT_WORK_PLAN_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>项目书籍</div><SearchBar /><RightFloat /></>)}
-        {location.pathname.includes(APP_PROJECT_KB_BOOK_MARK_PATH) && (<><div className={s.doc_title}>项目书签</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<RightFloat />)}
       </div>
     </div>

@@ -3,7 +3,7 @@ import type { PluginEvent } from './events';
 import * as pi from './project_issue';
 import * as ex from './external_events';
 import * as es from './events_subscribe';
-import { LinkBookMarkCateInfo, LinkCodeCommentInfo, LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkIdeaPageInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
+import { LinkCodeCommentInfo, LinkEarthlyActionInfo, LinkEarthlyExecInfo, LinkIdeaPageInfo, LinkRequirementInfo, LinkScriptExecInfo, LinkScriptSuiteInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
   LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
@@ -5179,161 +5179,6 @@ namespace idea {
   }
 }
 
-namespace book_mark {
-  export type CreateCateEvent = {
-    cate_id: string;
-    cate_name: string;
-  }
-
-  function get_create_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateCateEvent,
-  ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 书签分类`),
-      new LinkBookMarkCateInfo(inner.cate_name, ev.project_id, inner.cate_id),
-    ];
-  }
-
-  export type UpdateCateEvent = {
-    cate_id: string;
-    old_cate_name: string;
-    new_catename: string;
-  };
-
-  function get_update_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UpdateCateEvent,
-  ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新 书签分类`),
-      new LinkBookMarkCateInfo(inner.new_catename, ev.project_id, inner.cate_id),
-      new LinkNoneInfo(`原标题 ${inner.old_cate_name}`),
-    ];
-  }
-
-  export type RemoveCateEvent = {
-    cate_id: string;
-    cate_name: string;
-  };
-
-  function get_remove_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveCateEvent,
-  ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 书签分类 ${inner.cate_name}`),
-    ];
-  }
-
-  export type CreateBookMarkEvent = {
-    book_mark_id: string;
-    title: string;
-    url: string;
-    cate_id: string;
-    cate_name: string;
-  };
-
-  function get_create_bookmark_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateBookMarkEvent,
-  ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建 书签`),
-      new LinkExterneInfo(inner.title, inner.url),
-      new LinkNoneInfo("书签分类"),
-      new LinkBookMarkCateInfo(inner.cate_name, ev.project_id, inner.cate_id),
-    ];
-  }
-
-  export type RemoveBookMarkEvent = {
-    book_mark_id: string;
-    title: string;
-    url: string;
-    cate_id: string;
-    cate_name: string;
-  };
-
-  function get_remove_bookmark_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveBookMarkEvent,
-  ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除 书签`),
-      new LinkExterneInfo(inner.title, inner.url),
-      new LinkNoneInfo("书签分类"),
-      new LinkBookMarkCateInfo(inner.cate_name, ev.project_id, inner.cate_id),
-    ];
-  }
-
-  export type SetBookMarkCateEvent = {
-    book_mark_id: string;
-    title: string;
-    url: string;
-    old_cate_id: string;
-    old_cate_name: string;
-    new_cate_id: string;
-    new_cate_name: string;
-  }
-
-  function get_set_bookmark_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: SetBookMarkCateEvent,
-  ): LinkInfo[] {
-    console.log(ev, skip_prj_name, inner);
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改 书签`),
-      new LinkExterneInfo(inner.title, inner.url),
-      new LinkNoneInfo("分类"),
-      new LinkNoneInfo("原分类"),
-      new LinkBookMarkCateInfo(inner.old_cate_name, ev.project_id, inner.old_cate_id),
-      new LinkNoneInfo("新分类"),
-      new LinkBookMarkCateInfo(inner.new_cate_name, ev.project_id, inner.new_cate_id),
-    ];
-  }
-
-  export class AllBookMarkEvent {
-    CreateCateEvent?: CreateCateEvent;
-    UpdateCateEvent?: UpdateCateEvent;
-    RemoveCateEvent?: RemoveCateEvent;
-    CreateBookMarkEvent?: CreateBookMarkEvent;
-    RemoveBookMarkEvent?: RemoveBookMarkEvent;
-    SetBookMarkCateEvent?: SetBookMarkCateEvent;
-  }
-
-  export function get_simple_content_inner(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: AllBookMarkEvent,
-  ): LinkInfo[] {
-    if (inner.CreateCateEvent !== undefined) {
-      return get_create_cate_simple_content(ev, skip_prj_name, inner.CreateCateEvent);
-    } else if (inner.UpdateCateEvent !== undefined) {
-      return get_update_cate_simple_content(ev, skip_prj_name, inner.UpdateCateEvent);
-    } else if (inner.RemoveCateEvent !== undefined) {
-      return get_remove_cate_simple_content(ev, skip_prj_name, inner.RemoveCateEvent);
-    } else if (inner.CreateBookMarkEvent !== undefined) {
-      return get_create_bookmark_simple_content(ev, skip_prj_name, inner.CreateBookMarkEvent);
-    } else if (inner.RemoveBookMarkEvent !== undefined) {
-      return get_remove_bookmark_simple_content(ev, skip_prj_name, inner.RemoveBookMarkEvent);
-    } else if (inner.SetBookMarkCateEvent !== undefined) {
-      return get_set_bookmark_cate_simple_content(ev, skip_prj_name, inner.SetBookMarkCateEvent);
-    }
-    return [new LinkNoneInfo('未知事件')];
-  }
-}
-
 export class AllEvent {
   ProjectEvent?: project.AllProjectEvent;
   ProjectDocEvent?: project_doc.AllProjectDocEvent;
@@ -5351,7 +5196,6 @@ export class AllEvent {
   RequirementEvent?: requirement.AllRequirementEvent;
   CodeEvent?: code.AllCodeEvent;
   IdeaEvent?: idea.AllIdeaEvent;
-  BookMarkEvent?: book_mark.AllBookMarkEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -5387,8 +5231,6 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return code.get_simple_content_inner(ev, skip_prj_name, ev.event_data.CodeEvent);
   } else if (ev.event_data.IdeaEvent !== undefined) {
     return idea.get_simple_content_inner(ev, skip_prj_name, ev.event_data.IdeaEvent);
-  } else if (ev.event_data.BookMarkEvent !== undefined) {
-    return book_mark.get_simple_content_inner(ev, skip_prj_name, ev.event_data.BookMarkEvent);
-  }
+  } 
   return [new LinkNoneInfo('未知事件')];
 }
