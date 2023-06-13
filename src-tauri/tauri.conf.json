@@ -29,7 +29,8 @@
       ],
       "resources": [],
       "externalBin": [
-        "bin/gitspy"
+        "bin/gitspy",
+        "bin/redis"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -69,16 +70,19 @@
         "all": true
       },
       "shell": {
-        "sidecar":true,
+        "sidecar": true,
         "open": ".*",
         "scope": [
           {
             "name": "bin/gitspy",
             "sidecar": true,
             "args": true
+          },
+          {
+            "name": "bin/redis",
+            "sidecar": true
           }
         ]
-
       },
       "dialog": {
         "all": true
