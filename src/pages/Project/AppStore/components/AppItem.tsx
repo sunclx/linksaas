@@ -172,7 +172,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
         <Card title={props.appInfo.basic_info.app_name} bordered={false} extra={
             <Popover content={
                 <div style={{ padding: "10px 10px" }}>
-                    {props.appInfo.basic_info.app_open_type == OPEN_TYPE_MIN_APP && (
+                    {props.appInfo.basic_info.app_open_type != OPEN_TYPE_BROWSER && (
                         <div>
                             <Button type="link" onClick={e => {
                                 e.stopPropagation();
