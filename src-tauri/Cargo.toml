@@ -48,6 +48,7 @@ substring = "1.4.5"
 rsa = "0.8.1"
 rand = "0.8.5"
 serde_yaml = "0.9.19"
+regex = "1.8.4"
 
 [features]
 # by default Tauri runs in production mode

@@ -12,6 +12,7 @@ use proto_gen_rust::project_app_api::{
     MinAppMemberPerm, MinAppNetPerm,
 };
 use rand::Rng;
+use regex::Regex;
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::net::TcpListener;
@@ -21,6 +22,7 @@ use substring::Substring;
 use tauri::async_runtime::Mutex;
 use tauri::Manager;
 use tauri::{
+    api::process::{Command, CommandChild, CommandEvent},
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window, WindowBuilder, WindowUrl,
 };
@@ -36,7 +38,9 @@ Object.defineProperty(window, "minApp", {
         memberUserId: "__MEMBER_USER_ID__",
         memberDisplayName: "__MEMBER_DISPLAY_NAME__",
         tokenUrl: "__TOKEN_URL__",
-        crossHttp: __CROSS_HTTP__
+        crossHttp: __CROSS_HTTP__,
+        redisProxyToken: "__REDIS_PROXY_TOKEN__",
+        redisProxyAddr: "__REDIS_PROXY_ADDR__"
     }
 });
 "#;
@@ -451,6 +455,9 @@ fn get_file_type(url_path: &String) -> &str {
 pub struct HttpServerMap(pub Mutex<HashMap<String, tokio::sync::oneshot::Sender<()>>>);
 
 #[derive(Default)]
+pub struct RedisProxyMap(pub Mutex<HashMap<String, CommandChild>>);
+
+#[derive(Default)]
 pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -588,11 +595,25 @@ async fn start_http_serv<R: Runtime>(
 }
 
 pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String) {
-    let serv_map = app_handle.state::<HttpServerMap>().inner();
-    let mut serv_map_data = serv_map.0.lock().await;
-    let tx = serv_map_data.remove(&label);
-    if tx.is_some() {
-        tx.unwrap().send(()).ok();
+    println!("clear min app resource");
+    {
+        let serv_map = app_handle.state::<HttpServerMap>().inner();
+        let mut serv_map_data = serv_map.0.lock().await;
+        let tx = serv_map_data.remove(&label);
+        if tx.is_some() {
+            tx.unwrap().send(()).ok();
+        }
+    }
+    {
+        let proxy_map = app_handle.state::<RedisProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        let child = proxy_map_data.remove(&label);
+        if child.is_some() {
+            println!("kill redis proxy");
+            if let Err(err) = child.unwrap().kill() {
+                println!("{:?}", err);
+            }
+        }
     }
 }
 
@@ -636,6 +657,7 @@ async fn start<R: Runtime>(
     }
     let dest_url = url::Url::parse(dest_url.as_str());
     if dest_url.is_err() {
+        clear_by_close(app_handle.clone(), request.label.clone()).await;
         return Err(dest_url.err().unwrap().to_string());
     }
 
@@ -660,13 +682,27 @@ async fn start<R: Runtime>(
         } else {
             script = script.replace("__CROSS_HTTP__", "false");
         }
+        //处理redis proxy
+        if net_perm.proxy_redis {
+            let res = start_proxy_redis(app_handle.clone(), request.label.clone()).await;
+            if res.is_err() {
+                clear_by_close(app_handle.clone(), request.label.clone()).await;
+                return Err(res.err().unwrap());
+            }
+            let (addr, token) = res.unwrap();
+            script = script.replace("__REDIS_PROXY_TOKEN__", &token);
+            script = script.replace("__REDIS_PROXY_ADDR__", &addr);
+        } else {
+            script = script.replace("__REDIS_PROXY_TOKEN__", "");
+            script = script.replace("__REDIS_PROXY_ADDR__", "");
+        }
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
     }
 
     let res = WindowBuilder::new(
         &app_handle,
-        request.label,
+        request.label.clone(),
         WindowUrl::External(dest_url.unwrap()),
     )
     .title(request.title)
@@ -674,9 +710,45 @@ async fn start<R: Runtime>(
     .initialization_script(&script)
     .build();
     if res.is_err() {
+        clear_by_close(app_handle.clone(), request.label.clone()).await;
         return Err(res.err().unwrap().to_string());
     }
     Ok(())
+}
+
+async fn start_proxy_redis<R: Runtime>(
+    app_handle: AppHandle<R>,
+    label: String,
+) -> Result<(String, String), String> {
+    let res = Command::new_sidecar("redis");
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    let res = res.unwrap().spawn();
+    if res.is_err() {
+        println!("{:?}", &res);
+        return Err(res.err().unwrap().to_string());
+    }
+    let mut res = res.unwrap();
+    let re = Regex::new(r"^listen=(.*),token=(.*)$").unwrap();
+    let mut addr: String = "".into();
+    let mut token: String = "".into();
+    while let Some(ev) = res.0.recv().await {
+        if let CommandEvent::Stdout(line) = ev {
+            let cap = re.captures(&line);
+            if cap.is_none() {
+                return Err("can't find token".into());
+            }
+            let cap = cap.unwrap();
+            addr = (&cap[1]).to_string();
+            token = (&cap[2]).to_string();
+            break;
+        }
+    }
+    let proxy_map = app_handle.state::<RedisProxyMap>().inner();
+    let mut proxy_map_data = proxy_map.0.lock().await;
+    proxy_map_data.insert(label, res.1);
+    return Ok((addr, token));
 }
 
 #[tauri::command]
@@ -1027,6 +1099,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
     fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
         app.manage(DebugPerm(Default::default()));
         app.manage(HttpServerMap(Default::default()));
+        app.manage(RedisProxyMap(Default::default()));
         Ok(())
     }
 
