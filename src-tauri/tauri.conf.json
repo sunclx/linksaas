@@ -30,7 +30,8 @@
       "resources": [],
       "externalBin": [
         "bin/gitspy",
-        "bin/redis"
+        "bin/redis",
+        "bin/mongo"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -80,6 +81,10 @@
           },
           {
             "name": "bin/redis",
+            "sidecar": true
+          },
+          {
+            "name": "bin/mongo",
             "sidecar": true
           }
         ]
