@@ -24,6 +24,9 @@ export type App = {
 
 export type MinAppNetPerm = {
     cross_domain_http: boolean;
+    proxy_redis: boolean;
+    proxy_mysql: boolean;
+    proxy_mongo: boolean;
 };
 
 export type MinAppMemberPerm = {

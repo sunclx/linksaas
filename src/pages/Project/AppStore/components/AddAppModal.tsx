@@ -31,6 +31,9 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
     const [minAppPerm, setMinAppPerm] = useState<MinAppPerm>({
         net_perm: {
             cross_domain_http: false,
+            proxy_redis: false,
+            proxy_mysql: false,
+            proxy_mongo: false,
         },
         member_perm: {
             list_member: false,

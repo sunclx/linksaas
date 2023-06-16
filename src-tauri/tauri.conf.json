@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "linksaas",
-    "version": "0.2.35"
+    "version": "0.3.1"
   },
   "build": {
     "distDir": "../dist",
@@ -29,7 +29,8 @@
       ],
       "resources": [],
       "externalBin": [
-        "bin/gitspy"
+        "bin/gitspy",
+        "bin/redis"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -69,16 +70,19 @@
         "all": true
       },
       "shell": {
-        "sidecar":true,
+        "sidecar": true,
         "open": ".*",
         "scope": [
           {
             "name": "bin/gitspy",
             "sidecar": true,
             "args": true
+          },
+          {
+            "name": "bin/redis",
+            "sidecar": true
           }
         ]
-
       },
       "dialog": {
         "all": true
