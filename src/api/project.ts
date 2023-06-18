@@ -96,7 +96,6 @@ export type ProjectInfo = {
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;
-  ai_gateway_addr: string;
   tip_list?: string[];
 };
 
@@ -156,29 +155,6 @@ export type UpdateSettingRequest = {
 export type UpdateSettingResponse = {
   code: number;
   err_msg: string;
-};
-
-export type SetAiGatewayRequest = {
-  session_id: string;
-  project_id: string;
-  addr: string;
-  secret: string;
-};
-
-export type SetAiGatewayResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type GenAiTokenRequest = {
-  session_id: string;
-  project_id: string;
-};
-
-export type GenAiTokenResponse = {
-  code: number;
-  err_msg: string;
-  token: string;
 };
 
 export type UpdateTipListRequest = {
@@ -415,29 +391,11 @@ export async function update_setting(request: UpdateSettingRequest): Promise<Upd
   });
 }
 
-//设置AI网关
-export async function set_ai_gateway(request: SetAiGatewayRequest): Promise<SetAiGatewayResponse> {
-  const cmd = 'plugin:project_api|set_ai_gateway';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<SetAiGatewayResponse>(cmd, {
-    request,
-  });
-}
-
-//生成AI网关令牌
-export async function gen_ai_token(request: GenAiTokenRequest): Promise<GenAiTokenResponse> {
-  const cmd = 'plugin:project_api|gen_ai_token';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<GenAiTokenResponse>(cmd, {
-    request,
-  });
-}
-
 //更新技巧集合
 export async function update_tip_list(request: UpdateTipListRequest): Promise<UpdateTipListResponse> {
   const cmd = 'plugin:project_api|update_tip_list';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<GenAiTokenResponse>(cmd, {
+  return invoke<UpdateTipListResponse>(cmd, {
     request,
   });
 }

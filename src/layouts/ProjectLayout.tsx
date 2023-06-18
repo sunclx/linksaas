@@ -4,7 +4,7 @@ import type { IRouteConfig } from '@/routes';
 import style from './style.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
-import MemberInfoModal from '@/pages/ChannelAndAi/components/MemberInfoModal';
+import MemberInfoModal from '@/pages/Channel/components/MemberInfoModal';
 import CodeCommentThreadModal from '@/pages/Project/Code/CodeCommentThreadModal';
 import ProjectSettingModal from '@/pages/Project/Setting/ProjectSettingModal';
 import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';

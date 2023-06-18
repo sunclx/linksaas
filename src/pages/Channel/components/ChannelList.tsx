@@ -195,7 +195,7 @@ const ChannelList = observer(() => {
 
   return (
     <div className={styles.menu}
-      style={{ height: chatMsgStore.replayTargetMsgId != "" ? "calc(100vh - 202px)" : "calc(100vh - 162px)" }}
+      style={{ height: chatMsgStore.replayTargetMsgId != "" ? "calc(100vh - 166px)" : "calc(100vh - 130px)" }}
       onMouseLeave={e => {
         e.stopPropagation();
         e.preventDefault();

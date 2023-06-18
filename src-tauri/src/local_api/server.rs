@@ -1984,34 +1984,15 @@ where
 
     async fn project_project_id_ai_token_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdAiTokenGetResponse, ApiError> {
-        let res = super::project_api::gen_ai_token(&self.app, &project_id).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdAiTokenGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdAiTokenGetResponse::Status200 {
-                body: ProjectProjectIdAiTokenGet200Response {
-                    token: Some(res.token),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
+        return Ok(ProjectProjectIdAiTokenGetResponse::Status200 {
+            body: ProjectProjectIdAiTokenGet200Response {
+                token: Some("".into()),
+            },
+            access_control_allow_origin: Some("*".into()),
+        });
     }
 
     /// git post commit hook回调

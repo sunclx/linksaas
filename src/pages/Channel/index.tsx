@@ -7,15 +7,13 @@ import { useStores } from '@/hooks';
 import ChannelList from './components/ChannelList';
 import ActionMember, { ActionMemberType } from './components/ActionMember';
 import { RenderMoreMenu } from './components/ChannelPanel';
-import { CloseOutlined, EyeOutlined, SettingOutlined } from '@ant-design/icons';
-import AiAssistantList from './components/AiAssistantList';
-import { PROJECT_CHAT_TYPE, PROJECT_SETTING_TAB } from '@/utils/constant';
-import AiAssistant from './components/AiAssistant';
+import { CloseOutlined, EyeOutlined } from '@ant-design/icons';
+import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 import ReplayMsgList from './components/ReplayMsgList';
 
 const { Sider, Content } = Layout;
 
-const ChannelAndAi = () => {
+const Channel = () => {
   const projectStore = useStores('projectStore');
   const channelStore = useStores('channelStore');
   const chatMsgStore = useStores('chatMsgStore');
@@ -32,7 +30,6 @@ const ChannelAndAi = () => {
   return (
     <Layout className={styles.layout}>
       <Content className={styles.content}>
-        {projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_AI && <AiAssistant />}
         {projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && <Chat />}
       </Content>
       <Sider className={styles.sider}>
@@ -67,19 +64,6 @@ const ChannelAndAi = () => {
           }>
             <ChannelList />
           </Collapse.Panel>
-          <Collapse.Panel header="AI助理" key="ai" extra={
-            <div className={styles.header}>
-              {projectStore.isAdmin && (
-                <SettingOutlined style={{ color: "#777", fontSize: "14px", width: "14px", height: "14px", padding: "3px" }} onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_AI;
-                }} title='设置' />
-              )}
-            </div>
-          }>
-            <AiAssistantList />
-          </Collapse.Panel>
           <Collapse.Panel header="消息会话" key="msgThread" extra={
             <Space size="large">
               <EyeOutlined style={{ color: "#777", fontSize: "14px", width: "14px", height: "14px", padding: "3px" }} onClick={e => {
@@ -102,4 +86,4 @@ const ChannelAndAi = () => {
   );
 };
 
-export default observer(ChannelAndAi);
+export default observer(Channel);

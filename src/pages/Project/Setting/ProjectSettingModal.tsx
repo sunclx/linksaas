@@ -5,7 +5,6 @@ import { useStores } from "@/hooks";
 import { PROJECT_SETTING_TAB } from "@/utils/constant";
 import LayoutSettingPanel from "./components/LayoutSettingPanel";
 import ChatSettingPanel from "./components/ChatSettingPanel";
-import AiSettingPanel from "./components/AiSettingPanel";
 import AlarmSettingPanel from "./components/AlarmSettingPanel";
 import TipListSettingPanel from "./components/TipListSettingPanel";
 import TagListSettingPanel from "./components/TagListSettingPanel";
@@ -22,8 +21,6 @@ const ProjectSettingModal = () => {
             setActiveKey("layout");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_CHAT) {
             setActiveKey("chat");
-        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_AI) {
-            setActiveKey("ai");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_ALARM) {
             setActiveKey("alarm");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_TIPLIST) {
@@ -55,8 +52,6 @@ const ProjectSettingModal = () => {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
                     } else if (key == "chat") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_CHAT;
-                    } else if (key == "ai") {
-                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_AI;
                     } else if (key == "alarm") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_ALARM;
                     } else if (key == "tips") {
@@ -71,11 +66,6 @@ const ProjectSettingModal = () => {
                 {projectStore.curProject?.setting.disable_chat === false && (
                     <Tabs.TabPane key="chat" tab="沟通设置" disabled={disableTabs}>
                         {activeKey == "chat" && <ChatSettingPanel onChange={value => setDisableTabs(value)} title="沟通设置" />}
-                    </Tabs.TabPane>
-                )}
-                {projectStore.curProject?.setting.disable_chat === false && (
-                    <Tabs.TabPane key="ai" tab="AI助理" disabled={disableTabs}>
-                        {activeKey == "ai" && <AiSettingPanel onChange={value => setDisableTabs(value)} title="AI助理" />}
                     </Tabs.TabPane>
                 )}
                 <Tabs.TabPane key="alarm" tab="项目预警" disabled={disableTabs}>
