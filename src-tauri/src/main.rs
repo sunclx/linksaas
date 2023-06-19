@@ -62,6 +62,7 @@ mod user_kb_api_plugin;
 mod min_app_fs_plugin;
 mod min_app_plugin;
 mod min_app_shell_plugin;
+mod min_app_store_plugin;
 
 mod my_updater;
 
@@ -197,6 +198,15 @@ fn get_tmp_dir() -> Option<String> {
     None
 }
 
+fn get_minapp_dir() -> Option<String> {
+    if let Some(mut home_dir) = dirs::home_dir() {
+        home_dir.push(".linksaas");
+        home_dir.push("minapp");
+        return Some(home_dir.to_str().unwrap().into());
+    }
+    None
+}
+
 async fn init_local_storage() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(base_dir) = get_base_dir() {
         let meta = fs::metadata((&base_dir).as_str()).await;
@@ -223,6 +233,14 @@ async fn init_local_storage() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     if let Some(tmp_dir) = get_user_dir() {
+        let meta = fs::metadata((&tmp_dir).as_str()).await;
+        if meta.is_err() {
+            if let Err(err) = fs::create_dir_all((&tmp_dir).as_str()).await {
+                return Err(Box::new(err));
+            }
+        }
+    }
+    if let Some(tmp_dir) = get_minapp_dir() {
         let meta = fs::metadata((&tmp_dir).as_str()).await;
         if meta.is_err() {
             if let Err(err) = fs::create_dir_all((&tmp_dir).as_str()).await {
@@ -405,6 +423,7 @@ fn main() {
         .plugin(min_app_plugin::MinAppPlugin::new())
         .plugin(min_app_fs_plugin::MinAppFsPlugin::new())
         .plugin(min_app_shell_plugin::MinAppShellPlugin::new())
+        .plugin(min_app_store_plugin::MinAppStorePlugin::new())
         .plugin(project_requirement_api_plugin::ProjectRequirementApiPlugin::new())
         .plugin(appstore_api_plugin::AppstoreApiPlugin::new())
         .plugin(appstore_admin_api_plugin::AppstoreAdminApiPlugin::new())

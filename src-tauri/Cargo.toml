@@ -27,7 +27,7 @@ image = "0.24.1"
 local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", tag = "0.1.1"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.5"}
+proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branch = "develop"}
 reqwest = {version = "0.11.12", features = ["blocking"] }
 rumqttc = "0.11.0"
 rust-string-random = "0.1.0"
@@ -49,6 +49,8 @@ rsa = "0.8.1"
 rand = "0.8.5"
 serde_yaml = "0.9.19"
 regex = "1.8.4"
+sled = "0.34.7"
+rust-crypto = "0.2.36"
 
 [features]
 # by default Tauri runs in production mode
