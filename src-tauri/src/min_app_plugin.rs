@@ -40,7 +40,9 @@ Object.defineProperty(window, "minApp", {
         tokenUrl: "__TOKEN_URL__",
         crossHttp: __CROSS_HTTP__,
         redisProxyToken: "__REDIS_PROXY_TOKEN__",
-        redisProxyAddr: "__REDIS_PROXY_ADDR__"
+        redisProxyAddr: "__REDIS_PROXY_ADDR__",
+        mongoProxyToken: "__MONGO_PROXY_TOKEN__",
+        mongoProxyAddr: "__MONGO_PROXY_ADDR__",
     }
 });
 "#;
@@ -458,6 +460,9 @@ pub struct HttpServerMap(pub Mutex<HashMap<String, tokio::sync::oneshot::Sender<
 pub struct RedisProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 
 #[derive(Default)]
+pub struct MongoProxyMap(pub Mutex<HashMap<String, CommandChild>>);
+
+#[derive(Default)]
 pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -615,6 +620,17 @@ pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String)
             }
         }
     }
+    {
+        let proxy_map = app_handle.state::<MongoProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        let child = proxy_map_data.remove(&label);
+        if child.is_some() {
+            println!("kill mongo proxy");
+            if let Err(err) = child.unwrap().kill() {
+                println!("{:?}", err);
+            }
+        }
+    }
 }
 
 #[tauri::command]
@@ -684,7 +700,7 @@ async fn start<R: Runtime>(
         }
         //处理redis proxy
         if net_perm.proxy_redis {
-            let res = start_proxy_redis(app_handle.clone(), request.label.clone()).await;
+            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "redis").await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
@@ -695,6 +711,20 @@ async fn start<R: Runtime>(
         } else {
             script = script.replace("__REDIS_PROXY_TOKEN__", "");
             script = script.replace("__REDIS_PROXY_ADDR__", "");
+        }
+        //处理mongo proxy
+        if net_perm.proxy_mongo {
+            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "mongo").await;
+            if res.is_err() {
+                clear_by_close(app_handle.clone(), request.label.clone()).await;
+                return Err(res.err().unwrap());
+            }
+            let (addr, token) = res.unwrap();
+            script = script.replace("__MONGO_PROXY_TOKEN__", &token);
+            script = script.replace("__MONGO_PROXY_ADDR__", &addr);
+        } else {
+            script = script.replace("__MONGO_PROXY_TOKEN__", "");
+            script = script.replace("__MONGO_PROXY_ADDR__", "");
         }
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
@@ -716,11 +746,12 @@ async fn start<R: Runtime>(
     Ok(())
 }
 
-async fn start_proxy_redis<R: Runtime>(
+async fn start_sidecar_proxy<R: Runtime>(
     app_handle: AppHandle<R>,
     label: String,
+    sidecar: &str,
 ) -> Result<(String, String), String> {
-    let res = Command::new_sidecar("redis");
+    let res = Command::new_sidecar(sidecar);
     if res.is_err() {
         return Err(res.err().unwrap().to_string());
     }
@@ -745,9 +776,16 @@ async fn start_proxy_redis<R: Runtime>(
             break;
         }
     }
-    let proxy_map = app_handle.state::<RedisProxyMap>().inner();
-    let mut proxy_map_data = proxy_map.0.lock().await;
-    proxy_map_data.insert(label, res.1);
+    if sidecar == "redis" {
+        let proxy_map = app_handle.state::<RedisProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        proxy_map_data.insert(label, res.1);
+    } else if sidecar == "mongo" {
+        let proxy_map = app_handle.state::<MongoProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        proxy_map_data.insert(label, res.1);
+    }
+
     return Ok((addr, token));
 }
 
@@ -1100,6 +1138,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
         app.manage(DebugPerm(Default::default()));
         app.manage(HttpServerMap(Default::default()));
         app.manage(RedisProxyMap(Default::default()));
+        app.manage(MongoProxyMap(Default::default()));
         Ok(())
     }
 

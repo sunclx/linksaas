@@ -1,0 +1,138 @@
+.box{
+    display:flex;
+    margin: calc(-20px - 0.5em) -20px -20px;
+    height: 425px;
+}
+.search_box {
+    flex: 1;
+    border-right: 1px solid #EAEAEF;
+    padding: 14px 0 0 0;
+    flex-direction: column;
+    display: flex;
+}
+.select_box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 0 0 0;
+}
+
+.select_count {
+    height: 30px;
+    line-height: 30px;
+    padding: 0 13px 12px 17px;
+    font-weight: 500;
+}
+.select_list {
+    font-size: 12px;
+    color: @main_color;
+    white-space: nowrap;
+    overflow: scroll;
+    flex: 1;
+    margin-top: 10px;
+    padding-left: 14px;
+    .item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        height: 26px;
+    }
+    .checkbox_cont {
+        display: flex;
+        align-items: center;
+    }
+    .cover {
+        display: block;
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        margin-right: 6px;
+    }
+    .name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+.add_channel {
+    border-top: 1px solid #EAEAEF;
+    padding: 4px 14px 16px;
+    .title {
+        line-height: 32px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+}
+
+.actions {
+    padding: 0 14px 20px 0;
+    text-align: right;
+    .btn {
+        margin-left: 10px;
+        width: 80px;
+        height: 30px;
+    }
+}
+
+:global {
+    .search {
+        display: block;
+        width: auto;
+        margin: 0 13px 0 15px;
+        .ant-input-group {
+            background-color: #f1f1f5;
+            border-radius: 4px;
+            display: flex;
+        }
+        .ant-input {
+            float: none;
+            margin-left: 28px;
+            flex: 1;
+            width: auto;
+            border: none;
+            background-color: transparent;
+            height: 30px;
+            font-size: 12px;
+            &:hover,
+            &:focus {
+                box-shadow: none;
+            }
+        }
+        .ant-input::placeholder {
+            color: #888;
+        }
+        .ant-input-group-addon {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .ant-btn {
+            box-shadow: none;
+            border: none;
+            background-color: transparent;
+        }
+    }
+    .checkbox {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        .ant-checkbox {
+            display: block;
+            margin-left: 4px;
+            .ant-checkbox-inner {
+                width: 14px;
+                height: 14px;
+                border: 1px solid #888;
+                border-radius: 999px;
+            }
+        }
+        .ant-checkbox-checked::after {
+            display: none;
+        }
+        .ant-checkbox + span {
+            display: flex;
+            flex: 1;
+            padding-left: 15px;
+        }
+    }
+}
