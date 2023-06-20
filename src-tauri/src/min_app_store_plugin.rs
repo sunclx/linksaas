@@ -1,5 +1,5 @@
-use crypto::buffer::{BufferResult, ReadBuffer, WriteBuffer};
-use crypto::{aes, blockmodes, buffer};
+use image::EncodableLayout;
+use libaes::Cipher;
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 use tauri::async_runtime::Mutex;
@@ -69,44 +69,20 @@ async fn encrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<
     if &secret == "" {
         return Err("miss secret".into());
     }
+    let mut new_secret = [0 as u8; 32];
+    new_secret[..32].copy_from_slice(secret.as_bytes());
+
     let mut iv: [u8; 16] = [0; 16];
     let mut rng = thread_rng();
     let res = rng.try_fill(&mut iv);
     if res.is_err() {
         return Err(res.err().unwrap().to_string());
     }
-    let mut final_result: Vec<u8> = Vec::from(iv);
-
-    let mut encryptor = aes::cbc_encryptor(
-        aes::KeySize::KeySize256,
-        secret.as_bytes(),
-        &iv,
-        blockmodes::PkcsPadding,
-    );
-    let mut read_buffer = buffer::RefReadBuffer::new(&data);
-    let mut buffer = [0; 4096];
-    let mut write_buffer = buffer::RefWriteBuffer::new(&mut buffer);
-
-    loop {
-        let result = encryptor.encrypt(&mut read_buffer, &mut write_buffer, true);
-        if result.is_err() {
-            return Err("encrypt error".into());
-        }
-        let result = result.unwrap();
-        final_result.extend(
-            write_buffer
-                .take_read_buffer()
-                .take_remaining()
-                .iter()
-                .map(|&i| i),
-        );
-
-        match result {
-            BufferResult::BufferUnderflow => break,
-            BufferResult::BufferOverflow => {}
-        }
-    }
-    return Ok(final_result);
+    let cipher = Cipher::new_256(&new_secret);
+    let encrypted = cipher.cbc_encrypt(&iv, data.as_bytes());
+    let mut result = Vec::from(iv);
+    result.extend(encrypted);
+    return Ok(result);
 }
 
 async fn decrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
@@ -114,41 +90,16 @@ async fn decrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<
     if &secret == "" {
         return Err("miss secret".into());
     }
+    let mut new_secret = [0 as u8; 32];
+    new_secret[..32].copy_from_slice(secret.as_bytes());
+
     if data.len() < 16 {
         return Err("miss iv".into());
     }
     let (iv, data) = data.split_at(16);
-    let mut decryptor = aes::cbc_decryptor(
-        aes::KeySize::KeySize256,
-        secret.as_bytes(),
-        iv,
-        blockmodes::PkcsPadding,
-    );
-    let mut final_result = Vec::<u8>::new();
-    let mut read_buffer = buffer::RefReadBuffer::new(data);
-    let mut buffer = [0; 4096];
-    let mut write_buffer = buffer::RefWriteBuffer::new(&mut buffer);
-
-    loop {
-        let result = decryptor.decrypt(&mut read_buffer, &mut write_buffer, true);
-        if result.is_err() {
-            return Err("decrypt error".into());
-        }
-        let result = result.unwrap();
-        final_result.extend(
-            write_buffer
-                .take_read_buffer()
-                .take_remaining()
-                .iter()
-                .map(|&i| i),
-        );
-        match result {
-            BufferResult::BufferUnderflow => break,
-            BufferResult::BufferOverflow => {}
-        }
-    }
-
-    return Ok(final_result);
+    let cipher = Cipher::new_256(&new_secret);
+    let decrypted = cipher.cbc_decrypt(iv, data);
+    return Ok(decrypted);
 }
 
 #[tauri::command]

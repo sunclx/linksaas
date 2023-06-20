@@ -50,7 +50,7 @@ rand = "0.8.5"
 serde_yaml = "0.9.19"
 regex = "1.8.4"
 sled = "0.34.7"
-rust-crypto = "0.2.36"
+libaes = "0.6.5"
 
 [features]
 # by default Tauri runs in production mode
