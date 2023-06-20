@@ -20,10 +20,7 @@ pub struct StoreStatus {
 #[derive(Default)]
 pub struct StoreMap(pub Mutex<HashMap<String, sled::Db>>);
 
-pub async fn start_store<R: Runtime>(
-    app_handle: AppHandle<R>,
-    label: String,
-) -> Result<(), String> {
+fn open_db(label: String) -> Result<sled::Db, String> {
     let path = crate::get_minapp_dir();
     if path.is_none() {
         return Err("no minapp store dir".into());
@@ -36,6 +33,18 @@ pub async fn start_store<R: Runtime>(
     let db = sled::open(&path);
     if db.is_err() {
         return Err(db.err().unwrap().to_string());
+    }
+    let db = db.unwrap();
+    return Ok(db);
+}
+
+pub async fn start_store<R: Runtime>(
+    app_handle: AppHandle<R>,
+    label: String,
+) -> Result<(), String> {
+    let db = open_db(label.clone());
+    if db.is_err() {
+        return Err(db.err().unwrap());
     }
 
     let store_map = app_handle.state::<StoreMap>().inner();
@@ -153,11 +162,6 @@ pub async fn set_data<R: Runtime>(
     let db_map = app_handle.state::<StoreMap>().inner();
     let mut db_map = db_map.0.lock().await;
     if let Some(db) = db_map.get_mut(label) {
-        let key = encrypt(app_handle.clone(), key).await;
-        if key.is_err() {
-            return Err(key.err().unwrap());
-        }
-        let key = key.unwrap();
         let value = encrypt(app_handle.clone(), value).await;
         if value.is_err() {
             return Err(value.err().unwrap());
@@ -182,11 +186,6 @@ pub async fn get_data<R: Runtime>(
     let db_map = app_handle.state::<StoreMap>().inner();
     let mut db_map = db_map.0.lock().await;
     if let Some(db) = db_map.get_mut(label) {
-        let key = encrypt(app_handle.clone(), key).await;
-        if key.is_err() {
-            return Err(key.err().unwrap());
-        }
-        let key = key.unwrap();
         let res = db.get(key);
         if res.is_err() {
             return Err(res.err().unwrap().to_string());
@@ -212,11 +211,6 @@ pub async fn remove_data<R: Runtime>(
     let db_map = app_handle.state::<StoreMap>().inner();
     let mut db_map = db_map.0.lock().await;
     if let Some(db) = db_map.get_mut(label) {
-        let key = encrypt(app_handle.clone(), key).await;
-        if key.is_err() {
-            return Err(key.err().unwrap());
-        }
-        let key = key.unwrap();
         let res = db.remove(key);
         if res.is_err() {
             return Err(res.err().unwrap().to_string());
@@ -241,11 +235,7 @@ pub async fn list_all<R: Runtime>(
             }
             let (key, value) = res.unwrap();
             let key = key.to_vec();
-            let key = decrypt(app_handle.clone(), key).await;
-            if key.is_err() {
-                return Err(key.err().unwrap());
-            }
-            let key = key.unwrap();
+
             let value = value.to_vec();
             let value = decrypt(app_handle.clone(), value).await;
             if value.is_err() {
@@ -276,6 +266,17 @@ pub async fn clear_data<R: Runtime>(
             return Err(res.err().unwrap().to_string());
         }
         let _ = db.flush();
+    } else {
+        let db = open_db(label.clone());
+        if db.is_err() {
+            return Err(db.err().unwrap());
+        }
+        let db = db.unwrap();
+        let res = db.clear();
+        if res.is_err() {
+            return Err(res.err().unwrap().to_string());
+        }
+        let _ = db.flush();
     }
     return Ok(());
 }
@@ -301,8 +302,22 @@ pub async fn get_status<R: Runtime>(
             total_size: size_res.unwrap(),
             key_count: count,
         });
+    } else {
+        let db = open_db(label.clone());
+        if db.is_err() {
+            return Err(db.err().unwrap());
+        }
+        let db = db.unwrap();
+        let size_res = db.size_on_disk();
+        if size_res.is_err() {
+            return Err(size_res.err().unwrap().to_string());
+        }
+        let count = db.len();
+        return Ok(StoreStatus {
+            total_size: size_res.unwrap(),
+            key_count: count,
+        });
     }
-    return Err("no minapp store".into());
 }
 
 pub struct MinAppStorePlugin<R: Runtime> {

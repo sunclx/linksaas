@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { App as UserApp, UserAppPerm } from "@/api/user_app";
 import { get_user_app_perm, remove as remove_app, set_user_app_perm } from "@/api/user_app";
-import { Button, Card, Popover, Image, Modal, message } from "antd";
+import { Button, Card, Popover, Image, Modal, message, Space } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { useStores } from "@/hooks";
@@ -12,6 +12,7 @@ import { request } from "@/utils/request";
 import { get_app as get_app_in_store } from '@/api/appstore';
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
 import UserAppPermPanel from "./UserAppPermPanel";
+import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
 
 interface UserAppItemProps {
     appInfo: UserApp;
@@ -30,7 +31,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
     const [userAppPerm, setUserAppPerm] = useState<UserAppPerm | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showDownload, setShowDownload] = useState<DownloadInfo | null>(null);
-
+    const [showStoreStatusModal, setShowStoreStatusModal] = useState(false);
 
     const getIconUrl = (fileId: string) => {
         if (fileId == "") {
@@ -140,20 +141,23 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
     return (
         <Card title={props.appInfo.basic_info.app_name} bordered={false} extra={
             <Popover content={
-                <div style={{ padding: "10px 10px" }}>
-                    <div>
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            loadUserAppPerm();
-                        }}>修改权限</Button>
-                    </div>
+                <Space direction="vertical" style={{ padding: "10px 10px" }}>
+                    <Button type="link" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowStoreStatusModal(true);
+                    }}>存储统计</Button>
+                    <Button type="link" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        loadUserAppPerm();
+                    }}>修改权限</Button>
                     <Button type="link" danger onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowRemoveModal(true);
                     }}>删除</Button>
-                </div>
+                </Space>
             }
                 trigger="click" placement="bottom">
                 <MoreOutlined />
@@ -215,6 +219,9 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
                             setUserAppPerm(newPerm);
                         }} />
                 </Modal>
+            )}
+            {showStoreStatusModal == true && (
+                <StoreStatusModal minAppId={props.appInfo.app_id} onCancel={() => { setShowStoreStatusModal(false) }} />
             )}
         </Card>
     );
