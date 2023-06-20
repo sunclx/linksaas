@@ -1,3 +1,4 @@
+use crate::min_app_store_plugin::{start_store, close_store};
 use crate::user_api_plugin::get_session;
 use async_zip::read::seek::ZipFileReader;
 use async_zip::write::ZipFileWriter;
@@ -631,6 +632,7 @@ pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String)
             }
         }
     }
+    close_store(app_handle.clone(), &label).await;
 }
 
 #[tauri::command]
@@ -728,6 +730,12 @@ async fn start<R: Runtime>(
         }
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
+    }
+
+    let res = start_store(app_handle.clone(), request.label.clone()).await;
+    if res.is_err() {
+        clear_by_close(app_handle.clone(), request.label.clone()).await;
+        return Err(res.err().unwrap().to_string());
     }
 
     let res = WindowBuilder::new(
