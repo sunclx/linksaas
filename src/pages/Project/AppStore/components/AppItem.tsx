@@ -7,7 +7,7 @@ import {
     OPEN_TYPE_MIN_APP_IN_STORE,
     get_min_app_perm, set_min_app_perm, remove as remove_app, get_token_url
 } from '@/api/project_app';
-import { Button, Card, Image, Modal, Popover, message } from "antd";
+import { Button, Card, Image, Modal, Popover, Space, message } from "antd";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { MoreOutlined } from "@ant-design/icons";
 import { useStores } from "@/hooks";
@@ -18,6 +18,7 @@ import { get_cache_file } from '@/api/fs';
 import DownloadProgressModal from "./DownloadProgressModal";
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
 import { get_app } from '@/api/appstore';
+import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
 
 interface AppItemProps {
     appInfo: AppInfo;
@@ -37,6 +38,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
     const [minAppPerm, setMinAppPerm] = useState<MinAppPerm | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showDownload, setShowDownload] = useState<DownloadInfo | null>(null);
+    const [showStoreStatusModal, setShowStoreStatusModal] = useState(false);
 
     const loadMinAppPerm = async () => {
         const res = await request(get_min_app_perm({
@@ -162,24 +164,29 @@ const AppItem: React.FC<AppItemProps> = (props) => {
 
     const adjustUrl = (url: string) => {
         if (appStore.isOsWindows) {
-            return url.replace("lcalhost","localhost").replace("fs://localhost/", "https://fs.localhost/");
+            return url.replace("lcalhost", "localhost").replace("fs://localhost/", "https://fs.localhost/");
         } else {
-            return url.replace("lcalhost","localhost").replace("https://fs.localhost/", "fs://localhost/");
+            return url.replace("lcalhost", "localhost").replace("https://fs.localhost/", "fs://localhost/");
         }
     }
 
     return (
         <Card title={props.appInfo.basic_info.app_name} bordered={false} extra={
             <Popover content={
-                <div style={{ padding: "10px 10px" }}>
+                <Space direction="vertical" style={{ padding: "10px 10px" }}>
                     {props.appInfo.basic_info.app_open_type != OPEN_TYPE_BROWSER && (
-                        <div>
-                            <Button type="link" onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                loadMinAppPerm();
-                            }}>{`${projectStore.isAdmin ? "修改权限" : "查看权限"}`}</Button>
-                        </div>
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowStoreStatusModal(true);
+                        }}>存储统计</Button>
+                    )}
+                    {props.appInfo.basic_info.app_open_type != OPEN_TYPE_BROWSER && (
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            loadMinAppPerm();
+                        }}>{`${projectStore.isAdmin ? "修改权限" : "查看权限"}`}</Button>
                     )}
                     {projectStore.isAdmin && (
                         <Button type="link" danger onClick={e => {
@@ -188,7 +195,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
                             setShowRemoveModal(true);
                         }}>删除</Button>
                     )}
-                </div>
+                </Space>
             }
                 trigger="click" placement="bottom">
                 <MoreOutlined />
@@ -257,6 +264,9 @@ const AppItem: React.FC<AppItemProps> = (props) => {
                         setShowDownload(null);
                         openMinApp(showDownload.fsId, showDownload.fileId);
                     }} />
+            )}
+            {showStoreStatusModal == true && (
+                <StoreStatusModal minAppId={props.appInfo.app_id} onCancel={() => { setShowStoreStatusModal(false) }} />
             )}
         </Card>
     );

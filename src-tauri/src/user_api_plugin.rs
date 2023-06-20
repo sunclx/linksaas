@@ -1,7 +1,6 @@
 use crate::notice_decode::{
-    decode_notice, earthly::Notice as EarthlyNotice, 
-    new_wrong_session_notice, robot::Notice as RobotNotice, script::Notice as ScriptNotice,
-    NoticeMessage,
+    decode_notice, earthly::Notice as EarthlyNotice, new_wrong_session_notice,
+    robot::Notice as RobotNotice, script::Notice as ScriptNotice, NoticeMessage,
 };
 use prost::Message;
 use proto_gen_rust::google::protobuf::Any;
@@ -25,6 +24,9 @@ pub struct CurSession(pub Mutex<Option<String>>);
 
 #[derive(Default)]
 pub struct CurUserId(pub Mutex<Option<String>>);
+
+#[derive(Default)]
+pub struct CurUserSecret(pub Mutex<Option<String>>);
 
 #[derive(Default)]
 struct CurNoticeClient(Mutex<Option<MqttClient>>);
@@ -140,6 +142,8 @@ async fn login<R: Runtime>(
             if let Some(user_info) = user_info {
                 let user_id = app_handle.state::<CurUserId>().inner();
                 *user_id.0.lock().await = Some(user_info.user_id);
+                let user_secret = app_handle.state::<CurUserSecret>().inner();
+                *user_secret.0.lock().await = Some(ret.user_secret.clone());
             }
 
             let mq_client = (&app_handle).state::<CurNoticeClient>().inner();
@@ -293,6 +297,8 @@ async fn logout<R: Runtime>(
             *sess.0.lock().await = None;
             let user_id = app_handle.state::<CurUserId>().inner();
             *user_id.0.lock().await = None;
+            let user_secret = app_handle.state::<CurUserSecret>().inner();
+            *user_secret.0.lock().await = None;
 
             let mq_client = (&app_handle).state::<CurNoticeClient>().inner();
             if let Some(c) = mq_client.0.lock().await.clone() {
@@ -433,6 +439,15 @@ pub async fn get_user_id<R: Runtime>(app_handle: AppHandle<R>) -> String {
     return "".into();
 }
 
+pub async fn get_user_secret<R: Runtime>(app_handle: AppHandle<R>) -> String {
+    let cur_value = app_handle.state::<CurUserSecret>().inner();
+    let cur_user_secret = cur_value.0.lock().await;
+    if let Some(cur_user_secret) = cur_user_secret.clone() {
+        return cur_user_secret;
+    }
+    return "".into();
+}
+
 pub async fn get_user_id_inner(app_handle: &AppHandle) -> String {
     let cur_value = app_handle.state::<CurUserId>().inner();
     let cur_user_id = cur_value.0.lock().await;
@@ -478,6 +493,7 @@ impl<R: Runtime> Plugin<R> for UserApiPlugin<R> {
     fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
         app.manage(CurSession(Default::default()));
         app.manage(CurUserId(Default::default()));
+        app.manage(CurUserSecret(Default::default()));
         app.manage(CurNoticeClient(Default::default()));
         tauri::async_runtime::block_on(async {
             keep_alive(app).await;

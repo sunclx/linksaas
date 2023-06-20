@@ -13,6 +13,7 @@ import AddAppModal from './components/AddAppModal';
 import AppItem from './components/AppItem';
 import { useHistory } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
+import StoreStatusModal from '@/components/MinApp/StoreStatusModal';
 
 
 const AppStore: React.FC = () => {
@@ -25,6 +26,7 @@ const AppStore: React.FC = () => {
   const [appList, setAppList] = useState([] as AppInfo[]);
   const [showAdd, setShowAdd] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
+  const [showStoreStatusModal, setShowStoreStatusModal] = useState(false);
 
 
   const loadAppList = async () => {
@@ -89,6 +91,11 @@ const AppStore: React.FC = () => {
               e.preventDefault();
               setShowDebug(true);
             }}>调试微应用</Button>
+            <Button type="link" style={{ marginLeft: "10px" }} onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              setShowStoreStatusModal(true);
+            }}>查看调试存储</Button>
           </Space>
         }>
           <MoreOutlined />
@@ -117,6 +124,9 @@ const AppStore: React.FC = () => {
       )}
       {showDebug == true && (
         <DebugMinAppModal onCancel={() => setShowDebug(false)} onOk={() => setShowDebug(false)} />
+      )}
+      {showStoreStatusModal == true && (
+        <StoreStatusModal minAppId="debug" onCancel={() => { setShowStoreStatusModal(false) }} />
       )}
     </CardWrap>
   );
