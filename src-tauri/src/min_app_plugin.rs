@@ -1,4 +1,4 @@
-use crate::min_app_store_plugin::{start_store, close_store};
+use crate::min_app_store_plugin::{close_store, start_store};
 use crate::user_api_plugin::get_session;
 use async_zip::read::seek::ZipFileReader;
 use async_zip::write::ZipFileWriter;
@@ -44,6 +44,8 @@ Object.defineProperty(window, "minApp", {
         redisProxyAddr: "__REDIS_PROXY_ADDR__",
         mongoProxyToken: "__MONGO_PROXY_TOKEN__",
         mongoProxyAddr: "__MONGO_PROXY_ADDR__",
+        mysqlProxyToken: "__MYSQL_PROXY_TOKEN__",
+        mysqlProxyAddr: "__MYSQL_PROXY_ADDR__",
     }
 });
 "#;
@@ -464,6 +466,9 @@ pub struct RedisProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 pub struct MongoProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 
 #[derive(Default)]
+pub struct SqlProxyMap(pub Mutex<HashMap<String, CommandChild>>);
+
+#[derive(Default)]
 pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -632,6 +637,17 @@ pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String)
             }
         }
     }
+    {
+        let proxy_map = app_handle.state::<SqlProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        let child = proxy_map_data.remove(&label);
+        if child.is_some() {
+            println!("kill sql proxy");
+            if let Err(err) = child.unwrap().kill() {
+                println!("{:?}", err);
+            }
+        }
+    }
     close_store(app_handle.clone(), &label).await;
 }
 
@@ -728,6 +744,20 @@ async fn start<R: Runtime>(
             script = script.replace("__MONGO_PROXY_TOKEN__", "");
             script = script.replace("__MONGO_PROXY_ADDR__", "");
         }
+        //处理sql proxy
+        if net_perm.proxy_mysql {
+            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "sql").await;
+            if res.is_err() {
+                clear_by_close(app_handle.clone(), request.label.clone()).await;
+                return Err(res.err().unwrap());
+            }
+            let (addr, token) = res.unwrap();
+            script = script.replace("__MYSQL_PROXY_TOKEN__", &token);
+            script = script.replace("__MYSQL_PROXY_ADDR__", &addr);
+        }else{
+            script = script.replace("__MYSQL_PROXY_TOKEN__", "");
+            script = script.replace("__MYSQL_PROXY_ADDR__", ""); 
+        }
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
     }
@@ -790,6 +820,10 @@ async fn start_sidecar_proxy<R: Runtime>(
         proxy_map_data.insert(label, res.1);
     } else if sidecar == "mongo" {
         let proxy_map = app_handle.state::<MongoProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        proxy_map_data.insert(label, res.1);
+    } else if sidecar == "sql" {
+        let proxy_map = app_handle.state::<SqlProxyMap>().inner();
         let mut proxy_map_data = proxy_map.0.lock().await;
         proxy_map_data.insert(label, res.1);
     }
@@ -1147,6 +1181,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
         app.manage(HttpServerMap(Default::default()));
         app.manage(RedisProxyMap(Default::default()));
         app.manage(MongoProxyMap(Default::default()));
+        app.manage(SqlProxyMap(Default::default()));
         Ok(())
     }
 

@@ -31,7 +31,8 @@
       "externalBin": [
         "bin/gitspy",
         "bin/redis",
-        "bin/mongo"
+        "bin/mongo",
+        "bin/sql"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -86,6 +87,11 @@
           {
             "name": "bin/mongo",
             "sidecar": true
+          },
+          {
+            "name": "bin/sql",
+            "sidecar": true,
+            "args": true
           }
         ]
       },
