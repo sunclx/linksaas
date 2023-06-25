@@ -856,6 +856,10 @@ async fn start_sidecar_proxy<R: Runtime>(
         let proxy_map = app_handle.state::<SqlProxyMap>().inner();
         let mut proxy_map_data = proxy_map.0.lock().await;
         proxy_map_data.insert(label, res.1);
+    } else if sidecar == "ssh" {
+        let proxy_map = app_handle.state::<SshProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        proxy_map_data.insert(label, res.1);
     }
 
     return Ok((addr, token));
