@@ -46,6 +46,8 @@ Object.defineProperty(window, "minApp", {
         mongoProxyAddr: "__MONGO_PROXY_ADDR__",
         mysqlProxyToken: "__MYSQL_PROXY_TOKEN__",
         mysqlProxyAddr: "__MYSQL_PROXY_ADDR__",
+        sshProxyToken: "__SSH_PROXY_TOKEN__",
+        sshProxyAddr: "__SSH_PROXY_ADDR__",
     }
 });
 "#;
@@ -469,6 +471,9 @@ pub struct MongoProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 pub struct SqlProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 
 #[derive(Default)]
+pub struct SshProxyMap(pub Mutex<HashMap<String, CommandChild>>);
+
+#[derive(Default)]
 pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -648,6 +653,17 @@ pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String)
             }
         }
     }
+    {
+        let proxy_map = app_handle.state::<SshProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        let child = proxy_map_data.remove(&label);
+        if child.is_some() {
+            println!("kill ssh proxy");
+            if let Err(err) = child.unwrap().kill() {
+                println!("{:?}", err);
+            }
+        }
+    }
     close_store(app_handle.clone(), &label).await;
 }
 
@@ -716,7 +732,7 @@ async fn start<R: Runtime>(
         } else {
             script = script.replace("__CROSS_HTTP__", "false");
         }
-        //处理redis proxy
+        // 处理redis proxy
         if net_perm.proxy_redis {
             let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "redis").await;
             if res.is_err() {
@@ -730,7 +746,7 @@ async fn start<R: Runtime>(
             script = script.replace("__REDIS_PROXY_TOKEN__", "");
             script = script.replace("__REDIS_PROXY_ADDR__", "");
         }
-        //处理mongo proxy
+        // 处理mongo proxy
         if net_perm.proxy_mongo {
             let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "mongo").await;
             if res.is_err() {
@@ -744,7 +760,7 @@ async fn start<R: Runtime>(
             script = script.replace("__MONGO_PROXY_TOKEN__", "");
             script = script.replace("__MONGO_PROXY_ADDR__", "");
         }
-        //处理sql proxy
+        // 处理sql proxy
         if net_perm.proxy_mysql {
             let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "sql").await;
             if res.is_err() {
@@ -757,6 +773,20 @@ async fn start<R: Runtime>(
         }else{
             script = script.replace("__MYSQL_PROXY_TOKEN__", "");
             script = script.replace("__MYSQL_PROXY_ADDR__", ""); 
+        }
+        // 处理ssh proxy
+        if net_perm.proxy_ssh {
+            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "ssh").await;
+            if res.is_err() {
+                clear_by_close(app_handle.clone(), request.label.clone()).await;
+                return Err(res.err().unwrap());
+            }
+            let (addr, token) = res.unwrap();
+            script = script.replace("__SSH_PROXY_TOKEN__", &token);
+            script = script.replace("__SSH_PROXY_ADDR__", &addr);
+        }else{
+            script = script.replace("__SSH_PROXY_TOKEN__", "");
+            script = script.replace("__SSH_PROXY_ADDR__", ""); 
         }
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
@@ -1122,6 +1152,7 @@ pub async fn get_min_app_perm<R: Runtime>(
                     proxy_redis: net_perm.proxy_redis,
                     proxy_mysql: net_perm.proxy_mysql,
                     proxy_mongo: net_perm.proxy_mongo,
+                    proxy_ssh: net_perm.proxy_ssh,
                 }),
                 member_perm: Some(MinAppMemberPerm {
                     list_member: false,
@@ -1182,6 +1213,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
         app.manage(RedisProxyMap(Default::default()));
         app.manage(MongoProxyMap(Default::default()));
         app.manage(SqlProxyMap(Default::default()));
+        app.manage(SshProxyMap(Default::default()));
         Ok(())
     }
 
