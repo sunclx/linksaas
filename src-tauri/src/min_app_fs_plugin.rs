@@ -151,14 +151,15 @@ async fn write_file<R: Runtime>(
 async fn open_dialog(
     title: String,
     dir: bool,
+    save_name: String,
     filters: Vec<Filter>,
 ) -> Result<String, String> {
     let (tx, rx) = oneshot::channel();
     let mut builder = FileDialogBuilder::new().set_title(&title);
     if dir {
-        builder.pick_folder(|p:Option<std::path::PathBuf>| {
+        builder.pick_folder(|p| {
             tx.send(p).unwrap();
-        })
+        });
     } else {
         for filter in &filters {
             let mut extensions = Vec::new();
@@ -167,9 +168,15 @@ async fn open_dialog(
             }
             builder = builder.add_filter(&filter.name, &extensions);
         }
-        builder.pick_file(|p:Option<std::path::PathBuf>| {
-            tx.send(p).unwrap();
-        })
+        if &save_name == "" {
+            builder.pick_file(|p| {
+                tx.send(p).unwrap();
+            });
+        } else {
+            builder.set_file_name(&save_name).save_file(|p| {
+                tx.send(p).unwrap();
+            })
+        }
     }
     let p = rx.await;
     if p.is_err() {
