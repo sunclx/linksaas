@@ -32,7 +32,8 @@
         "bin/gitspy",
         "bin/redis",
         "bin/mongo",
-        "bin/sql"
+        "bin/sql",
+        "bin/ssh"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -92,6 +93,10 @@
             "name": "bin/sql",
             "sidecar": true,
             "args": true
+          },
+          {
+            "name": "bin/ssh",
+            "sidecar": true
           }
         ]
       },
