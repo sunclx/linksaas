@@ -33,6 +33,10 @@ const netOptionList: CheckboxOptionType[] = [
     {
         label: "代理mongo访问",
         value: "proxy_mongo",
+    },
+    {
+        label: "代理ssh访问",
+        value: "proxy_ssh"
     }
 ];
 
@@ -140,6 +144,9 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
         if (props.perm.net_perm.proxy_mongo) {
             tmpNetValues.push("proxy_mongo");
         }
+        if (props.perm.net_perm.proxy_ssh){
+            tmpNetValues.push("proxy_ssh");
+        }
 
         if (props.perm.member_perm.list_member) {
             tmpMemberValues.push("list_member");
@@ -198,6 +205,7 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
                 proxy_redis: false,
                 proxy_mysql: false,
                 proxy_mongo: false,
+                proxy_ssh: false,
             },
             member_perm: {
                 list_member: false,
@@ -231,6 +239,8 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
                 tempPerm.net_perm.proxy_mysql = true;
             } else if (permStr == "proxy_mongo") {
                 tempPerm.net_perm.proxy_mongo = true;
+            } else if(permStr == "proxy_ssh"){
+                tempPerm.net_perm.proxy_ssh = true;
             }
         });
         memberPermList.forEach(permStr => {

@@ -27,6 +27,7 @@ export type MinAppNetPerm = {
     proxy_redis: boolean;
     proxy_mysql: boolean;
     proxy_mongo: boolean;
+    proxy_ssh: boolean;
 };
 
 export type MinAppMemberPerm = {

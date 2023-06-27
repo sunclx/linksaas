@@ -12,6 +12,12 @@ pub struct File {
     pub file_data: Vec<u8>,
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+pub struct Filter {
+    pub name: String,
+    pub extensions: Vec<String>,
+}
+
 //读取文件,只在微应用里面调用
 #[tauri::command]
 async fn read_file<R: Runtime>(
@@ -141,6 +147,48 @@ async fn write_file<R: Runtime>(
     Ok(())
 }
 
+#[tauri::command]
+async fn open_dialog(
+    title: String,
+    dir: bool,
+    save_name: String,
+    filters: Vec<Filter>,
+) -> Result<String, String> {
+    let (tx, rx) = oneshot::channel();
+    let mut builder = FileDialogBuilder::new().set_title(&title);
+    if dir {
+        builder.pick_folder(|p| {
+            tx.send(p).unwrap();
+        });
+    } else {
+        for filter in &filters {
+            let mut extensions = Vec::new();
+            for extension in &filter.extensions {
+                extensions.push(extension.as_ref());
+            }
+            builder = builder.add_filter(&filter.name, &extensions);
+        }
+        if &save_name == "" {
+            builder.pick_file(|p| {
+                tx.send(p).unwrap();
+            });
+        } else {
+            builder.set_file_name(&save_name).save_file(|p| {
+                tx.send(p).unwrap();
+            })
+        }
+    }
+    let p = rx.await;
+    if p.is_err() {
+        return Err(p.err().unwrap().to_string());
+    }
+    let p = p.unwrap();
+    if p.is_none() {
+        return Ok("".into());
+    }
+    return Ok(String::from(p.unwrap().to_str().unwrap_or_default()));
+}
+
 pub struct MinAppFsPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -148,7 +196,7 @@ pub struct MinAppFsPlugin<R: Runtime> {
 impl<R: Runtime> MinAppFsPlugin<R> {
     pub fn new() -> Self {
         Self {
-            invoke_handler: Box::new(tauri::generate_handler![read_file, write_file,]),
+            invoke_handler: Box::new(tauri::generate_handler![read_file, write_file, open_dialog]),
         }
     }
 }
