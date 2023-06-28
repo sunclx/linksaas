@@ -46,7 +46,6 @@ mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_test_case_api_plugin;
 mod project_tool_api_plugin;
-mod restrict_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
 mod robot_metric_api_plugin;
@@ -401,7 +400,6 @@ fn main() {
         .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
         .plugin(project_expert_qa_api_plugin::ProjectExpertQaApiPlugin::new())
         .plugin(search_api_plugin::SearchApiPlugin::new())
-        .plugin(restrict_api_plugin::RestrictApiPlugin::new())
         .plugin(project_app_api_plugin::ProjectAppApiPlugin::new())
         .plugin(project_book_shelf_api_plugin::ProjectBookShelfApiPlugin::new())
         .plugin(project_award_api_plugin::ProjectAwardApiPlugin::new())
