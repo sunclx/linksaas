@@ -27,7 +27,7 @@ image = "0.24.1"
 local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", tag = "0.1.1"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branch = "develop"}
+proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", branch = "feature/net_util"}
 reqwest = {version = "0.11.12", features = ["blocking"] }
 rumqttc = "0.11.0"
 rust-string-random = "0.1.0"

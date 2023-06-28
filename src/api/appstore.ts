@@ -42,6 +42,7 @@ export type AppNetPerm = {
     proxy_mysql: boolean;
     proxy_mongo: boolean;
     proxy_ssh: boolean;
+    net_util: boolean;
 };
 
 export type AppMemberPerm = {

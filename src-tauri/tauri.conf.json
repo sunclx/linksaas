@@ -33,7 +33,8 @@
         "bin/redis",
         "bin/mongo",
         "bin/sql",
-        "bin/ssh"
+        "bin/ssh",
+        "bin/netutil"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -96,6 +97,10 @@
           },
           {
             "name": "bin/ssh",
+            "sidecar": true
+          },
+          {
+            "name": "bin/netutil",
             "sidecar": true
           }
         ]
