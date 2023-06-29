@@ -806,7 +806,8 @@ async fn start<R: Runtime>(
         }
         // 处理 net util
         if net_perm.net_util {
-            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "netutil").await;
+            let res =
+                start_sidecar_proxy(app_handle.clone(), request.label.clone(), "netutil").await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
@@ -814,7 +815,7 @@ async fn start<R: Runtime>(
             let (addr, token) = res.unwrap();
             script = script.replace("__NET_UTIL_TOKEN__", &token);
             script = script.replace("__NET_UTIL_ADDR__", &addr);
-        }else{
+        } else {
             script = script.replace("__NET_UTIL_TOKEN__", "");
             script = script.replace("__NET_UTIL_ADDR__", "");
         }
@@ -890,7 +891,7 @@ async fn start_sidecar_proxy<R: Runtime>(
         let proxy_map = app_handle.state::<SshProxyMap>().inner();
         let mut proxy_map_data = proxy_map.0.lock().await;
         proxy_map_data.insert(label, res.1);
-    } else if sidecar == "netutil"{
+    } else if sidecar == "netutil" {
         let proxy_map = app_handle.state::<NetUtilMap>().inner();
         let mut proxy_map_data = proxy_map.0.lock().await;
         proxy_map_data.insert(label, res.1);
