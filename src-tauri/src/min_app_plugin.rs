@@ -48,6 +48,8 @@ Object.defineProperty(window, "minApp", {
         mysqlProxyAddr: "__MYSQL_PROXY_ADDR__",
         sshProxyToken: "__SSH_PROXY_TOKEN__",
         sshProxyAddr: "__SSH_PROXY_ADDR__",
+        netUtilToken: "__NET_UTIL_TOKEN__",
+        netUtilAddr: "__NET_UTIL_ADDR__",
     }
 });
 "#;
@@ -474,6 +476,9 @@ pub struct SqlProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 pub struct SshProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 
 #[derive(Default)]
+pub struct NetUtilMap(pub Mutex<HashMap<String, CommandChild>>);
+
+#[derive(Default)]
 pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -664,6 +669,17 @@ pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String)
             }
         }
     }
+    {
+        let proxy_map = app_handle.state::<NetUtilMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        let child = proxy_map_data.remove(&label);
+        if child.is_some() {
+            println!("kill net util");
+            if let Err(err) = child.unwrap().kill() {
+                println!("{:?}", err);
+            }
+        }
+    }
     close_store(app_handle.clone(), &label).await;
 }
 
@@ -770,9 +786,9 @@ async fn start<R: Runtime>(
             let (addr, token) = res.unwrap();
             script = script.replace("__MYSQL_PROXY_TOKEN__", &token);
             script = script.replace("__MYSQL_PROXY_ADDR__", &addr);
-        }else{
+        } else {
             script = script.replace("__MYSQL_PROXY_TOKEN__", "");
-            script = script.replace("__MYSQL_PROXY_ADDR__", ""); 
+            script = script.replace("__MYSQL_PROXY_ADDR__", "");
         }
         // 处理ssh proxy
         if net_perm.proxy_ssh {
@@ -784,9 +800,24 @@ async fn start<R: Runtime>(
             let (addr, token) = res.unwrap();
             script = script.replace("__SSH_PROXY_TOKEN__", &token);
             script = script.replace("__SSH_PROXY_ADDR__", &addr);
-        }else{
+        } else {
             script = script.replace("__SSH_PROXY_TOKEN__", "");
-            script = script.replace("__SSH_PROXY_ADDR__", ""); 
+            script = script.replace("__SSH_PROXY_ADDR__", "");
+        }
+        // 处理 net util
+        if net_perm.net_util {
+            let res =
+                start_sidecar_proxy(app_handle.clone(), request.label.clone(), "netutil").await;
+            if res.is_err() {
+                clear_by_close(app_handle.clone(), request.label.clone()).await;
+                return Err(res.err().unwrap());
+            }
+            let (addr, token) = res.unwrap();
+            script = script.replace("__NET_UTIL_TOKEN__", &token);
+            script = script.replace("__NET_UTIL_ADDR__", &addr);
+        } else {
+            script = script.replace("__NET_UTIL_TOKEN__", "");
+            script = script.replace("__NET_UTIL_ADDR__", "");
         }
     } else {
         script = script.replace("__CROSS_HTTP__", "false");
@@ -858,6 +889,10 @@ async fn start_sidecar_proxy<R: Runtime>(
         proxy_map_data.insert(label, res.1);
     } else if sidecar == "ssh" {
         let proxy_map = app_handle.state::<SshProxyMap>().inner();
+        let mut proxy_map_data = proxy_map.0.lock().await;
+        proxy_map_data.insert(label, res.1);
+    } else if sidecar == "netutil" {
+        let proxy_map = app_handle.state::<NetUtilMap>().inner();
         let mut proxy_map_data = proxy_map.0.lock().await;
         proxy_map_data.insert(label, res.1);
     }
@@ -1157,6 +1192,7 @@ pub async fn get_min_app_perm<R: Runtime>(
                     proxy_mysql: net_perm.proxy_mysql,
                     proxy_mongo: net_perm.proxy_mongo,
                     proxy_ssh: net_perm.proxy_ssh,
+                    net_util: net_perm.net_util,
                 }),
                 member_perm: Some(MinAppMemberPerm {
                     list_member: false,
@@ -1218,6 +1254,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
         app.manage(MongoProxyMap(Default::default()));
         app.manage(SqlProxyMap(Default::default()));
         app.manage(SshProxyMap(Default::default()));
+        app.manage(NetUtilMap(Default::default()));
         Ok(())
     }
 
