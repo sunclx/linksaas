@@ -39,6 +39,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             proxy_mysql: false,
             proxy_mongo: false,
             proxy_ssh: false,
+            net_util: false,
         },
         member_perm: {
             list_member: false,

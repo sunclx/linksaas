@@ -18,6 +18,7 @@ export type UserAppNetPerm = {
     proxy_mysql: boolean;
     proxy_mongo: boolean;
     proxy_ssh: boolean;
+    net_util: boolean;
 };
 
 export type UserAppFsPerm = {
