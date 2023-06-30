@@ -26,6 +26,7 @@ export type MinAppNetPerm = {
     cross_domain_http: boolean;
     proxy_redis: boolean;
     proxy_mysql: boolean;
+    proxy_post_gres: boolean;
     proxy_mongo: boolean;
     proxy_ssh: boolean;
     net_util: boolean;

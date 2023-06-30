@@ -25,6 +25,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             cross_domain_http: false,
             proxy_redis: false,
             proxy_mysql: false,
+            proxy_post_gres: false,
             proxy_mongo: false,
             proxy_ssh: false,
             net_util: false,
