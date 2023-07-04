@@ -803,6 +803,81 @@ const ideaEventList: EventDesc[] = [
     },
 ];
 
+const dataAnnoEventList: EventDesc[] = [
+    {
+        id: "CreateAnnoProjectEvent",
+        name: "创建标注项目",
+        attrList: [
+            {
+                key: "anno_project_id",
+                desc: "标注项目ID",
+            },
+            {
+                key: "anno_project_name",
+                desc: "标注项目名称",
+            },
+        ],
+    },
+    {
+        id: "RemoveAnnoProjectEvent",
+        name: "删除标注项目",
+        attrList: [
+            {
+                key: "anno_project_id",
+                desc: "标注项目ID",
+            },
+            {
+                key: "anno_project_name",
+                desc: "标注项目名称",
+            },
+        ],
+    },
+    {
+        id: "AddAnnoMemberEvent",
+        name: "新增标注成员",
+        attrList: [
+            {
+                key: "anno_project_id",
+                desc: "标注项目ID",
+            },
+            {
+                key: "anno_project_name",
+                desc: "标注项目名称",
+            },
+            {
+                key: "member_user_id",
+                desc: "成员ID",
+            },
+            {
+                key: "member_display_name",
+                desc: "成员名称",
+            },
+        ],
+    },
+    {
+        id: "RemoveAnnoMemberEvent",
+        name: "移除标注成员",
+        attrList: [
+            {
+                key: "anno_project_id",
+                desc: "标注项目ID",
+            },
+            {
+                key: "anno_project_name",
+                desc: "标注项目名称",
+            },
+            {
+                key: "member_user_id",
+                desc: "成员ID",
+            },
+            {
+                key: "member_display_name",
+                desc: "成员名称",
+            },
+        ],
+    },
+];
+
 const testCaseEventList: EventDesc[] = [
     {
         id: "CreateEntryEvent",
@@ -4067,5 +4142,10 @@ export const eventGroupList: EventGroup[] = [
         id: "IdeaEvent",
         name: "知识点",
         eventDescList: ideaEventList,
+    },
+    {
+        id: "DataAnnoEvent",
+        name: "数据标注",
+        eventDescList: dataAnnoEventList,
     },
 ];

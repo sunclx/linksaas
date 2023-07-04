@@ -21,6 +21,7 @@ export type Setting = {
   disable_server_agent: boolean;
   disable_ext_event: boolean;
   disable_app_store: boolean;
+  disable_data_anno: boolean;
 
   disable_chat: boolean;
   disable_kb: boolean;

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Button, Card, Checkbox, Form,  Space, message } from "antd";
+import { Button, Card, Checkbox, Form, Space, message } from "antd";
 import { useStores } from "@/hooks";
 import { update_setting } from "@/api/project";
 import { request } from "@/utils/request";
@@ -27,6 +27,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableServerAgent, setDisableServerAgent] = useState(projectStore.curProject?.setting.disable_server_agent ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
+    const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
 
     const [hasChange, setHasChange] = useState(false);
 
@@ -53,6 +54,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_server_agent: disableServerAgent,
                 disable_ext_event: disableExtEvent,
                 disable_app_store: disableAppStore,
+                disable_data_anno: disableDataAnno,
                 disable_chat: disableChat,
                 disable_kb: disableKb,
                 disable_work_plan: disableWorkPlan,
@@ -141,6 +143,11 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableExtEvent(e.target.checked);
                             setHasChange(true);
                         }}>关闭第三方接入入口</Checkbox>
+                        <Checkbox checked={disableDataAnno} onChange={e => {
+                            e.stopPropagation();
+                            setDisableDataAnno(e.target.checked);
+                            setHasChange(true);
+                        }}>关闭数据标注入口</Checkbox>
                         <Checkbox checked={disableAppStore} onChange={e => {
                             e.stopPropagation();
                             setDisableAppStore(e.target.checked);
