@@ -46,6 +46,8 @@ Object.defineProperty(window, "minApp", {
         mongoProxyAddr: "__MONGO_PROXY_ADDR__",
         mysqlProxyToken: "__MYSQL_PROXY_TOKEN__",
         mysqlProxyAddr: "__MYSQL_PROXY_ADDR__",
+        postGresProxyToken: "__POST_GRES_PROXY_TOKEN__",
+        postGresProxyAddr: "__POST_GRES_PROXY_ADDR__",
         sshProxyToken: "__SSH_PROXY_TOKEN__",
         sshProxyAddr: "__SSH_PROXY_ADDR__",
         netUtilToken: "__NET_UTIL_TOKEN__",
@@ -750,7 +752,13 @@ async fn start<R: Runtime>(
         }
         // 处理redis proxy
         if net_perm.proxy_redis {
-            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "redis").await;
+            let res = start_sidecar_proxy(
+                app_handle.clone(),
+                request.label.clone(),
+                "redis",
+                Vec::new(),
+            )
+            .await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
@@ -764,7 +772,13 @@ async fn start<R: Runtime>(
         }
         // 处理mongo proxy
         if net_perm.proxy_mongo {
-            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "mongo").await;
+            let res = start_sidecar_proxy(
+                app_handle.clone(),
+                request.label.clone(),
+                "mongo",
+                Vec::new(),
+            )
+            .await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
@@ -777,22 +791,40 @@ async fn start<R: Runtime>(
             script = script.replace("__MONGO_PROXY_ADDR__", "");
         }
         // 处理sql proxy
-        if net_perm.proxy_mysql {
-            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "sql").await;
+        if net_perm.proxy_mysql || net_perm.proxy_post_gres {
+            let mut args = Vec::new();
+            if net_perm.proxy_mysql {
+                args.push(String::from("mysql"))
+            }
+            if net_perm.proxy_post_gres {
+                args.push(String::from("postgres"));
+            }
+            let res =
+                start_sidecar_proxy(app_handle.clone(), request.label.clone(), "sql", args).await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
             }
             let (addr, token) = res.unwrap();
-            script = script.replace("__MYSQL_PROXY_TOKEN__", &token);
-            script = script.replace("__MYSQL_PROXY_ADDR__", &addr);
-        } else {
-            script = script.replace("__MYSQL_PROXY_TOKEN__", "");
-            script = script.replace("__MYSQL_PROXY_ADDR__", "");
+            if net_perm.proxy_mysql {
+                script = script.replace("__MYSQL_PROXY_TOKEN__", &token);
+                script = script.replace("__MYSQL_PROXY_ADDR__", &addr);
+            }
+            if net_perm.proxy_post_gres {
+                script = script.replace("__POST_GRES_PROXY_TOKEN__", &token);
+                script = script.replace("__POST_GRES_PROXY_ADDR__", &addr);
+            }
         }
+        script = script.replace("__MYSQL_PROXY_TOKEN__", "");
+        script = script.replace("__MYSQL_PROXY_ADDR__", "");
+        script = script.replace("__POST_GRES_PROXY_TOKEN__", "");
+        script = script.replace("__POST_GRES_PROXY_ADDR__", "");
+
         // 处理ssh proxy
         if net_perm.proxy_ssh {
-            let res = start_sidecar_proxy(app_handle.clone(), request.label.clone(), "ssh").await;
+            let res =
+                start_sidecar_proxy(app_handle.clone(), request.label.clone(), "ssh", Vec::new())
+                    .await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
@@ -806,8 +838,13 @@ async fn start<R: Runtime>(
         }
         // 处理 net util
         if net_perm.net_util {
-            let res =
-                start_sidecar_proxy(app_handle.clone(), request.label.clone(), "netutil").await;
+            let res = start_sidecar_proxy(
+                app_handle.clone(),
+                request.label.clone(),
+                "netutil",
+                Vec::new(),
+            )
+            .await;
             if res.is_err() {
                 clear_by_close(app_handle.clone(), request.label.clone()).await;
                 return Err(res.err().unwrap());
@@ -849,12 +886,15 @@ async fn start_sidecar_proxy<R: Runtime>(
     app_handle: AppHandle<R>,
     label: String,
     sidecar: &str,
+    args: Vec<String>,
 ) -> Result<(String, String), String> {
     let res = Command::new_sidecar(sidecar);
     if res.is_err() {
         return Err(res.err().unwrap().to_string());
     }
-    let res = res.unwrap().spawn();
+    let res = res.unwrap();
+    let res = res.args(args);
+    let res = res.spawn();
     if res.is_err() {
         println!("{:?}", &res);
         return Err(res.err().unwrap().to_string());
@@ -1190,6 +1230,7 @@ pub async fn get_min_app_perm<R: Runtime>(
                     cross_domain_http: net_perm.cross_domain_http,
                     proxy_redis: net_perm.proxy_redis,
                     proxy_mysql: net_perm.proxy_mysql,
+                    proxy_post_gres: net_perm.proxy_post_gres,
                     proxy_mongo: net_perm.proxy_mongo,
                     proxy_ssh: net_perm.proxy_ssh,
                     net_util: net_perm.net_util,

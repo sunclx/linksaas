@@ -31,6 +31,10 @@ const netOptionList: CheckboxOptionType[] = [
         value: "proxy_mysql",
     },
     {
+        label: "代理postgres访问",
+        value: "proxy_post_gres",
+    },
+    {
         label: "代理mongo访问",
         value: "proxy_mongo",
     },
@@ -145,13 +149,16 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
         if (props.perm.net_perm.proxy_mysql) {
             tmpNetValues.push("proxy_mysql");
         }
+        if(props.perm.net_perm.proxy_post_gres){
+            tmpNetValues.push("proxy_post_gres");
+        }
         if (props.perm.net_perm.proxy_mongo) {
             tmpNetValues.push("proxy_mongo");
         }
-        if (props.perm.net_perm.proxy_ssh){
+        if (props.perm.net_perm.proxy_ssh) {
             tmpNetValues.push("proxy_ssh");
         }
-        if (props.perm.net_perm.net_util){
+        if (props.perm.net_perm.net_util) {
             tmpNetValues.push("net_util");
         }
 
@@ -211,6 +218,7 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
                 cross_domain_http: false,
                 proxy_redis: false,
                 proxy_mysql: false,
+                proxy_post_gres: false,
                 proxy_mongo: false,
                 proxy_ssh: false,
                 net_util: false,
@@ -245,11 +253,13 @@ const AppPermPanel: React.FC<AppPermPanelProps> = (props) => {
                 tempPerm.net_perm.proxy_redis = true;
             } else if (permStr == "proxy_mysql") {
                 tempPerm.net_perm.proxy_mysql = true;
+            }else if(permStr == "proxy_post_gres"){
+                tempPerm.net_perm.proxy_post_gres = true;
             } else if (permStr == "proxy_mongo") {
                 tempPerm.net_perm.proxy_mongo = true;
-            } else if(permStr == "proxy_ssh"){
+            } else if (permStr == "proxy_ssh") {
                 tempPerm.net_perm.proxy_ssh = true;
-            } else if(permStr == "net_util"){
+            } else if (permStr == "net_util") {
                 tempPerm.net_perm.net_util = true;
             }
         });

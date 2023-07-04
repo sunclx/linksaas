@@ -31,6 +31,10 @@ const netOptionList: CheckboxOptionType[] = [
         value: "proxy_mysql",
     },
     {
+        label: "代理postgres访问",
+        value: "proxy_post_gres",
+    },
+    {
         label: "代理mongo访问",
         value: "proxy_mongo",
     },
@@ -99,6 +103,9 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
         if (props.perm.net_perm.proxy_mysql) {
             tmpNetValues.push("proxy_mysql");
         }
+        if(props.perm.net_perm.proxy_post_gres){
+            tmpNetValues.push("proxy_post_gres");
+        }
         if (props.perm.net_perm.proxy_mongo) {
             tmpNetValues.push("proxy_mongo");
         }
@@ -133,6 +140,7 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
                 cross_domain_http: false,
                 proxy_redis: false,
                 proxy_mysql: false,
+                proxy_post_gres: false,
                 proxy_mongo: false,
                 proxy_ssh: false,
                 net_util: false,
@@ -153,6 +161,8 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
                 tempPerm.net_perm.proxy_redis = true;
             } else if (permStr == "proxy_mysql") {
                 tempPerm.net_perm.proxy_mysql = true;
+            }else if(permStr == "proxy_post_gres"){
+                tempPerm.net_perm.proxy_post_gres = true;
             } else if (permStr == "proxy_mongo") {
                 tempPerm.net_perm.proxy_mongo = true;
             } else if (permStr == "proxy_ssh") {
