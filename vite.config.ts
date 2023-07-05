@@ -51,6 +51,7 @@ export default ({ command, mode }: ConfigEnv) => {
           localApi: "local_api.html",
           book: "book.html",
           gitDiff: "git_diff.html",
+          dataAnno: "data_anno.html"
         },
       },
       terserOptions: {

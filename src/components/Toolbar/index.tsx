@@ -138,6 +138,17 @@ const Toolbar: React.FC = observer(() => {
         </>
       )}
 
+      {projectStore.curProject?.setting.disable_data_anno != true && (
+        <>
+          <Divider />
+          <Item
+            id="dataanno"
+            pathname={pathname}
+            title="数据标注"
+          />
+        </>
+      )}
+
       <Divider />
       <Item
         id="record"

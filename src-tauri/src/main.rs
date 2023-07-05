@@ -333,6 +333,7 @@ fn main() {
                 let all_windows = app.windows();
                 for (_, win) in &all_windows {
                     win.show().unwrap();
+                    win.unminimize().unwrap();
                 }
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
@@ -350,8 +351,7 @@ fn main() {
                     let all_windows = app.windows();
                     for (_, win) in &all_windows {
                         win.show().unwrap();
-                        if let Err(_) = win.set_always_on_top(true) {}
-                        if let Err(_) = win.set_always_on_top(false) {}
+                        win.unminimize().unwrap();
                     }
                 }
                 "about" => {

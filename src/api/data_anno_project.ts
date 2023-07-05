@@ -40,12 +40,12 @@ export type AudioEntityIdentiConfig = {
     label_list: AnnoLabel[];
     transcribe: boolean;
     only_use_words_in_phrase_bank: boolean;
-    transcription_type: string;
+    transcription_type: "simple" | "proper";
 };
 
 export type AudioTransConfig = {
     only_use_words_in_phrase_bank: boolean;
-    transcription_type: string;
+    transcription_type: "simple" | "proper";
 };
 
 export type ImageClassifiConfig = {
@@ -62,7 +62,7 @@ export type ImagePixelSegConfig = {
 
 export type ImageSegConfig = {
     label_list: AnnoLabel[];
-    region_types_allowed: string[];
+    region_types_allowed: ("bounding-box" | "polygon" | "point")[];
     region_description: string;
     multiple_region_labels: boolean;
     multiple_regions: boolean;
@@ -116,6 +116,8 @@ export type AnnoProjectInfo = {
     all_task_count: number;
     done_task_count: number;
     member_count: number;
+    my_done_count: number;
+    my_task_count: number;
     create_time: number;
     create_user_id: string;
     create_display_name: string;
@@ -146,7 +148,6 @@ export type CreateResponse = {
     anno_project_id: string;
 };
 
-
 export type UpdateRequest = {
     session_id: string;
     project_id: string;
@@ -159,7 +160,6 @@ export type UpdateResponse = {
     err_msg: string;
 };
 
-
 export type RemoveRequest = {
     session_id: string;
     project_id: string;
@@ -170,7 +170,6 @@ export type RemoveResponse = {
     code: number;
     err_msg: string;
 };
-
 
 export type ListRequest = {
     session_id: string;
@@ -186,6 +185,17 @@ export type ListResponse = {
     info_list: AnnoProjectInfo[];
 };
 
+export type GetRequest = {
+    session_id: string;
+    project_id: string;
+    anno_project_id: string;
+};
+
+export type GetResponse = {
+    code: number;
+    err_msg: string;
+    info: AnnoProjectInfo;
+};
 
 export type AddResourceRequest = {
     session_id: string;
@@ -261,6 +271,15 @@ export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:data_anno_project_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个标注项目信息
+export async function get(request: GetRequest): Promise<GetResponse> {
+    const cmd = 'plugin:data_anno_project_api|get';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetResponse>(cmd, {
         request,
     });
 }

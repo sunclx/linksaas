@@ -107,6 +107,31 @@ async fn list<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetRequest,
+) -> Result<GetResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = DataAnnoProjectApiClient::new(chan.unwrap());
+    match client.get(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn add_resource<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -199,6 +224,7 @@ impl<R: Runtime> DataAnnoProjectApiPlugin<R> {
                 update,
                 remove,
                 list,
+                get,
                 add_resource,
                 remove_resource,
                 list_resource,
