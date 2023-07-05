@@ -8,6 +8,7 @@ import s from "./DataAnnoDetail.module.less";
 import ResourcePanel from "./components/ResourcePanel";
 import Button from "@/components/Button";
 import MemberPanel from "./components/MemberPanel";
+import AnnoPanel from "./components/AnnoPanel";
 
 const DataAnnoDetail = () => {
     const location = useLocation();
@@ -90,7 +91,12 @@ const DataAnnoDetail = () => {
                     }>
                     {(annoProjectInfo.my_task_count - annoProjectInfo.my_done_count > 0) && (
                         <Tabs.TabPane tab="未完成标注" key="myTodo">
-                            <div className={s.panel_wrap}>xx</div>
+                            <div className={s.panel_wrap}>
+                                {activeKey == "myTodo" && (
+                                    <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
+                                        annoConfig={annoProjectInfo.base_info.config} done={false} />
+                                )}
+                            </div>
                         </Tabs.TabPane>
                     )}
                     {annoProjectInfo.my_done_count > 0 && (

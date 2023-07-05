@@ -211,6 +211,7 @@ async fn download_file<R: Runtime>(
 
 pub async fn http_download_file(
     app_handle: &AppHandle,
+    label: String,
     url_path: &str,
     session_id: &str,
 ) -> Result<Response, Box<(dyn std::error::Error + 'static)>> {
@@ -221,9 +222,14 @@ pub async fn http_download_file(
             .status(404)
             .body("wrong url".into());
     }
+    let window = app_handle.get_window(&label);
+    if window.is_none() {
+        return Err("miss window".into());
+    }
+
     let download_result = download_file(
         app_handle.clone(),
-        app_handle.get_window("main").unwrap(),
+        window.unwrap(),
         "".into(),
         session_id.into(),
         url_parts[1].into(),

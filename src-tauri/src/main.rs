@@ -456,6 +456,7 @@ fn main() {
                         if let Some(cur_session_id) = cur_session.clone() {
                             return fs_api_plugin::http_download_file(
                                 app_handle,
+                                String::from("main"),
                                 req_url.path(),
                                 cur_session_id.as_str(),
                             )
@@ -465,6 +466,7 @@ fn main() {
                             if let Some(cur_session_id) = cur_session.clone() {
                                 return fs_api_plugin::http_download_file(
                                     app_handle,
+                                    String::from("main"),
                                     req_url.path(),
                                     cur_session_id.as_str(),
                                 )
