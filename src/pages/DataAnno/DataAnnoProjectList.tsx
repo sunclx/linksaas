@@ -51,7 +51,7 @@ const DataAnnoProjectList = () => {
         }
         new WebviewWindow(label, {
             title: `标注项目(${annoName})`,
-            url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}`,
+            url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
             width: 1000,
             minWidth: 800,
             height: 800,

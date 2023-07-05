@@ -5,12 +5,13 @@ import { createRoot } from 'react-dom/client';
 import 'moment/dist/locale/zh-cn';
 import '@/styles/global.less';
 import { BrowserRouter } from "react-router-dom";
+import DataAnnoDetail from "./DataAnnoDetail";
 
 const App = () => {
     return (
         <ConfigProvider locale={zhCN}>
             <BrowserRouter>
-                xx
+                <DataAnnoDetail/>
             </BrowserRouter>
         </ConfigProvider>
     );
