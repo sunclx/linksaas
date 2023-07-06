@@ -31,7 +31,7 @@ const AddResourceModal = (props: AddResourceModalProps) => {
     const [inUpload, setInUpload] = useState(false);
 
     const choiceFile = async () => {
-        const filter: DialogFilter = [dataAnnoPrjApi.ANNO_TYPE_AUDIO_ENTITY_IDENTI, dataAnnoPrjApi.ANNO_TYPE_AUDIO_TRANS].includes(props.annoType) ? {
+        const filter: DialogFilter = dataAnnoPrjApi.isAnnoAudio(props.annoType) ? {
             name: "音频文件",
             extensions: ["wav", "mp3"],
         } : {
@@ -112,8 +112,8 @@ const AddResourceModal = (props: AddResourceModalProps) => {
                 e.preventDefault();
                 uploadResource();
             }}>
-            {[dataAnnoPrjApi.ANNO_TYPE_TEXT_CLASSIFI, dataAnnoPrjApi.ANNO_TYPE_TEXT_ENTITY_REC, dataAnnoPrjApi.ANNO_TYPE_TEXT_ENTITY_REL].includes(props.annoType) == true && "TODO"}
-            {[dataAnnoPrjApi.ANNO_TYPE_TEXT_CLASSIFI, dataAnnoPrjApi.ANNO_TYPE_TEXT_ENTITY_REC, dataAnnoPrjApi.ANNO_TYPE_TEXT_ENTITY_REL].includes(props.annoType) == false && (
+            {dataAnnoPrjApi.isAnnoText(props.annoType) == true && "TODO"}
+            {dataAnnoPrjApi.isAnnoText(props.annoType) == false && (
                 <Card bordered={false} extra={
                     <Button onClick={e => {
                         e.stopPropagation();

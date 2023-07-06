@@ -70,8 +70,8 @@ const ResourcePanel = (props: ResourcePanelProps) => {
         <div>
             <List rowKey="resource_id" dataSource={resourceList} renderItem={item => (
                 <>
-                    {item.store_as_file == false && item.content && "xx"}
-                    {item.store_as_file == true && [dataAnnoPrjApi.ANNO_TYPE_AUDIO_ENTITY_IDENTI, dataAnnoPrjApi.ANNO_TYPE_AUDIO_TRANS].includes(props.annoType) == true && (
+                    {item.store_as_file == false && item.content && "text"}
+                    {item.store_as_file == true && dataAnnoPrjApi.isAnnoAudio(props.annoType) == true && (
                         <List.Item extra={
                             <Space size="large" style={{ marginLeft: "20px" }}>
                                 <span>任务数量:&nbsp;{item.task_count}</span>
@@ -82,12 +82,12 @@ const ResourcePanel = (props: ResourcePanelProps) => {
                                 }}><DeleteOutlined /></Button>
                             </Space>
                         }>
-                            <audio controls style={{ width: "calc(100% - 160px)" }}>
+                            <audio controls style={{ width: "calc(100% - 180px)" }}>
                                 <source src={getUrl(item.content)} />
                             </audio>
                         </List.Item>
                     )}
-                    {item.store_as_file == true && [dataAnnoPrjApi.ANNO_TYPE_AUDIO_ENTITY_IDENTI, dataAnnoPrjApi.ANNO_TYPE_AUDIO_TRANS].includes(props.annoType) == false && "image"}
+                    {item.store_as_file == true && dataAnnoPrjApi.isAnnoImage(props.annoType) == true && "image"}
                 </>
             )} pagination={{ total: totalCount, pageSize: PAGE_SIZE, current: curPage + 1, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             {props.showAddModal == true && (

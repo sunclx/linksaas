@@ -101,14 +101,19 @@ const DataAnnoProjectList = () => {
             width: 100,
             render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
                 <>
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_AUDIO_ENTITY_IDENTI && "音频实体识别"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_AUDIO_TRANS && "音频翻译"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_CLASSIFI && "图片分类"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_PIXEL_SEG && "图片像素分割"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_SEG && "图片分割"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_TEXT_CLASSIFI && "文本分类"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_TEXT_ENTITY_REC && "文本命名实体识别"}
-                    {row.base_info.config.anno_type == dataAnnoPrjApi.ANNO_TYPE_TEXT_ENTITY_REL && "文本实体关系"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_AUDIO_CLASSIFI && "音频分类"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_AUDIO_SEG && "音频分割"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_AUDIO_TRANS && "音频翻译"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_AUDIO_SEG_TRANS && "音频分段翻译"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_CLASSIFI && "图像分类"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_BBOX_OBJ_DETECT && "矩形对象检测"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_BRUSH_SEG && "画笔分割"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_CIRCULAR_OBJ_DETECT && "圆形对象检测"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_KEYPOINT && "图像关键点"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_IMAGE_POLYGON_SEG && "多边形分割"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_TEXT_CLASSIFI && "文本分类"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_TEXT_NER && "文本命名实体识别"}
+                    {row.base_info.anno_type == dataAnnoPrjApi.ANNO_TYPE_TEXT_SUMMARY && "文本摘要"}
                 </>
             ),
         },

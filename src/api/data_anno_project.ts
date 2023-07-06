@@ -2,111 +2,27 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 
 export type ANNO_TYPE = number;
-export const ANNO_TYPE_AUDIO_ENTITY_IDENTI: ANNO_TYPE = 0;
-export const ANNO_TYPE_AUDIO_TRANS: ANNO_TYPE = 1;
-export const ANNO_TYPE_IMAGE_CLASSIFI: ANNO_TYPE = 2;
-export const ANNO_TYPE_IMAGE_LANDMARK: ANNO_TYPE = 3;
-export const ANNO_TYPE_IMAGE_PIXEL_SEG: ANNO_TYPE = 4;
-export const ANNO_TYPE_IMAGE_SEG: ANNO_TYPE = 5;
-export const ANNO_TYPE_TEXT_CLASSIFI: ANNO_TYPE = 6;
-export const ANNO_TYPE_TEXT_ENTITY_REC: ANNO_TYPE = 7;
-export const ANNO_TYPE_TEXT_ENTITY_REL: ANNO_TYPE = 8;
 
+export const ANNO_TYPE_AUDIO_CLASSIFI: ANNO_TYPE = 0;
+export const ANNO_TYPE_AUDIO_SEG: ANNO_TYPE = 1;
+export const ANNO_TYPE_AUDIO_TRANS: ANNO_TYPE = 2;
+export const ANNO_TYPE_AUDIO_SEG_TRANS: ANNO_TYPE = 3;
+export const ANNO_TYPE_IMAGE_CLASSIFI: ANNO_TYPE = 10;
+export const ANNO_TYPE_IMAGE_BBOX_OBJ_DETECT: ANNO_TYPE = 11;
+export const ANNO_TYPE_IMAGE_BRUSH_SEG: ANNO_TYPE = 12;
+export const ANNO_TYPE_IMAGE_CIRCULAR_OBJ_DETECT: ANNO_TYPE = 13;
+export const ANNO_TYPE_IMAGE_KEYPOINT: ANNO_TYPE = 14;
+export const ANNO_TYPE_IMAGE_POLYGON_SEG: ANNO_TYPE = 15;
+export const ANNO_TYPE_TEXT_CLASSIFI: ANNO_TYPE = 20;
+export const ANNO_TYPE_TEXT_NER: ANNO_TYPE = 21;
+export const ANNO_TYPE_TEXT_SUMMARY: ANNO_TYPE = 22;
 
-export type AnnoLabel = {
-    id: string;
-    display_name: string;
-    desc: string;
-};
-
-export type LandMark = {
-    label: string;
-    display_name: string;
-    color: string;
-};
-
-export type LandMarkConn = {
-    from_label: string;
-    to_label: string;
-};
-
-export type KeyPointDef = {
-    name: string;
-    land_mark_list: LandMark[];
-    conn_list: LandMarkConn[];
-};
-
-export type AudioEntityIdentiConfig = {
-    label_list: AnnoLabel[];
-    transcribe: boolean;
-    only_use_words_in_phrase_bank: boolean;
-    transcription_type: "simple" | "proper";
-};
-
-export type AudioTransConfig = {
-    only_use_words_in_phrase_bank: boolean;
-    transcription_type: "simple" | "proper";
-};
-
-export type ImageClassifiConfig = {
-    label_list: AnnoLabel[];
-};
-
-export type ImageLandmarkConfig = {
-    key_point_def_list: KeyPointDef[];
-};
-
-export type ImagePixelSegConfig = {
-    label_list: AnnoLabel[];
-};
-
-export type ImageSegConfig = {
-    label_list: AnnoLabel[];
-    region_types_allowed: ("bounding-box" | "polygon" | "point")[];
-    region_description: string;
-    multiple_region_labels: boolean;
-    multiple_regions: boolean;
-    minimum_region_size: number;
-    overlapping_regions: boolean;
-    region_min_acceptable_difference: number;
-};
-
-export type TextClassifiConfig = {
-    label_list: AnnoLabel[];
-    multiple: boolean;
-};
-
-export type TextEntityRecConfig = {
-    label_list: AnnoLabel[];
-    overlap_allowed: boolean;
-};
-
-export type TextEntityRelConfig = {
-    entity_label_list: AnnoLabel[];
-    rel_label_list: AnnoLabel[];
-};
-
-export type AnnoConfig = {
-    anno_type: ANNO_TYPE;
-    desc: string;
-    config: Config;
-};
-
-export type Config = {
-    AudioEntityIdenti?: AudioEntityIdentiConfig;
-    AudioTrans?: AudioTransConfig;
-    ImageClassifi?: ImageClassifiConfig;
-    ImageLandmark?: ImageLandmarkConfig;
-    ImagePixelSeg?: ImagePixelSegConfig;
-    ImageSeg?: ImageSegConfig;
-    TextClassifi?: TextClassifiConfig;
-    TextEntityRec?: TextEntityRecConfig;
-    TextEntityRel?: TextEntityRelConfig;
-};
 
 export type BaseAnnoProjectInfo = {
     name: string;
-    config: AnnoConfig;
+    anno_type: ANNO_TYPE;
+    desc: string;
+    config: string;
 };
 
 export type AnnoProjectInfo = {
@@ -309,4 +225,20 @@ export async function list_resource(request: ListResourceRequest): Promise<ListR
     return invoke<ListResourceResponse>(cmd, {
         request,
     });
+}
+
+//是否是音频标注
+export function isAnnoAudio(annoType: ANNO_TYPE): boolean {
+    return [ANNO_TYPE_AUDIO_CLASSIFI, ANNO_TYPE_AUDIO_SEG, ANNO_TYPE_AUDIO_TRANS, ANNO_TYPE_AUDIO_SEG_TRANS].includes(annoType);
+}
+
+//是否是图像标注
+export function isAnnoImage(annoType: ANNO_TYPE): boolean {
+    return [ANNO_TYPE_IMAGE_CLASSIFI, ANNO_TYPE_IMAGE_BBOX_OBJ_DETECT, ANNO_TYPE_IMAGE_BRUSH_SEG,
+        ANNO_TYPE_IMAGE_CIRCULAR_OBJ_DETECT, ANNO_TYPE_IMAGE_KEYPOINT, ANNO_TYPE_IMAGE_POLYGON_SEG].includes(annoType);
+}
+
+//是否是文本标注
+export function isAnnoText(annoType: ANNO_TYPE): boolean {
+    return [ANNO_TYPE_TEXT_CLASSIFI, ANNO_TYPE_TEXT_NER, ANNO_TYPE_TEXT_SUMMARY].includes(annoType);
 }

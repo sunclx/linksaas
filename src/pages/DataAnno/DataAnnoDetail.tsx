@@ -9,6 +9,7 @@ import ResourcePanel from "./components/ResourcePanel";
 import Button from "@/components/Button";
 import MemberPanel from "./components/MemberPanel";
 import AnnoPanel from "./components/AnnoPanel";
+import SettingPanel from "./components/SettingPanel";
 
 const DataAnnoDetail = () => {
     const location = useLocation();
@@ -90,18 +91,27 @@ const DataAnnoDetail = () => {
                         </div>
                     }>
                     {(annoProjectInfo.my_task_count - annoProjectInfo.my_done_count > 0) && (
-                        <Tabs.TabPane tab="未完成标注" key="myTodo">
+                        <Tabs.TabPane tab={`未完成标注(${annoProjectInfo.my_task_count - annoProjectInfo.my_done_count})`} key="myTodo">
                             <div className={s.panel_wrap}>
                                 {activeKey == "myTodo" && (
                                     <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
-                                        annoConfig={annoProjectInfo.base_info.config} done={false} />
+                                        annoType={annoProjectInfo.base_info.anno_type}
+                                        config={annoProjectInfo.base_info.config} done={false}
+                                        onChange={() => loadAnnoProjectInfo()} />
                                 )}
                             </div>
                         </Tabs.TabPane>
                     )}
                     {annoProjectInfo.my_done_count > 0 && (
-                        <Tabs.TabPane tab="已完成标注" key="myDone">
-                            <div className={s.panel_wrap}>xx</div>
+                        <Tabs.TabPane tab={`已完成标注(${annoProjectInfo.my_done_count})`} key="myDone">
+                            <div className={s.panel_wrap}>
+                                {activeKey == "myDone" && (
+                                    <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
+                                        annoType={annoProjectInfo.base_info.anno_type}
+                                        config={annoProjectInfo.base_info.config} done={true}
+                                        onChange={() => loadAnnoProjectInfo()} />
+                                )}
+                            </div>
                         </Tabs.TabPane>
                     )}
                     {adminStr == "true" && (
@@ -126,7 +136,7 @@ const DataAnnoDetail = () => {
                                 <div className={s.panel_wrap}>
                                     {activeKey == "adminResource" && (
                                         <ResourcePanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
-                                            annoType={annoProjectInfo.base_info.config.anno_type} showAddModal={showAddResourceModal}
+                                            annoType={annoProjectInfo.base_info.anno_type} showAddModal={showAddResourceModal}
                                             onChange={resourceCount => {
                                                 if (annoProjectInfo.resource_count != resourceCount) {
                                                     setAnnoProjectInfo({ ...annoProjectInfo, resource_count: resourceCount });
@@ -137,11 +147,16 @@ const DataAnnoDetail = () => {
                                     )}
                                 </div>
                             </Tabs.TabPane>
-                            <Tabs.TabPane tab="标注设置" key="setting">
-                                <div className={s.panel_wrap}>xx</div>
-                            </Tabs.TabPane>
                         </>
                     )}
+                    <Tabs.TabPane tab="标注设置" key="setting">
+                        <div className={s.panel_wrap}>
+                            {activeKey == "setting" && (
+                                <SettingPanel projectId={projectId} annoProjectInfo={annoProjectInfo} admin={adminStr == "true"}
+                                    onChange={() => loadAnnoProjectInfo()} />
+                            )}
+                        </div>
+                    </Tabs.TabPane>
                 </Tabs>
             )}
 
