@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
 import Button from "@/components/Button";
-import { Space, Table } from "antd";
+import { Modal, Space, Table, message } from "antd";
 import addIcon from '@/assets/image/addIcon.png';
 import { useStores } from "@/hooks";
 import CreateAnnoProjectModal from "./components/CreateAnnoProjectModal";
@@ -12,6 +12,7 @@ import type { ColumnsType } from 'antd/lib/table';
 import moment from "moment";
 import { WebviewWindow } from '@tauri-apps/api/window';
 import { EditText } from "@/components/EditCell/EditText";
+import { WarningOutlined } from "@ant-design/icons";
 
 
 const PAGE_SIZE = 10;
@@ -24,7 +25,7 @@ const DataAnnoProjectList = () => {
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
     const [annoProjectList, setAnnoProjectList] = useState<dataAnnoPrjApi.AnnoProjectInfo[]>([]);
-
+    const [removeAnnoProjectInfo, setRemoveAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
 
     const loadAnnoProjectList = async () => {
         const res = await request(dataAnnoPrjApi.list({
@@ -74,6 +75,17 @@ const DataAnnoProjectList = () => {
             tmpList[index].base_info.name = newName;
             setAnnoProjectList(tmpList);
         }
+    };
+
+    const removeAnnoProject = async () => {
+        await request(dataAnnoPrjApi.remove({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            anno_project_id: removeAnnoProjectInfo?.anno_project_id ?? "",
+        }));
+        await loadAnnoProjectList();
+        setRemoveAnnoProjectInfo(null);
+        message.info("删除成功");
     };
 
     const columns: ColumnsType<dataAnnoPrjApi.AnnoProjectInfo> = [
@@ -147,6 +159,20 @@ const DataAnnoProjectList = () => {
             render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
                 <span>{moment(row.create_time).format("YYYY-MM-DD")}</span>
             ),
+        },
+        {
+            title: "操作",
+            width: 200,
+            render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
+                <Space size="large">
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled>导出</Button>
+                    <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveAnnoProjectInfo(row);
+                    }}>删除</Button>
+                </Space>
+            ),
         }
     ];
 
@@ -167,7 +193,7 @@ const DataAnnoProjectList = () => {
             </Space>
         }>
             <Table rowKey="anno_project_id" dataSource={annoProjectList} columns={columns}
-                scroll={{ x: 800, y: "calc(100vh - 180px)" }} style={{ padding: "10px 10px" }}
+                scroll={{ x: 1000, y: "calc(100vh - 180px)" }} style={{ padding: "10px 10px" }}
                 pagination={{
                     total: totalCount, pageSize: PAGE_SIZE, current: curPage + 1,
                     hideOnSinglePage: true, onChange: page => setCurPage(page - 1)
@@ -181,6 +207,29 @@ const DataAnnoProjectList = () => {
                     }
                     setShowCreateModal(false);
                 }} />
+            )}
+            {removeAnnoProjectInfo !== null && (
+                <Modal open title={<span><WarningOutlined style={{ color: "red" }} />&nbsp;删除标注项目</span>}
+                    okText="删除" okButtonProps={{ danger: true }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveAnnoProjectInfo(null);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeAnnoProject();
+                    }}>
+                    <p>是否删除标注项目&nbsp; {removeAnnoProjectInfo.base_info.name} &nbsp; ?</p>
+                    <p>下面数据将被清除:</p>
+                    <ul style={{ paddingLeft: "10px" }}>
+                        <li>标注成员</li>
+                        <li>标注资源</li>
+                        <li>标注任务</li>
+                        <li>标注结果</li>
+                    </ul>
+                </Modal>
             )}
         </CardWrap>
     );
