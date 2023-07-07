@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg,
-    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg
+    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -1995,6 +1995,66 @@ export const genIdeaEvCfgValues = (cfg: IdeaEvCfg): string[] => {
     }
     if (cfg.cancel_appraise) {
         retList.push("cancel_appraise");
+    }
+    return retList;
+}
+
+export const dataAnnoEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建标注项目",
+        value: "create_anno_project",
+    },
+    {
+        label: "删除标注项目",
+        value: "remove_anno_project",
+    },
+    {
+        label: "增加标注成员",
+        value: "add_anno_member",
+    },
+    {
+        label: "移除标注成员",
+        value: "remove_anno_member",
+    },
+];
+
+export const calcDataAnnoEvCfg = (values: string[] | undefined): DataAnnoEvCfg => {
+    const ret: DataAnnoEvCfg = {
+        create_anno_project: false,
+        remove_anno_project: false,
+        add_anno_member: false,
+        remove_anno_member: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create_anno_project") {
+            ret.create_anno_project = true;
+        } else if (value == "remove_anno_project") {
+            ret.remove_anno_project = true;
+        } else if (value == "add_anno_member") {
+            ret.add_anno_member = true;
+        } else if (value == "remove_anno_member") {
+            ret.remove_anno_member = true;
+        }
+    });
+    return ret;
+};
+
+export const genDataAnnoEvCfgValues = (cfg: DataAnnoEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create_anno_project) {
+        retList.push("create_anno_project");
+    }
+    if (cfg.remove_anno_project) {
+        retList.push("remove_anno_project");
+    }
+    if (cfg.add_anno_member) {
+        retList.push("add_anno_member");
+    }
+    if (cfg.remove_anno_member) {
+        retList.push("remove_anno_member");
     }
     return retList;
 }

@@ -414,9 +414,7 @@ class NoticeStore {
       }
     }
     else if (notice.UpdateIssueStateNotice !== undefined) {
-      console.log("1111111111111111111");
       this.rootStore.projectStore.updateProjectIssueCount(notice.UpdateIssueStateNotice.project_id);
-      console.log("2222222222222222222");
       await this.rootStore.spritStore.updateIssue(notice.UpdateIssueStateNotice.issue_id);
       if (notice.UpdateIssueStateNotice.project_id == this.rootStore.projectStore.curProjectId) {
         if (notice.UpdateIssueStateNotice.exec_user_id != "") {
@@ -520,8 +518,9 @@ class NoticeStore {
         this.rootStore.linkAuxStore.goToTestCaseList({ entryId: ev.targetId }, this.history);
       }
     }
-    await appWindow.show();
     await appWindow.setAlwaysOnTop(true);
+    await appWindow.show();
+    await appWindow.unminimize();
     if (ev.shortNoteModeType != SHORT_NOTE_MODE_SHOW) {
       if (this.rootStore.appStore.simpleMode) {
         this.rootStore.appStore.simpleMode = false;

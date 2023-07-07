@@ -57,6 +57,8 @@ mod user_api_plugin;
 mod user_app_api_plugin;
 mod user_book_shelf_api_plugin;
 mod user_kb_api_plugin;
+mod data_anno_project_api_plugin;
+mod data_anno_task_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -331,6 +333,7 @@ fn main() {
                 let all_windows = app.windows();
                 for (_, win) in &all_windows {
                     win.show().unwrap();
+                    win.unminimize().unwrap();
                 }
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
@@ -348,8 +351,7 @@ fn main() {
                     let all_windows = app.windows();
                     for (_, win) in &all_windows {
                         win.show().unwrap();
-                        if let Err(_) = win.set_always_on_top(true) {}
-                        if let Err(_) = win.set_always_on_top(false) {}
+                        win.unminimize().unwrap();
                     }
                 }
                 "about" => {
@@ -435,6 +437,8 @@ fn main() {
         .plugin(user_book_shelf_api_plugin::UserBookShelfApiPlugin::new())
         .plugin(project_bulletin_api_plugin::ProjectBulletinApiPlugin::new())
         .plugin(local_repo_plugin::LocalRepoPlugin::new())
+        .plugin(data_anno_project_api_plugin::DataAnnoProjectApiPlugin::new())
+        .plugin(data_anno_task_api_plugin::DataAnnoTaskApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
@@ -452,6 +456,7 @@ fn main() {
                         if let Some(cur_session_id) = cur_session.clone() {
                             return fs_api_plugin::http_download_file(
                                 app_handle,
+                                String::from("main"),
                                 req_url.path(),
                                 cur_session_id.as_str(),
                             )
@@ -461,6 +466,7 @@ fn main() {
                             if let Some(cur_session_id) = cur_session.clone() {
                                 return fs_api_plugin::http_download_file(
                                     app_handle,
+                                    String::from("main"),
                                     req_url.path(),
                                     cur_session_id.as_str(),
                                 )

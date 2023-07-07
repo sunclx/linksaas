@@ -695,6 +695,9 @@ async fn start<R: Runtime>(
     if window.label() != "main" {
         return Err("no permission".into());
     }
+    if &request.label == "main" {
+        return Err("no permission".into());
+    }
     //关闭之前的窗口
     let dest_win = app_handle.get_window(&request.label);
     if dest_win.is_some() {
@@ -947,6 +950,9 @@ async fn start_debug<R: Runtime>(
     request: StartRequest,
     perm: MinAppPerm,
 ) -> Result<(), String> {
+    if &request.label == "main" {
+        return Err("no permission".into());
+    }
     let debug_perm = app_handle.state::<DebugPerm>().inner();
     *debug_perm.0.lock().await = Some(perm.clone());
 
