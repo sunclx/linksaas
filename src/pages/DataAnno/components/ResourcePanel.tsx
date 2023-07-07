@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as dataAnnoPrjApi from "@/api/data_anno_project";
 import AddResourceModal from "./AddResourceModal";
-import { Button, List, Modal, Space, message } from "antd";
+import { Button, Card, List, Modal, Space, Image, message } from "antd";
 import { request } from "@/utils/request";
 import { get_session } from "@/api/user";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -70,7 +70,21 @@ const ResourcePanel = (props: ResourcePanelProps) => {
         <div>
             <List rowKey="resource_id" dataSource={resourceList} renderItem={item => (
                 <>
-                    {item.store_as_file == false && item.content && "text"}
+                    {item.store_as_file == false && item.content && (
+                        <List.Item>
+                            <Card style={{width:"100%"}} extra={
+                                <Space size="large" style={{ marginLeft: "20px" }}>
+                                    <span>任务数量:&nbsp;{item.task_count}</span>
+                                    <Button type="link" danger onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setRemoveResourceId(item.resource_id);
+                                    }}><DeleteOutlined /></Button>
+                                </Space>}>
+                                {item.content}
+                            </Card>
+                        </List.Item>
+                    )}
                     {item.store_as_file == true && dataAnnoPrjApi.isAnnoAudio(props.annoType) == true && (
                         <List.Item extra={
                             <Space size="large" style={{ marginLeft: "20px" }}>
@@ -87,7 +101,21 @@ const ResourcePanel = (props: ResourcePanelProps) => {
                             </audio>
                         </List.Item>
                     )}
-                    {item.store_as_file == true && dataAnnoPrjApi.isAnnoImage(props.annoType) == true && "image"}
+                    {item.store_as_file == true && dataAnnoPrjApi.isAnnoImage(props.annoType) == true && (
+                        <List.Item>
+                            <Card style={{width:"100%"}} extra={
+                                <Space size="large" style={{ marginLeft: "20px" }}>
+                                    <span>任务数量:&nbsp;{item.task_count}</span>
+                                    <Button type="link" danger onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setRemoveResourceId(item.resource_id);
+                                    }}><DeleteOutlined /></Button>
+                                </Space>}>
+                                <Image src={getUrl(item.content)} preview={false} />
+                            </Card>
+                        </List.Item>
+                    )}
                 </>
             )} pagination={{ total: totalCount, pageSize: PAGE_SIZE, current: curPage + 1, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             {props.showAddModal == true && (

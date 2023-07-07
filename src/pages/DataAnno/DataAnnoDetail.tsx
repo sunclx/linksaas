@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { get_session } from "@/api/user";
 import * as dataAnnoPrjApi from "@/api/data_anno_project";
+import * as dataAnnoTaskApi from "@/api/data_anno_task";
 import { request } from "@/utils/request";
-import { Tabs } from "antd";
+import { Form, Select, Tabs } from "antd";
 import s from "./DataAnnoDetail.module.less";
 import ResourcePanel from "./components/ResourcePanel";
 import Button from "@/components/Button";
@@ -25,6 +26,9 @@ const DataAnnoDetail = () => {
 
     const [showAddMemberModal, setShowAddMemberModal] = useState(false);
     const [showAddResourceModal, setShowAddResourceModal] = useState(false);
+
+    const [auditMemberUserId, setAuditMemberUserId] = useState("");
+    const [memberInfoList, setMemberInfoList] = useState<dataAnnoTaskApi.MemberInfo[]>([]);
 
     const loadAnnoProjectInfo = async () => {
         const sessionId = await get_session();
@@ -60,6 +64,20 @@ const DataAnnoDetail = () => {
         }
     };
 
+    const loadMemberList = async () => {
+        const sessionId = await get_session();
+        const res = await request(dataAnnoTaskApi.list_member({
+            session_id: sessionId,
+            project_id: projectId,
+            anno_project_id: annoProjectId,
+        }));
+        const tmpList = res.info_list.filter(item => item.done_count > 0);
+        setMemberInfoList(tmpList);
+        if (tmpList.length > 0) {
+            setAuditMemberUserId(tmpList[0].member_user_id);
+        }
+    };
+
     useEffect(() => {
         loadAnnoProjectInfo();
     }, []);
@@ -71,7 +89,14 @@ const DataAnnoDetail = () => {
     return (
         <div style={{ backgroundColor: "white" }}>
             {annoProjectInfo != null && (
-                <Tabs type="card" activeKey={activeKey} onChange={key => setActiveKey(key)}
+                <Tabs type="card" activeKey={activeKey} onChange={key => {
+                    setActiveKey(key);
+                    setMemberInfoList([]);
+                    setAuditMemberUserId("");
+                    if (key == "audit") {
+                        loadMemberList();
+                    }
+                }}
                     tabBarStyle={{ height: "50px" }} tabBarExtraContent={
                         <div style={{ marginRight: "20px" }}>
                             {activeKey == "adminMember" && (
@@ -87,6 +112,17 @@ const DataAnnoDetail = () => {
                                     e.preventDefault();
                                     setShowAddResourceModal(true);
                                 }}>增加标注资源</Button>
+                            )}
+                            {activeKey == "audit" && (
+                                <Form style={{paddingTop:"10px"}}>
+                                    <Form.Item label="标注成员">
+                                        <Select style={{ width: "150px" }} value={auditMemberUserId} onChange={value => setAuditMemberUserId(value)}>
+                                            {memberInfoList.map(item => (
+                                                <Select.Option key={item.member_user_id} value={item.member_user_id}>{item.display_name}</Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </Form>
                             )}
                         </div>
                     }>
@@ -116,6 +152,17 @@ const DataAnnoDetail = () => {
                     )}
                     {adminStr == "true" && (
                         <>
+                            {annoProjectInfo.done_task_count > 0 && (<Tabs.TabPane tab={`审核`} key="audit">
+                                <div className={s.panel_wrap}>
+                                    {activeKey == "audit" && auditMemberUserId != "" && (
+                                        <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
+                                            annoType={annoProjectInfo.base_info.anno_type}
+                                            config={annoProjectInfo.base_info.config} done={true}
+                                            memberUserId={auditMemberUserId}
+                                            onChange={() => loadAnnoProjectInfo()} />
+                                    )}
+                                </div>
+                            </Tabs.TabPane>)}
                             <Tabs.TabPane tab={`成员管理(${annoProjectInfo.member_count})`} key="adminMember">
                                 <div className={s.panel_wrap}>
                                     {activeKey == "adminMember" && (
