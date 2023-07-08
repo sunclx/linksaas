@@ -21,6 +21,7 @@ export type Setting = {
   disable_server_agent: boolean;
   disable_ext_event: boolean;
   disable_app_store: boolean;
+  disable_data_anno: boolean;
 
   disable_chat: boolean;
   disable_kb: boolean;
@@ -93,6 +94,7 @@ export type ProjectInfo = {
   require_ment_fs_id: string;
   idea_fs_id: string;
   bulletin_fs_id: string;
+  data_anno_fs_id: string;
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;

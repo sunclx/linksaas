@@ -352,7 +352,6 @@ export default class ProjectStore {
       }
     }
     const member = this.rootStore.memberStore.getMember(this.rootStore.userStore.userInfo.userId);
-    console.log("xxxxx", member);
     if (member !== undefined) {
       return member.member.can_admin;
     }

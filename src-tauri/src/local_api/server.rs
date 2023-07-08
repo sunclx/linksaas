@@ -143,10 +143,7 @@ where
         if let Err(err) = win.show() {
             println!("{}", err);
         }
-        if let Err(err) = win.set_always_on_top(true) {
-            println!("{}", err);
-        }
-        if let Err(err) = win.set_always_on_top(false) {
+        if let Err(err) = win.unminimize() {
             println!("{}", err);
         }
         return Ok(ShowGetResponse::Status200 {

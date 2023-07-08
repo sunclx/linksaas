@@ -93,8 +93,7 @@ import PubRes from '@/pages/PubRes';
 import BookCateList from '@/pages/Admin/BookAdmin/BookCateList';
 import BookList from '@/pages/Admin/BookAdmin/BookList';
 import WorkPlanLayout from '@/layouts/WorkPlanLayout';
-
-
+import DataAnnoProjectList from '@/pages/DataAnno/DataAnnoProjectList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -273,6 +272,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/appstore",
       title: "更多应用",
       component: AppStore,
+      exact: true,
+    },
+    {
+      path: prefix +"/dataanno",
+      title: "数据标注项目列表",
+      component: DataAnnoProjectList,
       exact: true,
     },
   ];

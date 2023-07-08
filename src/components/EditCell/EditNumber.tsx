@@ -9,6 +9,8 @@ export interface EditNumberProps {
     onChange: (value: number) => Promise<boolean>;
     showEditIcon: boolean;
     fixedLen?: number;
+    min?: number;
+    max?: number;
 }
 
 export const EditNumber: React.FC<EditNumberProps> = (props) => {
@@ -35,6 +37,8 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
                     controls={false}
                     autoFocus={true}
                     precision={props.fixedLen ?? 2}
+                    min={props.min}
+                    max={props.max}
                     style={{ width: "calc(100% - 50px)" }} addonAfter={
                         <Space>
                             <a onClick={e => {

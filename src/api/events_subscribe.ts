@@ -219,6 +219,14 @@ export type IdeaEvCfg = {
     cancel_appraise: boolean;
 };
 
+export type DataAnnoEvCfg = {
+    create_anno_project: boolean;
+    remove_anno_project: boolean;
+    add_anno_member: boolean;
+    remove_anno_member: boolean;
+};
+
+
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
@@ -236,6 +244,7 @@ export type EventCfg = {
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;
     idea_ev_cfg: IdeaEvCfg;
+    data_anno_ev_cfg: DataAnnoEvCfg;
 };
 
 export type SubscribeInfo = {
