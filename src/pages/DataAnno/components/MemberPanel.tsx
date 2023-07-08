@@ -5,8 +5,9 @@ import { get_session } from "@/api/user";
 import AddMemberModal from "./AddMemberModal";
 import type { ColumnsType } from 'antd/lib/table';
 import Table from "antd/lib/table";
-import { Button, Modal, message } from "antd";
+import { Button, Modal, Space, message } from "antd";
 import { EditNumber } from "@/components/EditCell/EditNumber";
+import AssignTaskModal from "./AssignTaskModal";
 
 
 export interface MemberPanelPrps {
@@ -23,6 +24,7 @@ export interface MemberPanelPrps {
 const MemberPanel = (props: MemberPanelPrps) => {
     const [memberInfoList, setMemberInfoList] = useState<dataAnnoTaskApi.MemberInfo[]>([]);
     const [removeMemberUserId, setRemoveMemberUserId] = useState("");
+    const [assignMemberInfo, setAssignMemberInfo] = useState<dataAnnoTaskApi.MemberInfo | null>(null);
 
     const loadMemberList = async () => {
         const sessionId = await get_session();
@@ -94,13 +96,22 @@ const MemberPanel = (props: MemberPanelPrps) => {
         },
         {
             title: "操作",
-            width: 100,
+            width: 150,
             render: (_, row: dataAnnoTaskApi.MemberInfo) => (
-                <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setRemoveMemberUserId(row.member_user_id)
-                }}>删除</Button>
+                <Space size="large">
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={props.resourceCount == 0}
+                        title={props.resourceCount == 0 ? "缺乏可标注资源" : ""}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setAssignMemberInfo(row);
+                        }}>分配任务</Button>
+                    <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveMemberUserId(row.member_user_id)
+                    }}>删除</Button>
+                </Space>
             )
         }
     ];
@@ -135,6 +146,16 @@ const MemberPanel = (props: MemberPanelPrps) => {
                     }}>
                     是否删除标注成员?
                 </Modal>
+            )}
+            {assignMemberInfo != null && (
+                <AssignTaskModal memberInfo={assignMemberInfo} projectId={props.projectId} annoProjectId={props.annoProjectId}
+                    resourceCount={props.resourceCount}
+                    onCancel={() => { setAssignMemberInfo(null) }}
+                    onOk={() => {
+                        loadMemberList();
+                        setAssignMemberInfo(null);
+                        props.onSetTask();
+                    }} />
             )}
         </div>
     );
