@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputNumber, Space } from 'antd'
 import { CheckOutlined, CloseOutlined, EditOutlined } from "@ant-design/icons";
 
@@ -17,6 +17,11 @@ export const EditNumber: React.FC<EditNumberProps> = (props) => {
     const [inEdit, setInEdit] = useState(false);
     const [value, setValue] = useState(props.value);
 
+    useEffect(() => {
+        if (props.value !== undefined) {
+            setValue(props.value);
+        }
+    }, [props.value])
 
     return (
         <span onClick={e => {
