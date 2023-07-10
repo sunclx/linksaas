@@ -54,7 +54,23 @@ async fn get_cache_file<R: Runtime>(
         (&fs_id).as_str(),
         (&file_id).as_str(),
     );
-    let cache_file = format!("{}/{}", (&cache_dir).as_str(), (&file_name).as_str());
+    let mut cache_file = format!("{}/{}", (&cache_dir).as_str(), (&file_name).as_str());
+    if &file_name == "" {
+        let file_list = fs::read_dir(&cache_dir).await;
+        if file_list.is_err() {
+            return Err(file_list.err().unwrap().to_string());
+        }
+        let mut file_list = file_list.unwrap();
+        let entry = file_list.next_entry().await;
+        if entry.is_err() {
+            return Err(entry.err().unwrap().to_string());
+        }
+        let entry = entry.unwrap();
+        if let Some(entry) = entry {
+            let file_name = String::from(entry.file_name().to_string_lossy());
+            cache_file = format!("{}/{}", (&cache_dir).as_str(), &file_name);
+        }
+    }
     if let Ok(cache_file_stat) = fs::metadata(cache_file.as_str()).await {
         if cache_file_stat.is_file() {
             return Ok(DownloadResult {
@@ -502,10 +518,7 @@ pub async fn write_thumb_image_file<R: Runtime>(
 }
 
 #[tauri::command]
-pub async fn save_tmp_file_base64(
-    file_name: String,
-    data: String,
-) -> Result<String, String> {
+pub async fn save_tmp_file_base64(file_name: String, data: String) -> Result<String, String> {
     let bytes = base64::decode(data);
     if bytes.is_err() {
         return Err(bytes.err().unwrap().to_string());

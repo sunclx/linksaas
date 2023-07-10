@@ -23,6 +23,7 @@ export type BaseAnnoProjectInfo = {
     anno_type: ANNO_TYPE;
     desc: string;
     config: string;
+    predict_url: string;
 };
 
 export type AnnoProjectInfo = {
