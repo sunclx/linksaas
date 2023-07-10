@@ -1,10 +1,11 @@
-use crate::notice_decode::new_wrong_session_notice;
+use crate::{fs_api_plugin::download_file, notice_decode::new_wrong_session_notice};
 use proto_gen_rust::data_anno_project_api::data_anno_project_api_client::DataAnnoProjectApiClient;
 use proto_gen_rust::data_anno_project_api::*;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
+use tokio::fs;
 
 #[tauri::command]
 async fn create<R: Runtime>(
@@ -212,6 +213,53 @@ async fn list_resource<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn export_resource<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    session_id: String,
+    resource :ResourceInfo,
+    fs_id: String,
+    dest_path: String,
+) -> Result<(), String> {
+    //创建目录
+    let mut path = std::path::PathBuf::from(dest_path);
+    path.push("resources");
+    if !path.exists() {
+        let res = fs::create_dir_all(&path).await;
+        if res.is_err() {
+            return Err(res.err().unwrap().to_string());
+        }
+    }
+    path.push(format!("{}.{}", &resource.resource_id, &resource.file_ext));
+    if resource.store_as_file {
+        let res = download_file(
+            app_handle,
+            window,
+            "".into(),
+            session_id,
+            fs_id,
+            resource.content,
+            "".into(),
+        )
+        .await;
+        if res.is_err() {
+            return Err(res.err().unwrap());
+        }
+        let res = res.unwrap();
+        let res = fs::copy(res.local_path, &path).await;
+        if res.is_err() {
+            return Err(res.err().unwrap().to_string());
+        }
+    } else {
+        let res = fs::write(&path, resource.content).await;
+        if res.is_err() {
+            return Err(res.err().unwrap().to_string());
+        }
+    }
+    Ok(())
+}
+
 pub struct DataAnnoProjectApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -228,6 +276,7 @@ impl<R: Runtime> DataAnnoProjectApiPlugin<R> {
                 add_resource,
                 remove_resource,
                 list_resource,
+                export_resource,
             ]),
         }
     }

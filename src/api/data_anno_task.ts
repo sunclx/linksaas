@@ -206,3 +206,14 @@ export async function get_result(request: GetResultRequest): Promise<GetResultRe
         request,
     });
 }
+
+//导出结果
+export async function export_result(result: AnnoResult, destPath: string): Promise<void> {
+    const cmd = 'plugin:data_anno_task_api|export_result';
+    const request = {
+        result,
+        destPath,
+    };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<void>(cmd, request);
+}

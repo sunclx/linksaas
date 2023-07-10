@@ -5,6 +5,7 @@ use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
+use tokio::fs;
 
 #[tauri::command]
 async fn add_member<R: Runtime>(
@@ -21,7 +22,9 @@ async fn add_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_member_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_member".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("add_member".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -46,7 +49,9 @@ async fn list_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_member_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_member".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_member".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -71,7 +76,9 @@ async fn remove_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_member_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_member".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_member".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -96,7 +103,9 @@ async fn set_task_count<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_task_count_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_task_count".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_task_count".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -121,7 +130,9 @@ async fn list_task<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_task_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_task".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_task".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -146,7 +157,9 @@ async fn set_result<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_result_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_result".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("set_result".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -171,7 +184,10 @@ async fn set_result_state<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == set_result_state_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_result_state".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_result_state".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -196,7 +212,9 @@ async fn get_result<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_result_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_result".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_result".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -204,6 +222,27 @@ async fn get_result<R: Runtime>(
         }
         Err(status) => Err(status.message().into()),
     }
+}
+
+#[tauri::command]
+async fn export_result(result: AnnoResult, dest_path: String) -> Result<(), String> {
+    let mut path = std::path::PathBuf::from(dest_path);
+    path.push("annotations");
+    if !path.exists() {
+        let res = fs::create_dir_all(&path).await;
+        if res.is_err() {
+            return Err(res.err().unwrap().to_string());
+        }
+    }
+    path.push(format!(
+        "{}_{}.json",
+        &result.resource_id, &result.member_user_id
+    ));
+    let res = fs::write(&path, &result.result).await;
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    Ok(())
 }
 
 pub struct DataAnnoTaskApiPlugin<R: Runtime> {
@@ -222,6 +261,7 @@ impl<R: Runtime> DataAnnoTaskApiPlugin<R> {
                 set_result,
                 set_result_state,
                 get_result,
+                export_result,
             ]),
         }
     }

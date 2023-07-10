@@ -88,7 +88,7 @@ async fn get_cache_file<R: Runtime>(
 }
 
 #[tauri::command]
-async fn download_file<R: Runtime>(
+pub async fn download_file<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
     track_id: String,
