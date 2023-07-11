@@ -2,16 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import * as dataAnnoTaskApi from "@/api/data_anno_task";
 import { request } from "@/utils/request";
 import { get_session } from "@/api/user";
-import { Button, Card, Space } from "antd";
+import { Button, Card, Modal, Popover, Space, message } from "antd";
 import type { ANNO_TYPE } from "@/api/data_anno_project";
 import { isAnnoText, isAnnoAudio, isAnnoImage } from "@/api/data_anno_project";
-
+import { MoreOutlined } from "@ant-design/icons";
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import { fetch, Body } from '@tauri-apps/api/http';
+import { get_cache_file } from "@/api/fs";
 
 export interface AnnoPanelProps {
     projectId: string;
     annoProjectId: string;
     annoType: ANNO_TYPE;
     config: string;
+    predictUrl: string;
     fsId: string;
     memberUserId?: string;
     done: boolean;
@@ -21,11 +25,13 @@ export interface AnnoPanelProps {
 const AnnoPanel = (props: AnnoPanelProps) => {
     const [taskList, setTaskList] = useState<dataAnnoTaskApi.TaskInfo[]>([]);
     const [taskIndex, setTaskIndex] = useState(0);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_taskResult, setTaskResult] = useState("");
+    const [taskResult, setTaskResult] = useState("[]");
     const editorRef = useRef<HTMLDivElement>(null);
     const [instance, setInstance] = useState<any>(null);
     const [hasChange, sethasChange] = useState(false);
+
+    const [taskDraft, setTaskDraft] = useState("[]");
+    const [showResultModal, setShowResultModal] = useState(false);
 
     const loadTaskList = async () => {
         const sessionId = await get_session();
@@ -59,6 +65,21 @@ const AnnoPanel = (props: AnnoPanelProps) => {
         sethasChange(false);
     };
 
+    const getResultData = () => {
+        try {
+            const obj = JSON.parse(taskResult);
+            if (Array.isArray(obj)) {
+                if (obj.length == 1) {
+                    return obj[0].result ?? [];
+                }
+            }
+        } catch (e) {
+            console.log(e, taskResult);
+            return [];
+        }
+        return [];
+    }
+
     const setDone = async (done: boolean) => {
         if (taskList.length == 0) {
             return;
@@ -81,25 +102,53 @@ const AnnoPanel = (props: AnnoPanelProps) => {
         props.onChange();
     };
 
-    const initEditor = async (task: any) => {
+    const initEditor = async (task: any, tmpResult: string = "") => {
         //加载已标注结果
         const sessionId = await get_session();
-        const res = await request(dataAnnoTaskApi.get_result({
-            session_id: sessionId,
-            project_id: props.projectId,
-            anno_project_id: props.annoProjectId,
-            member_user_id: props.memberUserId ?? "",
-            resource_id: taskList[taskIndex % taskList.length].resource_id,
-        }));
-        try {
-            task.annotations = JSON.parse(res.result.result).map((item: any) => {
-                item.readonly = props.done;
-                return item;
-            });
-        } catch (e) {
-            console.log(e);
+        if (tmpResult == "") {
+            const res = await request(dataAnnoTaskApi.get_result({
+                session_id: sessionId,
+                project_id: props.projectId,
+                anno_project_id: props.annoProjectId,
+                member_user_id: props.memberUserId ?? "",
+                resource_id: taskList[taskIndex % taskList.length].resource_id,
+            }));
+            try {
+                task.annotations = JSON.parse(res.result.result).map((item: any) => {
+                    item.readonly = props.done;
+                    return item;
+                });
+                if (Array.isArray(task.annotations)) {
+                    if (task.annotations.length == 1) {
+                        if (task.annotations[0].result !== undefined) {
+                            setTaskDraft(JSON.stringify(task.annotations[0].result, null, 2));
+                        } else {
+                            setTaskDraft("[]");
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log(e, res.result.result);
+                setTaskDraft("[]");
+            }
+            setTaskResult(res.result.result);
+        } else {
+            try {
+                task.annotations = [
+                    {
+                        "readonly": props.done,
+                        "result": JSON.parse(tmpResult),
+                    }
+                ];
+
+                setTaskDraft(tmpResult);
+                setTaskResult(tmpResult);
+            } catch (e) {
+                console.log(e, tmpResult);
+                setTaskDraft("[]");
+                setTaskResult("[]");
+            }
         }
-        setTaskResult(res.result.result);
         setInstance((oldValue: any) => {
             if (oldValue != null) {
                 return oldValue;
@@ -137,7 +186,9 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                 onEntityDelete: function () {
                     sethasChange(true);
                 },
-                onSubmitDraft: function () {
+                onSubmitDraft: function (_: any, annotation: any) {
+                    const resultList = annotation.serializeAnnotation();
+                    setTaskDraft(JSON.stringify([{ "result": resultList }], null, 2));
                     sethasChange(true);
                 }
             });
@@ -152,6 +203,69 @@ const AnnoPanel = (props: AnnoPanelProps) => {
             return `fs://localhost/${props.fsId}/${taskList[(taskIndex) % taskList.length].content}/resource`;
         }
     }
+
+    const runPredict = async () => {
+        let body = Body.form({});
+
+        if (isAnnoText(props.annoType)) {
+            body = Body.form({
+                "config": props.config,
+                "result": taskDraft,
+                "text": taskList[(taskIndex) % taskList.length].content,
+            });
+        } else {
+            const cacheRes = await get_cache_file(props.fsId, taskList[(taskIndex) % taskList.length].content, "");
+            if (cacheRes.exist_in_local == false) {
+                message.error("资源文件不存在");
+                return;
+            }
+            if (isAnnoAudio(props.annoType)) {
+                body = Body.form({
+                    "config": props.config,
+                    "result": taskDraft,
+                    "audio": {
+                        file: cacheRes.local_path
+                    },
+                });
+            } else if (isAnnoImage(props.annoType)) {
+                body = Body.form({
+                    "config": props.config,
+                    "result": taskDraft,
+                    "image": {
+                        file: cacheRes.local_path
+                    },
+                });
+            }
+        }
+        try {
+            const res = await fetch(props.predictUrl, {
+                method: "POST",
+                body,
+            });
+            if (res.status !== 200) {
+                message.error("调用失败");
+                return;
+            }
+            if (instance !== null) {
+                instance.destroy();
+                setInstance(null);
+            }
+            initEditor({
+                annotations: [],
+                predictions: [],
+                data: {
+                    image: isAnnoImage(props.annoType) ? getUrl() : "",
+                    audio: isAnnoAudio(props.annoType) ? getUrl() : "",
+                    text: isAnnoText(props.annoType) ? taskList[(taskIndex) % taskList.length].content : "",
+                }
+            }, res.data as string);
+            sethasChange(true);
+            message.info("调用成功");
+        } catch (e) {
+            console.log(e);
+            message.error("调用失败");
+        }
+    };
 
     useEffect(() => {
         loadTaskList();
@@ -250,9 +364,68 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                         setDone(false);
                     }}>标记成未完成</Button>
                 )}
+                <Popover placement="bottomLeft" trigger="click" content={
+                    <Space direction="vertical">
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowResultModal(true);
+                        }}>查看标注数据</Button>
+                        {props.done == false && getResultData().length > 0 && (
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                if (taskDraft != "[]") {
+                                    sethasChange(true);
+                                }
+                                if (instance !== null) {
+                                    instance.destroy();
+                                    setInstance(null);
+                                }
+                                initEditor({
+                                    annotations: [],
+                                    predictions: [],
+                                    data: {
+                                        image: isAnnoImage(props.annoType) ? getUrl() : "",
+                                        audio: isAnnoAudio(props.annoType) ? getUrl() : "",
+                                        text: isAnnoText(props.annoType) ? taskList[(taskIndex) % taskList.length].content : "",
+                                    }
+                                }, "[]");
+                            }}>清空标注数据</Button>
+                        )}
+                        {props.done == false && props.predictUrl != "" && (
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                runPredict();
+                            }}>AI标注</Button>
+                        )}
+                    </Space>
+                }>
+                    <MoreOutlined style={{ paddingRight: "22px" }} />
+                </Popover>
             </Space>
         }>
             <div ref={editorRef} style={{ height: "100px" }} />
+            {showResultModal == true && (
+                <Modal open title="标注数据" footer={null} onCancel={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowResultModal(false);
+                }}>
+                    <CodeEditor
+                        value={taskDraft}
+                        language="json"
+                        disabled
+                        style={{
+                            fontSize: 14,
+                            backgroundColor: '#f5f5f5',
+                            maxHeight: "calc(100vh - 300px)",
+                            overflowY: "auto"
+                        }}
+                    />
+                </Modal>
+            )}
         </Card>
     )
 };

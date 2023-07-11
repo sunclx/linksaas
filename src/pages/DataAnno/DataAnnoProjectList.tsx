@@ -13,6 +13,7 @@ import moment from "moment";
 import { WebviewWindow } from '@tauri-apps/api/window';
 import { EditText } from "@/components/EditCell/EditText";
 import { WarningOutlined } from "@ant-design/icons";
+import ExportModal from "./components/ExportModal";
 
 
 const PAGE_SIZE = 10;
@@ -26,6 +27,7 @@ const DataAnnoProjectList = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [annoProjectList, setAnnoProjectList] = useState<dataAnnoPrjApi.AnnoProjectInfo[]>([]);
     const [removeAnnoProjectInfo, setRemoveAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
+    const [exportAnnoProjectInfo, setExportAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
 
     const loadAnnoProjectList = async () => {
         const res = await request(dataAnnoPrjApi.list({
@@ -165,7 +167,11 @@ const DataAnnoProjectList = () => {
             width: 200,
             render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
                 <Space size="large">
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled>导出</Button>
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setExportAnnoProjectInfo(row);
+                    }}>导出</Button>
                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -230,6 +236,9 @@ const DataAnnoProjectList = () => {
                         <li>标注结果</li>
                     </ul>
                 </Modal>
+            )}
+            {exportAnnoProjectInfo != null && (
+                <ExportModal annoProjectId={exportAnnoProjectInfo.anno_project_id} onCancel={() => setExportAnnoProjectInfo(null)} />
             )}
         </CardWrap>
     );

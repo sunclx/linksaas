@@ -23,6 +23,7 @@ export type BaseAnnoProjectInfo = {
     anno_type: ANNO_TYPE;
     desc: string;
     config: string;
+    predict_url: string;
 };
 
 export type AnnoProjectInfo = {
@@ -50,6 +51,7 @@ export type ResourceInfo = {
     content: string;
     store_as_file: boolean;
     task_count: number;
+    file_ext: string;
 };
 
 export type CreateRequest = {
@@ -241,4 +243,17 @@ export function isAnnoImage(annoType: ANNO_TYPE): boolean {
 //是否是文本标注
 export function isAnnoText(annoType: ANNO_TYPE): boolean {
     return [ANNO_TYPE_TEXT_CLASSIFI, ANNO_TYPE_TEXT_NER, ANNO_TYPE_TEXT_SUMMARY].includes(annoType);
+}
+
+//导出资源
+export function export_resource(sessionId: string, resource: ResourceInfo, fsId: string, destPath: string): Promise<void> {
+    const cmd = 'plugin:data_anno_project_api|export_resource';
+    const request = {
+        sessionId,
+        resource,
+        fsId,
+        destPath,
+    };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<void>(cmd, request);
 }

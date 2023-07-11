@@ -131,7 +131,7 @@ const DataAnnoDetail = () => {
                             <div className={s.panel_wrap}>
                                 {activeKey == "myTodo" && (
                                     <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
-                                        annoType={annoProjectInfo.base_info.anno_type}
+                                        annoType={annoProjectInfo.base_info.anno_type} predictUrl={annoProjectInfo.base_info.predict_url}
                                         config={annoProjectInfo.base_info.config} done={false}
                                         onChange={() => loadAnnoProjectInfo()} />
                                 )}
@@ -143,7 +143,7 @@ const DataAnnoDetail = () => {
                             <div className={s.panel_wrap}>
                                 {activeKey == "myDone" && (
                                     <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
-                                        annoType={annoProjectInfo.base_info.anno_type}
+                                        annoType={annoProjectInfo.base_info.anno_type} predictUrl={annoProjectInfo.base_info.predict_url}
                                         config={annoProjectInfo.base_info.config} done={true}
                                         onChange={() => loadAnnoProjectInfo()} />
                                 )}
@@ -156,7 +156,7 @@ const DataAnnoDetail = () => {
                                 <div className={s.panel_wrap}>
                                     {activeKey == "audit" && auditMemberUserId != "" && (
                                         <AnnoPanel projectId={projectId} annoProjectId={annoProjectId} fsId={fsId}
-                                            annoType={annoProjectInfo.base_info.anno_type}
+                                            annoType={annoProjectInfo.base_info.anno_type} predictUrl={annoProjectInfo.base_info.predict_url}
                                             config={annoProjectInfo.base_info.config} done={true}
                                             memberUserId={auditMemberUserId}
                                             onChange={() => loadAnnoProjectInfo()} />

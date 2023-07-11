@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as dataAnnoPrjApi from "@/api/data_anno_project";
-import { Button, Card, Descriptions, Space } from "antd";
+import { Button, Card, Descriptions, Space, message } from "antd";
 import { EditText } from "@/components/EditCell/EditText";
 import { EditTextArea } from "@/components/EditCell/EditTextArea";
 import { request } from "@/utils/request";
@@ -157,6 +157,31 @@ const SettingPanel = (props: SettingPanelProps) => {
                                     project_id: props.projectId,
                                     anno_project_id: props.annoProjectInfo.anno_project_id,
                                     base_info: { ...props.annoProjectInfo.base_info, desc: value.trim() },
+                                }));
+                            } catch (e) {
+                                console.log(e);
+                                return false;
+                            }
+                            props.onChange();
+                            return true;
+                        }} showEditIcon />
+                </Descriptions.Item>
+                <Descriptions.Item label="AI标注地址">
+                    <EditText editable={props.admin} content={props.annoProjectInfo.base_info.predict_url}
+                        onChange={async (value) => {
+                            if (value.trim() != "") {
+                                if (!(value.startsWith("http://") || value.startsWith("https"))) {
+                                    message.info("标注地址必须以http://或https://开头");
+                                    return false;
+                                }
+                            }
+                            const sessionId = await get_session();
+                            try {
+                                await request(dataAnnoPrjApi.update({
+                                    session_id: sessionId,
+                                    project_id: props.projectId,
+                                    anno_project_id: props.annoProjectInfo.anno_project_id,
+                                    base_info: { ...props.annoProjectInfo.base_info, predict_url: value.trim() },
                                 }));
                             } catch (e) {
                                 console.log(e);

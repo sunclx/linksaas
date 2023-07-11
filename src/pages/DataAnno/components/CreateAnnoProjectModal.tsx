@@ -28,6 +28,7 @@ const CreateAnnoProjectModal = (props: CreateAnnoProjectModalProps) => {
                 anno_type: annoType,
                 desc: annoDesc,
                 config: getDefaultConfig(annoType),
+                predict_url: "",
             },
         }));
         message.info("创建成功");
