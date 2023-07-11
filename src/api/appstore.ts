@@ -11,8 +11,6 @@ export const OS_SCOPE_WINDOWS: OS_SCOPE = 0;
 export const OS_SCOPE_MAC: OS_SCOPE = 1;
 export const OS_SCOPE_LINUX: OS_SCOPE = 2;
 
-
-
 export type MajorCate = {
     cate_id: string;
     cate_name: string;
@@ -110,6 +108,9 @@ export type ListAppParam = {
     app_scope: APP_SCOPE;
     filter_by_os_scope: boolean;
     os_scope: OS_SCOPE;
+    filter_by_keyword: boolean;
+    keyword: string;
+
 };
 
 export type CatePath = {

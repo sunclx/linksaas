@@ -1,4 +1,4 @@
-import { Card, Form, List, Select, Image } from "antd";
+import { Card, Form, List, Select, Image, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
 import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS } from "@/api/appstore";
@@ -22,6 +22,7 @@ const AppStorePanel = () => {
     const [minorCateList, setMinorCateList] = useState<MinorCate[]>([]);
     const [subMinorCateId, setSubMinorCateId] = useState("");
     const [subMinorCateList, setSubMinorCateList] = useState<SubMinorCate[]>([]);
+    const [keyword, setKeyword] = useState("");
 
     const [showAppInfo, setShowAppInfo] = useState<AppInfo | null>(null);
 
@@ -66,6 +67,8 @@ const AppStorePanel = () => {
                 app_scope: 0,
                 filter_by_os_scope: true,
                 os_scope: osScope,
+                filter_by_keyword: keyword.trim() != "",
+                keyword: keyword.trim(),
             },
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
@@ -97,8 +100,16 @@ const AppStorePanel = () => {
     }, [minorCateId]);
 
     useEffect(() => {
-        setTimeout(() => loadAppList(), 200);
-    }, [curPage, majorCateId, minorCateId, subMinorCateId]);
+        loadAppList();
+    }, [curPage]);
+
+    useEffect(() => {
+        if (curPage != 0) {
+            setCurPage(0);
+        } else {
+            loadAppList();
+        }
+    }, [majorCateId, minorCateId, subMinorCateId, keyword]);
 
     return (
         <Card bordered={false}
@@ -128,6 +139,13 @@ const AppStorePanel = () => {
                                 <Select.Option key={cate.cate_id} value={cate.cate_id}>{cate.cate_name}</Select.Option>
                             ))}
                         </Select>
+                    </Form.Item>
+                    <Form.Item label="关键词">
+                        <Input style={{ width: 150 }} value={keyword} onChange={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setKeyword(e.target.value.trim());
+                        }} />
                     </Form.Item>
                 </Form>
             }>
