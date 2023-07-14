@@ -7,7 +7,7 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.3.9"
+version = "0.3.10"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,6 +16,7 @@ tauri-build = {version = "1.0.4", features = [] }
 
 [dependencies]
 async-trait = "0.1.26"
+async_zip = {version = "0.0.11", features = ["full"] }
 base64 = "0.13.0"
 dirs = "4.0.0"
 futures = "0.3"
@@ -24,33 +25,52 @@ html-escape = "0.2.13"
 http = "0.2.8"
 hyper = {version = "0.14", features = ["full"] }
 image = "0.24.1"
+libaes = "0.6.5"
 local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", tag = "0.1.1"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.11"}
+proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.12"}
+rand = "0.8.5"
+regex = "1.8.4"
 reqwest = {version = "0.11.12", features = ["blocking"] }
+rsa = "0.8.1"
 rumqttc = "0.11.0"
 rust-string-random = "0.1.0"
 serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_yaml = "0.9.19"
 signature = "1.6.4"
+sled = "0.34.7"
 ssh-key = {version = "0.5.1", features = ["alloc", "rsa", "dsa", "p256", "p384"] }
+substring = "1.4.5"
 swagger = {version = "6.1", features = ["serdejson", "server", "client", "tls", "tcp"] }
-tauri = {git = "https://jihulab.com/linksaas/tauri.git", branch = "local_ipc", features = ["clipboard-all", "devtools", "dialog-all", "fs-read-file", "fs-write-file", "http-all", "http-multipart", "macos-private-api", "notification-all", "os-all", "process-all", "process-command-api", "protocol-all", "shell-open", "shell-sidecar", "system-tray", "updater", "window-all", "windows7-compat"] }
+tauri = {git = "https://jihulab.com/linksaas/tauri.git", branch = "local_ipc_v2", features = [
+  "clipboard-all",
+  "devtools",
+  "dialog-all",
+  "fs-read-file",
+  "fs-write-file",
+  "http-all",
+  "http-multipart",
+  "macos-private-api",
+  "notification-all",
+  "os-all",
+  "process-all",
+  "process-command-api",
+  "protocol-all",
+  "shell-open",
+  "shell-sidecar",
+  "system-tray",
+  "updater",
+  "window-all",
+  "windows7-compat",
+] }
 tokio = {version = "1.17.0", feature = ["time", "macros"] }
 tokio-stream = "0.1.6"
 tonic = "0.6.2"
 url = "2.2.2"
 uuid = {version = "0.8", features = ["serde", "v4"] }
 walkdir = "2.3.2"
-async_zip = { version = "0.0.11", features = ["full"] }
-substring = "1.4.5"
-rsa = "0.8.1"
-rand = "0.8.5"
-serde_yaml = "0.9.19"
-regex = "1.8.4"
-sled = "0.34.7"
-libaes = "0.6.5"
 
 [features]
 # by default Tauri runs in production mode

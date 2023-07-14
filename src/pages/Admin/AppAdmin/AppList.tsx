@@ -60,6 +60,8 @@ const AppList = () => {
                 app_scope: 0,
                 filter_by_os_scope: false,
                 os_scope: 0,
+                filter_by_keyword: false,
+                keyword: "",
             },
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
