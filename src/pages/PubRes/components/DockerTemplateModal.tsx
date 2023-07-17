@@ -138,7 +138,9 @@ const DockerTemplateModal = (props: DockerTemplateModalProps) => {
 
     const runExport = async () => {
         try {
-            await genResult(destPath, featureMap, envCfgList, envMap, fileCfgList, fileValMap);
+            await genResult(props.templatePath, destPath, appStore.isOsWindows, featureMap, envCfgList, envMap, fileCfgList, fileValMap);
+            props.onCancel();
+            message.info("生成成功");
         } catch (e) {
             console.log(e);
             message.error(`${e}`);
