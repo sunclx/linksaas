@@ -134,6 +134,7 @@
       "fs": {
         "readFile": true,
         "writeFile": true,
+        "exists": true,
         "scope": [
           "**",
           "$HOME/.linksaas/**"

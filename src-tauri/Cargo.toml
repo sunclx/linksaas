@@ -44,7 +44,7 @@ sled = "0.34.7"
 ssh-key = {version = "0.5.1", features = ["alloc", "rsa", "dsa", "p256", "p384"] }
 substring = "1.4.5"
 swagger = {version = "6.1", features = ["serdejson", "server", "client", "tls", "tcp"] }
-tauri = {git = "https://jihulab.com/linksaas/tauri.git", branch = "local_ipc_v2", features = [
+tauri = {git = "https://jihulab.com/linksaas/tauri.git", branch = "local_ipc_v2", features = [ "fs-exists",
   "clipboard-all",
   "devtools",
   "dialog-all",

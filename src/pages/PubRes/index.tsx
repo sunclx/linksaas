@@ -6,7 +6,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
 import BookStorePanel from './components/BookStorePanel';
+
 import { useStores } from '@/hooks';
+import { ReactComponent as DockerSvg } from '@/assets/svg/docker.svg';
+import DockerTemplatePanel from './components/DockerTemplatePanel';
 
 const PubRes = () => {
     const location = useLocation();
@@ -20,6 +23,8 @@ const PubRes = () => {
             tab = "appStore"
         } else if (appStore.clientCfg?.enable_pub_book_store == true) {
             tab = "bookStore"
+        } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
+            tab = "dockerTemplate"
         }
     }
 
@@ -47,6 +52,15 @@ const PubRes = () => {
                         {activeKey == "bookStore" && (
                             <div className={s.content_wrap}>
                                 <BookStorePanel />
+                            </div>
+                        )}
+                    </Tabs.TabPane>
+                )}
+                {appStore.clientCfg?.enable_pub_docker_template == true && (
+                    <Tabs.TabPane tab={<h2><DockerSvg style={{ width: "14px", height: "14px" }} />&nbsp;Docker模板</h2>} key="dockerTemplate">
+                        {activeKey == "dockerTemplate" && (
+                            <div className={s.content_wrap}>
+                                <DockerTemplatePanel />
                             </div>
                         )}
                     </Tabs.TabPane>
