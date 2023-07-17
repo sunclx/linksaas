@@ -39,7 +39,6 @@ export type AdminRemoveCateResponse = {
 
 
 export type AdminCreateAppRequest = {
-
     admin_session_id: string;
     name: string;
     desc: string;

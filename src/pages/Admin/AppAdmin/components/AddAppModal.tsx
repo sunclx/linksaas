@@ -91,7 +91,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
 
     const changeIcon = async () => {
         const selectd = await open_dialog({
-            title: "更好应用图标",
+            title: "更换应用图标",
             filters: [{
                 name: "图标",
                 extensions: ["ico", "png", "jpg", "jpeg"],

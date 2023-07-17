@@ -90,3 +90,27 @@ export async function get_app_with_template(request: GetAppWithTemplateRequest):
         request,
     });
 }
+
+// 打包模板
+export async function pack_template(path: string): Promise<string> {
+    const cmd = 'plugin:docker_template_api|pack_template';
+    const request = { path };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<string>(cmd, request);
+}
+
+// 检查是否解压模板
+export async function check_unpark(fsId: string, fileId: string): Promise<boolean> {
+    const cmd = 'plugin:docker_template_api|check_unpark';
+    const request = { fsId, fileId };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<boolean>(cmd, request);
+}
+
+//解压模板
+export async function unpack_template(fsId: string, fileId: string): Promise<void> {
+    const cmd = 'plugin:docker_template_api|unpack_template';
+    const request = { fsId, fileId };
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<void>(cmd, request);
+}
