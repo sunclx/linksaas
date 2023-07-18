@@ -26,6 +26,13 @@ const VairableSetting = (props: VairableSettingProps) => {
         const values: any = form.getFieldsValue();
         values[key] = selected;
         form.setFieldsValue(values);
+        const tmpMap: Map<string, string | number> = new Map();
+        for (const tmpKey of Object.keys(values)) {
+            if (values[tmpKey] !== undefined) {
+                tmpMap.set(tmpKey, values[key]);
+            }
+        }
+        props.onChange(tmpMap);
     }
 
     useEffect(() => {
