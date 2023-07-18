@@ -65,6 +65,9 @@ mod min_app_plugin;
 mod min_app_shell_plugin;
 mod min_app_store_plugin;
 
+mod docker_template_api_plugin;
+mod admin_docker_template_api_plugin;
+
 mod my_updater;
 
 mod local_repo_plugin;
@@ -439,6 +442,8 @@ fn main() {
         .plugin(local_repo_plugin::LocalRepoPlugin::new())
         .plugin(data_anno_project_api_plugin::DataAnnoProjectApiPlugin::new())
         .plugin(data_anno_task_api_plugin::DataAnnoTaskApiPlugin::new())
+        .plugin(docker_template_api_plugin::DockerTemplateApiPlugin::new())
+        .plugin(admin_docker_template_api_plugin::DockerTemplateAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

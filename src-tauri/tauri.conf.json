@@ -132,10 +132,10 @@
         ]
       },
       "fs": {
-        "readFile": true,
-        "writeFile": true,
+        "all": true,
         "scope": [
           "**",
+          "**/.env",
           "$HOME/.linksaas/**"
         ]
       }
