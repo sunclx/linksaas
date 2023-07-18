@@ -53,6 +53,8 @@ import {
   ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
   ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
   APP_PROJECT_WORK_PLAN_PATH,
+  ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
+  ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -94,6 +96,8 @@ import BookCateList from '@/pages/Admin/BookAdmin/BookCateList';
 import BookList from '@/pages/Admin/BookAdmin/BookList';
 import WorkPlanLayout from '@/layouts/WorkPlanLayout';
 import DataAnnoProjectList from '@/pages/DataAnno/DataAnnoProjectList';
+import TemplateCateList from '@/pages/Admin/DockerTemplateAdmin/TemplateCateList';
+import TemplateList from '@/pages/Admin/DockerTemplateAdmin/TemplateList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -275,7 +279,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
-      path: prefix +"/dataanno",
+      path: prefix + "/dataanno",
       title: "数据标注项目列表",
       component: DataAnnoProjectList,
       exact: true,
@@ -469,6 +473,18 @@ const routesConfig: IRouteConfig[] = [
         component: BookList,
         exact: true,
       },
+      {
+        path: ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
+        title: "Docker模板类别管理",
+        component: TemplateCateList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
+        title: "Docker模板管理",
+        component: TemplateList,
+        exact: true,
+      }
     ]
   },
 

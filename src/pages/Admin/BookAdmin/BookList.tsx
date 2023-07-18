@@ -165,10 +165,12 @@ const BookList = () => {
                 </Space>
             }
         >
-            <Table rowKey="book_id" dataSource={bookList} columns={columns} pagination={{
-                total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE,
-                onChange: (page) => setCurPage(page - 1), showTitle: true
-            }} />
+            <Table rowKey="book_id" dataSource={bookList} columns={columns}
+                style={{ height: "calc(100vh - 100px)", overflowY: "scroll" }}
+                pagination={{
+                    total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE,
+                    onChange: (page) => setCurPage(page - 1), showTitle: true
+                }} />
             {showAddModal == true && (
                 <AddBookModal cateList={cateList} permInfo={permInfo} onCancel={() => setShowAddModal(false)}
                     onAdd={(cateId) => {

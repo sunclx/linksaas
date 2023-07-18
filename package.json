@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@linksaas.pro>",
@@ -44,6 +44,7 @@
     "antd": "^4.20.1",
     "classnames": "^2.3.1",
     "dayjs": "^1.11.1",
+    "ejs": "^3.1.9",
     "epubjs": "^0.3.93",
     "gantt-task-react": "^0.3.9",
     "indexof": "^0.0.1",
@@ -83,6 +84,7 @@
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-decorators": "^7.17.9",
     "@types/babel__core": "^7.1.19",
+    "@types/ejs": "^3.1.2",
     "@types/html-minifier-terser": "^6.1.0",
     "@types/loadable__component": "^5.13.4",
     "@types/lodash": "^4.14.182",

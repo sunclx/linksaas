@@ -12,6 +12,8 @@ import {
     ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
     ADMIN_PATH_CLIENT_AD_SUFFIX,
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
+    ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
+    ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
     ADMIN_PATH_ORG_LIST_SUFFIX, ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
     ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
     ADMIN_PATH_USER_LIST_SUFFIX, USER_LOGIN_PATH
@@ -32,6 +34,7 @@ const AdminNav = () => {
     const [clientCfgSelectedKeys, setClientCfgSelectedKeys] = useState<string[]>([]);
     const [appstoreSelectedKeys, setAppstoreSelectedKeys] = useState<string[]>([]);
     const [bookstoreSelectedKeys, setBookstoreSelectedKeys] = useState<string[]>([]);
+    const [dockerTemplateSelectedKeys, setDockerTemplateSelectedKeys] = useState<string[]>([]);
 
     useEffect(() => {
         setUserSelectedKeys([]);
@@ -86,6 +89,15 @@ const AdminNav = () => {
     }, [location.pathname]);
 
     useEffect(() => {
+        setDockerTemplateSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX) {
+            setDockerTemplateSelectedKeys(["docker_template_cate"]);
+        } else if (location.pathname == ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX) {
+            setDockerTemplateSelectedKeys(["docker_template_app"]);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
         get_admin_perm().then(res => setPermInfo(res));
     }, []);
 
@@ -104,7 +116,7 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore"]}
+            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore", "dockerTemplate"]}
                 style={{ height: "calc(100vh - 132px)", overflowY: "scroll", paddingBottom: "10px" }}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
@@ -218,6 +230,30 @@ const AdminNav = () => {
                                     history.push(ADMIN_PATH_BOOKSTORE_CATE_SUFFIX);
                                 } else if (e.selectedKeys[0] == "book_book") {
                                     history.push(ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX);
+                                }
+                            }
+                        }} />
+                </Collapse.Panel>
+                <Collapse.Panel header="Docker模板管理" key="dockerTemplate">
+                    <Menu selectedKeys={dockerTemplateSelectedKeys} items={[
+                        {
+                            label: "管理类别",
+                            key: "docker_template_cate",
+                            disabled: !(permInfo?.docker_template_perm.read ?? false),
+                        },
+                        {
+                            label: "管理模板",
+                            key: "docker_template_app",
+                            disabled: !(permInfo?.docker_template_perm.read ?? false),
+                        }
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "docker_template_cate") {
+                                    history.push(ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX);
+                                } else if (e.selectedKeys[0] == "docker_template_app") {
+                                    history.push(ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX);
                                 }
                             }
                         }} />

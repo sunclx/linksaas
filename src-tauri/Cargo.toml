@@ -7,7 +7,7 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.3.10"
+version = "0.3.11"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -29,7 +29,7 @@ libaes = "0.6.5"
 local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", tag = "0.1.1"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.12"}
+proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.13"}
 rand = "0.8.5"
 regex = "1.8.4"
 reqwest = {version = "0.11.12", features = ["blocking"] }
@@ -44,12 +44,10 @@ sled = "0.34.7"
 ssh-key = {version = "0.5.1", features = ["alloc", "rsa", "dsa", "p256", "p384"] }
 substring = "1.4.5"
 swagger = {version = "6.1", features = ["serdejson", "server", "client", "tls", "tcp"] }
-tauri = {git = "https://jihulab.com/linksaas/tauri.git", branch = "local_ipc_v2", features = [
+tauri = {git = "https://jihulab.com/linksaas/tauri.git", branch = "local_ipc_v2", features = [ "fs-all",
   "clipboard-all",
   "devtools",
   "dialog-all",
-  "fs-read-file",
-  "fs-write-file",
   "http-all",
   "http-multipart",
   "macos-private-api",

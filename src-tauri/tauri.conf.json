@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "linksaas",
-    "version": "0.3.10"
+    "version": "0.3.11"
   },
   "build": {
     "distDir": "../dist",
@@ -132,10 +132,10 @@
         ]
       },
       "fs": {
-        "readFile": true,
-        "writeFile": true,
+        "all": true,
         "scope": [
           "**",
+          "**/.env",
           "$HOME/.linksaas/**"
         ]
       }
