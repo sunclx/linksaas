@@ -35,7 +35,13 @@ const DockerTemplateModal = (props: DockerTemplateModalProps) => {
         }
         const configText = await readTextFile(configFile);
         try {
-            setConfig(JSON.parse(configText));
+            const tmpCfg = JSON.parse(configText) as DockerComposeTemplateSchema;
+            setConfig(tmpCfg);
+            const tmpFeatMap: Map<string, boolean> = new Map();
+            for (const feat of (tmpCfg.features ?? [])) {
+                tmpFeatMap.set(feat.id, false);
+            }
+            setFeatureMap(tmpFeatMap);
         } catch (e) {
             console.log(e);
             message.error(`${e}`);
