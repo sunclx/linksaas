@@ -1,24 +1,16 @@
-import { Card, List, Popover, Select, Space, Spin, Table, Image, Form, Divider } from "antd";
+import { Card, List, Select, Space } from "antd";
 import React, { useEffect, useState } from "react";
-import type { CateInfo, AppWithTemplateInfo, TemplateInfo } from "@/api/docker_template";
+import type { CateInfo, AppWithTemplateInfo } from "@/api/docker_template";
 import { list_cate, list_app_with_template, get_app_with_template } from "@/api/docker_template";
 import Button from "@/components/Button";
 import type { AdminPermInfo } from '@/api/admin_auth';
-import { get_admin_session, get_admin_perm } from '@/api/admin_auth';
+import { get_admin_perm } from '@/api/admin_auth';
 import CreateAppModal from "./components/CreateAppModal";
-import { MoreOutlined } from "@ant-design/icons";
-import { useStores } from "@/hooks";
-import type { ColumnsType } from 'antd/es/table';
-import { download_file } from "@/api/fs";
-import { open as shell_open } from '@tauri-apps/api/shell';
-import defaultIcon from '@/assets/allIcon/app-default-icon.png';
-import moment from "moment";
-import CreateVersionModal from "./components/CreateVersionModal";
+import AppPanel from "./components/AppPanel";
 
 const PAGE_SIZE = 10;
 
 const TemplateList = () => {
-    const appStore = useStores('appStore');
 
     const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
     const [cateList, setCateList] = useState<CateInfo[]>([]);
@@ -28,13 +20,8 @@ const TemplateList = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
 
-    const [removeAwtInfo, setRemoveAwtInfo] = useState<AppWithTemplateInfo | null>(null);
-
     const [showCreateAppModal, setShowCreateAppModal] = useState(false);
 
-    const [curDownloadFileId, setCurDownloadFileId] = useState("");
-
-    const [createTemplateAppId, setCreateTemplateAppId] = useState("");
 
 
     const loadCateList = async () => {
@@ -64,49 +51,6 @@ const TemplateList = () => {
         }
     };
 
-    const downloadFile = async (fileId: string) => {
-        const sessionId = await get_admin_session();
-        setCurDownloadFileId(fileId);
-        try {
-            const res = await download_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", fileId, "", "template.zip");
-            if (res.exist_in_local) {
-                shell_open(res.local_dir);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-        setCurDownloadFileId("");
-    };
-
-    const getIconUrl = (fileId: string) => {
-        if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/x.png`;
-        } else {
-            return `fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/x.png`;
-        }
-    }
-
-    const columns: ColumnsType<TemplateInfo> = [
-        {
-            title: "版本",
-            dataIndex: "version",
-        },
-        {
-            title: "模板文件",
-            render: (_, row) => (
-                <Space>
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        downloadFile(row.file_id);
-                    }}>template.zip</Button>
-                    {curDownloadFileId == row.file_id && (
-                        <Spin tip="下载中" size="small" />
-                    )}
-                </Space>
-            ),
-        }
-    ];
 
     useEffect(() => {
         loadAwtList();
@@ -147,63 +91,13 @@ const TemplateList = () => {
         >
             <List dataSource={awtList} renderItem={item => (
                 <List.Item key={item.app_info.app_id}>
-                    <Card style={{ width: "100%" }} title={item.app_info.name} extra={
-                        <Space size="middle">
-                            <Button onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                //TODO
-                            }} disabled={!(permInfo?.docker_template_perm.update_app ?? false)}>修改</Button>
-                            <Popover trigger="click" placement="bottom" content={
-                                <div style={{ padding: "10px 10px" }}>
-                                    <Button type="link" danger disabled={(item.template_info_list.length > 0) || !(permInfo?.docker_template_perm.remove_app ?? false)}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            setRemoveAwtInfo(item);
-                                        }}>删除模板</Button>
-                                </div>
-                            }>
-                                <MoreOutlined style={{ marginRight: "20px" }} />
-                            </Popover>
-                        </Space>
-                    }>
-                        <div style={{ display: "flex" }}>
-                            <div style={{ width: "100px" }}>
-                                <Image style={{ width: "80px", cursor: "pointer" }}
-                                    src={getIconUrl(item.app_info.icon_file_id)}
-                                    preview={false}
-                                    fallback={defaultIcon}
-                                />
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Form>
-                                    <Form.Item label="模板类别">
-                                        {item.app_info.cate_name}
-                                    </Form.Item>
-                                    <Form.Item label="创建时间">
-                                        {moment(item.app_info.create_time).format("YYYY-MM-DD HH:mm:ss")}
-                                    </Form.Item>
-                                    <Form.Item label="更新时间">
-                                        {moment(item.app_info.update_time).format("YYYY-MM-DD HH:mm:ss")}
-                                    </Form.Item>
-                                </Form>
-                            </div>
-                        </div>
-                        <Divider orientation="left">模板描述</Divider>
-                        <pre>{item.app_info.desc}</pre>
-                        <Card style={{ border: "none" }} extra={
-                            <Button disabled={!(permInfo?.docker_template_perm.create_template ?? false)} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setCreateTemplateAppId(item.app_info.app_id);
-                            }}>上传模板</Button>
-                        }>
-                            <Table rowKey="version" dataSource={item.template_info_list} columns={columns} pagination={false} />
-                        </Card>
-                    </Card>
+                    <AppPanel appInfo={item} cateList={cateList}
+                        onChange={() => loadAwtInfo(item.app_info.app_id)} onRemove={() => {
+                            const tmpList = awtList.filter(tmpItem => tmpItem.app_info.app_id != item.app_info.app_id);
+                            setAwtList(tmpList);
+                        }} />
                 </List.Item>
-            )} />
+            )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             {showCreateAppModal == true && (
                 <CreateAppModal onCancel={() => setShowCreateAppModal(false)} onOk={() => {
                     if (curCateId == "" && curPage == 0) {
@@ -213,12 +107,6 @@ const TemplateList = () => {
                         setCurPage(0);
                     }
                     setShowCreateAppModal(false);
-                }} />
-            )}
-            {createTemplateAppId != "" && (
-                <CreateVersionModal appId={createTemplateAppId} onCancel={() => setCreateTemplateAppId("")} onOk={() => {
-                    loadAwtInfo(createTemplateAppId);
-                    setCreateTemplateAppId("");
                 }} />
             )}
         </Card>

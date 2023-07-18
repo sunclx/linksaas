@@ -41,23 +41,23 @@ const CreateAppModal = (props: CreateAppModalProps) => {
         });
         if (selectd == null || Array.isArray(selectd)) {
             return;
-        } else {
-            const sessionId = await get_admin_session();
-            const res = await request(write_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", selectd, ""));
-            setIconFileId(res.file_id);
-            if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${res.file_id}/x.png`);
-            } else {
-                setIconUrl(`fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${res.file_id}/x.png`);
-            }
         }
+        const sessionId = await get_admin_session();
+        const res = await request(write_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", selectd, ""));
+        setIconFileId(res.file_id);
+        if (appStore.isOsWindows) {
+            setIconUrl(`https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${res.file_id}/x.png`);
+        } else {
+            setIconUrl(`fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${res.file_id}/x.png`);
+        }
+
     };
 
     const createApp = async () => {
         const sessionId = await get_admin_session();
         const createRes = await request(create_app({
             admin_session_id: sessionId,
-            name: curCateId,
+            name: appName,
             desc: appDesc,
             icon_file_id: iconFileId,
             cate_id: curCateId,
@@ -125,7 +125,11 @@ const CreateAppModal = (props: CreateAppModalProps) => {
                 </div>
             </div>
             <Divider orientation="left">模板描述</Divider>
-            <Input.TextArea autoSize={{ minRows: 5, maxRows: 5 }} />
+            <Input.TextArea autoSize={{ minRows: 5, maxRows: 5 }} value={appDesc} onChange={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setAppDesc(e.target.value);
+            }} />
         </Modal>
     );
 };

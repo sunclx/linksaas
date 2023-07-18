@@ -54,7 +54,6 @@ export type AdminCreateAppResponse = {
 
 
 export type AdminUpdateAppRequest = {
-
     admin_session_id: string;
     app_id: string;
     name: string;
