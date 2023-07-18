@@ -8,6 +8,7 @@ import VairableSetting from "./dockerTemplate/VairableSetting";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { save as save_dialog } from '@tauri-apps/api/dialog';
 import { genResult } from "./dockerTemplate/gen";
+import s from "./DockerTemplateModal.module.less";
 
 export interface DockerTemplateModalProps {
     templatePath: string;
@@ -167,6 +168,7 @@ const DockerTemplateModal = (props: DockerTemplateModalProps) => {
 
     return (
         <Modal open title="配置模板参数"
+            maskStyle={{ zIndex: 1000 }}
             okText="生成" okButtonProps={{ disabled: destPath == "" }}
             onCancel={e => {
                 e.stopPropagation();
@@ -179,7 +181,7 @@ const DockerTemplateModal = (props: DockerTemplateModalProps) => {
                 runExport();
             }}>
             {config !== null && (
-                <Tabs defaultActiveKey="destPath">
+                <Tabs defaultActiveKey="destPath" popupClassName={s.popup}>
                     <Tabs.TabPane tab="保存目录" key="destPath">
                         <div style={{ height: "calc(100vh - 400px)", overflowY: "scroll" }}>
                             <Form labelCol={{ span: 6 }}>
