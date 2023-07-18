@@ -89,7 +89,7 @@ const TemplateList = () => {
                 </Space>
             }
         >
-            <List dataSource={awtList} renderItem={item => (
+            <List style={{ height: "calc(100vh - 110px)", overflowY: "scroll" }} dataSource={awtList} renderItem={item => (
                 <List.Item key={item.app_info.app_id}>
                     <AppPanel appInfo={item} cateList={cateList}
                         onChange={() => loadAwtInfo(item.app_info.app_id)} onRemove={() => {
