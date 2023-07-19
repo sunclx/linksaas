@@ -57,7 +57,7 @@ const PubRes = () => {
                     </Tabs.TabPane>
                 )}
                 {appStore.clientCfg?.enable_pub_docker_template == true && (
-                    <Tabs.TabPane tab={<h2><DockerSvg style={{ width: "14px", height: "14px" }} />&nbsp;Docker模板</h2>} key="dockerTemplate">
+                    <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;Docker模板</h2>} key="dockerTemplate">
                         {activeKey == "dockerTemplate" && (
                             <div className={s.content_wrap}>
                                 <DockerTemplatePanel />

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import type { CateInfo, AppWithTemplateInfo } from "@/api/docker_template";
 import { list_cate, list_app_with_template, check_unpark, unpack_template } from "@/api/docker_template";
 import { request } from "@/utils/request";
-import { MoreOutlined } from "@ant-design/icons";
+import { DownloadOutlined, MoreOutlined } from "@ant-design/icons";
 import LocalDockerTemplateModal from "./LocalDockerTemplateModal";
 import DockerTemplateModal from "./DockerTemplateModal";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
@@ -102,7 +102,7 @@ const DockerTemplatePanel = () => {
             }>
             <List dataSource={awtInfoList} renderItem={item => (
                 <List.Item key={item.app_info.app_id}>
-                    <div>
+                    <div style={{ border: "1px solid #e4e4e8", padding: "10px 10px" }}>
                         <div style={{ display: "flex" }}>
                             <div style={{ width: "100px" }}>
                                 <Image style={{ width: "80px" }}
@@ -134,7 +134,7 @@ const DockerTemplatePanel = () => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                         prepareTemplate(template.file_id);
-                                    }}>{template.version}</Button>
+                                    }}>{template.version}&nbsp;<DownloadOutlined /></Button>
                                 </Tag>
                             ))}
                         </Space>
