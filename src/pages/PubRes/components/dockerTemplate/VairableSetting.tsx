@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import type { VariableSchema } from "./schema";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Select } from "antd";
 import InputNumber from "@/components/InputNumber";
 import { useForm } from "antd/lib/form/Form";
 import { FolderOpenOutlined } from "@ant-design/icons";
@@ -53,12 +53,21 @@ const VairableSetting = (props: VairableSettingProps) => {
         }}>
             {props.valCfgList.map(item => (
                 <div key={item.id}>
-                    {item.valueType == "string" && (
+                    {(item.optionList ?? []).length > 0 && (
+                        <Form.Item name={item.id} label={item.name}>
+                            <Select value={item.defaultValue}>
+                                {(item.optionList ?? []).map(tmpItem => (
+                                    <Select.Option key={tmpItem} value={tmpItem}>{tmpItem}</Select.Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    )}
+                    {item.valueType == "string" && (item.optionList ?? []).length == 0 && (
                         <Form.Item name={item.id} label={item.name}>
                             <Input />
                         </Form.Item>
                     )}
-                    {item.valueType == "integer" && (
+                    {item.valueType == "integer" && (item.optionList ?? []).length == 0 && (
                         <Form.Item name={item.id} label={item.name}>
                             <InputNumber min={item.minValue} max={item.maxValue} precision={0} controls={false} />
                         </Form.Item>
