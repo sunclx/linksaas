@@ -29,9 +29,10 @@ const VairableSetting = (props: VairableSettingProps) => {
         const tmpMap: Map<string, string | number> = new Map();
         for (const tmpKey of Object.keys(values)) {
             if (values[tmpKey] !== undefined) {
-                tmpMap.set(tmpKey, values[key]);
+                tmpMap.set(tmpKey, values[tmpKey]);
             }
         }
+        console.log("tmpMap", tmpMap)
         props.onChange(tmpMap);
     }
 
@@ -51,24 +52,24 @@ const VairableSetting = (props: VairableSettingProps) => {
             props.onChange(tmpMap);
         }}>
             {props.valCfgList.map(item => (
-                <>
+                <div key={item.id}>
                     {item.valueType == "string" && (
-                        <Form.Item key={item.id} name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name}>
                             <Input />
                         </Form.Item>
                     )}
                     {item.valueType == "integer" && (
-                        <Form.Item key={item.id} name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name}>
                             <InputNumber min={item.minValue} max={item.maxValue} precision={0} controls={false} />
                         </Form.Item>
                     )}
                     {item.valueType == "float" && (
-                        <Form.Item key={item.id} name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name}>
                             <InputNumber min={item.minValue} max={item.maxValue} controls={false} />
                         </Form.Item>
                     )}
                     {item.valueType == "filePath" && (
-                        <Form.Item key={item.id} name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name}>
                             <Input addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -77,7 +78,7 @@ const VairableSetting = (props: VairableSettingProps) => {
                         </Form.Item>
                     )}
                     {item.valueType == "dirPath" && (
-                        <Form.Item key={item.id} name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name}>
                             <Input addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -85,7 +86,7 @@ const VairableSetting = (props: VairableSettingProps) => {
                             }} />} />
                         </Form.Item>
                     )}
-                </>
+                </div>
             ))}
         </Form>
     );
