@@ -13,6 +13,8 @@ export type AppInfo = {
     icon_file_id: string;
     cate_id: string;
     cate_name: string;
+    official_url: string;
+    doc_url: string;
     template_count: number;
     create_time: number;
     update_time: number;
@@ -42,6 +44,8 @@ export type ListCateResponse = {
 export type ListAppWithTemplateRequest = {
     filter_by_cate_id: boolean;
     cate_id: string;
+    filter_by_keyword: boolean;
+    keyword: string;
     offset: number;
     limit: number;
 };
