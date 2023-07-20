@@ -1,4 +1,4 @@
-import { Card, List, Select, Space } from "antd";
+import { Card, Form, Input, List, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import type { CateInfo, AppWithTemplateInfo } from "@/api/docker_template";
 import { list_cate, list_app_with_template, get_app_with_template } from "@/api/docker_template";
@@ -15,6 +15,7 @@ const TemplateList = () => {
     const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
     const [cateList, setCateList] = useState<CateInfo[]>([]);
     const [curCateId, setCurCateId] = useState("");
+    const [keyword, setKeyword] = useState("");
 
     const [awtList, setAwtList] = useState<AppWithTemplateInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -33,6 +34,8 @@ const TemplateList = () => {
         const res = await list_app_with_template({
             filter_by_cate_id: curCateId !== "",
             cate_id: curCateId,
+            filter_by_keyword: keyword !== "",
+            keyword: keyword,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
         });
@@ -54,7 +57,7 @@ const TemplateList = () => {
 
     useEffect(() => {
         loadAwtList();
-    }, [curPage, curCateId]);
+    }, [curPage, curCateId, keyword]);
 
     useEffect(() => {
         loadCateList();
@@ -68,9 +71,15 @@ const TemplateList = () => {
         <Card title="模板列表"
             style={{ height: "calc(100vh - 40px)", overflowY: "hidden" }}
             extra={
-                <Space size="large">
-                    <span>
-                        模板类别：
+                <Form layout="inline">
+                    <Form.Item label="关键词">
+                        <Input value={keyword} allowClear onChange={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setKeyword(e.target.value.trim());
+                        }} />
+                    </Form.Item>
+                    <Form.Item label="模板类别">
                         <Select style={{ width: "100px" }} value={curCateId} onChange={value => {
                             setCurPage(0);
                             setCurCateId(value);
@@ -80,13 +89,17 @@ const TemplateList = () => {
                                 <Select.Option key={cate.cate_id} value={cate.cate_id}>{cate.cate_name}</Select.Option>
                             ))}
                         </Select>
-                    </span>
-                    <Button onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowCreateAppModal(true);
-                    }} disabled={!((permInfo?.docker_template_perm.create_app ?? false) && cateList.length > 0)}>增加模板</Button>
-                </Space>
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowCreateAppModal(true);
+                        }} disabled={!((permInfo?.docker_template_perm.create_app ?? false) && cateList.length > 0)}>增加模板</Button>
+                    </Form.Item>
+
+                </Form >
             }
         >
             <List style={{ height: "calc(100vh - 110px)", overflowY: "scroll" }} dataSource={awtList} renderItem={item => (
@@ -98,18 +111,20 @@ const TemplateList = () => {
                         }} />
                 </List.Item>
             )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
-            {showCreateAppModal == true && (
-                <CreateAppModal onCancel={() => setShowCreateAppModal(false)} onOk={() => {
-                    if (curCateId == "" && curPage == 0) {
-                        loadAwtList();
-                    } else {
-                        setCurCateId("");
-                        setCurPage(0);
-                    }
-                    setShowCreateAppModal(false);
-                }} />
-            )}
-        </Card>
+            {
+                showCreateAppModal == true && (
+                    <CreateAppModal onCancel={() => setShowCreateAppModal(false)} onOk={() => {
+                        if (curCateId == "" && curPage == 0) {
+                            loadAwtList();
+                        } else {
+                            setCurCateId("");
+                            setCurPage(0);
+                        }
+                        setShowCreateAppModal(false);
+                    }} />
+                )
+            }
+        </Card >
     );
 };
 

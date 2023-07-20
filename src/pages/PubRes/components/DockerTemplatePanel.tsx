@@ -1,4 +1,4 @@
-import { Button, Card, Form, List, Popover, Select, Space, Image, Descriptions, Divider, Tag } from "antd";
+import { Button, Card, Form, List, Popover, Select, Space, Image, Descriptions, Divider, Tag, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import type { CateInfo, AppWithTemplateInfo } from "@/api/docker_template";
 import { list_cate, list_app_with_template, check_unpark, unpack_template } from "@/api/docker_template";
@@ -11,6 +11,7 @@ import { useStores } from "@/hooks";
 import moment from "moment";
 import { download_file } from "@/api/fs";
 import { observer } from 'mobx-react';
+import { open as open_shell } from '@tauri-apps/api/shell';
 
 const PAGE_SIZE = 10;
 
@@ -19,6 +20,7 @@ const DockerTemplatePanel = () => {
     const userStore = useStores('userStore');
 
     const [curCateId, setCurCateId] = useState("");
+    const [keyword, setKeyword] = useState("");
     const [cateInfoList, setCateInfoList] = useState<CateInfo[]>([]);
 
     const [curPage, setCurPage] = useState(0);
@@ -36,6 +38,8 @@ const DockerTemplatePanel = () => {
         const res = await request(list_app_with_template({
             filter_by_cate_id: curCateId !== "",
             cate_id: curCateId,
+            filter_by_keyword: keyword !== "",
+            keyword: keyword,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
         }));
@@ -70,7 +74,7 @@ const DockerTemplatePanel = () => {
 
     useEffect(() => {
         loadAwtInfoList();
-    }, [curPage, curCateId]);
+    }, [curPage, curCateId, keyword]);
 
     return (
         <Card bordered={false}
@@ -78,6 +82,13 @@ const DockerTemplatePanel = () => {
             extra={
                 <Space size="middle">
                     <Form layout="inline">
+                        <Form.Item label="关键词">
+                            <Input allowClear value={keyword} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setKeyword(e.target.value.trim());
+                            }} />
+                        </Form.Item>
                         <Form.Item label="模板类别">
                             <Select value={curCateId} onChange={value => setCurCateId(value)} style={{ width: "100px" }}>
                                 <Select.Option value="">全部</Select.Option>
@@ -102,7 +113,24 @@ const DockerTemplatePanel = () => {
             }>
             <List dataSource={awtInfoList} renderItem={item => (
                 <List.Item key={item.app_info.app_id}>
-                    <div style={{ border: "1px solid #e4e4e8", padding: "10px 10px" }}>
+                    <Card title={item.app_info.name} bodyStyle={{ margin: "10px 10px" }} extra={
+                        <Space size="middle">
+                            {item.app_info.official_url != "" && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    open_shell(item.app_info.official_url);
+                                }}>官网</a>
+                            )}
+                            {item.app_info.doc_url != "" && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    open_shell(item.app_info.doc_url);
+                                }}>文档</a>
+                            )}
+                        </Space>
+                    }>
                         <div style={{ display: "flex" }}>
                             <div style={{ width: "100px" }}>
                                 <Image style={{ width: "80px" }}
@@ -117,7 +145,6 @@ const DockerTemplatePanel = () => {
                             </div>
                             <div style={{ paddingLeft: "20px" }}>
                                 <Descriptions column={1}>
-                                    <Descriptions.Item label="模板名称">{item.app_info.name}</Descriptions.Item>
                                     <Descriptions.Item label="模板类别">{item.app_info.cate_name}</Descriptions.Item>
                                     <Descriptions.Item label="创建时间">{moment(item.app_info.create_time).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
                                     <Descriptions.Item label="更新时间">{moment(item.app_info.update_time).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
@@ -138,7 +165,7 @@ const DockerTemplatePanel = () => {
                                 </Tag>
                             ))}
                         </Space>
-                    </div>
+                    </Card>
                 </List.Item>
             )} pagination={{
                 total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE,
