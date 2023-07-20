@@ -63,7 +63,7 @@ async function genEnvFile(destPath: string, isOsWindows: boolean, envMap: Map<st
         if (typeof value == "number") {
             lineList.push(`${key}=${value}`);
         } else if (typeof value == "string") {
-            const tmpValue = value.replaceAll("\"", "\\\"");
+            const tmpValue = value.replaceAll("\"", "\\\"").replaceAll("\\", "\\\\");
             lineList.push(`${key}="${tmpValue}"`);
         }
     });
