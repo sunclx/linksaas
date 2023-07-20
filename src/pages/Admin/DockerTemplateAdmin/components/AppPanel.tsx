@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Space, Image, Spin, Form, Divider, Table, Modal } from "antd";
+import { Card, Space, Image, Spin, Divider, Table, Modal, Descriptions } from "antd";
 import type { AppWithTemplateInfo, TemplateInfo, CateInfo } from "@/api/docker_template";
 import { update_app, remove_app, remove_template } from "@/api/docker_template_admin";
 import { get_admin_perm, get_admin_session, type AdminPermInfo } from "@/api/admin_auth";
@@ -17,6 +17,7 @@ import Button from "@/components/Button";
 import { EditTextArea } from "@/components/EditCell/EditTextArea";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { write_file, set_file_owner, FILE_OWNER_TYPE_DOCKER_TEMPLATE } from "@/api/fs";
+import { open as open_shell } from '@tauri-apps/api/shell';
 
 
 export interface AppPanelProps {
@@ -103,6 +104,8 @@ const AppPanel = (props: AppPanelProps) => {
             desc: props.appInfo.app_info.desc,
             icon_file_id: res.file_id,
             cate_id: props.appInfo.app_info.cate_id,
+            official_url: props.appInfo.app_info.official_url,
+            doc_url: props.appInfo.app_info.doc_url,
         }));
         props.onChange();
     };
@@ -162,6 +165,8 @@ const AppPanel = (props: AppPanelProps) => {
                             desc: props.appInfo.app_info.desc,
                             icon_file_id: props.appInfo.app_info.icon_file_id,
                             cate_id: props.appInfo.app_info.cate_id,
+                            official_url: props.appInfo.app_info.official_url,
+                            doc_url: props.appInfo.app_info.doc_url,
                         }));
                         props.onChange();
                     } catch (e) {
@@ -192,8 +197,8 @@ const AppPanel = (props: AppPanelProps) => {
                     />
                 </div>
                 <div style={{ flex: 1 }}>
-                    <Form>
-                        <Form.Item label="模板类别">
+                    <Descriptions>
+                        <Descriptions.Item label="模板类别">
                             <EditSelect editable={permInfo?.docker_template_perm.update_app ?? false} curValue={props.appInfo.app_info.cate_id}
                                 itemList={props.cateList.map(item => ({
                                     value: item.cate_id,
@@ -209,6 +214,8 @@ const AppPanel = (props: AppPanelProps) => {
                                             desc: props.appInfo.app_info.desc,
                                             icon_file_id: props.appInfo.app_info.icon_file_id,
                                             cate_id: value as string,
+                                            official_url: props.appInfo.app_info.official_url,
+                                            doc_url: props.appInfo.app_info.doc_url,
                                         }));
                                         props.onChange();
                                     } catch (e) {
@@ -217,14 +224,68 @@ const AppPanel = (props: AppPanelProps) => {
                                     }
                                     return true;
                                 }} />
-                        </Form.Item>
-                        <Form.Item label="创建时间">
+                        </Descriptions.Item>
+                        <Descriptions.Item label="官网地址">
+                            <EditText editable={permInfo?.docker_template_perm.update_app ?? false} content={props.appInfo.app_info.official_url}
+                                showEditIcon={true} onClick={() => {
+                                    if (props.appInfo.app_info.official_url != "") {
+                                        open_shell(props.appInfo.app_info.official_url);
+                                    }
+                                }} onChange={async (value) => {
+                                    const sessionId = await get_admin_session();
+                                    try {
+                                        await request(update_app({
+                                            admin_session_id: sessionId,
+                                            app_id: props.appInfo.app_info.app_id,
+                                            name: props.appInfo.app_info.name,
+                                            desc: props.appInfo.app_info.desc,
+                                            icon_file_id: props.appInfo.app_info.icon_file_id,
+                                            cate_id: props.appInfo.app_info.cate_id,
+                                            official_url: value as string,
+                                            doc_url: props.appInfo.app_info.doc_url,
+                                        }));
+                                        props.onChange();
+                                    } catch (e) {
+                                        console.log(e);
+                                        return false;
+                                    }
+                                    return true;
+                                }} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="文档地址">
+                            <EditText editable={permInfo?.docker_template_perm.update_app ?? false} content={props.appInfo.app_info.doc_url}
+                                showEditIcon={true} onClick={() => {
+                                    if (props.appInfo.app_info.doc_url != "") {
+                                        open_shell(props.appInfo.app_info.doc_url);
+                                    }
+                                }} onChange={async (value) => {
+                                    const sessionId = await get_admin_session();
+                                    try {
+                                        await request(update_app({
+                                            admin_session_id: sessionId,
+                                            app_id: props.appInfo.app_info.app_id,
+                                            name: props.appInfo.app_info.name,
+                                            desc: props.appInfo.app_info.desc,
+                                            icon_file_id: props.appInfo.app_info.icon_file_id,
+                                            cate_id: props.appInfo.app_info.cate_id,
+                                            official_url: props.appInfo.app_info.official_url,
+                                            doc_url: value as string,
+                                        }));
+                                        props.onChange();
+                                    } catch (e) {
+                                        console.log(e);
+                                        return false;
+                                    }
+                                    return true;
+                                }} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="创建时间">
                             {moment(props.appInfo.app_info.create_time).format("YYYY-MM-DD HH:mm:ss")}
-                        </Form.Item>
-                        <Form.Item label="更新时间">
+                        </Descriptions.Item>
+                        <Descriptions.Item label="更新时间">
                             {moment(props.appInfo.app_info.update_time).format("YYYY-MM-DD HH:mm:ss")}
-                        </Form.Item>
-                    </Form>
+                        </Descriptions.Item>
+                    </Descriptions>
                 </div>
             </div>
             <Divider orientation="left">模板描述</Divider>
@@ -240,6 +301,8 @@ const AppPanel = (props: AppPanelProps) => {
                                 desc: value,
                                 icon_file_id: props.appInfo.app_info.icon_file_id,
                                 cate_id: props.appInfo.app_info.cate_id,
+                                official_url: props.appInfo.app_info.official_url,
+                                doc_url: props.appInfo.app_info.doc_url,
                             }));
                             props.onChange();
                         } catch (e) {

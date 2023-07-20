@@ -44,6 +44,8 @@ export type AdminCreateAppRequest = {
     desc: string;
     icon_file_id: string;
     cate_id: string;
+    official_url: string;
+    doc_url: string;
 };
 
 export type AdminCreateAppResponse = {
@@ -60,6 +62,8 @@ export type AdminUpdateAppRequest = {
     desc: string;
     icon_file_id: string;
     cate_id: string;
+    official_url: string;
+    doc_url: string;
 };
 
 export type AdminUpdateAppResponse = {

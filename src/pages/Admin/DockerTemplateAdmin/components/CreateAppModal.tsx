@@ -1,4 +1,4 @@
-import { Divider, Form, Input, Modal, Image, Select } from "antd";
+import { Divider, Form, Input, Modal, Image, Select,message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { CateInfo } from "@/api/docker_template";
 import { list_cate } from "@/api/docker_template";
@@ -25,6 +25,8 @@ const CreateAppModal = (props: CreateAppModalProps) => {
     const [curCateId, setCurCateId] = useState("");
     const [appName, setAppName] = useState("");
     const [appDesc, setAppDesc] = useState("");
+    const [officialUrl, setOfficialUrl] = useState("");
+    const [docUrl, setDocUrl] = useState("");
 
     const loadCateList = async () => {
         const res = await list_cate({});
@@ -54,6 +56,14 @@ const CreateAppModal = (props: CreateAppModalProps) => {
     };
 
     const createApp = async () => {
+        if(officialUrl != "" && officialUrl.startsWith("https://") == false){
+            message.error("官网地址必须以https://开头");
+            return;
+        }
+        if(docUrl != "" && docUrl.startsWith("https://") == false){
+            message.error("文档地址必须以https://开头");
+            return;
+        }
         const sessionId = await get_admin_session();
         const createRes = await request(create_app({
             admin_session_id: sessionId,
@@ -61,6 +71,8 @@ const CreateAppModal = (props: CreateAppModalProps) => {
             desc: appDesc,
             icon_file_id: iconFileId,
             cate_id: curCateId,
+            official_url: officialUrl,
+            doc_url: docUrl
         }));
         if (iconFileId != "") {
             await request(set_file_owner({
@@ -124,6 +136,35 @@ const CreateAppModal = (props: CreateAppModalProps) => {
                     </Form>
                 </div>
             </div>
+            <Divider orientation="left">可选参数</Divider>
+            <Form labelCol={{ span: 4 }}>
+                <Form.Item label="官网地址" help={
+                    <>
+                        {officialUrl.startsWith("https://".substring(0, officialUrl.length)) == false && (
+                            <span style={{ color: "red" }}>地址必须以https://开头</span>
+                        )}
+                    </>
+                }>
+                    <Input value={officialUrl} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setOfficialUrl(e.target.value.trim());
+                    }} />
+                </Form.Item>
+                <Form.Item label="文档地址" help={
+                    <>
+                        {docUrl.startsWith("https://".substring(0, docUrl.length)) == false && (
+                            <span style={{ color: "red" }}>地址必须以https://开头</span>
+                        )}
+                    </>
+                }>
+                    <Input value={docUrl} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setDocUrl(e.target.value.trim());
+                    }} />
+                </Form.Item>
+            </Form>
             <Divider orientation="left">模板描述</Divider>
             <Input.TextArea autoSize={{ minRows: 5, maxRows: 5 }} value={appDesc} onChange={e => {
                 e.stopPropagation();
