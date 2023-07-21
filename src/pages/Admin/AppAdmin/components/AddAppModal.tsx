@@ -68,6 +68,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
 
     const [iconFileId, setIconFileId] = useState("");
     const [iconUrl, setIconUrl] = useState("");
+    const [srcUrl, setSrcUrl] = useState("");
 
     const [localPath, setLocalPath] = useState("");
     const [uploadRatio, setUploadRatio] = useState(0);
@@ -146,6 +147,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
                 app_name: appNameValue,
                 app_desc: JSON.stringify(content),
                 icon_file_id: iconFileId,
+                src_url: srcUrl.startsWith("https://") ? srcUrl : "",
             },
             major_cate_id: curMajorCateId,
             minor_cate_id: curMinorCateId,
@@ -226,7 +228,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
                     />
                 </div>
                 <div className={s.right}>
-                    <Form>
+                    <Form labelCol={{ span: 5 }}>
                         <Form.Item label="应用名称">
                             <Input value={appName} onChange={e => {
                                 e.stopPropagation();
@@ -249,6 +251,13 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
                                     e.preventDefault();
                                     choicePath();
                                 }} />} />
+                        </Form.Item>
+                        <Form.Item label="源代码地址">
+                            <Input value={srcUrl} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSrcUrl(e.target.value.trim());
+                            }} />
                         </Form.Item>
                         <Form.Item label="发布系统">
                             <Checkbox checked={osWindows} onChange={e => {
