@@ -11,6 +11,7 @@ import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_ap
 import { get_cache_file } from '@/api/fs';
 import DownloadProgressModal from "@/pages/Project/AppStore/components/DownloadProgressModal";
 import { OPEN_TYPE_MIN_APP_IN_STORE, add as add_project_app, set_min_app_perm, query_in_store as query_project_app_in_store, remove as remove_project_app, get_min_app_perm, get_token_url } from "@/api/project_app";
+import { open as open_shell } from '@tauri-apps/api/shell';
 
 interface AppInfoModalProps {
     appInfo: AppInfo;
@@ -349,8 +350,16 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
                                 ))}
                             </Form>
                         )}
-
                     </Descriptions.Item>
+                    {props.appInfo.base_info.src_url !== "" && (
+                        <Descriptions.Item label="源代码">
+                            <a onClick={e=>{
+                                e.stopPropagation();
+                                e.preventDefault();
+                                open_shell(props.appInfo.base_info.src_url);
+                            }}>{props.appInfo.base_info.src_url}</a>
+                        </Descriptions.Item>
+                    )}
                 </Descriptions>
             </Modal>
             {showDownload != null && (
