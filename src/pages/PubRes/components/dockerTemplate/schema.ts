@@ -16,6 +16,7 @@ export interface VariableSchema {
     minValue?: number;
     maxValue?: number;
     optionList?: (string | number)[];
+    tip?: string;
 }
 
 
@@ -23,7 +24,7 @@ export interface FileSchema {
     name: string;
     features?: string[];
     variables?: VariableSchema[];
-    _variables?: VariableSchema[]; 
+    _variables?: VariableSchema[];
 }
 
 export interface RemoteFileSchema {
