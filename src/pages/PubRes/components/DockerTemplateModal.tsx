@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, Tabs, message } from "antd";
+import { Button, Descriptions, Form, Input, Modal, Tabs, message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { DockerComposeTemplateSchema, VariableSchema, FileSchema } from "./dockerTemplate/schema";
 import { useStores } from "@/hooks";
@@ -9,6 +9,8 @@ import { FolderOpenOutlined } from "@ant-design/icons";
 import { save as save_dialog } from '@tauri-apps/api/dialog';
 import { genResult } from "./dockerTemplate/gen";
 import s from "./DockerTemplateModal.module.less";
+import { open as open_shell } from '@tauri-apps/api/shell';
+
 
 export interface DockerTemplateModalProps {
     templatePath: string;
@@ -154,6 +156,7 @@ const DockerTemplateModal = (props: DockerTemplateModalProps) => {
         }
     };
 
+
     useEffect(() => {
         loadConfig();
     }, []);
@@ -225,6 +228,19 @@ const DockerTemplateModal = (props: DockerTemplateModalProps) => {
                             </div>
                         </Tabs.TabPane>
                     ))}
+                    <Tabs.TabPane tab="其他" key="other">
+                        <div style={{ height: "calc(100vh - 400px)", overflowY: "scroll" }}>
+                            <Descriptions column={1}>
+                                <Descriptions.Item label="操作">
+                                    <a onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        open_shell(props.templatePath);
+                                    }}>查看模板目录</a>
+                                </Descriptions.Item>
+                            </Descriptions>
+                        </div>
+                    </Tabs.TabPane>
                 </Tabs>
             )}
 
