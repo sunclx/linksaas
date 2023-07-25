@@ -878,6 +878,45 @@ const dataAnnoEventList: EventDesc[] = [
     },
 ];
 
+const apiCollectionEventList: EventDesc[] = [
+    {
+        id: "CreateApiCollectionEvent",
+        name: "创建接口集合",
+        attrList: [
+            {
+                key: "api_coll_id",
+                desc: "接口集合ID",
+            },
+            {
+                key: "api_coll_type",
+                desc: "接口集合类型",
+            },
+            {
+                key: "name",
+                desc: "接口集合名称",
+            },
+        ],
+    },
+    {
+        id: "RemoveApiCollectionEvent",
+        name: "删除接口集合",
+        attrList: [
+            {
+                key: "api_coll_id",
+                desc: "接口集合ID",
+            },
+            {
+                key: "api_coll_type",
+                desc: "接口集合类型",
+            },
+            {
+                key: "name",
+                desc: "接口集合名称",
+            },
+        ],
+    },
+];
+
 const testCaseEventList: EventDesc[] = [
     {
         id: "CreateEntryEvent",
@@ -4148,4 +4187,9 @@ export const eventGroupList: EventGroup[] = [
         name: "数据标注",
         eventDescList: dataAnnoEventList,
     },
+    {
+        id: "ApiCollectionEvent",
+        name: "接口集合",
+        eventDescList: apiCollectionEventList,
+    }
 ];

@@ -226,7 +226,10 @@ export type DataAnnoEvCfg = {
     remove_anno_member: boolean;
 };
 
-
+export type ApiCollectionEvCfg = {
+    create: boolean;
+    remove: boolean;
+}
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
@@ -245,6 +248,7 @@ export type EventCfg = {
     code_ev_cfg: CodeEvCfg;
     idea_ev_cfg: IdeaEvCfg;
     data_anno_ev_cfg: DataAnnoEvCfg;
+    api_collection_ev_cfg: ApiCollectionEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -352,6 +356,20 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             remove_idea: false,
             set_appraise: false,
             cancel_appraise: false,
+        };
+    }
+    if (cfg.data_anno_ev_cfg == undefined) {
+        cfg.data_anno_ev_cfg = {
+            create_anno_project: false,
+            remove_anno_project: false,
+            add_anno_member: false,
+            remove_anno_member: false,
+        };
+    }
+    if (cfg.api_collection_ev_cfg == undefined) {
+        cfg.api_collection_ev_cfg = {
+            create: false,
+            remove: false,
         };
     }
     return cfg;

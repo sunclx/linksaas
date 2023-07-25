@@ -1,7 +1,7 @@
 import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDataAnnoEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, dataAnnoEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { apiCollectionEvOptionList, bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDataAnnoEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, dataAnnoEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
@@ -32,6 +32,7 @@ interface FormValue {
     codeEvCfg: string[] | undefined;
     ideaEvCfg: string[] | undefined;
     dataAnnoEvCfg: string[] | undefined;
+    apiCollectionEvCfg: string[] | undefined;
 }
 
 
@@ -91,6 +92,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [dataAnnoEvCfgCheckAll, setDataAnnoEvCfgCheckAll] = useState(false);
     const [dataAnnoEvCfgIndeterminate, setDataAnnoEvCfgIndeterminate] = useState(false);
 
+    const [apiCollectionEvCfgCheckAll, setApiCollectionEvCfgCheckAll] = useState(false);
+    const [apiCollectionEvCfgIndeterminate, setApiCollectionEvCfgIndeterminate] = useState(false);
+
     const createSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -130,6 +134,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
+                api_collection_ev_cfg: calcApiCollectionEvcfg(formValue.apiCollectionEvCfg),
             },
         }));
         props.onOk();
@@ -568,6 +573,32 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                         }} />
                     </Form.Item>
 
+                    <Form.Item label={<Checkbox indeterminate={apiCollectionEvCfgIndeterminate} checked={apiCollectionEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setApiCollectionEvCfgIndeterminate(false);
+                        if (apiCollectionEvCfgCheckAll) {
+                            setApiCollectionEvCfgCheckAll(false);
+                            form.setFieldValue("apiCollectionEvCfg", []);
+                        } else {
+                            setApiCollectionEvCfgCheckAll(true);
+                            form.setFieldValue("apiCollectionEvCfg", apiCollectionEvOptionList.map(item => item.value));
+                        }
+                    }}>接口集合事件</Checkbox>} name="apiCollectionEvCfg">
+                        <Checkbox.Group options={apiCollectionEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setApiCollectionEvCfgCheckAll(false);
+                                setApiCollectionEvCfgIndeterminate(false);
+                            } else if (values.length == apiCollectionEvOptionList.length) {
+                                setApiCollectionEvCfgCheckAll(true);
+                                setApiCollectionEvCfgIndeterminate(false);
+                            } else {
+                                setApiCollectionEvCfgCheckAll(false);
+                                setApiCollectionEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    
                 </Form>
             </div>
         </Modal>
@@ -575,3 +606,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 }
 
 export default observer(CreateSubscribeModal);
+function calcApiCollectionEvcfg(apiCollectionEvCfg: string[] | undefined): import("@/api/events_subscribe").ApiCollectionEvCfg {
+    throw new Error("Function not implemented.");
+}
+

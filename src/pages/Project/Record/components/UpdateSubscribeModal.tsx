@@ -3,7 +3,7 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDataAnnoEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, dataAnnoEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues, genCodeEvCfgValues, genDataAnnoEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIdeaEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { apiCollectionEvOptionList, bookShelfEvOptionList, calcApiCollectionEvCfg, calcBookShelfEvCfg, calcCodeEvCfg, calcDataAnnoEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, dataAnnoEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genApiCollectionEvCfgValues, genBookShelfEvCfgValues, genCodeEvCfgValues, genDataAnnoEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIdeaEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -32,6 +32,7 @@ interface FormValue {
     codeEvCfg: string[] | undefined;
     ideaEvCfg: string[] | undefined;
     dataAnnoEvCfg: string[] | undefined;
+    apiCollectionEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -103,6 +104,10 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [dataAnnoEvCfgCheckAll, setDataAnnoEvCfgCheckAll] = useState(dataAnnoEvCfgValues.length == dataAnnoEvOptionList.length);
     const [dataAnnoEvCfgIndeterminate, setDataAnnoEvCfgIndeterminate] = useState(dataAnnoEvCfgValues.length > 0 && dataAnnoEvCfgValues.length < dataAnnoEvOptionList.length);
 
+    const apiCollectionEvCfgValues = genApiCollectionEvCfgValues(props.subscribe.event_cfg.api_collection_ev_cfg);
+    const [apiCollectionEvCfgCheckAll, setApiCollectionEvCfgCheckAll] = useState(apiCollectionEvCfgValues.length == apiCollectionEvOptionList.length);
+    const [apiCollectionEvCfgIndeterminate, setApiCollectionEvCfgIndeterminate] = useState(apiCollectionEvCfgValues.length > 0 && apiCollectionEvCfgValues.length < apiCollectionEvOptionList.length);
+
     const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -130,6 +135,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
+                api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
             },
         }));
         props.onOk();
@@ -565,6 +571,32 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setDataAnnoEvCfgCheckAll(false);
                                 setDataAnnoEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+
+                    <Form.Item label={<Checkbox indeterminate={apiCollectionEvCfgIndeterminate} checked={apiCollectionEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setApiCollectionEvCfgIndeterminate(false);
+                        if (apiCollectionEvCfgCheckAll) {
+                            setApiCollectionEvCfgCheckAll(false);
+                            form.setFieldValue("apiCollectionEvCfg", []);
+                        } else {
+                            setApiCollectionEvCfgCheckAll(true);
+                            form.setFieldValue("apiCollectionEvCfg", apiCollectionEvOptionList.map(item => item.value));
+                        }
+                    }}>接口集合事件</Checkbox>} name="apiCollectionEvCfg">
+                        <Checkbox.Group options={apiCollectionEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setApiCollectionEvCfgCheckAll(false);
+                                setApiCollectionEvCfgIndeterminate(false);
+                            } else if (values.length == apiCollectionEvOptionList.length) {
+                                setApiCollectionEvCfgCheckAll(true);
+                                setApiCollectionEvCfgIndeterminate(false);
+                            } else {
+                                setApiCollectionEvCfgCheckAll(false);
+                                setApiCollectionEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg,
-    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg
+    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -2057,4 +2057,44 @@ export const genDataAnnoEvCfgValues = (cfg: DataAnnoEvCfg): string[] => {
         retList.push("remove_anno_member");
     }
     return retList;
-}
+};
+
+export const apiCollectionEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建接口集合",
+        value: "create",
+    },
+    {
+        label: "删除接口集合",
+        value: "remove",
+    }
+];
+
+export const calcApiCollectionEvCfg = (values: string[] | undefined): ApiCollectionEvCfg => {
+    const ret: ApiCollectionEvCfg = {
+        create: false,
+        remove: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create") {
+            ret.create = true;
+        } else if (value == "remove") {
+            ret.remove = true;
+        }
+    });
+    return ret;
+};
+
+export const genApiCollectionEvCfgValues = (cfg: ApiCollectionEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create) {
+        retList.push("create");
+    }
+    if (cfg.remove) {
+        retList.push("remove");
+    }
+    return retList;
+};
