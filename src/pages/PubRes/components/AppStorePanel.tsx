@@ -6,7 +6,7 @@ import { request } from "@/utils/request";
 import { platform } from '@tauri-apps/api/os';
 import { useStores } from "@/hooks";
 import AppInfoModal from "./AppInfoModal";
-
+import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 
 const PAGE_SIZE = 20;
 
@@ -158,7 +158,7 @@ const AppStorePanel = () => {
                         setShowAppInfo(app);
                     }}>
                         <Image style={{ width: "80px", height: "80px", cursor: "pointer" }}
-                            src={adjustUrl(app.base_info.icon_file_id)} preview={false} />
+                            src={adjustUrl(app.base_info.icon_file_id)}  fallback={defaultIcon} preview={false} />
                     </Card>
                 )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: (page) => setCurPage(page - 1) }} />
 

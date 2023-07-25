@@ -54,7 +54,7 @@ const VairableSetting = (props: VairableSettingProps) => {
             {props.valCfgList.map(item => (
                 <div key={item.id}>
                     {(item.optionList ?? []).length > 0 && (
-                        <Form.Item name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name} help={item.tip ?? ""}>
                             <Select value={item.defaultValue}>
                                 {(item.optionList ?? []).map(tmpItem => (
                                     <Select.Option key={tmpItem} value={tmpItem}>{tmpItem}</Select.Option>
@@ -63,22 +63,22 @@ const VairableSetting = (props: VairableSettingProps) => {
                         </Form.Item>
                     )}
                     {item.valueType == "string" && (item.optionList ?? []).length == 0 && (
-                        <Form.Item name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name} help={item.tip ?? ""}>
                             <Input />
                         </Form.Item>
                     )}
                     {item.valueType == "integer" && (item.optionList ?? []).length == 0 && (
-                        <Form.Item name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name} help={item.tip ?? ""}>
                             <InputNumber min={item.minValue} max={item.maxValue} precision={0} controls={false} />
                         </Form.Item>
                     )}
                     {item.valueType == "float" && (
-                        <Form.Item name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name} help={item.tip ?? ""}>
                             <InputNumber min={item.minValue} max={item.maxValue} controls={false} />
                         </Form.Item>
                     )}
                     {item.valueType == "filePath" && (
-                        <Form.Item name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name} help={item.tip ?? ""}>
                             <Input addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -87,7 +87,7 @@ const VairableSetting = (props: VairableSettingProps) => {
                         </Form.Item>
                     )}
                     {item.valueType == "dirPath" && (
-                        <Form.Item name={item.id} label={item.name}>
+                        <Form.Item name={item.id} label={item.name} help={item.tip ?? ""}>
                             <Input addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();

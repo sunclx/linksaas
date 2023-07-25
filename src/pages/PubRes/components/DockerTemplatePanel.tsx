@@ -82,13 +82,6 @@ const DockerTemplatePanel = () => {
             extra={
                 <Space size="middle">
                     <Form layout="inline">
-                        <Form.Item label="关键词">
-                            <Input allowClear value={keyword} onChange={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setKeyword(e.target.value.trim());
-                            }} />
-                        </Form.Item>
                         <Form.Item label="模板类别">
                             <Select value={curCateId} onChange={value => setCurCateId(value)} style={{ width: "100px" }}>
                                 <Select.Option value="">全部</Select.Option>
@@ -96,6 +89,13 @@ const DockerTemplatePanel = () => {
                                     <Select.Option key={cateInfo.cate_id} value={cateInfo.cate_id}>{cateInfo.cate_name}</Select.Option>
                                 ))}
                             </Select>
+                        </Form.Item>
+                        <Form.Item label="关键词">
+                            <Input style={{ width: "150px" }} allowClear value={keyword} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setKeyword(e.target.value.trim());
+                            }} />
                         </Form.Item>
                     </Form>
                     <Popover trigger="click" placement="bottom" content={

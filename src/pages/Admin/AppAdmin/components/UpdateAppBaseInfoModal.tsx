@@ -25,6 +25,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
     const [iconFileId, setIconFileId] = useState(props.baseInfo.icon_file_id);
     const [iconUrl, setIconUrl] = useState("");
     const [appName, setAppName] = useState(props.baseInfo.app_name);
+    const [srcUrl, setSrcUrl] = useState(props.baseInfo.src_url);
 
     const { editor, editorRef } = useCommonEditor({
         content: props.baseInfo.app_desc,
@@ -84,6 +85,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
                 app_name: appNameValue,
                 app_desc: JSON.stringify(content),
                 icon_file_id: iconFileId,
+                src_url: srcUrl.startsWith("https://") ? srcUrl : props.baseInfo.src_url,
             },
         }));
         props.onOk();
@@ -126,12 +128,19 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
                     />
                 </div>
                 <div className={s.right}>
-                    <Form>
+                    <Form labelCol={{ span: 8 }}>
                         <Form.Item label="应用名称">
                             <Input value={appName} onChange={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setAppName(e.target.value);
+                            }} />
+                        </Form.Item>
+                        <Form.Item label="源代码地址">
+                            <Input value={srcUrl} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSrcUrl(e.target.value);
                             }} />
                         </Form.Item>
                     </Form>

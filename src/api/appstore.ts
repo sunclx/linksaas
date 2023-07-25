@@ -32,6 +32,7 @@ export type BaseAppInfo = {
     app_name: string;
     app_desc: string;
     icon_file_id: string;
+    src_url: string;
 };
 
 export type AppNetPerm = {
