@@ -12,6 +12,8 @@ import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import { EditText } from "@/components/EditCell/EditText";
 import { WebviewWindow } from '@tauri-apps/api/window';
+import UpdateGrpcModal from "./components/UpdateGrpcModal";
+import UpdateSwaggerModal from "./components/UpdateSwaggerModal";
 
 const PAGE_SIZE = 10;
 
@@ -26,6 +28,8 @@ const ApiCollectionList = () => {
     const [curPage, setCurPage] = useState(0);
 
     const [removeApiCollInfo, setRemoveApiCollInfo] = useState<ApiCollInfo | null>(null);
+    const [updateGrpcApiId, setUpdateGrpcApiId] = useState("");
+    const [updateOpenApiId, setUpdateOpenApiId] = useState("");
 
     const loadApiCollInfoList = async () => {
         const res = await request(list_info({
@@ -147,11 +151,33 @@ const ApiCollectionList = () => {
         {
             title: "操作",
             render: (_, row) => (
-                <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setRemoveApiCollInfo(row);
-                }}>删除</Button>
+                <Space size="large">
+                    {row.api_coll_type == API_COLL_GRPC && (
+                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                            disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setUpdateGrpcApiId(row.api_coll_id);
+                            }}>更新接口协议</Button>
+                    )}
+                    {row.api_coll_type == API_COLL_OPENAPI && (
+                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                            disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setUpdateOpenApiId(row.api_coll_id);
+                            }}>更新接口协议</Button>
+                    )}
+                    <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
+                        disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setRemoveApiCollInfo(row);
+                        }}>删除</Button>
+                </Space>
             ),
         }
     ];
@@ -199,6 +225,12 @@ const ApiCollectionList = () => {
                     }}>
                     是否删除API集合&nbsp;{removeApiCollInfo.name}&nbsp;?
                 </Modal>
+            )}
+            {updateGrpcApiId != "" && (
+                <UpdateGrpcModal apiCollId={updateGrpcApiId} onClose={() => setUpdateGrpcApiId("")} />
+            )}
+            {updateOpenApiId != "" && (
+                <UpdateSwaggerModal apiCollId={updateOpenApiId} onClose={() => setUpdateOpenApiId("")} />
             )}
         </CardWrap>
     );

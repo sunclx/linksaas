@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import 'swagger-ui-react/swagger-ui.css';
 import SwaggerUI from 'swagger-ui-react';
-import { Card, message } from "antd";
+import { Button, Card, Form, Input, Modal, Space, message } from "antd";
 import { get_open_api } from "@/api/api_collection";
 import { request } from "@/utils/request";
 import { get_session } from "@/api/user";
 import { download_file } from "@/api/fs";
 import { readTextFile } from '@tauri-apps/api/fs';
 import YAML from 'yaml'
-import { EditText } from "@/components/EditCell/EditText";
+import { EditOutlined } from "@ant-design/icons";
 
 const SwaggerPage = () => {
     const location = useLocation();
@@ -21,6 +21,8 @@ const SwaggerPage = () => {
 
     const [spec, setSpec] = useState<object | null>(null);
     const [addr, setAddr] = useState("");
+    const [tmpAddr, setTmpAddr] = useState("");
+    const [inEdit, setInEdit] = useState(false);
 
     const loadSpec = async () => {
         const sessionId = await get_session();
@@ -70,28 +72,64 @@ const SwaggerPage = () => {
 
     return (
         <Card bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "auto" }} extra={
-            <div style={{ height: "30px", width: "200px" }}>
+            <div style={{ height: "30px", display: "flex", justifyContent: "flex-end" }}>
                 {spec !== null && (
-                    <EditText editable={true} content={addr} showEditIcon={true}
-                        onChange={async value => {
-                            if (!(value.startsWith("http://") || value.startsWith("https://"))) {
-                                message.error("非法的http地址")
-                                return false;
-                            }
-                            const tmpSpec = Object.assign({}, spec);
-                            (tmpSpec as any).servers = [
-                                {
-                                    url: value.trim(),
-                                }
-                            ];
-                            setSpec(tmpSpec);
-                            return true;
-                        }} />
+                    <Space>
+                        <span>{addr}</span>
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setTmpAddr(addr);
+                            setInEdit(true);
+                        }}><EditOutlined /></Button>
+                    </Space>
                 )}
             </div>
         }>
             {spec !== null && (
                 <SwaggerUI spec={spec} />
+            )}
+            {inEdit == true && (
+                <Modal open title="更新访问地址"
+                    okText="更新" okButtonProps={{ disabled: tmpAddr == "" || tmpAddr == addr }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setInEdit(false);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (!(tmpAddr.startsWith("http://") || (tmpAddr.startsWith("https://")))) {
+                            message.error("不是合法的URL")
+                            return;
+                        }
+                        setInEdit(false);
+                        setAddr(tmpAddr);
+                        const tmpSpec = Object.assign({}, spec);
+                        (tmpSpec as any).servers = [
+                            {
+                                url: tmpAddr,
+                            }
+                        ];
+                        setSpec(tmpSpec);
+                    }}>
+                    <Form>
+                        <Form.Item label="URL" help={
+                            <>
+                                {!(tmpAddr.startsWith("http://") || (tmpAddr.startsWith("https://"))) && (
+                                    <span style={{ color: "red" }}>不是合法的URL</span>
+                                )}
+                            </>
+                        }>
+                            <Input value={tmpAddr} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setTmpAddr(e.target.value.trim());
+                            }} />
+                        </Form.Item>
+                    </Form>
+                </Modal>
             )}
         </Card>
     );
