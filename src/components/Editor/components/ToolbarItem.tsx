@@ -25,7 +25,6 @@ import {
   WIDGET_TYPE_MEMBER_DUTY,
   WIDGET_TYPE_OTSW,
   WIDGET_TYPE_SOAR,
-  WIDGET_TYPE_SWAGGER,
   WIDGET_TYPE_SWOT,
   WIDGET_TYPE_TECH_COMPARE,
   WIDGET_TYPE_TIME_RANGE,
@@ -414,10 +413,6 @@ const ContentWidget = observer(() => {
             {
               key: WIDGET_TYPE_MERMAID,
               label: 'mermaid',
-            },
-            {
-              key: WIDGET_TYPE_SWAGGER,
-              label: 'swagger',
             },
           ],
         },

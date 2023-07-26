@@ -6,7 +6,6 @@ export { L5w2hWidget } from './L5w2hWidget';
 export { MemberDutyWidget } from './MemberDutyWidget';
 export { OtswWidget } from './OtswWidget';
 export { SoarWidget } from './SoarWidget';
-export { SwaggerWidget } from './SwaggerWidget';
 export { SwotWidget } from './SwotWidget';
 export { TechCompareWidget } from './TechCompareWidget';
 export { TimeRangeWidget } from './TimeRangeWidget';
@@ -25,7 +24,6 @@ import { l5w2hWidgetInitData } from './L5w2hWidget';
 import { memberDutyWidgetInitData } from './MemberDutyWidget';
 import { otswWidgetInitData } from './OtswWidget';
 import { soarWidgetInitData } from './SoarWidget';
-import { swaggerWidgetInitData } from './SwaggerWidget';
 import { swotWidgetInitData } from './SwotWidget';
 import { techCompareWidgetInitData } from './TechCompareWidget';
 import { timeRangeWidgetInitData } from './TimeRangeWidget';
@@ -47,7 +45,6 @@ export const WIDGET_TYPE_5W2H: WIDGET_TYPE = "5w2h"; //七问分析法
 export const WIDGET_TYPE_MEMBER_DUTY: WIDGET_TYPE = "memberDuty"; //成员职责 
 export const WIDGET_TYPE_OTSW: WIDGET_TYPE = "otsw"; //OTSW分析法 
 export const WIDGET_TYPE_SOAR: WIDGET_TYPE = "soar"; //SOAR分析法 
-export const WIDGET_TYPE_SWAGGER: WIDGET_TYPE = "swagger"; //swagger api测试 
 export const WIDGET_TYPE_SWOT: WIDGET_TYPE = "swot"; //SWOT分析法 
 export const WIDGET_TYPE_TECH_COMPARE: WIDGET_TYPE = "techCompare"; //技术对比 
 export const WIDGET_TYPE_TIME_RANGE: WIDGET_TYPE = "timeRange"; // 时间区间
@@ -68,7 +65,6 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_MEMBER_DUTY,
     WIDGET_TYPE_OTSW,
     WIDGET_TYPE_SOAR,
-    WIDGET_TYPE_SWAGGER,
     WIDGET_TYPE_SWOT,
     WIDGET_TYPE_TECH_COMPARE,
     WIDGET_TYPE_TIME_RANGE,
@@ -92,7 +88,6 @@ WidgetInitDataMap.set(WIDGET_TYPE_5W2H, l5w2hWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_MEMBER_DUTY, memberDutyWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_OTSW, otswWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SOAR, soarWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_SWAGGER, swaggerWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SWOT, swotWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TECH_COMPARE, techCompareWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TIME_RANGE, timeRangeWidgetInitData);
