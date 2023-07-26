@@ -28,6 +28,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
+    const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
 
     const [hasChange, setHasChange] = useState(false);
 
@@ -55,6 +56,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_ext_event: disableExtEvent,
                 disable_app_store: disableAppStore,
                 disable_data_anno: disableDataAnno,
+                disable_api_collection: disableApiCollection,
                 disable_chat: disableChat,
                 disable_kb: disableKb,
                 disable_work_plan: disableWorkPlan,
@@ -138,16 +140,21 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableServerAgent(e.target.checked);
                             setHasChange(true);
                         }}>关闭自动化入口</Checkbox>
-                        <Checkbox checked={disableExtEvent} onChange={e => {
+                        <Checkbox checked={disableApiCollection} onChange={e => {
                             e.stopPropagation();
-                            setDisableExtEvent(e.target.checked);
+                            setDisableApiCollection(e.target.checked);
                             setHasChange(true);
-                        }}>关闭第三方接入入口</Checkbox>
+                        }}>关闭接口集合入口</Checkbox>
                         <Checkbox checked={disableDataAnno} onChange={e => {
                             e.stopPropagation();
                             setDisableDataAnno(e.target.checked);
                             setHasChange(true);
                         }}>关闭数据标注入口</Checkbox>
+                        <Checkbox checked={disableExtEvent} onChange={e => {
+                            e.stopPropagation();
+                            setDisableExtEvent(e.target.checked);
+                            setHasChange(true);
+                        }}>关闭第三方接入入口</Checkbox>
                         <Checkbox checked={disableAppStore} onChange={e => {
                             e.stopPropagation();
                             setDisableAppStore(e.target.checked);

@@ -598,6 +598,25 @@ async fn get_fs_status<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn make_tmp_dir<R: Runtime>(window: Window<R>) -> Result<String, String> {
+    if window.label() != "main" {
+        return Err("no permission".into());
+    }
+    let app_tmp_dir = crate::get_tmp_dir();
+    if app_tmp_dir.is_none() {
+        return Err("no tmp dir".into());
+    }
+    let tmp_dir = mktemp::Temp::new_dir_in(app_tmp_dir.unwrap());
+    if tmp_dir.is_err() {
+        return Err(tmp_dir.err().unwrap().to_string());
+    }
+    let tmp_dir = tmp_dir.unwrap();
+    let tmp_dir = tmp_dir.release();
+    let tmp_dir = String::from(tmp_dir.to_string_lossy());
+    return Ok(tmp_dir);
+}
+
 pub struct FsApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -616,6 +635,7 @@ impl<R: Runtime> FsApiPlugin<R> {
                 copy_file,
                 get_fs_status,
                 save_tmp_file_base64,
+                make_tmp_dir
             ]),
         }
     }

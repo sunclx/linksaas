@@ -34,7 +34,8 @@
         "bin/mongo",
         "bin/sql",
         "bin/ssh",
-        "bin/netutil"
+        "bin/netutil",
+        "bin/grpcutil"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -102,6 +103,11 @@
           {
             "name": "bin/netutil",
             "sidecar": true
+          },
+          {
+            "name": "bin/grpcutil",
+            "sidecar": true,
+            "args": true
           }
         ]
       },

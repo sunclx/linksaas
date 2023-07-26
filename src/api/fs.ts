@@ -196,3 +196,7 @@ export async function save_tmp_file_base64(file_name: string, data: string): Pro
         data: data,
     });
 }
+
+export async function make_tmp_dir(): Promise<string> {
+    return invoke<string>("plugin:fs_api|make_tmp_dir", {});
+}

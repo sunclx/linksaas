@@ -31,6 +31,7 @@ export type GrpcExtraInfo = {
 export type OpenApiExtraInfo = {
     api_coll_id: string;
     proto_file_id: string;
+    net_protocol: string;
 };
 
 export type UpdateNameRequest = {
@@ -148,6 +149,7 @@ export type CreateOpenApiRequest = {
     name: string;
     default_addr: string;
     proto_file_id: string;
+    net_protocol: string;
 };
 
 export type CreateOpenApiResponse = {
@@ -175,6 +177,7 @@ export type UpdateOpenApiRequest = {
     project_id: string;
     api_coll_id: string;
     proto_file_id: string;
+    net_protocol: string;
 };
 
 export type UpdateOpenApiResponse = {
