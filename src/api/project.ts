@@ -22,6 +22,7 @@ export type Setting = {
   disable_ext_event: boolean;
   disable_app_store: boolean;
   disable_data_anno: boolean;
+  disable_api_collection: boolean;
 
   disable_chat: boolean;
   disable_kb: boolean;
@@ -95,6 +96,7 @@ export type ProjectInfo = {
   idea_fs_id: string;
   bulletin_fs_id: string;
   data_anno_fs_id: string;
+  api_coll_fs_id: string;
   default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;

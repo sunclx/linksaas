@@ -15,6 +15,7 @@ import * as tc from '@/api/project_test_case';
 
 import moment from 'moment';
 import { APPRAISE_AGREE } from './project_idea';
+import { API_COLL_TYPE } from './api_collection';
 
 export function get_issue_type_str(issue_type: number): string {
   if (issue_type == pi.ISSUE_TYPE_BUG) {
@@ -5269,6 +5270,60 @@ namespace idea {
   }
 }
 
+namespace api_collection {
+
+  export type CreateApiCollectionEvent = {
+    api_coll_id: string;
+    api_coll_type: API_COLL_TYPE;
+    name: string;
+  };
+
+  function get_create_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CreateApiCollectionEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建API集合 ${inner.name}`),
+    ];
+  }
+
+  export type RemoveApiCollectionEvent = {
+    api_coll_id: string;
+    api_coll_type: API_COLL_TYPE;
+    name: string;
+  };
+
+  function get_remove_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: RemoveApiCollectionEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除API集合 ${inner.name}`),
+    ];
+  }
+
+  export class AllApiCollectionEvent {
+    CreateApiCollectionEvent?: CreateApiCollectionEvent;
+    RemoveApiCollectionEvent?: RemoveApiCollectionEvent;
+  }
+
+  export function get_simple_content_inner(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: AllApiCollectionEvent,
+  ) {
+    if (inner.CreateApiCollectionEvent !== undefined) {
+      return get_create_simple_content(ev, skip_prj_name, inner.CreateApiCollectionEvent);
+    } else if (inner.RemoveApiCollectionEvent !== undefined) {
+      return get_remove_simple_content(ev, skip_prj_name, inner.RemoveApiCollectionEvent);
+    } else {
+      return [new LinkNoneInfo('未知事件')];
+    }
+  }
+}
+
 export class AllEvent {
   ProjectEvent?: project.AllProjectEvent;
   ProjectDocEvent?: project_doc.AllProjectDocEvent;
@@ -5287,6 +5342,7 @@ export class AllEvent {
   CodeEvent?: code.AllCodeEvent;
   IdeaEvent?: idea.AllIdeaEvent;
   DataAnnoEvent?: data_anno.AllDataAnnoEvent;
+  ApiCollectionEvent?: api_collection.AllApiCollectionEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -5324,6 +5380,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return idea.get_simple_content_inner(ev, skip_prj_name, ev.event_data.IdeaEvent);
   } else if (ev.event_data.DataAnnoEvent !== undefined) {
     return data_anno.get_simple_content_inner(ev, skip_prj_name, ev.event_data.DataAnnoEvent);
+  } else if (ev.event_data.ApiCollectionEvent !== undefined) {
+    return api_collection.get_simple_content_inner(ev, skip_prj_name, ev.event_data.ApiCollectionEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

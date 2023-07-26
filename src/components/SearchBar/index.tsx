@@ -9,8 +9,6 @@ import type moment from 'moment';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { WebviewWindow } from '@tauri-apps/api/window';
 
-
-
 export type SEARCH_SCOPE = string;
 
 export const SEARCH_SCOPE_CUR_CHANNEL: SEARCH_SCOPE = "curChannel";

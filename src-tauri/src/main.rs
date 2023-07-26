@@ -15,6 +15,8 @@ mod bookstore_admin_api_plugin;
 mod bookstore_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
+mod data_anno_project_api_plugin;
+mod data_anno_task_api_plugin;
 mod events_admin_api_plugin;
 mod events_api_plugin;
 mod events_decode;
@@ -57,16 +59,15 @@ mod user_api_plugin;
 mod user_app_api_plugin;
 mod user_book_shelf_api_plugin;
 mod user_kb_api_plugin;
-mod data_anno_project_api_plugin;
-mod data_anno_task_api_plugin;
 
 mod min_app_fs_plugin;
 mod min_app_plugin;
 mod min_app_shell_plugin;
 mod min_app_store_plugin;
 
-mod docker_template_api_plugin;
 mod admin_docker_template_api_plugin;
+mod api_collection_api_plugin;
+mod docker_template_api_plugin;
 
 mod my_updater;
 
@@ -444,6 +445,7 @@ fn main() {
         .plugin(data_anno_task_api_plugin::DataAnnoTaskApiPlugin::new())
         .plugin(docker_template_api_plugin::DockerTemplateApiPlugin::new())
         .plugin(admin_docker_template_api_plugin::DockerTemplateAdminApiPlugin::new())
+        .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
