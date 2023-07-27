@@ -1002,6 +1002,28 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appstore"));
   }
 
+  //跳转到数据标注
+  goToDataAnnoList(history: History) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_data_anno == true) {
+      return;
+    }
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/dataanno"));
+  }
+
+  //跳转到接口集合
+  goToApiCollectionList(history: History) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_api_collection == true) {
+      return;
+    }
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/apicoll"));
+  }
+
   //跳转到知识点列表
   goToIdeaList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_chat == true && this.rootStore.projectStore.curProject?.setting.disable_kb == true) {
