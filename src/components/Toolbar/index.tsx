@@ -138,6 +138,17 @@ const Toolbar: React.FC = observer(() => {
         </>
       )}
 
+      {projectStore.curProject?.setting.disable_api_collection != true && (
+        <>
+          <Divider />
+          <Item
+            id="apicoll"
+            pathname={pathname}
+            title="接口集合"
+          />
+        </>
+      )}
+
       {projectStore.curProject?.setting.disable_data_anno != true && (
         <>
           <Divider />

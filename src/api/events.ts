@@ -23,6 +23,7 @@ export const EVENT_TYPE_CODE: EVENT_TYPE = 15; //代码相关
 export const EVENT_TYPE_IDEA: EVENT_TYPE = 16; //知识点相关
 // export const EVENT_TYPE_BOOK_MARK: EVENT_TYPE = 17; //书签相关
 export const EVENT_TYPE_DATA_ANNO: EVENT_TYPE = 18; //数据标注
+export const EVENT_TYPE_API_COLLECTION: EVENT_TYPE = 19; //API集合
 
 export const EVENT_TYPE_GITLAB: EVENT_TYPE = 100; //gitlab事件
 export const EVENT_TYPE_GITHUB: EVENT_TYPE = 101; //github事件
@@ -52,7 +53,7 @@ export const EVENT_REF_TYPE_REQUIRE_MENT: EVENT_REF_TYPE = 13;
 export const EVENT_REF_TYPE_CODE_COMMENT_THREAD: EVENT_REF_TYPE = 14;
 export const EVENT_REF_TYPE_IDEA: EVENT_REF_TYPE = 15;
 export const EVENT_REF_TYPE_ANNO_PROJECT: EVENT_REF_TYPE = 16;
-
+export const EVENT_REF_TYPE_API_COLLECTION: EVENT_REF_TYPE = 17;
 
 export type DayEventStatusItem = {
   day: number;

@@ -1202,6 +1202,36 @@ pub mod data_anno {
     }
 }
 
+pub mod api_collection {
+    use prost::Message;
+    use proto_gen_rust::events_api_collection;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateApiCollectionEvent(events_api_collection::CreateApiCollectionEvent),
+        RemoveApiCollectionEvent(events_api_collection::RemoveApiCollectionEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_api_collection::CreateApiCollectionEvent::type_url() {
+            if let Ok(ev) =
+                events_api_collection::CreateApiCollectionEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::CreateApiCollectionEvent(ev));
+            }
+        } else if data.type_url == events_api_collection::RemoveApiCollectionEvent::type_url() {
+            if let Ok(ev) =
+                events_api_collection::RemoveApiCollectionEvent::decode(data.value.as_slice())
+            {
+                return Some(Event::RemoveApiCollectionEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -1221,6 +1251,7 @@ pub enum EventMessage {
     CodeEvent(code::Event),
     IdeaEvent(idea::Event),
     DataAnnoEvent(data_anno::Event),
+    ApiCollectionEvent(api_collection::Event),
     NoopEvent(),
 }
 
@@ -1277,6 +1308,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = data_anno::decode_event(data) {
         return Some(EventMessage::DataAnnoEvent(ret));
+    }
+    if let Some(ret) = api_collection::decode_event(data) {
+        return Some(EventMessage::ApiCollectionEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

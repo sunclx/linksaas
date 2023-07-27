@@ -49,9 +49,6 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_SOAR: {
       return <widgets.SoarWidget {...widgetProps} />;
     }
-    case widgets.WIDGET_TYPE_SWAGGER: {
-      return <widgets.SwaggerWidget {...widgetProps} />;
-    }
     case widgets.WIDGET_TYPE_SWOT: {
       return <widgets.SwotWidget {...widgetProps} />;
     }

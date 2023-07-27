@@ -29,6 +29,8 @@ export const FILE_OWNER_TYPE_BOOK_STORE: FILE_OWNER_TYPE = 15; //书籍市场
 export const FILE_OWNER_TYPE_BULLETIN: FILE_OWNER_TYPE = 16; //公告
 export const FILE_OWNER_TYPE_DATA_ANNO: FILE_OWNER_TYPE = 17; //数据标注
 export const FILE_OWNER_TYPE_DOCKER_TEMPLATE: FILE_OWNER_TYPE = 18;
+export const FILE_OWNER_TYPE_API_COLLECTION: FILE_OWNER_TYPE = 19;
+
 
 export const FILE_OWNER_TYPE_PROJECT: FILE_OWNER_TYPE = 99; //项目范围 
 
@@ -193,4 +195,8 @@ export async function save_tmp_file_base64(file_name: string, data: string): Pro
         fileName: file_name,
         data: data,
     });
+}
+
+export async function make_tmp_dir(): Promise<string> {
+    return invoke<string>("plugin:fs_api|make_tmp_dir", {});
 }
