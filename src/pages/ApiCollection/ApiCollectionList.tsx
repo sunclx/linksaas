@@ -11,7 +11,6 @@ import { list as list_info, update_name, update_default_addr, remove as remove_i
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import { EditText } from "@/components/EditCell/EditText";
-import { WebviewWindow } from '@tauri-apps/api/window';
 import UpdateGrpcModal from "./components/UpdateGrpcModal";
 import UpdateSwaggerModal from "./components/UpdateSwaggerModal";
 
@@ -20,6 +19,7 @@ const PAGE_SIZE = 10;
 const ApiCollectionList = () => {
     const userStore = useStores("userStore")
     const projectStore = useStores("projectStore");
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -56,23 +56,6 @@ const ApiCollectionList = () => {
         await loadApiCollInfoList();
     };
 
-    const openApiWindow = async (info: ApiCollInfo) => {
-        const label = `apiColl:${info.api_coll_id}`;
-        if (info.api_coll_type == API_COLL_GRPC) {
-            new WebviewWindow(label, {
-                title: `${info.name}(GRPC)`,
-                url: `api_grpc.html?projectId=${projectStore.curProjectId}&apiCollId=${info.api_coll_id}&fsId=${projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${info.default_addr}`
-            });
-        } else if (info.api_coll_type == API_COLL_OPENAPI) {
-            new WebviewWindow(label, {
-                title: `${info.name}(GRPC)`,
-                url: `api_swagger.html?projectId=${projectStore.curProjectId}&apiCollId=${info.api_coll_id}&fsId=${projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${info.default_addr}`
-            });
-        } else if (info.api_coll_type == API_COLL_CUSTOM) {
-            //TODO
-        }
-    }
-
     const columns: ColumnsType<ApiCollInfo> = [
         {
             title: "名称",
@@ -101,7 +84,7 @@ const ApiCollectionList = () => {
                         }
                         return true;
                     }} onClick={() => {
-                        openApiWindow(row);
+                        linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr);
                     }} />
             ),
         },
