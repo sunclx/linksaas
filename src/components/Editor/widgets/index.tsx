@@ -16,6 +16,7 @@ export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
 export { RequirementRefWidget } from "./RequirementRefWidget";
 export { ServerScriptWidget } from "./ServerScriptWidget";
 export { EarthlyActionWidget } from "./EarthlyActionWidget";
+export { ApiCollRefWidget } from './ApiCollRefWidget';
 
 import { funnelWidgetInitData } from './FunnelWidget';
 import { taskRefWidgetInitData, bugRefWidgetInitData } from './IssueRefWidget';
@@ -34,6 +35,7 @@ import { surveyTrueOrFlaseWidgetInitData } from './SurveyTrueOrFalseWidget';
 import { requirementRefWidgetInitData } from './RequirementRefWidget';
 import { serverScriptWidgetInitData } from './ServerScriptWidget';
 import { earthlyActionWidgetInitData } from './EarthlyActionWidget';
+import { apiCollRefWidgetInitData } from './ApiCollRefWidget';
 
 export type WIDGET_TYPE = string;
 export const WIDGET_TYPE_FUNNEL: WIDGET_TYPE = "funnel";//漏斗分析法
@@ -54,6 +56,7 @@ export const WIDGET_TYPE_SURVEY_CHOICE: WIDGET_TYPE = "surveyChoice"; //问卷�
 export const WIDGET_TYPE_SURVEY_TRUE_OR_FALSE: WIDGET_TYPE = "surveyTrueOrFalse"; //问卷对错题
 export const WIDGET_TYPE_ROBOT_SERVER_SCRIPT: WIDGET_TYPE = "serverScript"; //服务端脚本
 export const WIDGET_TYPE_ROBOT_EARTHLY_ACTION: WIDGET_TYPE = "earthlyAction"; //earthly命令
+export const WIDGET_TYPE_API_COLL_REF: WIDGET_TYPE = "apiCollRef"; //引用接口集合
 
 export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_FUNNEL,
@@ -74,6 +77,7 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
     WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
     WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
+    WIDGET_TYPE_API_COLL_REF,
 ];
 
 
@@ -97,3 +101,4 @@ WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_CHOICE, surveyChoiceWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_TRUE_OR_FALSE, surveyTrueOrFlaseWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_SERVER_SCRIPT, serverScriptWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_ROBOT_EARTHLY_ACTION, earthlyActionWidgetInitData);
+WidgetInitDataMap.set(WIDGET_TYPE_API_COLL_REF, apiCollRefWidgetInitData);

@@ -36,6 +36,7 @@ import {
   WIDGET_TYPE_SPRIT_REF,
   WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
   WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
+  WIDGET_TYPE_API_COLL_REF,
 } from '../widgets/index';
 import type { HeadingExtensionAttributes } from '@remirror/extension-heading';
 import { redoDepth, undoDepth } from '@remirror/pm/history';
@@ -317,6 +318,121 @@ export const listItem = (
 const ContentWidget = observer(() => {
   const projectStore = useStores('projectStore');
   const commands = useCommands();
+
+  const items = [];
+  if (projectStore.curProjectId !== "") {
+    items.push({
+      key: 'manager',
+      label: '项目管理',
+      children: [
+        {
+          key: WIDGET_TYPE_TIME_RANGE,
+          label: '时间区间',
+        },
+        {
+          key: WIDGET_TYPE_MEMBER_DUTY,
+          label: '人员职责',
+        },
+        {
+          key: WIDGET_TYPE_REQUIRE_MENT_REF,
+          label: "引用需求",
+        },
+        {
+          key: WIDGET_TYPE_TASK_REF,
+          label: '引用任务',
+        },
+        {
+          key: WIDGET_TYPE_BUG_REF,
+          label: '引用缺陷',
+        },
+        {
+          key: WIDGET_TYPE_SPRIT_REF,
+          label: '引用工作计划'
+        }
+      ],
+    });
+  }
+  items.push({
+    key: 'analyse',
+    label: '项目分析',
+    children: [
+      {
+        key: WIDGET_TYPE_TECH_COMPARE,
+        label: '技术对比',
+      },
+      {
+        key: WIDGET_TYPE_SWOT,
+        label: 'SWOT分析',
+      },
+      {
+        key: WIDGET_TYPE_OTSW,
+        label: 'OTSW分析',
+      },
+      {
+        key: WIDGET_TYPE_SOAR,
+        label: 'SOAR分析',
+      },
+      {
+        key: WIDGET_TYPE_5W2H,
+        label: '七问分析',
+      },
+      {
+        key: WIDGET_TYPE_FUNNEL,
+        label: '漏斗模型',
+      },
+    ],
+  });
+  if (projectStore.curProject?.setting.disable_server_agent == false) {
+    items.push({
+      key: "robot",
+      label: "自动化",
+      children: [
+        {
+          key: WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
+          label: "服务端脚本",
+        },
+        {
+          key: WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
+          label: "earthly脚本",
+        },
+      ],
+    });
+  }
+  const designItems = {
+    key: 'design',
+    label: '软件设计',
+    children: [
+      {
+        key: WIDGET_TYPE_MARK_MAP,
+        label: 'markmap',
+      },
+      {
+        key: WIDGET_TYPE_MERMAID,
+        label: 'mermaid',
+      },
+    ],
+  };
+  if (projectStore.curProject?.setting.disable_api_collection == false) {
+    designItems.children.push({
+      key: WIDGET_TYPE_API_COLL_REF,
+      label: "引用接口集合",
+    });
+  }
+  items.push(designItems);
+  items.push({
+    key: 'survey',
+    label: '知识巩固',
+    children: [
+      {
+        key: WIDGET_TYPE_SURVEY_CHOICE,
+        label: '选择题',
+      },
+      {
+        key: WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
+        label: '对错题',
+      },
+    ],
+  });
   const menu = (
     <Menu
       subMenuCloseDelay={0.05}
@@ -326,111 +442,7 @@ const ContentWidget = observer(() => {
           commands.insertWidget(value.key);
         }
       }}
-      items={[
-        {
-          key: 'manager',
-          label: '项目管理',
-          disabled: projectStore.curProjectId == "",
-          children: [
-            {
-              key: WIDGET_TYPE_TIME_RANGE,
-              label: '时间区间',
-            },
-            {
-              key: WIDGET_TYPE_MEMBER_DUTY,
-              label: '人员职责',
-            },
-            {
-              key: WIDGET_TYPE_REQUIRE_MENT_REF,
-              label: "引用需求",
-            },
-            {
-              key: WIDGET_TYPE_TASK_REF,
-              label: '引用任务',
-            },
-            {
-              key: WIDGET_TYPE_BUG_REF,
-              label: '引用缺陷',
-            },
-            {
-              key: WIDGET_TYPE_SPRIT_REF,
-              label: '引用工作计划'
-            }
-          ],
-        },
-        {
-          key: 'analyse',
-          label: '项目分析',
-          children: [
-            {
-              key: WIDGET_TYPE_TECH_COMPARE,
-              label: '技术对比',
-            },
-            {
-              key: WIDGET_TYPE_SWOT,
-              label: 'SWOT分析',
-            },
-            {
-              key: WIDGET_TYPE_OTSW,
-              label: 'OTSW分析',
-            },
-            {
-              key: WIDGET_TYPE_SOAR,
-              label: 'SOAR分析',
-            },
-            {
-              key: WIDGET_TYPE_5W2H,
-              label: '七问分析',
-            },
-            {
-              key: WIDGET_TYPE_FUNNEL,
-              label: '漏斗模型',
-            },
-          ],
-        },
-        {
-          key: "robot",
-          label: "自动化",
-          children: [
-            {
-              key: WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
-              label: "服务端脚本",
-            },
-            {
-              key: WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
-              label: "earthly脚本",
-            },
-          ],
-        },
-        {
-          key: 'design',
-          label: '软件设计',
-          children: [
-            {
-              key: WIDGET_TYPE_MARK_MAP,
-              label: 'markmap',
-            },
-            {
-              key: WIDGET_TYPE_MERMAID,
-              label: 'mermaid',
-            },
-          ],
-        },
-        {
-          key: 'survey',
-          label: '知识巩固',
-          children: [
-            {
-              key: WIDGET_TYPE_SURVEY_CHOICE,
-              label: '选择题',
-            },
-            {
-              key: WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
-              label: '对错题',
-            },
-          ],
-        },
-      ]}
+      items={items}
     />
   );
   return (
