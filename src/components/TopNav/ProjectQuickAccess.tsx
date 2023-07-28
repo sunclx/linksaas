@@ -39,8 +39,8 @@ const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
 const MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS = "toolbar.extEvents.show";
 const MENU_KEY_SHOW_TOOL_BAR_APP = "toolbar.app.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
-
-
+const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
+const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
 
 const ProjectQuickAccess = () => {
     const memberStore = useStores('memberStore');
@@ -214,6 +214,18 @@ const ProjectQuickAccess = () => {
                 label: "CI/CD",
             });
         }
+        if (projectStore.curProject?.setting.disable_api_collection != true) {
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION,
+                label: "接口集合",
+            });
+        }
+        if (projectStore.curProject?.setting.disable_data_anno != true) {
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO,
+                label: "数据标注",
+            });
+        }
         tmpItems.push({
             key: "event",
             label: "研发行为",
@@ -275,7 +287,6 @@ const ProjectQuickAccess = () => {
 
     const onMenuClick = async (info: MenuInfo) => {
         switch (info.key) {
-
             case MENU_KEY_SHOW_INVITE_MEMBER:
                 memberStore.showInviteMember = true;
                 break;
@@ -371,6 +382,12 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_LOCAL_API_DEBUG:
                 await openApiConsole();
+                break;
+            case MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION:
+                linkAuxStore.goToApiCollectionList(history);
+                break;
+            case MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO:
+                linkAuxStore.goToDataAnnoList(history);
                 break;
         }
         if (info.key.startsWith(MENU_KEY_MEMBER_PREFIX)) {

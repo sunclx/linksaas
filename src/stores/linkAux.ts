@@ -28,6 +28,9 @@ import {
 import { open } from '@tauri-apps/api/shell';
 import { uniqId } from '@/utils/utils';
 import { openBook } from '@/pages/Book/utils';
+import type { API_COLL_TYPE } from '@/api/api_collection';
+import { API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
+import { WebviewWindow } from '@tauri-apps/api/window';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -1002,6 +1005,28 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appstore"));
   }
 
+  //跳转到数据标注
+  goToDataAnnoList(history: History) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_data_anno == true) {
+      return;
+    }
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/dataanno"));
+  }
+
+  //跳转到接口集合
+  goToApiCollectionList(history: History) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_api_collection == true) {
+      return;
+    }
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/apicoll"));
+  }
+
   //跳转到知识点列表
   goToIdeaList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_chat == true && this.rootStore.projectStore.curProject?.setting.disable_kb == true) {
@@ -1022,6 +1047,22 @@ class LinkAuxStore {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, SCRIPT_CREATE_SUFFIX));
+  }
+
+  //打开接口集合页面
+  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string) {
+    const label = `apiColl:${apiCollId}`;
+    if (apiCollType == API_COLL_GRPC) {
+      new WebviewWindow(label, {
+        title: `${name}(GRPC)`,
+        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}`
+      });
+    } else if (apiCollType == API_COLL_OPENAPI) {
+      new WebviewWindow(label, {
+        title: `${name}(OPENAPI/SWAGGER)`,
+        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}`
+      });
+    }
   }
 
   //跳转到服务端脚本列表页面
