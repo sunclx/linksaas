@@ -177,7 +177,18 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
                   {hasVoted ? '已投票' : '去投票'}
                 </a>
               )}
-              <div className={styles.list_info}>
+              <div className={styles.list_info} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (isCurrent) {
+                  runInAction(() => {
+                    localStore.setCurAppraiseId("");
+                    localStore.dataSource = [];
+                  });
+                } else {
+                  loadApprasiseScore(item.appraise_id);
+                }
+              }}>
                 <div className={styles.list_info_item}>
                   来自：{item.create_display_name}
                 </div>
