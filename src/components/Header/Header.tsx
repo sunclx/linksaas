@@ -88,65 +88,68 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     }
   }, []);
   return (
-    <Header className={style.layout_header} {...props} data-tauri-drag-region={true}>
-      <div className={style.l} >
-        {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
-      </div>
-      <div className={style.r}>
-        {props.type == "login" && hasNewVersion == true && (
-          <a style={{ marginRight: "20px" }} onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            check_update();
-          }}>
-            <Space size="small">
-              <InfoCircleOutlined />
-              {updateProgress == 0 && "有新版本"}
-              {updateProgress > 0 && (
-                <Progress type="line" percent={Math.ceil(updateProgress * 100)} showInfo={false} style={{ width: 50, paddingBottom: "16px" }} />
-              )}
-            </Space>
-          </a>
-        )}
-
-        {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
-          <ProjectTipList />
-        )}
-        {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
-          <ProjectUseTip />
-        )}
-        {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
-          <div
-            className={style.btnSimpleMode}
-            onClick={e => {
+    <div>
+      <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
+      <Header className={style.layout_header} {...props} data-tauri-drag-region>
+        <div className={style.l}>
+          {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
+        </div>
+        <div className={style.r}>
+          {props.type == "login" && hasNewVersion == true && (
+            <a style={{ marginRight: "20px" }} onClick={e => {
               e.stopPropagation();
               e.preventDefault();
-              appStore.simpleMode = false;
-            }} title='退出精简模式'><ArrowsAltOutlined /></div>
-        )}
-        {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == false && projectStore.curProjectId != "" && (
-          <div
-            className={style.btnSimpleMode}
-            onClick={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              appStore.simpleMode = true;
-            }} title='进入精简模式'><ShrinkOutlined /></div>
-        )}
+              check_update();
+            }}>
+              <Space size="small">
+                <InfoCircleOutlined />
+                {updateProgress == 0 && "有新版本"}
+                {updateProgress > 0 && (
+                  <Progress type="line" percent={Math.ceil(updateProgress * 100)} showInfo={false} style={{ width: 50, paddingBottom: "16px" }} />
+                )}
+              </Space>
+            </a>
+          )}
 
-        {appStore.simpleMode == false && (
-          <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
-        )}
+          {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
+            <ProjectTipList />
+          )}
+          {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
+            <ProjectUseTip />
+          )}
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
+            <div
+              className={style.btnSimpleMode}
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                appStore.simpleMode = false;
+              }} title='退出精简模式'><ArrowsAltOutlined /></div>
+          )}
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == false && projectStore.curProjectId != "" && (
+            <div
+              className={style.btnSimpleMode}
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                appStore.simpleMode = true;
+              }} title='进入精简模式'><ShrinkOutlined /></div>
+          )}
 
-        {appStore.simpleMode == false && (
-          <>
-            {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
-            {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
-            <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
-          </>
-        )}
-      </div>
-    </Header>
+          {appStore.simpleMode == false && (
+            <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
+          )}
+
+          {appStore.simpleMode == false && (
+            <>
+              {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
+              {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+              <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
+            </>
+          )}
+        </div>
+      </Header>
+    </div>
   );
 };
 

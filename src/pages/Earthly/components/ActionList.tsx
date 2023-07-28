@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { RobotInfo as RepoRobotInfo, ActionInfo } from '@/api/robot_earthly';
 import { list_action, remove_action, link_robot, unlink_robot } from '@/api/robot_earthly';
-import { Card, Modal, Table, Tooltip } from "antd";
+import { Card, Modal, Space, Table, Tooltip } from "antd";
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
 import addIcon from '@/assets/image/addIcon.png';
@@ -153,18 +153,23 @@ const ActionList: React.FC<ActionListProps> = (props) => {
             title: "操作",
             width: 200,
             render: (_, record: ActionInfo) => (
-                <div>
+                <Space size="large">
+                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkEarthlyActionInfo("", projectStore.curProjectId, props.repoId, record.action_id), history);
+                    }}>查看执行记录</Button>
                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setUpdateActionId(record.action_id);
                     }}>修改</Button>
-                    <Button type="link" danger onClick={e => {
+                    <Button type="link" danger style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setRemoveActionId(record.action_id);
                     }}>删除</Button>
-                </div>
+                </Space>
             ),
         }
     ];
@@ -253,7 +258,7 @@ const ActionList: React.FC<ActionListProps> = (props) => {
                     添加命令
                 </Button>
             }>
-                <Table rowKey="action_id" dataSource={actionList} columns={columns} pagination={false}/>
+                <Table rowKey="action_id" dataSource={actionList} columns={columns} pagination={false} />
             </Card>
             {showCreateModal && <ActionModal repoId={props.repoId} optType={OPT_TYPE.OPT_CREATE} onCancel={() => setShowCreateModal(false)} onOk={() => {
                 loadAction();

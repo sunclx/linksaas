@@ -49,7 +49,7 @@ const ProjectTipList = () => {
         <Tooltip open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_TIPLIST} placement="left" trigger={[]}
             title="经验集锦" color="orange" overlayInnerStyle={{ color: 'black' }}>
             <div data-tauri-drag-region={true}
-                style={{ marginRight: "20px", width: "calc(100vw - 800px)" }}
+                style={{ marginRight: "20px", width: "calc(100vw - 800px)"}}
                 onMouseEnter={e => {
                     e.stopPropagation();
                     e.preventDefault();

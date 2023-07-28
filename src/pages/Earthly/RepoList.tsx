@@ -74,7 +74,6 @@ const RepoList = () => {
                     e.stopPropagation();
                     e.preventDefault();
                     setShowAddModal(true);
-
                 }}
                 disabled={((projectStore.isAdmin == false) || (projectStore.curProject?.closed))}
             >
@@ -92,7 +91,15 @@ const RepoList = () => {
                     <div className={s.list_cont}>
                         {repoList.map(repo => (
                             <div className={s.list_item} key={repo.repo_id}>
-                                <div className={s.list_hd}>
+                                <div className={s.list_hd} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    if (curRepoId == repo.repo_id) {
+                                        setCurRepoId("");
+                                    } else {
+                                        setCurRepoId(repo.repo_id);
+                                    }
+                                }}>
                                     <div className={s.list_title}>
                                         {repo.basic_info.repo_url ?? ""}
                                     </div>
