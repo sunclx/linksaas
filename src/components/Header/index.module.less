@@ -2,27 +2,31 @@ header.layout_header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 40px;
+  height: 36px;
   padding: 0;
   color: #2c2d2e;
   font-weight: 500;
   line-height: 40px;
   background-color: #fff;
-  border-top: 1px solid #e8e9ee;
   border-right: 1px solid #e8e9ee;
   box-shadow: 0 2px 8px #f0f1f2;
+  cursor: move;
+
   h1 {
     padding: 0 30px;
     color: #2c2d2e;
   }
-  .l{
+
+  .l {
     padding-left: 20px;
   }
+
   .r {
     display: flex;
     align-items: center;
     padding: 0 10px;
   }
+
   .btnMinimize,
   .btnMaximize,
   .config,
@@ -35,29 +39,35 @@ header.layout_header {
     background-size: 100%;
     cursor: pointer;
   }
+
   .btnMaximize {
     background: url('@/assets/allIcon/icon-maximize.png') no-repeat 50% 50%;
     background-size: 100%;
   }
+
   .btnMinimize {
     background: url('@/assets/allIcon/icon-minimize.png') no-repeat 50% 50%;
     background-size: 100%;
   }
+
   .config {
     margin: 0 15px;
     background: url('@/assets/allIcon/icon-config.png') no-repeat 50% 50%;
     background-size: 100%;
   }
+
   .notice {
     margin: 0 15px;
     background: url('@/assets/allIcon/icon-notice.png') no-repeat 50% 50%;
     background-size: 100%;
   }
+
   .cutOffRule {
     margin: 0 15px;
     font-size: 16px;
     opacity: 0.2;
   }
+
   .btnSimpleMode {
     cursor: pointer;
     margin-right: 20px;
