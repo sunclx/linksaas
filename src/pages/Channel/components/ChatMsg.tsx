@@ -180,7 +180,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               <span
                 title="创建需求"
                 className={styles.reqBtn}
-                onClick={() => linkAuxStore.goToCreateRequirement(msg.msg.basic_msg.msg_data, projectStore.curProjectId, "", history)}
+                onClick={() => linkAuxStore.goToCreateRequirement(msg.msg.basic_msg.msg_data, projectStore.curProjectId, history)}
               />
               <span
                 title="创建任务"

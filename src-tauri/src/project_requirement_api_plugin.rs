@@ -7,114 +7,6 @@ use tauri::{
 };
 
 #[tauri::command]
-async fn create_cate<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: CreateCateRequest,
-) -> Result<CreateCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.create_cate(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == create_cate_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("create_cate".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn list_cate<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListCateRequest,
-) -> Result<ListCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.list_cate(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_cate_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_cate".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn update_cate<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UpdateCateRequest,
-) -> Result<UpdateCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.update_cate(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == update_cate_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_cate".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn remove_cate<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: RemoveCateRequest,
-) -> Result<RemoveCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.remove_cate(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == remove_cate_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("remove_cate".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn create_requirement<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -271,34 +163,6 @@ async fn update_tag_id_list<R: Runtime>(
                 if let Err(err) = window.emit(
                     "notice",
                     new_wrong_session_notice("update_tag_id_list".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn set_requirement_cate<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: SetRequirementCateRequest,
-) -> Result<SetRequirementCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.set_requirement_cate(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == set_requirement_cate_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("set_requirement_cate".into()),
                 ) {
                     println!("{:?}", err);
                 }
@@ -699,17 +563,12 @@ impl<R: Runtime> ProjectRequirementApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                create_cate,
-                list_cate,
-                update_cate,
-                remove_cate,
                 create_requirement,
                 list_requirement,
                 list_requirement_by_id,
                 get_requirement,
                 update_requirement,
                 update_tag_id_list,
-                set_requirement_cate,
                 remove_requirement,
                 link_issue,
                 unlink_issue,

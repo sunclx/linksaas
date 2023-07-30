@@ -1797,52 +1797,6 @@ const robotEventList: EventDesc[] = [
 
 const requirementEventList: EventDesc[] = [
     {
-        id: "CreateCateEvent",
-        name: "创建需求分类",
-        attrList: [
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
-            },
-        ]
-    },
-    {
-        id: "UpdateCateEvent",
-        name: "修改需求分类",
-        attrList: [
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "old_cate_name",
-                desc: "旧需求分类名称",
-            },
-            {
-                key: "new_cate_name",
-                desc: "新需求分类名称",
-            },
-        ]
-    },
-    {
-        id: "RemoveCateEvent",
-        name: "删除需求分类",
-        attrList: [
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
-            },
-        ]
-    },
-    {
         id: "CreateRequirementEvent",
         name: "创建需求",
         attrList: [
@@ -1853,14 +1807,6 @@ const requirementEventList: EventDesc[] = [
             {
                 key: "title",
                 desc: "需求标题"
-            },
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
             },
         ]
     },
@@ -1880,14 +1826,6 @@ const requirementEventList: EventDesc[] = [
                 key: "new_title",
                 desc: "新需求标题"
             },
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
-            },
         ]
     },
     {
@@ -1903,50 +1841,12 @@ const requirementEventList: EventDesc[] = [
                 desc: "需求标题"
             },
             {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
-            },
-            {
                 key: "old_tag_list",
                 desc: "旧标签列表",
             },
             {
                 key: "new_tag_list",
                 desc: "新标签列表",
-            },
-        ]
-    },
-    {
-        id: "SetRequirementCateEvent",
-        name: "修改需求分类",
-        attrList: [
-            {
-                key: "requirement_id",
-                desc: "需求ID"
-            },
-            {
-                key: "title",
-                desc: "需求标题"
-            },
-            {
-                key: "old_cate_id",
-                desc: "旧需求分类ID",
-            },
-            {
-                key: "old_cate_name",
-                desc: "旧需求分类名称",
-            },
-            {
-                key: "new_cate_id",
-                desc: "新需求分类ID",
-            },
-            {
-                key: "new_cate_name",
-                desc: "新需求分类名称",
             },
         ]
     },
@@ -1962,14 +1862,6 @@ const requirementEventList: EventDesc[] = [
                 key: "title",
                 desc: "需求标题"
             },
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
-            },
         ]
     },
     {
@@ -1983,14 +1875,6 @@ const requirementEventList: EventDesc[] = [
             {
                 key: "title",
                 desc: "需求标题"
-            },
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
             },
             {
                 key: "issue_id",
@@ -2013,14 +1897,6 @@ const requirementEventList: EventDesc[] = [
             {
                 key: "title",
                 desc: "需求标题"
-            },
-            {
-                key: "cate_id",
-                desc: "需求分类ID",
-            },
-            {
-                key: "cate_name",
-                desc: "需求分类名称",
             },
             {
                 key: "issue_id",

@@ -446,7 +446,6 @@ export type LinkDocState = {
 };
 
 export type LinkRequirementState = {
-  cateId: string;
   requirementId: string;
   content: string;
 }
@@ -757,7 +756,6 @@ class LinkAuxStore {
         await this.rootStore.projectStore.setCurProjectId(reqLink.projectId);
       }
       const state: LinkRequirementState = {
-        cateId: "",
         requirementId: reqLink.requirementId,
         content: "",
       };
@@ -856,7 +854,7 @@ class LinkAuxStore {
   }
 
   //跳转到创建需求
-  async goToCreateRequirement(content: string, projectId: string, cateId: string, history: History) {
+  async goToCreateRequirement(content: string, projectId: string, history: History) {
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
@@ -866,7 +864,6 @@ class LinkAuxStore {
     const state: LinkRequirementState = {
       content: content,
       requirementId: '',
-      cateId: cateId,
     };
     history.push(this.genUrl(projectId, history.location.pathname, REQUIRE_MENT_CREATE_SUFFIX), state);
   }

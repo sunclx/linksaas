@@ -11,7 +11,7 @@ import { bugPriority, issueState, taskPriority } from '@/utils/constant';
 import { issueTypeIsTask } from '@/utils/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ModalProps } from 'antd';
-import { Form, Select, Tabs } from 'antd';
+import { Form, Tabs } from 'antd';
 import { Input } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import Table from 'antd/lib/table';
@@ -33,8 +33,8 @@ import { LinkTaskInfo, LinkBugInfo, LinkNoneInfo } from '@/stores/linkAux';
 import type { LinkInfo } from '@/stores/linkAux';
 import Pagination from '@/components/Pagination';
 import { getStateColor } from '@/pages/Issue/components/utils';
-import { CateInfo, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
-import { list_cate, list_requirement, list_multi_issue_link } from '@/api/project_requirement';
+import { REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
+import { list_requirement, list_multi_issue_link } from '@/api/project_requirement';
 
 
 const PAGE_SIZE = 10;
@@ -118,8 +118,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const projectStore = useStores('projectStore');
 
   const [activeKey, setActiveKey] = useState('task');
-  const [cateList, setCateList] = useState<CateInfo[]>([]);
-  const [curCateId, setCurCateId] = useState<string | null>(null);
 
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const [keyword, setKeyword] = useState('');
@@ -127,28 +125,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
 
   const [curPage, setCurPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-
-  const loadCateList = async () => {
-    const res = await request(list_cate({
-      session_id: userStore.sessionId,
-      project_id: projectStore.curProjectId,
-    }));
-    res.cate_info_list.unshift({
-      cate_id: "",
-      project_id: projectStore.curProjectId,
-      cate_name: "未分类需求",
-      requirement_count: -1,
-      create_user_id: "",
-      create_time: 0,
-      create_display_name: "",
-      create_logo_uri: "",
-      update_user_id: "",
-      update_time: 0,
-      update_display_name: "",
-      update_logo_uri: "",
-    })
-    setCateList(res.cate_info_list);
-  };
 
   const loadIssue = async () => {
     const listIssueParam: ListIssueParam = {
@@ -205,8 +181,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
     const reqRes = await request(list_requirement({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      filter_by_cate_id: curCateId != null,
-      cate_id: curCateId == null ? "" : curCateId,
       filter_by_keyword: keyword.trim() != "",
       keyword: keyword.trim(),
       filter_by_has_link_issue: true,
@@ -238,11 +212,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
     setTotalCount(reqRes.total_count);
   };
 
-  useEffect(() => {
-    if (props.type == "task") {
-      loadCateList();
-    }
-  }, []);
 
   useEffect(() => {
     if (props.type == "bug") {
@@ -256,7 +225,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
     if (props.type == "task" && activeKey == "requirement") {
       loadIssueByReq();
     }
-  }, [keyword, props.type, curPage, activeKey, curCateId])
+  }, [keyword, props.type, curPage, activeKey])
 
   const rowSelection = {
     onChange: (keys: React.Key[]) => {
@@ -412,17 +381,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
                       setKeyword(e.target.value);
                     }}
                   />
-                </Form.Item>
-                <Form.Item label="需求类别">
-                  <Select value={curCateId}
-                    onChange={value => {
-                      setCurCateId(value);
-                    }}>
-                    <Select.Option value={null}>全部分类</Select.Option>
-                    {cateList.map(item => (
-                      <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
-                    ))}
-                  </Select>
                 </Form.Item>
               </Form>
             </Tabs.TabPane>

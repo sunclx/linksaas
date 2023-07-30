@@ -4,9 +4,9 @@ import EditorWrap from '../components/EditorWrap';
 import s from './RequirementRefWidget.module.less';
 import Button from '@/components/Button';
 import { LinkOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
-import { Card, Form, Input, Modal, Select, Space, Table } from 'antd';
-import type { RequirementInfo, CateInfo } from '@/api/project_requirement';
-import { list_requirement, list_cate, get_requirement, list_requirement_by_id,REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
+import { Card, Form, Input, Modal, Space, Table } from 'antd';
+import type { RequirementInfo } from '@/api/project_requirement';
+import { list_requirement, get_requirement, list_requirement_by_id,REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
@@ -37,45 +37,19 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
-    const [cateList, setCateList] = useState([] as CateInfo[]);
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(props.requirementIdList);
 
-    const [curCateId, setCurCateId] = useState<string | null>(null);
     const [keyword, setKeyword] = useState("");
 
     const [requirementList, setRequirementList] = useState<RequirementInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
 
-    const loadCateList = async () => {
-        const res = await request(list_cate({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-        }));
-        res.cate_info_list.unshift({
-            cate_id: "",
-            project_id: projectStore.curProjectId,
-            cate_name: "未分类需求",
-            requirement_count: -1,
-            create_user_id: "",
-            create_time: 0,
-            create_display_name: "",
-            create_logo_uri: "",
-            update_user_id: "",
-            update_time: 0,
-            update_display_name: "",
-            update_logo_uri: "",
-        })
-        setCateList(res.cate_info_list);
-    };
-
     const loadRequirementList = async () => {
         const res = await request(list_requirement({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            filter_by_cate_id: curCateId != null,
-            cate_id: curCateId ?? "",
             filter_by_keyword: keyword.trim() != "",
             keyword: keyword.trim(),
             filter_by_has_link_issue: false,
@@ -113,11 +87,7 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
 
     useEffect(() => {
         loadRequirementList();
-    }, [curPage, curCateId, keyword]);
-
-    useEffect(() => {
-        loadCateList();
-    }, []);
+    }, [curPage, keyword]);
 
     return (
         <Modal open title="引用需求"
@@ -141,15 +111,6 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
                                 e.preventDefault();
                                 setKeyword(e.target.value);
                             }} />
-                        </Form.Item>
-                        <Form.Item label="分类">
-                            <Select value={curCateId} style={{ width: "100px" }}
-                                onChange={value => setCurCateId(value)}>
-                                <Select.Option value={null}>全部分类</Select.Option>
-                                {cateList.map(item => (
-                                    <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
-                                ))}
-                            </Select>
                         </Form.Item>
                     </Form>
                 </Space>

@@ -1361,18 +1361,6 @@ export const genIssueEvCfgValues = (cfg: IssueEvCfg): string[] => {
 
 export const requirementEvOptionList: CheckboxOptionType[] = [
     {
-        label: "创建需求分类",
-        value: "create_cate",
-    },
-    {
-        label: "更新需求分类",
-        value: "update_cate",
-    },
-    {
-        label: "删除需求分类",
-        value: "remove_cate",
-    },
-    {
         label: "创建需求",
         value: "create_requirement",
     },
@@ -1383,10 +1371,6 @@ export const requirementEvOptionList: CheckboxOptionType[] = [
     {
         label: "更新标签",
         value: "update_tag",
-    },
-    {
-        label: "移动需求",
-        value: "set_requirement_cate",
     },
     {
         label: "删除需求",
@@ -1420,12 +1404,8 @@ export const requirementEvOptionList: CheckboxOptionType[] = [
 
 export const calcRequirementEvCfg = (values: string[] | undefined): RequirementEvCfg => {
     const ret: RequirementEvCfg = {
-        create_cate: false,
-        update_cate: false,
-        remove_cate: false,
         create_requirement: false,
         update_requirement: false,
-        set_requirement_cate: false,
         remove_requirement: false,
         link_issue: false,
         unlink_issue: false,
@@ -1439,18 +1419,10 @@ export const calcRequirementEvCfg = (values: string[] | undefined): RequirementE
         return ret;
     }
     values.forEach(value => {
-        if (value == "create_cate") {
-            ret.create_cate = true;
-        } else if (value == "update_cate") {
-            ret.update_cate = true;
-        } else if (value == "remove_cate") {
-            ret.remove_cate = true;
-        } else if (value == "create_requirement") {
+        if (value == "create_requirement") {
             ret.create_requirement = true;
         } else if (value == "update_requirement") {
             ret.update_requirement = true;
-        } else if (value == "set_requirement_cate") {
-            ret.set_requirement_cate = true;
         } else if (value == "remove_requirement") {
             ret.remove_requirement = true;
         } else if (value == "link_issue") {
@@ -1474,23 +1446,11 @@ export const calcRequirementEvCfg = (values: string[] | undefined): RequirementE
 
 export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
     const retList: string[] = [];
-    if (cfg.create_cate) {
-        retList.push("create_cate");
-    }
-    if (cfg.update_cate) {
-        retList.push("update_cate");
-    }
-    if (cfg.remove_cate) {
-        retList.push("remove_cate");
-    }
     if (cfg.create_requirement) {
         retList.push("create_requirement");
     }
     if (cfg.update_requirement) {
         retList.push("update_requirement");
-    }
-    if (cfg.set_requirement_cate) {
-        retList.push("set_requirement_cate");
     }
     if (cfg.remove_requirement) {
         retList.push("remove_requirement");

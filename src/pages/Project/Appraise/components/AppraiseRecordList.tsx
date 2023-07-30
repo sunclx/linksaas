@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Pagination, Empty, Modal } from 'antd';
+import { Table, Pagination, Empty, Modal, Card } from 'antd';
 import { useStores } from '@/hooks';
 import moment from 'moment';
 import type { WebUserScoreInfo } from '@/stores/appraise';
@@ -219,18 +219,17 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
 
             {/* 数据 */}
             {isCurrent && !!localStore.dataSource.length && (
-              <div>
-                {projectStore.isAdmin && (
-                  <div className={styles.action_bar}>
-                    <div className={styles.remove_btn_wrap}>
-                      <Button danger onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowRemoveModal(true);
-                      }}>删除互评</Button>
-                    </div>
-                  </div>
-                )}
+              <Card title="评估得分" bordered={false} extra={
+                <div>
+                  {projectStore.isAdmin && (
+                    <Button danger onClick={e => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setShowRemoveModal(true);
+                    }}>删除互评</Button>
+                  )}
+                </div>
+              }>
                 <Table
                   dataSource={localStore.dataSource}
                   columns={columns}
@@ -239,7 +238,7 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
                   className={styles.table}
                   rowKey="user_id"
                 />
-              </div>
+              </Card>
             )}
           </div>
         })
