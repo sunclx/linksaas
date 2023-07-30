@@ -13,14 +13,12 @@ const ChatSettingPanel: React.FC<PanelProps> = (props) => {
 
     const [minPureTextLen, setMinPureTextLen] = useState(projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0);
     const [disableWidget, setDisableWidget] = useState(projectStore.curProject?.setting.disable_widget_in_chat ?? false);
-    const [allowReplyInDays, setAllowReplyInDays] = useState(projectStore.curProject?.setting.allow_reply_in_days ?? 0);
 
     const [hasChange, setHasChange] = useState(false);
 
     const resetConfig = () => {
         setMinPureTextLen(projectStore.curProject?.setting.min_pure_text_len_in_chat ?? 0);
         setDisableWidget(projectStore.curProject?.setting.disable_widget_in_chat ?? false);
-        setAllowReplyInDays(projectStore.curProject?.setting.allow_reply_in_days ?? 0);
         setHasChange(false);
     };
 
@@ -32,7 +30,6 @@ const ChatSettingPanel: React.FC<PanelProps> = (props) => {
                 ...projectStore.curProject!.setting,
                 min_pure_text_len_in_chat: minPureTextLen,
                 disable_widget_in_chat: disableWidget,
-                allow_reply_in_days: allowReplyInDays,
             },
         }));
         message.info("保存成功");
@@ -78,18 +75,6 @@ const ChatSettingPanel: React.FC<PanelProps> = (props) => {
                         setDisableWidget(e.target.checked);
                         setHasChange(true);
                     }} />
-                </Form.Item>
-                <Form.Item label="回复消息时间限制" help={
-                    <span>0&nbsp;表示不做限制</span>
-                }>
-                    可回复<InputNumber controls={false} value={allowReplyInDays} precision={0} min={0}
-                        style={{ width: "50px", margin: "0px 10px" }}
-                        onChange={value => {
-                            if (value !== null) {
-                                setAllowReplyInDays(value);
-                                setHasChange(true);
-                            }
-                        }} />天内的消息
                 </Form.Item>
             </Form>
         </Card>

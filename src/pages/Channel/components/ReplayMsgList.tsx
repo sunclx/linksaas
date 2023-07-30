@@ -22,7 +22,6 @@ const ReplayMsgList = () => {
     const [replyMsgList, setReplyMsgList] = useState<ReplyMsg[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
-    const [canReply, setCanReply] = useState(false);
 
     const loadReplyMsgList = async () => {
         const res = await request(list_reply_msg({
@@ -56,25 +55,6 @@ const ReplayMsgList = () => {
         }
     };
 
-    const checkCanReply = () => {
-        if ((projectStore.curProject?.setting.allow_reply_in_days ?? 0) == 0) {
-            setCanReply(true);
-            return;
-        }
-        const targetMsg = chatMsgStore.msgList.find(msg => msg.msg.msg_id == chatMsgStore.replayTargetMsgId);
-        if (targetMsg == undefined) {
-            setCanReply(false);
-            return;
-        }
-        if ((moment().valueOf() - targetMsg.msg.send_time) > (projectStore.curProject?.setting.allow_reply_in_days ?? 0) * 24 * 3600 * 1000) {
-            setCanReply(false);
-            return;
-        } else {
-            setCanReply(true);
-            return;
-        }
-    };
-
     const removeReplyMsg = async (replayMsgId: string) => {
         await request(remove_reply_msg({
             session_id: userStore.sessionId,
@@ -91,7 +71,6 @@ const ReplayMsgList = () => {
         if (chatMsgStore.replayTargetMsgId != "") {
             loadReplyMsgList();
         }
-        checkCanReply();
     }, [chatMsgStore.replayTargetMsgId, curPage]);
 
     useEffect(() => {
@@ -102,22 +81,18 @@ const ReplayMsgList = () => {
 
     return (
         <div className={s.wrap} style={{ height: chatMsgStore.replayTargetMsgId != "" ? "calc(100vh - 202px)" : "calc(100vh - 170px)" }}>
-            {canReply == true && (
-                <>
-                    <Input.TextArea draggable={false} autoSize={{ minRows: 2 }} placeholder="请输入回复内容" value={replyContent} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setReplyContent(e.target.value);
-                    }} />
-                    <div className={s.btns}>
-                        <Button style={{ minWidth: "0px" }} disabled={replyContent.trim() == ""} onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            addReplyMsg();
-                        }}>发送</Button>
-                    </div>
-                </>
-            )}
+            <Input.TextArea draggable={false} autoSize={{ minRows: 2 }} placeholder="请输入回复内容" value={replyContent} onChange={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setReplyContent(e.target.value);
+            }} />
+            <div className={s.btns}>
+                <Button style={{ minWidth: "0px" }} disabled={replyContent.trim() == ""} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    addReplyMsg();
+                }}>发送</Button>
+            </div>
 
             <List rowKey="reply_msg_id" dataSource={replyMsgList}
                 style={{ paddingTop: "10px", borderTop: "1px dotted #eee", marginTop: "10px" }}
