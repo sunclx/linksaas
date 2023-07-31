@@ -25,8 +25,8 @@ import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
 import type { ScriptSuiteKey } from '@/api/robot_script';
 import { list_script_suite_key } from '@/api/robot_script';
-import { RequirementInfo, CateInfo, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
-import { list_cate, list_requirement } from '@/api/project_requirement';
+import type { RequirementInfo } from '@/api/project_requirement';
+import { list_requirement,REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 
 const PAGE_SIZE = 10;
 
@@ -94,8 +94,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [tab, setTab] = useState(defaultTab);
   const [keyword, setKeyword] = useState('');
   const [externeUrl, setExterneUrl] = useState('');
-  const [curCateId, setCurCateId] = useState<string | null>(null);
-  const [cateInfoList, setCateInfoList] = useState([] as CateInfo[]);
 
   const tabList = [];
   if (props.showChannel) {
@@ -154,27 +152,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
         const tmpList = res.doc_space_list.slice();
         tmpList.unshift(ALL_DOC_SPACE);
         setDocSpaceList(tmpList);
-      })
-    } else if (tab == 'requirement') {
-      request(list_cate({
-        session_id: userStore.sessionId,
-        project_id: projectStore.curProjectId,
-      })).then(res => {
-        res.cate_info_list.unshift({
-          cate_id: "",
-          project_id: projectStore.curProjectId,
-          cate_name: "未分类需求",
-          requirement_count: -1,
-          create_user_id: "",
-          create_time: 0,
-          create_display_name: "",
-          create_logo_uri: "",
-          update_user_id: "",
-          update_time: 0,
-          update_display_name: "",
-          update_logo_uri: "",
-        });
-        setCateInfoList(res.cate_info_list);
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -294,8 +271,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     request(list_requirement({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      filter_by_cate_id: curCateId != null,
-      cate_id: curCateId == null ? "" : curCateId,
       filter_by_keyword: keyword.trim() != "",
       keyword: keyword.trim(),
       filter_by_has_link_issue: false,
@@ -311,7 +286,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       setTotalCount(res.total_count);
       setRequirementList(res.requirement_list);
     })
-  }, [tab, curPage, keyword, curCateId]);
+  }, [tab, curPage, keyword]);
 
   const renderItemContent = () => {
     if (props.showChannel && tab === 'channel') {
@@ -386,14 +361,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
                   setKeyword(e.target.value);
                 }}
               />
-            </Form.Item>
-            <Form.Item label="分类">
-              <Select value={curCateId} style={{ width: "100px" }} onChange={value => setCurCateId(value)}>
-                <Select.Option value={null}>全部分类</Select.Option>
-                {cateInfoList.map(item => (
-                  <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
-                ))}
-              </Select>
             </Form.Item>
           </Form>
           {requirementList.map((item) => (

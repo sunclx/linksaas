@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
 import DetailsNav from "@/components/DetailsNav";
 import Button from "@/components/Button";
-import { Form, Input, Select, Space, message } from "antd";
+import { Input, Space, message } from "antd";
 import { useHistory, useLocation } from "react-router-dom";
 import s from './RequirementCreate.module.less';
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
@@ -11,9 +11,8 @@ import { LinkRequirementInfo } from "@/stores/linkAux";
 import type { LinkRequirementState } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_PROJECT, FILE_OWNER_TYPE_REQUIRE_MENT } from "@/api/fs";
-import type { CateInfo } from '@/api/project_requirement';
 import { request } from "@/utils/request";
-import { list_cate, create_requirement } from '@/api/project_requirement';
+import { create_requirement } from '@/api/project_requirement';
 
 const RequirementCreate = () => {
     const location = useLocation();
@@ -40,30 +39,6 @@ const RequirementCreate = () => {
 
 
     const [title, setTitle] = useState("");
-    const [curCateId, setCurCateId] = useState(state?.cateId ?? "");
-    const [cateList, setCateList] = useState<CateInfo[]>([]);
-
-    const loadCateList = async () => {
-        const res = await request(list_cate({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-        }));
-        res.cate_info_list.unshift({
-            cate_id: "",
-            project_id: projectStore.curProjectId,
-            cate_name: "未分类需求",
-            requirement_count: -1,
-            create_user_id: "",
-            create_time: 0,
-            create_display_name: "",
-            create_logo_uri: "",
-            update_user_id: "",
-            update_time: 0,
-            update_display_name: "",
-            update_logo_uri: "",
-        })
-        setCateList(res.cate_info_list);
-    };
 
     const createRequirement = async () => {
         if (title == "") {
@@ -90,7 +65,6 @@ const RequirementCreate = () => {
                 content: JSON.stringify(content),
                 tag_id_list: [],
             },
-            cate_id: curCateId,
         }));
         //变更文件Owner
         await change_file_owner(content, userStore.sessionId, FILE_OWNER_TYPE_REQUIRE_MENT, createRes.requirement_id);
@@ -100,28 +74,9 @@ const RequirementCreate = () => {
         linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, createRes.requirement_id), history);
     };
 
-    useEffect(() => {
-        loadCateList();
-    }, [projectStore.curProjectId]);
-
     return (
         <CardWrap>
-            <DetailsNav title={<Space size="large">
-                创建需求
-                <Form layout="inline">
-                    <Form.Item label="需求分类">
-                        <Select style={{ width: "100px" }} value={curCateId} bordered={false}
-                            onChange={value => {
-                                setCurCateId(value);
-                            }}>
-                            {cateList.map(item => (
-                                <Select.Option key={item.cate_id} value={item.cate_id}>{item.cate_name}</Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                </Form>
-
-            </Space>} >
+            <DetailsNav title="创建需求">
                 <Space>
                     <Button type="default" onClick={e => {
                         e.stopPropagation();

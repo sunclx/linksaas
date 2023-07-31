@@ -15,7 +15,7 @@ import * as tc from '@/api/project_test_case';
 
 import moment from 'moment';
 import { APPRAISE_AGREE } from './project_idea';
-import { API_COLL_TYPE } from './api_collection';
+import type { API_COLL_TYPE } from './api_collection';
 
 export function get_issue_type_str(issue_type: number): string {
   if (issue_type == pi.ISSUE_TYPE_BUG) {
@@ -4645,51 +4645,9 @@ namespace code {
 }
 
 namespace requirement {
-  export type CreateCateEvent = {
-    cate_id: string;
-    cate_name: string;
-  };
-
-  function get_create_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateCateEvent,
-  ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建需求分类 ${inner.cate_name}`)];
-  }
-
-  export type UpdateCateEvent = {
-    cate_id: string;
-    old_cate_name: string;
-    new_cate_name: string;
-  };
-
-  function get_update_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UpdateCateEvent,
-  ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新需求分类 ${inner.new_cate_name}  (原名称 ${inner.old_cate_name})`)];
-  }
-
-  export type RemoveCateEvent = {
-    cate_id: string;
-    cate_name: string;
-  };
-
-  function get_remove_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveCateEvent,
-  ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除需求分类 ${inner.cate_name}`)];
-  }
-
   export type CreateRequirementEvent = {
     requirement_id: string;
     title: string;
-    cate_id: string;
-    cate_name: string;
   };
 
   function get_create_req_simple_content(
@@ -4698,7 +4656,7 @@ namespace requirement {
     inner: CreateRequirementEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 创建需求 `),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建需求 `),
       new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
     ];
   }
@@ -4707,8 +4665,6 @@ namespace requirement {
     requirement_id: string;
     old_title: string;
     new_title: string;
-    cate_id: string;
-    cate_name: string;
   };
 
   function get_update_req_simple_content(
@@ -4717,7 +4673,7 @@ namespace requirement {
     inner: UpdateRequirementEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 修改需求`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改需求`),
       new LinkRequirementInfo(inner.new_title, ev.project_id, inner.requirement_id),
       new LinkNoneInfo(`(原标题 ${inner.old_title})`),
     ];
@@ -4731,8 +4687,6 @@ namespace requirement {
   export type UpdateTagEvent = {
     requirement_id: string;
     title: string;
-    cate_id: string;
-    cate_name: string;
     old_tag_list: TagInfo[];
     new_tag_list: TagInfo[];
   };
@@ -4743,38 +4697,15 @@ namespace requirement {
     inner: UpdateTagEvent,
   ): LinkInfo[] {
     return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在需求分类 ${inner.cate_name} 修改需求`),
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改需求`),
       new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
       new LinkNoneInfo(`新标签 ${inner.new_tag_list.map(tag => tag.tag_name).join(",")} 旧标签 ${inner.old_tag_list.map(tag => tag.tag_name).join(",")}`),
-    ];
-  }
-
-  export type SetRequirementCateEvent = {
-    requirement_id: string;
-    title: string;
-    old_cate_id: string;
-    old_cate_name: string;
-    new_cate_id: string;
-    new_cate_name: string;
-  };
-
-  function get_set_req_cate_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: SetRequirementCateEvent,
-  ): LinkInfo[] {
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 修改需求 `),
-      new LinkRequirementInfo(inner.title, ev.project_id, inner.requirement_id),
-      new LinkNoneInfo(`到需求分类 ${inner.new_cate_name} (原需求分类 ${inner.old_cate_name})`),
     ];
   }
 
   export type RemoveRequirementEvent = {
     requirement_id: string;
     title: string;
-    cate_id: string;
-    cate_name: string;
   };
 
   function get_remove_req_simple_content(
@@ -4782,14 +4713,12 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: RemoveRequirementEvent,
   ): LinkInfo[] {
-    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 从需求分类 ${inner.cate_name} 删除需求 ${inner.title}`)];
+    return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除需求 ${inner.title}`)];
   }
 
   export type LinkIssueEvent = {
     requirement_id: string;
     title: string;
-    cate_id: string;
-    cate_name: string;
     issue_id: string;
     issue_title: string;
   };
@@ -4810,8 +4739,6 @@ namespace requirement {
   export type UnlinkIssueEvent = {
     requirement_id: string;
     title: string;
-    cate_id: string;
-    cate_name: string;
     issue_id: string;
     issue_title: string;
   };
@@ -4897,13 +4824,9 @@ namespace requirement {
   }
 
   export class AllRequirementEvent {
-    CreateCateEvent?: CreateCateEvent;
-    UpdateCateEvent?: UpdateCateEvent;
-    RemoveCateEvent?: RemoveCateEvent;
     CreateRequirementEvent?: CreateRequirementEvent;
     UpdateRequirementEvent?: UpdateRequirementEvent;
     UpdateTagEvent?: UpdateTagEvent;
-    SetRequirementCateEvent?: SetRequirementCateEvent;
     RemoveRequirementEvent?: RemoveRequirementEvent;
     LinkIssueEvent?: LinkIssueEvent;
     UnlinkIssueEvent?: UnlinkIssueEvent;
@@ -4917,20 +4840,12 @@ namespace requirement {
     skip_prj_name: boolean,
     inner: AllRequirementEvent,
   ): LinkInfo[] {
-    if (inner.CreateCateEvent !== undefined) {
-      return get_create_cate_simple_content(ev, skip_prj_name, inner.CreateCateEvent);
-    } else if (inner.UpdateCateEvent !== undefined) {
-      return get_update_cate_simple_content(ev, skip_prj_name, inner.UpdateCateEvent);
-    } else if (inner.RemoveCateEvent !== undefined) {
-      return get_remove_cate_simple_content(ev, skip_prj_name, inner.RemoveCateEvent);
-    } else if (inner.CreateRequirementEvent !== undefined) {
+    if (inner.CreateRequirementEvent !== undefined) {
       return get_create_req_simple_content(ev, skip_prj_name, inner.CreateRequirementEvent);
     } else if (inner.UpdateRequirementEvent !== undefined) {
       return get_update_req_simple_content(ev, skip_prj_name, inner.UpdateRequirementEvent);
     } else if (inner.UpdateTagEvent !== undefined) {
       return get_update_tag_simple_content(ev, skip_prj_name, inner.UpdateTagEvent);
-    } else if (inner.SetRequirementCateEvent !== undefined) {
-      return get_set_req_cate_simple_content(ev, skip_prj_name, inner.SetRequirementCateEvent);
     } else if (inner.RemoveRequirementEvent !== undefined) {
       return get_remove_req_simple_content(ev, skip_prj_name, inner.RemoveRequirementEvent);
     } else if (inner.LinkIssueEvent !== undefined) {

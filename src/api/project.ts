@@ -30,7 +30,6 @@ export type Setting = {
 
   min_pure_text_len_in_chat: number;
   disable_widget_in_chat: boolean;
-  allow_reply_in_days: number;
 
   //后续删除字段
   layout_type: number;

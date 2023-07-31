@@ -7,21 +7,6 @@ export const REQ_SORT_KANO: REQ_SORT_TYPE = 2;         //根据kano better系数
 export const REQ_SORT_URGENT: REQ_SORT_TYPE = 3;       //根据四象限紧急层度
 export const REQ_SORT_IMPORTANT: REQ_SORT_TYPE = 4;    //根据四象限重要层度
 
-export type CateInfo = {
-    cate_id: string;
-    project_id: string;
-    cate_name: string;
-    requirement_count: number;
-    create_user_id: string;
-    create_time: number;
-    create_display_name: string;
-    create_logo_uri: string;
-    update_user_id: string;
-    update_time: number;
-    update_display_name: string;
-    update_logo_uri: string;
-};
-
 export type BaseRequirementInfo = {
     title: string;
     content: string;
@@ -36,7 +21,6 @@ export type RequirementTag = {
 
 export type RequirementInfo = {
     requirement_id: string;
-    cate_id: string;
     project_id: string;
     base_info: BaseRequirementInfo;
     issue_link_count: number;
@@ -106,62 +90,10 @@ export type Comment = {
     ref_user_display_name: string;
 };
 
-
-export type CreateCateRequest = {
-    session_id: string;
-    project_id: string;
-    cate_name: string;
-};
-
-export type CreateCateResponse = {
-    code: number;
-    err_msg: string;
-    cate_id: string;
-};
-
-
-export type ListCateRequest = {
-    session_id: string;
-    project_id: string;
-};
-
-export type ListCateResponse = {
-    code: number;
-    err_msg: string;
-    cate_info_list: CateInfo[];
-};
-
-
-export type UpdateCateRequest = {
-    session_id: string;
-    project_id: string;
-    cate_id: string;
-    cate_name: string;
-};
-
-export type UpdateCateResponse = {
-    code: number;
-    err_msg: string;
-};
-
-
-export type RemoveCateRequest = {
-    session_id: string;
-    project_id: string;
-    cate_id: string;
-};
-
-export type RemoveCateResponse = {
-    code: number;
-    err_msg: string;
-};
-
-
 export type CreateRequirementRequest = {
     session_id: string;
     project_id: string;
     base_info: BaseRequirementInfo;
-    cate_id: string;
 };
 
 export type CreateRequirementResponse = {
@@ -174,8 +106,6 @@ export type CreateRequirementResponse = {
 export type ListRequirementRequest = {
     session_id: string;
     project_id: string;
-    filter_by_cate_id: boolean;
-    cate_id: string;
     filter_by_keyword: boolean;
     keyword: string;
     filter_by_has_link_issue: boolean;
@@ -233,20 +163,6 @@ export type UpdateRequirementResponse = {
     code: number;
     err_msg: string;
 };
-
-
-export type SetRequirementCateRequest = {
-    session_id: string;
-    project_id: string;
-    requirement_id: string;
-    cate_id: string;
-};
-
-export type SetRequirementCateResponse = {
-    code: number;
-    err_msg: string;
-};
-
 
 export type RemoveRequirementRequest = {
     session_id: string;
@@ -442,43 +358,6 @@ export type UpdateTagIdListResponse = {
     err_msg: string;
 };
 
-
-//创建需求分类
-export async function create_cate(request: CreateCateRequest): Promise<CreateCateResponse> {
-    const cmd = 'plugin:project_requirement_api|create_cate';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<CreateCateResponse>(cmd, {
-        request,
-    });
-}
-
-//列出需求分类
-export async function list_cate(request: ListCateRequest): Promise<ListCateResponse> {
-    const cmd = 'plugin:project_requirement_api|list_cate';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListCateResponse>(cmd, {
-        request,
-    });
-}
-
-//更新需求分类
-export async function update_cate(request: UpdateCateRequest): Promise<UpdateCateResponse> {
-    const cmd = 'plugin:project_requirement_api|update_cate';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdateCateResponse>(cmd, {
-        request,
-    });
-}
-
-//删除需求分类
-export async function remove_cate(request: RemoveCateRequest): Promise<RemoveCateResponse> {
-    const cmd = 'plugin:project_requirement_api|remove_cate';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<RemoveCateResponse>(cmd, {
-        request,
-    });
-}
-
 //创建需求
 export async function create_requirement(request: CreateRequirementRequest): Promise<CreateRequirementResponse> {
     const cmd = 'plugin:project_requirement_api|create_requirement';
@@ -529,15 +408,6 @@ export async function update_tag_id_list(request: UpdateTagIdListRequest): Promi
     const cmd = 'plugin:project_requirement_api|update_tag_id_list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateTagIdListResponse>(cmd, {
-        request,
-    });
-}
-
-//设置需求分类
-export async function set_requirement_cate(request: SetRequirementCateRequest): Promise<SetRequirementCateResponse> {
-    const cmd = 'plugin:project_requirement_api|set_requirement_cate';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<SetRequirementCateResponse>(cmd, {
         request,
     });
 }

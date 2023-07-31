@@ -112,7 +112,7 @@ const ChannelHeader = observer(() => {
       message.info("发送消息成功");
     }
     if (action == SEND_ACTION.SEND_ACTION_CREATE_REQUIRE_MENT) {
-      linkAuxStore.goToCreateRequirement(JSON.stringify(chatJson), projectStore.curProjectId, "", history);
+      linkAuxStore.goToCreateRequirement(JSON.stringify(chatJson), projectStore.curProjectId, history);
     } else if (action == SEND_ACTION.SEND_ACTION_CREATE_TASK) {
       linkAuxStore.goToCreateTask(JSON.stringify(chatJson), projectStore.curProjectId, history);
     } else if (action == SEND_ACTION.SEND_ACTION_CREATE_BUG) {

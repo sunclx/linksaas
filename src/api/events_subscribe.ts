@@ -185,12 +185,8 @@ export type ScriptEvCfg = {
 };
 
 export type RequirementEvCfg = {
-    create_cate: boolean;
-    update_cate: boolean;
-    remove_cate: boolean;
     create_requirement: boolean;
     update_requirement: boolean;
-    set_requirement_cate: boolean;
     remove_requirement: boolean;
     link_issue: boolean;
     unlink_issue: boolean;
@@ -403,12 +399,8 @@ export async function list(request: ListRequest): Promise<ListResponse> {
     for (const info of ret.info_list) {
         if (info.event_cfg.requirement_ev_cfg == undefined || info.event_cfg.requirement_ev_cfg == null) {
             info.event_cfg.requirement_ev_cfg = {
-                create_cate: false,
-                update_cate: false,
-                remove_cate: false,
                 create_requirement: false,
                 update_requirement: false,
-                set_requirement_cate: false,
                 remove_requirement: false,
                 link_issue: false,
                 unlink_issue: false,
@@ -417,6 +409,40 @@ export async function list(request: ListRequest): Promise<ListResponse> {
                 set_kano_info: false,
                 set_four_q_info: false,
                 update_tag: false,
+            };
+        }
+        if (info.event_cfg.code_ev_cfg == undefined || info.event_cfg.code_ev_cfg == null) {
+            info.event_cfg.code_ev_cfg = {
+                add_comment: false,
+                update_comment: false,
+                remove_comment: false,
+            };
+        }
+        if (info.event_cfg.idea_ev_cfg == undefined || info.event_cfg.idea_ev_cfg == null) {
+            info.event_cfg.idea_ev_cfg = {
+                create_idea: false,
+                update_idea_content: false,
+                update_idea_tag: false,
+                update_idea_keyword: false,
+                lock_idea: false,
+                unlock_idea: false,
+                remove_idea: false,
+                set_appraise: false,
+                cancel_appraise: false,
+            };
+        }
+        if (info.event_cfg.data_anno_ev_cfg == undefined || info.event_cfg.data_anno_ev_cfg == null) {
+            info.event_cfg.data_anno_ev_cfg = {
+                create_anno_project: false,
+                remove_anno_project: false,
+                add_anno_member: false,
+                remove_anno_member: false,
+            };
+        }
+        if (info.event_cfg.api_collection_ev_cfg == undefined || info.event_cfg.api_collection_ev_cfg == null) {
+            info.event_cfg.api_collection_ev_cfg = {
+                create: false,
+                remove: false,
             };
         }
     }

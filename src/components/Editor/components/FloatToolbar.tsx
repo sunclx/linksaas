@@ -4,7 +4,7 @@ import Toolbar from './Toolbar';
 import { useCommands, useHelpers, useRemirrorContext } from '@remirror/react';
 import { LinkSelect } from '.';
 import type { LinkInfo } from '@/stores/linkAux';
-import { Select, Tooltip, Popover} from 'antd';
+import { Select, Tooltip, Popover } from 'antd';
 import { CompactPicker } from 'react-color';
 import type { TextColorAttributes } from '@remirror/extension-text-color';
 import type { TextHighlightAttributes } from '@remirror/extension-text-highlight';
@@ -362,7 +362,7 @@ const formatItem = (
 
 const FloatToolBar = () => {
   return (
-    <FloatingWrapper displayArrow={true} positioner="selection" placement="top">
+    <FloatingWrapper displayArrow={true} positioner="selection" placement="auto" enabled>
       <Toolbar items={[headAndLinkItem, fontItem, formatItem]} />
     </FloatingWrapper>
   );
