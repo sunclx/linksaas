@@ -705,10 +705,9 @@ async fn start<R: Runtime>(
             return Err(err.to_string());
         }
     }
-    #[allow(unused_assignments)]
     let mut dest_url = String::from("");
     if request.path.starts_with("http://") {
-        dest_url = request.path;
+        dest_url.clone_from(&request.path);
     } else {
         let mut cross_origin_isolated = false;
         if let Some(extra_perm) = perm.extra_perm {
@@ -724,12 +723,13 @@ async fn start<R: Runtime>(
         if serv.is_err() {
             return Err(serv.err().unwrap());
         }
-        dest_url = format!("http://localhost:{}/index.html", serv.unwrap());
+        let tmp_url = format!("http://localhost:{}/index.html", serv.unwrap());
+        dest_url.clone_from(&tmp_url);
     }
-    let dest_url = url::Url::parse(dest_url.as_str());
-    if dest_url.is_err() {
+    let open_url = url::Url::parse(dest_url.as_str());
+    if open_url.is_err() {
         clear_by_close(app_handle.clone(), request.label.clone()).await;
-        return Err(dest_url.err().unwrap().to_string());
+        return Err(open_url.err().unwrap().to_string());
     }
 
     let mut script = INIT_SCRIPT
@@ -872,7 +872,7 @@ async fn start<R: Runtime>(
     let res = WindowBuilder::new(
         &app_handle,
         request.label.clone(),
-        WindowUrl::External(dest_url.unwrap()),
+        WindowUrl::External(open_url.unwrap()),
     )
     .title(request.title)
     .visible(true)
@@ -891,6 +891,9 @@ async fn start_sidecar_proxy<R: Runtime>(
     sidecar: &str,
     args: Vec<String>,
 ) -> Result<(String, String), String> {
+    if &label == "main" {
+        return Err("not allow".into());
+    }
     let res = Command::new_sidecar(sidecar);
     if res.is_err() {
         return Err(res.err().unwrap().to_string());
