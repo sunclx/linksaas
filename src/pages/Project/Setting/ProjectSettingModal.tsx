@@ -8,6 +8,7 @@ import ChatSettingPanel from "./components/ChatSettingPanel";
 import AlarmSettingPanel from "./components/AlarmSettingPanel";
 import TipListSettingPanel from "./components/TipListSettingPanel";
 import TagListSettingPanel from "./components/TagListSettingPanel";
+import EventSettingPanel from "./components/EventSettingPanel";
 
 
 const ProjectSettingModal = () => {
@@ -27,6 +28,8 @@ const ProjectSettingModal = () => {
             setActiveKey("tips");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST) {
             setActiveKey("tags");
+        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT) {
+            setActiveKey("event");
         }
     }, [projectStore.showProjectSetting]);
 
@@ -58,6 +61,8 @@ const ProjectSettingModal = () => {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TIPLIST;
                     } else if (key == "tags") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
+                    } else if (key == "event") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT;
                     }
                 }}>
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
@@ -71,6 +76,10 @@ const ProjectSettingModal = () => {
                 <Tabs.TabPane key="alarm" tab="项目预警" disabled={disableTabs}>
                     {activeKey == "alarm" && <AlarmSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
                 </Tabs.TabPane>
+                <Tabs.TabPane key="event" tab="工作记录" disabled={disableTabs}>
+                    {activeKey == "event" && <EventSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
+                </Tabs.TabPane>
+
                 <Tabs.TabPane key="tips" tab="经验集锦" disabled={disableTabs}>
                     {activeKey == "tips" && <TipListSettingPanel onChange={value => setDisableTabs(value)} title="经验集锦" />}
                 </Tabs.TabPane>

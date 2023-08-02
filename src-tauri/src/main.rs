@@ -338,6 +338,8 @@ fn main() {
                 for (_, win) in &all_windows {
                     win.show().unwrap();
                     win.unminimize().unwrap();
+                    win.set_always_on_top(true).unwrap();
+                    win.set_always_on_top(false).unwrap();
                 }
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
@@ -356,6 +358,8 @@ fn main() {
                     for (_, win) in &all_windows {
                         win.show().unwrap();
                         win.unminimize().unwrap();
+                        win.set_always_on_top(true).unwrap();
+                        win.set_always_on_top(false).unwrap();
                     }
                 }
                 "about" => {

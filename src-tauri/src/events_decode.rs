@@ -44,6 +44,7 @@ pub mod project {
         WatchChannelEvent(events_project::WatchChannelEvent),
         UnWatchChannelEvent(events_project::UnWatchChannelEvent),
         SetAlarmConfigEvent(events_project::SetAlarmConfigEvent),
+        CustomEvent(events_project::CustomEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -205,6 +206,10 @@ pub mod project {
         } else if data.type_url == events_project::SetAlarmConfigEvent::type_url() {
             if let Ok(ev) = events_project::SetAlarmConfigEvent::decode(data.value.as_slice()) {
                 return Some(Event::SetAlarmConfigEvent(ev));
+            }
+        } else if data.type_url == events_project::CustomEvent::type_url() {
+            if let Ok(ev) = events_project::CustomEvent::decode(data.value.as_slice()) {
+                return Some(Event::CustomEvent(ev));
             }
         }
         None

@@ -74,8 +74,8 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::{
-    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdAiTokenGet200Response,
-    ProjectProjectIdBugAllGet200Response, ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
+    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBugAllGet200Response,
+    ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
     ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
     ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
     ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
@@ -83,22 +83,24 @@ use local_api_rust::models::{
     ProjectProjectIdTestCaseReportEntryIdPostRequest,
 };
 use local_api_rust::{
-    Api, HelloGetResponse, ProjectGetResponse, ProjectProjectIdAiTokenGetResponse,
-    ProjectProjectIdBugAllGetResponse, ProjectProjectIdBugMyGetResponse,
-    ProjectProjectIdBugRecordBugIdEventsGetResponse,
+    Api, HelloGetResponse, ProjectGetResponse, ProjectProjectIdBugAllGetResponse,
+    ProjectProjectIdBugMyGetResponse, ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
     ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
     ProjectProjectIdChannelMyGetResponse, ProjectProjectIdChannelNotJoinGetResponse,
     ProjectProjectIdChannelOrphanGetResponse,
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse,
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdCommentIdOptionsResponse,
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse,
     ProjectProjectIdCodeCommentCommentThreadIdGetResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdOptionsResponse,
     ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ProjectProjectIdCreateBugGetResponse,
     ProjectProjectIdCreateDocDocSpaceIdGetResponse, ProjectProjectIdCreateTaskGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse,
     ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ProjectProjectIdDocSpaceGetResponse,
-    ProjectProjectIdEventGetResponse, ProjectProjectIdMemberGetResponse,
+    ProjectProjectIdEventGetResponse, ProjectProjectIdEventOptionsResponse,
+    ProjectProjectIdEventPostResponse, ProjectProjectIdMemberGetResponse,
     ProjectProjectIdMemberMemberUserIdShowGetResponse, ProjectProjectIdTaskAllGetResponse,
     ProjectProjectIdTaskMyGetResponse, ProjectProjectIdTaskRecordTaskIdDependGetResponse,
     ProjectProjectIdTaskRecordTaskIdEventsGetResponse,
@@ -107,6 +109,7 @@ use local_api_rust::{
     ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse, ProjectProjectIdTestCaseLangGetResponse,
     ProjectProjectIdTestCaseLangLangFrameworkEntryIdGetResponse,
     ProjectProjectIdTestCaseLangLangGetResponse, ProjectProjectIdTestCaseListEntryIdGetResponse,
+    ProjectProjectIdTestCaseReportEntryIdOptionsResponse,
     ProjectProjectIdTestCaseReportEntryIdPostResponse,
     ProjectProjectIdTestCaseShowEntryIdGetResponse, ProjectProjectIdToolsPostHookGetResponse,
     ShowGetResponse,
@@ -1979,19 +1982,6 @@ where
         }
     }
 
-    async fn project_project_id_ai_token_get(
-        &self,
-        _project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdAiTokenGetResponse, ApiError> {
-        return Ok(ProjectProjectIdAiTokenGetResponse::Status200 {
-            body: ProjectProjectIdAiTokenGet200Response {
-                token: Some("".into()),
-            },
-            access_control_allow_origin: Some("*".into()),
-        });
-    }
-
     /// git post commit hook回调
     async fn project_project_id_tools_post_hook_get(
         &self,
@@ -2048,5 +2038,121 @@ where
                 access_control_allow_origin: Some("*".into()),
             });
         }
+    }
+
+    /// 上报自定义事件
+    async fn project_project_id_event_post(
+        &self,
+        project_id: String,
+        project_project_id_event_post_request: Option<
+            local_api_rust::models::ProjectProjectIdEventPostRequest,
+        >,
+        _context: &C,
+    ) -> Result<ProjectProjectIdEventPostResponse, ApiError> {
+        println!(
+            "request is none {}",
+            project_project_id_event_post_request.is_none()
+        );
+        if project_project_id_event_post_request.is_none() {
+            return Ok(ProjectProjectIdEventPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("错误的请求参数".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+
+        let request = project_project_id_event_post_request.unwrap();
+        println!("{:?}", &request);
+        let ev_type = request.ev_type.unwrap_or_default();
+        let ev_content = request.ev_content.unwrap_or_default();
+        if &ev_type == "" || &ev_content == "" {
+            return Ok(ProjectProjectIdEventPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("错误的请求参数".into()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        let res =
+            super::event_api::add_custom_event(&self.app, &project_id, &ev_type, &ev_content).await;
+        if res.is_err() {
+            return Ok(ProjectProjectIdEventPostResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some(res.err().unwrap()),
+                },
+                access_control_allow_origin: Some("*".into()),
+            });
+        }
+        return Ok(ProjectProjectIdEventPostResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
+    }
+
+    async fn project_project_id_code_comment_comment_thread_id_comment_id_options(
+        &self,
+        _project_id: String,
+        _comment_thread_id: String,
+        _comment_id: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdCommentIdOptionsResponse, ApiError> {
+        return Ok(
+            ProjectProjectIdCodeCommentCommentThreadIdCommentIdOptionsResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+                access_control_allow_methods: Some("PUT, GET, POST, DELETE, OPTIONS".into()),
+                access_control_allow_headers: Some("Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials".into()),
+                access_control_allow_credentials: Some("true".into()),
+            },
+        );
+    }
+
+    async fn project_project_id_code_comment_comment_thread_id_options(
+        &self,
+        _project_id: String,
+        _comment_thread_id: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdCodeCommentCommentThreadIdOptionsResponse, ApiError> {
+        return Ok(
+            ProjectProjectIdCodeCommentCommentThreadIdOptionsResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+                access_control_allow_methods: Some("PUT, GET, POST, DELETE, OPTIONS".into()),
+                access_control_allow_headers: Some("Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials".into()),
+                access_control_allow_credentials: Some("true".into()),
+            },
+        );
+    }
+
+    async fn project_project_id_event_options(
+        &self,
+        _project_id: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdEventOptionsResponse, ApiError> {
+        return Ok(ProjectProjectIdEventOptionsResponse::Status200 {
+            body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+                access_control_allow_methods: Some("PUT, GET, POST, DELETE, OPTIONS".into()),
+                access_control_allow_headers: Some("Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials".into()),
+                access_control_allow_credentials: Some("true".into()),
+        });
+    }
+
+    async fn project_project_id_test_case_report_entry_id_options(
+        &self,
+        _project_id: String,
+        _entry_id: String,
+        _context: &C,
+    ) -> Result<ProjectProjectIdTestCaseReportEntryIdOptionsResponse, ApiError> {
+        return Ok(
+            ProjectProjectIdTestCaseReportEntryIdOptionsResponse::Status200 {
+                body: json!({}),
+                access_control_allow_origin: Some("*".into()),
+                access_control_allow_methods: Some("PUT, GET, POST, DELETE, OPTIONS".into()),
+                access_control_allow_headers: Some("Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials".into()),
+                access_control_allow_credentials: Some("true".into()),
+            },
+        );
     }
 }

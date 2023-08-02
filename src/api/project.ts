@@ -34,6 +34,10 @@ export type Setting = {
   //后续删除字段
   layout_type: number;
   disable_sprit: boolean;
+
+  //事件相关字段
+  hide_custom_event: boolean;
+  hide_custom_event_for_admin: boolean;
 };
 
 export type CreateResponse = {
