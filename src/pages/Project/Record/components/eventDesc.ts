@@ -2543,6 +2543,20 @@ const projectEventList: EventDesc[] = [
         name: "设置告警",
         attrList: []
     },
+    {
+        id: "CustomEvent",
+        name: "自定义事件",
+        attrList: [
+            {
+                key: "event_type",
+                desc: "自定义事件类型"
+            },
+            {
+                key: "event_content",
+                desc: "自定义事件内容"
+            }
+        ],
+    }
 ];
 
 const issueEventList: EventDesc[] = [
