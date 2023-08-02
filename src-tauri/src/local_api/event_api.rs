@@ -5,6 +5,36 @@ use proto_gen_rust::events_api::*;
 use serde_json::json;
 use tauri::AppHandle;
 
+pub async fn add_custom_event(
+    app: &AppHandle,
+    project_id: &String,
+    ev_type: &String,
+    ev_content: &String,
+) -> Result<(), String> {
+    let chan = crate::get_grpc_chan(app).await;
+    if chan.is_none() {
+        return Err("grpc连接出错".into());
+    }
+    let mut client = EventsApiClient::new(chan.unwrap());
+    let res = client
+        .add_custom_event(AddCustomEventRequest {
+            session_id: get_session_inner(app).await,
+            project_id: project_id.clone(),
+            event_type: ev_type.clone(),
+            event_content: ev_content.clone(),
+        })
+        .await;
+    if res.is_err() {
+        return Err("调用接口出错".into());
+    } else {
+        let res = res.unwrap().into_inner();
+        if res.code != 0 {
+            return Err(res.err_msg);
+        }
+        return Ok(());
+    }
+}
+
 pub async fn list_project_event(
     app: &AppHandle,
     project_id: &String,

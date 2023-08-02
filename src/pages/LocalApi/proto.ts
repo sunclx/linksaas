@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.12
+  version: 0.1.13
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -76,42 +76,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ProjectInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/aiToken:
-    get:
-      tags:
-        - projectAi
-      summary: 生成Ai token
-      description: 生成Ai token
-      operationId: projectProjectIdAiTokenGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: Ai token
         '500':
           description: 失败
           headers:
@@ -913,6 +877,49 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/EventInfo'
+        '500':
+          description: 失败
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrInfo'
+    post:
+      tags:
+        - projectEvent
+      summary: 上报自定义事件
+      description: 上报自定义事件
+      operationId: projectProjectIdEventPost
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                evType:
+                  type: string
+                  description: 自定义事件类型
+                evContent:
+                  type: string
+                  description: 自定义事件内容
+      responses:
+        '200':
+          description: 成功
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                default: '*'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyRes'
         '500':
           description: 失败
           headers:
@@ -2136,4 +2143,6 @@ components:
             - low
             - middle
             - high
+
+
 `;
