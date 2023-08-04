@@ -199,18 +199,7 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
                 <div className={styles.list_info_item}>
                   发起日期：{moment(item.create_time).format('YYYY-MM-DD')}
                 </div>
-                <a
-                  className={styles.list_expand}
-                  onClick={() => {
-                    if (isCurrent) {
-                      runInAction(() => {
-                        localStore.setCurAppraiseId("");
-                        localStore.dataSource = [];
-                      });
-                    } else {
-                      loadApprasiseScore(item.appraise_id);
-                    }
-                  }}>
+                <a className={styles.list_expand}>
                   {isCurrent ? '收起' : '展开'}
                 </a>
               </div>

@@ -157,6 +157,10 @@ export const projectEvOptionList: CheckboxOptionType[] = [
     {
         label: "更新预警配置",
         value: "setAlarmConfig",
+    },
+    {
+        label: "自定义事件",
+        value: "customEvent"
     }
 ];
 
@@ -200,6 +204,7 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         watch_channel: false,
         un_watch_channel: false,
         set_alarm_config: false,
+        custom_event: false,
     };
     if (values == undefined) {
         return ret;
@@ -281,6 +286,8 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.un_watch_channel = true;
         } else if (value == "setAlarmConfig") {
             ret.set_alarm_config = true;
+        } else if (value == "customEvent") {
+            ret.custom_event = true;
         }
     });
     return ret;
@@ -401,6 +408,9 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.set_alarm_config) {
         retList.push("setAlarmConfig");
+    }
+    if (cfg.custom_event) {
+        retList.push("customEvent");
     }
     return retList;
 }

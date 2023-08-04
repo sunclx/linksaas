@@ -7,7 +7,7 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.4.2"
+version = "0.4.3"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -26,10 +26,10 @@ http = "0.2.8"
 hyper = {version = "0.14", features = ["full"] }
 image = "0.24.1"
 libaes = "0.6.5"
-local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", tag = "0.1.1"}
+local_api_rust = {git = "https://jihulab.com/linksaas/local-api-rust.git", tag = "0.1.5"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.17"}
+proto_gen_rust = {git = "https://jihulab.com/linksaas/proto-gen-rust.git", tag = "0.1.18"}
 rand = "0.8.5"
 regex = "1.8.4"
 reqwest = {version = "0.11.12", features = ["blocking"] }

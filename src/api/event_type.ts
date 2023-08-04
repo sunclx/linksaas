@@ -674,6 +674,22 @@ export namespace project {
     ];
   }
 
+  export type CustomEvent = {
+    event_type: string;
+    event_content: string;
+  };
+
+  function get_custom_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: CustomEvent,
+  ): LinkInfo[] {
+    return [
+      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${inner.event_type}:${inner.event_content}`),
+    ];
+  }
+
+
   export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
     UpdateProjectEvent?: UpdateProjectEvent;
@@ -713,7 +729,9 @@ export namespace project {
     WatchChannelEvent?: WatchChannelEvent;
     UnWatchChannelEvent?: UnWatchChannelEvent;
     SetAlarmConfigEvent?: SetAlarmConfigEvent;
+    CustomEvent?: CustomEvent;
   };
+
   export function get_simple_content_inner(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -807,6 +825,8 @@ export namespace project {
       return get_unwatch_channel_simple_content(ev, skip_prj_name, inner.UnWatchChannelEvent);
     } else if (inner.SetAlarmConfigEvent !== undefined) {
       return get_set_alarm_config_simple_content(ev, skip_prj_name);
+    } else if (inner.CustomEvent !== undefined) {
+      return get_custom_simple_content(ev, skip_prj_name, inner.CustomEvent);
     } else {
       return [new LinkNoneInfo('未知事件')];
     }

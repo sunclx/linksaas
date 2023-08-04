@@ -98,5 +98,9 @@ export const EVENT_ICON_LIST = {
   [API.EVENT_TYPE_API_COLLECTION]: {
     title: 'ApiCollection',
     icon: apiCollIcon,
-  }
+  },
+  [API.EVENT_TYPE_CUSTOM_EVENT]: {
+    title: 'CustomEvent',
+    icon: iconApp,
+  },
 };

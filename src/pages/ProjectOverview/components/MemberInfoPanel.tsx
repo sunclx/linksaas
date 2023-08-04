@@ -18,6 +18,8 @@ import { ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS } from "@/api/project_issue";
 import { useHistory } from "react-router-dom";
 import EventCom from "@/components/EventCom";
 import moment from "moment";
+import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
+import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
 
 const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
     if (state == undefined) {
@@ -217,6 +219,28 @@ const MemberInfoPanel = () => {
                                                     skipProjectName={true} skipLink={true}
                                                     showMoreLink={true} onLinkClick={() => { }} />
 
+                                            </Descriptions.Item>
+                                        )}
+                                        {member.short_note_list.length > 0 && (
+                                            <Descriptions.Item label="桌面便签" span={2}>
+                                                {member.short_note_list.map(item => (
+                                                    <div key={item.target_id}>
+                                                        {item.short_note_type == SHORT_NOTE_TASK && (
+                                                            <span>任务:&nbsp;<a onClick={e => {
+                                                                e.stopPropagation();
+                                                                e.preventDefault();
+                                                                linkAuxStore.goToLink(new LinkTaskInfo("", item.project_id, item.target_id), history);
+                                                            }}>{item.title}</a></span>
+                                                        )}
+                                                        {item.short_note_type == SHORT_NOTE_BUG && (
+                                                            <span>缺陷:&nbsp;<a onClick={e => {
+                                                                e.stopPropagation();
+                                                                e.preventDefault();
+                                                                linkAuxStore.goToLink(new LinkBugInfo("", item.project_id, item.target_id), history);
+                                                            }}>{item.title}</a></span>
+                                                        )}
+                                                    </div>
+                                                ))}
                                             </Descriptions.Item>
                                         )}
 

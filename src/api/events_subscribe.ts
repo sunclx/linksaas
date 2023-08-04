@@ -45,6 +45,7 @@ export type ProjectEvCfg = {
     watch_channel: boolean;
     un_watch_channel: boolean;
     set_alarm_config: boolean;
+    custom_event: boolean;
 };
 
 export type BookShelfEvCfg = {
