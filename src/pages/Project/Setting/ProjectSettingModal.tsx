@@ -77,7 +77,7 @@ const ProjectSettingModal = () => {
                     {activeKey == "alarm" && <AlarmSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
                 </Tabs.TabPane>
                 <Tabs.TabPane key="event" tab="工作记录" disabled={disableTabs}>
-                    {activeKey == "event" && <EventSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
+                    {activeKey == "event" && <EventSettingPanel onChange={value => setDisableTabs(value)} title="工作记录" />}
                 </Tabs.TabPane>
 
                 <Tabs.TabPane key="tips" tab="经验集锦" disabled={disableTabs}>

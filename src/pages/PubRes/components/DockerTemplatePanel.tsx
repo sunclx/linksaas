@@ -152,7 +152,7 @@ const DockerTemplatePanel = () => {
                             </div>
                         </div>
                         <Divider orientation="left">模板描述</Divider>
-                        <pre>{item.app_info.desc}</pre>
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.app_info.desc}</pre>
                         <Divider orientation="left">模板版本</Divider>
                         <Space>
                             {item.template_info_list.map(template => (
