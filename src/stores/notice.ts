@@ -191,6 +191,12 @@ class NoticeStore {
     } else if (notice.SwitchUserNotice !== undefined) {
       this.rootStore.userStore.logout();
     } else if (notice.GitPostHookNotice !== undefined) {
+      await appWindow.show();
+      await appWindow.unminimize();
+      await appWindow.setAlwaysOnTop(true);
+      setTimeout(() => {
+        appWindow.setAlwaysOnTop(false);
+      }, 200);
       const projectId = notice.GitPostHookNotice.project_id;
       if (projectId != this.rootStore.projectStore.curProjectId) {
         if (this.rootStore.docSpaceStore.inEdit) {
@@ -518,17 +524,17 @@ class NoticeStore {
         this.rootStore.linkAuxStore.goToTestCaseList({ entryId: ev.targetId }, this.history);
       }
     }
-    await appWindow.setAlwaysOnTop(true);
     await appWindow.show();
     await appWindow.unminimize();
+    await appWindow.setAlwaysOnTop(true);
+    setTimeout(() => {
+      appWindow.setAlwaysOnTop(false);
+    }, 200);
     if (ev.shortNoteModeType != SHORT_NOTE_MODE_SHOW) {
       if (this.rootStore.appStore.simpleMode) {
         this.rootStore.appStore.simpleMode = false;
       }
     }
-    setTimeout(() => {
-      appWindow.setAlwaysOnTop(false);
-    }, 500);
   }
 
 }
