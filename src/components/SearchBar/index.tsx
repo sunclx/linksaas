@@ -7,7 +7,7 @@ import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } fro
 import { useStores } from "@/hooks";
 import type moment from 'moment';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 
 export type SEARCH_SCOPE = string;
 
@@ -111,6 +111,10 @@ const SearchBar = () => {
             width = size.width;
             height = size.height;
             await view.close();
+        } else {
+            const pos = await appWindow.innerPosition();
+            x = pos.x + 100;
+            y = pos.y + 100;
         }
         let searchScope = curScope;
         if (simpleMode) {
@@ -121,7 +125,7 @@ const SearchBar = () => {
             scopeValue = channelStore.curChannelId;
         } else if (searchScope == SEARCH_SCOPE_CUR_DOC_SPACE) {
             scopeValue = docSpaceStore.curDocSpaceId;
-        } 
+        }
         let fromTime = ""
         let toTime = ""
         if (dateRange.length == 2 && simpleMode == false) {
@@ -129,12 +133,14 @@ const SearchBar = () => {
             toTime = dateRange[1].valueOf().toFixed(0);
         }
 
+        const deviceRatio = window.devicePixelRatio ?? 1;
+
         new WebviewWindow(label, {
             url: `search_result.html?projectId=${projectStore.curProjectId}&keyword=${encodeURIComponent(keyword)}&scope=${searchScope}&scopeValue=${scopeValue}&fromTime=${fromTime}&toTime=${toTime}`,
-            width: width ?? 800,
-            minWidth: 300,
-            height: height ?? 600,
-            minHeight: 200,
+            width: width ?? 800 * deviceRatio,
+            minWidth: 300 * deviceRatio,
+            height: height ?? 600 * deviceRatio,
+            minHeight: 200 * deviceRatio,
             decorations: false,
             alwaysOnTop: false,
             skipTaskbar: false,

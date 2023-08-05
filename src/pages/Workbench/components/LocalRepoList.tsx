@@ -6,7 +6,7 @@ import { open as open_dir } from '@tauri-apps/api/shell';
 import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
 import type { ColumnsType } from 'antd/lib/table';
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import moment, { type Moment } from "moment";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { useStores } from "@/hooks";
@@ -271,6 +271,36 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
         setStatus(statusRes);
     };
 
+    const openCommitDiff = async (row: LocalRepoCommitInfo) => {
+        const pos = await appWindow.innerPosition();
+        new WebviewWindow(`commit:${row.id}`, {
+            url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${row.id}&summary=${encodeURIComponent(row.summary)}&commiter=${encodeURIComponent(row.commiter)}`,
+            title: `${props.repo.name}(commit:${row.id.substring(0, 8)})`,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
+        })
+    };
+
+    const openBranchDiff = async (item: LocalRepoBranchInfo) => {
+        const pos = await appWindow.innerPosition();
+        new WebviewWindow(`commit:${item.commit_id}`, {
+            url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
+            title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
+        });
+    }
+
+    const openTagDiff = async (item: LocalRepoTagInfo) => {
+        const pos = await appWindow.innerPosition();
+        new WebviewWindow(`commit:${item.commit_id}`, {
+            url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
+            title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
+        });
+    };
+
     const columns: ColumnsType<LocalRepoCommitInfo> = [
         {
             title: "",
@@ -286,10 +316,7 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                 <a onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    new WebviewWindow(`commit:${row.id}`, {
-                        url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${row.id}&summary=${encodeURIComponent(row.summary)}&commiter=${encodeURIComponent(row.commiter)}`,
-                        title: `${props.repo.name}(commit:${row.id.substring(0, 8)})`
-                    })
+                    openCommitDiff(row);
                 }}>{row.summary}</a>
             ),
         },
@@ -358,10 +385,7 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                             <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} <a onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                new WebviewWindow(`commit:${item.commit_id}`, {
-                                    url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
-                                    title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`
-                                })
+                                openBranchDiff(item);
                             }}>{item.commit_summary}</a>
                         </Space>
                     </List.Item>
@@ -378,10 +402,7 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                             <NodeIndexOutlined /> {item.commit_id.substring(0, 8)} <a onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                new WebviewWindow(`commit:${item.commit_id}`, {
-                                    url: `git_diff.html?path=${encodeURIComponent(props.repo.path)}&commitId=${item.commit_id}&summary=${encodeURIComponent(item.commit_summary)}&commiter=`,
-                                    title: `${props.repo.name}(commit:${item.commit_id.substring(0, 8)})`
-                                })
+                                openTagDiff(item);
                             }}>{item.commit_summary}</a>
                         </Space>
                     </List.Item>
