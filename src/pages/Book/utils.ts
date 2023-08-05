@@ -2,7 +2,7 @@ import type { NavItem } from 'epubjs';
 import { get_session } from "@/api/user";
 import { get_book as get_project_book } from "@/api/project_book_shelf";
 import { get_book as get_user_book } from "@/api/user_book_shelf";
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 
 export interface Chapter {
@@ -81,8 +81,11 @@ export async function openBook(userId: string, projectId: string, bookId: string
     }
 
     const url = `book.html?projectId=${projectId}&userId=${userId}&bookId=${bookId}&markId=${markId}&fsId=${fsId}&fileLocId=${fileLocId}&bookTitle=${encodeURIComponent(bookTitle)}&canShare=${canShare ? "1" : ""}`;
+    const pos = await appWindow.innerPosition();
     new WebviewWindow(`book:${bookId}`, {
         url: url,
         title: bookTitle,
+        x: pos.x + Math.floor(Math.random() * 200),
+        y: pos.y + Math.floor(Math.random() * 200),
     });
 }

@@ -52,15 +52,16 @@ export async function showShortNote(sessionId: string, data: ShortNoteData, proj
         await view.close();
     }
     const pos = await appWindow.innerPosition();
+    const deviceRatio = window.devicePixelRatio ?? 1;
     const shortNoteTypeStr = getShortNoteTypeStr(data.shortNoteType);
     const webview = new WebviewWindow(label, {
         url: `short_note.html?type=${shortNoteTypeStr}&projectId=${projectId}&id=${id}&title=${encodeURIComponent(title)}&projectName=${encodeURIComponent(projectName)}`,
         x: pos.x + Math.floor(Math.random() * 500),
         y: pos.y + Math.floor(Math.random() * 200),
-        width: 250,
-        minWidth: 200,
-        height: 150,
-        minHeight: 100,
+        width: 250 * deviceRatio,
+        minWidth: 200 * deviceRatio,
+        height: 150 * deviceRatio,
+        minHeight: 100 * deviceRatio,
         decorations: false,
         alwaysOnTop: true,
         skipTaskbar: true,
