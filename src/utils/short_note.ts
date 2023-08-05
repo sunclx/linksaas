@@ -1,7 +1,7 @@
 
 import type { IssueInfo } from '@/api/project_issue';
 import type { Doc } from '@/api/project_doc';
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import type { SHORT_NOTE_TYPE, SHORT_NOTE_MODE_TYPE } from '@/api/short_note';
 import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, add, list_my } from '@/api/short_note';
 import { request } from '@/utils/request';
@@ -51,9 +51,12 @@ export async function showShortNote(sessionId: string, data: ShortNoteData, proj
     if (view != null) {
         await view.close();
     }
+    const pos = await appWindow.innerPosition();
     const shortNoteTypeStr = getShortNoteTypeStr(data.shortNoteType);
     const webview = new WebviewWindow(label, {
         url: `short_note.html?type=${shortNoteTypeStr}&projectId=${projectId}&id=${id}&title=${encodeURIComponent(title)}&projectName=${encodeURIComponent(projectName)}`,
+        x: pos.x + Math.floor(Math.random() * 500),
+        y: pos.y + Math.floor(Math.random() * 200),
         width: 250,
         minWidth: 200,
         height: 150,
