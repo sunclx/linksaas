@@ -34,6 +34,60 @@ async fn gen_invite<R: Runtime>(
 }
 
 #[tauri::command]
+async fn list_invite<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListInviteRequest,
+) -> Result<ListInviteResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.list_invite(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_invite_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_invite".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_invite<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveInviteRequest,
+) -> Result<RemoveInviteResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.remove_invite(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_invite_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_invite".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn join<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -499,6 +553,8 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 gen_invite,
+                list_invite,
+                remove_invite,
                 join,
                 leave,
                 create_role,
