@@ -6,6 +6,7 @@ import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe }
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
+import { open as shell_open } from '@tauri-apps/api/shell';
 
 interface CreateSubscribeModalProps {
     onCancel: () => void;
@@ -152,7 +153,31 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
         }}>
             <div style={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}>
                 <Form form={form} labelCol={{ span: 7 }}>
-                    <Form.Item label="订阅目标" rules={[{ required: true }]}>
+                    <Form.Item label="订阅目标" rules={[{ required: true }]} help={
+                        <>
+                            {chatBotType == CHAT_BOT_QYWX && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    shell_open("https://open.work.weixin.qq.com/help2/pc/18401");
+                                }}>企业微信webhook接入说明</a>
+                            )}
+                            {chatBotType == CHAT_BOT_DING && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    shell_open("https://open.dingtalk.com/document/isvapp/group-chat-bot-overview");
+                                }}>钉钉webhook接入说明</a>
+                            )}
+                            {chatBotType == CHAT_BOT_FS && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    shell_open("https://www.feishu.cn/hc/zh-CN/articles/807992406756-webhook-%E8%A7%A6%E5%8F%91%E5%99%A8");
+                                }}>飞书webhook接入说明</a>
+                            )}
+                        </>
+                    }>
                         <Select value={chatBotType} onChange={value => setChatBotType(value)}>
                             <Select.Option value={CHAT_BOT_QYWX}>企业微信</Select.Option>
                             <Select.Option value={CHAT_BOT_DING}>钉钉</Select.Option>
@@ -598,7 +623,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
-                    
+
                 </Form>
             </div>
         </Modal>
