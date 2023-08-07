@@ -10,7 +10,7 @@ import * as dataAnnoPrjApi from "@/api/data_anno_project";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import moment from "moment";
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { EditText } from "@/components/EditCell/EditText";
 import { WarningOutlined } from "@ant-design/icons";
 import ExportModal from "./components/ExportModal";
@@ -52,15 +52,20 @@ const DataAnnoProjectList = () => {
             }, 200);
             return;
         }
+        const pos = await appWindow.innerPosition();
+        const deviceRatio = window.devicePixelRatio ?? 1;
+
         new WebviewWindow(label, {
             title: `标注项目(${annoName})`,
             url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
-            width: 1000,
-            minWidth: 800,
-            height: 800,
-            minHeight: 600,
+            width: 1000 * deviceRatio,
+            minWidth: 800 * deviceRatio,
+            height: 800 * deviceRatio,
+            minHeight: 600 * deviceRatio,
             resizable: true,
             center: true,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
         });
     };
 

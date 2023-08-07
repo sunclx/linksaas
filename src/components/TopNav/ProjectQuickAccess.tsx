@@ -9,7 +9,7 @@ import { useHistory } from "react-router-dom";
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
@@ -273,15 +273,19 @@ const ProjectQuickAccess = () => {
             await view.close();
         }
         const res = await get_port();
+        const pos = await appWindow.innerPosition();
+        const deviceRatio = window.devicePixelRatio ?? 1;
         new WebviewWindow(label, {
             url: `local_api.html?port=${res}`,
-            width: 800,
-            minWidth: 800,
-            height: 600,
-            minHeight: 600,
+            width: 800 * deviceRatio,
+            minWidth: 800 * deviceRatio,
+            height: 600 * deviceRatio,
+            minHeight: 600 * deviceRatio,
             center: true,
             title: "本地接口调试",
             resizable: true,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
         });
     };
 

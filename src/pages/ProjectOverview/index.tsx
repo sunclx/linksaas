@@ -5,7 +5,7 @@ import ProjectInfoPanel from "./components/ProjectInfoPanel";
 import LocalApi from "./components/LocalApi";
 import { Card, Collapse } from "antd";
 import Button from "@/components/Button";
-import { WebviewWindow } from '@tauri-apps/api/window';
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { get_port } from "@/api/local_api";
 import MemberInfoPanel from "./components/MemberInfoPanel";
 import MyIssuePanel from "./components/MyIssuePanel";
@@ -31,15 +31,19 @@ const ProjectOverview = () => {
         if (view != null) {
             await view.close();
         }
+        const pos = await appWindow.innerPosition();
+        const deviceRatio = window.devicePixelRatio ?? 1;
         new WebviewWindow(label, {
             url: `local_api.html?port=${port}`,
-            width: 800,
-            minWidth: 800,
-            height: 600,
-            minHeight: 600,
+            width: 800 * deviceRatio,
+            minWidth: 800 * deviceRatio,
+            height: 600 * deviceRatio,
+            minHeight: 600 * deviceRatio,
             center: true,
             title: "本地接口调试",
             resizable: true,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
         });
     };
 
