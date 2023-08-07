@@ -10,9 +10,11 @@ import { get_port } from "@/api/local_api";
 import MemberInfoPanel from "./components/MemberInfoPanel";
 import MyIssuePanel from "./components/MyIssuePanel";
 import BulletinListPanel from "./components/BulletinListPanel";
+import { useStores } from "@/hooks";
 
 
 const ProjectOverview = () => {
+    const projectStore = useStores('projectStore');
 
     const [port, setPort] = useState(0);
 
@@ -49,25 +51,27 @@ const ProjectOverview = () => {
 
     return (
         <div className={s.overview_wrap}>
-            <ProjectInfoPanel />
-            <BulletinListPanel />
+            {(projectStore.curProject?.setting.hide_project_info ?? false) == false && <ProjectInfoPanel />}
+            {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && <BulletinListPanel />}
             <MemberInfoPanel />
             <MyIssuePanel />
-            <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
-                <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>
-                    <Collapse.Panel key="localApi" header="本地接口" extra={
-                        <Button
-                            title={port == 0 ? "本地服务没有启动" : ""}
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                openApiConsole();
-                            }} disabled={port == 0}>调试接口</Button>
-                    }>
-                        <LocalApi />
-                    </Collapse.Panel>
-                </Collapse>
-            </Card>
+            {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && (
+                <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
+                    <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>
+                        <Collapse.Panel key="localApi" header="本地接口" extra={
+                            <Button
+                                title={port == 0 ? "本地服务没有启动" : ""}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    openApiConsole();
+                                }} disabled={port == 0}>调试接口</Button>
+                        }>
+                            <LocalApi />
+                        </Collapse.Panel>
+                    </Collapse>
+                </Card>
+            )}
         </div>
     );
 };

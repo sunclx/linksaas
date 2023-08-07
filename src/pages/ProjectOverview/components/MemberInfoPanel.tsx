@@ -145,7 +145,9 @@ const MemberInfoPanel = () => {
                                         <Descriptions.Item label="操作">
                                             <Button
                                                 type="link"
-                                                disabled={!projectStore.isAdmin}
+                                                style={{ minWidth: 0, padding: "0px 0px" }}
+                                                disabled={!projectStore.isAdmin || member.member.member_user_id == userStore.userInfo.userId}
+                                                danger
                                                 onClick={e => {
                                                     e.stopPropagation();
                                                     e.preventDefault();
@@ -243,19 +245,23 @@ const MemberInfoPanel = () => {
                                                 ))}
                                             </Descriptions.Item>
                                         )}
+                                        {(projectStore.curProject?.setting.hide_user_goal ?? false) == false && (
+                                            <Descriptions.Item label="成员目标" span={2} contentStyle={{ padding: "0px 0px" }}>
+                                                <GoalList memberUserId={member.member.member_user_id} />
+                                            </Descriptions.Item>
+                                        )}
 
-                                        <Descriptions.Item label="成员目标" span={2} contentStyle={{ padding: "0px 0px" }}>
-                                            <GoalList memberUserId={member.member.member_user_id} />
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label={
-                                            <Space direction="vertical">
-                                                <span>成员贡献</span>
-                                                <MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />
-                                            </Space>
-                                        } span={2} contentStyle={{ padding: "0px 0px" }}>
+                                        {(projectStore.curProject?.setting.hide_user_award ?? false) == false && (
+                                            <Descriptions.Item label={
+                                                <Space direction="vertical">
+                                                    <span>成员贡献</span>
+                                                    <MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />
+                                                </Space>
+                                            } span={2} contentStyle={{ padding: "0px 0px" }}>
 
-                                            <AwardList memberUserId={member.member.member_user_id} />
-                                        </Descriptions.Item>
+                                                <AwardList memberUserId={member.member.member_user_id} />
+                                            </Descriptions.Item>
+                                        )}
                                     </Descriptions>
                                 )}
                             </Tabs.TabPane>

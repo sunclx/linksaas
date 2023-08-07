@@ -299,7 +299,7 @@ const AlarmHeader = () => {
     return (
         <div style={{ marginRight: "20px" }}>
             <Space size="small">
-                {bulletinCount > 0 && (
+                {bulletinCount > 0 && (projectStore.curProject?.setting.hide_bulletin ?? false) == false && (
                     <Popover trigger="click" content={<BulletinList />} placement="bottomLeft" destroyTooltipOnHide>
                         <a style={{ backgroundColor: "#2997ff", padding: "4px 8px", fontWeight: 500, borderRadius: 20, color: "black" }}>未读公告:{bulletinCount}</a>
                     </Popover>
