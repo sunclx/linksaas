@@ -17,6 +17,14 @@ export interface MethodCallListProps {
 const MethodCallList = (props: MethodCallListProps) => {
     const [tabList, setTabList] = useState<Tab[]>([]);
 
+    const getSvcName = (name: string) => {
+        const parts = name.split(".");
+        if (parts.length == 2) {
+            return parts[1];
+        }
+        return name;
+    }
+
     const adjustTabList = () => {
         const newKeyList = props.curMethodList.map(item => `${item.serviceName}.${item.method.methodName}`);
         //关闭tab
@@ -30,7 +38,7 @@ const MethodCallList = (props: MethodCallListProps) => {
             }
             tmpList.push({
                 key: key,
-                label: <span title={key}><ApiOutlined />{method.method.methodName}</span>,
+                label: <span title={key}><ApiOutlined />{getSvcName(method.serviceName)}:{method.method.methodName}</span>,
                 children: <MethodCall protoPath={props.protoPath} remoteAddr={props.remoteAddr} secure={props.secure} method={method} />,
             });
         }

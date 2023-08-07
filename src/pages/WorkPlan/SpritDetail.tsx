@@ -91,7 +91,7 @@ const SpritDetail = () => {
     return (
         <Card bordered={false}
             style={{ marginRight: "60px" }}
-            bodyStyle={{ height: "calc(100vh - 134px)", overflowY: "scroll", overflowX: "hidden" }}
+            bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll", overflowX: "hidden" }}
             title={
                 <h2 className={s.head}>
                     <a onClick={e => {
