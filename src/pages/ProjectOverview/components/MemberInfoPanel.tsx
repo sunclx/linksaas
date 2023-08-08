@@ -117,7 +117,7 @@ const MemberInfoPanel = () => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             setShowInviteListModal(true);
-                                        }}>查看邀请记录</Button>
+                                        }}>查看未过期邀请记录</Button>
                                     </div>
                                 }>
                                     <MoreOutlined />
