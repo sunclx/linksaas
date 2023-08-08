@@ -869,6 +869,12 @@ async fn start<R: Runtime>(
         return Err(res.err().unwrap().to_string());
     }
 
+    let pos = window.inner_position();
+    if pos.is_err() {
+        return Err(pos.err().unwrap().to_string());
+    }
+    let pos = pos.unwrap();
+
     let res = WindowBuilder::new(
         &app_handle,
         request.label.clone(),
@@ -877,6 +883,7 @@ async fn start<R: Runtime>(
     .title(request.title)
     .visible(true)
     .initialization_script(&script)
+    .position(pos.x as f64 + 100.0, pos.y as f64 + 100.0)
     .build();
     if res.is_err() {
         clear_by_close(app_handle.clone(), request.label.clone()).await;

@@ -1,9 +1,44 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type InviteInfo = {
+  invite_code: string;
+  create_user_id: string;
+  create_display_name: string;
+  create_logo_uri: string;
+  create_time: number;
+  expire_time: number;
+}
+
+
 type GenInviteResponse = {
   code: number;
   err_msg: string;
   invite_code: string;
+};
+
+export type ListInviteRequest = {
+  session_id: string;
+  project_id: string;
+  offset: number;
+  limit: number;
+};
+
+export type ListInviteResponse = {
+  code: number;
+  err_msg: string;
+  total_count: number;
+  invite_info_list: InviteInfo[];
+};
+
+export type RemoveInviteRequest = {
+  session_id: string;
+  project_id: string;
+  invite_code: string;
+};
+
+export type RemoveInviteResponse = {
+  code: number;
+  err_msg: string;
 };
 
 type JoinResponse = {
@@ -191,7 +226,7 @@ export type UnlockGoalResponse = {
   err_msg: string;
 };
 
-//生成加入项目邀请码
+//生成加入项目邀请码（ttl单位 小时）
 export async function gen_invite(
   session_id: string,
   project_id: string,
@@ -206,6 +241,28 @@ export async function gen_invite(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<GenInviteResponse>(cmd, {
+    request,
+  });
+}
+
+//列出邀请信息
+export async function list_invite(
+  request: ListInviteRequest,
+): Promise<ListInviteResponse> {
+  const cmd = 'plugin:project_member_api|list_invite';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<ListInviteResponse>(cmd, {
+    request,
+  });
+}
+
+//删除邀请信息
+export async function remove_invite(
+  request: RemoveInviteRequest,
+): Promise<RemoveInviteResponse> {
+  const cmd = 'plugin:project_member_api|remove_invite';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<RemoveInviteResponse>(cmd, {
     request,
   });
 }

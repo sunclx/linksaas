@@ -416,52 +416,56 @@ const MyTaskPanel = () => {
 
     useEffect(() => {
         loadTagDefList();
-    }, [projectStore.curProjectId,projectStore.curProject?.tag_version]);
+    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <>
-            <Card title={<h1 className={s.head}>我的待处理任务</h1>} className={s.content_wrap} headStyle={{ backgroundColor: "#f5f5f5" }}
-                extra={
-                    <Space size="large">
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToTaskList({
-                                stateList: [],
-                                execUserIdList: [],
-                                checkUserIdList: [],
-                            }, history);
-                        }}>查看全部任务</Button>
-                        <Button onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToCreateTask("", projectStore.curProjectId, history);
-                        }}>创建任务</Button>
-                    </Space>
-                }>
-                <Table rowKey="issue_id" dataSource={taskList} columns={taskColumns} pagination={false} scroll={{ x: 1300 }} />
-            </Card>
-            <Card title={<h1 className={s.head}>我的待处理缺陷</h1>} className={s.content_wrap} headStyle={{ backgroundColor: "#f5f5f5" }}
-                extra={
-                    <Space size="large">
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToBugList({
-                                stateList: [],
-                                execUserIdList: [],
-                                checkUserIdList: [],
-                            }, history);
-                        }}>查看全部缺陷</Button>
-                        <Button onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            linkAuxStore.goToCreateBug("", projectStore.curProjectId, history);
-                        }}>创建缺陷</Button>
-                    </Space>
-                }>
-                <Table rowKey="issue_id" dataSource={bugList} columns={bugColumns} pagination={false} scroll={{ x: 1300 }} />
-            </Card>
+            {(projectStore.curProject?.setting.hide_my_todo_task ?? false) == false && (
+                <Card title={<h1 className={s.head}>我的待处理任务</h1>} className={s.content_wrap} headStyle={{ backgroundColor: "#f5f5f5" }}
+                    extra={
+                        <Space size="large">
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                linkAuxStore.goToTaskList({
+                                    stateList: [],
+                                    execUserIdList: [],
+                                    checkUserIdList: [],
+                                }, history);
+                            }}>查看全部任务</Button>
+                            <Button onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                linkAuxStore.goToCreateTask("", projectStore.curProjectId, history);
+                            }}>创建任务</Button>
+                        </Space>
+                    }>
+                    <Table rowKey="issue_id" dataSource={taskList} columns={taskColumns} pagination={false} scroll={{ x: 1300 }} />
+                </Card>
+            )}
+            {(projectStore.curProject?.setting.hide_my_todo_bug ?? false) == false && (
+                <Card title={<h1 className={s.head}>我的待处理缺陷</h1>} className={s.content_wrap} headStyle={{ backgroundColor: "#f5f5f5" }}
+                    extra={
+                        <Space size="large">
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                linkAuxStore.goToBugList({
+                                    stateList: [],
+                                    execUserIdList: [],
+                                    checkUserIdList: [],
+                                }, history);
+                            }}>查看全部缺陷</Button>
+                            <Button onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                linkAuxStore.goToCreateBug("", projectStore.curProjectId, history);
+                            }}>创建缺陷</Button>
+                        </Space>
+                    }>
+                    <Table rowKey="issue_id" dataSource={bugList} columns={bugColumns} pagination={false} scroll={{ x: 1300 }} />
+                </Card>
+            )}
         </>
     );
 };

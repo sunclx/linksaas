@@ -1,8 +1,8 @@
-import { Collapse, Descriptions, Modal, Select, Space, Tabs, message } from "antd";
+import { Collapse, Descriptions, Modal, Popover, Select, Space, Tabs, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import Button from "@/components/Button";
-import { MinusCircleOutlined, UserAddOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, MoreOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useStores } from "@/hooks";
 import GoalList from "./GoalList";
 import AwardList from "./AwardList";
@@ -20,6 +20,7 @@ import EventCom from "@/components/EventCom";
 import moment from "moment";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
+import InviteListModal from "./InviteListModal";
 
 const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
     if (state == undefined) {
@@ -52,6 +53,7 @@ const MemberInfoPanel = () => {
     const [ownerMemberUserId, setOwnerMemberUserId] = useState("");
     const [awardStateList, setAwardStateList] = useState<AwardState[]>([]);
     const [activeKey, setActiveKey] = useState(userStore.userInfo.userId);
+    const [showInviteListModal, setShowInviteListModal] = useState(false);
 
     const loadRoleList = async () => {
         const res = await request(list_role(userStore.sessionId, projectStore.curProjectId));
@@ -99,14 +101,30 @@ const MemberInfoPanel = () => {
         <>
             <Collapse bordered={true} className={s.member_list_wrap} defaultActiveKey="memberInfo">
                 <Collapse.Panel key="memberInfo" header={<h1 className={s.head}>成员信息</h1>} extra={
-                    <>
+                    <div onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }}>
                         {!(projectStore.curProject?.closed) && projectStore.isAdmin && appStore.clientCfg?.can_invite && (
-                            <Button onClick={() => memberStore.showInviteMember = true}>
-                                <UserAddOutlined />
-                                邀请成员
-                            </Button>
+                            <Space size="middle">
+                                <Button onClick={() => memberStore.showInviteMember = true}>
+                                    <UserAddOutlined />
+                                    邀请成员
+                                </Button>
+                                <Popover trigger="click" placement="bottom" content={
+                                    <div style={{ padding: "10px 10px" }}>
+                                        <Button type="link" onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowInviteListModal(true);
+                                        }}>查看未过期邀请记录</Button>
+                                    </div>
+                                }>
+                                    <MoreOutlined />
+                                </Popover>
+                            </Space>
                         )}
-                    </>
+                    </div>
                 }>
                     <Tabs tabPosition="left" activeKey={activeKey} onChange={value => setActiveKey(value)}>
                         {memberStore.memberList.map(member => (
@@ -145,7 +163,9 @@ const MemberInfoPanel = () => {
                                         <Descriptions.Item label="操作">
                                             <Button
                                                 type="link"
-                                                disabled={!projectStore.isAdmin}
+                                                style={{ minWidth: 0, padding: "0px 0px" }}
+                                                disabled={!projectStore.isAdmin || member.member.member_user_id == userStore.userInfo.userId}
+                                                danger
                                                 onClick={e => {
                                                     e.stopPropagation();
                                                     e.preventDefault();
@@ -243,19 +263,23 @@ const MemberInfoPanel = () => {
                                                 ))}
                                             </Descriptions.Item>
                                         )}
+                                        {(projectStore.curProject?.setting.hide_user_goal ?? false) == false && (
+                                            <Descriptions.Item label="成员目标" span={2} contentStyle={{ padding: "0px 0px" }}>
+                                                <GoalList memberUserId={member.member.member_user_id} />
+                                            </Descriptions.Item>
+                                        )}
 
-                                        <Descriptions.Item label="成员目标" span={2} contentStyle={{ padding: "0px 0px" }}>
-                                            <GoalList memberUserId={member.member.member_user_id} />
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label={
-                                            <Space direction="vertical">
-                                                <span>成员贡献</span>
-                                                <MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />
-                                            </Space>
-                                        } span={2} contentStyle={{ padding: "0px 0px" }}>
+                                        {(projectStore.curProject?.setting.hide_user_award ?? false) == false && (
+                                            <Descriptions.Item label={
+                                                <Space direction="vertical">
+                                                    <span>成员贡献</span>
+                                                    <MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />
+                                                </Space>
+                                            } span={2} contentStyle={{ padding: "0px 0px" }}>
 
-                                            <AwardList memberUserId={member.member.member_user_id} />
-                                        </Descriptions.Item>
+                                                <AwardList memberUserId={member.member.member_user_id} />
+                                            </Descriptions.Item>
+                                        )}
                                     </Descriptions>
                                 )}
                             </Tabs.TabPane>
@@ -306,6 +330,9 @@ const MemberInfoPanel = () => {
                         是否确认移除成员 {memberStore.getMember(removeMemberUserId)?.member.display_name ?? ""}？
                     </div>
                 </Modal>
+            )}
+            {showInviteListModal == true && (
+                <InviteListModal onClose={() => setShowInviteListModal(false)} />
             )}
         </>
     );
