@@ -7,6 +7,33 @@ use tauri::{
 };
 
 #[tauri::command]
+async fn list_thread<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListThreadRequest,
+) -> Result<ListThreadResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectCodeApiClient::new(chan.unwrap());
+    match client.list_thread(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_thread_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_thread".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn add_comment<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -149,6 +176,7 @@ impl<R: Runtime> ProjectCodeApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
+                list_thread,
                 add_comment,
                 update_comment,
                 list_comment,
