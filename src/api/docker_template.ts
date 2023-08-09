@@ -6,6 +6,12 @@ export type CateInfo = {
     app_count: number;
 };
 
+export type AppImage = {
+    thumb_file_id: string;
+    raw_file_id: string;
+    weight: number;
+};
+
 export type AppInfo = {
     app_id: string;
     name: string;
@@ -18,6 +24,7 @@ export type AppInfo = {
     template_count: number;
     create_time: number;
     update_time: number;
+    image_list?: AppImage[];
 };
 
 export type TemplateInfo = {

@@ -65,7 +65,7 @@ mod min_app_plugin;
 mod min_app_shell_plugin;
 mod min_app_store_plugin;
 
-mod admin_docker_template_api_plugin;
+mod docker_template_admin_api_plugin;
 mod api_collection_api_plugin;
 mod docker_template_api_plugin;
 
@@ -448,7 +448,7 @@ fn main() {
         .plugin(data_anno_project_api_plugin::DataAnnoProjectApiPlugin::new())
         .plugin(data_anno_task_api_plugin::DataAnnoTaskApiPlugin::new())
         .plugin(docker_template_api_plugin::DockerTemplateApiPlugin::new())
-        .plugin(admin_docker_template_api_plugin::DockerTemplateAdminApiPlugin::new())
+        .plugin(docker_template_admin_api_plugin::DockerTemplateAdminApiPlugin::new())
         .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
