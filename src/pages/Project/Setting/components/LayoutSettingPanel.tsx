@@ -29,6 +29,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
     const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
+    const [disableCodeComment, setDisableCodeComment] = useState(projectStore.curProject?.setting.disable_code_comment ?? false);
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
@@ -44,11 +45,16 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         setDisableWorkPlan(projectStore.curProject?.setting.disable_work_plan ?? false);
         setDisableChat(projectStore.curProject?.setting.disable_chat ?? false);
         setDisableKb(projectStore.curProject?.setting.disable_kb ?? false);
+
         setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
         setDisableTestCase(projectStore.curProject?.setting.disable_test_case ?? false);
         setDisableServerAgent(projectStore.curProject?.setting.disable_server_agent ?? false);
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableAppStore(projectStore.curProject?.setting.disable_app_store ?? false);
+        setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
+        setDisableApiCollection(projectStore.curProject?.setting.disable_api_collection ?? false);
+        setDisableCodeComment(projectStore.curProject?.setting.disable_code_comment ?? false);
+
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
         setHideBulletin(projectStore.curProject?.setting.hide_bulletin ?? false);
         setHideUserGoal(projectStore.curProject?.setting.hide_user_goal ?? false);
@@ -72,6 +78,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_app_store: disableAppStore,
                 disable_data_anno: disableDataAnno,
                 disable_api_collection: disableApiCollection,
+                disable_code_comment: disableCodeComment,
                 disable_chat: disableChat,
                 disable_kb: disableKb,
                 disable_work_plan: disableWorkPlan,
@@ -177,6 +184,11 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableExtEvent(e.target.checked);
                             setHasChange(true);
                         }}>关闭第三方接入入口</Checkbox>
+                        <Checkbox checked={disableCodeComment} onChange={e => {
+                            e.stopPropagation();
+                            setDisableCodeComment(e.target.checked);
+                            setHasChange(true);
+                        }}>关闭代码评论入口</Checkbox>
                         <Checkbox checked={disableAppStore} onChange={e => {
                             e.stopPropagation();
                             setDisableAppStore(e.target.checked);

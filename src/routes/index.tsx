@@ -99,6 +99,7 @@ import DataAnnoProjectList from '@/pages/DataAnno/DataAnnoProjectList';
 import TemplateCateList from '@/pages/Admin/DockerTemplateAdmin/TemplateCateList';
 import TemplateList from '@/pages/Admin/DockerTemplateAdmin/TemplateList';
 import ApiCollectionList from '@/pages/ApiCollection/ApiCollectionList';
+import ThreadList from '@/pages/Project/Code/ThreadList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -289,6 +290,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/apicoll",
       title: "接口集合列表",
       component: ApiCollectionList,
+      exact: true,
+    },
+    {
+      path: prefix + "/code",
+      title: "代码评论",
+      component: ThreadList,
       exact: true,
     }
   ];

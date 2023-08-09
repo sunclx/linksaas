@@ -617,6 +617,7 @@ async fn start_http_serv<R: Runtime>(
     Err("no port".into())
 }
 
+// linksaas://comment/T4REDwNFdxcdiw3yFCti3
 pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String) {
     println!("clear min app resource");
     {

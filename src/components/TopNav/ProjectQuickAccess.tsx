@@ -37,6 +37,7 @@ const MENU_KEY_SHOW_TOOL_BAR_EARTHLY = "toolbar.earthly.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS = "toolbar.events.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
 const MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS = "toolbar.extEvents.show";
+const MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT = "toolbar.codeComment.show";
 const MENU_KEY_SHOW_TOOL_BAR_APP = "toolbar.app.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
@@ -140,10 +141,12 @@ const ProjectQuickAccess = () => {
                 ],
             });
         }
-        tmpItems.push({
-            key: MENU_KEY_SHOW_TOOL_BAR_IDEA,
-            label: "项目知识点",
-        })
+        if (projectStore.curProject?.setting.disable_kb != true || projectStore.curProject?.setting.disable_chat != true) {
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_IDEA,
+                label: "项目知识点",
+            });
+        }
         tmpItems.push({
             key: "requirement",
             label: "项目需求",
@@ -241,10 +244,16 @@ const ProjectQuickAccess = () => {
                 },
             ],
         });
-        if (projectStore.curProject?.setting.disable_ext_event != true) {
+        if (projectStore.curProject?.setting.disable_ext_event != true && projectStore.isAdmin) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS,
                 label: "查看第三方接入",
+            });
+        }
+        if (projectStore.curProject?.setting.disable_code_comment != true && projectStore.isAdmin) {
+            tmpItems.push({
+                key: MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT,
+                label: "查看代码评论",
             });
         }
         if (projectStore.curProject?.setting.disable_app_store != true) {
@@ -253,16 +262,18 @@ const ProjectQuickAccess = () => {
                 label: "查看项目应用",
             });
         }
-        tmpItems.push({
-            key: "localApi",
-            label: "本地接口",
-            children: [
-                {
-                    key: MENU_KEY_SHOW_LOCAL_API_DEBUG,
-                    label: "调试本地接口",
-                }
-            ]
-        });
+        if (projectStore.curProject?.setting.hide_extra_info != true) {
+            tmpItems.push({
+                key: "localApi",
+                label: "本地接口",
+                children: [
+                    {
+                        key: MENU_KEY_SHOW_LOCAL_API_DEBUG,
+                        label: "调试本地接口",
+                    }
+                ]
+            });
+        }
         setItems(tmpItems);
     };
 
@@ -380,6 +391,9 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS:
                 linkAuxStore.goToExtEventList(history);
+                break;
+            case MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT:
+                linkAuxStore.goToCodeThreadList(history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_APP:
                 linkAuxStore.goToAppList(history);
