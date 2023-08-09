@@ -991,6 +991,17 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/access"));
   }
 
+  //调整到代码评论会话列表
+  goToCodeThreadList(history: History) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_code_comment == true) {
+      return;
+    }
+    if (this.rootStore.appStore.simpleMode) {
+      this.rootStore.appStore.simpleMode = false;
+    }
+    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/code"));
+  }
+
   //跳转到项目应用
   goToAppList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_app_store == true) {
