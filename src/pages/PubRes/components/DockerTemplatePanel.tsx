@@ -68,6 +68,14 @@ const DockerTemplatePanel = () => {
         }
     };
 
+    const getImageUrl = (fileId: string) => {
+        if (appStore.isOsWindows) {
+            return `https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/image.png`;
+        } else {
+            return `fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/image.png`;
+        }
+    };
+
     useEffect(() => {
         loadCateInfoList();
     }, []);
@@ -151,6 +159,19 @@ const DockerTemplatePanel = () => {
                                 </Descriptions>
                             </div>
                         </div>
+                        {(item.app_info.image_list ?? []).length > 0 && (
+                            <>
+                                <Divider orientation="left">相关截图</Divider>
+                                <Image.PreviewGroup>
+                                    <List rowKey="thumb_file_id" dataSource={item.app_info.image_list ?? []} grid={{ gutter: 16 }}
+                                    renderItem={imageItem=>(
+                                        <List.Item>
+                                            <Image src={getImageUrl(imageItem.thumb_file_id)} preview={{src:getImageUrl(imageItem.raw_file_id)}} width={200} height={150}/>
+                                        </List.Item>
+                                    )}/>
+                                </Image.PreviewGroup>
+                            </>
+                        )}
                         <Divider orientation="left">模板描述</Divider>
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.app_info.desc}</pre>
                         <Divider orientation="left">模板版本</Divider>
