@@ -244,13 +244,13 @@ const ProjectQuickAccess = () => {
                 },
             ],
         });
-        if (projectStore.curProject?.setting.disable_ext_event != true) {
+        if (projectStore.curProject?.setting.disable_ext_event != true && projectStore.isAdmin) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS,
                 label: "查看第三方接入",
             });
         }
-        if (projectStore.curProject?.setting.disable_code_comment != true) {
+        if (projectStore.curProject?.setting.disable_code_comment != true && projectStore.isAdmin) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT,
                 label: "查看代码评论",
