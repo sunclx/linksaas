@@ -4,6 +4,19 @@ export type CONTENT_TYPE = number;
 export const CONTENT_TYPE_MARKDOWN: CONTENT_TYPE = 0;
 export const CONTENT_TYPE_TEXT: CONTENT_TYPE = 1;
 
+export type CommentUser = {
+    comment_user_id: string;
+    comment_display_name: string;
+    comment_logo_uri: string;
+};
+
+export type ThreadInfo = {
+    thread_id: string;
+    create_time: number;
+    update_time: number;
+    comment_count: number;
+    comment_user_list: CommentUser[];
+};
 
 export type Comment = {
     comment_id: string;
@@ -17,6 +30,20 @@ export type Comment = {
     update_time: number;
     can_update: boolean;
     can_remove: boolean;
+};
+
+export type ListThreadRequest = {
+    session_id: string;
+    project_id: string;
+    offset: number;
+    limit: number;
+};
+
+export type ListThreadResponse = {
+    code: number;
+    err_msg: string;
+    total_count: number;
+    thread_list: ThreadInfo[];
 };
 
 export type AddCommentRequest = {
@@ -84,6 +111,15 @@ export type RemoveCommentResponse = {
     code: number;
     err_msg: string;
 };
+
+//列出评论会话
+export async function list_thread(request: ListThreadRequest): Promise<ListThreadResponse> {
+    const cmd = 'plugin:project_code_api|list_thread';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListThreadResponse>(cmd, {
+        request,
+    });
+}
 
 //创建代码评论
 export async function add_comment(request: AddCommentRequest): Promise<AddCommentResponse> {
