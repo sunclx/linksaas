@@ -9,6 +9,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { fetch, Body } from '@tauri-apps/api/http';
 import { get_cache_file } from "@/api/fs";
+import { useSize } from "ahooks";
 
 export interface AnnoPanelProps {
     projectId: string;
@@ -23,12 +24,14 @@ export interface AnnoPanelProps {
 }
 
 const AnnoPanel = (props: AnnoPanelProps) => {
+    const winSize = useSize(window.document.body);
+
     const [taskList, setTaskList] = useState<dataAnnoTaskApi.TaskInfo[]>([]);
     const [taskIndex, setTaskIndex] = useState(0);
     const [taskResult, setTaskResult] = useState("[]");
     const editorRef = useRef<HTMLDivElement>(null);
     const [instance, setInstance] = useState<any>(null);
-    const [hasChange, sethasChange] = useState(false);
+    const [hasChange, setHasChange] = useState(false);
 
     const [taskDraft, setTaskDraft] = useState("[]");
     const [showResultModal, setShowResultModal] = useState(false);
@@ -62,7 +65,7 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                 result: result,
             },
         }));
-        sethasChange(false);
+        setHasChange(false);
     };
 
     const getResultData = () => {
@@ -181,15 +184,15 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                     saveResult(JSON.stringify([{ "result": resultList }]));
                 },
                 onEntityCreate: function () {
-                    sethasChange(true);
+                    setHasChange(true);
                 },
                 onEntityDelete: function () {
-                    sethasChange(true);
+                    setHasChange(true);
                 },
                 onSubmitDraft: function (_: any, annotation: any) {
                     const resultList = annotation.serializeAnnotation();
                     setTaskDraft(JSON.stringify([{ "result": resultList }], null, 2));
-                    sethasChange(true);
+                    setHasChange(true);
                 }
             });
         });
@@ -259,7 +262,7 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                     text: isAnnoText(props.annoType) ? taskList[(taskIndex) % taskList.length].content : "",
                 }
             }, res.data as string);
-            sethasChange(true);
+            setHasChange(true);
             message.info("调用成功");
         } catch (e) {
             console.log(e);
@@ -275,6 +278,9 @@ const AnnoPanel = (props: AnnoPanelProps) => {
         if (editorRef.current == null || taskList.length == 0) {
             return;
         }
+        if (hasChange) {
+            return;
+        }
         initEditor({
             annotations: [],
             predictions: [],
@@ -285,16 +291,19 @@ const AnnoPanel = (props: AnnoPanelProps) => {
             }
         });
         return () => {
-            setInstance((oldValue: any) => {
-                if (oldValue !== null) {
-                    oldValue.destroy();
+            setHasChange(oldChange => {
+                if (!oldChange) {
+                    setInstance((oldValue: any) => {
+                        if (oldValue !== null) {
+                            oldValue.destroy();
+                        }
+                        return null;
+                    });
                 }
-                return null;
+                return oldChange;
             });
         };
-    }, [editorRef.current, taskList, taskIndex]);
-
-
+    }, [editorRef.current, taskList, taskIndex, winSize]);
 
     return (
         <Card bordered={false} extra={
@@ -338,7 +347,7 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                                     text: isAnnoText(props.annoType) ? taskList[(taskIndex) % taskList.length].content : "",
                                 }
                             });
-                            sethasChange(false);
+                            setHasChange(false);
                         }}>取消</Button>
                         <Button type="primary" disabled={!hasChange} onClick={e => {
                             e.stopPropagation();
@@ -376,7 +385,7 @@ const AnnoPanel = (props: AnnoPanelProps) => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 if (taskDraft != "[]") {
-                                    sethasChange(true);
+                                    setHasChange(true);
                                 }
                                 if (instance !== null) {
                                     instance.destroy();
