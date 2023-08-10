@@ -1,5 +1,8 @@
 import {
   ASSGIN_USER_ALL,
+  ISSUE_STATE_CHECK,
+  ISSUE_STATE_PLAN,
+  ISSUE_STATE_PROCESS,
   ISSUE_TYPE_BUG,
   ISSUE_TYPE_TASK,
   SORT_KEY_UPDATE_TIME,
@@ -11,7 +14,7 @@ import { bugPriority, issueState, taskPriority } from '@/utils/constant';
 import { issueTypeIsTask } from '@/utils/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ModalProps } from 'antd';
-import { Form, Tabs } from 'antd';
+import { Checkbox, Form, Tabs } from 'antd';
 import { Input } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
 import Table from 'antd/lib/table';
@@ -122,6 +125,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
   const [dataSource, setDataSource] = useState<IssueInfo[]>([]);
   const [keyword, setKeyword] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(props.issueIdList);
+  const [includeClose, setIncludeClose] = useState(true);
 
   const [curPage, setCurPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
@@ -130,8 +134,8 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
     const listIssueParam: ListIssueParam = {
       filter_by_issue_type: true,
       issue_type: ISSUE_TYPE_TASK,
-      filter_by_state: false,
-      state_list: [],
+      filter_by_state: includeClose == false,
+      state_list: includeClose ? [] : [ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK],
       filter_by_create_user_id: false,
       create_user_id_list: [],
       filter_by_assgin_user_id: false,
@@ -219,7 +223,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
     } else if (props.type == "task" && activeKey == "task") {
       loadIssue();
     }
-  }, [keyword, props.type, curPage, activeKey]);
+  }, [keyword, props.type, curPage, activeKey, includeClose]);
 
   useEffect(() => {
     if (props.type == "task" && activeKey == "requirement") {
@@ -365,6 +369,12 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
                       setKeyword(e.target.value);
                     }}
                   />
+                </Form.Item>
+                <Form.Item label="包含已关闭任务">
+                  <Checkbox checked={includeClose} onChange={e => {
+                    e.stopPropagation();
+                    setIncludeClose(e.target.checked);
+                  }} />
                 </Form.Item>
               </Form>
             </Tabs.TabPane>

@@ -114,7 +114,7 @@ const DataAnnoDetail = () => {
                                 }}>增加标注资源</Button>
                             )}
                             {activeKey == "audit" && (
-                                <Form style={{paddingTop:"10px"}}>
+                                <Form style={{ paddingTop: "10px" }}>
                                     <Form.Item label="标注成员">
                                         <Select style={{ width: "150px" }} value={auditMemberUserId} onChange={value => setAuditMemberUserId(value)}>
                                             {memberInfoList.map(item => (
