@@ -164,11 +164,12 @@ const DockerTemplatePanel = () => {
                                 <Divider orientation="left">相关截图</Divider>
                                 <Image.PreviewGroup>
                                     <List rowKey="thumb_file_id" dataSource={item.app_info.image_list ?? []} grid={{ gutter: 16 }}
-                                    renderItem={imageItem=>(
-                                        <List.Item>
-                                            <Image src={getImageUrl(imageItem.thumb_file_id)} preview={{src:getImageUrl(imageItem.raw_file_id)}} width={200} height={150}/>
-                                        </List.Item>
-                                    )}/>
+                                        renderItem={imageItem => (
+                                            <List.Item>
+                                                <Image src={getImageUrl(imageItem.thumb_file_id)}
+                                                    preview={{ src: getImageUrl(imageItem.raw_file_id) }} width={200} height={150} />
+                                            </List.Item>
+                                        )} />
                                 </Image.PreviewGroup>
                             </>
                         )}
