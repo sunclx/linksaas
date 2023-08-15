@@ -66,7 +66,7 @@ const MemberPanel = (props: MemberPanelPrps) => {
             title: "任务数",
             width: 150,
             render: (_, row: dataAnnoTaskApi.MemberInfo) => (
-                <EditNumber editable={true} value={row.task_count} showEditIcon={true} fixedLen={0}
+                <EditNumber editable={props.resourceCount > 0 && (row.is_member ?? true)} value={row.task_count} showEditIcon={true} fixedLen={0}
                     min={row.task_count}
                     max={props.resourceCount}
                     onChange={async (value) => {
@@ -95,11 +95,16 @@ const MemberPanel = (props: MemberPanelPrps) => {
             ),
         },
         {
+            title: "项目成员",
+            width: 80,
+            render: (_, row: dataAnnoTaskApi.MemberInfo) => (row.is_member ?? true) ? "是" : "否",
+        },
+        {
             title: "操作",
             width: 150,
             render: (_, row: dataAnnoTaskApi.MemberInfo) => (
                 <Space size="large">
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={props.resourceCount == 0}
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={props.resourceCount == 0 || !(row.is_member ?? true)}
                         title={props.resourceCount == 0 ? "缺乏可标注资源" : ""}
                         onClick={e => {
                             e.stopPropagation();

@@ -13,6 +13,7 @@ export type MemberInfo = {
     logo_uri: string;
     task_count: number;
     done_count: number;
+    is_member?: boolean;
 };
 
 export type TaskInfo = {
