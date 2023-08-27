@@ -40,9 +40,11 @@ export type GetCfgResponse = {
   enable_pub_app_store: boolean;
   enable_pub_book_store: boolean;
   enable_pub_docker_template: boolean;
+  enable_rss: boolean;
   app_store_fs_id: string;
   book_store_fs_id: string;
   docker_template_fs_id: string;
+  rss_fs_id: string;
 };
 
 export type ServerInfo = {
