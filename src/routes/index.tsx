@@ -55,6 +55,7 @@ import {
   APP_PROJECT_WORK_PLAN_PATH,
   ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
   ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
+  ADMIN_PATH_RSS_CRAWLER_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -100,6 +101,7 @@ import TemplateCateList from '@/pages/Admin/DockerTemplateAdmin/TemplateCateList
 import TemplateList from '@/pages/Admin/DockerTemplateAdmin/TemplateList';
 import ApiCollectionList from '@/pages/ApiCollection/ApiCollectionList';
 import ThreadList from '@/pages/Project/Code/ThreadList';
+import CrawlerList from '@/pages/Admin/RssAdmin/CrawlerList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -497,6 +499,12 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
         title: "Docker模板管理",
         component: TemplateList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_RSS_CRAWLER_SUFFIX,
+        title: "资讯爬虫管理",
+        component: CrawlerList,
         exact: true,
       }
     ]
