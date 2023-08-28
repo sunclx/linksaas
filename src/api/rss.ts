@@ -43,6 +43,8 @@ export type ListCateResponse = {
 export type ListFeedRequest = {
     session_id: string;
     cate_id: string;
+    filter_by_keyword: boolean;
+    keyword: string;
     offset: number;
     limit: number;
 };

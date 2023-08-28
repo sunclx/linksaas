@@ -1,4 +1,4 @@
-import { Button, Card, Form, Layout, List, Space, message } from "antd";
+import { Button, Card, Form, Input, Layout, List, Space, message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { FeedCate, Feed } from "@/api/rss";
 import { list_cate, list_feed } from "@/api/rss";
@@ -25,6 +25,8 @@ const RssPanel = () => {
 
     const [showFeedItem, setShowFeedItem] = useState<Feed | null>(null);
 
+    const [keyword, setKeyword] = useState("");
+
     const loadCateList = async () => {
         const res = await request(list_cate({
             session_id: userStore.sessionId,
@@ -43,6 +45,8 @@ const RssPanel = () => {
         const res = await request(list_feed({
             session_id: userStore.sessionId,
             cate_id: curCateId,
+            filter_by_keyword: keyword != "",
+            keyword: keyword,
             offset: PAGE_SIZE * curFeedPage,
             limit: PAGE_SIZE,
         }));
@@ -92,7 +96,7 @@ const RssPanel = () => {
         if (curCateId != "") {
             loadFeedList();
         }
-    }, [curCateId, curFeedPage]);
+    }, [curCateId, curFeedPage, keyword]);
 
     return (
         <Layout>
@@ -106,68 +110,80 @@ const RssPanel = () => {
                     )} />
             </Layout.Sider>
             <Layout.Content style={{ background: "white" }}>
-                <List rowKey="feed_id" dataSource={feedList} grid={{ gutter: 16 }}
-                    style={{ height: "calc(100vh - 130px)", overflowY: "scroll", overflowX: "hidden" }}
-                    renderItem={item => (
-                        <List.Item>
-                            <Card title={<a title={item.feed_name} onClick={e => {
+                <Card extra={
+                    <Form layout="inline">
+                        <Form.Item label="关键词">
+                            <Input value={keyword} onChange={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                setShowFeedItem(item);
-                            }}>{item.feed_name}</a>} style={{ width: "250px", height: "280px" }}
-                                extra={
-                                    <Button type="link" onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        if (item.my_watch) {
-                                            unwatchFeed(item.feed_id);
-                                        } else {
-                                            watchFeed(item.feed_id);
-                                        }
-                                    }}>{item.my_watch ? "取消订阅" : "订阅"}</Button>
-                                }>
-                                <Form labelCol={{ span: 7 }}>
-                                    <Form.Item label="网站地址" style={{ overflow: "hidden" }}>
-                                        <a onClick={e => {
+                                setKeyword(e.target.value.trim());
+                            }} allowClear/>
+                        </Form.Item>
+                    </Form>
+                }>
+                    <List rowKey="feed_id" dataSource={feedList} grid={{ gutter: 16 }}
+                        style={{ height: "calc(100vh - 200px)", overflowY: "scroll", overflowX: "hidden" }}
+                        renderItem={item => (
+                            <List.Item>
+                                <Card title={<a title={item.feed_name} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowFeedItem(item);
+                                }}>{item.feed_name}</a>} style={{ width: "250px", height: "280px" }}
+                                    extra={
+                                        <Button type="link" onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
-                                            shell_open(item.root_url);
-                                        }} title={item.root_url} style={{ whiteSpace: "nowrap" }}><LinkOutlined />&nbsp;{item.root_url}</a>
-                                    </Form.Item>
-                                    <Form.Item label="文章数量">
-                                        <a onClick={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            setShowFeedItem(item);
-                                        }}>{item.entry_count}</a>
-                                    </Form.Item>
-                                    {item.entry_count > 0 && (
-                                        <>
-                                            <Form.Item label="最新文章" style={{ overflow: "hidden", height: "28px" }}>
-                                                <a onClick={e => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    shell_open(item.last_entry_url);
-                                                }} title={item.last_title} style={{ whiteSpace: "nowrap" }}><LinkOutlined />&nbsp;{item.last_title}</a>
-                                            </Form.Item>
-                                            <Form.Item label="更新时间">
-                                                {moment(item.last_time_stamp).format("YYYY-MM-DD")}
-                                            </Form.Item>
-                                        </>
-                                    )}
-                                    {item.tag_list.length > 0 && (
-                                        <Form.Item label="标签">
-                                            <Space>
-                                                {item.tag_list.map(tag => (
-                                                    <div key={tag}>{tag}</div>
-                                                ))}
-                                            </Space>
+                                            if (item.my_watch) {
+                                                unwatchFeed(item.feed_id);
+                                            } else {
+                                                watchFeed(item.feed_id);
+                                            }
+                                        }}>{item.my_watch ? "取消订阅" : "订阅"}</Button>
+                                    }>
+                                    <Form labelCol={{ span: 7 }}>
+                                        <Form.Item label="网站地址" style={{ overflow: "hidden" }}>
+                                            <a onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                shell_open(item.root_url);
+                                            }} title={item.root_url} style={{ whiteSpace: "nowrap" }}><LinkOutlined />&nbsp;{item.root_url}</a>
                                         </Form.Item>
-                                    )}
-                                </Form>
-                            </Card>
-                        </List.Item>
-                    )} pagination={{ pageSize: PAGE_SIZE, total: totalFeedCount, current: curFeedPage + 1, onChange: page => setCurFeedPage(page - 1), hideOnSinglePage: true }} />
+                                        <Form.Item label="文章数量">
+                                            <a onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setShowFeedItem(item);
+                                            }}>{item.entry_count}</a>
+                                        </Form.Item>
+                                        {item.entry_count > 0 && (
+                                            <>
+                                                <Form.Item label="最新文章" style={{ overflow: "hidden", height: "28px" }}>
+                                                    <a onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        shell_open(item.last_entry_url);
+                                                    }} title={item.last_title} style={{ whiteSpace: "nowrap" }}><LinkOutlined />&nbsp;{item.last_title}</a>
+                                                </Form.Item>
+                                                <Form.Item label="更新时间">
+                                                    {moment(item.last_time_stamp).format("YYYY-MM-DD")}
+                                                </Form.Item>
+                                            </>
+                                        )}
+                                        {item.tag_list.length > 0 && (
+                                            <Form.Item label="标签">
+                                                <Space>
+                                                    {item.tag_list.map(tag => (
+                                                        <div key={tag}>{tag}</div>
+                                                    ))}
+                                                </Space>
+                                            </Form.Item>
+                                        )}
+                                    </Form>
+                                </Card>
+                            </List.Item>
+                        )} pagination={{ pageSize: PAGE_SIZE, total: totalFeedCount, current: curFeedPage + 1, onChange: page => setCurFeedPage(page - 1), hideOnSinglePage: true }} />
+                </Card>
             </Layout.Content>
             {showFeedItem != null && (
                 <RssFeedModal feedId={showFeedItem.feed_id} feedName={showFeedItem.feed_name} myWatch={showFeedItem.my_watch}
