@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
-import { AppstoreOutlined, BookOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, BookOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
@@ -69,7 +69,7 @@ const PubRes = () => {
                     </Tabs.TabPane>
                 )}
                 {appStore.clientCfg?.enable_rss == true && (
-                    <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;资讯订阅</h2>} key="rss">
+                    <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
                     {activeKey == "rss" && (
                         <div className={s.content_wrap}>
                             <RssPanel />
