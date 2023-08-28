@@ -7,6 +7,7 @@ export type Feed = {
     cate_name: string;
     root_url: string;
     entry_count: number;
+    tag_list: string[];
     last_time_stamp: number;
 };
 

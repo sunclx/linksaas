@@ -97,7 +97,7 @@ const CrawlerList = () => {
             title: "操作",
             width: 100,
             render: (_, row: Crawler) => (
-                <Button type="link" disabled={!(permInfo?.rss_perm.remove_crawler ?? false)}
+                <Button type="link" disabled={!(permInfo?.rss_perm.remove_crawler ?? false)} danger
                     style={{ minWidth: 0, padding: "0px 0px" }}
                     onClick={e => {
                         e.stopPropagation();
