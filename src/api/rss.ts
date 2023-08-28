@@ -14,6 +14,8 @@ export type Feed = {
     root_url: string;
     entry_count: number;
     last_time_stamp: number;
+    last_title: string;
+    last_entry_url: string;
     tag_list: string[];
     my_watch: boolean;
 };
