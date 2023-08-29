@@ -11,6 +11,7 @@ import { open as shell_open } from '@tauri-apps/api/shell';
 import moment from 'moment';
 import RssFeedModal from "./RssFeedModal";
 import { LinkOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const PAGE_SIZE = 12;
 
@@ -105,7 +106,7 @@ const RssPanel = () => {
                     style={{ height: "calc(100vh - 130px)", overflowY: "scroll", overflowX: "hidden", borderRight: "1px solid #e4e4e8", marginRight: "10px" }}
                     renderItem={item => (
                         <List.Item className={classNames(s.item, curCateId == item.cate_id ? s.item_active : "")}>
-                            <Button type="link" onClick={e=>{
+                            <Button type="link" onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setCurCateId(item.cate_id);
@@ -121,7 +122,10 @@ const RssPanel = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setKeyword(e.target.value.trim());
-                            }} allowClear/>
+                            }} allowClear />
+                        </Form.Item>
+                        <Form.Item>
+                            <Link to={"/app/workbench?tab=myRss&userAction=true"}>查看我的订阅</Link>
                         </Form.Item>
                     </Form>
                 }>
@@ -135,7 +139,7 @@ const RssPanel = () => {
                                     setShowFeedItem(item);
                                 }}>{item.feed_name}</a>} style={{ width: "250px", height: "280px" }}
                                     extra={
-                                        <Button type="link" onClick={e => {
+                                        <Button type={item.my_watch ? "link" : "primary"} onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             if (item.my_watch) {
