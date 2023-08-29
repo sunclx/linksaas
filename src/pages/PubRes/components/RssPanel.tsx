@@ -105,7 +105,11 @@ const RssPanel = () => {
                     style={{ height: "calc(100vh - 130px)", overflowY: "scroll", overflowX: "hidden", borderRight: "1px solid #e4e4e8", marginRight: "10px" }}
                     renderItem={item => (
                         <List.Item className={classNames(s.item, curCateId == item.cate_id ? s.item_active : "")}>
-                            <Button type="link">{item.cate_name}({item.feed_count})</Button>
+                            <Button type="link" onClick={e=>{
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setCurCateId(item.cate_id);
+                            }}>{item.cate_name}({item.feed_count})</Button>
                         </List.Item>
                     )} />
             </Layout.Sider>
