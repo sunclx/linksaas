@@ -69,6 +69,10 @@ mod docker_template_admin_api_plugin;
 mod api_collection_api_plugin;
 mod docker_template_api_plugin;
 
+mod rss_api_plugin;
+mod rss_admin_api_plugin;
+mod user_rss_api_plugin;
+
 mod my_updater;
 
 mod local_repo_plugin;
@@ -450,6 +454,9 @@ fn main() {
         .plugin(docker_template_api_plugin::DockerTemplateApiPlugin::new())
         .plugin(docker_template_admin_api_plugin::DockerTemplateAdminApiPlugin::new())
         .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
+        .plugin(user_rss_api_plugin::UserRssApiPlugin::new())
+        .plugin(rss_api_plugin::RssApiPlugin::new())
+        .plugin(rss_admin_api_plugin::RssAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

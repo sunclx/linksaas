@@ -15,7 +15,7 @@ import {
     ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
     ADMIN_PATH_ORG_LIST_SUFFIX, ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
-    ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
+    ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_RSS_CRAWLER_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
     ADMIN_PATH_USER_LIST_SUFFIX, USER_LOGIN_PATH
 } from "@/utils/constant";
 import { useStores } from "@/hooks";
@@ -35,6 +35,7 @@ const AdminNav = () => {
     const [appstoreSelectedKeys, setAppstoreSelectedKeys] = useState<string[]>([]);
     const [bookstoreSelectedKeys, setBookstoreSelectedKeys] = useState<string[]>([]);
     const [dockerTemplateSelectedKeys, setDockerTemplateSelectedKeys] = useState<string[]>([]);
+    const [rssSelectedKeys, setRssSelectedKeys] = useState<string[]>([]);
 
     useEffect(() => {
         setUserSelectedKeys([]);
@@ -98,6 +99,13 @@ const AdminNav = () => {
     }, [location.pathname]);
 
     useEffect(() => {
+        setRssSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_RSS_CRAWLER_SUFFIX) {
+            setRssSelectedKeys(["rss_crawler"]);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
         get_admin_perm().then(res => setPermInfo(res));
     }, []);
 
@@ -116,7 +124,7 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore", "dockerTemplate"]}
+            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore", "dockerTemplate", "rss"]}
                 style={{ height: "calc(100vh - 132px)", overflowY: "scroll", paddingBottom: "10px" }}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
@@ -254,6 +262,23 @@ const AdminNav = () => {
                                     history.push(ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX);
                                 } else if (e.selectedKeys[0] == "docker_template_app") {
                                     history.push(ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX);
+                                }
+                            }
+                        }} />
+                </Collapse.Panel>
+                <Collapse.Panel header="资讯订阅管理" key="rss">
+                    <Menu selectedKeys={rssSelectedKeys} items={[
+                        {
+                            label: "资讯爬虫",
+                            key: "rss_crawler",
+                            disabled: !(permInfo?.rss_perm.read ?? false),
+                        },
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "rss_crawler") {
+                                    history.push(ADMIN_PATH_RSS_CRAWLER_SUFFIX);
                                 }
                             }
                         }} />

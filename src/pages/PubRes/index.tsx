@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
-import { AppstoreOutlined, BookOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, BookOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
@@ -10,6 +10,7 @@ import BookStorePanel from './components/BookStorePanel';
 import { useStores } from '@/hooks';
 import { ReactComponent as DockerSvg } from '@/assets/svg/docker.svg';
 import DockerTemplatePanel from './components/DockerTemplatePanel';
+import RssPanel from './components/RssPanel';
 
 const PubRes = () => {
     const location = useLocation();
@@ -25,6 +26,8 @@ const PubRes = () => {
             tab = "bookStore"
         } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
             tab = "dockerTemplate"
+        } else if (appStore.clientCfg?.enable_rss == true) {
+            tab = "rss"
         }
     }
 
@@ -64,6 +67,15 @@ const PubRes = () => {
                             </div>
                         )}
                     </Tabs.TabPane>
+                )}
+                {appStore.clientCfg?.enable_rss == true && (
+                    <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
+                    {activeKey == "rss" && (
+                        <div className={s.content_wrap}>
+                            <RssPanel />
+                        </div>
+                    )}
+                </Tabs.TabPane>
                 )}
             </Tabs>
         </div>

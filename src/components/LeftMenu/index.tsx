@@ -57,27 +57,28 @@ const LeftMenu: React.FC = () => {
         </div>
         <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
         <ProjectList />
-        {(appStore.clientCfg?.enable_pub_app_store == true || appStore.clientCfg?.enable_pub_book_store == true || appStore.clientCfg?.enable_pub_docker_template == true) && (
-          <>
-            <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />
-            <div className={`${cls.workbench_menu} ${location.pathname.startsWith(PUB_RES_PATH) ? cls.active_menu : ""}`}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (docSpaceStore.inEdit) {
-                  docSpaceStore.showCheckLeave(() => {
-                    history.push(PUB_RES_PATH);
-                    projectStore.setCurProjectId("");
-                  });
-                  return;
-                }
-                history.push(PUB_RES_PATH);
-                projectStore.setCurProjectId("");
-              }}>
-              <GlobalOutlined />&nbsp;公共资源
-            </div>
-          </>
-        )}
+        {(appStore.clientCfg?.enable_pub_app_store == true || appStore.clientCfg?.enable_pub_book_store == true
+          || appStore.clientCfg?.enable_pub_docker_template == true || appStore.clientCfg?.enable_rss == true) && (
+            <>
+              <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />
+              <div className={`${cls.workbench_menu} ${location.pathname.startsWith(PUB_RES_PATH) ? cls.active_menu : ""}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (docSpaceStore.inEdit) {
+                    docSpaceStore.showCheckLeave(() => {
+                      history.push(PUB_RES_PATH);
+                      projectStore.setCurProjectId("");
+                    });
+                    return;
+                  }
+                  history.push(PUB_RES_PATH);
+                  projectStore.setCurProjectId("");
+                }}>
+                <GlobalOutlined />&nbsp;公共资源
+              </div>
+            </>
+          )}
         {(appStore.clientCfg?.item_list.length ?? 0) > 0 && <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />}
         {appStore.clientCfg?.item_list.map(extraItem => (
           <div key={extraItem.menu_id}

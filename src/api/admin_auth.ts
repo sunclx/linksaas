@@ -84,6 +84,14 @@ export type DockerTemplatePerm = {
     remove_template: boolean;
 };
 
+export type RssPerm = {
+    read: boolean;
+    add_crawler: boolean;
+    upate_crawler: boolean;
+    remove_crawler: boolean;
+};
+
+
 export type AdminPermInfo = {
     org_perm: OrgPerm;
     user_perm: UserPerm;
@@ -94,6 +102,7 @@ export type AdminPermInfo = {
     app_store_perm: AppStorePerm;
     book_store_perm: BookStorePerm;
     docker_template_perm: DockerTemplatePerm;
+    rss_perm: RssPerm;
 };
 
 export type PreAuthRequest = {
@@ -144,7 +153,16 @@ export async function get_admin_session(): Promise<string> {
 //获取当前管理会话权限
 export async function get_admin_perm(): Promise<AdminPermInfo> {
     const cmd = 'plugin:admin_auth_api|get_admin_perm';
-    return invoke<AdminPermInfo>(cmd, {});
+    const perm = await invoke<AdminPermInfo>(cmd, {});
+    if (perm.rss_perm == undefined) {
+        perm.rss_perm = {
+            read: false,
+            add_crawler: false,
+            upate_crawler: false,
+            remove_crawler: false,
+        };
+    }
+    return perm
 }
 
 //用私钥对内容签名
