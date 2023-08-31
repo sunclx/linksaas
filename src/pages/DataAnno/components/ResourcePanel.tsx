@@ -117,7 +117,7 @@ const ResourcePanel = (props: ResourcePanelProps) => {
                         </List.Item>
                     )}
                 </>
-            )} pagination={{ total: totalCount, pageSize: PAGE_SIZE, current: curPage + 1, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
+            )} pagination={{ total: totalCount, pageSize: PAGE_SIZE, current: curPage + 1, onChange: page => setCurPage(page - 1), hideOnSinglePage: true, showSizeChanger: false }} />
             {props.showAddModal == true && (
                 <AddResourceModal projectId={props.projectId} annoProjectId={props.annoProjectId} annoType={props.annoType}
                     fsId={props.fsId}

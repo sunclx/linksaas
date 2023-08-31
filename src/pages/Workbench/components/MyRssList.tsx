@@ -163,7 +163,7 @@ const MyRssList = () => {
                             </div>
                         </Card>
                     </List.Item>
-                )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
+                )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true, showSizeChanger: false }} />
             </Layout.Content>
         </Layout>
     )

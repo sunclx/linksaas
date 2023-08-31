@@ -110,6 +110,7 @@ const RssPanel = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setCurCateId(item.cate_id);
+                                setCurFeedPage(0);
                             }}>{item.cate_name}({item.feed_count})</Button>
                         </List.Item>
                     )} />
@@ -122,6 +123,7 @@ const RssPanel = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setKeyword(e.target.value.trim());
+                                setCurFeedPage(0);
                             }} allowClear />
                         </Form.Item>
                         <Form.Item>
@@ -190,7 +192,7 @@ const RssPanel = () => {
                                     </Form>
                                 </Card>
                             </List.Item>
-                        )} pagination={{ pageSize: PAGE_SIZE, total: totalFeedCount, current: curFeedPage + 1, onChange: page => setCurFeedPage(page - 1), hideOnSinglePage: true }} />
+                        )} pagination={{ pageSize: PAGE_SIZE, total: totalFeedCount, current: curFeedPage + 1, onChange: page => setCurFeedPage(page - 1), hideOnSinglePage: true, showSizeChanger: false }} />
                 </Card>
             </Layout.Content>
             {showFeedItem != null && (

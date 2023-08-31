@@ -90,7 +90,7 @@ const RssFeedModal = (props: RssFeedModalProps) => {
                             </div>
                         </Card>
                     </List.Item>
-                )} pagination={{ hideOnSinglePage: true, total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1) }} />
+                )} pagination={{ hideOnSinglePage: true, total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), showSizeChanger: false }} />
         </Modal>
     )
 };

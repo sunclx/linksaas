@@ -110,7 +110,7 @@ const TemplateList = () => {
                             setAwtList(tmpList);
                         }} />
                 </List.Item>
-            )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
+            )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true, showSizeChanger: false }} />
             {
                 showCreateAppModal == true && (
                     <CreateAppModal onCancel={() => setShowCreateAppModal(false)} onOk={() => {
