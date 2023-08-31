@@ -23,6 +23,7 @@ import UserAppList from './components/UserAppList';
 import UserBookList from './components/UserBookList';
 import SetLocalRepoModal from './components/SetLocalRepoModal';
 import LocalRepoList from './components/LocalRepoList';
+import MyRssList from './components/MyRssList';
 
 
 const Workbench: React.FC = () => {
@@ -68,13 +69,14 @@ const Workbench: React.FC = () => {
       <Card className={s.infoCount_wrap} childStyle={{ height: '100%' }}>
         {!userStore.isResetPassword && <InfoCount total={totalMyIssueCount} />}
       </Card>
-      <Tabs activeKey={activeKey} className={s.my_wrap} type="card" onChange={key => {
-        setCurKbSpace(null);
-        setActiveKey(key);
-        history.push(`${WORKBENCH_PATH}?tab=${key}&userAction=true`);
-      }}
+      <Tabs activeKey={activeKey} className={s.my_wrap} type="card"
+        onChange={key => {
+          setCurKbSpace(null);
+          setActiveKey(key);
+          history.push(`${WORKBENCH_PATH}?tab=${key}&userAction=true`);
+        }}
         tabBarExtraContent={
-          <>
+          <div>
             {activeKey == "myProject" && (
               <Space size="small">
                 <Button type="default" onClick={e => {
@@ -144,7 +146,16 @@ const Workbench: React.FC = () => {
                 添加本地仓库
               </Button>
             )}
-          </>
+            {activeKey == "myRss" && (
+              <Button
+                type="link"
+                style={{ marginRight: "20px" }} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  history.push(`${PUB_RES_PATH}?tab=rss`);
+                }}>前往资讯市场<DoubleRightOutlined /></Button>
+            )}
+          </div>
         }>
         {projectStore.projectList.length > 0 && (
           <Tabs.TabPane tab={<h2><IssuesCloseOutlined />我的待办</h2>} key="myIssue">
@@ -160,6 +171,15 @@ const Workbench: React.FC = () => {
             {activeKey == "myEvent" && (
               <div className={s.content_wrap}>
                 <Record />
+              </div>
+            )}
+          </Tabs.TabPane>
+        )}
+        {appStore.clientCfg?.enable_rss == true && (
+          <Tabs.TabPane tab={<h2><FolderOutlined />资讯订阅</h2>} key="myRss">
+            {activeKey == "myRss" && (
+              <div className={s.content_wrap}>
+                <MyRssList />
               </div>
             )}
           </Tabs.TabPane>

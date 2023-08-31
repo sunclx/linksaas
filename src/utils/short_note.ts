@@ -80,16 +80,17 @@ export async function showShortNote(sessionId: string, data: ShortNoteData, proj
 
 export async function showMyShortNote(sessionId: string) {
     const res = await request(list_my({ session_id: sessionId }));
+    const deviceRatio = window.devicePixelRatio ?? 1;
     if (res) {
         for (const item of res.short_note_list) {
             const label = `shortNote-${item.target_id}`;
             const shortNoteTypeStr = getShortNoteTypeStr(item.short_note_type);
             new WebviewWindow(label, {
                 url: `short_note.html?type=${shortNoteTypeStr}&projectId=${item.project_id}&id=${item.target_id}&title=${encodeURIComponent(item.title)}&projectName=${encodeURIComponent(item.project_name)}`,
-                width: 250,
-                minWidth: 200,
-                height: 150,
-                minHeight: 100,
+                width: 250 * deviceRatio,
+                minWidth: 200 * deviceRatio,
+                height: 150 * deviceRatio,
+                minHeight: 100 * deviceRatio,
                 decorations: false,
                 alwaysOnTop: true,
                 skipTaskbar: true,
