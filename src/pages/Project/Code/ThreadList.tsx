@@ -90,6 +90,7 @@ const ThreadList = () => {
                     pageSize: PAGE_SIZE,
                     onChange: page => setCurPage(page - 1),
                     hideOnSinglePage: true,
+                    showSizeChanger: false
                 }} />
         </CardWrap>
     );

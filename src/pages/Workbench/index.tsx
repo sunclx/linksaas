@@ -12,7 +12,7 @@ import Backlog from './components/Backlog';
 import { Select, Space, Tabs } from 'antd';
 import { observer } from 'mobx-react';
 import Record from './components/Record';
-import { BookOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
+import { BookOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, InfoCircleOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
 import UserDocSpaceList from '../UserExtend/UserKb/UserDocSpaceList';
 import Button from '@/components/Button';
 import type { KbSpaceInfo } from '@/api/user_kb';
@@ -176,7 +176,7 @@ const Workbench: React.FC = () => {
           </Tabs.TabPane>
         )}
         {appStore.clientCfg?.enable_rss == true && (
-          <Tabs.TabPane tab={<h2><FolderOutlined />资讯订阅</h2>} key="myRss">
+          <Tabs.TabPane tab={<h2><InfoCircleOutlined />资讯订阅</h2>} key="myRss">
             {activeKey == "myRss" && (
               <div className={s.content_wrap}>
                 <MyRssList />

@@ -207,7 +207,8 @@ const DataAnnoProjectList = () => {
                 scroll={{ x: 1000, y: "calc(100vh - 180px)" }} style={{ padding: "10px 10px" }}
                 pagination={{
                     total: totalCount, pageSize: PAGE_SIZE, current: curPage + 1,
-                    hideOnSinglePage: true, onChange: page => setCurPage(page - 1)
+                    hideOnSinglePage: true, onChange: page => setCurPage(page - 1),
+                    showSizeChanger: false
                 }} />
             {showCreateModal == true && (
                 <CreateAnnoProjectModal onCancel={() => setShowCreateModal(false)} onOk={() => {

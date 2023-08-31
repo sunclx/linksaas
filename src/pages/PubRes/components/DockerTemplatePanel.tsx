@@ -191,7 +191,8 @@ const DockerTemplatePanel = () => {
                 </List.Item>
             )} pagination={{
                 total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE,
-                onChange: page => setCurPage(page - 1), hideOnSinglePage: true
+                onChange: page => setCurPage(page - 1), hideOnSinglePage: true,
+                showSizeChanger: false
             }} />
             {useLocalTemplate == true && (
                 <LocalDockerTemplateModal onCancel={() => setUseLocalTemplate(false)}
