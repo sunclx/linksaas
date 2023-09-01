@@ -137,7 +137,7 @@ const Portrait = ({ ...props }) => {
         )}
         {showExit && (
           <Modal
-            visible={showExit}
+            open={showExit}
             title="退出"
             onCancel={() => setShowExit(false)}
             onOk={() => {
@@ -162,14 +162,12 @@ const Portrait = ({ ...props }) => {
       content={renderContent()}
       placement="bottomLeft"
       trigger="click"
-      visible={userStore.accountsModal}
+      open={userStore.accountsModal}
       overlayInnerStyle={{
-        left: '2px',
+        marginLeft: "10px",
+        marginTop: "-30px"
       }}
-      style={{
-        left: '2px',
-      }}
-      onVisibleChange={(boo) => userStore.setAccountsModal(boo)}
+      onOpenChange={(boo) => userStore.setAccountsModal(boo)}
     >
       {props.children}
     </Popover>

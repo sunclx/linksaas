@@ -20,15 +20,15 @@ const PubRes = () => {
     const urlParams = new URLSearchParams(location.search);
     let tab = urlParams.get('tab') ?? "";
     if (tab == "") {
-        if (appStore.clientCfg?.enable_pub_app_store == true) {
+        if (appStore.clientCfg?.enable_rss == true) {
+            tab = "rss"
+        }else if (appStore.clientCfg?.enable_pub_app_store == true) {
             tab = "appStore"
         } else if (appStore.clientCfg?.enable_pub_book_store == true) {
             tab = "bookStore"
         } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
             tab = "dockerTemplate"
-        } else if (appStore.clientCfg?.enable_rss == true) {
-            tab = "rss"
-        }
+        } 
     }
 
     const [activeKey, setActiveKey] = useState(tab);

@@ -62,17 +62,38 @@ async fn get_cache_file<R: Runtime>(
     if &file_name == "" {
         let file_list = fs::read_dir(&cache_dir).await;
         if file_list.is_err() {
-            return Err(file_list.err().unwrap().to_string());
+            return Ok(DownloadResult {
+                exist_in_local: false,
+                local_path: "".into(),
+                local_dir: "".into(),
+            });
         }
         let mut file_list = file_list.unwrap();
         let entry = file_list.next_entry().await;
         if entry.is_err() {
-            return Err(entry.err().unwrap().to_string());
+            return Ok(DownloadResult {
+                exist_in_local: false,
+                local_path: "".into(),
+                local_dir: "".into(),
+            });
         }
         let entry = entry.unwrap();
         if let Some(entry) = entry {
             let file_name = String::from(entry.file_name().to_string_lossy());
+            if &file_name == ".tmp" {
+                return Ok(DownloadResult {
+                    exist_in_local: false,
+                    local_path: "".into(),
+                    local_dir: "".into(),
+                });
+            }
             cache_file = format!("{}/{}", (&cache_dir).as_str(), &file_name);
+        } else {
+            return Ok(DownloadResult {
+                exist_in_local: false,
+                local_path: "".into(),
+                local_dir: "".into(),
+            });
         }
     }
     if let Ok(cache_file_stat) = fs::metadata(cache_file.as_str()).await {

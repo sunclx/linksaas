@@ -12,7 +12,7 @@ import Backlog from './components/Backlog';
 import { Select, Space, Tabs } from 'antd';
 import { observer } from 'mobx-react';
 import Record from './components/Record';
-import { BookOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, InfoCircleOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, BookOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, InfoCircleOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
 import UserDocSpaceList from '../UserExtend/UserKb/UserDocSpaceList';
 import Button from '@/components/Button';
 import type { KbSpaceInfo } from '@/api/user_kb';
@@ -192,7 +192,7 @@ const Workbench: React.FC = () => {
           )}
         </Tabs.TabPane>
         {appStore.clientCfg?.enable_pub_app_store == true && (
-          <Tabs.TabPane tab={<h2><BookOutlined />我的微应用</h2>} key="userApp">
+          <Tabs.TabPane tab={<h2><AppstoreOutlined />我的微应用</h2>} key="userApp">
             {activeKey == "userApp" && (
               <div className={s.content_wrap}>
                 <UserAppList />

@@ -26,17 +26,16 @@ const LeftMenu: React.FC = () => {
 
   return (
     <Sider className={cls.sider} data-tauri-drag-region={true}>
-      <div className={cls.user} data-tauri-drag-region={true}>
 
-        <Portrait>
+      <Portrait>
+        <div className={cls.user}>
           <div className={cls.avatar}>
             <UserPhoto logoUri={userStore.userInfo.logoUri ?? ''} />
           </div>
-        </Portrait>
+          <div className={cls.name}>{userStore.userInfo.displayName}</div>
+        </div>
+      </Portrait>
 
-
-        <div className={cls.name}>{userStore.userInfo.displayName}</div>
-      </div>
       <div>
         <div className={`${cls.workbench_menu} ${location.pathname.startsWith(WORKBENCH_PATH) ? cls.active_menu : ""}`}
           onClick={e => {
