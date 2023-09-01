@@ -7,7 +7,7 @@ import {
     OPEN_TYPE_MIN_APP_IN_STORE,
     get_min_app_perm, set_min_app_perm, remove as remove_app, get_token_url
 } from '@/api/project_app';
-import { Button, Card, Image, Modal, Popover, Space, message } from "antd";
+import { Button, Card, Modal, Popover, Space, message } from "antd";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { MoreOutlined } from "@ant-design/icons";
 import { useStores } from "@/hooks";
@@ -19,6 +19,7 @@ import DownloadProgressModal from "./DownloadProgressModal";
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
 import { get_app } from '@/api/appstore';
 import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
+import AsyncImage from "@/components/AsyncImage";
 
 interface AppItemProps {
     appInfo: AppInfo;
@@ -201,10 +202,9 @@ const AppItem: React.FC<AppItemProps> = (props) => {
                 <MoreOutlined />
             </Popover>
         }>
-            <Image
+            <AsyncImage
                 style={{ width: "80px", cursor: "pointer" }}
                 src={adjustUrl(props.appInfo.basic_info.app_icon_url)}
-                alt={""}
                 preview={false}
                 fallback={defaultIcon}
                 onClick={(e) => {
@@ -218,6 +218,7 @@ const AppItem: React.FC<AppItemProps> = (props) => {
                         preOpenMinAppInStore();
                     }
                 }}
+                useRawImg={false}
             />
             {minAppPerm != null && (
                 <Modal open

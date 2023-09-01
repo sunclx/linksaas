@@ -1,4 +1,4 @@
-import { Image, Form, message, Card, Table, Modal, Input, InputNumber } from "antd";
+import { Form, message, Card, Table, Modal, Input, InputNumber } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AdminPermInfo } from '@/api/admin_auth';
 import type { AdItem } from '@/api/client_cfg';
@@ -9,6 +9,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { EditNumber } from "@/components/EditCell/EditNumber";
 import Button from "@/components/Button";
 import { PlusOutlined } from "@ant-design/icons";
+import AsyncImage from "@/components/AsyncImage";
 
 const URL_REGEX = /^https*:\/\/.+/;
 
@@ -72,7 +73,7 @@ const AdAdmin = () => {
             title: "图片(190x100)",
             width: 120,
             render: (_, row: AdItem) => (
-                <Image width={100} src={row.img_url} preview={false} />
+                <AsyncImage width={100} src={row.img_url} preview={false} useRawImg={false} />
             ),
         },
         {
@@ -171,7 +172,7 @@ const AdAdmin = () => {
             )}
             {removeAdItem != null && (
                 <Modal open title="删除广告"
-                okText="删除" okButtonProps={{ danger: true }}
+                    okText="删除" okButtonProps={{ danger: true }}
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();

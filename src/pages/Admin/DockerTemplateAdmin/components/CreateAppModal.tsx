@@ -1,4 +1,4 @@
-import { Divider, Form, Input, Modal, Image, Select,message } from "antd";
+import { Divider, Form, Input, Modal, Select,message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { CateInfo } from "@/api/docker_template";
 import { list_cate } from "@/api/docker_template";
@@ -10,6 +10,7 @@ import { request } from "@/utils/request";
 import { write_file, set_file_owner, FILE_OWNER_TYPE_DOCKER_TEMPLATE } from "@/api/fs";
 import { useStores } from "@/hooks";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
+import AsyncImage from "@/components/AsyncImage";
 
 export interface CreateAppModalProps {
     onCancel: () => void;
@@ -106,7 +107,7 @@ const CreateAppModal = (props: CreateAppModalProps) => {
             }}>
             <div style={{ display: "flex" }}>
                 <div style={{ width: "100px" }}>
-                    <Image style={{ width: "80px", cursor: "pointer" }}
+                    <AsyncImage style={{ width: "80px", cursor: "pointer" }}
                         src={iconUrl}
                         preview={false}
                         fallback={defaultIcon}
@@ -115,6 +116,7 @@ const CreateAppModal = (props: CreateAppModalProps) => {
                             e.preventDefault();
                             changeIcon();
                         }}
+                        useRawImg={false}
                     />
                 </div>
                 <div style={{ flex: 1 }}>

@@ -6,6 +6,7 @@ use futures_util::stream;
 use std::io::Cursor;
 use std::iter::Iterator;
 use std::path::Path;
+use tauri::async_runtime::Mutex;
 use tauri::http::{Response, ResponseBuilder};
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
@@ -15,6 +16,9 @@ use tokio::fs;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio_stream::StreamExt;
+
+#[derive(Default)]
+pub struct DownloadCount(pub Mutex<u64>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub struct DownloadResult {
@@ -58,17 +62,38 @@ async fn get_cache_file<R: Runtime>(
     if &file_name == "" {
         let file_list = fs::read_dir(&cache_dir).await;
         if file_list.is_err() {
-            return Err(file_list.err().unwrap().to_string());
+            return Ok(DownloadResult {
+                exist_in_local: false,
+                local_path: "".into(),
+                local_dir: "".into(),
+            });
         }
         let mut file_list = file_list.unwrap();
         let entry = file_list.next_entry().await;
         if entry.is_err() {
-            return Err(entry.err().unwrap().to_string());
+            return Ok(DownloadResult {
+                exist_in_local: false,
+                local_path: "".into(),
+                local_dir: "".into(),
+            });
         }
         let entry = entry.unwrap();
         if let Some(entry) = entry {
             let file_name = String::from(entry.file_name().to_string_lossy());
+            if &file_name == ".tmp" {
+                return Ok(DownloadResult {
+                    exist_in_local: false,
+                    local_path: "".into(),
+                    local_dir: "".into(),
+                });
+            }
             cache_file = format!("{}/{}", (&cache_dir).as_str(), &file_name);
+        } else {
+            return Ok(DownloadResult {
+                exist_in_local: false,
+                local_path: "".into(),
+                local_dir: "".into(),
+            });
         }
     }
     if let Ok(cache_file_stat) = fs::metadata(cache_file.as_str()).await {
@@ -97,6 +122,9 @@ pub async fn download_file<R: Runtime>(
     file_id: String,
     as_name: String,
 ) -> Result<DownloadResult, String> {
+    let mut download_count = app_handle.state::<DownloadCount>().inner().0.lock().await;
+    *download_count += 1;
+
     let notice_name = format!("downloadFile_{}", track_id);
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
@@ -649,7 +677,8 @@ impl<R: Runtime> Plugin<R> for FsApiPlugin<R> {
         None
     }
 
-    fn initialize(&mut self, _app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+    fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+        app.manage(DownloadCount(Default::default()));
         Ok(())
     }
 

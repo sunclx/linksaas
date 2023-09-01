@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, List, Select, Image } from "antd";
+import { Card, Form, List, Select } from "antd";
 import type { CateInfo, BookInfo } from "@/api/bookstore";
 import { list_cate, list_book } from "@/api/bookstore";
 import { request } from "@/utils/request";
 import logoPng from '@/assets/allIcon/logo.png';
 import { useStores } from "@/hooks";
 import BookInfoModal from "./BookInfoModal";
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 12;
 
@@ -86,7 +87,7 @@ const BookStorePanel = () => {
                     <Card title={<h2 title={book.book_title} style={{ width: "180px", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{book.book_title}</h2>}
                         bodyStyle={{ width: "200px", height: "300px", overflow: "hidden" }}
                     >
-                        <Image width={200} src={getCoverImage(book)} fallback={logoPng} preview={false} />
+                        <AsyncImage width={200} src={getCoverImage(book)} fallback={logoPng} preview={false} useRawImg={false}/>
                     </Card>
                 </List.Item>
             )} pagination={{ current: curPage + 1, total: totalCount, pageSize: PAGE_SIZE, onChange: (page) => setCurPage(page - 1) }} />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCommands } from '@remirror/react';
 import type { NodeViewComponentProps } from '@remirror/react';
-import { Progress, Image, Switch } from 'antd';
+import { Progress, Switch } from 'antd';
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent, FILE_OWNER_TYPE } from '@/api/fs';
 import { save_tmp_file_base64, write_thumb_image_file, set_file_owner, write_file } from '@/api/fs';
@@ -11,6 +11,7 @@ import style from './common.module.less';
 import { ReactComponent as Deletesvg } from '@/assets/svg/delete.svg';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { request } from '@/utils/request';
+import AsyncImage from '@/components/AsyncImage';
 
 export type EditImageProps = NodeViewComponentProps & {
   trackId: string;
@@ -184,12 +185,12 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
         )}
         {showRawImage == false && (
           <div className={style.img}>
-            <Image src={thumbImgUrl} preview={false} />
+            <AsyncImage src={thumbImgUrl} preview={false} useRawImg={false}/>
           </div>
         )}
         {showRawImage == true && (
           <div style={{ maxWidth: "100%" }}>
-            <Image src={imgUrl} preview={false} />
+            <AsyncImage src={imgUrl} preview={false} useRawImg={false}/>
           </div>
         )}
 
@@ -244,7 +245,7 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
       <div className={style.imgUpload}>
         {props.showRawImage != true && (
           <div className={style.img}>
-            <Image
+            <AsyncImage
               preview={{
                 src: imageUrl,
                 bodyStyle: {
@@ -256,12 +257,13 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
                 zIndex: 9999,
               }}
               src={thumbImageUrl}
+              useRawImg={false}
             />
           </div>
         )}
         {props.showRawImage == true && (
           <div style={{ maxWidth: "100%" }}>
-            <Image src={imageUrl} preview={false} />
+            <AsyncImage src={imageUrl} preview={false} useRawImg={false}/>
           </div>
         )}
 

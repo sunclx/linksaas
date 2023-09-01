@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Button, Empty, Layout, List, Popover, Image, Card } from "antd";
+import { Button, Empty, Layout, List, Popover, Card } from "antd";
 import { useStores } from "@/hooks";
 import type { Feed } from "@/api/user_rss";
 import { list_feed, unwatch } from "@/api/user_rss";
@@ -14,6 +14,7 @@ import { useHistory } from "react-router-dom";
 import { PUB_RES_PATH } from "@/utils/constant";
 import s from "./MyRssList.module.less";
 import classNames from 'classnames';
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 10;
 
@@ -156,7 +157,7 @@ const MyRssList = () => {
                             <div style={{ display: "flex" }}>
                                 {item.img_file_id != "" && (
                                     <div style={{ padding: "20px" }}>
-                                        <Image src={getImageUrl(item.img_file_id)} preview={false} width={200} />
+                                        <AsyncImage src={getImageUrl(item.img_file_id)} preview={false} width={200} useRawImg={false}/>
                                     </div>
                                 )}
                                 <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.summary}</pre>

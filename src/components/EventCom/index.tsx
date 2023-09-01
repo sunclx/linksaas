@@ -3,11 +3,12 @@ import * as API from '@/api/event_type';
 import { useStores } from '@/hooks';
 import { useState } from 'react';
 import React from 'react';
-import { Image, Modal } from 'antd';
+import { Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
 import type { LinkInfo, LinkImageInfo, LinkExterneInfo } from '@/stores/linkAux';
 import { LINK_TARGET_TYPE, LinkEventlInfo } from '@/stores/linkAux';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import AsyncImage from '../AsyncImage';
 
 type EventComProps = {
   item: PluginEvent;
@@ -52,7 +53,7 @@ const EventCom: React.FC<EventComProps> = ({
         }
         return (
           <div key={index}>
-            <Image
+            <AsyncImage
               preview={{
                 src: imgUrl,
                 mask: false,
@@ -61,6 +62,7 @@ const EventCom: React.FC<EventComProps> = ({
                 },
               }}
               src={thumbImgUrl}
+              useRawImg={false}
             />
           </div>
         );

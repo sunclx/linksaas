@@ -1,4 +1,4 @@
-import { Card, List, Modal, Image } from "antd";
+import { Card, List, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import type { FeedEntry } from "@/api/rss";
 import { list_entry } from "@/api/rss";
@@ -7,6 +7,7 @@ import { useStores } from "@/hooks";
 import moment from "moment";
 import { open as shell_open } from '@tauri-apps/api/shell';
 import { LinkOutlined } from "@ant-design/icons";
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 10;
 
@@ -83,7 +84,7 @@ const RssFeedModal = (props: RssFeedModalProps) => {
                             <div style={{ display: "flex" }}>
                                 {item.img_file_id != "" && (
                                     <div style={{ padding: "20px" }}>
-                                        <Image src={getImageUrl(item.img_file_id)} preview={false} width={200} />
+                                        <AsyncImage src={getImageUrl(item.img_file_id)} preview={false} width={200} useRawImg={false}/>
                                     </div>
                                 )}
                                 <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.summary}</pre>

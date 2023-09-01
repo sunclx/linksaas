@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import * as dataAnnoPrjApi from "@/api/data_anno_project";
 import AddResourceModal from "./AddResourceModal";
-import { Button, Card, List, Modal, Space, Image, message } from "antd";
+import { Button, Card, List, Modal, Space, message } from "antd";
 import { request } from "@/utils/request";
 import { get_session } from "@/api/user";
 import { DeleteOutlined } from "@ant-design/icons";
+import AsyncImage from "@/components/AsyncImage";
 
 export interface ResourcePanelProps {
     projectId: string;
@@ -112,7 +113,7 @@ const ResourcePanel = (props: ResourcePanelProps) => {
                                         setRemoveResourceId(item.resource_id);
                                     }}><DeleteOutlined /></Button>
                                 </Space>}>
-                                <Image src={getUrl(item.content)} preview={false} />
+                                <AsyncImage src={getUrl(item.content)} preview={false} useRawImg={false}/>
                             </Card>
                         </List.Item>
                     )}

@@ -1,4 +1,4 @@
-import { Modal, Image, Form, Input, Card, message } from "antd";
+import { Modal, Form, Input, Card, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { BaseAppInfo } from "@/api/appstore";
@@ -11,6 +11,7 @@ import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE } from "@/api/fs"
 import { request } from "@/utils/request";
 import { useCommonEditor } from "@/components/Editor";
 import { update_app } from "@/api/appstore_admin";
+import AsyncImage from "@/components/AsyncImage";
 
 interface UpdateAppBaseInfoModalProps {
     appId: string;
@@ -116,7 +117,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
             }}>
             <div className={s.head}>
                 <div className={s.left}>
-                    <Image style={{ width: "80px", cursor: "pointer" }}
+                    <AsyncImage style={{ width: "80px", cursor: "pointer" }}
                         src={iconUrl}
                         preview={false}
                         fallback={defaultIcon}
@@ -125,6 +126,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
                             e.preventDefault();
                             changeIcon();
                         }}
+                        useRawImg={false}
                     />
                 </div>
                 <div className={s.right}>

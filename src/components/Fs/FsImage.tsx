@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent } from '@/api/fs';
 import style from '@/components/Editor/extensions/common.module.less';
-import { Progress, Image } from "antd";
+import { Progress } from "antd";
 import { ReactComponent as Deletesvg } from '@/assets/svg/delete.svg';
+import AsyncImage from "../AsyncImage";
 
 
 interface FsImageProps {
@@ -58,7 +59,7 @@ const FsImage: React.FC<FsImageProps> = (props) => {
             <div className={style.img}>
                 {imgUrl != "" && thumbUrl != "" && (
                     <>
-                        {props.preview == true && <Image
+                        {props.preview == true && <AsyncImage
                             preview={{
                                 src: imgUrl,
                                 mask: false,
@@ -67,8 +68,9 @@ const FsImage: React.FC<FsImageProps> = (props) => {
                                 },
                             }}
                             src={thumbUrl}
+                            useRawImg={false}
                         />}
-                        {props.preview == false && <Image src={thumbUrl} preview={false} />}
+                        {props.preview == false && <AsyncImage src={thumbUrl} preview={false} useRawImg={false}/>}
                     </>
                 )}
             </div>
