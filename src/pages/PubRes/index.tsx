@@ -41,6 +41,15 @@ const PubRes = () => {
                     setActiveKey(key);
                     history.push(`${PUB_RES_PATH}?tab=${key}`);
                 }}>
+                {appStore.clientCfg?.enable_rss == true && (
+                    <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
+                        {activeKey == "rss" && (
+                            <div className={s.content_wrap}>
+                                <RssPanel />
+                            </div>
+                        )}
+                    </Tabs.TabPane>
+                )}
                 {appStore.clientCfg?.enable_pub_app_store == true && (
                     <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用</h2>} key="appStore">
                         {activeKey == "appStore" && (
@@ -67,15 +76,6 @@ const PubRes = () => {
                             </div>
                         )}
                     </Tabs.TabPane>
-                )}
-                {appStore.clientCfg?.enable_rss == true && (
-                    <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
-                    {activeKey == "rss" && (
-                        <div className={s.content_wrap}>
-                            <RssPanel />
-                        </div>
-                    )}
-                </Tabs.TabPane>
                 )}
             </Tabs>
         </div>
