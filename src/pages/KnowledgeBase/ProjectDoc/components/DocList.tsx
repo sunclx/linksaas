@@ -203,11 +203,15 @@ const DocList = () => {
                             <Form.Item label="我的关注">
                                 <Switch onChange={checked => {
                                     setFilterWatch(checked);
-                                }} />
+                                    setCurPage(0);
+                                }} checked={filterWatch}/>
                             </Form.Item>
                             {tagDefList.length > 0 && (
                                 <Form.Item label="标签">
-                                    <Select style={{ width: "100px" }} value={filterTagId} onChange={value => setFilterTagId(value ?? "")} allowClear>
+                                    <Select style={{ width: "100px" }} value={filterTagId} onChange={value => {
+                                        setFilterTagId(value ?? "");
+                                        setCurPage(0);
+                                    }} allowClear>
                                         {tagDefList.map(tagDef => (
                                             <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
                                                 <span style={{ padding: "2px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
@@ -240,7 +244,24 @@ const DocList = () => {
 
     useEffect(() => {
         loadDocKey();
-    }, [projectStore.curProjectId, docSpaceStore.curDocSpaceId, docSpaceStore.recycleBin, filterWatch, filterTagId]);
+    }, [filterWatch, filterTagId, curPage]);
+
+
+    useEffect(() => {
+        if (!filterWatch && filterTagId == "" && curPage == 0) {
+            loadDocKey();
+        } else {
+            if (filterWatch) {
+                setFilterWatch(false);
+            }
+            if (filterTagId != "") {
+                setFilterTagId("");
+            }
+            if (curPage != 0) {
+                setCurPage(0);
+            }
+        }
+    }, [projectStore.curProjectId, docSpaceStore.curDocSpaceId, docSpaceStore.recycleBin]);
 
     useEffect(() => {
         loadTagDefList();
