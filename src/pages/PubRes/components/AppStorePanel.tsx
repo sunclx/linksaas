@@ -1,4 +1,4 @@
-import { Card, Form, List, Select, Image, Input } from "antd";
+import { Card, Form, List, Select, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
 import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS } from "@/api/appstore";
@@ -7,6 +7,7 @@ import { platform } from '@tauri-apps/api/os';
 import { useStores } from "@/hooks";
 import AppInfoModal from "./AppInfoModal";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 20;
 
@@ -157,8 +158,8 @@ const AppStorePanel = () => {
                         e.preventDefault();
                         setShowAppInfo(app);
                     }}>
-                        <Image style={{ width: "80px", height: "80px", cursor: "pointer" }}
-                            src={adjustUrl(app.base_info.icon_file_id)}  fallback={defaultIcon} preview={false} />
+                        <AsyncImage style={{ width: "80px", height: "80px", cursor: "pointer" }}
+                            src={adjustUrl(app.base_info.icon_file_id)} fallback={defaultIcon} preview={false} useRawImg={false} />
                     </Card>
                 )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: (page) => setCurPage(page - 1) }} />
 

@@ -6,6 +6,7 @@ use futures_util::stream;
 use std::io::Cursor;
 use std::iter::Iterator;
 use std::path::Path;
+use tauri::async_runtime::Mutex;
 use tauri::http::{Response, ResponseBuilder};
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
@@ -15,6 +16,9 @@ use tokio::fs;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio_stream::StreamExt;
+
+#[derive(Default)]
+pub struct DownloadCount(pub Mutex<u64>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub struct DownloadResult {
@@ -97,6 +101,9 @@ pub async fn download_file<R: Runtime>(
     file_id: String,
     as_name: String,
 ) -> Result<DownloadResult, String> {
+    let mut download_count = app_handle.state::<DownloadCount>().inner().0.lock().await;
+    *download_count += 1;
+
     let notice_name = format!("downloadFile_{}", track_id);
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
@@ -649,7 +656,8 @@ impl<R: Runtime> Plugin<R> for FsApiPlugin<R> {
         None
     }
 
-    fn initialize(&mut self, _app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+    fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+        app.manage(DownloadCount(Default::default()));
         Ok(())
     }
 

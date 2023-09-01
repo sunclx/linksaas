@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { AppInfo } from "@/api/appstore";
 import { observer } from 'mobx-react';
-import { Card, Descriptions, Image, Modal, message } from "antd";
+import { Card, Descriptions, Modal, message } from "antd";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { useStores } from "@/hooks";
 import { ReadOnlyEditor } from '@/components/Editor';
@@ -9,6 +9,7 @@ import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
 import { OPEN_TYPE_MIN_APP_IN_STORE, add as add_app_to_project, set_min_app_perm } from "@/api/project_app";
 import { request } from "@/utils/request";
 import { add as add_app_to_user, set_user_app_perm } from "@/api/user_app";
+import AsyncImage from "@/components/AsyncImage";
 
 interface AppStoreItemProps {
     appInfo: AppInfo;
@@ -83,10 +84,9 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
 
     return (
         <Card title={props.appInfo.base_info.app_name} bordered={false}>
-            <Image
+            <AsyncImage
                 style={{ width: "80px", cursor: "pointer" }}
                 src={iconUrl}
-                alt={""}
                 preview={false}
                 fallback={defaultIcon}
                 onClick={(e) => {
@@ -94,6 +94,7 @@ const AppStoreItem: React.FC<AppStoreItemProps> = (props) => {
                     e.preventDefault();
                     setShowDetailModal(true);
                 }}
+                useRawImg={false}
             />
             {showDetailModal == true && (
                 <Modal open title={`应用 ${props.appInfo.base_info.app_name} 详情`}

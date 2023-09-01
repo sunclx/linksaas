@@ -1,4 +1,4 @@
-import { Form, Input, Modal, Image, Button, Card, Progress, message, Checkbox } from "antd";
+import { Form, Input, Modal, Button, Card, Progress, message, Checkbox } from "antd";
 import React, { useEffect, useState } from "react";
 import s from "./AddAppModal.module.less";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
@@ -17,6 +17,7 @@ import type { FsProgressEvent } from '@/api/fs';
 import { add_app } from "@/api/appstore_admin";
 import AppPermPanel from "./AppPermPanel";
 import type { AppPerm } from "@/api/appstore";
+import AsyncImage from "@/components/AsyncImage";
 
 interface AddAppModalProps {
     onCancel: () => void;
@@ -216,7 +217,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             }}>
             <div className={s.head}>
                 <div className={s.left}>
-                    <Image style={{ width: "80px", cursor: "pointer" }}
+                    <AsyncImage style={{ width: "80px", cursor: "pointer" }}
                         src={iconUrl}
                         preview={false}
                         fallback={defaultIcon}
@@ -225,6 +226,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
                             e.preventDefault();
                             changeIcon();
                         }}
+                        useRawImg={false}
                     />
                 </div>
                 <div className={s.right}>

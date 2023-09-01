@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, List, Image, Popover, Button, Modal } from "antd";
+import { Card, List, Popover, Button, Modal } from "antd";
 import type { BookInfo } from "@/api/user_book_shelf";
 import { list_book, remove_book } from "@/api/user_book_shelf";
 import { useStores } from "@/hooks";
@@ -8,6 +8,7 @@ import { request } from "@/utils/request";
 import { openBook } from "@/pages/Book/utils";
 import logoPng from '@/assets/allIcon/logo.png';
 import { MoreOutlined } from "@ant-design/icons";
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 12;
 
@@ -85,7 +86,7 @@ const UserBookList = () => {
                             openBook(userStore.userInfo.userId, "", book.book_id, "",
                                 appStore.clientCfg?.book_store_fs_id ?? "", "", false);
                         }}>
-                            <Image width={200} src={getCoverImage(book)} fallback={logoPng} preview={false} />
+                            <AsyncImage width={200} src={getCoverImage(book)} fallback={logoPng} preview={false} useRawImg={false}/>
                         </a>
                     </Card>
                 </List.Item>

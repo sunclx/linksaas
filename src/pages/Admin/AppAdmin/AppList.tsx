@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import { Card, Space, Image, Table, Modal } from "antd";
+import { Card, Space, Table, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AdminPermInfo } from '@/api/admin_auth';
 import { get_admin_session, get_admin_perm } from '@/api/admin_auth';
@@ -22,6 +22,7 @@ import UpdateAppScopeModal from "./components/UpdateAppScopeModal";
 import { remove_app } from "@/api/appstore_admin";
 import SelectAppCateModal from "./components/SelectAppCateModal";
 import UpdateAppPermModal from "./components/UpdateAppPermModal";
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 10;
 
@@ -101,10 +102,11 @@ const AppList = () => {
                 }
                 return (
                     <div>
-                        <Image style={{ width: "60px", cursor: "pointer", marginRight: "20px" }}
+                        <AsyncImage style={{ width: "60px", cursor: "pointer", marginRight: "20px" }}
                             src={iconUrl}
                             preview={false}
                             fallback={defaultIcon}
+                            useRawImg={false}
                         />
                         <span>{row.base_info.app_name}</span>
                         {(permInfo?.app_store_perm.update_app ?? false) == true && (

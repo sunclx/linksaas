@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, message, Modal, Space, Image, Input, List, Popover } from "antd";
+import { Card, message, Modal, Space, Input, List, Popover } from "antd";
 import s from './BookList.module.less';
 import { BookOutlined, DoubleRightOutlined, MoreOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
@@ -16,6 +16,7 @@ import { readBinaryFile } from '@tauri-apps/api/fs';
 import logoPng from '@/assets/allIcon/logo.png';
 import { PUB_RES_PATH } from "@/utils/constant";
 import { useHistory } from "react-router-dom";
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 12;
 
@@ -230,7 +231,7 @@ const BookList = () => {
                                 openBook(userStore.userInfo.userId, projectStore.curProjectId, book.book_id, "",
                                     appStore.clientCfg?.book_store_fs_id ?? "", projectStore.curProject?.ebook_fs_id ?? "", canShare);
                             }}>
-                                <Image width={200} src={getCoverImage(book)} fallback={logoPng} preview={false} />
+                                <AsyncImage width={200} src={getCoverImage(book)} fallback={logoPng} preview={false} useRawImg={false}/>
                             </a>
                         </Card>
                     </List.Item>

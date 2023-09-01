@@ -1,4 +1,4 @@
-import { Button, Card, Form, List, Popover, Select, Space, Image, Descriptions, Divider, Tag, Input } from "antd";
+import { Button, Card, Form, List, Popover, Select, Space, Descriptions, Divider, Tag, Input, Image } from "antd";
 import React, { useEffect, useState } from "react";
 import type { CateInfo, AppWithTemplateInfo } from "@/api/docker_template";
 import { list_cate, list_app_with_template, check_unpark, unpack_template } from "@/api/docker_template";
@@ -12,6 +12,7 @@ import moment from "moment";
 import { download_file } from "@/api/fs";
 import { observer } from 'mobx-react';
 import { open as open_shell } from '@tauri-apps/api/shell';
+import AsyncImage from "@/components/AsyncImage";
 
 const PAGE_SIZE = 10;
 
@@ -141,7 +142,7 @@ const DockerTemplatePanel = () => {
                     }>
                         <div style={{ display: "flex" }}>
                             <div style={{ width: "100px" }}>
-                                <Image style={{ width: "80px" }}
+                                <AsyncImage style={{ width: "80px" }}
                                     src={getIconUrl(item.app_info.icon_file_id)}
                                     preview={false}
                                     fallback={defaultIcon}
@@ -149,6 +150,7 @@ const DockerTemplatePanel = () => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                     }}
+                                    useRawImg={false}
                                 />
                             </div>
                             <div style={{ paddingLeft: "20px" }}>
@@ -166,8 +168,8 @@ const DockerTemplatePanel = () => {
                                     <List rowKey="thumb_file_id" dataSource={item.app_info.image_list ?? []} grid={{ gutter: 16 }}
                                         renderItem={imageItem => (
                                             <List.Item>
-                                                <Image src={getImageUrl(imageItem.thumb_file_id)}
-                                                    preview={{ src: getImageUrl(imageItem.raw_file_id) }} width={200} height={150} />
+                                                <AsyncImage src={getImageUrl(imageItem.thumb_file_id)}
+                                                    preview={{ src: getImageUrl(imageItem.raw_file_id) }} width={200} height={150} useRawImg={false} />
                                             </List.Item>
                                         )} />
                                 </Image.PreviewGroup>

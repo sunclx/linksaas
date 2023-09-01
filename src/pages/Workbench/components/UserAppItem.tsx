@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { App as UserApp, UserAppPerm } from "@/api/user_app";
 import { get_user_app_perm, remove as remove_app, set_user_app_perm } from "@/api/user_app";
-import { Button, Card, Popover, Image, Modal, message, Space } from "antd";
+import { Button, Card, Popover, Modal, message, Space } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { useStores } from "@/hooks";
@@ -13,6 +13,7 @@ import { get_app as get_app_in_store } from '@/api/appstore';
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
 import UserAppPermPanel from "./UserAppPermPanel";
 import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
+import AsyncImage from "@/components/AsyncImage";
 
 interface UserAppItemProps {
     appInfo: UserApp;
@@ -163,10 +164,9 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
                 <MoreOutlined />
             </Popover>
         }>
-            <Image
+            <AsyncImage
                 style={{ width: "80px", cursor: "pointer" }}
                 src={getIconUrl(props.appInfo.basic_info.icon_file_id)}
-                alt={""}
                 preview={false}
                 fallback={defaultIcon}
                 onClick={(e) => {
@@ -174,6 +174,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
                     e.preventDefault();
                     preOpenUserApp();
                 }}
+                useRawImg={false}
             />
             {showDownload != null && (
                 <DownloadProgressModal fsId={showDownload.fsId} fileId={showDownload.fileId}

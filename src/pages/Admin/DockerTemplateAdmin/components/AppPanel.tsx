@@ -20,6 +20,7 @@ import { write_thumb_image_file, write_file, set_file_owner, FILE_OWNER_TYPE_DOC
 import { open as open_shell } from '@tauri-apps/api/shell';
 import { MoreOutlined } from "@ant-design/icons";
 import SetImageWeightModal from "./SetImageWeightModal";
+import AsyncImage from "@/components/AsyncImage";
 
 
 export interface AppPanelProps {
@@ -260,7 +261,7 @@ const AppPanel = (props: AppPanelProps) => {
         }>
             <div style={{ display: "flex" }}>
                 <div style={{ width: "100px" }}>
-                    <Image style={{ width: "80px", cursor: "pointer" }}
+                    <AsyncImage style={{ width: "80px", cursor: "pointer" }}
                         src={getIconUrl(props.appInfo.app_info.icon_file_id)}
                         preview={false}
                         fallback={defaultIcon}
@@ -269,6 +270,7 @@ const AppPanel = (props: AppPanelProps) => {
                             e.preventDefault();
                             updateIconFile();
                         }}
+                        useRawImg={false}
                     />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -423,8 +425,8 @@ const AppPanel = (props: AppPanelProps) => {
                                             <MoreOutlined />
                                         </Popover>
                                     }>
-                                        <Image src={getImageUrl(imageItem.thumb_file_id)} width={200} height={150}
-                                            preview={{ src: getImageUrl(imageItem.raw_file_id) }} />
+                                        <AsyncImage src={getImageUrl(imageItem.thumb_file_id)} width={200} height={150}
+                                            preview={{ src: getImageUrl(imageItem.raw_file_id) }} useRawImg={false}/>
                                     </Card>
                                 </List.Item>
                             )} />
