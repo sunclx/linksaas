@@ -111,6 +111,7 @@ const RssPanel = () => {
                                 e.preventDefault();
                                 setCurCateId(item.cate_id);
                                 setCurFeedPage(0);
+                                setKeyword("");
                             }}>{item.cate_name}({item.feed_count})</Button>
                         </List.Item>
                     )} />
