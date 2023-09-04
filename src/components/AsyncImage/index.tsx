@@ -38,9 +38,9 @@ const AsyncImage: React.FC<AsyncImageProps> = (props) => {
                 asName = parts[2];
             }
             let sessionId = ""
-            if (location.pathname.startsWith("/admin/")){
+            if (location.pathname.startsWith("/admin/")) {
                 sessionId = await get_admin_session();
-            }else{
+            } else {
                 sessionId = userStore.sessionId;
             }
             try {
@@ -68,7 +68,12 @@ const AsyncImage: React.FC<AsyncImageProps> = (props) => {
                 }
             }
         } else {
-            setImgSrc(props.src)
+            if (props.src != "") {
+                setImgSrc(props.src);
+            } else {
+                setImgSrc(props.fallback ?? "");
+            }
+
         }
     };
 

@@ -556,6 +556,9 @@ async fn start_http_serv<R: Runtime>(
                         path.push(sub_path);
                     }
                 });
+                if req.uri().path().ends_with("/") {
+                    path.push("index.html");
+                }
                 let data = tokio::fs::read(path).await;
                 if data.is_err() {
                     let resp = Response::builder()

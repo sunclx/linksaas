@@ -64,6 +64,12 @@ const Workbench: React.FC = () => {
     }
   }, [projectStore.projectList]);
 
+  useEffect(() => {
+    if (tab != null) {
+      setActiveKey(tab);
+    }
+  }, [location.search]);
+
   return (
     <div className={s.workbench_wrap}>
       <Card className={s.infoCount_wrap} childStyle={{ height: '100%' }}>
@@ -72,7 +78,6 @@ const Workbench: React.FC = () => {
       <Tabs activeKey={activeKey} className={s.my_wrap} type="card"
         onChange={key => {
           setCurKbSpace(null);
-          setActiveKey(key);
           history.push(`${WORKBENCH_PATH}?tab=${key}&userAction=true`);
         }}
         tabBarExtraContent={
