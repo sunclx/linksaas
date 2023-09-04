@@ -1,23 +1,18 @@
-import { Card, Space, Table, Tag, message } from "antd";
+import { Card, Space, Table, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { get_admin_session, get_admin_perm } from '@/api/admin_auth';
 import type { AdminPermInfo } from '@/api/admin_auth';
 import type { Crawler } from '@/api/rss_admin';
-import { list_crawler, remove_crawler, renew_crawler_token } from '@/api/rss_admin';
+import { list_crawler, remove_crawler, renew_crawler_token, add_crawler } from '@/api/rss_admin';
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/es/table';
 import Button from "@/components/Button";
-import AddCrawlerModal from "./components/AddCrawlerModal";
-import { EditOutlined, SyncOutlined } from "@ant-design/icons";
+import { SyncOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
-import UpdateCrawlerTimeModal from "./components/UpdateCrawlerTimeModal";
 
 const CrawlerList = () => {
-
     const [crawlerList, setCrawlerList] = useState<Crawler[]>([]);
     const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
-    const [showAdd, setShowAdd] = useState(false);
-    const [updateTimeCrawler, setUpdateTimeCrawler] = useState<Crawler | null>(null);
 
     const loadCrawlerList = async () => {
         const sessionId = await get_admin_session();
@@ -25,6 +20,19 @@ const CrawlerList = () => {
             admin_session_id: sessionId,
         }));
         setCrawlerList(res.crawler_list);
+    };
+
+    const addCrawler = async () => {
+        const sessionId = await get_admin_session();
+        await request(add_crawler({
+            admin_session_id: sessionId,
+            crawler: {
+                crawler_id: uniqId(),
+                token: uniqId(),
+            },
+        }));
+        message.info("新增爬虫成功");
+        await loadCrawlerList();
     };
 
     const updateToken = async (crawlerId: string) => {
@@ -57,12 +65,12 @@ const CrawlerList = () => {
     const columns: ColumnsType<Crawler> = [
         {
             title: "爬虫ID",
-            width: 180,
+            width: 200,
             dataIndex: "crawler_id",
         },
         {
             title: "爬虫密钥",
-            width: 200,
+            width: 220,
             render: (_, row: Crawler) => (
                 <Space>
                     <span>{row.token}</span>
@@ -75,23 +83,6 @@ const CrawlerList = () => {
                         }}><SyncOutlined /></Button>
                 </Space>
             ),
-        },
-        {
-            title: "执行时间点",
-            render: (_, row: Crawler) => (
-                <Space>
-                    {row.run_time_of_day_list.map(hour => (
-                        <Tag key={hour}>每天{hour}点</Tag>
-                    ))}
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!(permInfo?.rss_perm.upate_crawler ?? false)}
-                        title="修改执行时间点"
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setUpdateTimeCrawler(row);
-                        }}><EditOutlined /></Button>
-                </Space>
-            )
         },
         {
             title: "操作",
@@ -120,24 +111,11 @@ const CrawlerList = () => {
             <Button disabled={!(permInfo?.rss_perm.add_crawler ?? false)} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                setShowAdd(true);
+                addCrawler();
             }}>新增爬虫</Button>
         }>
             <Table rowKey="crawler_id" columns={columns} dataSource={crawlerList} pagination={false}
                 scroll={{ y: "calc(100vh - 110px)" }} style={{ height: "calc(100vh - 104px)" }} />
-            {showAdd == true && (
-                <AddCrawlerModal onCancel={() => setShowAdd(false)} onOk={() => {
-                    loadCrawlerList();
-                    setShowAdd(false);
-                }} />
-            )}
-            {updateTimeCrawler != null && (
-                <UpdateCrawlerTimeModal crawlerId={updateTimeCrawler.crawler_id} hourList={updateTimeCrawler.run_time_of_day_list}
-                    onCancel={() => setUpdateTimeCrawler(null)} onOk={() => {
-                        loadCrawlerList();
-                        setUpdateTimeCrawler(null);
-                    }} />
-            )}
         </Card>
     )
 };

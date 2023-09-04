@@ -65,35 +65,6 @@ async fn renew_crawler_token<R: Runtime>(
 }
 
 #[tauri::command]
-async fn set_crawler_run_time<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminSetCrawlerRunTimeRequest,
-) -> Result<AdminSetCrawlerRunTimeResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = RssAdminApiClient::new(chan.unwrap());
-    match client.set_crawler_run_time(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_set_crawler_run_time_response::Code::WrongSession as i32
-                || inner_resp.code == admin_set_crawler_run_time_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_crawler_run_time".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn list_crawler<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -161,7 +132,6 @@ impl<R: Runtime> RssAdminApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 add_crawler,
                 renew_crawler_token,
-                set_crawler_run_time,
                 list_crawler,
                 remove_crawler,
             ]),
