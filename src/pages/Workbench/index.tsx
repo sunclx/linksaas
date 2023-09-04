@@ -61,14 +61,12 @@ const Workbench: React.FC = () => {
       } else {
         setActiveKey("myIssue");
       }
+    } else {
+      if (tab != null) {
+        setActiveKey(tab);
+      }
     }
-  }, [projectStore.projectList]);
-
-  useEffect(() => {
-    if (tab != null) {
-      setActiveKey(tab);
-    }
-  }, [location.search]);
+  }, [projectStore.projectList, location.search]);
 
   return (
     <div className={s.workbench_wrap}>
