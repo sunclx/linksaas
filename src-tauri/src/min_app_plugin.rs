@@ -888,6 +888,7 @@ async fn start<R: Runtime>(
     .title(request.title)
     .visible(true)
     .initialization_script(&script)
+    .inner_size(800.0, 600.0)
     .position(pos.x as f64 + 100.0, pos.y as f64 + 100.0)
     .build();
     if res.is_err() {

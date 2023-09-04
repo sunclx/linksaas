@@ -53,7 +53,8 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
 
   const adjustSize = async () => {
     const winSize = await appWindow.outerSize();
-    const deviceRatio = window.devicePixelRatio ?? 1;
+    const deviceRatio = await appWindow.scaleFactor();
+    
     if (deviceRatio > 1.1) {
       appWindow.setMinSize(new PhysicalSize(200 * deviceRatio, 300 * deviceRatio));
     }

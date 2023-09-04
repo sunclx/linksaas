@@ -53,15 +53,14 @@ const DataAnnoProjectList = () => {
             return;
         }
         const pos = await appWindow.innerPosition();
-        const deviceRatio = window.devicePixelRatio ?? 1;
 
         new WebviewWindow(label, {
             title: `标注项目(${annoName})`,
             url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
-            width: 1000 * deviceRatio,
-            minWidth: 800 * deviceRatio,
-            height: 800 * deviceRatio,
-            minHeight: 600 * deviceRatio,
+            width: 1000 ,
+            minWidth: 800 ,
+            height: 800 ,
+            minHeight: 600 ,
             resizable: true,
             center: true,
             x: pos.x + Math.floor(Math.random() * 200),
