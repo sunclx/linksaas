@@ -3,7 +3,6 @@ import { invoke } from '@tauri-apps/api/tauri';
 export type Crawler = {
     crawler_id: string;
     token: string;
-    run_time_of_day_list: number[];
 }
 
 export type AdminAddCrawlerRequest = {
@@ -24,17 +23,6 @@ export type AdminRenewCrawlerTokenRequest = {
 }
 
 export type AdminRenewCrawlerTokenResponse = {
-    code: number;
-    err_msg: string;
-}
-
-export type AdminSetCrawlerRunTimeRequest = {
-    admin_session_id: string;
-    crawler_id: string;
-    run_time_of_day_list: number[];
-}
-
-export type AdminSetCrawlerRunTimeResponse = {
     code: number;
     err_msg: string;
 }
@@ -74,15 +62,6 @@ export async function renew_crawler_token(request: AdminRenewCrawlerTokenRequest
     const cmd = 'plugin:rss_admin_api|renew_crawler_token';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminRenewCrawlerTokenResponse>(cmd, {
-        request,
-    });
-}
-
-//设置爬虫运行时间
-export async function set_crawler_run_time(request: AdminSetCrawlerRunTimeRequest): Promise<AdminSetCrawlerRunTimeResponse> {
-    const cmd = 'plugin:rss_admin_api|set_crawler_run_time';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<AdminSetCrawlerRunTimeResponse>(cmd, {
         request,
     });
 }
