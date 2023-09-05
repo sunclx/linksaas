@@ -4,6 +4,7 @@ export type SiteCate = {
     cate_id: string;
     cate_name: string;
     order_index: number;
+    site_count: number;
 };
 
 export type Site = {

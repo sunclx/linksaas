@@ -15,7 +15,7 @@ import {
     ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
     ADMIN_PATH_ORG_LIST_SUFFIX, ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
-    ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_RSS_CRAWLER_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
+    ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX, ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX, ADMIN_PATH_RSS_CRAWLER_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
     ADMIN_PATH_USER_LIST_SUFFIX, USER_LOGIN_PATH
 } from "@/utils/constant";
 import { useStores } from "@/hooks";
@@ -36,6 +36,7 @@ const AdminNav = () => {
     const [bookstoreSelectedKeys, setBookstoreSelectedKeys] = useState<string[]>([]);
     const [dockerTemplateSelectedKeys, setDockerTemplateSelectedKeys] = useState<string[]>([]);
     const [rssSelectedKeys, setRssSelectedKeys] = useState<string[]>([]);
+    const [pubSearchSelectedKeys, setPubSearchSelectedKeys] = useState<string[]>([]);
 
     useEffect(() => {
         setUserSelectedKeys([]);
@@ -106,6 +107,15 @@ const AdminNav = () => {
     }, [location.pathname]);
 
     useEffect(() => {
+        setPubSearchSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX) {
+            setPubSearchSelectedKeys(["pub_search_cate"]);
+        } else if (location.pathname == ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX) {
+            setPubSearchSelectedKeys(["pub_search_site"]);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
         get_admin_perm().then(res => setPermInfo(res));
     }, []);
 
@@ -124,7 +134,7 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore", "dockerTemplate", "rss"]}
+            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "bookstore", "dockerTemplate", "rss", "pubSearch"]}
                 style={{ height: "calc(100vh - 132px)", overflowY: "scroll", paddingBottom: "10px" }}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
@@ -279,6 +289,30 @@ const AdminNav = () => {
                             if (e.selectedKeys.length == 1) {
                                 if (e.selectedKeys[0] == "rss_crawler") {
                                     history.push(ADMIN_PATH_RSS_CRAWLER_SUFFIX);
+                                }
+                            }
+                        }} />
+                </Collapse.Panel>
+                <Collapse.Panel header="聚合搜索管理" key="pubSearch">
+                    <Menu selectedKeys={pubSearchSelectedKeys} items={[
+                        {
+                            label: "搜索站点类别",
+                            key: "pub_search_cate",
+                            disabled: !(permInfo?.pub_search_perm.read ?? false),
+                        },
+                        {
+                            label: "搜索站点",
+                            key: "pub_search_site",
+                            disabled: !(permInfo?.pub_search_perm.read ?? false),
+                        },
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "pub_search_cate") {
+                                    history.push(ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX);
+                                } else if (e.selectedKeys[0] == "pub_search_site") {
+                                    history.push(ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX);
                                 }
                             }
                         }} />
