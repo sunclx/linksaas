@@ -91,6 +91,15 @@ export type RssPerm = {
     remove_crawler: boolean;
 };
 
+export type PubSearchPerm = {
+    read: boolean;
+    add_cate: boolean;
+    update_cate: boolean;
+    remove_cate: boolean;
+    add_site: boolean;
+    update_site: boolean;
+    remove_site: boolean;
+};
 
 export type AdminPermInfo = {
     org_perm: OrgPerm;
@@ -103,6 +112,7 @@ export type AdminPermInfo = {
     book_store_perm: BookStorePerm;
     docker_template_perm: DockerTemplatePerm;
     rss_perm: RssPerm;
+    pub_search_perm: PubSearchPerm;
 };
 
 export type PreAuthRequest = {
@@ -161,6 +171,17 @@ export async function get_admin_perm(): Promise<AdminPermInfo> {
             upate_crawler: false,
             remove_crawler: false,
         };
+    }
+    if (perm.pub_search_perm == undefined) {
+        perm.pub_search_perm = {
+            read: true,
+            add_cate: true,
+            update_cate: true,
+            remove_cate: true,
+            add_site: true,
+            update_site: true,
+            remove_site: true,
+        }
     }
     return perm
 }
