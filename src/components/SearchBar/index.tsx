@@ -133,14 +133,12 @@ const SearchBar = () => {
             toTime = dateRange[1].valueOf().toFixed(0);
         }
 
-        const deviceRatio = window.devicePixelRatio ?? 1;
-
         new WebviewWindow(label, {
             url: `search_result.html?projectId=${projectStore.curProjectId}&keyword=${encodeURIComponent(keyword)}&scope=${searchScope}&scopeValue=${scopeValue}&fromTime=${fromTime}&toTime=${toTime}`,
-            width: width ?? 800 * deviceRatio,
-            minWidth: 300 * deviceRatio,
-            height: height ?? 600 * deviceRatio,
-            minHeight: 200 * deviceRatio,
+            width: width ?? 800,
+            minWidth: 300 ,
+            height: height ?? 600 ,
+            minHeight: 200 ,
             decorations: false,
             alwaysOnTop: false,
             skipTaskbar: false,

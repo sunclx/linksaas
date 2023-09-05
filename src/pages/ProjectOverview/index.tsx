@@ -34,13 +34,13 @@ const ProjectOverview = () => {
             await view.close();
         }
         const pos = await appWindow.innerPosition();
-        const deviceRatio = window.devicePixelRatio ?? 1;
+
         new WebviewWindow(label, {
             url: `local_api.html?port=${port}`,
-            width: 800 * deviceRatio,
-            minWidth: 800 * deviceRatio,
-            height: 600 * deviceRatio,
-            minHeight: 600 * deviceRatio,
+            width: 800 ,
+            minWidth: 800 ,
+            height: 600 ,
+            minHeight: 600 ,
             center: true,
             title: "本地接口调试",
             resizable: true,
