@@ -228,7 +228,7 @@ const PubSearchPanel = () => {
                                         <Button type="link" onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
-                                            shell_open(item.search_tpl.replace("KEYWORD", keyword));
+                                            shell_open(item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword)));
                                         }}>使用浏览器打开</Button>}>
                                         {item.use_browser == true && (
                                             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={
@@ -238,7 +238,7 @@ const PubSearchPanel = () => {
                                         {item.use_browser == false && (
                                             <iframe style={{ width: "calc(100vw - 250px)", height: "calc(100vh - 300px)", overflow: "scroll" }}
                                                 referrerPolicy="no-referrer"
-                                                src={item.search_tpl.replace("KEYWORD", keyword)} />
+                                                src={item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword))} />
                                         )}
                                     </Card>
                                 )}
