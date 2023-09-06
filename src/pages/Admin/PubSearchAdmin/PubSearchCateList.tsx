@@ -158,7 +158,7 @@ const PubSearchCateList = () => {
             title: "操作",
             width: 100,
             render: (_, row: SiteCate) => (
-                <Button type="link" disabled={!((permInfo?.pub_search_perm.remove_cate ?? false) || row.site_count == 0)} danger onClick={e => {
+                <Button type="link" disabled={!((permInfo?.pub_search_perm.remove_cate ?? false) && row.site_count == 0)} danger onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     setRemoveCateInfo(row);
