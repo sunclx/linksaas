@@ -65,17 +65,20 @@ mod min_app_plugin;
 mod min_app_shell_plugin;
 mod min_app_store_plugin;
 
-mod docker_template_admin_api_plugin;
 mod api_collection_api_plugin;
+mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
 
-mod rss_api_plugin;
 mod rss_admin_api_plugin;
+mod rss_api_plugin;
 mod user_rss_api_plugin;
 
 mod my_updater;
 
 mod local_repo_plugin;
+
+mod pub_search_admin_api_plugin;
+mod pub_search_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -457,6 +460,8 @@ fn main() {
         .plugin(user_rss_api_plugin::UserRssApiPlugin::new())
         .plugin(rss_api_plugin::RssApiPlugin::new())
         .plugin(rss_admin_api_plugin::RssAdminApiPlugin::new())
+        .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
+        .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

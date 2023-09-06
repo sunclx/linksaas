@@ -57,7 +57,8 @@ const LeftMenu: React.FC = () => {
         <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
         <ProjectList />
         {(appStore.clientCfg?.enable_pub_app_store == true || appStore.clientCfg?.enable_pub_book_store == true
-          || appStore.clientCfg?.enable_pub_docker_template == true || appStore.clientCfg?.enable_rss == true) && (
+          || appStore.clientCfg?.enable_pub_docker_template == true || appStore.clientCfg?.enable_rss == true
+          || appStore.clientCfg?.enable_pub_search == true) && (
             <>
               <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />
               <div className={`${cls.workbench_menu} ${location.pathname.startsWith(PUB_RES_PATH) ? cls.active_menu : ""}`}
