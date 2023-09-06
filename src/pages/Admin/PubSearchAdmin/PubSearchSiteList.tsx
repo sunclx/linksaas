@@ -64,11 +64,32 @@ const PubSearchSiteList = () => {
             search_tpl: info.search_tpl,
             cate_id: info.cate_id,
             default_site: defaultSite,
+            use_browser: info.use_browser,
         }));
         const tmpList = siteList.slice();
         const index = tmpList.findIndex(item => item.site_id == info.site_id);
         if (index != -1) {
             tmpList[index].default_site = defaultSite
+            setSiteList(tmpList);
+        }
+    };
+
+    const setUseBrowser = async (info: Site, useBrowser: boolean) => {
+        const sessionId = await get_admin_session();
+        await request(update_site({
+            admin_session_id: sessionId,
+            site_id: info.site_id,
+            site_name: info.site_name,
+            icon_file_id: info.icon_file_id,
+            search_tpl: info.search_tpl,
+            cate_id: info.cate_id,
+            default_site: info.default_site,
+            use_browser: useBrowser,
+        }));
+        const tmpList = siteList.slice();
+        const index = tmpList.findIndex(item => item.site_id == info.site_id);
+        if (index != -1) {
+            tmpList[index].use_browser = useBrowser
             setSiteList(tmpList);
         }
     };
@@ -102,6 +123,7 @@ const PubSearchSiteList = () => {
                 search_tpl: info.search_tpl,
                 cate_id: info.cate_id,
                 default_site: info.default_site,
+                use_browser: info.use_browser,
             }));
             await request(set_file_owner({
                 session_id: sessionId,
@@ -168,6 +190,7 @@ const PubSearchSiteList = () => {
                                 search_tpl: row.search_tpl,
                                 cate_id: row.cate_id,
                                 default_site: row.default_site,
+                                use_browser: row.use_browser,
                             }));
                             const tmpList = siteList.slice();
                             const index = tmpList.findIndex(item => item.site_id == row.site_id);
@@ -205,6 +228,7 @@ const PubSearchSiteList = () => {
                                 search_tpl: value.trim(),
                                 cate_id: row.cate_id,
                                 default_site: row.default_site,
+                                use_browser: row.use_browser,
                             }));
                             const tmpList = siteList.slice();
                             const index = tmpList.findIndex(item => item.site_id == row.site_id);
@@ -245,6 +269,7 @@ const PubSearchSiteList = () => {
                                 search_tpl: row.search_tpl,
                                 cate_id: value as string,
                                 default_site: row.default_site,
+                                use_browser: row.use_browser,
                             }));
                             const tmpList = siteList.slice();
                             const index = tmpList.findIndex(item => item.site_id == row.site_id);
@@ -271,6 +296,18 @@ const PubSearchSiteList = () => {
                     onChange={e => {
                         e.stopPropagation();
                         setDefaultSite(row, e.target.checked);
+                    }} />
+            ),
+        },
+        {
+            title: "使用浏览器",
+            width: 100,
+            render: (_, row: Site) => (
+                <Checkbox checked={row.use_browser}
+                    disabled={!(permInfo?.pub_search_perm.update_site ?? false)}
+                    onChange={e => {
+                        e.stopPropagation();
+                        setUseBrowser(row, e.target.checked);
                     }} />
             ),
         },

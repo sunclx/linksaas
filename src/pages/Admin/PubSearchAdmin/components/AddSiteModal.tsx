@@ -24,6 +24,7 @@ const AddSiteModal = (props: AddSiteModalProps) => {
     const [searchTpl, setSearchTpl] = useState("");
     const [cateId, setCateId] = useState("");
     const [defaultSite, setDefaultSite] = useState(false);
+    const [useBrowser, setUseBrowser] = useState(false);
 
     const [cateList, setCateList] = useState<SiteCate[]>([]);
 
@@ -40,6 +41,7 @@ const AddSiteModal = (props: AddSiteModalProps) => {
             search_tpl: searchTpl,
             cate_id: cateId,
             default_site: defaultSite,
+            use_browser: useBrowser,
         }));
         //设置文件owner
         await request(set_file_owner({
@@ -115,7 +117,7 @@ const AddSiteModal = (props: AddSiteModalProps) => {
                     />
                 </div>
                 <div className={s.right}>
-                    <Form labelCol={{ span: 6 }}>
+                    <Form labelCol={{ span: 4 }}>
                         <Form.Item label="名称">
                             <Input value={siteName} onChange={e => {
                                 e.stopPropagation();
@@ -148,6 +150,12 @@ const AddSiteModal = (props: AddSiteModalProps) => {
                             <Checkbox checked={defaultSite} onChange={e => {
                                 e.stopPropagation();
                                 setDefaultSite(e.target.checked);
+                            }} />
+                        </Form.Item>
+                        <Form.Item label="使用浏览器打开">
+                            <Checkbox checked={useBrowser} onChange={e => {
+                                e.stopPropagation();
+                                setUseBrowser(e.target.checked);
                             }} />
                         </Form.Item>
                     </Form>

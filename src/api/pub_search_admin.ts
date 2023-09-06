@@ -43,6 +43,7 @@ export type AdminAddSiteRequest = {
     search_tpl: string;
     cate_id: string;
     default_site: boolean;
+    use_browser: boolean;
 };
 
 export type AdminAddSiteResponse = {
@@ -60,6 +61,7 @@ export type AdminUpdateSiteRequest = {
     search_tpl: string;
     cate_id: string;
     default_site: boolean;
+    use_browser: boolean;
 };
 
 export type AdminUpdateSiteResponse = {

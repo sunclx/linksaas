@@ -15,6 +15,7 @@ export type Site = {
     cate_id: string;
     cate_name: string;
     default_site: boolean;
+    use_browser: boolean;
 };
 
 export type ListSiteCateRequest = {};

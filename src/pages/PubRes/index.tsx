@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
-import { AppstoreOutlined, BookOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, BookOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
@@ -11,6 +11,7 @@ import { useStores } from '@/hooks';
 import { ReactComponent as DockerSvg } from '@/assets/svg/docker.svg';
 import DockerTemplatePanel from './components/DockerTemplatePanel';
 import RssPanel from './components/RssPanel';
+import PubSearchPanel from './components/PubSearchPanel';
 
 const PubRes = () => {
     const location = useLocation();
@@ -20,15 +21,17 @@ const PubRes = () => {
     const urlParams = new URLSearchParams(location.search);
     let tab = urlParams.get('tab') ?? "";
     if (tab == "") {
-        if (appStore.clientCfg?.enable_rss == true) {
+        if (appStore.clientCfg?.enable_pub_search == true) {
+            tab = "pubSearch"
+        } else if (appStore.clientCfg?.enable_rss == true) {
             tab = "rss"
-        }else if (appStore.clientCfg?.enable_pub_app_store == true) {
+        } else if (appStore.clientCfg?.enable_pub_app_store == true) {
             tab = "appStore"
         } else if (appStore.clientCfg?.enable_pub_book_store == true) {
             tab = "bookStore"
         } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
             tab = "dockerTemplate"
-        } 
+        }
     }
 
     const [activeKey, setActiveKey] = useState(tab);
@@ -41,6 +44,15 @@ const PubRes = () => {
                     setActiveKey(key);
                     history.push(`${PUB_RES_PATH}?tab=${key}`);
                 }}>
+                {appStore.clientCfg?.enable_pub_search == true && (
+                    <Tabs.TabPane tab={<h2><SearchOutlined />&nbsp;聚合搜索</h2>} key="pubSearch">
+                    {activeKey == "pubSearch" && (
+                        <div className={s.content_wrap}>
+                            <PubSearchPanel />
+                        </div>
+                    )}
+                </Tabs.TabPane>
+                )}
                 {appStore.clientCfg?.enable_rss == true && (
                     <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
                         {activeKey == "rss" && (
