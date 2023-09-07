@@ -88,7 +88,7 @@ const AddModal = (props: AddModalProps) => {
                     label: item.cate_name,
                     children: <List grid={{ gutter: 16 }} dataSource={siteList}
                         renderItem={innerItem => (
-                            <List.Item style={{ width: 100 }}>
+                            <List.Item style={{ width: 150 }}>
                                 <Checkbox disabled={props.siteIdList.includes(innerItem.site_id)} checked={newSiteIdList.includes(innerItem.site_id)}
                                     onChange={e => {
                                         e.preventDefault();
@@ -100,7 +100,7 @@ const AddModal = (props: AddModalProps) => {
                                     }}>
                                     <Space>
                                         <AsyncImage useRawImg={true} src={getIconUrl(innerItem.icon_file_id)} style={{ width: "20px" }} />
-                                        {innerItem.site_name}
+                                        <div style={{ whiteSpace: "nowrap" }}>{innerItem.site_name}</div>
                                     </Space>
                                 </Checkbox>
                             </List.Item>
