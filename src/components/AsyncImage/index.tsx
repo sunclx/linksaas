@@ -43,12 +43,14 @@ const AsyncImage: React.FC<AsyncImageProps> = (props) => {
             } else {
                 sessionId = userStore.sessionId;
             }
+            
             try {
                 const cacheRes = await get_cache_file(parts[0], parts[1], asName);
                 let localPath = ""
                 if (cacheRes.exist_in_local) {
                     localPath = cacheRes.local_path;
                 } else {
+                    console.log(sessionId, parts[0], parts[1], "", asName);
                     const res = await download_file(sessionId, parts[0], parts[1], "", asName);
                     localPath = res.local_path;
                 }
