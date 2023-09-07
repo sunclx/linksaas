@@ -35,7 +35,8 @@
         "bin/sql",
         "bin/ssh",
         "bin/netutil",
-        "bin/grpcutil"
+        "bin/grpcutil",
+        "bin/search"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -106,6 +107,11 @@
           },
           {
             "name": "bin/grpcutil",
+            "sidecar": true,
+            "args": true
+          },
+          {
+            "name":"bin/search",
             "sidecar": true,
             "args": true
           }
