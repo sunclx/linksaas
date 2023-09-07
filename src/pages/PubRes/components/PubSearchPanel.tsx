@@ -189,10 +189,10 @@ const PubSearchPanel = () => {
         setSearchStrList(res.search_str_list);
     };
 
-    const addSearchHistory = async () => {
+    const addSearchHistory = async (kw: string) => {
         await request(add_search_history({
             session_id: userStore.sessionId,
-            search_str: tmpKeyword,
+            search_str: kw,
         }));
         await loadHistoryList();
     }
@@ -243,13 +243,17 @@ const PubSearchPanel = () => {
                         onKeyDown={e => {
                             if (e.key == "Enter") {
                                 setKeyword(tmpKeyword);
+                                addSearchHistory(tmpKeyword);
                             }
-                        }} onSelect={value => setKeyword(value)} />
+                        }} onSelect={value => {
+                            setKeyword(value);
+                            addSearchHistory(value);
+                        }} />
                     <Button type="primary" disabled={tmpKeyword == ""} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setKeyword(tmpKeyword);
-                        addSearchHistory();
+                        addSearchHistory(tmpKeyword);
                     }}><SearchOutlined />&nbsp;搜索</Button>
                 </Space>
             </div>
