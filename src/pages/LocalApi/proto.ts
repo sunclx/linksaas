@@ -6,7 +6,7 @@ info:
   contact:
     name: linksaas
     email: panleiming@linksaas.pro
-    url: https://jihulab.com/linksaas/local-api
+    url: https://atomgit.com/openlinksaas/local-api
 servers:
   - url: http://localhost:__PORT__
 tags:

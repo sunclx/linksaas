@@ -137,7 +137,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           )}
 
           {appStore.simpleMode == false && (
-            <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
+            <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
           )}
 
           {appStore.simpleMode == false && (
