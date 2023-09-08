@@ -1,8 +1,6 @@
-import ActionModal from '@/components/ActionModal';
-import { Form, Input, Radio, message } from 'antd';
+import { Form, Input, Radio, message, Modal } from 'antd';
 import type { FC } from 'react';
-import React from 'react';
-import Button from '../Button';
+import React, { useState } from 'react';
 import type { BasicProjectInfo } from '@/api/project';
 import { create, update_setting } from '@/api/project';
 import { useStores } from '@/hooks';
@@ -21,25 +19,28 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
 
   const history = useHistory();
 
-  const [form] = Form.useForm();
-  form.setFieldsValue({ project_name: "", simple_mode: true })
-
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
 
+  const [prjName, setPrjName] = useState("");
+  const [simpleMode, setSimpleMode] = useState(true);
+
   const { editor, editorRef } = useSimpleEditor("请输入项目描述");
 
-  const submit = async (values: { project_name: string, simple_mode: boolean }) => {
-    const content = editorRef.current?.getContent() ?? { type: "doc" };
+  const createProject = async () => {
+    let content = { type: "doc" };
+    if (simpleMode == false) {
+      content = editorRef.current?.getContent() ?? { type: "doc" };
+    }
 
     const data: BasicProjectInfo = {
-      project_name: values.project_name,
+      project_name: prjName,
       project_desc: JSON.stringify(content),
     };
     try {
       const res = await request(create(userStore.sessionId, data));
       message.success('创建项目成功');
-      if (values.simple_mode) {
+      if (simpleMode) {
         await request(update_setting({
           session_id: userStore.sessionId,
           project_id: res.project_id,
@@ -82,44 +83,51 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
         history.push(APP_PROJECT_OVERVIEW_PATH);
         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
       });
-    } catch (error) { }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
 
   return (
-    <ActionModal open={visible} title="创建项目" width={800} onCancel={() => onChange(false)}>
-      <Form form={form} onFinish={submit} labelCol={{ span: 3 }}>
-        <Form.Item
-          name="project_name"
-          label="项目名称"
-          rules={[{ required: true, message: '项目名称必填' }]}
-        >
-          <Input allowClear placeholder={`请输入项目名称`} style={{ borderRadius: '6px' }} />
+    <Modal open={visible} title="创建项目" width={800}
+      okText="创建" okButtonProps={{ disabled: prjName == "" }}
+      onCancel={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        onChange(false);
+      }}
+      onOk={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        createProject();
+      }}>
+      <Form labelCol={{ span: 3 }}>
+        <Form.Item label="项目名称">
+          <Input allowClear placeholder={`请输入项目名称`} style={{ borderRadius: '6px' }} value={prjName} onChange={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            setPrjName(e.target.value.trim());
+          }} />
         </Form.Item>
-        <Form.Item label="模式" name="simple_mode"
-          rules={[{ required: true }]}
-        >
-          <Radio.Group>
+        <Form.Item label="模式" >
+          <Radio.Group value={simpleMode} onChange={e => {
+            e.stopPropagation();
+            setSimpleMode(e.target.value);
+          }}>
             <Radio value={true}>简单模式</Radio>
             <Radio value={false}>专家模式</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item name="project_desc" label="项目介绍">
-          <div className="_projectEditContext" style={{ marginTop: '-12px' }}>
-            {editor}
-          </div>
-        </Form.Item>
-        <Form.Item>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button ghost onClick={() => onChange(false)}>
-              取消
-            </Button>
-            &nbsp; &nbsp;
-            <Button htmlType="submit">创建</Button>
-          </div>
-        </Form.Item>
+        {simpleMode == false && (
+          <Form.Item label="项目介绍">
+            <div className="_projectEditContext" style={{ marginTop: '-12px' }}>
+              {editor}
+            </div>
+          </Form.Item>
+        )}
       </Form>
-    </ActionModal>
+    </Modal>
   );
 };
 
