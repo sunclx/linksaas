@@ -37,7 +37,7 @@ const PlanIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column}>
-            <Card title="规划中" style={{ border: "2px solid #e4e4e8", borderBottom: "none" }}
+            <Card title={`规划中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
                 bodyStyle={{ minHeight: "calc(100vh - 200px)", backgroundColor: "#e4e4e8" }}>
                 {issueList?.map(item => (
@@ -82,7 +82,7 @@ const ProcessIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title="进行中" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
+            <Card title={`进行中(${issueList?.length ?? 0})`} style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
                 bodyStyle={{ minHeight: "calc(100vh - 200px)", backgroundColor: "#e4e4e8" }}>
                 {issueList?.map(item => (
@@ -127,7 +127,7 @@ const CheckIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title="检查中" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
+            <Card title={`检查中(${issueList?.length ?? 0})`} style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
                 bodyStyle={{ minHeight: "calc(100vh - 200px)", backgroundColor: "#e4e4e8" }}>
                 {issueList?.map(item => (
@@ -169,7 +169,7 @@ const CloseIssueColumn = observer(() => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title="完成" style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
+            <Card title={`完成(${issueList?.length ?? 0})`} style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: "#e4e4e8", textAlign: "center" }}
                 bodyStyle={{ minHeight: "calc(100vh - 200px)", backgroundColor: "#e4e4e8" }}>
                 {issueList?.map(item => (
