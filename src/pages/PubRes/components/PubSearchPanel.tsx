@@ -6,7 +6,56 @@ import type { Site, SiteCate } from '@/api/pub_search';
 import { list_my_site, get_search_history, add_search_history, set_my_site, list_site_cate, list_site } from '@/api/pub_search';
 import { request } from "@/utils/request";
 import AsyncImage from "@/components/AsyncImage";
-import { open as shell_open } from '@tauri-apps/api/shell';
+import { open as shell_open, Command } from '@tauri-apps/api/shell';
+import { uniqId } from "@/utils/utils";
+
+interface SearchProxyProps {
+    src: string;
+}
+
+type SearchEntry = {
+    id: string;
+    title: string;
+    url: string;
+    summary: string;
+}
+
+const SearchProxy = (props: SearchProxyProps) => {
+    const [entryList, setEntryList] = useState<SearchEntry[]>([]);
+
+    const search = async () => {
+        setEntryList([]);
+        const command = Command.sidecar('bin/search', [props.src]);
+        const result = await command.execute();
+        const itemList = JSON.parse(result.stdout) as SearchEntry[];
+        setEntryList(itemList.map(item => ({
+            ...item,
+            id: uniqId(),
+        })));
+    };
+    useEffect(() => {
+        search();
+    }, [props.src]);
+
+    return (
+        <List rowKey="id" dataSource={entryList}
+            style={{ height: "calc(100vh - 300px)", overflow: "scroll" }}
+            renderItem={item => (
+                <List.Item>
+                    <div>
+                        <h2 style={{ fontSize: "20px", fontWeight: 600 }}>
+                            <a onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                shell_open(item.url);
+                            }}>{item.title}</a>
+                        </h2>
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.summary}</pre>
+                    </div>
+                </List.Item>
+            )} />
+    );
+};
 
 interface AddModalProps {
     siteIdList: string[];
@@ -88,7 +137,7 @@ const AddModal = (props: AddModalProps) => {
                     label: item.cate_name,
                     children: <List grid={{ gutter: 16 }} dataSource={siteList}
                         renderItem={innerItem => (
-                            <List.Item style={{ width: 100 }}>
+                            <List.Item style={{ width: 150 }}>
                                 <Checkbox disabled={props.siteIdList.includes(innerItem.site_id)} checked={newSiteIdList.includes(innerItem.site_id)}
                                     onChange={e => {
                                         e.preventDefault();
@@ -100,7 +149,7 @@ const AddModal = (props: AddModalProps) => {
                                     }}>
                                     <Space>
                                         <AsyncImage useRawImg={true} src={getIconUrl(innerItem.icon_file_id)} style={{ width: "20px" }} />
-                                        {innerItem.site_name}
+                                        <div style={{ whiteSpace: "nowrap" }}>{innerItem.site_name}</div>
                                     </Space>
                                 </Checkbox>
                             </List.Item>
@@ -140,10 +189,10 @@ const PubSearchPanel = () => {
         setSearchStrList(res.search_str_list);
     };
 
-    const addSearchHistory = async () => {
+    const addSearchHistory = async (kw: string) => {
         await request(add_search_history({
             session_id: userStore.sessionId,
-            search_str: tmpKeyword,
+            search_str: kw,
         }));
         await loadHistoryList();
     }
@@ -194,13 +243,17 @@ const PubSearchPanel = () => {
                         onKeyDown={e => {
                             if (e.key == "Enter") {
                                 setKeyword(tmpKeyword);
+                                addSearchHistory(tmpKeyword);
                             }
-                        }} onSelect={value => setKeyword(value)} />
+                        }} onSelect={value => {
+                            setKeyword(value);
+                            addSearchHistory(value);
+                        }} />
                     <Button type="primary" disabled={tmpKeyword == ""} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setKeyword(tmpKeyword);
-                        addSearchHistory();
+                        addSearchHistory(tmpKeyword);
                     }}><SearchOutlined />&nbsp;搜索</Button>
                 </Space>
             </div>
@@ -231,9 +284,7 @@ const PubSearchPanel = () => {
                                             shell_open(item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword)));
                                         }}>使用浏览器打开</Button>}>
                                         {item.use_browser == true && (
-                                            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={
-                                                <span>无法使用iframe显示内容</span>
-                                            } />
+                                            <SearchProxy src={item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword))} />
                                         )}
                                         {item.use_browser == false && (
                                             <iframe style={{ width: "calc(100vw - 250px)", height: "calc(100vh - 300px)", overflow: "scroll" }}
