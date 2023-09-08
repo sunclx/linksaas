@@ -15,7 +15,6 @@ type ActionModalProps = ModalProps & {
 const ActionModal: FC<ActionModalProps> = ({
   title,
   open,
-  footer,
   onOK,
   onCancel,
   okText = '确定',
