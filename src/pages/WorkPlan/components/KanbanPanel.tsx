@@ -10,30 +10,47 @@ import { Card } from "antd";
 import { request } from "@/utils/request";
 import KanbanCard, { DND_ITEM_TYPE } from "./KanbanCard";
 
-const filterIssueList = (taskList: IssueInfo[], bugList: IssueInfo[], state: ISSUE_STATE) => {
+const filterIssueList = (taskList: IssueInfo[], bugList: IssueInfo[], state: ISSUE_STATE, memberId: string) => {
     const retList: IssueInfo[] = [];
     taskList.forEach(item => {
         if (item.state == state) {
-            retList.push(item);
+            if (memberId == "") {
+                retList.push(item);
+            } else {
+                if (item.exec_user_id == memberId || item.check_user_id == memberId) {
+                    retList.push(item);
+                }
+            }
         }
     });
     bugList.forEach(item => {
         if (item.state == state) {
-            retList.push(item);
+            if (memberId == "") {
+                retList.push(item);
+            } else {
+                if (item.exec_user_id == memberId || item.check_user_id == memberId) {
+                    retList.push(item);
+                }
+            }
         }
     });
+    console.log(taskList, bugList, memberId);
     retList.sort((a: IssueInfo, b: IssueInfo) => b.update_time - a.update_time);
     return retList;
 }
 
+interface KanbanPanelProps {
+    memberId: string;
+}
 
-const PlanIssueColumn = observer(() => {
+
+const PlanIssueColumn = observer((props: KanbanPanelProps) => {
     const spritStore = useStores('spritStore');
     const [issueList, setIssueList] = useState<IssueInfo[]>();
 
     useEffect(() => {
-        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_PLAN));
-    }, [spritStore.taskList, spritStore.bugList]);
+        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_PLAN, props.memberId));
+    }, [spritStore.taskList, spritStore.bugList, props.memberId]);
 
     return (
         <div className={s.kanban_column}>
@@ -48,7 +65,7 @@ const PlanIssueColumn = observer(() => {
     );
 });
 
-const ProcessIssueColumn = observer(() => {
+const ProcessIssueColumn = observer((props: KanbanPanelProps) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
@@ -77,8 +94,8 @@ const ProcessIssueColumn = observer(() => {
     }));
 
     useEffect(() => {
-        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_PROCESS));
-    }, [spritStore.taskList, spritStore.bugList]);
+        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_PROCESS, props.memberId));
+    }, [spritStore.taskList, spritStore.bugList, props.memberId]);
 
     return (
         <div className={s.kanban_column} ref={drop}>
@@ -93,7 +110,7 @@ const ProcessIssueColumn = observer(() => {
     );
 });
 
-const CheckIssueColumn = observer(() => {
+const CheckIssueColumn = observer((props: KanbanPanelProps) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
@@ -122,8 +139,8 @@ const CheckIssueColumn = observer(() => {
     }));
 
     useEffect(() => {
-        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_CHECK));
-    }, [spritStore.taskList, spritStore.bugList]);
+        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_CHECK, props.memberId));
+    }, [spritStore.taskList, spritStore.bugList, props.memberId]);
 
     return (
         <div className={s.kanban_column} ref={drop}>
@@ -138,7 +155,7 @@ const CheckIssueColumn = observer(() => {
     );
 });
 
-const CloseIssueColumn = observer(() => {
+const CloseIssueColumn = observer((props: KanbanPanelProps) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
@@ -164,8 +181,8 @@ const CloseIssueColumn = observer(() => {
     }));
 
     useEffect(() => {
-        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_CLOSE));
-    }, [spritStore.taskList, spritStore.bugList]);
+        setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_CLOSE, props.memberId));
+    }, [spritStore.taskList, spritStore.bugList, props.memberId]);
 
     return (
         <div className={s.kanban_column} ref={drop}>
@@ -180,14 +197,14 @@ const CloseIssueColumn = observer(() => {
     );
 });
 
-const KanbanPanel = () => {
+const KanbanPanel = (props: KanbanPanelProps) => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className={s.kanban_column_list}>
-                <PlanIssueColumn />
-                <ProcessIssueColumn />
-                <CheckIssueColumn />
-                <CloseIssueColumn />
+                <PlanIssueColumn memberId={props.memberId} />
+                <ProcessIssueColumn memberId={props.memberId} />
+                <CheckIssueColumn memberId={props.memberId} />
+                <CloseIssueColumn memberId={props.memberId} />
             </div>
         </DndProvider>
     );
