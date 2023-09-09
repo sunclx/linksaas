@@ -8,7 +8,7 @@ import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
 import { LeftOutlined, MoreOutlined } from "@ant-design/icons";
-import { Card, message, Modal, Popover, Space, Tabs, Tag } from 'antd';
+import { Card, Form, message, Modal, Popover, Select, Space, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
@@ -20,6 +20,7 @@ import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
 import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import SummaryPanel from "./components/SummaryPanel";
+import UserPhoto from "@/components/Portrait/UserPhoto";
 
 
 const SpritDetail = () => {
@@ -28,6 +29,7 @@ const SpritDetail = () => {
     const linkAuxStore = useStores('linkAuxStore');
     const spritStore = useStores('spritStore');
     const channelStore = useStores('channelStore');
+    const memberStore = useStores('memberStore');
 
     const location = useLocation();
     const tabStr = new URLSearchParams(location.search).get('tab') ?? "";
@@ -37,6 +39,7 @@ const SpritDetail = () => {
     const [activeKey, setActiveKey] = useState("");
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [selMemberUserId, setSelMemberUserId] = useState("");
 
     const loadSpritInfo = async () => {
         const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
@@ -221,12 +224,36 @@ const SpritDetail = () => {
                     type="card"
                     onChange={value => {
                         history.push(`${location.pathname}?tab=${value}`);
-                    }}>
+                    }} tabBarExtraContent={
+                        <>
+                            {(activeKey == "issue" || activeKey == "kanban") && (
+                                <Form layout="inline">
+                                    <Form.Item label="过滤成员">
+                                        <Select value={selMemberUserId} style={{ width: "120px", marginRight: "20px" }}
+                                            onChange={value => setSelMemberUserId(value)}>
+                                            <Select.Option value="">全部成员</Select.Option>
+                                            {memberStore.memberList.map(item => (
+                                                <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>
+                                                    <Space>
+                                                        <UserPhoto logoUri={item.member.logo_uri} style={{ width: "20px" }} />
+                                                        <span>{item.member.display_name}</span>
+                                                    </Space>
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </Form>
+                            )}
+                        </>
+                    }>
                     <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
-                        {activeKey == "issue" && spritInfo != null && <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                        {activeKey == "issue" && spritInfo != null && (
+                            <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time}
+                                memberId={selMemberUserId} />
+                        )}
                     </Tabs.TabPane>
                     <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
-                        {activeKey == "kanban" && <KanbanPanel />}
+                        {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} />}
                     </Tabs.TabPane>
                     {!projectStore.curProject?.setting.disable_kb && (
                         <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>相关文档</span>} key="linkDoc">

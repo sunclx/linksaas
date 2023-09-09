@@ -94,9 +94,9 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
                         <h4>支持https和ssh格式</h4>
                         比如：
                         <ul>
-                            <li>https://jihulab.com/linksaas/desktop</li>
-                            <li>https://jihulab.com/linksaas/desktop.git</li>
-                            <li>git@jihulab.com:linksaas/desktop.git</li>
+                            <li>https://atomgit.com/openlinksaas/desktop</li>
+                            <li>https://atomgit.com/openlinksaas/desktop.git</li>
+                            <li>git@atomgit.com:openlinksaas/desktop.git</li>
                         </ul>
                     </div>}><a><QuestionCircleOutlined /></a></Popover>
                 </span>} name="repoUrl" rules={[{

@@ -89,14 +89,15 @@ const renderTitle = (
     );
 };
 
-interface SpritDetailProps {
+interface IssuePanelProps {
     spritId: string;
     startTime: number;
     endTime: number;
+    memberId: string;
 }
 
 
-const IssuePanel: React.FC<SpritDetailProps> = (props) => {
+const IssuePanel: React.FC<IssuePanelProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
@@ -441,7 +442,16 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                 </Space>}>
                 <Table
                     rowKey="issue_id"
-                    dataSource={spritStore.taskList}
+                    dataSource={spritStore.taskList.filter(item => {
+                        if (props.memberId == "") {
+                            return true;
+                        } else {
+                            if (item.exec_user_id == props.memberId || item.check_user_id == props.memberId) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    })}
                     columns={columns}
                     pagination={false}
                     scroll={{ x: 1100 }}
@@ -476,7 +486,16 @@ const IssuePanel: React.FC<SpritDetailProps> = (props) => {
                 </Space>}>
                 <Table
                     rowKey="issue_id"
-                    dataSource={spritStore.bugList}
+                    dataSource={spritStore.bugList.filter(item => {
+                        if (props.memberId == "") {
+                            return true;
+                        } else {
+                            if (item.exec_user_id == props.memberId || item.check_user_id == props.memberId) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    })}
                     columns={columns}
                     pagination={false}
                     scroll={{ x: 1100 }} />

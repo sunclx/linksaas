@@ -34,14 +34,14 @@ const App = () => {
                 <div style={{ marginTop: "10px" }}>
                     <div>
                         <div>版本：{version}&nbsp;&nbsp;
-                            <a href="https://jihulab.com/linksaas/desktop/-/blob/develop/CHANGELOG.md" target="_blank" rel="noreferrer">更新日志</a></div>
+                            <a href="https://atomgit.com/openlinksaas/desktop/blob/develop/CHANGELOG.md" target="_blank" rel="noreferrer">更新日志</a></div>
                     </div>
                     <div>
                         <div>公司：深圳市同心圆网络有限公司</div>
                     </div>
                     <div style={{ marginLeft: "45px", paddingTop: "10px", paddingBottom: "16px" }}>
-                        <a href="https://jihulab.com/linksaas/desktop" target="_blank" rel="noreferrer">代码仓库</a>
-                        <a href="https://jihulab.com/linksaas/desktop/-/issues" target="_blank" rel="noreferrer" style={{ marginLeft: "20px" }} >反馈问题</a>
+                        <a href="https://atomgit.com/openlinksaas/desktop" target="_blank" rel="noreferrer">代码仓库</a>
+                        <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginLeft: "20px" }} >反馈问题</a>
                     </div>
                 </div>
             </div>

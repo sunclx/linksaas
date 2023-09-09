@@ -96,25 +96,35 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </Space>
                     )}
                 </div>
-                <h4>{props.issue.basic_info.title}</h4>
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Space>
-                        {props.issue.exec_user_id != "" && (
-                            <Space>
-                                <span>执行:</span>
-                                <UserPhoto logoUri={memberStore.getMember(props.issue.exec_user_id)?.member.logo_uri ?? ""} width="20px"
-                                    style={{ borderRadius: "10px" }} />
-                            </Space>
-                        )}
-                        {props.issue.check_user_id != "" && (
-                            <Space>
-                                <span>检查:</span>
-                                <UserPhoto logoUri={memberStore.getMember(props.issue.check_user_id)?.member.logo_uri ?? ""} width="20px"
-                                    style={{ borderRadius: "10px" }} />
-                            </Space>
-                        )}
-                    </Space>
-                </div>
+                <h4 className={s.title}><a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (props.issue.issue_type == ISSUE_TYPE_TASK) {
+                        linkAuxStore.goToLink(new LinkTaskInfo("", props.issue.project_id, props.issue.issue_id), history);
+                    } else if (props.issue.issue_type == ISSUE_TYPE_BUG) {
+                        linkAuxStore.goToLink(new LinkBugInfo("", props.issue.project_id, props.issue.issue_id), history);
+                    }
+                }}>{props.issue.basic_info.title}</a></h4>
+                {props.issue.exec_user_id != "" && (
+                    <div className={s.member}>
+                        <Space>
+                            <span>执行人:</span>
+                            <UserPhoto logoUri={memberStore.getMember(props.issue.exec_user_id)?.member.logo_uri ?? ""} width="16px"
+                                style={{ borderRadius: "10px" }} />
+                            <span>{props.issue.exec_display_name}</span>
+                        </Space>
+                    </div>
+                )}
+                {props.issue.check_user_id != "" && (
+                    <div className={s.member}>
+                        <Space>
+                            <span>检查人:</span>
+                            <UserPhoto logoUri={memberStore.getMember(props.issue.check_user_id)?.member.logo_uri ?? ""} width="16px"
+                                style={{ borderRadius: "10px" }} />
+                            <span>{props.issue.check_display_name}</span>
+                        </Space>
+                    </div>
+                )}
                 {props.issue.estimate_minutes > 0 && props.issue.remain_minutes >= 0 && props.issue.state == ISSUE_STATE_PROCESS && (
                     <div>
                         <Progress
@@ -127,20 +137,30 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </div>
                     </div>
                 )}
-                <div>
+                <div className={s.tips}>
                     {props.issue.exec_user_id == "" && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea", color: "red" }}>
-                            <span><WarningOutlined />&nbsp;未设置执行人</span>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置执行人</span>
                         </Tag>
                     )}
                     {props.issue.check_user_id == "" && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
-                            <span><WarningOutlined />&nbsp;未设置检查人</span>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置检查人</span>
+                        </Tag>
+                    )}
+                    {props.issue.re_open_count > 0 && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;重新打开次数&nbsp;{props.issue.re_open_count}</span>
+                        </Tag>
+                    )}
+                    {props.issue.msg_count > 0 && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                            <span>&nbsp;评论数&nbsp;{props.issue.msg_count}</span>
                         </Tag>
                     )}
                     {props.issue.state == ISSUE_STATE_PROCESS && props.issue.estimate_minutes <= 0 && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
-                            <span><WarningOutlined />&nbsp;未设置预估时间</span>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置预估时间</span>
                         </Tag>
                     )}
                     {props.issue.issue_type == ISSUE_TYPE_TASK && (
