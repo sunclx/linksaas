@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Modal, message } from "antd";
 import { observer } from 'mobx-react';
 import type { EVENT_SOURCE } from '@/api/external_events';
-import { create, gen_id_and_secret, EVENT_SOURCE_GITLAB, EVENT_SOURCE_GITEE } from '@/api/external_events';
+import { create, gen_id_and_secret, EVENT_SOURCE_GITLAB, EVENT_SOURCE_GITEE, EVENT_SOURCE_ATOMGIT } from '@/api/external_events';
 import style from '../index.module.less';
+import iconAtomgit from '@/assets/allIcon/icon-atomgit.png';
 import iconGitee from '@/assets/allIcon/icon-gitee.png';
 import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
 import { clipboard } from '@tauri-apps/api';
@@ -69,10 +70,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             >
                 <Form.Item label="接入平台">
                     <div className={style.souceItem}>
+                    {props.eventSource == EVENT_SOURCE_ATOMGIT && (
+                            <>
+                                <img src={iconAtomgit} alt="" />
+                                <span>Atomgit</span>
+                            </>
+                        )}
                         {props.eventSource == EVENT_SOURCE_GITLAB && (
                             <>
                                 <img src={iconGitlab} alt="" />
-                                <span>GitLab</span>
+                                <span>Gitlab</span>
                             </>
                         )}
                         {props.eventSource == EVENT_SOURCE_GITEE && (

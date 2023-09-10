@@ -1,4 +1,5 @@
 import iconGitee from '@/assets/allIcon/icon-gitee.png';
+import iconAtomgit from '@/assets/allIcon/icon-atomgit.png';
 import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
 import iconApp from '@/assets/allIcon/logo.png';
 import taskIcon from '@/assets/allIcon/icon-task.png';
@@ -103,4 +104,8 @@ export const EVENT_ICON_LIST = {
     title: 'CustomEvent',
     icon: iconApp,
   },
+  [API.EVENT_TYPE_ATOMGIT]: {
+    title: "Atomgit",
+    icon: iconAtomgit,
+  }
 };

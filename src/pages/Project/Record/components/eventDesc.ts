@@ -3621,6 +3621,487 @@ const gitlabEventList: EventDesc[] = [
     },
 ];
 
+const atomgitEventList: EventDesc[] = [
+    {
+        id: "BuildEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: ""
+            },
+            {
+                key: "ref",
+                desc: ""
+            },
+            {
+                key: "tag",
+                desc: ""
+            },
+            {
+                key: "before_sha",
+                desc: ""
+            },
+            {
+                key: "sha",
+                desc: ""
+            },
+            {
+                key: "build_id",
+                desc: ""
+            },
+            {
+                key: "build_name",
+                desc: ""
+            },
+            {
+                key: "build_stage",
+                desc: ""
+            },
+            {
+                key: "build_status",
+                desc: ""
+            },
+            {
+                key: "build_started_at",
+                desc: ""
+            },
+            {
+                key: "build_finished_at",
+                desc: ""
+            },
+            {
+                key: "build_duration",
+                desc: ""
+            },
+            {
+                key: "build_allow_failure",
+                desc: ""
+            },
+            {
+                key: "project_id",
+                desc: ""
+            },
+            {
+                key: "project_name",
+                desc: ""
+            },
+            {
+                key: "user",
+                desc: ""
+            },
+            {
+                key: "commit",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "runner",
+                desc: ""
+            }
+        ]
+    },
+    {
+        id: "CommentEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: "",
+            },
+            {
+                key: "user",
+                desc: "",
+            },
+            {
+                key: "project_id",
+                desc: "",
+            },
+            {
+                key: "project",
+                desc: "",
+            },
+            {
+                key: "repository",
+                desc: "",
+            },
+            {
+                key: "object_attributes",
+                desc: "",
+            },
+            {
+                key: "merge_request",
+                desc: "",
+            },
+            {
+                key: "commit",
+                desc: "",
+            },
+            {
+                key: "issue",
+                desc: "",
+            },
+            {
+                key: "snippet",
+                desc: "",
+            },
+        ]
+    },
+    {
+        id: "IssueEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: ""
+            },
+            {
+                key: "user",
+                desc: ""
+            },
+            {
+                key: "project",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "object_attributes",
+                desc: ""
+            },
+            {
+                key: "assignee",
+                desc: ""
+            },
+            {
+                key: "changes",
+                desc: ""
+            },
+        ]
+    },
+    {
+        id: "JobEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: ""
+            },
+            {
+                key: "ref",
+                desc: ""
+            },
+            {
+                key: "tag",
+                desc: ""
+            },
+            {
+                key: "before_sha",
+                desc: ""
+            },
+            {
+                key: "sha",
+                desc: ""
+            },
+            {
+                key: "build_id",
+                desc: ""
+            },
+            {
+                key: "build_name",
+                desc: ""
+            },
+            {
+                key: "build_stage",
+                desc: ""
+            },
+            {
+                key: "build_status",
+                desc: ""
+            },
+            {
+                key: "build_started_at",
+                desc: ""
+            },
+            {
+                key: "build_finished_at",
+                desc: ""
+            },
+            {
+                key: "build_duration",
+                desc: ""
+            },
+            {
+                key: "build_allow_failure",
+                desc: ""
+            },
+            {
+                key: "project_id",
+                desc: ""
+            },
+            {
+                key: "project_name",
+                desc: ""
+            },
+            {
+                key: "user",
+                desc: ""
+            },
+            {
+                key: "commit",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "runner",
+                desc: ""
+            }
+        ]
+    },
+    {
+        id: "MergeRequestEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: "",
+            },
+            {
+                key: "user",
+                desc: "",
+            },
+            {
+                key: "object_attributes",
+                desc: "",
+            },
+            {
+                key: "changes",
+                desc: "",
+            },
+            {
+                key: "project",
+                desc: "",
+            },
+            {
+                key: "repository",
+                desc: "",
+            },
+            {
+                key: "labels",
+                desc: "",
+            },
+            {
+                key: "assignees",
+                desc: "",
+            },
+        ]
+    },
+    {
+        id: "PipelineEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: ""
+            },
+            {
+                key: "user",
+                desc: ""
+            },
+            {
+                key: "project",
+                desc: ""
+            },
+            {
+                key: "commit",
+                desc: ""
+            },
+            {
+                key: "object_attributes",
+                desc: ""
+            },
+            {
+                key: "merge_request",
+                desc: ""
+            },
+            {
+                key: "builds",
+                desc: ""
+            },
+        ]
+    },
+    {
+        id: "PushEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: "",
+            },
+            {
+                key: "before",
+                desc: "",
+            },
+            {
+                key: "after",
+                desc: "",
+            },
+            {
+                key: "ref",
+                desc: "",
+            },
+            {
+                key: "checkout_sha",
+                desc: "",
+            },
+            {
+                key: "user_id",
+                desc: "",
+            },
+            {
+                key: "user_name",
+                desc: "",
+            },
+            {
+                key: "user_username",
+                desc: "",
+            },
+            {
+                key: "user_email",
+                desc: "",
+            },
+            {
+                key: "user_avatar",
+                desc: "",
+            },
+            {
+                key: "project_id",
+                desc: "",
+            },
+            {
+                key: "project",
+                desc: "",
+            },
+            {
+                key: "repository",
+                desc: "",
+            },
+            {
+                key: "commits",
+                desc: "",
+            },
+            {
+                key: "total_commits_count",
+                desc: "",
+            },
+        ]
+    },
+    {
+        id: "TagEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: ""
+            },
+            {
+                key: "before",
+                desc: ""
+            },
+            {
+                key: "after",
+                desc: ""
+            },
+            {
+                key: "ref",
+                desc: ""
+            },
+            {
+                key: "checkout_sha",
+                desc: ""
+            },
+            {
+                key: "user_id",
+                desc: ""
+            },
+            {
+                key: "user_name",
+                desc: ""
+            },
+            {
+                key: "user_username",
+                desc: ""
+            },
+            {
+                key: "user_avatar",
+                desc: ""
+            },
+            {
+                key: "project_id",
+                desc: ""
+            },
+            {
+                key: "project",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "commits",
+                desc: ""
+            },
+            {
+                key: "total_commits_count",
+                desc: ""
+            },
+        ]
+    },
+    {
+        id: "WikiEvent",
+        name: "",
+        attrList: [
+            {
+                key: "object_kind",
+                desc: "",
+            },
+            {
+                key: "user",
+                desc: "",
+            },
+            {
+                key: "project",
+                desc: "",
+            },
+            {
+                key: "wiki",
+                desc: "",
+            },
+            {
+                key: "object_attributes",
+                desc: "",
+            },
+        ]
+    },
+];
+
 const giteeEventList: EventDesc[] = [
     {
         id: "PushEvent",
@@ -4033,14 +4514,19 @@ export const eventGroupList: EventGroup[] = [
         eventDescList: extEventList,
     },
     {
-        id: "GitlabEvent",
-        name: "gitlab",
-        eventDescList: gitlabEventList,
+        id: "AtomgitEvent",
+        name: "atomgit",
+        eventDescList: atomgitEventList,
     },
     {
         id: "GiteeEvent",
         name: "gitee",
         eventDescList: giteeEventList,
+    },
+    {
+        id: "GitlabEvent",
+        name: "gitlab",
+        eventDescList: gitlabEventList,
     },
     {
         id: "RobotEvent",

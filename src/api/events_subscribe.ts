@@ -228,6 +228,18 @@ export type ApiCollectionEvCfg = {
     remove: boolean;
 }
 
+export type AtomgitEvCfg = {
+    build: boolean;
+    comment: boolean;
+    issue: boolean;
+    job: boolean;
+    merge_request: boolean;
+    pipeline: boolean;
+    push: boolean;
+    tag: boolean;
+    wiki: boolean;
+}
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     book_shelf_ev_cfg: BookShelfEvCfg;
@@ -246,6 +258,7 @@ export type EventCfg = {
     idea_ev_cfg: IdeaEvCfg;
     data_anno_ev_cfg: DataAnnoEvCfg;
     api_collection_ev_cfg: ApiCollectionEvCfg;
+    atomgit_ev_cfg: AtomgitEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -367,6 +380,19 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
         cfg.api_collection_ev_cfg = {
             create: false,
             remove: false,
+        };
+    }
+    if (cfg.atomgit_ev_cfg == undefined) {
+        cfg.atomgit_ev_cfg = {
+            build: false,
+            comment: false,
+            issue: false,
+            job: false,
+            merge_request: false,
+            pipeline: false,
+            push: false,
+            tag: false,
+            wiki: false,
         };
     }
     return cfg;

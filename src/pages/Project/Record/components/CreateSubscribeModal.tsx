@@ -1,7 +1,44 @@
 import { Form, Modal, Checkbox, Select, Input, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
-import { apiCollectionEvOptionList, bookShelfEvOptionList, calcBookShelfEvCfg, calcCodeEvCfg, calcDataAnnoEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, dataAnnoEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import {
+    apiCollectionEvOptionList,
+    bookShelfEvOptionList,
+    calcBookShelfEvCfg,
+    calcCodeEvCfg,
+    calcDataAnnoEvCfg,
+    calcDocEvCfg,
+    calcEarthlyEvCfg,
+    calcExtEvCfg,
+    calcGiteeEvCfg,
+    calcGitlabEvCfg,
+    calcIdeaEvCfg,
+    calcIssueEvCfg,
+    calcProjectEvCfg,
+    calcRequirementEvCfg,
+    calcRobotEvCfg,
+    calcScriptEvCfg,
+    calcSpritEvCfg,
+    calcTestCaseEvCfg,
+    codeEvOptionList,
+    dataAnnoEvOptionList,
+    docEvOptionList,
+    earthlyEvOptionList,
+    extEvOptionList,
+    giteeEvOptionList,
+    gitlabEvOptionList,
+    ideaEvOptionList,
+    issueEvOptionList,
+    projectEvOptionList,
+    requirementEvOptionList,
+    robotEvOptionList,
+    scriptEvOptionList,
+    spritEvOptionList,
+    calcApiCollectionEvCfg,
+    testCaseEvOptionList,
+    calcAtomgitEvCfg,
+    atomgitEvOptionList,
+} from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
 import { request } from "@/utils/request";
@@ -21,6 +58,7 @@ interface FormValue {
     docEvCfg: string[] | undefined;
     earthlyEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
+    atomgitEvCfg: string[] | undefined;
     giteeEvCfg: string[] | undefined;
     gitlabEvCfg: string[] | undefined;
     issueEvCfg: string[] | undefined;
@@ -62,6 +100,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(false);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(false);
+
+    const [atomgitEvCfgCheckAll, setAtomgitEvCfgCheckAll] = useState(false);
+    const [atomgitEvCfgIndeterminate, setAtomgitEvCfgIndeterminate] = useState(false);
 
     const [giteeEvCfgCheckAll, setGiteeEvCfgCheckAll] = useState(false);
     const [giteeEvCfgIndeterminate, setGiteeEvCfgIndeterminate] = useState(false);
@@ -124,6 +165,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 earthly_ev_cfg: calcEarthlyEvCfg(formValue.earthlyEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
+                atomgit_ev_cfg: calcAtomgitEvCfg(formValue.atomgitEvCfg),
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
                 gitlab_ev_cfg: calcGitlabEvCfg(formValue.gitlabEvCfg),
                 issue_ev_cfg: calcIssueEvCfg(formValue.issueEvCfg),
@@ -135,7 +177,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
-                api_collection_ev_cfg: calcApiCollectionEvcfg(formValue.apiCollectionEvCfg),
+                api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
             },
         }));
         props.onOk();
@@ -342,6 +384,31 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setExtEvCfgCheckAll(false);
                                 setExtEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={atomgitEvCfgIndeterminate} checked={atomgitEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setAtomgitEvCfgIndeterminate(false);
+                        if (atomgitEvCfgCheckAll) {
+                            setAtomgitEvCfgCheckAll(false);
+                            form.setFieldValue("atomgitEvCfg", []);
+                        } else {
+                            setAtomgitEvCfgCheckAll(true);
+                            form.setFieldValue("atomgitEvCfg", atomgitEvOptionList.map(item => item.value));
+                        }
+                    }}>atomgit事件</Checkbox>} name="atomgitEvCfg">
+                        <Checkbox.Group options={atomgitEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setAtomgitEvCfgCheckAll(false);
+                                setAtomgitEvCfgIndeterminate(false);
+                            } else if (values.length == atomgitEvOptionList.length) {
+                                setAtomgitEvCfgCheckAll(true);
+                                setAtomgitEvCfgIndeterminate(false);
+                            } else {
+                                setAtomgitEvCfgCheckAll(false);
+                                setAtomgitEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>
@@ -631,7 +698,4 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 }
 
 export default observer(CreateSubscribeModal);
-function calcApiCollectionEvcfg(apiCollectionEvCfg: string[] | undefined): import("@/api/events_subscribe").ApiCollectionEvCfg {
-    throw new Error("Function not implemented.");
-}
 

@@ -5,7 +5,6 @@ import {
   LinkExterneInfo,
 } from '@/stores/linkAux';
 
-
 export type Author = {
     name: string;
     email: string;
@@ -571,7 +570,7 @@ export type Author = {
     return retList;
   }
 
-  export class AllGitlabEvent {
+  export class AllAtomgitEvent {
     BuildEvent?: BuildEvent;
     CommentEvent?: CommentEvent;
     IssueEvent?: IssueEvent;
@@ -582,10 +581,10 @@ export type Author = {
     TagEvent?: TagEvent;
     WikiEvent?: WikiEvent;
   }
-  export function get_gitlab_simple_content(
+  export function get_atomgit_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
-    inner: AllGitlabEvent,
+    inner: AllAtomgitEvent,
   ): LinkInfo[] {
     // console.log(JSON.stringify(inner));
     if (inner.BuildEvent !== undefined) {

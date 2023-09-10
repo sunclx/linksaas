@@ -10,6 +10,7 @@ import { platform } from './common';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { useStores } from '@/hooks';
 import Button from '@/components/Button';
+import iconAtomgit from '@/assets/allIcon/icon-atomgit.png';
 import iconGitee from '@/assets/allIcon/icon-gitee.png';
 import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
 import { runInAction } from 'mobx';
@@ -100,9 +101,9 @@ const ProjectInvite: React.FC = () => {
         <Button type="default" onClick={e => {
           e.stopPropagation();
           e.preventDefault();
-          localStore.setNewEventSource(API.EVENT_SOURCE_GITLAB);
+          localStore.setNewEventSource(API.EVENT_SOURCE_ATOMGIT);
         }}>
-          <img src={iconGitlab} style={{ width: "20px", marginRight: "10px" }} />连接GitLab
+          <img src={iconAtomgit} style={{ width: "20px", marginRight: "10px" }} />连接Atomgit
         </Button>
         <Button type="default" onClick={e => {
           e.stopPropagation();
@@ -110,6 +111,13 @@ const ProjectInvite: React.FC = () => {
           localStore.setNewEventSource(API.EVENT_SOURCE_GITEE);
         }}>
           <img src={iconGitee} style={{ width: "20px", marginRight: "10px" }} />连接Gitee
+        </Button>
+        <Button type="default" onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          localStore.setNewEventSource(API.EVENT_SOURCE_GITLAB);
+        }}>
+          <img src={iconGitlab} style={{ width: "20px", marginRight: "10px" }} />连接Gitlab
         </Button>
       </Space>
     }>

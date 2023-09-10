@@ -21,14 +21,15 @@ import { type AllRequirementEvent, get_requirement_simple_content } from './even
 import { type AllDataAnnoEvent, get_data_anno_simple_content } from './events/data_anno';
 import { type AllIdeaEvent, get_idea_simple_content } from './events/idea';
 import { type AllApiCollectionEvent, get_api_collection_simple_content } from './events/api_collection';
+import { type AllAtomgitEvent, get_atomgit_simple_content } from './events/atomgit';
 
 export function get_issue_type_str(issue_type: number): string {
   if (issue_type == pi.ISSUE_TYPE_BUG) {
-      return '缺陷';
+    return '缺陷';
   } else if (issue_type == pi.ISSUE_TYPE_TASK) {
-      return '任务';
+    return '任务';
   } else {
-      return '';
+    return '';
   }
 }
 
@@ -51,6 +52,7 @@ export class AllEvent {
   IdeaEvent?: AllIdeaEvent;
   DataAnnoEvent?: AllDataAnnoEvent;
   ApiCollectionEvent?: AllApiCollectionEvent;
+  AtomgitEvent?: AllAtomgitEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -90,6 +92,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return get_data_anno_simple_content(ev, skip_prj_name, ev.event_data.DataAnnoEvent);
   } else if (ev.event_data.ApiCollectionEvent !== undefined) {
     return get_api_collection_simple_content(ev, skip_prj_name, ev.event_data.ApiCollectionEvent);
+  } else if (ev.event_data.AtomgitEvent !== undefined) {
+    return get_atomgit_simple_content(ev, skip_prj_name, ev.event_data.AtomgitEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }

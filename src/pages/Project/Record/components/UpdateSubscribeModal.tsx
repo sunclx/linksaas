@@ -3,7 +3,62 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { apiCollectionEvOptionList, bookShelfEvOptionList, calcApiCollectionEvCfg, calcBookShelfEvCfg, calcCodeEvCfg, calcDataAnnoEvCfg, calcDocEvCfg, calcEarthlyEvCfg, calcExtEvCfg, calcGiteeEvCfg, calcGitlabEvCfg, calcIdeaEvCfg, calcIssueEvCfg, calcProjectEvCfg, calcRequirementEvCfg, calcRobotEvCfg, calcScriptEvCfg, calcSpritEvCfg, calcTestCaseEvCfg, codeEvOptionList, dataAnnoEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genApiCollectionEvCfgValues, genBookShelfEvCfgValues, genCodeEvCfgValues, genDataAnnoEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues, genIdeaEvCfgValues, genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues, genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, ideaEvOptionList, issueEvOptionList, projectEvOptionList, requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList } from "./constants";
+import { 
+    apiCollectionEvOptionList, 
+    atomgitEvOptionList, 
+    bookShelfEvOptionList, 
+    calcApiCollectionEvCfg, 
+    calcAtomgitEvCfg, 
+    calcBookShelfEvCfg, 
+    calcCodeEvCfg, 
+    calcDataAnnoEvCfg, 
+    calcDocEvCfg, 
+    calcEarthlyEvCfg, 
+    calcExtEvCfg, 
+    calcGiteeEvCfg, 
+    calcGitlabEvCfg, 
+    calcIdeaEvCfg, 
+    calcIssueEvCfg, 
+    calcProjectEvCfg, 
+    calcRequirementEvCfg, 
+    calcRobotEvCfg, 
+    calcScriptEvCfg, 
+    calcSpritEvCfg, 
+    calcTestCaseEvCfg, 
+    codeEvOptionList, 
+    dataAnnoEvOptionList, 
+    docEvOptionList, 
+    earthlyEvOptionList, 
+    extEvOptionList, 
+    genApiCollectionEvCfgValues, 
+    genAtomgitEvCfgValues, 
+    genBookShelfEvCfgValues, 
+    genCodeEvCfgValues, 
+    genDataAnnoEvCfgValues, 
+    genDocEvCfgValues, 
+    genEarthlyEvCfgValues, 
+    genExtEvCfgValues, 
+    genGiteeEvCfgValues, 
+    genGitlabEvCfgValues, 
+    genIdeaEvCfgValues, 
+    genIssueEvCfgValues, 
+    genProjectEvCfgValues, 
+    genRequirementEvCfgValues, 
+    genRobotEvCfgValues, 
+    genScriptEvCfgValues, 
+    genSpritEvCfgValues, 
+    genTestCaseEvCfgValues, 
+    giteeEvOptionList, 
+    gitlabEvOptionList, 
+    ideaEvOptionList, 
+    issueEvOptionList, 
+    projectEvOptionList, 
+    requirementEvOptionList, 
+    robotEvOptionList, 
+    scriptEvOptionList, 
+    spritEvOptionList, 
+    testCaseEvOptionList,
+ } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -20,6 +75,7 @@ interface FormValue {
     docEvCfg: string[] | undefined;
     earthlyEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
+    atomgitEvCfg: string[] | undefined;
     giteeEvCfg: string[] | undefined;
     gitlabEvCfg: string[] | undefined;
     issueEvCfg: string[] | undefined;
@@ -64,6 +120,10 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(extEvCfgValues.length == extEvOptionList.length);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(extEvCfgValues.length > 0 && extEvCfgValues.length < extEvOptionList.length);
 
+    const atomgitEvCfgValues = genAtomgitEvCfgValues(props.subscribe.event_cfg.atomgit_ev_cfg);
+    const [atomgitEvCfgCheckAll, setAtomgitEvCfgCheckAll] = useState(atomgitEvCfgValues.length == atomgitEvOptionList.length);
+    const [atomgitEvCfgIndeterminate, setAtomgitEvCfgIndeterminate] = useState(atomgitEvCfgValues.length > 0 && atomgitEvCfgValues.length < atomgitEvOptionList.length);
+    
     const giteeEvCfgValues = genGiteeEvCfgValues(props.subscribe.event_cfg.gitee_ev_cfg);
     const [giteeEvCfgCheckAll, setGiteeEvCfgCheckAll] = useState(giteeEvCfgValues.length == giteeEvOptionList.length);
     const [giteeEvCfgIndeterminate, setGiteeEvCfgIndeterminate] = useState(giteeEvCfgValues.length > 0 && giteeEvCfgValues.length < giteeEvOptionList.length);
@@ -124,6 +184,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 earthly_ev_cfg: calcEarthlyEvCfg(formValue.earthlyEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
+                atomgit_ev_cfg:calcAtomgitEvCfg(formValue.atomgitEvCfg),
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
                 gitlab_ev_cfg: calcGitlabEvCfg(formValue.gitlabEvCfg),
                 issue_ev_cfg: calcIssueEvCfg(formValue.issueEvCfg),
@@ -159,6 +220,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "earthlyEvCfg": earthlyEvCfgValues,
                     "scriptEvCfg": scriptEvCfgValues,
                     "extEvCfg": extEvCfgValues,
+                    "atomgitEvcfg":atomgitEvCfgValues,
                     "giteeEvCfg": giteeEvCfgValues,
                     "gitlabEvCfg": gitlabEvCfgValues,
                     "issueEvCfg": issueEvCfgValues,
@@ -319,6 +381,31 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setExtEvCfgCheckAll(false);
                                 setExtEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={atomgitEvCfgIndeterminate} checked={atomgitEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setAtomgitEvCfgIndeterminate(false);
+                        if (atomgitEvCfgCheckAll) {
+                            setAtomgitEvCfgCheckAll(false);
+                            form.setFieldValue("atomgitEvCfg", []);
+                        } else {
+                            setAtomgitEvCfgCheckAll(true);
+                            form.setFieldValue("atomgitEvCfg", atomgitEvOptionList.map(item => item.value));
+                        }
+                    }}>atomgit事件</Checkbox>} name="atomgitEvCfg">
+                        <Checkbox.Group options={atomgitEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setAtomgitEvCfgCheckAll(false);
+                                setAtomgitEvCfgIndeterminate(false);
+                            } else if (values.length == atomgitEvOptionList.length) {
+                                setAtomgitEvCfgCheckAll(true);
+                                setAtomgitEvCfgIndeterminate(false);
+                            } else {
+                                setAtomgitEvCfgCheckAll(false);
+                                setAtomgitEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>
