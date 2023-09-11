@@ -1215,6 +1215,32 @@ pub mod api_collection {
     }
 }
 
+pub mod atomgit {
+    use prost::Message;
+    use proto_gen_rust::events_atomgit;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        IssueEvent(events_atomgit::IssueEvent),
+        PushEvent(events_atomgit::PushEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_atomgit::IssueEvent::type_url() {
+            if let Ok(ev) = events_atomgit::IssueEvent::decode(data.value.as_slice()) {
+                return Some(Event::IssueEvent(ev));
+            }
+        } else if data.type_url == events_atomgit::PushEvent::type_url() {
+            if let Ok(ev) = events_atomgit::PushEvent::decode(data.value.as_slice()) {
+                return Some(Event::PushEvent(ev));
+            }
+        } 
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -1235,6 +1261,7 @@ pub enum EventMessage {
     IdeaEvent(idea::Event),
     DataAnnoEvent(data_anno::Event),
     ApiCollectionEvent(api_collection::Event),
+    AtomgitEvent(atomgit::Event),
     NoopEvent(),
 }
 
@@ -1294,6 +1321,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = api_collection::decode_event(data) {
         return Some(EventMessage::ApiCollectionEvent(ret));
+    }
+    if let Some(ret) = atomgit::decode_event(data) {
+        return Some(EventMessage::AtomgitEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

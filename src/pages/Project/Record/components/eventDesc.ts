@@ -3621,6 +3621,81 @@ const gitlabEventList: EventDesc[] = [
     },
 ];
 
+const atomgitEventList: EventDesc[] = [
+    {
+        id: "IssueEvent",
+        name: "",
+        attrList: [
+            {
+                key: "action",
+                desc: ""
+            },
+            {
+                key: "issue",
+                desc: ""
+            },
+            {
+                key: "repository",
+                desc: ""
+            },
+            {
+                key: "sender",
+                desc: ""
+            },
+        ]
+    },
+    {
+        id: "PushEvent",
+        name: "",
+        attrList: [
+            {
+                key: "after",
+                desc: "",
+            },
+            {
+                key: "before",
+                desc: "",
+            },
+            {
+                key: "commits",
+                desc: "",
+            },
+            {
+                key: "compare",
+                desc: "",
+            },
+            {
+                key: "created",
+                desc: "",
+            },
+            {
+                key: "deleted",
+                desc: "",
+            },
+            {
+                key: "forced",
+                desc: "",
+            },
+            {
+                key: "head_commit",
+                desc: "",
+            },
+            {
+                key: "ref",
+                desc: "",
+            },
+            {
+                key: "repository",
+                desc: "",
+            },
+            {
+                key: "sender",
+                desc: "",
+            },
+        ]
+    },
+];
+
 const giteeEventList: EventDesc[] = [
     {
         id: "PushEvent",
@@ -4033,14 +4108,19 @@ export const eventGroupList: EventGroup[] = [
         eventDescList: extEventList,
     },
     {
-        id: "GitlabEvent",
-        name: "gitlab",
-        eventDescList: gitlabEventList,
+        id: "AtomgitEvent",
+        name: "atomgit",
+        eventDescList: atomgitEventList,
     },
     {
         id: "GiteeEvent",
         name: "gitee",
         eventDescList: giteeEventList,
+    },
+    {
+        id: "GitlabEvent",
+        name: "gitlab",
+        eventDescList: gitlabEventList,
     },
     {
         id: "RobotEvent",

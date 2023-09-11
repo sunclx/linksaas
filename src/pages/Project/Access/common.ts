@@ -1,14 +1,16 @@
+import iconAtomgit from '@/assets/allIcon/icon-atomgit.png';
 import iconGitee from '@/assets/allIcon/icon-gitee.png';
-// import iconGods from '@/assets/allIcon/icon-gods.png';
-// import iconJenkins from '@/assets/allIcon/icon-jenkins.png';
-// import iconGitTea from '@/assets/allIcon/icon-gittea.png';
-// import iconJira from '@/assets/allIcon/icon-jira.png';
 import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
 import * as API from '@/api/external_events';
 
 export const platform = [
   {
-    title: 'GitLab',
+    title: 'Atomgit',
+    icon: iconAtomgit,
+    eventSource: API.EVENT_SOURCE_ATOMGIT,
+  },
+  {
+    title: 'Gitlab',
     icon: iconGitlab,
     eventSource: API.EVENT_SOURCE_GITLAB,
   },

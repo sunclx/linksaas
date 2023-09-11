@@ -228,6 +228,11 @@ export type ApiCollectionEvCfg = {
     remove: boolean;
 }
 
+export type AtomgitEvCfg = {
+    push: boolean;
+    issue: boolean;
+}
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     book_shelf_ev_cfg: BookShelfEvCfg;
@@ -246,6 +251,7 @@ export type EventCfg = {
     idea_ev_cfg: IdeaEvCfg;
     data_anno_ev_cfg: DataAnnoEvCfg;
     api_collection_ev_cfg: ApiCollectionEvCfg;
+    atomgit_ev_cfg: AtomgitEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -367,6 +373,12 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
         cfg.api_collection_ev_cfg = {
             create: false,
             remove: false,
+        };
+    }
+    if (cfg.atomgit_ev_cfg == undefined) {
+        cfg.atomgit_ev_cfg = {
+            push: false,
+            issue: false,
         };
     }
     return cfg;

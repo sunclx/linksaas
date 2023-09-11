@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg,
-    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg
+    ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -2065,6 +2065,48 @@ export const genApiCollectionEvCfgValues = (cfg: ApiCollectionEvCfg): string[] =
     }
     if (cfg.remove) {
         retList.push("remove");
+    }
+    return retList;
+};
+
+
+export const atomgitEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "IssueEvent",
+        value: "issue",
+    },
+    {
+        label: "PushEvent",
+        value: "push",
+    },
+];
+
+export const calcAtomgitEvCfg = (values: string[] | undefined): AtomgitEvCfg => {
+    const ret: AtomgitEvCfg = {
+        issue: false,
+        push: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "issue") {
+            ret.issue = true;
+        } else if (value == "push") {
+            ret.push = true;
+        }
+    });
+    return ret;
+};
+
+export const genAtomgitEvCfgValues = (cfg: AtomgitEvCfg): string[] => {
+    const retList: string[] = [];
+    
+    if (cfg.issue) {
+        retList.push("issue");
+    }
+    if (cfg.push) {
+        retList.push("push");
     }
     return retList;
 };
