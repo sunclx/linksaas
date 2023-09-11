@@ -127,6 +127,8 @@ function get_issue_simple_content(
     opt = "关闭";
   } else if (inner?.action == "reopen") {
     opt = "重新打开";
+  } else if (inner.action == "deleted"){
+    opt = "删除";
   }
   const retList = [
     new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 源用户 ${inner.sender?.name ?? ""} ${opt}工单`),
