@@ -229,15 +229,8 @@ export type ApiCollectionEvCfg = {
 }
 
 export type AtomgitEvCfg = {
-    build: boolean;
-    comment: boolean;
-    issue: boolean;
-    job: boolean;
-    merge_request: boolean;
-    pipeline: boolean;
     push: boolean;
-    tag: boolean;
-    wiki: boolean;
+    issue: boolean;
 }
 
 export type EventCfg = {
@@ -384,15 +377,8 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
     }
     if (cfg.atomgit_ev_cfg == undefined) {
         cfg.atomgit_ev_cfg = {
-            build: false,
-            comment: false,
-            issue: false,
-            job: false,
-            merge_request: false,
-            pipeline: false,
             push: false,
-            tag: false,
-            wiki: false,
+            issue: false,
         };
     }
     return cfg;

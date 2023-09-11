@@ -2072,77 +2072,28 @@ export const genApiCollectionEvCfgValues = (cfg: ApiCollectionEvCfg): string[] =
 
 export const atomgitEvOptionList: CheckboxOptionType[] = [
     {
-        label: "BuildEvent",
-        value: "build",
-    },
-    {
-        label: "CommentEvent",
-        value: "comment",
-    },
-    {
         label: "IssueEvent",
         value: "issue",
-    },
-    {
-        label: "JobEvent",
-        value: "job",
-    },
-    {
-        label: "MergeRequestEvent",
-        value: "mergeRequest",
-    },
-    {
-        label: "PipelineEvent",
-        value: "pipeline",
     },
     {
         label: "PushEvent",
         value: "push",
     },
-    {
-        label: "TagEvent",
-        value: "tag",
-    },
-    {
-        label: "WikiEvent",
-        value: "wiki",
-    },
 ];
 
 export const calcAtomgitEvCfg = (values: string[] | undefined): AtomgitEvCfg => {
     const ret: AtomgitEvCfg = {
-        build: false,
-        comment: false,
         issue: false,
-        job: false,
-        merge_request: false,
-        pipeline: false,
         push: false,
-        tag: false,
-        wiki: false,
     };
     if (values == undefined) {
         return ret;
     }
     values.forEach(value => {
-        if (value == "build") {
-            ret.build = true;
-        } else if (value == "comment") {
-            ret.comment = true;
-        } else if (value == "issue") {
+        if (value == "issue") {
             ret.issue = true;
-        } else if (value == "job") {
-            ret.job = true;
-        } else if (value == "mergeRequest") {
-            ret.merge_request = true;
-        } else if (value == "pipeline") {
-            ret.pipeline = true;
         } else if (value == "push") {
             ret.push = true;
-        } else if (value == "tag") {
-            ret.tag = true;
-        } else if (value == "wiki") {
-            ret.wiki = true;
         }
     });
     return ret;
@@ -2150,32 +2101,12 @@ export const calcAtomgitEvCfg = (values: string[] | undefined): AtomgitEvCfg => 
 
 export const genAtomgitEvCfgValues = (cfg: AtomgitEvCfg): string[] => {
     const retList: string[] = [];
-    if (cfg.build) {
-        retList.push("build");
-    }
-    if (cfg.comment) {
-        retList.push("comment");
-    }
+    
     if (cfg.issue) {
         retList.push("issue");
     }
-    if (cfg.job) {
-        retList.push("job");
-    }
-    if (cfg.merge_request) {
-        retList.push("mergeRequest");
-    }
-    if (cfg.pipeline) {
-        retList.push("pipeline");
-    }
     if (cfg.push) {
         retList.push("push");
-    }
-    if (cfg.tag) {
-        retList.push("tag");
-    }
-    if (cfg.wiki) {
-        retList.push("wiki");
     }
     return retList;
 };

@@ -1223,56 +1223,20 @@ pub mod atomgit {
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
     pub enum Event {
-        BuildEvent(events_atomgit::BuildEvent),
-        CommentEvent(events_atomgit::CommentEvent),
         IssueEvent(events_atomgit::IssueEvent),
-        JobEvent(events_atomgit::JobEvent),
-        MergeRequestEvent(events_atomgit::MergeRequestEvent),
-        PipelineEvent(events_atomgit::PipelineEvent),
         PushEvent(events_atomgit::PushEvent),
-        TagEvent(events_atomgit::TagEvent),
-        WikiEvent(events_atomgit::WikiEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_atomgit::BuildEvent::type_url() {
-            if let Ok(ev) = events_atomgit::BuildEvent::decode(data.value.as_slice()) {
-                return Some(Event::BuildEvent(ev));
-            }
-        } else if data.type_url == events_atomgit::CommentEvent::type_url() {
-            if let Ok(ev) = events_atomgit::CommentEvent::decode(data.value.as_slice()) {
-                return Some(Event::CommentEvent(ev));
-            }
-        } else if data.type_url == events_atomgit::IssueEvent::type_url() {
+        if data.type_url == events_atomgit::IssueEvent::type_url() {
             if let Ok(ev) = events_atomgit::IssueEvent::decode(data.value.as_slice()) {
                 return Some(Event::IssueEvent(ev));
-            }
-        } else if data.type_url == events_atomgit::JobEvent::type_url() {
-            if let Ok(ev) = events_atomgit::JobEvent::decode(data.value.as_slice()) {
-                return Some(Event::JobEvent(ev));
-            }
-        } else if data.type_url == events_atomgit::MergeRequestEvent::type_url() {
-            if let Ok(ev) = events_atomgit::MergeRequestEvent::decode(data.value.as_slice()) {
-                return Some(Event::MergeRequestEvent(ev));
-            }
-        } else if data.type_url == events_atomgit::PipelineEvent::type_url() {
-            if let Ok(ev) = events_atomgit::PipelineEvent::decode(data.value.as_slice()) {
-                return Some(Event::PipelineEvent(ev));
             }
         } else if data.type_url == events_atomgit::PushEvent::type_url() {
             if let Ok(ev) = events_atomgit::PushEvent::decode(data.value.as_slice()) {
                 return Some(Event::PushEvent(ev));
             }
-        } else if data.type_url == events_atomgit::TagEvent::type_url() {
-            if let Ok(ev) = events_atomgit::TagEvent::decode(data.value.as_slice()) {
-                return Some(Event::TagEvent(ev));
-            }
-        } else if data.type_url == events_atomgit::WikiEvent::type_url() {
-            if let Ok(ev) = events_atomgit::WikiEvent::decode(data.value.as_slice()) {
-                return Some(Event::WikiEvent(ev));
-            }
-        }
-
+        } 
         None
     }
 }
