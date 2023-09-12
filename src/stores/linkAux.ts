@@ -29,7 +29,7 @@ import { open } from '@tauri-apps/api/shell';
 import { uniqId } from '@/utils/utils';
 import { openBook } from '@/pages/Book/utils';
 import type { API_COLL_TYPE } from '@/api/api_collection';
-import { API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
+import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 
 /*
@@ -1072,6 +1072,13 @@ class LinkAuxStore {
       new WebviewWindow(label, {
         title: `${name}(OPENAPI/SWAGGER)`,
         url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}`,
+        x: pos.x + Math.floor(Math.random() * 200),
+        y: pos.y + Math.floor(Math.random() * 200),
+      });
+    } else if(apiCollType == API_COLL_CUSTOM) {
+      new WebviewWindow(label, {
+        title: `${name}(自定义接口)`,
+        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&admin=${this.rootStore.projectStore.isAdmin}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });

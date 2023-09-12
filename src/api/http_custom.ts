@@ -210,6 +210,18 @@ export type ListApiItemResponse = {
     item_list: ApiItemInfo[];
 };
 
+export type GetApiItemRequest = {
+     session_id: string;
+     project_id: string;
+     api_coll_id: string;
+     api_item_id: string;
+};
+
+export type GetApiItemResponse = {
+    code: number;
+    err_msg: string;
+    item_info: ApiItemInfo;
+};
 
 export type RemoveApiItemRequest = {
     session_id: string;
@@ -319,6 +331,16 @@ export async function list_api_item(request: ListApiItemRequest): Promise<ListAp
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
     return invoke<ListApiItemResponse>(cmd, {
+        request,
+    });
+}
+
+//获取接口
+export async function get_api_item(request: GetApiItemRequest): Promise<GetApiItemResponse> {
+    const cmd = 'plugin:http_custom_api|get_api_item';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+    return invoke<GetApiItemResponse>(cmd, {
         request,
     });
 }

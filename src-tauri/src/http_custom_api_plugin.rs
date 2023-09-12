@@ -257,6 +257,31 @@ async fn list_api_item<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_api_item<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetApiItemRequest,
+) -> Result<GetApiItemResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = HttpCustomApiClient::new(chan.unwrap());
+    match client.get_api_item(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_api_item_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_api_item".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn remove_api_item<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -299,6 +324,7 @@ impl<R: Runtime> HttpCustomApiPlugin<R> {
                 create_api_item,
                 update_api_item,
                 list_api_item,
+                get_api_item,
                 remove_api_item,
             ]),
         }

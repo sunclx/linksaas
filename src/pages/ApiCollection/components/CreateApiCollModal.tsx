@@ -2,7 +2,7 @@ import { Card, Checkbox, Form, Input, Modal, Select, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
-import { API_COLL_GRPC, API_COLL_OPENAPI, create_rpc, create_open_api } from "@/api/api_collection";
+import { API_COLL_GRPC, API_COLL_OPENAPI, create_rpc, create_open_api, API_COLL_CUSTOM } from "@/api/api_collection";
 import Button from "@/components/Button";
 import { DeleteOutlined, FolderOpenOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
@@ -10,6 +10,7 @@ import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { make_tmp_dir, write_file, set_file_owner, FILE_OWNER_TYPE_API_COLLECTION } from "@/api/fs";
 import { Command } from '@tauri-apps/api/shell';
 import { request } from "@/utils/request";
+import { create_custom } from "@/api/http_custom";
 
 export interface CreateApiCollModalProps {
     onCancel: () => void;
@@ -38,6 +39,9 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
     //openapi相关字段
     const [openApiPath, setOpenApiPath] = useState("");
     const [openApiProtocol, setOpenApiProtocol] = useState("http");
+
+    //自定义接口相关字段
+    const [customProtocol, setCustomProtocol] = useState("https");
 
     const choiceRootPath = async () => {
         const selected = await open_dialog({
@@ -90,10 +94,13 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
         if (apiName == "") {
             return false;
         }
-        if (defaultAddr.split(":").length != 2) {
+        if (defaultAddr.trim() == "") {
             return false;
         }
         if (apiCollType == API_COLL_GRPC) {
+            if (defaultAddr.split(":").length != 2) {
+                return false;
+            }
             if (grpcRootPath == "") {
                 return false;
             }
@@ -105,6 +112,8 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
             return true;
         } else if (apiCollType == API_COLL_OPENAPI) {
             return openApiPath != "";
+        } else if (apiCollType == API_COLL_CUSTOM) {
+            return true;
         } else {
             return false;
         }
@@ -175,6 +184,18 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
         props.onOk();
     };
 
+    const createCustomApi = async () => {
+        await request(create_custom({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            name: apiName,
+            default_addr: defaultAddr,
+            net_protocol: customProtocol,
+        }));
+        message.info("创建成功");
+        props.onOk();
+    };
+
     return (
         <Modal open title="创建接口集合" okText="创建" okButtonProps={{ disabled: !checkValid() }}
             onCancel={e => {
@@ -189,6 +210,8 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
                     createGrpcApi();
                 } else if (apiCollType == API_COLL_OPENAPI) {
                     createOpenApi();
+                } else if (apiCollType == API_COLL_CUSTOM) {
+                    createCustomApi();
                 }
             }}>
             <Form labelCol={{ span: 5 }}>
@@ -204,11 +227,12 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
                         <Select.Option value={-1}>未选择</Select.Option>
                         <Select.Option value={API_COLL_GRPC}>GRPC接口</Select.Option>
                         <Select.Option value={API_COLL_OPENAPI}>OPENAPI接口</Select.Option>
+                        <Select.Option value={API_COLL_CUSTOM}>自定义接口</Select.Option>
                     </Select>
                 </Form.Item>
                 <Form.Item label="服务地址" help={
                     <>
-                        {defaultAddr !== "" && defaultAddr.split(":").length != 2 && (
+                        {apiCollType == API_COLL_GRPC && defaultAddr !== "" && defaultAddr.split(":").length != 2 && (
                             <span style={{ color: "red" }}>请输入 地址:端口</span>
                         )}
                     </>
@@ -260,6 +284,14 @@ const CreateApiCollModal = (props: CreateApiCollModalProps) => {
                             </Select>
                         </Form.Item>
                     </>
+                )}
+                {apiCollType == API_COLL_CUSTOM && (
+                    <Form.Item label="网络协议">
+                        <Select value={customProtocol} onChange={value => setCustomProtocol(value)}>
+                            <Select.Option value="http">http</Select.Option>
+                            <Select.Option value="https">https</Select.Option>
+                        </Select>
+                    </Form.Item>
                 )}
             </Form>
             {apiCollType == API_COLL_GRPC && (

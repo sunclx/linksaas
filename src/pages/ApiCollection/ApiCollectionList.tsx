@@ -94,7 +94,7 @@ const ApiCollectionList = () => {
                 <>
                     {row.api_coll_type == API_COLL_GRPC && "GRPC"}
                     {row.api_coll_type == API_COLL_OPENAPI && "OPENAPI/SWAGGER"}
-                    {row.api_coll_type == API_COLL_CUSTOM && "自定义"}
+                    {row.api_coll_type == API_COLL_CUSTOM && "自定义接口"}
                 </>
             ),
         },
