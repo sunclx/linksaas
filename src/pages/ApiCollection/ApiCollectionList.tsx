@@ -13,6 +13,7 @@ import type { ColumnsType } from 'antd/lib/table';
 import { EditText } from "@/components/EditCell/EditText";
 import UpdateGrpcModal from "./components/UpdateGrpcModal";
 import UpdateSwaggerModal from "./components/UpdateSwaggerModal";
+import UpdateCustomModal from "./components/UpdateCustomModal";
 
 const PAGE_SIZE = 10;
 
@@ -30,6 +31,7 @@ const ApiCollectionList = () => {
     const [removeApiCollInfo, setRemoveApiCollInfo] = useState<ApiCollInfo | null>(null);
     const [updateGrpcApiId, setUpdateGrpcApiId] = useState("");
     const [updateOpenApiId, setUpdateOpenApiId] = useState("");
+    const [updateCustomApiId, setUpdateCustomApiId] = useState("");
 
     const loadApiCollInfoList = async () => {
         const res = await request(list_info({
@@ -135,6 +137,12 @@ const ApiCollectionList = () => {
             title: "操作",
             render: (_, row) => (
                 <Space size="large">
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr);
+                        }}>打开</Button>
                     {row.api_coll_type == API_COLL_GRPC && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
                             disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
@@ -151,6 +159,15 @@ const ApiCollectionList = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setUpdateOpenApiId(row.api_coll_id);
+                            }}>更新接口协议</Button>
+                    )}
+                    {row.api_coll_type == API_COLL_CUSTOM && (
+                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                            disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setUpdateCustomApiId(row.api_coll_id);
                             }}>更新接口协议</Button>
                     )}
                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
@@ -214,6 +231,9 @@ const ApiCollectionList = () => {
             )}
             {updateOpenApiId != "" && (
                 <UpdateSwaggerModal apiCollId={updateOpenApiId} onClose={() => setUpdateOpenApiId("")} />
+            )}
+            {updateCustomApiId != "" && (
+                <UpdateCustomModal apiCollId={updateCustomApiId} onClose={() => setUpdateCustomApiId("")} />
             )}
         </CardWrap>
     );

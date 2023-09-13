@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HTTP_BODY_NONE, type ApiItemInfo, remove_api_item } from "@/api/http_custom";
+import { HTTP_BODY_NONE, type ApiItemInfo, remove_api_item, update_api_item } from "@/api/http_custom";
 import { Card, Form, Input, Modal, Popover, Select, Space, Tabs } from "antd";
 import Button from "@/components/Button";
 import { MoreOutlined } from "@ant-design/icons";
@@ -28,10 +28,28 @@ const ApiDetail = (props: ApiDetailProps) => {
             api_coll_id: store.api.apiCollId,
             api_item_id: props.apiItem.api_item_id,
         }));
-        store.api.loadApiItemList();
-        const tmpList = store.api.tabApiIdList.filter(id => id != props.apiItem.api_item_id);
-        store.api.tabApiIdList = tmpList;
+        store.api.removeApiItem(props.apiItem.api_item_id);
         setShowRemoveModal(false);
+    };
+
+    const updateApiItem = async () => {
+        await request(update_api_item({
+            session_id: store.api.sessionId,
+            project_id: store.api.projectId,
+            api_coll_id: store.api.apiCollId,
+            group_id: apiItem.group_id,
+            api_item_id: apiItem.api_item_id,
+            api_item_name: apiItem.api_item_name,
+            method: apiItem.method,
+            url: apiItem.url,
+            param_list: apiItem.param_list.slice(),
+            header_list: apiItem.header_list.slice(),
+            content_type: apiItem.content_type,
+            body_type: apiItem.body_type,
+            body: apiItem.body,
+        }));
+        await store.api.updateApiItem(apiItem.api_item_id);
+        setHasChange(false);
     };
 
     return (
@@ -61,18 +79,26 @@ const ApiDetail = (props: ApiDetailProps) => {
             }
             extra={
                 <Space>
-                    <Button disabled={!(hasChange && ((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser))}
+                    <Button type="default" disabled={!(hasChange && ((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser))}
                         onClick={e => {
-                            //TODO
+                            e.stopPropagation();
+                            e.preventDefault();
+                            updateApiItem();
                         }}>保存</Button>
                     <Popover trigger="click" placement="bottomLeft" content={
-                        <div>
+                        <Space direction="vertical">
+                            <Button type="link" disabled={!hasChange} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setApiItem(Object.assign({}, props.apiItem));
+                                setHasChange(false);
+                            }}>重置接口</Button>
                             <Button type="link" danger disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setShowRemoveModal(true);
                             }}>删除接口</Button>
-                        </div>
+                        </Space>
                     }>
                         <MoreOutlined />
                     </Popover>

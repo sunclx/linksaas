@@ -5,7 +5,7 @@ import { get_session, get_user_id } from "@/api/user";
 import type { ApiCollInfo } from "@/api/api_collection";
 import { get as get_coll_info } from "@/api/api_collection";
 import { request } from "@/utils/request";
-import { list_api_item, list_group, get_custom } from "@/api/http_custom";
+import { list_api_item, list_group, get_custom, get_api_item } from "@/api/http_custom";
 
 
 class ApiStore {
@@ -162,6 +162,34 @@ class ApiStore {
             return this._apiItemList[index];
         }
         return null;
+    }
+
+    removeApiItem(apiItemId: string) {
+        const tmpList = this._apiItemList.filter(item => item.api_item_id != apiItemId);
+        const tmpIdList = this._tabApiIdList.filter(id => id != apiItemId);
+        runInAction(() => {
+            this._apiItemList = tmpList;
+            this._tabApiIdList = tmpIdList;
+        });
+    }
+
+    async updateApiItem(apiItemId: string) {
+        const res = await request(get_api_item({
+            session_id: this._sessionId,
+            project_id: this._projectId,
+            api_coll_id: this._apiCollId,
+            api_item_id: apiItemId,
+        }));
+        const tmpList = this._apiItemList.slice();
+        const index = tmpList.findIndex(item => item.api_item_id == apiItemId);
+        if (index != -1) {
+            tmpList[index] = res.item_info;
+        } else {
+            tmpList.push(res.item_info);
+        }
+        runInAction(() => {
+            this._apiItemList = tmpList;
+        });
     }
 }
 
