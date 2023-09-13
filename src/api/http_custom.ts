@@ -19,6 +19,7 @@ export type ApiGroupInfo = {
 };
 
 export type HttpKeyValue = {
+    id: string;
     key: string;
     value: string;
 };
@@ -28,6 +29,7 @@ export type UrlEncodeBody = {
 };
 
 export type MultiPart = {
+    id: string;
     key: string;
     value: string;
     is_file: boolean;
@@ -52,6 +54,7 @@ export type ApiItemInfo = {
     url: string;
     param_list: HttpKeyValue[];
     header_list: HttpKeyValue[];
+    content_type: string;
     body_type: HTTP_BODY_TYPE;
     body: Body;
 };
@@ -162,6 +165,7 @@ export type CreateApiItemRequest = {
     url: string;
     param_list: HttpKeyValue[];
     header_list: HttpKeyValue[];
+    content_type: string;
     body_type: HTTP_BODY_TYPE;
     body: Body;
 };
@@ -185,6 +189,7 @@ export type UpdateApiItemRequest = {
     url: string;
     param_list: HttpKeyValue[];
     header_list: HttpKeyValue[];
+    content_type: string;
     body_type: HTTP_BODY_TYPE;
     body: Body;
 };
@@ -211,10 +216,10 @@ export type ListApiItemResponse = {
 };
 
 export type GetApiItemRequest = {
-     session_id: string;
-     project_id: string;
-     api_coll_id: string;
-     api_item_id: string;
+    session_id: string;
+    project_id: string;
+    api_coll_id: string;
+    api_item_id: string;
 };
 
 export type GetApiItemResponse = {

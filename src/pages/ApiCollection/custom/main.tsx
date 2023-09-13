@@ -6,14 +6,18 @@ import 'moment/dist/locale/zh-cn';
 import '@/styles/global.less';
 import { BrowserRouter } from "react-router-dom";
 import CustomPage from "./CustomPage";
+import { Provider } from 'mobx-react';
+import stores from './stores';
 
 const App = () => {
     return (
-        <ConfigProvider locale={zhCN}>
-            <BrowserRouter>
-                <CustomPage/>
-            </BrowserRouter>
-        </ConfigProvider>
+        <Provider {...stores}>
+            <ConfigProvider locale={zhCN}>
+                <BrowserRouter>
+                    <CustomPage />
+                </BrowserRouter>
+            </ConfigProvider>
+        </Provider>
     );
 }
 

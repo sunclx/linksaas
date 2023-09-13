@@ -1,13 +1,12 @@
-import React, { useState } from "react";
-import type { GroupInfo } from "./types";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Input, List, Modal, Popover, Space, message } from "antd";
 import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
-import type { ApiCollInfo } from "@/api/api_collection";
-import { HTTP_BODY_NONE, create_api_item, remove_group, update_group } from "@/api/http_custom";
-import { get_session } from "@/api/user";
+import { type ApiGroupInfo, HTTP_BODY_NONE, create_api_item, remove_group, update_group } from "@/api/http_custom";
 import { request } from "@/utils/request";
 import s from "./CustomGroup.module.less";
 import classNames from "classnames";
+import { useCustomStores } from "./stores";
+import { observer } from 'mobx-react';
 
 interface UpdateNameModalProps {
     name: string;
@@ -46,71 +45,68 @@ const UpdateNameModal = (props: UpdateNameModalProps) => {
 }
 
 export interface CustomGroupProps {
-    projectId: string;
-    group: GroupInfo;
-    curUserId: string;
-    isAdminUser: boolean;
-    collInfo: ApiCollInfo;
-    curApiIdList: string[];
-    onChange: () => void;
-    onSelect: (apiItemId: string) => void;
+    group: ApiGroupInfo;
 }
 
 const CustomGroup = (props: CustomGroupProps) => {
+    const store = useCustomStores();
     const [showUpdateGrpName, setShowUpdateGrpName] = useState(false);
+    const [tabApiIdList, setTabApiIdList] = useState<string[]>([]);
 
     const createApiItem = async () => {
-        const sessionId = await get_session();
         await request(create_api_item({
-            session_id: sessionId,
-            project_id: props.projectId,
-            api_coll_id: props.collInfo.api_coll_id,
+            session_id: store.api.sessionId,
+            project_id: store.api.projectId,
+            api_coll_id: store.api.apiCollId,
             group_id: props.group.group_id,
             api_item_name: "New Api",
             method: "GET",
             url: "/",
             param_list: [],
             header_list: [],
+            content_type: "",
             body_type: HTTP_BODY_NONE,
             body: {
                 NodyBody: "",
             },
         }));
-        props.onChange();
+        store.api.loadApiItemList();
     };
 
     const removeGroup = async () => {
-        const sessionId = await get_session();
         await request(remove_group({
-            session_id: sessionId,
-            project_id: props.projectId,
-            api_coll_id: props.collInfo.api_coll_id,
+            session_id: store.api.sessionId,
+            project_id: store.api.projectId,
+            api_coll_id: store.api.apiCollId,
             group_id: props.group.group_id,
         }));
         message.info("删除接口分组成功");
 
-        props.onChange();
+        store.api.loadGroupList();
     };
 
     const updateGroupName = async (newName: string) => {
-        const sessionId = await get_session();
         await request(update_group({
-            session_id: sessionId,
-            project_id: props.projectId,
-            api_coll_id: props.collInfo.api_coll_id,
+            session_id: store.api.sessionId,
+            project_id: store.api.projectId,
+            api_coll_id: store.api.apiCollId,
             group_id: props.group.group_id,
             group_name: newName,
         }));
         message.info("更新接口分组名称成功");
         setShowUpdateGrpName(false);
-        props.onChange();
+        store.api.loadGroupList();
     };
+
+    useEffect(() => {
+        setTabApiIdList(store.api.tabApiIdList);
+    }, [store.api.tabApiIdList]);
 
     return (
         <Card title={<span title={props.group.group_name}>{props.group.group_name}</span>} style={{ width: "100%" }} bordered={false} extra={
             <Space>
                 <Button type="link" style={{ minBlockSize: 0, padding: "0px 0px" }} title="创建接口"
-                    disabled={!((props.collInfo.create_user_id == props.curUserId) || props.isAdminUser)}
+                    disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -120,7 +116,7 @@ const CustomGroup = (props: CustomGroupProps) => {
                 </Button>
                 <Popover trigger="click" placement="right" content={
                     <Space direction="vertical">
-                        <Button type="link" disabled={!((props.collInfo.create_user_id == props.curUserId) || props.isAdminUser)}
+                        <Button type="link" disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)}
                             onClick={e => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -129,7 +125,7 @@ const CustomGroup = (props: CustomGroupProps) => {
                             修改名称
                         </Button>
                         <Button type="link" danger
-                            disabled={!((props.group.item_count == 0) && ((props.collInfo.create_user_id == props.curUserId) || props.isAdminUser))}
+                            disabled={!((props.group.item_count == 0) && ((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser))}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -143,12 +139,14 @@ const CustomGroup = (props: CustomGroupProps) => {
                 </Popover>
             </Space>
         }>
-            <List rowKey="api_item_id" dataSource={props.group.item_list} renderItem={item => (
-                <List.Item className={classNames(s.api_item, props.curApiIdList.includes(item.api_item_id) ? s.active : "")}>
+            <List rowKey="api_item_id" dataSource={store.api.apiItemList.filter(item => item.group_id == props.group.group_id)} renderItem={item => (
+                <List.Item className={classNames(s.api_item, tabApiIdList.includes(item.api_item_id) ? s.active : "")}>
                     <Button type="link" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        props.onSelect(item.api_item_id);
+                        if (!store.api.tabApiIdList.includes(item.api_item_id)) {
+                            store.api.tabApiIdList = [...store.api.tabApiIdList, item.api_item_id];
+                        }
                     }}>{item.api_item_name}</Button>
                 </List.Item>
             )} />
@@ -162,4 +160,4 @@ const CustomGroup = (props: CustomGroupProps) => {
     );
 };
 
-export default CustomGroup;
+export default observer(CustomGroup);

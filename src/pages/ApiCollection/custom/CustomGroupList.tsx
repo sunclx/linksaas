@@ -1,34 +1,33 @@
 import Button from "@/components/Button";
 import { FolderAddOutlined } from "@ant-design/icons";
 import { Card, Form, Input, List, Modal, message } from "antd";
-import React, { useEffect, useState } from "react";
-import type { ApiCollInfo } from "@/api/api_collection";
-import { list_group, list_api_item, create_group } from "@/api/http_custom";
+import React, { useState } from "react";
+import { create_group } from "@/api/http_custom";
 import { request } from "@/utils/request";
 import { get_session } from "@/api/user";
-import { type GroupInfo } from "./types";
+import { useCustomStores } from "./stores";
+import { observer } from 'mobx-react';
 import CustomGroup from "./CustomGroup";
 
 interface AddGroupModalProps {
-    projectId: string;
-    apiCollId: string;
     onCancel: () => void;
-    onOk: () => void;
 }
 
-const AddGroupModal = (props: AddGroupModalProps) => {
+const AddGroupModal = observer((props: AddGroupModalProps) => {
+    const store = useCustomStores();
     const [groupName, setGroupName] = useState("");
 
     const createGroup = async () => {
         const sessionId = await get_session();
         await request(create_group({
             session_id: sessionId,
-            project_id: props.projectId,
-            api_coll_id: props.apiCollId,
+            project_id: store.api.projectId,
+            api_coll_id: store.api.apiCollId,
             group_name: groupName,
         }));
         message.info("创建接口分组成功");
-        props.onOk();
+        store.api.loadGroupList();
+        props.onCancel();
     };
 
     return (
@@ -55,54 +54,18 @@ const AddGroupModal = (props: AddGroupModalProps) => {
             </Form>
         </Modal>
     );
-};
+});
 
-export interface CustomGroupListProps {
-    projectId: string;
-    curUserId: string;
-    isAdminUser: boolean;
-    collInfo: ApiCollInfo;
-    curApiIdList: string[];
-    setCurApiIdList: (itemIdList: string[]) => void;
-}
 
-const CustomGroupList = (props: CustomGroupListProps) => {
+const CustomGroupList = () => {
+    const store = useCustomStores();
 
-    const [groupList, setGroupList] = useState<GroupInfo[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
-
-    const loadApiDef = async () => {
-        const sessionId = await get_session();
-        const groupRes = await request(list_group({
-            session_id: sessionId,
-            project_id: props.projectId,
-            api_coll_id: props.collInfo.api_coll_id,
-        }));
-        const itemRes = await request(list_api_item({
-            session_id: sessionId,
-            project_id: props.projectId,
-            api_coll_id: props.collInfo.api_coll_id,
-            filter_by_group_id: false,
-            group_id: "",
-        }));
-        const tmpList = groupRes.group_list.map(groupItem => {
-            const itemList = itemRes.item_list.filter(item => item.group_id == groupItem.group_id);
-            return {
-                ...groupItem,
-                item_list: itemList,
-            }
-        });
-        setGroupList(tmpList);
-    };
-
-    useEffect(() => {
-        loadApiDef();
-    }, []);
 
     return (
         <Card bordered={false} title="接口列表" extra={
             <Button type="link" title="创建接口分组" style={{ minWidth: 0, padding: "0px 0px" }}
-                disabled={!((props.collInfo.create_user_id == props.curUserId) || props.isAdminUser)}>
+                disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)}>
                 <FolderAddOutlined style={{ fontSize: "20px" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -110,31 +73,17 @@ const CustomGroupList = (props: CustomGroupListProps) => {
                 }} />
             </Button>
         }>
-            <List rowKey="group_id" dataSource={groupList} style={{ height: "calc(100vh - 60px)", overflowY: "scroll" }} renderItem={item => (
+            <List rowKey="group_id" dataSource={store.api.groupList} style={{ height: "calc(100vh - 60px)", overflowY: "scroll" }} renderItem={item => (
                 <List.Item>
-                    <CustomGroup group={item} curUserId={props.curUserId} isAdminUser={props.isAdminUser}
-                        curApiIdList={props.curApiIdList} onSelect={apiItemId => {
-                            if (!props.curApiIdList.includes(apiItemId)) {
-                                const tmpList = props.curApiIdList.slice();
-                                tmpList.push(apiItemId);
-                                props.setCurApiIdList(tmpList);
-                                console.log(tmpList);
-                            }
-                        }}
-                        collInfo={props.collInfo} projectId={props.projectId} onChange={() => {
-                            loadApiDef();
-                        }} />
+                    <CustomGroup group={item} />
                 </List.Item>
             )} />
             {showAddModal == true && (
-                <AddGroupModal projectId={props.projectId} apiCollId={props.collInfo.api_coll_id}
-                    onCancel={() => setShowAddModal(false)} onOk={() => {
-                        setShowAddModal(false);
-                        loadApiDef();
-                    }} />
+                <AddGroupModal
+                    onCancel={() => setShowAddModal(false)} />
             )}
         </Card>
     );
 };
 
-export default CustomGroupList;
+export default observer(CustomGroupList);
