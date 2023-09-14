@@ -236,3 +236,8 @@ export async function check_session(session_id: string): Promise<CheckSessionRes
 export async function get_session(): Promise<string> {
   return invoke<string>('plugin:user_api|get_session', {})
 }
+
+//获取用户ID
+export async function get_user_id(): Promise<string> {
+  return invoke<string>('plugin:user_api|get_user_id', {})
+}

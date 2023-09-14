@@ -66,6 +66,7 @@ mod min_app_shell_plugin;
 mod min_app_store_plugin;
 
 mod api_collection_api_plugin;
+mod http_custom_api_plugin;
 mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
 
@@ -462,6 +463,7 @@ fn main() {
         .plugin(rss_admin_api_plugin::RssAdminApiPlugin::new())
         .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
         .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
+        .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
