@@ -108,9 +108,11 @@ const ApiCollectionList = () => {
                         if (value.trim() == "") {
                             return false;
                         }
-                        if (value.split(":").length != 2) {
-                            message.warn("地址未包含端口信息")
-                            return false;
+                        if (row.api_coll_type == API_COLL_GRPC) {
+                            if (value.split(":").length != 2) {
+                                message.warn("地址未包含端口信息")
+                                return false;
+                            }
                         }
                         try {
                             await request(update_default_addr({
