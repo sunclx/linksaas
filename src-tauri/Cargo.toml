@@ -29,7 +29,7 @@ libaes = "0.6.5"
 local_api_rust = {git = "https://atomgit.com/openlinksaas/local-api-rust.git", tag = "0.1.5"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://atomgit.com/openlinksaas/proto-gen-rust.git", branch = "feature/api_perm"}
+proto_gen_rust = {git = "https://atomgit.com/openlinksaas/proto-gen-rust.git", tag = "0.1.27"}
 rand = "0.8.5"
 regex = "1.8.4"
 reqwest = {version = "0.11.12", features = ["blocking"] }
