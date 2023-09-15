@@ -12,6 +12,7 @@ export type ApiCollInfo = {
     name: string;
     default_addr: string;
     api_coll_type: API_COLL_TYPE;
+    edit_member_user_id_list?: string[];
     create_time: number;
     create_user_id: string;
     create_display_name: string;
@@ -20,6 +21,8 @@ export type ApiCollInfo = {
     update_user_id: string;
     update_display_name: string;
     update_logo_uri: string;
+    can_update: boolean,
+    can_remove: boolean,
 };
 
 export type GrpcExtraInfo = {
@@ -59,6 +62,17 @@ export type UpdateDefaultAddrResponse = {
     err_msg: string;
 };
 
+export type UpdateEditMemberRequest = {
+    session_id: string;
+    project_id: string;
+    api_coll_id: string;
+    member_user_id_list: string[];
+};
+
+export type UpdateEditMemberResponse = {
+    code: number;
+    err_msg: string;
+}
 
 export type ListRequest = {
     session_id: string;
@@ -199,6 +213,15 @@ export async function update_default_addr(request: UpdateDefaultAddrRequest): Pr
     const cmd = 'plugin:api_collection_api|update_default_addr';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateDefaultAddrResponse>(cmd, {
+        request,
+    });
+}
+
+//更新可编辑用户
+export async function update_edit_member(request: UpdateEditMemberRequest): Promise<UpdateEditMemberResponse> {
+    const cmd = 'plugin:api_collection_api|update_edit_member';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateEditMemberResponse>(cmd, {
         request,
     });
 }
