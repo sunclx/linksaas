@@ -18,6 +18,7 @@ const SwaggerPage = () => {
     const apiCollId = urlParams.get("apiCollId") ?? "";
     const fsId = urlParams.get("fsId") ?? "";
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
+    const editStr = urlParams.get("edit") ?? "";
 
     const [spec, setSpec] = useState<object | null>(null);
     const [addr, setAddr] = useState("");
@@ -81,7 +82,7 @@ const SwaggerPage = () => {
                             e.preventDefault();
                             setTmpAddr(addr);
                             setInEdit(true);
-                        }}><EditOutlined /></Button>
+                        }} disabled={editStr.toLowerCase().includes("false")}><EditOutlined /></Button>
                     </Space>
                 )}
             </div>

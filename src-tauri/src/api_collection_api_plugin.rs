@@ -63,6 +63,34 @@ async fn update_default_addr<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_edit_member<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateEditMemberRequest,
+) -> Result<UpdateEditMemberResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ApiCollectionApiClient::new(chan.unwrap());
+    match client.update_edit_member(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_edit_member_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_edit_member".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -308,6 +336,7 @@ impl<R: Runtime> ApiCollectionApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 update_name,
                 update_default_addr,
+                update_edit_member,
                 list,
                 get,
                 remove,

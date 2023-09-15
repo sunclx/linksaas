@@ -65,7 +65,7 @@ const CustomGroupList = () => {
     return (
         <Card bordered={false} title="接口列表" extra={
             <Button type="link" title="创建接口分组" style={{ minWidth: 0, padding: "0px 0px" }}
-                disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)}>
+                disabled={!(store.api.canEdit)}>
                 <FolderAddOutlined style={{ fontSize: "20px" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();

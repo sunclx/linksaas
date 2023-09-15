@@ -1,7 +1,7 @@
 import React from "react";
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { ApiGroupInfo, ApiItemInfo } from "@/api/http_custom";
-import { get_session, get_user_id } from "@/api/user";
+import { get_session } from "@/api/user";
 import type { ApiCollInfo } from "@/api/api_collection";
 import { get as get_coll_info } from "@/api/api_collection";
 import { request } from "@/utils/request";
@@ -16,7 +16,7 @@ class ApiStore {
     private _projectId = "";
     private _apiCollId = "";
     private _remoteAddr = "";
-    private _adminUser = false;
+    private _canEdit = false;
 
     get projectId(): string {
         return this._projectId;
@@ -47,34 +47,27 @@ class ApiStore {
         });
     }
 
-    get adminUser(): boolean {
-        return this._adminUser;
+    get canEdit(): boolean {
+        return this._canEdit;
     }
 
-    set adminUser(val: boolean) {
+    set canEdit(val: boolean) {
         runInAction(() => {
-            this._adminUser = val;
+            this._canEdit = val;
         });
     }
 
     //=========================================================
 
-    private _curUserId = "";
     private _sessionId = "";
-
-    get curUserId(): string {
-        return this._curUserId;
-    }
 
     get sessionId(): string {
         return this._sessionId;
     }
 
     async initUser() {
-        const tmpUserId = await get_user_id();
         const tmpSessId = await get_session();
         runInAction(() => {
-            this._curUserId = tmpUserId;
             this._sessionId = tmpSessId;
         });
     }

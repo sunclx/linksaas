@@ -12,13 +12,13 @@ const CustomPage = () => {
     const projectId = urlParams.get("projectId") ?? "";
     const apiCollId = urlParams.get("apiCollId") ?? "";
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
-    const adminStr = urlParams.get("admin") ?? "";
+    const editStr = urlParams.get("edit") ?? "";
 
     const store = useCustomStores();
 
 
     useEffect(() => {
-        store.api.adminUser = adminStr.toLowerCase().includes("true");
+        store.api.canEdit = editStr.toLowerCase().includes("true");
         store.api.apiCollId = apiCollId;
         store.api.projectId = projectId;
         store.api.remoteAddr = remoteAddr;
