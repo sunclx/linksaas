@@ -80,6 +80,7 @@ export type LocalRepoAnalyseInfo = {
     effect_add_count: number;
     effect_del_count: number;
     commiter_stat_list: LocalRepoCommiterStatItem[];
+    last_time: number;
 }
 
 export type LocalRepoRemoteInfo = {

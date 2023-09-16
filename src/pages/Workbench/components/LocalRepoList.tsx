@@ -182,6 +182,9 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                                     <Descriptions.Item label="最大提交删除">{analyseInfo.global_stat.max_commit.del_count}</Descriptions.Item>
                                 </>
                             )}
+                            {analyseInfo.last_time > 0 && (
+                                <Descriptions.Item label="最后提交时间" span={2}>{moment(analyseInfo.last_time * 1000).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
+                            )}
                         </Descriptions>
                         {analyseInfo.commiter_stat_list.map(item => (
                             <div key={item.commiter}>
