@@ -1,7 +1,7 @@
 import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions, Checkbox, Tooltip as AntTooltip, Divider } from "antd";
 import React, { useEffect, useState } from "react";
 import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo, LocalRepoRemoteInfo } from "@/api/local_repo";
-import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse, list_remote, get_http_url } from "@/api/local_repo";
+import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse, list_remote, get_http_url, get_host } from "@/api/local_repo";
 import { open as open_dir } from '@tauri-apps/api/shell';
 import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
@@ -13,6 +13,7 @@ import { useStores } from "@/hooks";
 import { observer } from "mobx-react";
 import { get_git_hook, set_git_hook } from "@/api/project_tool";
 import { open as shell_open } from '@tauri-apps/api/shell';
+import AtomGitRepo from "./remote_repo/AtomGitRepo";
 
 
 interface LinkProjectModalProps {
@@ -430,7 +431,7 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                     </List.Item>
                 )} />
             </Tabs.TabPane>
-            <Tabs.TabPane tab="远程仓库" style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+            <Tabs.TabPane tab="远程仓库" key="remotes" style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
                 <List rowKey="name" dataSource={remoteList} renderItem={item => (
                     <List.Item>
                         <div style={{ display: "flex", width: "100%" }}>
@@ -448,6 +449,29 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                     </List.Item>
                 )} />
             </Tabs.TabPane>
+            {remoteList.map(remoteItem => {
+                const host = get_host(remoteItem.url);
+                return (
+                    <>
+                        {host.includes("atomgit.com") && (props.repo.setting?.atomgit_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(atomgit)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                <AtomGitRepo url={remoteItem.url} token={props.repo.setting?.atomgit_token ?? ""}/>
+                            </Tabs.TabPane>
+                        )}
+                        {host.includes("gitee.com") && (props.repo.setting?.gitee_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(gitee)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                xx
+                            </Tabs.TabPane>
+                        )}
+                        {!(host.includes("atomgit.com") || host.includes("github.com") || host.includes("gitcode.net") || host.includes("gitee.com"))
+                            && (props.repo.setting?.gitlab_token ?? "") != "" && (
+                                <Tabs.TabPane tab="工单(gitlab)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                    xx
+                                </Tabs.TabPane>
+                            )}
+                    </>
+                );
+            })}
         </Tabs>
     );
 };
@@ -463,6 +487,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
     const [editRepo, setEditRepo] = useState<LocalRepoInfo | null>(null);
     const [analyseRepo, setAnalyseRepo] = useState<LocalRepoInfo | null>(null);
     const [linkProjectRepo, setLinkProjectRepo] = useState<LocalRepoInfo | null>(null);
+
     const loadRepoList = async () => {
         try {
             const res = await list_repo();
@@ -543,6 +568,13 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                                         setLinkProjectRepo(repo);
                                                     }}>
                                                         关联项目
+                                                    </Button>
+                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        setEditRepo(repo);
+                                                    }}>
+                                                        修改
                                                     </Button>
                                                     <Divider style={{ margin: "0px 0px" }} />
                                                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}

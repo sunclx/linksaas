@@ -1,4 +1,5 @@
 use crate::user_api_plugin::get_user_id;
+use crate::user_api_plugin::{decrypt, encrypt};
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
@@ -8,13 +9,58 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+pub struct LocalRepoSettingInfo {
+    pub gitlab_protocol: String,
+    pub gitlab_token: String,
+    pub github_token: String,
+    pub gitee_token: String,
+    pub atomgit_token: String,
+    pub gitcode_token: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub struct LocalRepoInfo {
     pub id: String,
     pub name: String,
     pub path: String,
+    pub setting: Option<LocalRepoSettingInfo>,
 }
 
-async fn load_data(user_id: &String) -> Result<Vec<LocalRepoInfo>, String> {
+async fn encrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> String {
+    if token == "" {
+        return String::from("");
+    }
+    let enc_data = encrypt(app_handle, Vec::from(token)).await;
+    if enc_data.is_err() {
+        return String::from("");
+    }
+    let enc_data = enc_data.unwrap();
+    return base64::encode(enc_data);
+}
+
+async fn decrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> String {
+    if token == "" {
+        return String::from("");
+    }
+    let dec_data = base64::decode(token);
+    if dec_data.is_err() {
+        return String::from("");
+    }
+    let dec_data = decrypt(app_handle, dec_data.unwrap()).await;
+    if dec_data.is_err() {
+        return String::from("");
+    }
+    let dec_data = String::from_utf8(dec_data.unwrap());
+    if dec_data.is_err() {
+        return String::from("");
+    }
+    return dec_data.unwrap();
+}
+
+async fn load_data<R: Runtime>(
+    app_handle: AppHandle<R>,
+    user_id: &String,
+) -> Result<Vec<LocalRepoInfo>, String> {
     let user_dir = crate::get_user_dir();
     if user_dir.is_none() {
         return Err("miss user dir".into());
@@ -44,7 +90,26 @@ async fn load_data(user_id: &String) -> Result<Vec<LocalRepoInfo>, String> {
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap().to_string());
     }
-    return Ok(repo_list.unwrap());
+    let repo_list: Vec<LocalRepoInfo> = repo_list.unwrap();
+    let mut ret_list = Vec::new();
+    for mut repo in repo_list {
+        if repo.setting.is_none() {
+            ret_list.push(repo);
+        } else {
+            let old_setting = repo.setting.unwrap();
+            let setting = LocalRepoSettingInfo {
+                gitlab_protocol: old_setting.gitlab_protocol.clone(),
+                gitlab_token: decrypt_token(app_handle.clone(), &old_setting.gitlab_token).await,
+                github_token: decrypt_token(app_handle.clone(), &old_setting.github_token).await,
+                gitee_token: decrypt_token(app_handle.clone(), &old_setting.gitee_token).await,
+                atomgit_token: decrypt_token(app_handle.clone(), &old_setting.atomgit_token).await,
+                gitcode_token: decrypt_token(app_handle.clone(), &old_setting.gitcode_token).await,
+            };
+            repo.setting = Some(setting);
+            ret_list.push(repo);
+        }
+    }
+    return Ok(ret_list);
 }
 
 async fn save_data(user_id: &String, repo_list: &Vec<LocalRepoInfo>) -> Result<(), String> {
@@ -87,7 +152,7 @@ async fn add_repo<R: Runtime>(
     path: String,
 ) -> Result<(), String> {
     let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+    let repo_list = load_data(app_handle.clone(), &user_id).await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }
@@ -101,6 +166,7 @@ async fn add_repo<R: Runtime>(
         id: id,
         name: name,
         path: path,
+        setting: None,
     });
 
     return save_data(&user_id, &repo_list).await;
@@ -112,9 +178,10 @@ async fn update_repo<R: Runtime>(
     id: String,
     name: String,
     path: String,
+    setting: LocalRepoSettingInfo,
 ) -> Result<(), String> {
     let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+    let repo_list = load_data(app_handle.clone(), &user_id).await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }
@@ -126,6 +193,14 @@ async fn update_repo<R: Runtime>(
                 id: id.clone(),
                 name: name.clone(),
                 path: path.clone(),
+                setting: Some(LocalRepoSettingInfo {
+                    gitlab_protocol: setting.gitlab_protocol.clone(),
+                    gitlab_token: encrypt_token(app_handle.clone(), &setting.gitlab_token).await,
+                    github_token: encrypt_token(app_handle.clone(), &setting.github_token).await,
+                    gitee_token: encrypt_token(app_handle.clone(), &setting.gitee_token).await,
+                    atomgit_token: encrypt_token(app_handle.clone(), &setting.atomgit_token).await,
+                    gitcode_token: encrypt_token(app_handle.clone(), &setting.gitcode_token).await,
+                }),
             });
         } else {
             new_repo_list.push(repo.clone());
@@ -139,7 +214,7 @@ async fn update_repo<R: Runtime>(
 #[tauri::command]
 async fn remove_repo<R: Runtime>(app_handle: AppHandle<R>, id: String) -> Result<(), String> {
     let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+    let repo_list = load_data(app_handle.clone(), &user_id).await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }
@@ -157,7 +232,7 @@ async fn remove_repo<R: Runtime>(app_handle: AppHandle<R>, id: String) -> Result
 #[tauri::command]
 async fn list_repo<R: Runtime>(app_handle: AppHandle<R>) -> Result<Vec<LocalRepoInfo>, String> {
     let user_id = get_user_id(app_handle.clone()).await;
-    return load_data(&user_id).await;
+    return load_data(app_handle.clone(), &user_id).await;
 }
 
 pub struct LocalRepoPlugin<R: Runtime> {

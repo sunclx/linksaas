@@ -1,6 +1,3 @@
-use image::EncodableLayout;
-use libaes::Cipher;
-use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 use tauri::async_runtime::Mutex;
 use tauri::Manager;
@@ -9,13 +6,12 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
-use crate::user_api_plugin::get_user_secret;
-
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub struct StoreStatus {
     total_size: u64,
     key_count: usize,
 }
+use crate::user_api_plugin::{decrypt, encrypt};
 
 #[derive(Default)]
 pub struct StoreMap(pub Mutex<HashMap<String, sled::Db>>);
@@ -62,44 +58,6 @@ pub async fn close_store<R: Runtime>(app_handle: AppHandle<R>, label: &String) {
         let _ = db.flush();
         println!("close minapp store");
     }
-}
-
-async fn encrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
-    let secret = get_user_secret(app_handle).await;
-    if &secret == "" {
-        return Err("miss secret".into());
-    }
-    let mut new_secret = [0 as u8; 32];
-    new_secret[..32].copy_from_slice(secret.as_bytes());
-
-    let mut iv: [u8; 16] = [0; 16];
-    let mut rng = thread_rng();
-    let res = rng.try_fill(&mut iv);
-    if res.is_err() {
-        return Err(res.err().unwrap().to_string());
-    }
-    let cipher = Cipher::new_256(&new_secret);
-    let encrypted = cipher.cbc_encrypt(&iv, data.as_bytes());
-    let mut result = Vec::from(iv);
-    result.extend(encrypted);
-    return Ok(result);
-}
-
-async fn decrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
-    let secret = get_user_secret(app_handle).await;
-    if &secret == "" {
-        return Err("miss secret".into());
-    }
-    let mut new_secret = [0 as u8; 32];
-    new_secret[..32].copy_from_slice(secret.as_bytes());
-
-    if data.len() < 16 {
-        return Err("miss iv".into());
-    }
-    let (iv, data) = data.split_at(16);
-    let cipher = Cipher::new_256(&new_secret);
-    let decrypted = cipher.cbc_decrypt(iv, data);
-    return Ok(decrypted);
 }
 
 #[tauri::command]
