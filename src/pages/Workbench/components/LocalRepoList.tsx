@@ -1,7 +1,7 @@
 import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions, Checkbox, Tooltip as AntTooltip, Divider } from "antd";
 import React, { useEffect, useState } from "react";
-import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo } from "@/api/local_repo";
-import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse } from "@/api/local_repo";
+import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo, LocalRepoRemoteInfo } from "@/api/local_repo";
+import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse, list_remote, get_http_url } from "@/api/local_repo";
 import { open as open_dir } from '@tauri-apps/api/shell';
 import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
@@ -12,6 +12,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { useStores } from "@/hooks";
 import { observer } from "mobx-react";
 import { get_git_hook, set_git_hook } from "@/api/project_tool";
+import { open as shell_open } from '@tauri-apps/api/shell';
+
 
 interface LinkProjectModalProps {
     repo: LocalRepoInfo;
@@ -227,6 +229,7 @@ interface LocalRepoPanelProps {
 
 const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
     const [status, setStatus] = useState<LocalRepoStatusInfo | null>(null);
+    const [remoteList, setRemoteList] = useState<LocalRepoRemoteInfo[]>([]);
     const [branchList, setBranchList] = useState<LocalRepoBranchInfo[]>([]);
     const [tagList, setTagList] = useState<LocalRepoTagInfo[]>([]);
     const [commitList, setCommitList] = useState<LocalRepoCommitInfo[]>([]);
@@ -260,6 +263,8 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
             const branch = branchRes.map(item => item.name).includes(statusRes.head) ? statusRes.head : branchRes[0].name;
             setFilterBranch(branch);
             await loadCommitList(branch);
+            const remoteRes = await list_remote(props.repo.path);
+            setRemoteList(remoteRes);
         } catch (e) {
             console.log(e);
             message.error(`${e}`);
@@ -417,6 +422,24 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                             </div>
                             <div style={{ flex: 1 }}>
                                 {item.status}
+                            </div>
+                        </div>
+                    </List.Item>
+                )} />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="远程仓库" style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                <List rowKey="name" dataSource={remoteList} renderItem={item => (
+                    <List.Item>
+                        <div style={{ display: "flex", width: "100%" }}>
+                            <div style={{ width: "200px" }}>
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    shell_open(get_http_url(item.url));
+                                }}>{item.name}</a>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                {item.url}
                             </div>
                         </div>
                     </List.Item>
