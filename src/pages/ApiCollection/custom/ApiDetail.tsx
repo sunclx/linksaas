@@ -134,7 +134,7 @@ const ApiDetail = (props: ApiDetailProps) => {
             }
             extra={
                 <Space>
-                    <Button type="default" disabled={!(hasChange && ((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser))}
+                    <Button type="default" disabled={!(hasChange && store.api.canEdit)}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -148,7 +148,7 @@ const ApiDetail = (props: ApiDetailProps) => {
                                 setApiItem(Object.assign({}, props.apiItem));
                                 setHasChange(false);
                             }}>重置接口</Button>
-                            <Button type="link" danger disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)} onClick={e => {
+                            <Button type="link" danger disabled={!(store.api.canEdit)} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setShowRemoveModal(true);

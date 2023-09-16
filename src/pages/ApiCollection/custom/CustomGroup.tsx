@@ -106,7 +106,7 @@ const CustomGroup = (props: CustomGroupProps) => {
         <Card title={<span title={props.group.group_name}>{props.group.group_name}</span>} style={{ width: "100%" }} bordered={false} extra={
             <Space>
                 <Button type="link" style={{ minBlockSize: 0, padding: "0px 0px" }} title="创建接口"
-                    disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)}
+                    disabled={!(store.api.canEdit)}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -116,7 +116,7 @@ const CustomGroup = (props: CustomGroupProps) => {
                 </Button>
                 <Popover trigger="click" placement="right" content={
                     <Space direction="vertical">
-                        <Button type="link" disabled={!((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser)}
+                        <Button type="link" disabled={!(store.api.canEdit)}
                             onClick={e => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -125,7 +125,7 @@ const CustomGroup = (props: CustomGroupProps) => {
                             修改名称
                         </Button>
                         <Button type="link" danger
-                            disabled={!((props.group.item_count == 0) && ((store.api.apiCollInfo?.create_user_id == store.api.curUserId) || store.api.adminUser))}
+                            disabled={!((props.group.item_count == 0) && (store.api.canEdit))}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();

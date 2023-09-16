@@ -2,25 +2,29 @@ import { useStores } from "@/hooks";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
-import { Modal, Space, Table, message } from "antd";
+import { Modal, Space, Table, Tag, message } from "antd";
 import Button from "@/components/Button";
 import addIcon from '@/assets/image/addIcon.png';
 import CreateApiCollModal from "./components/CreateApiCollModal";
 import type { ApiCollInfo } from "@/api/api_collection";
-import { list as list_info, update_name, update_default_addr, remove as remove_info, API_COLL_GRPC, API_COLL_OPENAPI, API_COLL_CUSTOM } from "@/api/api_collection";
+import { list as list_info, update_name, update_default_addr, remove as remove_info, API_COLL_GRPC, API_COLL_OPENAPI, API_COLL_CUSTOM, get as get_info } from "@/api/api_collection";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import { EditText } from "@/components/EditCell/EditText";
 import UpdateGrpcModal from "./components/UpdateGrpcModal";
 import UpdateSwaggerModal from "./components/UpdateSwaggerModal";
 import UpdateCustomModal from "./components/UpdateCustomModal";
+import UserPhoto from "@/components/Portrait/UserPhoto";
+import { EditOutlined } from "@ant-design/icons";
+import UpdateMemberModal from "./components/UpdateMemberModal";
 
 const PAGE_SIZE = 10;
 
 const ApiCollectionList = () => {
     const userStore = useStores("userStore")
     const projectStore = useStores("projectStore");
-    const linkAuxStore = useStores('linkAuxStore');
+    const linkAuxStore = useStores("linkAuxStore");
+    const memberStore = useStores("memberStore");
 
     const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -32,6 +36,7 @@ const ApiCollectionList = () => {
     const [updateGrpcApiId, setUpdateGrpcApiId] = useState("");
     const [updateOpenApiId, setUpdateOpenApiId] = useState("");
     const [updateCustomApiId, setUpdateCustomApiId] = useState("");
+    const [updateMemberApiCollInfo, setUpdateMemberApiCollInfo] = useState<ApiCollInfo | null>(null);
 
     const loadApiCollInfoList = async () => {
         const res = await request(list_info({
@@ -58,11 +63,26 @@ const ApiCollectionList = () => {
         await loadApiCollInfoList();
     };
 
+    const updateApiCollInfo = async (apiCollId: string) => {
+        const res = await request(get_info({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            api_coll_id: apiCollId,
+        }));
+        const tmpList = apiCollInfoList.slice();
+        const index = tmpList.findIndex(item => item.api_coll_id == apiCollId);
+        if (index != -1) {
+            tmpList[index] = res.info;
+            setApiCollInfoList(tmpList);
+        }
+    }
+
     const columns: ColumnsType<ApiCollInfo> = [
         {
             title: "名称",
+            width: 200,
             render: (_, row) => (
-                <EditText editable={projectStore.isAdmin || row.create_user_id == userStore.userInfo.userId}
+                <EditText editable={row.can_update}
                     content={row.name} showEditIcon={true} onChange={async value => {
                         if (value.trim() == "") {
                             return false;
@@ -86,12 +106,13 @@ const ApiCollectionList = () => {
                         }
                         return true;
                     }} onClick={() => {
-                        linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr);
+                        linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr, row.can_update);
                     }} />
             ),
         },
         {
             title: "类型",
+            width: 150,
             render: (_, row) => (
                 <>
                     {row.api_coll_type == API_COLL_GRPC && "GRPC"}
@@ -102,8 +123,9 @@ const ApiCollectionList = () => {
         },
         {
             title: "服务地址",
+            width: 200,
             render: (_, row) => (
-                <EditText editable={projectStore.isAdmin || row.create_user_id == userStore.userInfo.userId}
+                <EditText editable={row.can_update}
                     content={row.default_addr} showEditIcon={true} onChange={async value => {
                         if (value.trim() == "") {
                             return false;
@@ -136,6 +158,30 @@ const ApiCollectionList = () => {
             ),
         },
         {
+            title: "可编辑权限",
+            width: 200,
+            render: (_, row) => (
+                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                    {memberStore.memberList.filter(item => (row.edit_member_user_id_list ?? []).includes(item.member.member_user_id)).map(item => (
+                        <Tag key={item.member.member_user_id} style={{ marginBottom: "4px" }}>
+                            <Space>
+                                <UserPhoto logoUri={item.member.logo_uri} style={{ width: "16px" }} />
+                                {item.member.display_name}
+                            </Space>
+                        </Tag>
+                    ))}
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!(projectStore.isAdmin)}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setUpdateMemberApiCollInfo(row);
+                        }}>
+                        <EditOutlined />
+                    </Button>
+                </div>
+            ),
+        },
+        {
             title: "操作",
             render: (_, row) => (
                 <Space size="large">
@@ -143,11 +189,11 @@ const ApiCollectionList = () => {
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr);
+                            linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr, row.can_update);
                         }}>打开</Button>
                     {row.api_coll_type == API_COLL_GRPC && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                            disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                            disabled={!(row.can_update)}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -156,7 +202,7 @@ const ApiCollectionList = () => {
                     )}
                     {row.api_coll_type == API_COLL_OPENAPI && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                            disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                            disabled={!(row.can_update)}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -165,7 +211,7 @@ const ApiCollectionList = () => {
                     )}
                     {row.api_coll_type == API_COLL_CUSTOM && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                            disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                            disabled={!(row.can_update)}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -173,7 +219,7 @@ const ApiCollectionList = () => {
                             }}>更新接口协议</Button>
                     )}
                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
-                        disabled={!(projectStore.isAdmin || userStore.userInfo.userId == row.create_user_id)}
+                        disabled={!(projectStore.isAdmin)}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -236,6 +282,13 @@ const ApiCollectionList = () => {
             )}
             {updateCustomApiId != "" && (
                 <UpdateCustomModal apiCollId={updateCustomApiId} onClose={() => setUpdateCustomApiId("")} />
+            )}
+            {updateMemberApiCollInfo != null && (
+                <UpdateMemberModal apiCollId={updateMemberApiCollInfo.api_coll_id} memberIdList={updateMemberApiCollInfo.edit_member_user_id_list ?? []}
+                    onCancel={() => setUpdateMemberApiCollInfo(null)} onOk={() => {
+                        updateApiCollInfo(updateMemberApiCollInfo.api_coll_id);
+                        setUpdateMemberApiCollInfo(null);
+                    }} />
             )}
         </CardWrap>
     );

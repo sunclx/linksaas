@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import type { Response } from '@tauri-apps/api/http';
-import { Button, Card, Descriptions, Space, Tabs } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { Button, Card, Descriptions, Space, Tabs,message } from "antd";
+import { CloseOutlined, CopyOutlined } from "@ant-design/icons";
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import { writeText } from '@tauri-apps/api/clipboard';
 
 
 export interface ResponsePanelProps {
@@ -38,7 +40,27 @@ const ResponsePanel = (props: ResponsePanelProps) => {
     const getText = () => {
         const decoder = new TextDecoder();
         const data = Uint8Array.from(props.response.data as number[]);
-        return decoder.decode(data);
+        const txt = decoder.decode(data);
+        if (contentType.includes("json")) {
+            try {
+                const obj = JSON.parse(txt);
+                return JSON.stringify(obj, null, 2);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        return txt;
+    };
+
+    const guessLang = () => {
+        if (contentType.includes("json")) {
+            return "json";
+        } else if (contentType.includes("xml")) {
+            return "xml";
+        } else if (contentType.includes("html")) {
+            return "html";
+        }
+        return "text";
     };
 
     useEffect(() => {
@@ -71,7 +93,16 @@ const ResponsePanel = (props: ResponsePanelProps) => {
                                 <img src={getImgSrc()} />
                             )}
                             {(contentType.includes("text") || contentType.includes("json") || contentType.includes("xml") || contentType.includes("html")) && (
-                                <pre>{getText()}</pre>
+                                <CodeEditor
+                                    value={getText()}
+                                    language={guessLang()}
+                                    minHeight={200}
+                                    readOnly
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
                             )}
 
                         </>
@@ -88,7 +119,18 @@ const ResponsePanel = (props: ResponsePanelProps) => {
                         </Descriptions>
                     )
                 }
-            ]} />
+            ]} tabBarExtraContent={
+                <>
+                {(contentType.includes("text") || contentType.includes("json") || contentType.includes("xml") || contentType.includes("html")) && (
+                    <Button icon={<CopyOutlined />} onClick={e=>{
+                        e.stopPropagation();
+                        e.preventDefault();
+                        writeText(getText());
+                        message.info("复制成功");
+                    }}>复制内容</Button>
+                )}
+                </>
+            }/>
         </Card>
     );
 };

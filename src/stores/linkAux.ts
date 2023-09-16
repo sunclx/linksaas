@@ -1058,27 +1058,27 @@ class LinkAuxStore {
   }
 
   //打开接口集合页面
-  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string) {
+  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string, canEdit: boolean) {
     const label = `apiColl:${apiCollId}`;
     const pos = await appWindow.innerPosition();
     if (apiCollType == API_COLL_GRPC) {
       new WebviewWindow(label, {
         title: `${name}(GRPC)`,
-        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}`,
+        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
     } else if (apiCollType == API_COLL_OPENAPI) {
       new WebviewWindow(label, {
         title: `${name}(OPENAPI/SWAGGER)`,
-        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}`,
+        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
-    } else if(apiCollType == API_COLL_CUSTOM) {
+    } else if (apiCollType == API_COLL_CUSTOM) {
       new WebviewWindow(label, {
         title: `${name}(自定义接口)`,
-        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&admin=${this.rootStore.projectStore.isAdmin}`,
+        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&edit=${canEdit}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
