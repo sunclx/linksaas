@@ -15,6 +15,8 @@ import { get_git_hook, set_git_hook } from "@/api/project_tool";
 import { open as shell_open } from '@tauri-apps/api/shell';
 import AtomGitRepo from "./remote_repo/AtomGitRepo";
 import GiteeRepo from "./remote_repo/GiteeRepo";
+import GitlabRepo from "./remote_repo/GitLabRepo";
+import GithubRepo from "./remote_repo/GithubRepo";
 
 
 interface LinkProjectModalProps {
@@ -464,10 +466,15 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                                 <GiteeRepo url={remoteItem.url} token={props.repo.setting?.gitee_token ?? ""} />
                             </Tabs.TabPane>
                         )}
+                        {host.includes("github.com") && (props.repo.setting?.github_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(github)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                <GithubRepo url={remoteItem.url} token={props.repo.setting?.github_token ?? ""} />
+                            </Tabs.TabPane>
+                        )}
                         {!(host.includes("atomgit.com") || host.includes("github.com") || host.includes("gitcode.net") || host.includes("gitee.com"))
                             && (props.repo.setting?.gitlab_token ?? "") != "" && (
                                 <Tabs.TabPane tab="工单(gitlab)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
-                                    xx
+                                    <GitlabRepo protocol={props.repo.setting?.gitlab_protocol ?? "https"} url={remoteItem.url} token={props.repo.setting?.gitlab_token ?? ""} />
                                 </Tabs.TabPane>
                             )}
                     </>
@@ -575,7 +582,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                                         e.preventDefault();
                                                         setEditRepo(repo);
                                                     }}>
-                                                        修改
+                                                        修改设置
                                                     </Button>
                                                     <Divider style={{ margin: "0px 0px" }} />
                                                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}

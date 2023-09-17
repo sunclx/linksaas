@@ -39,6 +39,7 @@ const AtomGitRepo = (props: AtomGitRepoProps) => {
             });
             if (res.status != 200) {
                 message.error("令牌权限不足");
+                return;
             }
             setIssueList(res.data as AtomIssue[]);
         } catch (e) {
