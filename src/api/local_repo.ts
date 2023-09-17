@@ -1,10 +1,21 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { Command } from '@tauri-apps/api/shell';
 
+export type LocalRepoSettingInfo = {
+    gitlab_protocol: string;
+    gitlab_token: string;
+    github_token: string;
+    gitee_token: string;
+    atomgit_token: string;
+    gitcode_token: string;
+};
+
 export type LocalRepoInfo = {
     id: string;
     name: string;
     path: string;
+    //本地仓库相关设置
+    setting: LocalRepoSettingInfo | null;
 };
 
 export type LocalRepoPathStatusInfo = {
@@ -80,8 +91,13 @@ export type LocalRepoAnalyseInfo = {
     effect_add_count: number;
     effect_del_count: number;
     commiter_stat_list: LocalRepoCommiterStatItem[];
+    last_time: number;
 }
 
+export type LocalRepoRemoteInfo = {
+    name: string;
+    url: string;
+};
 
 export async function add_repo(id: string, name: string, path: string): Promise<void> {
     return invoke<void>("plugin:local_repo|add_repo", {
@@ -91,11 +107,12 @@ export async function add_repo(id: string, name: string, path: string): Promise<
     });
 }
 
-export async function update_repo(id: string, name: string, path: string): Promise<void> {
+export async function update_repo(id: string, name: string, path: string, setting: LocalRepoSettingInfo): Promise<void> {
     return invoke<void>("plugin:local_repo|update_repo", {
         id,
         name,
-        path
+        path,
+        setting,
     });
 }
 
@@ -165,4 +182,38 @@ export async function analyse(path: string, branch: string, fromTime: number, to
         throw new Error(result.stderr);
     }
     return JSON.parse(result.stdout);
+}
+
+export async function list_remote(path: string): Promise<LocalRepoRemoteInfo[]> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "list-remote"]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return JSON.parse(result.stdout);
+}
+
+export function get_http_url(url: string): string {
+    if (url.startsWith("http")) {
+        if (url.endsWith(".git")) {
+            return url.substring(0, url.length - 4);
+        } else {
+            return url;
+        }
+    } else if (url.includes("@") && url.includes(":")) {
+        const pos1 = url.indexOf("@");
+        const pos2 = url.indexOf(":")
+        const host = url.substring(pos1 + 1, pos2);
+        let uri = url.substring(pos2 + 1);
+        if (uri.endsWith(".git")) {
+            uri = uri.substring(0, uri.length - 4);
+        }
+        return `https://${host}/${uri}`;
+    }
+    return url;
+}
+
+export function get_host(url: string): string {
+    const l = new URL(get_http_url(url));
+    return l.host
 }

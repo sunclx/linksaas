@@ -1,7 +1,7 @@
 import { Button, Card, Collapse, Empty, Form, List, Modal, Popover, Select, Space, Table, Tabs, DatePicker, message, Spin, Descriptions, Checkbox, Tooltip as AntTooltip, Divider } from "antd";
 import React, { useEffect, useState } from "react";
-import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo } from "@/api/local_repo";
-import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse } from "@/api/local_repo";
+import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo, LocalRepoRemoteInfo } from "@/api/local_repo";
+import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse, list_remote, get_http_url, get_host } from "@/api/local_repo";
 import { open as open_dir } from '@tauri-apps/api/shell';
 import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
@@ -12,6 +12,12 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { useStores } from "@/hooks";
 import { observer } from "mobx-react";
 import { get_git_hook, set_git_hook } from "@/api/project_tool";
+import { open as shell_open } from '@tauri-apps/api/shell';
+import AtomGitRepo from "./remote_repo/AtomGitRepo";
+import GiteeRepo from "./remote_repo/GiteeRepo";
+import GitlabRepo from "./remote_repo/GitLabRepo";
+import GithubRepo from "./remote_repo/GithubRepo";
+
 
 interface LinkProjectModalProps {
     repo: LocalRepoInfo;
@@ -180,6 +186,9 @@ const AnalyseRepoModal: React.FC<AnalyseRepoModalProps> = (props) => {
                                     <Descriptions.Item label="最大提交删除">{analyseInfo.global_stat.max_commit.del_count}</Descriptions.Item>
                                 </>
                             )}
+                            {analyseInfo.last_time > 0 && (
+                                <Descriptions.Item label="最后提交时间" span={2}>{moment(analyseInfo.last_time * 1000).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
+                            )}
                         </Descriptions>
                         {analyseInfo.commiter_stat_list.map(item => (
                             <div key={item.commiter}>
@@ -227,6 +236,7 @@ interface LocalRepoPanelProps {
 
 const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
     const [status, setStatus] = useState<LocalRepoStatusInfo | null>(null);
+    const [remoteList, setRemoteList] = useState<LocalRepoRemoteInfo[]>([]);
     const [branchList, setBranchList] = useState<LocalRepoBranchInfo[]>([]);
     const [tagList, setTagList] = useState<LocalRepoTagInfo[]>([]);
     const [commitList, setCommitList] = useState<LocalRepoCommitInfo[]>([]);
@@ -260,6 +270,8 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
             const branch = branchRes.map(item => item.name).includes(statusRes.head) ? statusRes.head : branchRes[0].name;
             setFilterBranch(branch);
             await loadCommitList(branch);
+            const remoteRes = await list_remote(props.repo.path);
+            setRemoteList(remoteRes);
         } catch (e) {
             console.log(e);
             message.error(`${e}`);
@@ -422,6 +434,52 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                     </List.Item>
                 )} />
             </Tabs.TabPane>
+            <Tabs.TabPane tab="远程仓库" key="remotes" style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                <List rowKey="name" dataSource={remoteList} renderItem={item => (
+                    <List.Item>
+                        <div style={{ display: "flex", width: "100%" }}>
+                            <div style={{ width: "200px" }}>
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    shell_open(get_http_url(item.url));
+                                }}>{item.name}</a>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                {item.url}
+                            </div>
+                        </div>
+                    </List.Item>
+                )} />
+            </Tabs.TabPane>
+            {remoteList.map(remoteItem => {
+                const host = get_host(remoteItem.url);
+                return (
+                    <>
+                        {host.includes("atomgit.com") && (props.repo.setting?.atomgit_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(atomgit)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                <AtomGitRepo url={remoteItem.url} token={props.repo.setting?.atomgit_token ?? ""} />
+                            </Tabs.TabPane>
+                        )}
+                        {host.includes("gitee.com") && (props.repo.setting?.gitee_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(gitee)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                <GiteeRepo url={remoteItem.url} token={props.repo.setting?.gitee_token ?? ""} />
+                            </Tabs.TabPane>
+                        )}
+                        {host.includes("github.com") && (props.repo.setting?.github_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(github)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                <GithubRepo url={remoteItem.url} token={props.repo.setting?.github_token ?? ""} />
+                            </Tabs.TabPane>
+                        )}
+                        {!(host.includes("atomgit.com") || host.includes("github.com") || host.includes("gitcode.net") || host.includes("gitee.com"))
+                            && (props.repo.setting?.gitlab_token ?? "") != "" && (
+                                <Tabs.TabPane tab="工单(gitlab)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                    <GitlabRepo protocol={props.repo.setting?.gitlab_protocol ?? "https"} url={remoteItem.url} token={props.repo.setting?.gitlab_token ?? ""} />
+                                </Tabs.TabPane>
+                            )}
+                    </>
+                );
+            })}
         </Tabs>
     );
 };
@@ -437,6 +495,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
     const [editRepo, setEditRepo] = useState<LocalRepoInfo | null>(null);
     const [analyseRepo, setAnalyseRepo] = useState<LocalRepoInfo | null>(null);
     const [linkProjectRepo, setLinkProjectRepo] = useState<LocalRepoInfo | null>(null);
+
     const loadRepoList = async () => {
         try {
             const res = await list_repo();
@@ -517,6 +576,13 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                                         setLinkProjectRepo(repo);
                                                     }}>
                                                         关联项目
+                                                    </Button>
+                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        setEditRepo(repo);
+                                                    }}>
+                                                        修改设置
                                                     </Button>
                                                     <Divider style={{ margin: "0px 0px" }} />
                                                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
