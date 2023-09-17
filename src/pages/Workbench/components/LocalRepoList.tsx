@@ -14,6 +14,7 @@ import { observer } from "mobx-react";
 import { get_git_hook, set_git_hook } from "@/api/project_tool";
 import { open as shell_open } from '@tauri-apps/api/shell';
 import AtomGitRepo from "./remote_repo/AtomGitRepo";
+import GiteeRepo from "./remote_repo/GiteeRepo";
 
 
 interface LinkProjectModalProps {
@@ -455,12 +456,12 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                     <>
                         {host.includes("atomgit.com") && (props.repo.setting?.atomgit_token ?? "") != "" && (
                             <Tabs.TabPane tab="工单(atomgit)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
-                                <AtomGitRepo url={remoteItem.url} token={props.repo.setting?.atomgit_token ?? ""}/>
+                                <AtomGitRepo url={remoteItem.url} token={props.repo.setting?.atomgit_token ?? ""} />
                             </Tabs.TabPane>
                         )}
                         {host.includes("gitee.com") && (props.repo.setting?.gitee_token ?? "") != "" && (
                             <Tabs.TabPane tab="工单(gitee)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
-                                xx
+                                <GiteeRepo url={remoteItem.url} token={props.repo.setting?.gitee_token ?? ""} />
                             </Tabs.TabPane>
                         )}
                         {!(host.includes("atomgit.com") || host.includes("github.com") || host.includes("gitcode.net") || host.includes("gitee.com"))
