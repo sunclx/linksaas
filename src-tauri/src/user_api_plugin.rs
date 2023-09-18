@@ -18,6 +18,9 @@ use tauri::{
 use tokio::time::sleep;
 use url::Url;
 use uuid::Uuid;
+use image::EncodableLayout;
+use libaes::Cipher;
+use rand::{thread_rng, Rng};
 
 #[derive(Default)]
 pub struct CurSession(pub Mutex<Option<String>>);
@@ -439,13 +442,51 @@ pub async fn get_user_id<R: Runtime>(app_handle: AppHandle<R>) -> String {
     return "".into();
 }
 
-pub async fn get_user_secret<R: Runtime>(app_handle: AppHandle<R>) -> String {
+async fn get_user_secret<R: Runtime>(app_handle: AppHandle<R>) -> String {
     let cur_value = app_handle.state::<CurUserSecret>().inner();
     let cur_user_secret = cur_value.0.lock().await;
     if let Some(cur_user_secret) = cur_user_secret.clone() {
         return cur_user_secret;
     }
     return "".into();
+}
+
+pub async fn encrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
+    let secret = get_user_secret(app_handle).await;
+    if &secret == "" {
+        return Err("miss secret".into());
+    }
+    let mut new_secret = [0 as u8; 32];
+    new_secret[..32].copy_from_slice(secret.as_bytes());
+
+    let mut iv: [u8; 16] = [0; 16];
+    let mut rng = thread_rng();
+    let res = rng.try_fill(&mut iv);
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    let cipher = Cipher::new_256(&new_secret);
+    let encrypted = cipher.cbc_encrypt(&iv, data.as_bytes());
+    let mut result = Vec::from(iv);
+    result.extend(encrypted);
+    return Ok(result);
+}
+
+pub async fn decrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
+    let secret = get_user_secret(app_handle).await;
+    if &secret == "" {
+        return Err("miss secret".into());
+    }
+    let mut new_secret = [0 as u8; 32];
+    new_secret[..32].copy_from_slice(secret.as_bytes());
+
+    if data.len() < 16 {
+        return Err("miss iv".into());
+    }
+    let (iv, data) = data.split_at(16);
+    let cipher = Cipher::new_256(&new_secret);
+    let decrypted = cipher.cbc_decrypt(iv, data);
+    return Ok(decrypted);
 }
 
 pub async fn get_user_id_inner(app_handle: &AppHandle) -> String {
