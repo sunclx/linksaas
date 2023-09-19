@@ -6,17 +6,21 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
 import BookStorePanel from './components/BookStorePanel';
-
 import { useStores } from '@/hooks';
 import { ReactComponent as DockerSvg } from '@/assets/svg/docker.svg';
 import DockerTemplatePanel from './components/DockerTemplatePanel';
 import RssPanel from './components/RssPanel';
 import PubSearchPanel from './components/PubSearchPanel';
+import { observer } from 'mobx-react';
+import AppStoreDetail from './components/AppStoreDetail';
+
 
 const PubRes = () => {
     const location = useLocation();
     const history = useHistory();
+
     const appStore = useStores('appStore');
+    const pubResStore = useStores('pubResStore');
 
     const urlParams = new URLSearchParams(location.search);
     let tab = urlParams.get('tab') ?? "";
@@ -46,12 +50,12 @@ const PubRes = () => {
                 }}>
                 {appStore.clientCfg?.enable_pub_search == true && (
                     <Tabs.TabPane tab={<h2><SearchOutlined />&nbsp;聚合搜索</h2>} key="pubSearch">
-                    {activeKey == "pubSearch" && (
-                        <div className={s.content_wrap}>
-                            <PubSearchPanel />
-                        </div>
-                    )}
-                </Tabs.TabPane>
+                        {activeKey == "pubSearch" && (
+                            <div className={s.content_wrap}>
+                                <PubSearchPanel />
+                            </div>
+                        )}
+                    </Tabs.TabPane>
                 )}
                 {appStore.clientCfg?.enable_rss == true && (
                     <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
@@ -66,7 +70,8 @@ const PubRes = () => {
                     <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用</h2>} key="appStore">
                         {activeKey == "appStore" && (
                             <div className={s.content_wrap}>
-                                <AppStorePanel />
+                                {pubResStore.showAppId == "" && <AppStorePanel />}
+                                {pubResStore.showAppId != "" && <AppStoreDetail />}
                             </div>
                         )}
                     </Tabs.TabPane>
@@ -94,4 +99,4 @@ const PubRes = () => {
     );
 };
 
-export default PubRes;
+export default observer(PubRes);
