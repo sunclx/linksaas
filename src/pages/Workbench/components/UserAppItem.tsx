@@ -116,6 +116,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
     const preOpenUserApp = async () => {
         const appRes = await request(get_app_in_store({
             app_id: props.appInfo.basic_info.app_id_in_store,
+            session_id: userStore.sessionId,
         }));
         //检查文件是否已经下载
         const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", appRes.app_info.file_id, "content.zip");

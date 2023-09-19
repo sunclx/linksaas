@@ -7,7 +7,7 @@ import { request } from "@/utils/request";
 import SelectAppCate from "./components/SelectAppCate";
 import AddAppModal from "./components/AddAppModal";
 import type { AppInfo } from "@/api/appstore";
-import { list_app } from "@/api/appstore";
+import { SORT_KEY_UPDATE_TIME, list_app } from "@/api/appstore";
 import type { ColumnsType } from 'antd/es/table';
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { observer } from 'mobx-react';
@@ -66,6 +66,8 @@ const AppList = () => {
             },
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
+            sort_key: SORT_KEY_UPDATE_TIME,
+            session_id: ""
         }));
         setTotalCount(res.total_count);
         setAppList(res.app_info_list);

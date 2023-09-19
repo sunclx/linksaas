@@ -1,7 +1,7 @@
 import { Card, Form, List, Select, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
-import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS } from "@/api/appstore";
+import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS, SORT_KEY_UPDATE_TIME } from "@/api/appstore";
 import { request } from "@/utils/request";
 import { platform } from '@tauri-apps/api/os';
 import { useStores } from "@/hooks";
@@ -12,6 +12,7 @@ import AsyncImage from "@/components/AsyncImage";
 const PAGE_SIZE = 20;
 
 const AppStorePanel = () => {
+    const userStore = useStores('userStore');
     const appStore = useStores('appStore');
 
     const [appList, setAppList] = useState<AppInfo[]>([]);
@@ -73,6 +74,8 @@ const AppStorePanel = () => {
             },
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
+            sort_key: SORT_KEY_UPDATE_TIME,
+            session_id: userStore.sessionId,
         }));
         setTotalCount(res.total_count);
         setAppList(res.app_info_list);
