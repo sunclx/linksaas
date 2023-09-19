@@ -6,7 +6,8 @@ import { remove_comment } from "@/api/appstore_admin";
 import { request } from "@/utils/request";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
-import { get_admin_session } from "@/api/admin_auth";
+import type { AdminPermInfo } from '@/api/admin_auth';
+import { get_admin_session, get_admin_perm } from '@/api/admin_auth';
 
 const PAGE_SIZE = 10;
 
@@ -16,6 +17,8 @@ export interface CommentListModalProps {
 }
 
 const CommentListModal = (props: CommentListModalProps) => {
+
+    const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
 
     const [commentList, setCommentList] = useState<AppComment[]>([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -46,6 +49,10 @@ const CommentListModal = (props: CommentListModalProps) => {
         loadCommentList();
     }, [curPage]);
 
+    useEffect(() => {
+        get_admin_perm().then(res => setPermInfo(res));
+    }, []);
+
     return (
         <Modal open title={`${props.appInfo.base_info.app_name} 评论列表`}
             bodyStyle={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}
@@ -66,11 +73,12 @@ const CommentListModal = (props: CommentListModalProps) => {
                                 <span>{moment(item.create_time).format("YYYY-MM-DD HH:mm:ss")}</span>
                             </Space>
                         } extra={
-                            <Button type="link" danger onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                removeComment(item.comment_id);
-                            }}>删除</Button>
+                            <Button type="link" danger disabled={!(permInfo?.app_store_perm.remove_comment ?? false)}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    removeComment(item.comment_id);
+                                }}>删除</Button>
                         }>
                             <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.comment}</pre>
                         </Card>

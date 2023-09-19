@@ -1,7 +1,11 @@
-import { Card, Form, List, Select, Input, Space } from "antd";
+import { Card, Form, List, Input, Space, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
-import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, agree_app, cancel_agree_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS, SORT_KEY_UPDATE_TIME, SORT_KEY_INSTALL_COUNT, SORT_KEY_AGREE_COUNT } from "@/api/appstore";
+import {
+    list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, agree_app, cancel_agree_app,
+    OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS, SORT_KEY_UPDATE_TIME, SORT_KEY_INSTALL_COUNT,
+    SORT_KEY_AGREE_COUNT
+} from "@/api/appstore";
 import { request } from "@/utils/request";
 import { platform } from '@tauri-apps/api/os';
 import { useStores } from "@/hooks";
@@ -11,7 +15,7 @@ import { ReadOnlyEditor } from "@/components/Editor";
 import { CommentOutlined, DownloadOutlined, HeartTwoTone } from "@ant-design/icons";
 import { observer } from 'mobx-react';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 12;
 
 const AppStorePanel = () => {
     const userStore = useStores('userStore');
@@ -54,6 +58,7 @@ const AppStorePanel = () => {
         } else if ("win32" == p) {
             osScope = OS_SCOPE_WINDOWS;
         }
+        console.log(pubResStore.appSortKey);
         const res = await request(list_app({
             list_param: {
                 filter_by_major_cate_id: pubResStore.appMajorCateId != "",
@@ -178,10 +183,10 @@ const AppStorePanel = () => {
                         }} />
                     </Form.Item>
                     <Form.Item label="排序">
-                        <Select value={pubResStore.appSortKey} onChange={value => pubResStore.appSortKey = value}>
+                        <Select value={pubResStore.appSortKey} onChange={value => pubResStore.appSortKey = value} style={{ width: "100px" }}>
                             <Select.Option value={SORT_KEY_UPDATE_TIME}>更新时间</Select.Option>
                             <Select.Option value={SORT_KEY_INSTALL_COUNT}>安装数量</Select.Option>
-                            <Select.Option vaule={SORT_KEY_AGREE_COUNT}>点赞数量</Select.Option>
+                            <Select.Option value={SORT_KEY_AGREE_COUNT}>点赞数量</Select.Option>
                         </Select>
                     </Form.Item>
                 </Form>
@@ -190,13 +195,15 @@ const AppStorePanel = () => {
                 grid={{ gutter: 16, column: 3 }}
                 renderItem={app => (
                     <List.Item>
-                        <Card style={{ flex: 1 }} bordered={false} title={
-                            <a style={{ fontSize: "16px", fontWeight: 600 }} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                pubResStore.showAppId = app.app_id;
-                            }}>{app.base_info.app_name}</a>
-                        }
+                        <Card style={{ flex: 1, borderRadius: "10px" }}
+                            headStyle={{ backgroundColor: "#e4e4e8" }}
+                            title={
+                                <a style={{ fontSize: "16px", fontWeight: 600 }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    pubResStore.showAppId = app.app_id;
+                                }}>{app.base_info.app_name}</a>
+                            }
                             bodyStyle={{ display: "flex" }} extra={
                                 <Space style={{ fontSize: "18px" }} size="middle">
                                     <div><DownloadOutlined />&nbsp;{app.install_count}</div>
