@@ -1,31 +1,33 @@
-import { Card, Form, List, Select, Input } from "antd";
+import { Card, Form, List, Input, Space, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
-import { list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS } from "@/api/appstore";
+import {
+    list_major_cate, list_minor_cate, list_sub_minor_cate, list_app, agree_app, cancel_agree_app,
+    OS_SCOPE_LINUX, OS_SCOPE_MAC, OS_SCOPE_WINDOWS, SORT_KEY_UPDATE_TIME, SORT_KEY_INSTALL_COUNT,
+    SORT_KEY_AGREE_COUNT
+} from "@/api/appstore";
 import { request } from "@/utils/request";
 import { platform } from '@tauri-apps/api/os';
 import { useStores } from "@/hooks";
-import AppInfoModal from "./AppInfoModal";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import AsyncImage from "@/components/AsyncImage";
+import { ReadOnlyEditor } from "@/components/Editor";
+import { CommentOutlined, DownloadOutlined, HeartTwoTone } from "@ant-design/icons";
+import { observer } from 'mobx-react';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 12;
 
 const AppStorePanel = () => {
+    const userStore = useStores('userStore');
     const appStore = useStores('appStore');
+    const pubResStore = useStores('pubResStore');
 
     const [appList, setAppList] = useState<AppInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
-    const [curPage, setCurPage] = useState(0);
-    const [majorCateId, setMajorCateId] = useState("");
-    const [majorCateList, setMajorCateList] = useState<MajorCate[]>([]);
-    const [minorCateId, setMinorCateId] = useState("");
-    const [minorCateList, setMinorCateList] = useState<MinorCate[]>([]);
-    const [subMinorCateId, setSubMinorCateId] = useState("");
-    const [subMinorCateList, setSubMinorCateList] = useState<SubMinorCate[]>([]);
-    const [keyword, setKeyword] = useState("");
 
-    const [showAppInfo, setShowAppInfo] = useState<AppInfo | null>(null);
+    const [majorCateList, setMajorCateList] = useState<MajorCate[]>([]);
+    const [minorCateList, setMinorCateList] = useState<MinorCate[]>([]);
+    const [subMinorCateList, setSubMinorCateList] = useState<SubMinorCate[]>([]);
 
     const loadMajorCate = async () => {
         const res = await request(list_major_cate({}));
@@ -34,16 +36,16 @@ const AppStorePanel = () => {
 
     const loadMinorCate = async () => {
         setMinorCateList([]);
-        if (majorCateId != "") {
-            const res = await request(list_minor_cate({ major_cate_id: majorCateId }));
+        if (pubResStore.appMajorCateId != "") {
+            const res = await request(list_minor_cate({ major_cate_id: pubResStore.appMajorCateId }));
             setMinorCateList(res.cate_info_list);
         }
     }
 
     const loadSubMinorCate = async () => {
         setSubMinorCateList([]);
-        if (minorCateId != "") {
-            const res = await request(list_sub_minor_cate({ minor_cate_id: minorCateId }));
+        if (pubResStore.appMinorCateId != "") {
+            const res = await request(list_sub_minor_cate({ minor_cate_id: pubResStore.appMinorCateId }));
             setSubMinorCateList(res.cate_info_list);
         }
     };
@@ -56,26 +58,31 @@ const AppStorePanel = () => {
         } else if ("win32" == p) {
             osScope = OS_SCOPE_WINDOWS;
         }
+        console.log(pubResStore.appSortKey);
         const res = await request(list_app({
             list_param: {
-                filter_by_major_cate_id: majorCateId != "",
-                major_cate_id: majorCateId,
-                filter_by_minor_cate_id: minorCateId != "",
-                minor_cate_id: minorCateId,
-                filter_by_sub_minor_cate_id: subMinorCateId != "",
-                sub_minor_cate_id: subMinorCateId,
+                filter_by_major_cate_id: pubResStore.appMajorCateId != "",
+                major_cate_id: pubResStore.appMajorCateId,
+                filter_by_minor_cate_id: pubResStore.appMinorCateId != "",
+                minor_cate_id: pubResStore.appMinorCateId,
+                filter_by_sub_minor_cate_id: pubResStore.appSubMinorCateId != "",
+                sub_minor_cate_id: pubResStore.appSubMinorCateId,
                 filter_by_app_scope: false,
                 app_scope: 0,
                 filter_by_os_scope: true,
                 os_scope: osScope,
-                filter_by_keyword: keyword.trim() != "",
-                keyword: keyword.trim(),
+                filter_by_keyword: pubResStore.appKeyword.trim() != "",
+                keyword: pubResStore.appKeyword.trim(),
             },
-            offset: curPage * PAGE_SIZE,
+            offset: pubResStore.appCurPage * PAGE_SIZE,
             limit: PAGE_SIZE,
+            sort_key: pubResStore.appSortKey,
+            session_id: userStore.sessionId,
         }));
+
         setTotalCount(res.total_count);
         setAppList(res.app_info_list);
+
     };
 
     const adjustUrl = (fileId: string) => {
@@ -86,31 +93,58 @@ const AppStorePanel = () => {
         }
     }
 
+    const agreeApp = async (appId: string, newAgree: boolean) => {
+        if (newAgree) {
+            await request(agree_app({
+                session_id: userStore.sessionId,
+                app_id: appId,
+            }));
+        } else {
+            await request(cancel_agree_app({
+                session_id: userStore.sessionId,
+                app_id: appId,
+            }));
+        }
+        const tmpList = appList.slice();
+        const index = tmpList.findIndex(item => item.app_id == appId);
+        if (index != -1) {
+            tmpList[index].my_agree = newAgree;
+            if (newAgree) {
+                tmpList[index].agree_count += 1;
+            } else {
+                if (tmpList[index].agree_count > 0) {
+                    tmpList[index].agree_count -= 1;
+                }
+            }
+            setAppList(tmpList);
+        }
+    };
+
     useEffect(() => {
         loadMajorCate();
     }, []);
 
     useEffect(() => {
-        setMinorCateId("");
+        pubResStore.appMinorCateId = "";
         loadMinorCate();
-    }, [majorCateId]);
+    }, [pubResStore.appMajorCateId]);
 
     useEffect(() => {
-        setSubMinorCateId("");
+        pubResStore.appSubMinorCateId = "";
         loadSubMinorCate();
-    }, [minorCateId]);
+    }, [pubResStore.appMinorCateId]);
 
     useEffect(() => {
         loadAppList();
-    }, [curPage]);
+    }, [pubResStore.appCurPage]);
 
     useEffect(() => {
-        if (curPage != 0) {
-            setCurPage(0);
+        if (pubResStore.appCurPage != 0) {
+            pubResStore.appCurPage = 0;
         } else {
             loadAppList();
         }
-    }, [majorCateId, minorCateId, subMinorCateId, keyword]);
+    }, [pubResStore.appMajorCateId, pubResStore.appMinorCateId, pubResStore.appSubMinorCateId, pubResStore.appKeyword, pubResStore.appSortKey, pubResStore.showAppId]);
 
     return (
         <Card bordered={false}
@@ -118,7 +152,7 @@ const AppStorePanel = () => {
             extra={
                 <Form layout="inline">
                     <Form.Item label="一级分类">
-                        <Select style={{ width: "100px" }} value={majorCateId} onChange={value => setMajorCateId(value)}>
+                        <Select style={{ width: "100px" }} value={pubResStore.appMajorCateId} onChange={value => pubResStore.appMajorCateId = value}>
                             <Select.Option value="">全部</Select.Option>
                             {majorCateList.map(cate => (
                                 <Select.Option key={cate.cate_id} value={cate.cate_id}>{cate.cate_name}</Select.Option>
@@ -126,7 +160,7 @@ const AppStorePanel = () => {
                         </Select>
                     </Form.Item>
                     <Form.Item label="二级分类">
-                        <Select style={{ width: "100px" }} value={minorCateId} onChange={value => setMinorCateId(value)}>
+                        <Select style={{ width: "100px" }} value={pubResStore.appMinorCateId} onChange={value => pubResStore.appMinorCateId = value}>
                             <Select.Option value="">全部</Select.Option>
                             {minorCateList.map(cate => (
                                 <Select.Option key={cate.cate_id} value={cate.cate_id}>{cate.cate_name}</Select.Option>
@@ -134,7 +168,7 @@ const AppStorePanel = () => {
                         </Select>
                     </Form.Item>
                     <Form.Item label="三级分类">
-                        <Select style={{ width: "100px" }} value={subMinorCateId} onChange={value => setSubMinorCateId(value)}>
+                        <Select style={{ width: "100px" }} value={pubResStore.appSubMinorCateId} onChange={value => pubResStore.appSubMinorCateId = value}>
                             <Select.Option value="">全部</Select.Option>
                             {subMinorCateList.map(cate => (
                                 <Select.Option key={cate.cate_id} value={cate.cate_id}>{cate.cate_name}</Select.Option>
@@ -142,32 +176,67 @@ const AppStorePanel = () => {
                         </Select>
                     </Form.Item>
                     <Form.Item label="关键词">
-                        <Input style={{ width: 150 }} value={keyword} onChange={e => {
+                        <Input style={{ width: 150 }} value={pubResStore.appKeyword} onChange={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setKeyword(e.target.value.trim());
+                            pubResStore.appKeyword = e.target.value.trim();
                         }} />
+                    </Form.Item>
+                    <Form.Item label="排序">
+                        <Select value={pubResStore.appSortKey} onChange={value => pubResStore.appSortKey = value} style={{ width: "100px" }}>
+                            <Select.Option value={SORT_KEY_UPDATE_TIME}>更新时间</Select.Option>
+                            <Select.Option value={SORT_KEY_INSTALL_COUNT}>安装数量</Select.Option>
+                            <Select.Option value={SORT_KEY_AGREE_COUNT}>点赞数量</Select.Option>
+                        </Select>
                     </Form.Item>
                 </Form>
             }>
             <List rowKey="app_id" dataSource={appList}
-                grid={{ gutter: 16 }}
+                grid={{ gutter: 16, column: 3 }}
                 renderItem={app => (
-                    <Card title={<h3 title={app.base_info.app_name}>{app.base_info.app_name}</h3>} style={{ width: "100px", margin: "10px 10px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowAppInfo(app);
-                    }}>
-                        <AsyncImage style={{ width: "80px", height: "80px", cursor: "pointer" }}
-                            src={adjustUrl(app.base_info.icon_file_id)} fallback={defaultIcon} preview={false} useRawImg={false} />
-                    </Card>
-                )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: (page) => setCurPage(page - 1) }} />
+                    <List.Item>
+                        <Card style={{ flex: 1, borderRadius: "10px" }}
+                            headStyle={{ backgroundColor: "#e4e4e8" }}
+                            title={
+                                <a style={{ fontSize: "16px", fontWeight: 600 }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    pubResStore.showAppId = app.app_id;
+                                }}>{app.base_info.app_name}</a>
+                            }
+                            bodyStyle={{ display: "flex" }} extra={
+                                <Space style={{ fontSize: "18px" }} size="middle">
+                                    <div><DownloadOutlined />&nbsp;{app.install_count}</div>
+                                    <div><CommentOutlined />&nbsp;{app.comment_count}</div>
+                                    <div style={{ width: "20px" }} />
+                                    <div onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        agreeApp(app.app_id, !app.my_agree);
+                                    }}>
+                                        <a>
+                                            <HeartTwoTone twoToneColor={app.my_agree ? ["red", "red"] : ["#e4e4e8", "#e4e4e8"]} />
+                                        </a>
+                                        &nbsp;{app.agree_count}
+                                    </div>
+                                </Space>
+                            }>
+                            <AsyncImage style={{ width: "80px", height: "80px", cursor: "pointer" }}
+                                src={adjustUrl(app.base_info.icon_file_id)} fallback={defaultIcon} preview={false} useRawImg={false}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    pubResStore.showAppId = app.app_id;
+                                }} />
+                            <div style={{ marginLeft: "20px", height: "120px", overflowY: "scroll", width: "100%" }}>
+                                <ReadOnlyEditor content={app.base_info.app_desc} />
+                            </div>
+                        </Card>
+                    </List.Item>
+                )} pagination={{ total: totalCount, current: pubResStore.appCurPage + 1, pageSize: PAGE_SIZE, onChange: (page) => pubResStore.appCurPage = (page - 1) }} />
 
-            {showAppInfo != null && (
-                <AppInfoModal appInfo={showAppInfo} onCancel={() => setShowAppInfo(null)} />
-            )}
         </Card>
     );
 };
 
-export default AppStorePanel;
+export default observer(AppStorePanel);

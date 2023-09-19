@@ -212,6 +212,17 @@ export type AdminUpdateAppScopeResponse = {
     err_msg: string;
 };
 
+export type AdminRemoveCommentRequest = {
+    admin_session_id: string;
+    app_id: string;
+    comment_id: string;
+};
+
+export type AdminRemoveCommentResponse = {
+    code: number;
+    err_msg: string;
+};
+
 
 //创建一级分类
 export async function create_major_cate(request: AdminCreateMajorCateRequest): Promise<AdminCreateMajorCateResponse> {
@@ -362,6 +373,15 @@ export async function update_app_scope(request: AdminUpdateAppScopeRequest): Pro
     const cmd = 'plugin:appstore_admin_api|update_app_scope';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminUpdateAppScopeResponse>(cmd, {
+        request,
+    });
+}
+
+//删除评论
+export async function remove_comment(request: AdminRemoveCommentRequest): Promise<AdminRemoveCommentResponse> {
+    const cmd = 'plugin:appstore_admin_api|remove_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AdminRemoveCommentResponse>(cmd, {
         request,
     });
 }
