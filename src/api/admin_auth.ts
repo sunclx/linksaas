@@ -60,6 +60,7 @@ export type AppStorePerm = {
     add_app: boolean;
     update_app: boolean;
     remove_app: boolean;
+    remove_comment: boolean;
 };
 
 export type BookStorePerm = {

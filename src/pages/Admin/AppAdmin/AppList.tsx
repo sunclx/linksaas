@@ -7,7 +7,7 @@ import { request } from "@/utils/request";
 import SelectAppCate from "./components/SelectAppCate";
 import AddAppModal from "./components/AddAppModal";
 import type { AppInfo } from "@/api/appstore";
-import { list_app } from "@/api/appstore";
+import { SORT_KEY_UPDATE_TIME, list_app } from "@/api/appstore";
 import type { ColumnsType } from 'antd/es/table';
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { observer } from 'mobx-react';
@@ -23,6 +23,7 @@ import { remove_app } from "@/api/appstore_admin";
 import SelectAppCateModal from "./components/SelectAppCateModal";
 import UpdateAppPermModal from "./components/UpdateAppPermModal";
 import AsyncImage from "@/components/AsyncImage";
+import CommentListModal from "./components/CommentListModal";
 
 const PAGE_SIZE = 10;
 
@@ -47,6 +48,7 @@ const AppList = () => {
     const [showUpdateAppScope, setShowUpdateAppScope] = useState<AppInfo | null>(null);
     const [showRemoveApp, setShowRemoveApp] = useState<AppInfo | null>(null);
     const [showUpdatePerm, setShowUpdatePerm] = useState<AppInfo | null>(null);
+    const [showCommentAppInfo, setShowCommentAppInfo] = useState<AppInfo | null>(null);
 
     const loadAppList = async () => {
         const res = await request(list_app({
@@ -66,6 +68,8 @@ const AppList = () => {
             },
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
+            sort_key: SORT_KEY_UPDATE_TIME,
+            session_id: ""
         }));
         setTotalCount(res.total_count);
         setAppList(res.app_info_list);
@@ -205,7 +209,7 @@ const AppList = () => {
         },
         {
             title: "操作",
-            width: 220,
+            width: 300,
             render: (_, row: AppInfo) => (
                 <>
                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
@@ -221,6 +225,15 @@ const AppList = () => {
                             e.preventDefault();
                             setShowUpdatePerm(row);
                         }}>更新权限</Button>
+
+                    <Button type="link" style={{ minWidth: "0px", paddingLeft: "20px" }}
+                        disabled={row.comment_count == 0}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowCommentAppInfo(row);
+                        }}>查看评论</Button>
+
                     <Button type="link" style={{ minWidth: "0px" }} danger
                         disabled={!(permInfo?.app_store_perm.remove_app ?? false)}
                         onClick={e => {
@@ -230,6 +243,18 @@ const AppList = () => {
                         }}>删除</Button>
                 </>
             ),
+        },
+        {
+            title: "安装次数",
+            dataIndex: "install_count",
+        },
+        {
+            title: "点赞次数",
+            dataIndex: "agree_count",
+        },
+        {
+            title: "评论次数",
+            dataIndex: "comment_count",
         },
         {
             title: "创建时间",
@@ -275,7 +300,7 @@ const AppList = () => {
                 </Space>
             }>
             <div style={{ height: "calc(100vh - 100px)", overflowY: "scroll" }}>
-                <Table rowKey="app_id" columns={columns} dataSource={appList} pagination={false} scroll={{ x: 1300 }} />
+                <Table rowKey="app_id" columns={columns} dataSource={appList} pagination={false} scroll={{ x: 1500 }} />
                 <Pagination total={totalCount} pageSize={PAGE_SIZE} current={curPage + 1} onChange={page => setCurPage(page - 1)} />
             </div>
             {showAddModal == true && (
@@ -376,6 +401,9 @@ const AppList = () => {
                         }
                         setShowUpdatePerm(null);
                     }} />
+            )}
+            {showCommentAppInfo != null && (
+                <CommentListModal appInfo={showCommentAppInfo} onClose={()=>setShowCommentAppInfo(null)}/>
             )}
         </Card>
     );

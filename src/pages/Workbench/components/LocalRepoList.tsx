@@ -17,6 +17,7 @@ import AtomGitRepo from "./remote_repo/AtomGitRepo";
 import GiteeRepo from "./remote_repo/GiteeRepo";
 import GitlabRepo from "./remote_repo/GitLabRepo";
 import GithubRepo from "./remote_repo/GithubRepo";
+import GitcodeRepo from "./remote_repo/GitcodeRepo";
 
 
 interface LinkProjectModalProps {
@@ -469,6 +470,11 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                         {host.includes("github.com") && (props.repo.setting?.github_token ?? "") != "" && (
                             <Tabs.TabPane tab="工单(github)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
                                 <GithubRepo url={remoteItem.url} token={props.repo.setting?.github_token ?? ""} />
+                            </Tabs.TabPane>
+                        )}
+                        {host.includes("gitcode.net") && (props.repo.setting?.gitcode_token ?? "") != "" && (
+                            <Tabs.TabPane tab="工单(gitcode)" key={host} style={{ height: "calc(100vh - 400px)", overflow: "scroll" }}>
+                                <GitcodeRepo url={remoteItem.url} token={props.repo.setting?.gitcode_token ?? ""} />
                             </Tabs.TabPane>
                         )}
                         {!(host.includes("atomgit.com") || host.includes("github.com") || host.includes("gitcode.net") || host.includes("gitee.com"))

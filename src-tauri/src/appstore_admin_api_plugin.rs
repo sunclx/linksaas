@@ -525,6 +525,37 @@ async fn update_app_scope<R: Runtime>(
 }
 
 
+#[tauri::command]
+async fn remove_comment<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: AdminRemoveCommentRequest,
+) -> Result<AdminRemoveCommentResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = AppstoreAdminApiClient::new(chan.unwrap());
+    match client.remove_comment(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == admin_remove_comment_response::Code::WrongSession as i32
+                || inner_resp.code == admin_remove_comment_response::Code::NotAuth as i32
+            {
+                crate::admin_auth_api_plugin::logout(app_handle).await;
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_comment".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct AppstoreAdminApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -550,6 +581,7 @@ impl<R: Runtime> AppstoreAdminApiPlugin<R> {
                 update_app_perm,
                 update_app_os,
                 update_app_scope,
+                remove_comment,
             ]),
         }
     }

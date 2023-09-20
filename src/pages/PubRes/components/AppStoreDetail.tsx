@@ -1,22 +1,23 @@
-import { Form, Modal, Descriptions, Space, Button, message } from "antd";
 import React, { useEffect, useState } from "react";
-import type { AppInfo, InstallInfo } from "@/api/appstore";
-import { get_install_info } from "@/api/appstore";
-import { request } from "@/utils/request";
+import type { AppInfo, InstallInfo, AppComment } from "@/api/appstore";
+import { agree_app, cancel_agree_app, get_app, get_install_info, list_comment, add_comment, remove_comment } from "@/api/appstore";
+import { Button, Card, Descriptions, Form, Input, List, Modal, Space, message } from "antd";
+import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
+import { request } from "@/utils/request";
+import { CommentOutlined, DownloadOutlined, HeartTwoTone, LeftOutlined } from "@ant-design/icons";
 import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
-import { add as add_user_app, set_user_app_perm, get_user_app_perm, query_in_store as query_user_app_in_store, remove as remove_user_app } from "@/api/user_app";
-import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
 import { get_cache_file } from '@/api/fs';
-import DownloadProgressModal from "@/pages/Project/AppStore/components/DownloadProgressModal";
+import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
+import { add as add_user_app, set_user_app_perm, get_user_app_perm, query_in_store as query_user_app_in_store, remove as remove_user_app } from "@/api/user_app";
 import { OPEN_TYPE_MIN_APP_IN_STORE, add as add_project_app, set_min_app_perm, query_in_store as query_project_app_in_store, remove as remove_project_app, get_min_app_perm, get_token_url } from "@/api/project_app";
+import DownloadProgressModal from "@/pages/Project/AppStore/components/DownloadProgressModal";
 import { open as open_shell } from '@tauri-apps/api/shell';
+import UserPhoto from "@/components/Portrait/UserPhoto";
+import moment from "moment";
 
-interface AppInfoModalProps {
-    appInfo: AppInfo;
-    onCancel: () => void;
-}
+const PAGE_SIZE = 10;
 
 interface DownloadInfo {
     fsId: string;
@@ -25,49 +26,116 @@ interface DownloadInfo {
     projectName: string;
 }
 
-const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
-    const userStore = useStores("userStore");
+const AppStoreDetail = () => {
+    const userStore = useStores('userStore');
     const appStore = useStores("appStore");
+    const pubResStore = useStores('pubResStore');
 
+    const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
     const [installInfo, setInstallInfo] = useState<InstallInfo | null>(null);
     const [showDownload, setShowDownload] = useState<DownloadInfo | null>(null);
+    const [commentContent, setCommentContent] = useState("");
+
+    const [commentList, setCommentList] = useState<AppComment[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [curPage, setCurPage] = useState(0);
+
+    const [removeCommentInfo, setRemoveCommentInfo] = useState<AppComment | null>(null);
+
+    const loadAppInfo = async () => {
+        const res = await request(get_app({
+            app_id: pubResStore.showAppId,
+            session_id: userStore.sessionId,
+        }));
+        setAppInfo(res.app_info);
+    };
 
     const loadInstallInfo = async () => {
         const res = await request(get_install_info({
             session_id: userStore.sessionId,
-            app_id: props.appInfo.app_id,
+            app_id: pubResStore.showAppId,
         }));
         setInstallInfo(res.install_info);
     };
 
+    const loadCommentList = async () => {
+        const res = await request(list_comment({
+            app_id: pubResStore.showAppId,
+            offset: PAGE_SIZE * curPage,
+            limit: PAGE_SIZE,
+        }));
+
+        setTotalCount(res.total_count);
+        setCommentList(res.comment_list);
+    };
+
+    const addComment = async () => {
+        if (commentContent.trim() == "") {
+            return;
+        }
+        await request(add_comment({
+            session_id: userStore.sessionId,
+            app_id: pubResStore.showAppId,
+            comment: commentContent,
+        }));
+        message.info("增加评论成功");
+        setCommentContent("");
+        if (curPage == 0) {
+            await loadCommentList();
+        } else {
+            setCurPage(0);
+        }
+    };
+
+    const removeComment = async () => {
+        if (removeCommentInfo == null) {
+            return;
+        }
+        await request(remove_comment({
+            session_id: userStore.sessionId,
+            app_id: pubResStore.showAppId,
+            comment_id: removeCommentInfo.comment_id,
+        }));
+        message.info("删除评论成功");
+        setRemoveCommentInfo(null);
+        if (curPage == 0) {
+            await loadCommentList();
+        } else {
+            setCurPage(0);
+        }
+    };
+
     const installUserApp = async () => {
+        if (appInfo == null) {
+            return;
+        }
         const addRes = await request(add_user_app({
             session_id: userStore.sessionId,
             basic_info: {
-                app_name: props.appInfo.base_info.app_name,
-                icon_file_id: props.appInfo.base_info.icon_file_id,
-                app_id_in_store: props.appInfo.app_id,
+                app_name: appInfo?.base_info.app_name ?? "",
+                icon_file_id: appInfo?.base_info.icon_file_id ?? "",
+                app_id_in_store: appInfo?.app_id ?? "",
             },
         }));
         await request(set_user_app_perm({
             session_id: userStore.sessionId,
             app_id: addRes.app_id,
             perm: {
-                net_perm: props.appInfo.app_perm.net_perm,
-                fs_perm: props.appInfo.app_perm.fs_perm,
-                extra_perm: props.appInfo.app_perm.extra_perm,
+                net_perm: appInfo.app_perm.net_perm,
+                fs_perm: appInfo.app_perm.fs_perm,
+                extra_perm: appInfo.app_perm.extra_perm,
             },
         }));
         if (installInfo != null) {
             setInstallInfo({ ...installInfo, user_install: true });
         }
+        setAppInfo({ ...appInfo, install_count: appInfo.install_count + 1 });
     };
-
 
     const openUserApp = async (fsId: string, fileId: string) => {
         const queryRes = await request(query_user_app_in_store({
             session_id: userStore.sessionId,
-            app_id_in_store: props.appInfo.app_id,
+            app_id_in_store: appInfo?.app_id ?? "",
         }));
         if (queryRes.app_id_list.length == 0) {
             message.error("应用不存在");
@@ -86,7 +154,7 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
             member_display_name: userStore.userInfo.displayName,
             token_url: "",
             label: "minApp:" + queryRes.app_id_list[0],
-            title: `${props.appInfo.base_info.app_name}(微应用)`,
+            title: `${appInfo?.base_info.app_name ?? ""}(微应用)`,
             path: path,
         }, {
             net_perm: permRes.perm.net_perm,
@@ -111,35 +179,35 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
 
     const preOpenUserApp = async () => {
         //检查文件是否已经下载
-        const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", props.appInfo.file_id, "content.zip");
+        const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "", "content.zip");
         if (res.exist_in_local == false) {
             setShowDownload({
                 fsId: appStore.clientCfg?.app_store_fs_id ?? "",
-                fileId: props.appInfo.file_id,
+                fileId: appInfo?.file_id ?? "",
                 projectId: "",
                 projectName: "",
             });
             return;
         }
         //检查是否已经解压zip包
-        const ok = await check_unpark(appStore.clientCfg?.app_store_fs_id ?? "", props.appInfo.file_id);
+        const ok = await check_unpark(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "");
         if (!ok) {
             setShowDownload({
                 fsId: appStore.clientCfg?.app_store_fs_id ?? "",
-                fileId: props.appInfo.file_id,
+                fileId: appInfo?.file_id ?? "",
                 projectId: "",
                 projectName: "",
             });
             return;
         }
         //打开微应用
-        await openUserApp(appStore.clientCfg?.app_store_fs_id ?? "", props.appInfo.file_id);
+        await openUserApp(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "");
     }
 
     const removeUserApp = async () => {
         const queryRes = await request(query_user_app_in_store({
             session_id: userStore.sessionId,
-            app_id_in_store: props.appInfo.app_id,
+            app_id_in_store: appInfo?.app_id ?? "",
         }));
         for (const appId of queryRes.app_id_list) {
             await request(remove_user_app({
@@ -152,14 +220,18 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
         }
     };
 
+
     const installProjectApp = async (projectId: string) => {
+        if (appInfo == null) {
+            return;
+        }
         const addRes = await request(add_project_app({
             session_id: userStore.sessionId,
             basic_info: {
                 project_id: projectId,
-                app_name: props.appInfo.base_info.app_name,
-                app_icon_url: `fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.appInfo.base_info.icon_file_id}/x.png`,
-                app_url: props.appInfo.app_id,
+                app_name: appInfo.base_info.app_name,
+                app_icon_url: `fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${appInfo.base_info.icon_file_id}/x.png`,
+                app_url: appInfo.app_id,
                 app_open_type: OPEN_TYPE_MIN_APP_IN_STORE,
             },
         }));
@@ -168,12 +240,12 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
             project_id: projectId,
             app_id: addRes.app_id,
             perm: {
-                net_perm: props.appInfo.app_perm.net_perm,
-                member_perm: props.appInfo.app_perm.member_perm,
-                issue_perm: props.appInfo.app_perm.issue_perm,
-                event_perm: props.appInfo.app_perm.event_perm,
-                fs_perm: props.appInfo.app_perm.fs_perm,
-                extra_perm: props.appInfo.app_perm.extra_perm,
+                net_perm: appInfo.app_perm.net_perm,
+                member_perm: appInfo.app_perm.member_perm,
+                issue_perm: appInfo.app_perm.issue_perm,
+                event_perm: appInfo.app_perm.event_perm,
+                fs_perm: appInfo.app_perm.fs_perm,
+                extra_perm: appInfo.app_perm.extra_perm,
             },
         }));
         if (installInfo != null) {
@@ -187,10 +259,13 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
     }
 
     const removeProjectApp = async (projectId: string) => {
+        if (appInfo == null) {
+            return;
+        }
         const queryRes = await request(query_project_app_in_store({
             session_id: userStore.sessionId,
             project_id: projectId,
-            app_id_in_store: props.appInfo.app_id,
+            app_id_in_store: appInfo.app_id,
         }));
         for (const appId of queryRes.app_id_list) {
             await request(remove_project_app({
@@ -210,10 +285,13 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
     }
 
     const openProjectApp = async (projectId: string, projectName: string, fsId: string, fileId: string) => {
+        if (appInfo == null) {
+            return;
+        }
         const queryRes = await request(query_project_app_in_store({
             session_id: userStore.sessionId,
             project_id: projectId,
-            app_id_in_store: props.appInfo.app_id,
+            app_id_in_store: appInfo.app_id,
         }));
         if (queryRes.app_id_list.length == 0) {
             message.error("应用不存在");
@@ -240,62 +318,129 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
             member_display_name: userStore.userInfo.displayName,
             token_url: tokenRes.url,
             label: "minApp:" + queryRes.app_id_list[0],
-            title: `${props.appInfo.base_info.app_name}(微应用)`,
+            title: `${appInfo.base_info.app_name}(微应用)`,
             path: path,
         }, permRes.perm);
     };
 
     const preOpenProjectApp = async (projectId: string, projectName: string) => {
+        if (appInfo == null) {
+            return;
+        }
         //检查文件是否已经下载
-        const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", props.appInfo.file_id, "content.zip");
+        const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", appInfo.file_id, "content.zip");
         if (res.exist_in_local == false) {
             setShowDownload({
                 fsId: appStore.clientCfg?.app_store_fs_id ?? "",
-                fileId: props.appInfo.file_id,
+                fileId: appInfo.file_id,
                 projectId: projectId,
                 projectName: projectName,
             });
             return;
         }
         //检查是否已经解压zip包
-        const ok = await check_unpark(appStore.clientCfg?.app_store_fs_id ?? "", props.appInfo.file_id);
+        const ok = await check_unpark(appStore.clientCfg?.app_store_fs_id ?? "", appInfo.file_id);
         if (!ok) {
             setShowDownload({
                 fsId: appStore.clientCfg?.app_store_fs_id ?? "",
-                fileId: props.appInfo.file_id,
+                fileId: appInfo.file_id,
                 projectId: projectId,
                 projectName: projectName,
             });
             return;
         }
         //打开微应用
-        await openProjectApp(projectId, projectName, appStore.clientCfg?.app_store_fs_id ?? "", props.appInfo.file_id);
-    }
+        await openProjectApp(projectId, projectName, appStore.clientCfg?.app_store_fs_id ?? "", appInfo.file_id);
+    };
+
+    const agreeApp = async (appId: string, newAgree: boolean) => {
+        if (appInfo == null) {
+            return;
+        }
+        if (newAgree) {
+            await request(agree_app({
+                session_id: userStore.sessionId,
+                app_id: appId,
+            }));
+        } else {
+            await request(cancel_agree_app({
+                session_id: userStore.sessionId,
+                app_id: appId,
+            }));
+        }
+        let newAgreeCount = appInfo.agree_count;
+        if (newAgree) {
+            newAgreeCount = appInfo.agree_count + 1;
+        } else {
+            if (appInfo.agree_count > 0) {
+                newAgreeCount = appInfo.agree_count - 1;
+            }
+        }
+
+        setAppInfo({ ...appInfo, agree_count: newAgreeCount, my_agree: newAgree });
+    };
 
     useEffect(() => {
+        loadAppInfo();
         loadInstallInfo();
-    }, []);
+        if (curPage != 0) {
+            setCurPage(0);
+        } else {
+            loadCommentList();
+        }
+    }, [pubResStore.showAppId]);
+
 
     return (
-        <>
-            <Modal title={props.appInfo.base_info.app_name} open={showDownload == null} footer={null} onCancel={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onCancel();
-            }} bodyStyle={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
+        <Card title={
+            <Space>
+                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        pubResStore.showAppId = "";
+                    }}><LeftOutlined style={{ fontSize: "16px" }} /></Button>
+                <h2>{appInfo?.base_info.app_name ?? ""}</h2>
+            </Space>
+        } bordered={false}
+            bodyStyle={{ height: "calc(100vh - 180px)", overflowY: "scroll" }}
+            extra={
+                <>
+                    {appInfo != null && (
+                        <Space style={{ fontSize: "18px" }} size="middle">
+                            <div><DownloadOutlined />&nbsp;{appInfo.install_count}</div>
+                            <div><CommentOutlined />&nbsp;{totalCount}</div>
+                            <div style={{ width: "20px" }} />
+                            <div onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                agreeApp(appInfo.app_id, !appInfo.my_agree);
+                            }}>
+                                <a>
+                                    <HeartTwoTone twoToneColor={appInfo.my_agree ? ["red", "red"] : ["#e4e4e8", "#e4e4e8"]} />
+                                </a>
+                                &nbsp;{appInfo.agree_count}
+                            </div>
+                        </Space>
+
+                    )}
+
+                </>
+            }>
+            {appInfo != null && (
                 <Descriptions bordered>
-                    <Descriptions.Item label="一级分类">{props.appInfo.major_cate.cate_name}</Descriptions.Item>
-                    <Descriptions.Item label="二级分类">{props.appInfo.minor_cate.cate_name}</Descriptions.Item>
-                    <Descriptions.Item label="三级分类">{props.appInfo.sub_minor_cate.cate_name}</Descriptions.Item>
+                    <Descriptions.Item label="一级分类">{appInfo.major_cate.cate_name}</Descriptions.Item>
+                    <Descriptions.Item label="二级分类">{appInfo.minor_cate.cate_name}</Descriptions.Item>
+                    <Descriptions.Item label="三级分类">{appInfo.sub_minor_cate.cate_name}</Descriptions.Item>
                     <Descriptions.Item span={3} label="应用权限">
-                        <AppPermPanel disable={true} showTitle={false} onChange={() => { }} perm={props.appInfo.app_perm} />
+                        <AppPermPanel disable={true} showTitle={false} onChange={() => { }} perm={appInfo.app_perm} />
                     </Descriptions.Item>
                     <Descriptions.Item span={3} label="应用描述">
-                        <ReadOnlyEditor content={props.appInfo.base_info.app_desc} />
+                        <ReadOnlyEditor content={appInfo.base_info.app_desc} />
                     </Descriptions.Item>
                     <Descriptions.Item span={3} label="操作">
                         {installInfo != null && (
-                            <Form labelCol={{ span: 6 }}>
+                            <Form labelCol={{ span: 2 }}>
                                 <Form.Item label="工作台">
                                     <Space size="large">
                                         {installInfo.user_install == true && (
@@ -313,7 +458,7 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
                                             </>
                                         )}
                                         {installInfo.user_install == false && (
-                                            <Button type="link" disabled={!props.appInfo.user_app} onClick={e => {
+                                            <Button type="link" disabled={!appInfo.user_app} onClick={e => {
                                                 e.stopPropagation();
                                                 e.preventDefault();
                                                 installUserApp();
@@ -339,7 +484,7 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
                                                 </>
                                             )}
                                             {prj.has_install == false && (
-                                                <Button type="link" disabled={!(props.appInfo.project_app && prj.can_install)} onClick={e => {
+                                                <Button type="link" disabled={!(appInfo.project_app && prj.can_install)} onClick={e => {
                                                     e.stopPropagation();
                                                     e.preventDefault();
                                                     installProjectApp(prj.project_id);
@@ -351,17 +496,59 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
                             </Form>
                         )}
                     </Descriptions.Item>
-                    {props.appInfo.base_info.src_url !== "" && (
+                    {appInfo.base_info.src_url !== "" && (
                         <Descriptions.Item label="源代码">
-                            <a onClick={e=>{
+                            <a onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                open_shell(props.appInfo.base_info.src_url);
-                            }}>{props.appInfo.base_info.src_url}</a>
+                                open_shell(appInfo?.base_info.src_url ?? "");
+                            }}>{appInfo.base_info.src_url}</a>
                         </Descriptions.Item>
                     )}
                 </Descriptions>
-            </Modal>
+            )}
+            <h2 style={{ fontSize: "18px", fontWeight: 600, marginTop: "10px" }}>评论列表</h2>
+            <div>
+                <Input.TextArea
+                    autoSize={{ minRows: 5, maxRows: 5 }}
+                    value={commentContent}
+                    onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setCommentContent(e.target.value);
+                    }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button type="primary" style={{ margin: "10px 10px" }} disabled={commentContent.trim() == ""}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        addComment();
+                    }}>发送</Button>
+            </div>
+            <List rowKey="comment_id" dataSource={commentList} renderItem={item => (
+                <List.Item>
+                    <Card style={{ width: "100%" }} bordered={false} title={
+                        <Space>
+                            <UserPhoto logoUri={item.create_logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                            <span>{item.create_display_name}</span>
+                            <span>{moment(item.create_time).format("YYYY-MM-DD HH:mm:ss")}</span>
+                        </Space>
+                    } extra={
+                        <>
+                            {item.create_user_id == userStore.userInfo.userId && (
+                                <Button type="link" danger onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setRemoveCommentInfo(item);
+                                }}>删除</Button>
+                            )}
+                        </>
+                    }>
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{item.comment}</pre>
+                    </Card>
+                </List.Item>
+            )} pagination={{ current: curPage + 1, pageSize: PAGE_SIZE, total: totalCount, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             {showDownload != null && (
                 <DownloadProgressModal fsId={showDownload.fsId} fileId={showDownload.fileId}
                     onCancel={() => setShowDownload(null)}
@@ -374,9 +561,24 @@ const AppInfoModal: React.FC<AppInfoModalProps> = (props) => {
                         }
                     }} />
             )}
-        </>
-    )
+            {removeCommentInfo != null && (
+                <Modal open title="删除评论"
+                    okText="删除" okButtonProps={{ danger: true }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setRemoveCommentInfo(null);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeComment();
+                    }}>
+                    是否删除评论？
+                </Modal>
+            )}
+        </Card>
+    );
 };
 
-
-export default AppInfoModal;
+export default observer(AppStoreDetail);
