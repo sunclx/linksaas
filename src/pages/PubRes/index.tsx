@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
 import { AppstoreOutlined, BookOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
@@ -20,6 +20,7 @@ const PubRes = () => {
     const history = useHistory();
 
     const appStore = useStores('appStore');
+    const projectStore = useStores('projectStore');
     const pubResStore = useStores('pubResStore');
 
     const urlParams = new URLSearchParams(location.search);
@@ -39,6 +40,10 @@ const PubRes = () => {
     }
 
     const [activeKey, setActiveKey] = useState(tab);
+
+    useMemo(() => {
+        projectStore.setCurProjectId('');
+    }, []);
 
     return (
         <div className={s.tabs_wrap}>
