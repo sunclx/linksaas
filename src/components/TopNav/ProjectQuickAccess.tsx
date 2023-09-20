@@ -30,7 +30,6 @@ const MENU_KEY_CREATE_TASK = "create.task";
 const MENU_KEY_SHOW_TOOL_BAR_BUG_MY = "toolbar.bug.my.show";
 const MENU_KEY_SHOW_TOOL_BAR_BUG_ALL = "toolbar.bug.all.show";
 const MENU_KEY_CREATE_BUG = "create.bug";
-const MENU_KEY_SHOW_TOOL_BAR_TEST_CASE = "toolbar.testcase.show";
 const MENU_KEY_SHOW_TOOL_BAR_ROBOT = "toolbar.robot.show";
 const MENU_KEY_SHOW_TOOL_BAR_SCRIPT = "toolbar.script.show";
 const MENU_KEY_SHOW_TOOL_BAR_EARTHLY = "toolbar.earthly.show";
@@ -197,12 +196,6 @@ const ProjectQuickAccess = () => {
                 }
             ],
         });
-        if (projectStore.curProject?.setting.disable_test_case != true) {
-            tmpItems.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_TEST_CASE,
-                label: "测试用例",
-            });
-        }
         if (projectStore.curProject?.setting.disable_server_agent != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_ROBOT,
@@ -370,9 +363,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_CREATE_BUG:
                 linkAuxStore.goToCreateBug("", projectStore.curProjectId, history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_TEST_CASE:
-                linkAuxStore.goToTestCaseList({ entryId: "" }, history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_ROBOT:
                 linkAuxStore.goToRobotList(history);

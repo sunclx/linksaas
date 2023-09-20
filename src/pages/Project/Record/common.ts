@@ -9,7 +9,6 @@ import docIcon from '@/assets/channel/doc@2x.png';
 import appIcon from '@/assets/allIcon/icon-appstore.png';
 import robotIcon from '@/assets/allIcon/icon-robot.png';
 import repoIcon from '@/assets/allIcon/icon-repo.png';
-import testcaseIcon from '@/assets/allIcon/icon-testcase.png';
 import scriptIcon from '@/assets/allIcon/icon-script.png';
 import reqIcon from '@/assets/allIcon/icon-req.png';
 import ideaIcon from '@/assets/allIcon/icon-idea.png';
@@ -63,10 +62,6 @@ export const EVENT_ICON_LIST = {
   [API.EVENT_TYPE_EARTHLY]: {
     title: 'repo',
     icon: repoIcon,
-  },
-  [API.EVENT_TYPE_TEST_CASE]: {
-    title: 'testCase',
-    icon: testcaseIcon,
   },
   [API.EVENT_TYPE_SCRIPT]: {
     title: 'script',

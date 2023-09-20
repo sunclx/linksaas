@@ -46,7 +46,6 @@ mod project_member_admin_api_plugin;
 mod project_member_api_plugin;
 mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
-mod project_test_case_api_plugin;
 mod project_tool_api_plugin;
 mod robot_api_plugin;
 mod robot_earthly_api_plugin;
@@ -427,7 +426,6 @@ fn main() {
         .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
         .plugin(robot_script_api_plugin::RobotScriptApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
-        .plugin(project_test_case_api_plugin::ProjectTestCaseApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())
         .plugin(admin_auth_api_plugin::AdminAuthApiPlugin::new())
         .plugin(project_admin_api_plugin::ProjectAdminApiPlugin::new())

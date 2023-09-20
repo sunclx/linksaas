@@ -215,7 +215,7 @@ const AppStorePanel = () => {
                                         agreeApp(app.app_id, !app.my_agree);
                                     }}>
                                         <a>
-                                            <HeartTwoTone twoToneColor={app.my_agree ? ["red", "red"] : ["#e4e4e8", "#e4e4e8"]} />
+                                            <HeartTwoTone twoToneColor={app.my_agree ? ["red", "red"] : ["black", "#e4e4e8"]} />
                                         </a>
                                         &nbsp;{app.agree_count}
                                     </div>

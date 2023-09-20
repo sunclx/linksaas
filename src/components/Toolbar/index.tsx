@@ -109,13 +109,6 @@ const Toolbar: React.FC = observer(() => {
         title="缺陷列表"
         badge={projectStore.curProject?.project_status.undone_bug_count || 0}
       />
-      {projectStore.curProject?.setting.disable_test_case != true && (
-        <Item
-          id="testcase"
-          pathname={pathname}
-          title="测试用例"
-        />
-      )}
 
       {projectStore.curProject?.setting.disable_server_agent != true && (
         <>

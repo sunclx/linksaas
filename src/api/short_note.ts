@@ -6,7 +6,7 @@ export type SHORT_NOTE_TYPE = number;
 export const SHORT_NOTE_TASK: SHORT_NOTE_TYPE = 0;
 export const SHORT_NOTE_BUG: SHORT_NOTE_TYPE = 1;
 export const SHORT_NOTE_DOC: SHORT_NOTE_TYPE = 2;
-export const SHORT_NOTE_TEST_CASE: SHORT_NOTE_TYPE = 3;
+// export const SHORT_NOTE_TEST_CASE: SHORT_NOTE_TYPE = 3;
 
 
 export const SHORT_NOTE_CHANNEL: SHORT_NOTE_TYPE = 999; //自定义属性

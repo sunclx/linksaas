@@ -153,20 +153,6 @@ export type SpritEvCfg = {
     un_watch: boolean;
 }
 
-export type TestCaseEvCfg = {
-    create_entry: boolean;
-    move_entry: boolean;
-    update_entry_title: boolean;
-    remove_entry: boolean;
-    add_rule: boolean;
-    update_rule: boolean;
-    remove_rule: boolean;
-    add_metric: boolean;
-    update_metric: boolean;
-    remove_metric: boolean;
-    update_content: boolean;
-}
-
 export type ScriptEvCfg = {
     create_script_suite: boolean;
     remove_script_suite: boolean;
@@ -244,7 +230,6 @@ export type EventCfg = {
     issue_ev_cfg: IssueEvCfg;
     robot_ev_cfg: RobotEvCfg;
     sprit_ev_cfg: SpritEvCfg;
-    test_case_ev_cfg: TestCaseEvCfg;
     script_ev_cfg: ScriptEvCfg;
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;

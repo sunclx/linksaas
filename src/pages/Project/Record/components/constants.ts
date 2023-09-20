@@ -1,7 +1,7 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, BookShelfEvCfg, DocEvCfg, EarthlyEvCfg, ExtEvCfg,
-    GiteeEvCfg, GitlabEvCfg, RobotEvCfg, TestCaseEvCfg, IssueEvCfg, SpritEvCfg,
+    GiteeEvCfg, GitlabEvCfg, RobotEvCfg, IssueEvCfg, SpritEvCfg,
     ScriptEvCfg, RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg
 } from '@/api/events_subscribe';
 
@@ -1675,136 +1675,6 @@ export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
     }
     if (cfg.un_watch) {
         retList.push("unWatch");
-    }
-    return retList;
-};
-
-export const testCaseEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "创建节点",
-        value: "createEntry",
-    },
-    {
-        label: "移动节点",
-        value: "moveEntry",
-    },
-    {
-        label: "更新节点标题",
-        value: "updateEntryTitle",
-    },
-    {
-        label: "删除节点",
-        value: "removeEntry",
-    },
-    {
-        label: "增加验证规则",
-        value: "addRule",
-    },
-    {
-        label: "更新验证规则",
-        value: "updateRule",
-    },
-    {
-        label: "删除验证规则",
-        value: "removeRule",
-    },
-    {
-        label: "新增测试指标",
-        value: "addMetric",
-    },
-    {
-        label: "更新测试指标",
-        value: "updateMetric",
-    },
-    {
-        label: "删除测试指标",
-        value: "removeMetric",
-    },
-    {
-        label: "更新测试步骤",
-        value: "updateContent",
-    },
-];
-
-export const calcTestCaseEvCfg = (values: string[] | undefined): TestCaseEvCfg => {
-    const ret: TestCaseEvCfg = {
-        create_entry: false,
-        move_entry: false,
-        update_entry_title: false,
-        remove_entry: false,
-        add_rule: false,
-        update_rule: false,
-        remove_rule: false,
-        add_metric: false,
-        update_metric: false,
-        remove_metric: false,
-        update_content: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "createEntry") {
-            ret.create_entry = true;
-        } else if (value == "moveEntry") {
-            ret.move_entry = true;
-        } else if (value == "updateEntryTitle") {
-            ret.update_entry_title = true;
-        } else if (value == "removeEntry") {
-            ret.remove_entry = true;
-        } else if (value == "addRule") {
-            ret.add_rule = true;
-        } else if (value == "updateRule") {
-            ret.update_rule = true;
-        } else if (value == "removeRule") {
-            ret.remove_rule = true;
-        } else if (value == "addMetric") {
-            ret.add_metric = true;
-        } else if (value == "updateMetric") {
-            ret.update_metric = true;
-        } else if (value == "removeMetric") {
-            ret.remove_metric = true;
-        } else if (value == "updateContent") {
-            ret.update_content = true;
-        }
-    });
-    return ret;
-};
-
-export const genTestCaseEvCfgValues = (cfg: TestCaseEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.create_entry) {
-        retList.push("createEntry");
-    }
-    if (cfg.move_entry) {
-        retList.push("moveEntry");
-    }
-    if (cfg.update_entry_title) {
-        retList.push("updateEntryTitle");
-    }
-    if (cfg.remove_entry) {
-        retList.push("removeEntry");
-    }
-    if (cfg.add_rule) {
-        retList.push("addRule");
-    }
-    if (cfg.update_rule) {
-        retList.push("updateRule");
-    }
-    if (cfg.remove_rule) {
-        retList.push("removeRule");
-    }
-    if (cfg.add_metric) {
-        retList.push("addMetric");
-    }
-    if (cfg.update_metric) {
-        retList.push("updateMetric");
-    }
-    if (cfg.remove_metric) {
-        retList.push("removeMetric");
-    }
-    if (cfg.update_content) {
-        retList.push("updateContent");
     }
     return retList;
 };
