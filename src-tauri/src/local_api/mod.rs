@@ -18,7 +18,6 @@ mod notice;
 mod project_api;
 mod project_code_api;
 mod server;
-mod testcase_api;
 
 #[derive(Default)]
 pub struct ServPort(Mutex<Option<i16>>);

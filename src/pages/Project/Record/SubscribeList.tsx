@@ -15,8 +15,8 @@ import {
     bookShelfEvOptionList, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues,
     genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues,
-    genSpritEvCfgValues, genTestCaseEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, testCaseEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues, apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues
+    genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
+    requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues, apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
@@ -171,9 +171,6 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="工作计划事件">
                                             <Checkbox.Group options={spritEvOptionList} value={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="测试用例事件">
-                                            <Checkbox.Group options={testCaseEvOptionList} value={genTestCaseEvCfgValues(item.event_cfg.test_case_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="代码事件">
                                             <Checkbox.Group options={codeEvOptionList} value={genCodeEvCfgValues(item.event_cfg.code_ev_cfg)} disabled={true} />

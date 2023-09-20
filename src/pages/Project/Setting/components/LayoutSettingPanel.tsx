@@ -23,7 +23,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableKb, setDisableKb] = useState(projectStore.curProject?.setting.disable_kb ?? false);
 
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
-    const [disableTestCase, setDisableTestCase] = useState(projectStore.curProject?.setting.disable_test_case ?? false);
     const [disableServerAgent, setDisableServerAgent] = useState(projectStore.curProject?.setting.disable_server_agent ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
@@ -47,7 +46,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         setDisableKb(projectStore.curProject?.setting.disable_kb ?? false);
 
         setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
-        setDisableTestCase(projectStore.curProject?.setting.disable_test_case ?? false);
         setDisableServerAgent(projectStore.curProject?.setting.disable_server_agent ?? false);
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableAppStore(projectStore.curProject?.setting.disable_app_store ?? false);
@@ -72,7 +70,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
             setting: {
                 ...projectStore.curProject!.setting,
                 disable_member_appraise: disableMemberAppraise,
-                disable_test_case: disableTestCase,
                 disable_server_agent: disableServerAgent,
                 disable_ext_event: disableExtEvent,
                 disable_app_store: disableAppStore,
@@ -159,11 +156,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableMemberAppraise(e.target.checked);
                             setHasChange(true);
                         }}>关闭成员互评入口</Checkbox>
-                        <Checkbox checked={disableTestCase} onChange={e => {
-                            e.stopPropagation();
-                            setDisableTestCase(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭测试用例入口</Checkbox>
                         <Checkbox checked={disableServerAgent} onChange={e => {
                             e.stopPropagation();
                             setDisableServerAgent(e.target.checked);

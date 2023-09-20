@@ -51,7 +51,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_EARTHLY_ACTION = 11,
   LINK_TARGET_EARTHLY_EXEC = 12,
   LINK_TARGET_BOOK_MARK = 13,
-  LINK_TARGET_TEST_CASE_ENTRY = 14,
+  // LINK_TARGET_TEST_CASE_ENTRY = 14,
   LINK_TARGET_SCRIPT_SUITE = 15,
   LINK_TARGET_SCRIPT_EXEC = 16,
   LINK_TARGET_REQUIRE_MENT = 17,
@@ -326,19 +326,6 @@ export class LinkNoneInfo {
   linkContent: string;
 }
 
-export class LinkTestCaseEntryInfo {
-  constructor(content: string, projectId: string, entryId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.entryId = entryId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  entryId: string;
-}
-
 export class LinkRequirementInfo {
   constructor(content: string, projectId: string, requirementId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT;
@@ -463,10 +450,6 @@ export type LinkEarthlyExecState = {
   repoId: string;
   actionId: string;
   execId: string;
-}
-
-export type LinkTestCaseEntryState = {
-  entryId: string;
 }
 
 export type LinkScriptSuiteSate = {
@@ -710,18 +693,6 @@ class LinkAuxStore {
       }
       await this.rootStore.spritStore.setCurSpritId(spritLink.spritId);
       history.push(APP_PROJECT_WORK_PLAN_PATH);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TEST_CASE_ENTRY) {
-      const entryLink = link as LinkTestCaseEntryInfo;
-      if (this.rootStore.projectStore.getProject(entryLink.projectId)?.setting.disable_test_case == true) {
-        return;
-      }
-      if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(entryLink.projectId);
-      }
-      const state: LinkTestCaseEntryState = {
-        entryId: entryLink.entryId,
-      };
-      history.push(this.genUrl(entryLink.entryId, pathname, "/testcase"), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
       const scriptSuiteLink = link as LinkScriptSuiteInfo;
       if (this.rootStore.projectStore.getProject(scriptSuiteLink.projectId)?.setting.disable_server_agent == true) {
@@ -918,28 +889,6 @@ class LinkAuxStore {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/robot"));
-  }
-
-  //跳转到测试用例列表页
-  goToTestCaseList(state: LinkTestCaseEntryState, history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_test_case == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/testcase"), state);
-  }
-
-  //跳转到测试结果列表页
-  goToTestCaseResultList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_test_case == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/testcase/result"));
   }
 
   //跳转到研发行为列表页

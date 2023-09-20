@@ -2,7 +2,6 @@ pub enum ShortNoteType {
     ShortNoteTask = 0,
     ShortNoteBug = 1,
     ShortNoteDoc = 2,
-    ShortNoteTestCase = 3,
     ShortNoteMember = 998,
 }
 

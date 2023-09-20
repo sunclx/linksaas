@@ -70,8 +70,6 @@ import ScriptExecResult from '@/pages/Script/ExecResult';
 import ActionDetail from '@/pages/Earthly/ActionDetail';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
-import EntryList from '@/pages/TestCase/EntryList';
-import ResultList from '@/pages/TestCase/ResultList';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
 import ScriptList from '@/pages/Script/ScriptList';
 import CreateScript from '@/pages/Script/CreateScript';
@@ -188,18 +186,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + BUG_CREATE_SUFFIX,
       title: '创建缺陷',
       component: IssueCreate,
-      exact: true,
-    },
-    {
-      path: prefix + "/testcase",
-      title: "测试用例",
-      component: EntryList,
-      exact: true,
-    },
-    {
-      path: prefix + "/testcase/result",
-      title: "测试用例结果列表",
-      component: ResultList,
       exact: true,
     },
     {
