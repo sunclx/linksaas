@@ -16,6 +16,7 @@ import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, USER_LOGIN_PATH } from '@/utils/constant';
+import { message } from 'antd';
 
 
 class NoticeStore {
@@ -186,7 +187,8 @@ class NoticeStore {
         });
         this.history.push(USER_LOGIN_PATH);
       } else {
-        this.rootStore.userStore.logout();
+        // this.rootStore.userStore.logout();
+        message.warn("会话失效");
       }
     } else if (notice.SwitchUserNotice !== undefined) {
       this.rootStore.userStore.logout();
