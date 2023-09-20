@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import type { AppInfo, InstallInfo, AppComment } from "@/api/appstore";
 import { agree_app, cancel_agree_app, get_app, get_install_info, list_comment, add_comment, remove_comment } from "@/api/appstore";
-import { Button, Card, Descriptions, Form, Input, List, Modal, Space, message } from "antd";
+import { Button, Card, Descriptions, Input, List, Modal, Popover, Space, message } from "antd";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import { CommentOutlined, DownloadOutlined, HeartTwoTone, LeftOutlined } from "@ant-design/icons";
+import { CommentOutlined, DownloadOutlined, HeartTwoTone, LeftOutlined, MoreOutlined } from "@ant-design/icons";
 import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
 import { get_cache_file } from '@/api/fs';
@@ -16,6 +16,7 @@ import DownloadProgressModal from "@/pages/Project/AppStore/components/DownloadP
 import { open as open_shell } from '@tauri-apps/api/shell';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
@@ -27,9 +28,13 @@ interface DownloadInfo {
 }
 
 const AppStoreDetail = () => {
+    const history = useHistory();
+
     const userStore = useStores('userStore');
     const appStore = useStores("appStore");
+    const projectStore = useStores("projectStore");
     const pubResStore = useStores('pubResStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
     const [installInfo, setInstallInfo] = useState<InstallInfo | null>(null);
@@ -427,74 +432,157 @@ const AppStoreDetail = () => {
 
                 </>
             }>
+            <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "10px" }}>安装情况</h2>
+            {installInfo != null && appInfo != null && (
+                <div style={{ display: "flex", marginBottom: "10px", flexWrap: "wrap" }}>
+                    <Card title={<Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            history.push("/app/workbench?tab=userApp&userAction=true");
+                        }}>工作台</Button>} style={{ width: "200px", marginRight: "10px", marginBottom: "10px" }} extra={
+                            <>
+                                {installInfo.user_install && (
+                                    <Popover trigger="click" placement="bottom" content={
+                                        <div style={{ padding: "10px 10px" }}>
+                                            <Button type="link" danger onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                removeUserApp();
+                                            }}>删除应用</Button>
+                                        </div>
+                                    }>
+                                        <MoreOutlined />
+                                    </Popover>
+                                )}
+                            </>
+                        }>
+                        {installInfo.user_install == true && (
+                            <Button type="default" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                preOpenUserApp();
+                            }}>打开应用</Button>
+                        )}
+                        {installInfo.user_install == false && (
+                            <Button type="primary" disabled={!appInfo.user_app} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                installUserApp();
+                            }}>安装应用</Button>
+                        )}
+                    </Card>
+                    {installInfo.project_list.filter(prj => prj.can_install).map(prj => (
+                        <Card key={prj.project_id} title={<Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                projectStore.setCurProjectId(prj.project_id).then(() => {
+                                    linkAuxStore.goToAppList(history);
+                                });
+                            }}>项目:{prj.project_name}</Button>} style={{ width: "200px", marginRight: "10px", marginBottom: "10px" }}
+                            extra={
+                                <>
+                                    {prj.has_install == true && (
+                                        <Popover trigger="click" placement="bottom" content={
+                                            <div style={{ padding: "10px 10px" }}>
+                                                <Button type="link" danger disabled={!prj.can_install} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    removeProjectApp(prj.project_id);
+                                                }}>删除应用</Button>
+                                            </div>
+                                        }>
+                                            <MoreOutlined />
+                                        </Popover>
+                                    )}
+                                </>
+                            }>
+                            {prj.has_install == true && (
+                                <Button type="default" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    preOpenProjectApp(prj.project_id, prj.project_name);
+                                }}>打开应用</Button>
+                            )}
+                            {prj.has_install == false && (
+                                <Button type="primary" disabled={!(appInfo.project_app && prj.can_install)} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    installProjectApp(prj.project_id);
+                                }}>安装应用</Button>
+                            )}
+                        </Card>
+                    ))}
+                </div>
+                // <div style={{ display: "flex", marginBottom: "10px", flexWrap: "wrap" }}>
+                //     <div style={{ border: "1px solid #e4e4e8", padding: "0px 4px", margin: "10px 10px" }}>
+                //         <span style={{ fontSize: "16px", fontWeight: 700 }}>工作台</span>
+                //         <Space size="large">
+                //             {installInfo.user_install == true && (
+                //                 <>
+                //                     <Button type="primary" onClick={e => {
+                //                         e.stopPropagation();
+                //                         e.preventDefault();
+                //                         preOpenUserApp();
+                //                     }}>打开应用</Button>
+                //                     <Button type="link" danger onClick={e => {
+                //                         e.stopPropagation();
+                //                         e.preventDefault();
+                //                         removeUserApp();
+                //                     }}>删除应用</Button>
+                //                 </>
+                //             )}
+                //             {installInfo.user_install == false && (
+                //                 <Button type="link" disabled={!appInfo.user_app} onClick={e => {
+                //                     e.stopPropagation();
+                //                     e.preventDefault();
+                //                     installUserApp();
+                //                 }}>安装应用</Button>
+                //             )}
+                //         </Space>
+                //     </div>
+                //     {installInfo.project_list.map(prj => (
+                //         <div key={prj.project_id} style={{ border: "1px solid #e4e4e8", padding: "0px 4px", margin: "10px 10px" }}>
+                //             <span style={{ fontSize: "16px", fontWeight: 700 }}>{prj.project_name}</span>
+                //             <Space size="large">
+                //                 {prj.has_install == true && (
+                //                     <>
+                //                         <Button type="link" onClick={e => {
+                //                             e.stopPropagation();
+                //                             e.preventDefault();
+                //                             preOpenProjectApp(prj.project_id, prj.project_name);
+                //                         }}>打开应用</Button>
+                //                         <Button type="link" danger disabled={!prj.can_install} onClick={e => {
+                //                             e.stopPropagation();
+                //                             e.preventDefault();
+                //                             removeProjectApp(prj.project_id);
+                //                         }}>删除应用</Button>
+                //                     </>
+                //                 )}
+                //                 {prj.has_install == false && (
+                //                     <Button type="link" disabled={!(appInfo.project_app && prj.can_install)} onClick={e => {
+                //                         e.stopPropagation();
+                //                         e.preventDefault();
+                //                         installProjectApp(prj.project_id);
+                //                     }}>安装应用</Button>
+                //                 )}
+                //             </Space>
+                //         </div>
+                //     ))}
+                // </div>
+            )}
+            <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "10px" }}>应用信息</h2>
             {appInfo != null && (
                 <Descriptions bordered>
                     <Descriptions.Item label="一级分类">{appInfo.major_cate.cate_name}</Descriptions.Item>
                     <Descriptions.Item label="二级分类">{appInfo.minor_cate.cate_name}</Descriptions.Item>
                     <Descriptions.Item label="三级分类">{appInfo.sub_minor_cate.cate_name}</Descriptions.Item>
-                    <Descriptions.Item span={3} label="应用权限">
-                        <AppPermPanel disable={true} showTitle={false} onChange={() => { }} perm={appInfo.app_perm} />
-                    </Descriptions.Item>
                     <Descriptions.Item span={3} label="应用描述">
                         <ReadOnlyEditor content={appInfo.base_info.app_desc} />
                     </Descriptions.Item>
-                    <Descriptions.Item span={3} label="操作">
-                        {installInfo != null && (
-                            <Form labelCol={{ span: 2 }}>
-                                <Form.Item label="工作台">
-                                    <Space size="large">
-                                        {installInfo.user_install == true && (
-                                            <>
-                                                <Button type="link" onClick={e => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    preOpenUserApp();
-                                                }}>打开应用</Button>
-                                                <Button type="link" danger onClick={e => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    removeUserApp();
-                                                }}>删除应用</Button>
-                                            </>
-                                        )}
-                                        {installInfo.user_install == false && (
-                                            <Button type="link" disabled={!appInfo.user_app} onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                installUserApp();
-                                            }}>安装应用</Button>
-                                        )}
-                                    </Space>
-                                </Form.Item>
-                                {installInfo.project_list.map(prj => (
-                                    <Form.Item label={`${prj.project_name}`} key={prj.project_id}>
-                                        <Space size="large">
-                                            {prj.has_install == true && (
-                                                <>
-                                                    <Button type="link" onClick={e => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault();
-                                                        preOpenProjectApp(prj.project_id, prj.project_name);
-                                                    }}>打开应用</Button>
-                                                    <Button type="link" danger disabled={!prj.can_install} onClick={e => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault();
-                                                        removeProjectApp(prj.project_id);
-                                                    }}>删除应用</Button>
-                                                </>
-                                            )}
-                                            {prj.has_install == false && (
-                                                <Button type="link" disabled={!(appInfo.project_app && prj.can_install)} onClick={e => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    installProjectApp(prj.project_id);
-                                                }}>安装应用</Button>
-                                            )}
-                                        </Space>
-                                    </Form.Item>
-                                ))}
-                            </Form>
-                        )}
+                    <Descriptions.Item span={3} label="应用权限">
+                        <AppPermPanel disable={true} showTitle={false} onChange={() => { }} perm={appInfo.app_perm} />
                     </Descriptions.Item>
                     {appInfo.base_info.src_url !== "" && (
                         <Descriptions.Item label="源代码">
