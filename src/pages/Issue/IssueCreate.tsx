@@ -7,7 +7,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import s from './IssueCreate.module.less';
 import { DatePicker, Input, Select, Space, Tooltip, message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
-import { LinkSpritInfo, type LinkIssueState } from "@/stores/linkAux";
+import { LinkSpritInfo, type LinkIssueState, ISSUE_TAB_LIST_TYPE } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_ISSUE, FILE_OWNER_TYPE_PROJECT } from "@/api/fs";
 import Button from "@/components/Button";
@@ -109,7 +109,7 @@ const IssueCreate = () => {
             basic_info: {
                 title: title,
                 content: JSON.stringify(content),
-                tag_id_list:[],
+                tag_id_list: [],
             },
             extra_info: {
                 ExtraTaskInfo: getIsTask(location.pathname) ? {
@@ -166,12 +166,14 @@ const IssueCreate = () => {
                     stateList: [],
                     execUserIdList: [],
                     checkUserIdList: [],
+                    tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL,
                 }, history);
             } else {
                 linkAuxStore.goToBugList({
                     stateList: [],
                     execUserIdList: [],
                     checkUserIdList: [],
+                    tabType: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL,
                 }, history);
             }
         }

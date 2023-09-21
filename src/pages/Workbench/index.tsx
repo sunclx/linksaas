@@ -51,7 +51,6 @@ const Workbench: React.FC = () => {
 
   useMemo(() => {
     projectStore.setCurProjectId('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

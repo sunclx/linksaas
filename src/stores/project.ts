@@ -54,6 +54,9 @@ export default class ProjectStore {
 
   async setCurProjectId(val: string) {
     const oldProjectId = this._curProjectId;
+    if (val == oldProjectId) {
+      return;
+    }
     runInAction(() => {
       this._curProjectId = val;
     });

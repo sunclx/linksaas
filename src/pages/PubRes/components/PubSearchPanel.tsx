@@ -265,6 +265,7 @@ const PubSearchPanel = () => {
                     {
                         key: item.site_id,
                         closeIcon: siteList.length > 1 ? undefined : <span />,
+                        disabled: keyword == "",
                         label: (
                             <Space>
                                 <AsyncImage useRawImg={true} width="16px" src={getIconUrl(item.icon_file_id)} />
