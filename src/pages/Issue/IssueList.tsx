@@ -140,6 +140,8 @@ const IssueList = () => {
             title_keyword: "",
             filter_by_tag_id_list: (filterState.tagId ?? "") != "",
             tag_id_list: (filterState.tagId ?? "") == "" ? [] : [filterState.tagId!],
+            filter_by_watch: false,
+            watch: false,
         };
         const req: ListRequest = {
             session_id: userStore.sessionId,

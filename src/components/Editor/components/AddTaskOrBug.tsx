@@ -161,6 +161,8 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       title_keyword: keyword,
       filter_by_tag_id_list: false,
       tag_id_list: [],
+      filter_by_watch: false,
+      watch: false,
     };
 
     const res = await request(

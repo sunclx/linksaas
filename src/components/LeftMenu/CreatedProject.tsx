@@ -74,6 +74,11 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
             hide_my_todo_task: true,
             hide_my_todo_bug: true,
             hide_extra_info: true,
+
+            hide_watch_doc: true,
+            hide_watch_sprit: true,
+            hide_watch_task: true,
+            hide_watch_bug: true,
           },
         }));
       }

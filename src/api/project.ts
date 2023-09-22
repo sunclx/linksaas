@@ -48,6 +48,12 @@ export type Setting = {
   hide_my_todo_task: boolean;
   hide_my_todo_bug: boolean;
   hide_extra_info: boolean;
+
+  hide_watch_doc: boolean;
+  hide_watch_sprit: boolean;
+  hide_watch_task: boolean;
+  hide_watch_bug: boolean;
+
 };
 
 export type CreateResponse = {
