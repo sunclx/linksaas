@@ -276,6 +276,10 @@ export default class SpritStore {
         runInAction(() => {
             this._curWatchList = [];
         });
+        const curProject = this.rootStore.projectStore.getProject(projectId);
+        if (curProject?.setting.disable_work_plan == true || curProject?.setting.hide_watch_walk_plan == true) {
+            return;
+        }
         const res = await request(list_sprit(this.rootStore.userStore.sessionId, projectId, true, true, 0, 100));
         runInAction(() => {
             this._curWatchList = res.info_list;
