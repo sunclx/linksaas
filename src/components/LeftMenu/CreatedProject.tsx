@@ -61,9 +61,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
             min_pure_text_len_in_chat: 0,
             disable_widget_in_chat: true,
 
-            layout_type: 0, //后续删除字段
-            disable_sprit: true,//后续删除字段
-
             hide_custom_event: true,
             hide_custom_event_for_admin: false,
 
@@ -76,7 +73,7 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
             hide_extra_info: true,
 
             hide_watch_doc: true,
-            hide_watch_sprit: true,
+            hide_watch_walk_plan: true,
             hide_watch_task: true,
             hide_watch_bug: true,
           },

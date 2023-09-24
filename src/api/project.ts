@@ -32,10 +32,6 @@ export type Setting = {
   min_pure_text_len_in_chat: number;
   disable_widget_in_chat: boolean;
 
-  //后续删除字段
-  layout_type: number;
-  disable_sprit: boolean;
-
   //事件相关字段
   hide_custom_event: boolean;
   hide_custom_event_for_admin: boolean;
@@ -50,7 +46,7 @@ export type Setting = {
   hide_extra_info: boolean;
 
   hide_watch_doc: boolean;
-  hide_watch_sprit: boolean;
+  hide_watch_walk_plan: boolean;
   hide_watch_task: boolean;
   hide_watch_bug: boolean;
 
