@@ -172,6 +172,8 @@ export type ListParam = {
   title_keyword: string;
   filter_by_tag_id_list: boolean;
   tag_id_list: string[];
+  filter_by_watch: boolean;
+  watch: boolean;
 
   ///任务相关
   filter_by_task_priority: boolean;
@@ -212,6 +214,12 @@ export type IssueTag = {
   bg_color: string;
 };
 
+export type WatchUser = {
+  member_user_id: string;
+  display_name: string;
+  logo_uri: string;
+};
+
 
 export type IssueInfo = {
   issue_id: string;
@@ -234,6 +242,7 @@ export type IssueInfo = {
   depend_me_count: number;
   re_open_count: number;
   tag_info_list: IssueTag[];
+  watch_user_list?: WatchUser[];
 
   ///计划相关字段
   has_start_time: boolean;
@@ -255,6 +264,7 @@ export type IssueInfo = {
   requirement_id: string;
   requirement_title: string;
 
+  my_watch: boolean;
 };
 
 export type GetResponse = {
@@ -653,6 +663,27 @@ export type UpdateTagIdListRequest = {
 }
 
 
+export type WatchRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type WatchResponse = {
+  code: number;
+  err_msg: string;
+};
+
+export type UnwatchRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+};
+
+export type UnwatchResponse = {
+  code: number;
+  err_msg: string;
+}
 
 //创建工单，根据类型区分是任务还是缺陷
 export async function create(request: CreateRequest): Promise<CreateResponse> {
@@ -1219,6 +1250,24 @@ export async function cancel_dead_line_time(request: CancelDeadLineTimeRequest):
   const cmd = 'plugin:project_issue_api|cancel_dead_line_time';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<CancelDeadLineTimeResponse>(cmd, {
+    request,
+  });
+}
+
+//关注工单
+export async function watch(request: WatchRequest): Promise<WatchResponse> {
+  const cmd = 'plugin:project_issue_api|watch';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<WatchResponse>(cmd, {
+    request,
+  });
+}
+
+//取消关注工单
+export async function unwatch(request: UnwatchRequest): Promise<UnwatchResponse> {
+  const cmd = 'plugin:project_issue_api|unwatch';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<UnwatchResponse>(cmd, {
     request,
   });
 }
