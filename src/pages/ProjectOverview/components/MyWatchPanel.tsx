@@ -242,11 +242,11 @@ const MyWatchPanel = () => {
     const projectStore = useStores('projectStore');
 
     const getDefaultActiveKey = (): string => {
-        if ((projectStore.curProject?.setting.hide_watch_doc == false) && (projectStore.curProject?.setting.disable_kb == false)) {
-            return "doc";
-        }
         if ((projectStore.curProject?.setting.hide_watch_walk_plan == false) && (projectStore.curProject?.setting.disable_work_plan == false)) {
             return "workplan"
+        }
+        if ((projectStore.curProject?.setting.hide_watch_doc == false) && (projectStore.curProject?.setting.disable_kb == false)) {
+            return "doc";
         }
         if (projectStore.curProject?.setting.hide_watch_task == false) {
             return "task"
@@ -261,19 +261,6 @@ const MyWatchPanel = () => {
 
     const getTabItems = () => {
         const retList: Tab[] = [];
-        if ((projectStore.curProject?.setting.hide_watch_doc == false) && (projectStore.curProject?.setting.disable_kb == false)) {
-            retList.push({
-                key: "doc",
-                label: "文档",
-                children: (
-                    <>
-                        {activeKey == "doc" && (
-                            <WatchDocList />
-                        )}
-                    </>
-                ),
-            });
-        }
         if ((projectStore.curProject?.setting.hide_watch_walk_plan == false) && (projectStore.curProject?.setting.disable_work_plan == false)) {
             retList.push({
                 key: "workplan",
@@ -282,6 +269,19 @@ const MyWatchPanel = () => {
                     <>
                         {activeKey == "workplan" && (
                             <WatchWorkPlanList />
+                        )}
+                    </>
+                ),
+            });
+        }
+        if ((projectStore.curProject?.setting.hide_watch_doc == false) && (projectStore.curProject?.setting.disable_kb == false)) {
+            retList.push({
+                key: "doc",
+                label: "文档",
+                children: (
+                    <>
+                        {activeKey == "doc" && (
+                            <WatchDocList />
                         )}
                     </>
                 ),
