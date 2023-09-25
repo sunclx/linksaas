@@ -21,6 +21,7 @@ import { open as open_shell } from '@tauri-apps/api/shell';
 import { MoreOutlined } from "@ant-design/icons";
 import SetImageWeightModal from "./SetImageWeightModal";
 import AsyncImage from "@/components/AsyncImage";
+import CommentListModal from "./CommentListModal";
 
 
 export interface AppPanelProps {
@@ -39,6 +40,8 @@ const AppPanel = (props: AppPanelProps) => {
     const [removeVersion, setRemoveVersion] = useState("");
     const [changeImageInfo, setChangeImageInfo] = useState<AppImage | null>(null);
     const [removeImageInfo, setRemoveImageInfo] = useState<AppImage | null>(null);
+
+    const [showComment, setShowComment] = useState(false);
 
     const getIconUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
@@ -215,7 +218,6 @@ const AppPanel = (props: AppPanelProps) => {
                         e.stopPropagation();
                         e.preventDefault();
                         setRemoveVersion(row.version);
-                        console.log(row.version);
                     }}>删除模板</Button>
             ),
         }
@@ -252,12 +254,19 @@ const AppPanel = (props: AppPanelProps) => {
                     return true;
                 }} />
         } extra={
-            <Button type="link" danger disabled={(props.appInfo.template_info_list.length > 0) || !(permInfo?.docker_template_perm.remove_app ?? false)}
-                onClick={e => {
+            <Space>
+                <Button type="link" disabled={!(permInfo?.docker_template_perm.read ?? false)} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    removeApp();
-                }}>删除模板</Button>
+                    setShowComment(true);
+                }}>查看评论</Button>
+                <Button type="link" danger disabled={(props.appInfo.template_info_list.length > 0) || !(permInfo?.docker_template_perm.remove_app ?? false)}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeApp();
+                    }}>删除模板</Button>
+            </Space>
         }>
             <div style={{ display: "flex" }}>
                 <div style={{ width: "100px" }}>
@@ -426,7 +435,7 @@ const AppPanel = (props: AppPanelProps) => {
                                         </Popover>
                                     }>
                                         <AsyncImage src={getImageUrl(imageItem.thumb_file_id)} width={200} height={150}
-                                            preview={{ src: getImageUrl(imageItem.raw_file_id) }} useRawImg={false}/>
+                                            preview={{ src: getImageUrl(imageItem.raw_file_id) }} useRawImg={false} />
                                     </Card>
                                 </List.Item>
                             )} />
@@ -486,6 +495,9 @@ const AppPanel = (props: AppPanelProps) => {
                     }}>
                     是否删除截图?
                 </Modal>
+            )}
+            {showComment == true && (
+                <CommentListModal appInfo={props.appInfo.app_info} onClose={() => setShowComment(false)} />
             )}
         </Card>
     );

@@ -84,5 +84,51 @@ export default class PubResStore {
             this._showAppId = val;
         });
     }
+
+    //===================================
+    private _dockerKeyword = "";
+    private _dockerCateId = "";
+    private _dockerCurPage = 0;
+    private _dockerAppId = "";
+
+    get dockerKeyword(): string {
+        return this._dockerKeyword;
+    }
+
+    set dockerKeyword(val: string) {
+        runInAction(() => {
+            this._dockerKeyword = val;
+        });
+    }
+
+    get dockerCateId(): string {
+        return this._dockerCateId;
+    }
+
+    set dockerCateId(val: string) {
+        runInAction(() => {
+            this._dockerCateId = val;
+        });
+    }
+
+    get dockerCurPage(): number {
+        return this._dockerCurPage;
+    }
+
+    set dockerCurPage(val: number) {
+        runInAction(() => {
+            this._dockerCurPage = val;
+        });
+    }
+
+    get dockerAppId(): string {
+        return this._dockerAppId;
+    }
+
+    set dockerAppId(val: string) {
+        runInAction(() => {
+            this._dockerAppId = val;
+        });
+    }
 }
 
