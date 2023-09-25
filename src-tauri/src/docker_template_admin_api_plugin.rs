@@ -324,8 +324,39 @@ async fn set_image_weight<R: Runtime>(
                 || inner_resp.code == admin_set_image_weight_response::Code::NotAuth as i32
             {
                 crate::admin_auth_api_plugin::logout(app_handle).await;
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_image_weight".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_comment<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: AdminRemoveCommentRequest,
+) -> Result<AdminRemoveCommentResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = DockerTemplateAdminApiClient::new(chan.unwrap());
+    match client.remove_comment(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == admin_remove_comment_response::Code::WrongSession as i32
+                || inner_resp.code == admin_remove_comment_response::Code::NotAuth as i32
+            {
+                crate::admin_auth_api_plugin::logout(app_handle).await;
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("set_image_weight".into()))
+                    window.emit("notice", new_wrong_session_notice("remove_comment".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -355,6 +386,7 @@ impl<R: Runtime> DockerTemplateAdminApiPlugin<R> {
                 add_image,
                 remove_image,
                 set_image_weight,
+                remove_comment,
             ]),
         }
     }
