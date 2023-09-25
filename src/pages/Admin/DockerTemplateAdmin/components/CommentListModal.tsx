@@ -73,7 +73,7 @@ const CommentListModal = (props: CommentListModalProps) => {
                                 <span>{moment(item.create_time).format("YYYY-MM-DD HH:mm:ss")}</span>
                             </Space>
                         } extra={
-                            <Button type="link" danger disabled={!(permInfo?.app_store_perm.remove_comment ?? false)}
+                            <Button type="link" danger disabled={!(permInfo?.docker_template_perm.remove_comment ?? false)}
                                 onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
