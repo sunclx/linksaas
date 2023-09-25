@@ -141,6 +141,16 @@ export type AdminSetImageWeightResponse = {
     err_msg: string;
 };
 
+export type AdminRemoveCommentRequest = {
+    admin_session_id: string;
+    app_id: string;
+    comment_id: string;
+};
+
+export type AdminRemoveCommentResponse = {
+    code: number;
+    err_msg: string;
+};
 
 // 创建分类
 export async function create_cate(request: AdminCreateCateRequest): Promise<AdminCreateCateResponse> {
@@ -237,6 +247,15 @@ export async function set_image_weight(request: AdminSetImageWeightRequest): Pro
     const cmd = 'plugin:docker_template_admin_api|set_image_weight';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminSetImageWeightResponse>(cmd, {
+        request,
+    });
+}
+
+//删除评论
+export async function remove_comment(request: AdminRemoveCommentRequest): Promise<AdminRemoveCommentResponse> {
+    const cmd = 'plugin:docker_template_admin_api|remove_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AdminRemoveCommentResponse>(cmd, {
         request,
     });
 }

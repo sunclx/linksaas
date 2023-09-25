@@ -83,6 +83,7 @@ export type DockerTemplatePerm = {
     remove_app: boolean;
     create_template: boolean;
     remove_template: boolean;
+    remove_comment: boolean;
 };
 
 export type RssPerm = {

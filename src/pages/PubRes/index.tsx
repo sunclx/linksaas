@@ -13,6 +13,7 @@ import RssPanel from './components/RssPanel';
 import PubSearchPanel from './components/PubSearchPanel';
 import { observer } from 'mobx-react';
 import AppStoreDetail from './components/AppStoreDetail';
+import DockerTemplateDetail from './components/DockerTemplateDetail';
 
 
 const PubRes = () => {
@@ -94,7 +95,8 @@ const PubRes = () => {
                     <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;Docker模板</h2>} key="dockerTemplate">
                         {activeKey == "dockerTemplate" && (
                             <div className={s.content_wrap}>
-                                <DockerTemplatePanel />
+                                {pubResStore.dockerAppId == "" && <DockerTemplatePanel />}
+                                {pubResStore.dockerAppId != "" && <DockerTemplateDetail />}
                             </div>
                         )}
                     </Tabs.TabPane>
