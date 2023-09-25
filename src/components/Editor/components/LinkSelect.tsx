@@ -26,7 +26,7 @@ import Pagination from '@/components/Pagination';
 import type { ScriptSuiteKey } from '@/api/robot_script';
 import { list_script_suite_key } from '@/api/robot_script';
 import type { RequirementInfo } from '@/api/project_requirement';
-import { list_requirement,REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
+import { list_requirement, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 
 const PAGE_SIZE = 10;
 
@@ -191,6 +191,8 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       title_keyword: keyword,
       filter_by_tag_id_list: false,
       tag_id_list: [],
+      filter_by_watch: false,
+      watch: false,
     };
     if (tab == 'task') {
       request(

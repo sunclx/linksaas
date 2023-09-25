@@ -2,12 +2,10 @@ import type { IssueInfo } from '@/api/project_issue';
 import {
   ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG,
 } from '@/api/project_issue';
-
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask } from '@/utils/utils';
 import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
-import { Table, Tooltip } from 'antd';
-
+import { Space, Table, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { ColumnType } from 'antd/lib/table';
@@ -28,8 +26,10 @@ import {
 import { EditDate } from '@/components/EditCell/EditDate';
 import type { TagInfo } from "@/api/project";
 import { EditTag } from '@/components/EditCell/EditTag';
-import { update_tag_id_list } from "@/api/project_issue";
+import { update_tag_id_list, watch, unwatch } from "@/api/project_issue";
 import { request } from '@/utils/request';
+import s from "./IssueEditList.module.less";
+import UserPhoto from '@/components/Portrait/UserPhoto';
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
   dataIndex: string | string[];
@@ -64,7 +64,44 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
 
   const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 
+  const unwatchIssue = async (issueId: string) => {
+    await request(unwatch({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      issue_id: issueId,
+    }));
+    onChange(issueId);
+  };
+
+  const watchIssue = async (issueId: string) => {
+    await request(watch({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      issue_id: issueId,
+    }));
+    onChange(issueId);
+  };
+
   const columnsList: ColumnsTypes[] = [
+    {
+      title: "",
+      dataIndex: "my_watch",
+      width: 40,
+      render: (_, record: IssueInfo) => (
+        <a onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (record.my_watch) {
+            unwatchIssue(record.issue_id);
+          } else {
+            watchIssue(record.issue_id);
+          }
+        }}>
+          <span className={record.my_watch ? s.isCollect : s.noCollect} />
+        </a>
+      ),
+      fixed: true,
+    },
     {
       title: 'ID',
       dataIndex: 'issue_index',
@@ -321,6 +358,22 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         }} showEditIcon={true} />,
     },
     {
+      title: "关注人",
+      dataIndex: "",
+      width: 140,
+      align: 'left',
+      render: (_, row: IssueInfo) => (
+        <Space>
+          {(row.watch_user_list ?? []).length == 0 && "-"}
+          {(row.watch_user_list ?? []).map(item => (
+            <div key={item.member_user_id} title={item.display_name}>
+              <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+            </div>
+          ))}
+        </Space>
+      ),
+    },
+    {
       title: "标签",
       dataIndex: ["basic_info", "tag_id_list"],
       width: 200,
@@ -461,7 +514,6 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         return v ? v : '-';
       },
     },
-
   ];
   const columns: ColumnsTypes[] = columnsList.filter((item: ColumnsTypes) => !item.hideInTable);
 

@@ -34,6 +34,10 @@ const tabList = [
         value: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_CREATE,
     },
     {
+        name: "我的关注",
+        value: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_WATCH,
+    },
+    {
         name: "全部",
         value: ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ALL
     },
@@ -140,6 +144,8 @@ const IssueList = () => {
             title_keyword: "",
             filter_by_tag_id_list: (filterState.tagId ?? "") != "",
             tag_id_list: (filterState.tagId ?? "") == "" ? [] : [filterState.tagId!],
+            filter_by_watch: filterState.tabType == ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_WATCH,
+            watch: filterState.tabType == ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_MY_WATCH,
         };
         const req: ListRequest = {
             session_id: userStore.sessionId,

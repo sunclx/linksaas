@@ -46,7 +46,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
           project_id: res.project_id,
           setting: {
             disable_member_appraise: true,
-            // disable_test_case: true,
             disable_server_agent: true,
             disable_ext_event: true,
             disable_app_store: true,
@@ -61,9 +60,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
             min_pure_text_len_in_chat: 0,
             disable_widget_in_chat: true,
 
-            layout_type: 0, //后续删除字段
-            disable_sprit: true,//后续删除字段
-
             hide_custom_event: true,
             hide_custom_event_for_admin: false,
 
@@ -74,6 +70,12 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
             hide_my_todo_task: true,
             hide_my_todo_bug: true,
             hide_extra_info: true,
+
+            hide_watch_doc: true,
+            hide_watch_walk_plan: true,
+            hide_watch_task: true,
+            hide_watch_bug: true,
+            hide_watch_channel: true,
           },
         }));
       }

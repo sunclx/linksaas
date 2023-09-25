@@ -21,7 +21,7 @@ const ProjectWatch = () => {
 
     return (
         <div className={s.content_wrap}>
-            {!projectStore.curProject?.setting.disable_chat && (
+            {projectStore.curProject?.setting.disable_chat == false && projectStore.curProject?.setting.hide_watch_channel == false && (
                 <>
                     {
                         channelStore.channelList.filter(item => item.channelInfo.my_watch).map(item => (
@@ -39,7 +39,7 @@ const ProjectWatch = () => {
                 </>
             )}
 
-            {!projectStore.curProject?.setting.disable_work_plan && (
+            {projectStore.curProject?.setting.disable_work_plan == false && projectStore.curProject?.setting.hide_watch_walk_plan == false && (
                 <>
                     {
                         spritStore.curWatchList.map(item => (
@@ -57,7 +57,7 @@ const ProjectWatch = () => {
                 </>
             )}
 
-            {!projectStore.curProject?.setting.disable_kb && (
+            {projectStore.curProject?.setting.disable_kb == false && projectStore.curProject.setting.hide_watch_doc == false && (
                 <>
                     {docSpaceStore.curWatchDocList.map(item => (
                         <div key={item.doc_id}>
