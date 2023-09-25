@@ -515,62 +515,6 @@ const AppStoreDetail = () => {
                         </Card>
                     ))}
                 </div>
-                // <div style={{ display: "flex", marginBottom: "10px", flexWrap: "wrap" }}>
-                //     <div style={{ border: "1px solid #e4e4e8", padding: "0px 4px", margin: "10px 10px" }}>
-                //         <span style={{ fontSize: "16px", fontWeight: 700 }}>工作台</span>
-                //         <Space size="large">
-                //             {installInfo.user_install == true && (
-                //                 <>
-                //                     <Button type="primary" onClick={e => {
-                //                         e.stopPropagation();
-                //                         e.preventDefault();
-                //                         preOpenUserApp();
-                //                     }}>打开应用</Button>
-                //                     <Button type="link" danger onClick={e => {
-                //                         e.stopPropagation();
-                //                         e.preventDefault();
-                //                         removeUserApp();
-                //                     }}>删除应用</Button>
-                //                 </>
-                //             )}
-                //             {installInfo.user_install == false && (
-                //                 <Button type="link" disabled={!appInfo.user_app} onClick={e => {
-                //                     e.stopPropagation();
-                //                     e.preventDefault();
-                //                     installUserApp();
-                //                 }}>安装应用</Button>
-                //             )}
-                //         </Space>
-                //     </div>
-                //     {installInfo.project_list.map(prj => (
-                //         <div key={prj.project_id} style={{ border: "1px solid #e4e4e8", padding: "0px 4px", margin: "10px 10px" }}>
-                //             <span style={{ fontSize: "16px", fontWeight: 700 }}>{prj.project_name}</span>
-                //             <Space size="large">
-                //                 {prj.has_install == true && (
-                //                     <>
-                //                         <Button type="link" onClick={e => {
-                //                             e.stopPropagation();
-                //                             e.preventDefault();
-                //                             preOpenProjectApp(prj.project_id, prj.project_name);
-                //                         }}>打开应用</Button>
-                //                         <Button type="link" danger disabled={!prj.can_install} onClick={e => {
-                //                             e.stopPropagation();
-                //                             e.preventDefault();
-                //                             removeProjectApp(prj.project_id);
-                //                         }}>删除应用</Button>
-                //                     </>
-                //                 )}
-                //                 {prj.has_install == false && (
-                //                     <Button type="link" disabled={!(appInfo.project_app && prj.can_install)} onClick={e => {
-                //                         e.stopPropagation();
-                //                         e.preventDefault();
-                //                         installProjectApp(prj.project_id);
-                //                     }}>安装应用</Button>
-                //                 )}
-                //             </Space>
-                //         </div>
-                //     ))}
-                // </div>
             )}
             <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "10px" }}>应用信息</h2>
             {appInfo != null && (

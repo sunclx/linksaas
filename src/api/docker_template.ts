@@ -38,6 +38,15 @@ export type AppWithTemplateInfo = {
     template_info_list: TemplateInfo[],
 };
 
+export type AppComment = {
+    comment_id: string;
+    create_user_id: string;
+    create_display_name: string;
+    create_logo_uri: string;
+    create_time: number;
+    comment: string;
+};
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ListCateRequest = {};
 
@@ -73,6 +82,42 @@ export type GetAppWithTemplateResponse = {
     code: number;
     err_msg: string;
     info: AppWithTemplateInfo;
+};
+
+export type AddCommentRequest = {
+    session_id: string;
+    app_id: string;
+    comment: string;
+};
+
+export type AddCommentResponse = {
+    code: number;
+    err_msg: string;
+    comment_id: string;
+};
+
+export type RemoveCommentRequest = {
+    session_id: string;
+    app_id: string;
+    comment_id: string;
+};
+
+export type RemoveCommentResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type ListCommentRequest = {
+    app_id: string;
+    offset: number;
+    limit: number;
+};
+
+export type ListCommentResponse = {
+    code: number;
+    err_msg: string;
+    total_count: number;
+    comment_list: AppComment[];
 };
 
 // 列出分类
@@ -124,4 +169,31 @@ export async function unpack_template(fsId: string, fileId: string): Promise<voi
     const request = { fsId, fileId };
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<void>(cmd, request);
+}
+
+//增加评论
+export async function add_comment(request: AddCommentRequest): Promise<AddCommentResponse> {
+    const cmd = 'plugin:docker_template_api|add_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AddCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//删除评论
+export async function remove_comment(request: RemoveCommentRequest): Promise<RemoveCommentResponse> {
+    const cmd = 'plugin:docker_template_api|remove_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemoveCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//列出评论
+export async function list_comment(request: ListCommentRequest): Promise<ListCommentResponse> {
+    const cmd = 'plugin:docker_template_api|list_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListCommentResponse>(cmd, {
+        request,
+    });
 }
