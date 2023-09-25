@@ -46,7 +46,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
           project_id: res.project_id,
           setting: {
             disable_member_appraise: true,
-            // disable_test_case: true,
             disable_server_agent: true,
             disable_ext_event: true,
             disable_app_store: true,
@@ -76,6 +75,7 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
             hide_watch_walk_plan: true,
             hide_watch_task: true,
             hide_watch_bug: true,
+            hide_watch_channel: true,
           },
         }));
       }

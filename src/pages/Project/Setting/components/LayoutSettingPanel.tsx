@@ -17,6 +17,8 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const docSpaceStore = useStores('docSpaceStore');
+    const spritStore = useStores('spritStore');
 
     const [disableWorkPlan, setDisableWorkPlan] = useState(projectStore.curProject?.setting.disable_work_plan ?? false);
     const [disableChat, setDisableChat] = useState(projectStore.curProject?.setting.disable_chat ?? false);
@@ -42,6 +44,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [hideWatchWorkPlan, setHideWatchWorkPlan] = useState(projectStore.curProject?.setting.hide_watch_walk_plan ?? false);
     const [hideWatchTask, setHideWatchTask] = useState(projectStore.curProject?.setting.hide_watch_task ?? false);
     const [hideWatchBug, setHideWatchBug] = useState(projectStore.curProject?.setting.hide_watch_bug ?? false);
+    const [hideWatchChannel, setHideWatchChannel] = useState(projectStore.curProject?.setting.hide_watch_channel ?? false);
 
     const [hasChange, setHasChange] = useState(false);
 
@@ -95,11 +98,18 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 hide_watch_walk_plan: hideWatchWorkPlan,
                 hide_watch_task: hideWatchTask,
                 hide_watch_bug: hideWatchBug,
+                hide_watch_channel: hideWatchChannel,
             },
         }));
         message.info("保存成功");
         await projectStore.updateProject(projectStore.curProjectId);
         setHasChange(false);
+        if (!hideWatchDoc) {
+            await docSpaceStore.loadCurWatchDocList(projectStore.curProjectId);
+        }
+        if (!hideWatchWorkPlan) {
+            await spritStore.loadCurWatchList(projectStore.curProjectId);
+        }
         //特殊处理
         if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
             //do nothing
@@ -144,6 +154,9 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                         <Checkbox checked={disableChat} onChange={e => {
                             e.stopPropagation();
                             setDisableChat(e.target.checked);
+                            if (e.target.checked) {
+                                setHideWatchChannel(true);
+                            }
                             setHasChange(true);
                         }}>关闭沟通</Checkbox>
                         <Checkbox checked={disableWorkPlan} onChange={e => {
@@ -162,6 +175,25 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             }
                             setHasChange(true);
                         }}>关闭知识库</Checkbox>
+                    </Space>
+                </Form.Item>
+                <Form.Item label="左侧项目列表">
+                    <Space direction="vertical">
+                        <Checkbox checked={hideWatchWorkPlan} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchWorkPlan(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注工作计划</Checkbox>
+                        <Checkbox checked={hideWatchDoc} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchDoc(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注文档</Checkbox>
+                        <Checkbox checked={hideWatchChannel} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchChannel(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注频道</Checkbox>
                     </Space>
                 </Form.Item>
                 <Form.Item label="右侧工具栏">
@@ -226,16 +258,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setHasChange(true);
                         }}>隐藏成员贡献</Checkbox>
 
-                        <Checkbox checked={hideWatchDoc} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchDoc(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注文档</Checkbox>
-                        <Checkbox checked={hideWatchWorkPlan} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchWorkPlan(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注工作计划</Checkbox>
+
                         <Checkbox checked={hideWatchTask} onChange={e => {
                             e.stopPropagation();
                             setHideWatchTask(e.target.checked);

@@ -301,6 +301,10 @@ export default class DocSpaceStore {
         runInAction(() => {
             this._curWatchDocList = [];
         });
+        const curProject = this.rootStore.projectStore.getProject(projectId);
+        if (curProject?.setting.disable_kb == true || curProject?.setting.hide_watch_doc == true) {
+            return;
+        }
         const res = await request(prjDocApi.list_doc_key({
             session_id: this.rootStore.userStore.sessionId,
             project_id: projectId,
