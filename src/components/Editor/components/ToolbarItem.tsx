@@ -34,8 +34,6 @@ import {
   WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
   WIDGET_TYPE_SPRIT_REF,
-  WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
-  WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
   WIDGET_TYPE_API_COLL_REF,
 } from '../widgets/index';
 import type { HeadingExtensionAttributes } from '@remirror/extension-heading';
@@ -382,22 +380,6 @@ const ContentWidget = observer(() => {
       },
     ],
   });
-  if (projectStore.curProject?.setting.disable_server_agent == false) {
-    items.push({
-      key: "robot",
-      label: "自动化",
-      children: [
-        {
-          key: WIDGET_TYPE_ROBOT_SERVER_SCRIPT,
-          label: "服务端脚本",
-        },
-        {
-          key: WIDGET_TYPE_ROBOT_EARTHLY_ACTION,
-          label: "earthly脚本",
-        },
-      ],
-    });
-  }
   const designItems = {
     key: 'design',
     label: '软件设计',

@@ -321,48 +321,6 @@ export namespace client {
   };
 }
 
-export namespace robot {
-  export type RespMetricDataNotice = {
-    req_id: string;
-  };
-
-  export type AllNotice = {
-    RespMetricDataNotice?: RespMetricDataNotice;
-  };
-}
-
-export namespace earthly {
-  export type ExecDataNotice = {
-    exec_id: string;
-    data_index: number;
-    data: number[];
-  };
-  export type ExecStateNotice = {
-    exec_id: string;
-    exec_state: number;
-  };
-  export type AllNotice = {
-    ExecDataNotice?: ExecDataNotice;
-    ExecStateNotice?: ExecStateNotice;
-  };
-}
-
-export namespace script {
-  export type ExecDataNotice = {
-    exec_id: string;
-    data_index: number;
-    data: number[];
-  };
-  export type ExecStateNotice = {
-    exec_id: string;
-    exec_state: number;
-  };
-  export type AllNotice = {
-    ExecDataNotice?: ExecDataNotice;
-    ExecStateNotice?: ExecStateNotice;
-  };
-}
-
 export namespace idea {
   export type KeywordChangeNotice = {
     project_id: string;
@@ -380,9 +338,6 @@ export type AllNotice = {
   ProjectDocNotice?: project_doc.AllNotice;
   IssueNotice?: issue.AllNotice;
   AppraiseNotice?: appraise.AllNotice;
-  RobotNotice?: robot.AllNotice;
-  EarthlyNotice?: earthly.AllNotice;
-  ScriptNotice?: script.AllNotice;
   ClientNotice?: client.AllNotice;
   IdeaNotice?: idea.AllNotice;
 };

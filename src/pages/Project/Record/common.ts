@@ -7,9 +7,6 @@ import bugIcon from '@/assets/allIcon/icon-bug.png';
 import spritIcon from '@/assets/allIcon/icon-sprit.png';
 import docIcon from '@/assets/channel/doc@2x.png';
 import appIcon from '@/assets/allIcon/icon-appstore.png';
-import robotIcon from '@/assets/allIcon/icon-robot.png';
-import repoIcon from '@/assets/allIcon/icon-repo.png';
-import scriptIcon from '@/assets/allIcon/icon-script.png';
 import reqIcon from '@/assets/allIcon/icon-req.png';
 import ideaIcon from '@/assets/allIcon/icon-idea.png';
 import apiCollIcon from '@/assets/allIcon/icon-apicoll.png';
@@ -54,18 +51,6 @@ export const EVENT_ICON_LIST = {
   [API.EVENT_TYPE_BOOK_SHELF]: {
     title: 'bookShelf',
     icon: iconApp,
-  },
-  [API.EVENT_TYPE_ROBOT]: {
-    title: 'robot',
-    icon: robotIcon,
-  },
-  [API.EVENT_TYPE_EARTHLY]: {
-    title: 'repo',
-    icon: repoIcon,
-  },
-  [API.EVENT_TYPE_SCRIPT]: {
-    title: 'script',
-    icon: scriptIcon,
   },
   [API.EVENT_TYPE_REQUIRE_MENT]: {
     title: 'requirement',

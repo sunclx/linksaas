@@ -25,7 +25,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableKb, setDisableKb] = useState(projectStore.curProject?.setting.disable_kb ?? false);
 
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
-    const [disableServerAgent, setDisableServerAgent] = useState(projectStore.curProject?.setting.disable_server_agent ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
@@ -54,7 +53,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         setDisableKb(projectStore.curProject?.setting.disable_kb ?? false);
 
         setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
-        setDisableServerAgent(projectStore.curProject?.setting.disable_server_agent ?? false);
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableAppStore(projectStore.curProject?.setting.disable_app_store ?? false);
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
@@ -78,7 +76,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
             setting: {
                 ...projectStore.curProject!.setting,
                 disable_member_appraise: disableMemberAppraise,
-                disable_server_agent: disableServerAgent,
                 disable_ext_event: disableExtEvent,
                 disable_app_store: disableAppStore,
                 disable_data_anno: disableDataAnno,
@@ -203,11 +200,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableMemberAppraise(e.target.checked);
                             setHasChange(true);
                         }}>关闭成员互评入口</Checkbox>
-                        <Checkbox checked={disableServerAgent} onChange={e => {
-                            e.stopPropagation();
-                            setDisableServerAgent(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭自动化入口</Checkbox>
                         <Checkbox checked={disableApiCollection} onChange={e => {
                             e.stopPropagation();
                             setDisableApiCollection(e.target.checked);

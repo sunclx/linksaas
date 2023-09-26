@@ -68,15 +68,6 @@ export type DocEvCfg = {
     update_tag: boolean;
 };
 
-export type EarthlyEvCfg = {
-    add_repo: boolean;
-    remove_repo: boolean;
-    create_action: boolean;
-    update_action: boolean;
-    remove_action: boolean;
-    exec: boolean;
-};
-
 export type ExtEvCfg = {
     create: boolean;
     update: boolean;
@@ -132,15 +123,6 @@ export type IssueEvCfg = {
     update_tag: boolean;
 };
 
-export type RobotEvCfg = {
-    create: boolean;
-    update: boolean;
-    remove: boolean;
-    add_access_user: boolean;
-    remove_access_user: boolean;
-    renew_token: boolean;
-};
-
 export type SpritEvCfg = {
     create: boolean;
     update: boolean;
@@ -152,24 +134,6 @@ export type SpritEvCfg = {
     watch: boolean;
     un_watch: boolean;
 }
-
-export type ScriptEvCfg = {
-    create_script_suite: boolean;
-    remove_script_suite: boolean;
-    update_script_suite_name: boolean;
-    update_env_perm: boolean;
-    update_sys_perm: boolean;
-    update_net_perm: boolean;
-    update_read_perm: boolean;
-    update_write_perm: boolean;
-    update_run_perm: boolean;
-    update_script: boolean;
-    update_exec_user: boolean;
-    update_env_param_def: boolean;
-    update_arg_param_def: boolean;
-    recover_script: boolean;
-    exec: boolean;
-};
 
 export type RequirementEvCfg = {
     create_requirement: boolean;
@@ -223,14 +187,11 @@ export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     book_shelf_ev_cfg: BookShelfEvCfg;
     doc_ev_cfg: DocEvCfg;
-    earthly_ev_cfg: EarthlyEvCfg;
     ext_ev_cfg: ExtEvCfg;
     gitee_ev_cfg: GiteeEvCfg;
     gitlab_ev_cfg: GitlabEvCfg;
     issue_ev_cfg: IssueEvCfg;
-    robot_ev_cfg: RobotEvCfg;
     sprit_ev_cfg: SpritEvCfg;
-    script_ev_cfg: ScriptEvCfg;
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;
     idea_ev_cfg: IdeaEvCfg;
@@ -307,25 +268,6 @@ export type RemoveResponse = {
 };
 
 export function adjust_event_cfg(cfg: EventCfg): EventCfg {
-    if (cfg.script_ev_cfg == undefined) {
-        cfg.script_ev_cfg = {
-            create_script_suite: false,
-            remove_script_suite: false,
-            update_script_suite_name: false,
-            update_env_perm: false,
-            update_sys_perm: false,
-            update_net_perm: false,
-            update_read_perm: false,
-            update_write_perm: false,
-            update_run_perm: false,
-            update_script: false,
-            update_exec_user: false,
-            update_env_param_def: false,
-            update_arg_param_def: false,
-            recover_script: false,
-            exec: false,
-        };
-    }
     if (cfg.code_ev_cfg == undefined) {
         cfg.code_ev_cfg = {
             add_comment: false,

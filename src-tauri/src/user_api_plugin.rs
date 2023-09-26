@@ -1,11 +1,11 @@
-use crate::notice_decode::{
-    decode_notice, earthly::Notice as EarthlyNotice, new_wrong_session_notice,
-    robot::Notice as RobotNotice, script::Notice as ScriptNotice, NoticeMessage,
-};
+use crate::notice_decode::{decode_notice, new_wrong_session_notice};
+use image::EncodableLayout;
+use libaes::Cipher;
 use prost::Message;
 use proto_gen_rust::google::protobuf::Any;
 use proto_gen_rust::user_api::user_api_client::UserApiClient;
 use proto_gen_rust::user_api::*;
+use rand::{thread_rng, Rng};
 use rumqttc::AsyncClient as MqttClient;
 use rumqttc::{MqttOptions, QoS};
 use std::time::Duration;
@@ -18,9 +18,6 @@ use tauri::{
 use tokio::time::sleep;
 use url::Url;
 use uuid::Uuid;
-use image::EncodableLayout;
-use libaes::Cipher;
-use rand::{thread_rng, Rng};
 
 #[derive(Default)]
 pub struct CurSession(pub Mutex<Option<String>>);
@@ -214,68 +211,9 @@ fn emit_notice<R: Runtime>(window: &Window<R>, event: rumqttc::Event) {
         if let rumqttc::Packet::Publish(pub_event) = income_event {
             if let Ok(any) = Any::decode(pub_event.payload) {
                 if let Some(notice) = decode_notice(&any) {
-                    match notice {
-                        NoticeMessage::RobotNotice(RobotNotice::RespMetricDataNotice(n)) => {
-                            let m = n.clone();
-                            let event_name = format!("metric_data_{}", m.req_id);
-                            let res = window.emit(
-                                &event_name,
-                                NoticeMessage::RobotNotice(RobotNotice::RespMetricDataNotice(n)),
-                            );
-                            if res.is_err() {
-                                println!("{:?}", res);
-                            }
-                        }
-                        NoticeMessage::EarthlyNotice(EarthlyNotice::ExecDataNotice(n)) => {
-                            let m = n.clone();
-                            let event_name = format!("exec_data_{}", m.exec_id);
-                            let res = window.emit(
-                                &event_name,
-                                NoticeMessage::EarthlyNotice(EarthlyNotice::ExecDataNotice(n)),
-                            );
-                            if res.is_err() {
-                                println!("{:?}", res);
-                            }
-                        }
-                        NoticeMessage::ScriptNotice(ScriptNotice::ExecDataNotice(n)) => {
-                            let m = n.clone();
-                            let event_name = format!("exec_data_{}", m.exec_id);
-                            let res = window.emit(
-                                &event_name,
-                                NoticeMessage::ScriptNotice(ScriptNotice::ExecDataNotice(n)),
-                            );
-                            if res.is_err() {
-                                println!("{:?}", res);
-                            }
-                        }
-                        NoticeMessage::EarthlyNotice(EarthlyNotice::ExecStateNotice(n)) => {
-                            let m = n.clone();
-                            let event_name = format!("exec_state_{}", m.exec_id);
-                            let res = window.emit(
-                                &event_name,
-                                NoticeMessage::EarthlyNotice(EarthlyNotice::ExecStateNotice(n)),
-                            );
-                            if res.is_err() {
-                                println!("{:?}", res);
-                            }
-                        }
-                        NoticeMessage::ScriptNotice(ScriptNotice::ExecStateNotice(n)) => {
-                            let m = n.clone();
-                            let event_name = format!("exec_state_{}", m.exec_id);
-                            let res = window.emit(
-                                &event_name,
-                                NoticeMessage::ScriptNotice(ScriptNotice::ExecStateNotice(n)),
-                            );
-                            if res.is_err() {
-                                println!("{:?}", res);
-                            }
-                        }
-                        _ => {
-                            let res = window.emit("notice", notice);
-                            if res.is_err() {
-                                println!("{:?}", res);
-                            }
-                        }
+                    let res = window.emit("notice", notice);
+                    if res.is_err() {
+                        println!("{:?}", res);
                     }
                 }
             }
@@ -451,7 +389,10 @@ async fn get_user_secret<R: Runtime>(app_handle: AppHandle<R>) -> String {
     return "".into();
 }
 
-pub async fn encrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
+pub async fn encrypt<R: Runtime>(
+    app_handle: AppHandle<R>,
+    data: Vec<u8>,
+) -> Result<Vec<u8>, String> {
     let secret = get_user_secret(app_handle).await;
     if &secret == "" {
         return Err("miss secret".into());
@@ -472,7 +413,10 @@ pub async fn encrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Res
     return Ok(result);
 }
 
-pub async fn decrypt<R: Runtime>(app_handle: AppHandle<R>, data: Vec<u8>) -> Result<Vec<u8>, String> {
+pub async fn decrypt<R: Runtime>(
+    app_handle: AppHandle<R>,
+    data: Vec<u8>,
+) -> Result<Vec<u8>, String> {
     let secret = get_user_secret(app_handle).await;
     if &secret == "" {
         return Err("miss secret".into());
