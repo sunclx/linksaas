@@ -18,7 +18,7 @@ export type BasicProjectInfo = {
 export type Setting = {
   disable_member_appraise: boolean;
   // disable_test_case: boolean;
-  disable_server_agent: boolean;
+  // disable_server_agent: boolean;
   disable_ext_event: boolean;
   disable_app_store: boolean;
   disable_data_anno: boolean;
@@ -104,7 +104,7 @@ export type ProjectInfo = {
   project_fs_id: string;
   doc_fs_id: string;
   ebook_fs_id: string;
-  artifact_fs_id: string;
+  // artifact_fs_id: string;
   // test_case_fs_id: string;
   min_app_fs_id: string;
   require_ment_fs_id: string;

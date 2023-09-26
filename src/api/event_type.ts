@@ -12,9 +12,6 @@ import { type AllExtEvEvent, get_ext_event_simple_content } from './events/ext_e
 import { type AllGitlabEvent, get_gitlab_simple_content } from './events/gitlab';
 import { type AllGogsEvent, get_gogs_simple_content } from './events/gogs';
 import { type AllGiteeEvent, get_gitee_simple_content } from './events/gitee';
-import { type AllRobotEvent, get_robot_simple_content } from './events/robot';
-import { type AllEarthlyEvent, get_earthly_simple_content } from './events/earthly';
-import { type AllScriptEvent, get_script_simple_content } from './events/script';
 import { type AllCodeEvent, get_code_simple_content } from './events/code';
 import { type AllRequirementEvent, get_requirement_simple_content } from './events/requirement';
 import { type AllDataAnnoEvent, get_data_anno_simple_content } from './events/data_anno';
@@ -42,9 +39,6 @@ export class AllEvent {
   GitlabEvent?: AllGitlabEvent;
   GogsEvent?: AllGogsEvent;
   GiteeEvent?: AllGiteeEvent;
-  RobotEvent?: AllRobotEvent;
-  EarthlyEvent?: AllEarthlyEvent;
-  ScriptEvent?: AllScriptEvent;
   RequirementEvent?: AllRequirementEvent;
   CodeEvent?: AllCodeEvent;
   IdeaEvent?: AllIdeaEvent;
@@ -72,12 +66,6 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return get_gogs_simple_content(ev, skip_prj_name, ev.event_data.GogsEvent);
   } else if (ev.event_data.GiteeEvent !== undefined) {
     return get_gitee_simple_content(ev, skip_prj_name, ev.event_data.GiteeEvent);
-  } else if (ev.event_data.RobotEvent !== undefined) {
-    return get_robot_simple_content(ev, skip_prj_name, ev.event_data.RobotEvent);
-  } else if (ev.event_data.EarthlyEvent !== undefined) {
-    return get_earthly_simple_content(ev, skip_prj_name, ev.event_data.EarthlyEvent);
-  } else if (ev.event_data.ScriptEvent !== undefined) {
-    return get_script_simple_content(ev, skip_prj_name, ev.event_data.ScriptEvent);
   } else if (ev.event_data.RequirementEvent !== undefined) {
     return get_requirement_simple_content(ev, skip_prj_name, ev.event_data.RequirementEvent);
   } else if (ev.event_data.CodeEvent !== undefined) {

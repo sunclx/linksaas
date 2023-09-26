@@ -118,10 +118,6 @@ pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
             event_type = "app";
         } else if item.event_type == EventType::BookShelf as i32 {
             event_type = "bookShelf";
-        } else if item.event_type == EventType::Robot as i32 {
-            event_type = "robot";
-        } else if item.event_type == EventType::Earthly as i32 {
-            event_type = "earthly";
         } else if item.event_type == EventType::Gitlab as i32 {
             event_type = "gitlab";
         } else if item.event_type == EventType::Github as i32 {
@@ -159,11 +155,7 @@ pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
             ref_type = "doc";
         } else if item.ref_type == EventRefType::Book as i32 {
             ref_type = "book";
-        } else if item.ref_type == EventRefType::Robot as i32 {
-            ref_type = "robot";
-        } else if item.ref_type == EventRefType::Repo as i32 {
-            ref_type = "repo";
-        }
+        } 
 
         let mut event_data = json!({});
         if let Some(data) = &item.event_data {

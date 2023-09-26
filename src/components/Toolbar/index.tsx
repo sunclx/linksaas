@@ -110,27 +110,6 @@ const Toolbar: React.FC = observer(() => {
         badge={projectStore.curProject?.project_status.undone_bug_count || 0}
       />
 
-      {projectStore.curProject?.setting.disable_server_agent != true && (
-        <>
-          <Divider />
-          <Item
-            id="robot"
-            pathname={pathname}
-            title="服务器列表"
-          />
-          <Item
-            id="script"
-            pathname={pathname}
-            title="服务端脚本"
-          />
-          <Item
-            id="repo"
-            pathname={pathname}
-            title="CI/CD"
-          />
-        </>
-      )}
-
       {projectStore.curProject?.setting.disable_api_collection != true && (
         <>
           <Divider />

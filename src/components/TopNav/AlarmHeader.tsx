@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import { ALARM_TYPE_EARTHLY_ERROR_HIT, ALARM_TYPE_ISSUE_DELAY_ALERT, ALARM_TYPE_ISSUE_DELAY_HIT, ALARM_TYPE_ISSUE_DEPEND_ALERT, ALARM_TYPE_ISSUE_DEPEND_HIT, ALARM_TYPE_ISSUE_REOPEN_ALERT, ALARM_TYPE_ISSUE_REOPEN_HIT, ALARM_TYPE_SCRIPT_ERROR_HIT } from "@/api/project_alarm";
+import {  ALARM_TYPE_ISSUE_DELAY_ALERT, ALARM_TYPE_ISSUE_DELAY_HIT, ALARM_TYPE_ISSUE_DEPEND_ALERT, ALARM_TYPE_ISSUE_DEPEND_HIT, ALARM_TYPE_ISSUE_REOPEN_ALERT, ALARM_TYPE_ISSUE_REOPEN_HIT } from "@/api/project_alarm";
 import { get_alarm_state, list_alarm, remove_alarm } from "@/api/project_alarm";
 import type { Alarm } from "@/api/project_alarm";
 import { Button, Form, Input, Modal, Popover, Space, Table, message } from "antd";
@@ -10,7 +10,7 @@ import type { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { useHistory } from "react-router-dom";
 import { ISSUE_TYPE_TASK } from "@/api/project_issue";
-import { LinkBugInfo, LinkEarthlyExecInfo, LinkScriptExecInfo, LinkTaskInfo } from "@/stores/linkAux";
+import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
 import type { BulletinInfoKey, GetResponse } from "@/api/project_bulletin";
 import { list_key as list_bulletin_key, get as get_bulletin, mark_read } from "@/api/project_bulletin";
 import UserPhoto from "../Portrait/UserPhoto";
@@ -166,16 +166,7 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
         } else if (alarm.alarm_type == ALARM_TYPE_ISSUE_REOPEN_ALERT) {
             issueId = alarm.content.IssueReOpenAlertInfo?.issue_id ?? "";
             issueType = alarm.content.IssueReOpenAlertInfo?.issue_type ?? 0;
-        } else if (alarm.alarm_type == ALARM_TYPE_SCRIPT_ERROR_HIT) {
-            linkAuxStore.goToLink(new LinkScriptExecInfo("", projectStore.curProjectId,
-                alarm.content.ScriptErrorHitInfo?.script_suite_id ?? "",
-                alarm.content.ScriptErrorHitInfo?.exec_id ?? ""), history);
-        } else if (alarm.alarm_type == ALARM_TYPE_EARTHLY_ERROR_HIT) {
-            linkAuxStore.goToLink(new LinkEarthlyExecInfo("", projectStore.curProjectId,
-                alarm.content.EarthlyErrorHitInfo?.repo_id ?? "",
-                alarm.content.EarthlyErrorHitInfo?.action_id ?? "",
-                alarm.content.EarthlyErrorHitInfo?.exec_id ?? ""), history);
-        }
+        } 
         if (issueId != "") {
             if (issueType == ISSUE_TYPE_TASK) {
                 linkAuxStore.goToLink(new LinkTaskInfo("", projectStore.curProjectId, issueId), history);
@@ -217,11 +208,7 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
                     return "超时未完成";
                 } else if (record.alarm_type == ALARM_TYPE_ISSUE_REOPEN_HIT || record.alarm_type == ALARM_TYPE_ISSUE_REOPEN_ALERT) {
                     return "重新打开次数过多";
-                } else if (record.alarm_type == ALARM_TYPE_SCRIPT_ERROR_HIT) {
-                    return "服务端脚本执行错误";
-                } else if (record.alarm_type == ALARM_TYPE_EARTHLY_ERROR_HIT) {
-                    return "Earthly执行失败";
-                }
+                } 
                 return "";
             },
         },

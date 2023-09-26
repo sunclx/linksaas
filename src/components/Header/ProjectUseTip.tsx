@@ -7,10 +7,7 @@ import { useHistory } from "react-router-dom";
 import { APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import ReqBtn from '@/assets/allIcon/icon-req.png';
 import IdeaBtn from '@/assets/allIcon/icon-idea.png';
-import ScriptBtn from '@/assets/allIcon/icon-script.png';
-import RepoBtn from '@/assets/allIcon/icon-repo.png';
 import RecordBtn from '@/assets/allIcon/icon-record.png';
-import AccessBtn from '@/assets/allIcon/icon-access.png';
 import AppraiseBtn from '@/assets/allIcon/icon-appraise.png';
 import { LinkChannelInfo } from "@/stores/linkAux";
 import { open } from '@tauri-apps/api/shell';
@@ -121,48 +118,6 @@ const ProjectUseTip = () => {
             enable: projectStore.curProject?.setting.disable_chat === false && projectStore.curProject?.setting.disable_kb === false,
         },
         {
-            title: "安全的执行服务端脚本",
-            content: (<>
-                <p>你可以通过右侧工具栏上的<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToScriptList(history);
-                }}><img src={ScriptBtn} /></a>来打开<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToScriptList(history);
-                }}>服务端脚本面板</a>。</p>
-                <p>服务端脚本是非常安全的，网络权限，文件权限，系统信息等权限都是需要明确授予的。</p>
-                <p>你还可以对之前的执行记录进行回放。</p>
-                <p>注意：需要管理员先在<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToRobotList(history);
-                }}>服务器列表</a>上添加服务器代理，服务端脚本是通过服务器代理来执行的。</p>
-            </>),
-            enable: projectStore.curProject?.setting.disable_server_agent === false,
-        },
-        {
-            title: "使用earthly进行CI/CD",
-            content: (<>
-                <p>你可以通过右侧工具栏上的<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToRepoList(history);
-                }}><img src={RepoBtn} /></a>来打开<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToRepoList(history);
-                }}>CI/CD</a>。</p>
-                <p>注意：需要管理员先在<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToRobotList(history);
-                }}>服务器列表</a>上添加服务器代理，earthly脚本是通过服务器代理来执行的。</p>
-            </>),
-            enable: projectStore.curProject?.setting.disable_server_agent === false,
-        },
-        {
             title: "订阅研发行为",
             content: (<>
                 <p>你可以通过右侧工具栏上的<a onClick={e => {
@@ -212,23 +167,6 @@ const ProjectUseTip = () => {
                 }}>项目成员互评面板</a>。</p>
             </>),
             enable: projectStore.curProject?.setting.disable_member_appraise === false,
-        },
-        {
-            title: "接入代码仓库行为",
-            content: (<>
-                <p>你可以通过右侧工具栏上的<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToExtEventList(history);
-                }}><img src={AccessBtn} /></a>来打开<a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    linkAuxStore.goToExtEventList(history);
-                }}>第三方接入面板</a>。</p>
-                <p>目前只支持国内的gitlab(jihulab)和gitee。</p>
-                <p>注意: 必须对代码仓库上的用户和项目用户进行关联后，相关事件才会在<a>工作记录面板</a>出现。</p>
-            </>),
-            enable: projectStore.isAdmin && projectStore.curProject?.setting.disable_server_agent === false,
         },
         {
             title: "使用频道减少沟通干扰",

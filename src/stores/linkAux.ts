@@ -15,13 +15,8 @@ import {
   APP_PROJECT_WORK_PLAN_PATH,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
-  REPO_ACTION_ACTION_DETAIL_SUFFIX,
-  REPO_ACTION_EXEC_RESULT_SUFFIX,
   REQUIRE_MENT_CREATE_SUFFIX,
   REQUIRE_MENT_DETAIL_SUFFIX,
-  ROBOT_METRIC_SUFFIX,
-  SCRIPT_CREATE_SUFFIX,
-  SCRIPT_EXEC_RESULT_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
 } from '@/utils/constant';
@@ -47,13 +42,13 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_BUG = 7,
   LINK_TARGET_APPRAISE = 8,
   LINK_TARGET_USER_KB = 9,
-  LINK_TARGET_ROBOT_METRIC = 10,
-  LINK_TARGET_EARTHLY_ACTION = 11,
-  LINK_TARGET_EARTHLY_EXEC = 12,
+  // LINK_TARGET_ROBOT_METRIC = 10,
+  // LINK_TARGET_EARTHLY_ACTION = 11,
+  // LINK_TARGET_EARTHLY_EXEC = 12,
   LINK_TARGET_BOOK_MARK = 13,
   // LINK_TARGET_TEST_CASE_ENTRY = 14,
-  LINK_TARGET_SCRIPT_SUITE = 15,
-  LINK_TARGET_SCRIPT_EXEC = 16,
+  // LINK_TARGET_SCRIPT_SUITE = 15,
+  // LINK_TARGET_SCRIPT_EXEC = 16,
   LINK_TARGET_REQUIRE_MENT = 17,
   LINK_TARGET_CODE_COMMENT = 18,
   // LINK_TARGET_BOOK_MARK_CATE = 19,
@@ -222,85 +217,6 @@ export class LinkAppInfo {
   openType: number;
 }
 
-export class LinkRobotMetricInfo {
-  constructor(content: string, projectId: string, robotId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_ROBOT_METRIC;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.robotId = robotId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  robotId: string;
-}
-
-export class LinkEarthlyActionInfo {
-  constructor(content: string, projectId: string, repoId: string, actionId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_ACTION;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.repoId = repoId;
-    this.actionId = actionId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  repoId: string;
-  actionId: string;
-}
-
-export class LinkEarthlyExecInfo {
-  constructor(content: string, projectId: string, repoId: string, actionId: string, execId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_EXEC;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.repoId = repoId;
-    this.actionId = actionId;
-    this.execId = execId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  repoId: string;
-  actionId: string;
-  execId: string;
-}
-
-export class LinkScriptSuiteInfo {
-  constructor(content: string, projectId: string, scriptSuiteId: string, useHistoryScript: boolean, scriptTime: number, tab: string | undefined = undefined) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.scriptSuiteId = scriptSuiteId;
-    this.useHistoryScript = useHistoryScript;
-    this.scriptTime = scriptTime;
-    this.tab = tab;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  scriptSuiteId: string;
-  useHistoryScript: boolean;
-  scriptTime: number;
-  tab?: string;
-}
-
-export class LinkScriptExecInfo {
-  constructor(content: string, projectId: string, scriptSuiteId: string, execId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.scriptSuiteId = scriptSuiteId;
-    this.execId = execId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  scriptSuiteId: string;
-  execId: string;
-}
-
 export class LinkBookMarkInfo {
   constructor(content: string, projectId: string, bookId: string, markId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK;
@@ -436,33 +352,6 @@ export type LinkDocState = {
 export type LinkRequirementState = {
   requirementId: string;
   content: string;
-}
-
-export type LinkRobotState = {
-  robotId: string
-};
-
-export type LinkEarthlyActionState = {
-  repoId: string;
-  actionId: string;
-};
-
-export type LinkEarthlyExecState = {
-  repoId: string;
-  actionId: string;
-  execId: string;
-}
-
-export type LinkScriptSuiteSate = {
-  scriptSuiteId: string;
-  useHistoryScript: boolean;
-  scriptTime: number;
-  tab?: string;
-}
-
-export type LinkScriptExecState = {
-  scriptSuiteId: string;
-  execId: string;
 }
 
 export type LinkIdeaPageState = {
@@ -618,60 +507,6 @@ class LinkAuxStore {
       this.rootStore.docSpaceStore.fromLink = true;
       await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
       history.push(APP_PROJECT_KB_DOC_PATH);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ROBOT_METRIC) {
-      const robotLink = link as LinkRobotMetricInfo;
-      if (this.rootStore.projectStore.getProject(robotLink.projectId)?.setting.disable_server_agent == true) {
-        return;
-      }
-      if (remoteCheck) {
-        const res = await request(
-          linkAuxApi.check_access_robot_metric(
-            this.rootStore.userStore.sessionId,
-            robotLink.projectId,
-            robotLink.robotId,
-          ));
-        if (!res) {
-          return;
-        }
-        if (res.can_access == false) {
-          message.warn('没有权限对应服务器代理监控');
-          return;
-        }
-      }
-      if (this.rootStore.projectStore.curProjectId != robotLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(robotLink.projectId);
-      }
-      const state: LinkRobotState = {
-        robotId: robotLink.robotId,
-      };
-      history.push(this.genUrl(robotLink.projectId, pathname, ROBOT_METRIC_SUFFIX), state);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_ACTION) {
-      const actionLink = link as LinkEarthlyActionInfo;
-      if (this.rootStore.projectStore.getProject(actionLink.projectId)?.setting.disable_server_agent == true) {
-        return;
-      }
-      if (this.rootStore.projectStore.curProjectId != actionLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(actionLink.projectId);
-      }
-      const state: LinkEarthlyActionState = {
-        repoId: actionLink.repoId,
-        actionId: actionLink.actionId,
-      };
-      history.push(this.genUrl(actionLink.projectId, pathname, REPO_ACTION_ACTION_DETAIL_SUFFIX), state);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EARTHLY_EXEC) {
-      const execLink = link as LinkEarthlyExecInfo;
-      if (this.rootStore.projectStore.getProject(execLink.projectId)?.setting.disable_server_agent == true) {
-        return;
-      }
-      if (this.rootStore.projectStore.curProjectId != execLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(execLink.projectId);
-      }
-      const state: LinkEarthlyExecState = {
-        repoId: execLink.repoId,
-        actionId: execLink.actionId,
-        execId: execLink.execId,
-      };
-      history.push(this.genUrl(execLink.projectId, pathname, REPO_ACTION_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
       const bookMarkLink = link as LinkBookMarkInfo;
       let canShare = false;
@@ -694,34 +529,6 @@ class LinkAuxStore {
       }
       await this.rootStore.spritStore.setCurSpritId(spritLink.spritId);
       history.push(APP_PROJECT_WORK_PLAN_PATH);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
-      const scriptSuiteLink = link as LinkScriptSuiteInfo;
-      if (this.rootStore.projectStore.getProject(scriptSuiteLink.projectId)?.setting.disable_server_agent == true) {
-        return;
-      }
-      if (this.rootStore.projectStore.curProjectId != scriptSuiteLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(scriptSuiteLink.projectId);
-      }
-      const state: LinkScriptSuiteSate = {
-        scriptSuiteId: scriptSuiteLink.scriptSuiteId,
-        useHistoryScript: scriptSuiteLink.useHistoryScript,
-        scriptTime: scriptSuiteLink.scriptTime,
-        tab: scriptSuiteLink.tab,
-      };
-      history.push(this.genUrl(scriptSuiteLink.projectId, pathname, "/script/detail"), state);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_EXEC) {
-      const scriptExecLink = link as LinkScriptExecInfo;
-      if (this.rootStore.projectStore.getProject(scriptExecLink.projectId)?.setting.disable_server_agent == true) {
-        return;
-      }
-      if (this.rootStore.projectStore.curProjectId != scriptExecLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(scriptExecLink.projectId);
-      }
-      const state: LinkScriptExecState = {
-        scriptSuiteId: scriptExecLink.scriptSuiteId,
-        execId: scriptExecLink.execId,
-      };
-      history.push(this.genUrl(scriptExecLink.projectId, pathname, SCRIPT_EXEC_RESULT_SUFFIX), state);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as LinkRequirementInfo;
       if (this.rootStore.projectStore.curProjectId != reqLink.projectId) {
@@ -881,17 +688,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/bug"), state);
   }
 
-  //跳转到服务器代理列表
-  goToRobotList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/robot"));
-  }
-
   //跳转到研发行为列表页
   goToEventList(history: History) {
     if (this.rootStore.appStore.simpleMode) {
@@ -917,17 +713,6 @@ class LinkAuxStore {
       this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appraise"));
-  }
-
-  //跳转到CI/CD代码仓库
-  goToRepoList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/repo"));
   }
 
   //跳转到第三方接入列表
@@ -996,17 +781,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/idea"));
   }
 
-  //跳转到创建服务端脚本页面
-  goToCreateScript(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, SCRIPT_CREATE_SUFFIX));
-  }
-
   //打开接口集合页面
   async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string, canEdit: boolean) {
     const label = `apiColl:${apiCollId}`;
@@ -1033,17 +807,6 @@ class LinkAuxStore {
         y: pos.y + Math.floor(Math.random() * 200),
       });
     }
-  }
-
-  //跳转到服务端脚本列表页面
-  goToScriptList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_server_agent == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/script"));
   }
 
   //跳转到项目需求列表页面

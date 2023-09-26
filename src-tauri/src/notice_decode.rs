@@ -325,79 +325,6 @@ pub mod appraise {
     }
 }
 
-pub mod robot {
-    use prost::Message;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::notices_robot;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    pub enum Notice {
-        RespMetricDataNotice(notices_robot::RespMetricDataNotice),
-    }
-
-    pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_robot::RespMetricDataNotice::type_url() {
-            if let Ok(notice) = notices_robot::RespMetricDataNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RespMetricDataNotice(notice));
-            }
-        }
-        None
-    }
-}
-
-pub mod earthly {
-    use prost::Message;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::notices_earthly;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    pub enum Notice {
-        ExecDataNotice(notices_earthly::ExecDataNotice),
-        ExecStateNotice(notices_earthly::ExecStateNotice),
-    }
-
-    pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_earthly::ExecDataNotice::type_url() {
-            if let Ok(notice) = notices_earthly::ExecDataNotice::decode(data.value.as_slice()) {
-                return Some(Notice::ExecDataNotice(notice));
-            }
-        } else if data.type_url == notices_earthly::ExecStateNotice::type_url() {
-            if let Ok(notice) = notices_earthly::ExecStateNotice::decode(data.value.as_slice()) {
-                return Some(Notice::ExecStateNotice(notice));
-            }
-        }
-        None
-    }
-}
-
-pub mod script {
-    use prost::Message;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::notices_script;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    pub enum Notice {
-        ExecDataNotice(notices_script::ExecDataNotice),
-        ExecStateNotice(notices_script::ExecStateNotice),
-    }
-
-    pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_script::ExecDataNotice::type_url() {
-            if let Ok(notice) = notices_script::ExecDataNotice::decode(data.value.as_slice()) {
-                return Some(Notice::ExecDataNotice(notice));
-            }
-        } else if data.type_url == notices_script::ExecStateNotice::type_url() {
-            if let Ok(notice) = notices_script::ExecStateNotice::decode(data.value.as_slice()) {
-                return Some(Notice::ExecStateNotice(notice));
-            }
-        }
-        None
-    }
-}
-
 pub mod idea {
     use prost::Message;
     use proto_gen_rust::google::protobuf::Any;
@@ -450,9 +377,6 @@ pub enum NoticeMessage {
     ProjectDocNotice(project_doc::Notice),
     IssueNotice(issue::Notice),
     AppraiseNotice(appraise::Notice),
-    RobotNotice(robot::Notice),
-    EarthlyNotice(earthly::Notice),
-    ScriptNotice(script::Notice),
     IdeaNotice(idea::Notice),
     ClientNotice(client::Notice),
 }
@@ -471,15 +395,6 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = appraise::decode_notice(data) {
         return Some(NoticeMessage::AppraiseNotice(ret));
-    }
-    if let Some(ret) = robot::decode_notice(data) {
-        return Some(NoticeMessage::RobotNotice(ret));
-    }
-    if let Some(ret) = earthly::decode_notice(data) {
-        return Some(NoticeMessage::EarthlyNotice(ret));
-    }
-    if let Some(ret) = script::decode_notice(data) {
-        return Some(NoticeMessage::ScriptNotice(ret));
     }
     if let Some(ret) = idea::decode_notice(data) {
         return Some(NoticeMessage::IdeaNotice(ret));

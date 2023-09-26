@@ -47,10 +47,6 @@ mod project_member_api_plugin;
 mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_tool_api_plugin;
-mod robot_api_plugin;
-mod robot_earthly_api_plugin;
-mod robot_metric_api_plugin;
-mod robot_script_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_admin_api_plugin;
@@ -421,10 +417,6 @@ fn main() {
         .plugin(project_book_shelf_api_plugin::ProjectBookShelfApiPlugin::new())
         .plugin(project_award_api_plugin::ProjectAwardApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
-        .plugin(robot_api_plugin::RobotApiPlugin::new())
-        .plugin(robot_metric_api_plugin::RobotMetricApiPlugin::new())
-        .plugin(robot_earthly_api_plugin::RobotEarthlyApiPlugin::new())
-        .plugin(robot_script_api_plugin::RobotScriptApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())
         .plugin(admin_auth_api_plugin::AdminAuthApiPlugin::new())

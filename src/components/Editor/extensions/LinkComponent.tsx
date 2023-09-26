@@ -8,7 +8,6 @@ import type {
   LinkBugInfo,
   LinkDocInfo,
   LinkExterneInfo,
-  LinkScriptSuiteInfo,
   LinkRequirementInfo,
 } from '@/stores/linkAux';
 import { LINK_TARGET_TYPE } from '@/stores/linkAux';
@@ -20,7 +19,6 @@ import { get_channel } from '@/api/project_channel';
 import { get as get_issue } from '@/api/project_issue';
 import { get_doc_key } from '@/api/project_doc';
 import { LinkOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { get_script_suite_key } from '@/api/robot_script';
 import { get_requirement } from '@/api/project_requirement';
 import { get_session } from '@/api/user';
 
@@ -87,16 +85,6 @@ const Link: React.FC<{
       );
       if (res) {
         setTitle('文档:' + res.doc_key.title);
-      }
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SCRIPT_SUITE) {
-      const scriptSuiteLink = link as unknown as LinkScriptSuiteInfo;
-      const res = await request(get_script_suite_key({
-        session_id: sessionId,
-        project_id: scriptSuiteLink.projectId,
-        script_suite_id: scriptSuiteLink.scriptSuiteId,
-      }));
-      if (res) {
-        setTitle('服务端脚本:' + res.script_suite_key.script_suite_name);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
       setTitle('书本标注');
