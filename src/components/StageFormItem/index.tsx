@@ -113,16 +113,16 @@ const StageFormItem: FC<StageFormItemProps> = observer((props) => {
         }}
         className={s.stage_form_item_wrap}
       >
-        <Form.Item name="stage_item_status" label="更新阶段" style={{ display: details.user_issue_perm.next_state_list.length > 0 ? "auto" : "none" }}>
+        <Form.Item name="stage_item_status" label="更新状态" style={{ display: details.user_issue_perm.next_state_list.length > 0 ? "auto" : "none" }}>
           <div className={s.statusBtn}>
             {details.user_issue_perm.next_state_list.map(status => {
               if (status == ISSUE_STATE_PROCESS) {
-                return (<Button className={s.dispose} onClick={() => clickSetStatus(ISSUE_STATE_PROCESS)}>
+                return (<Button key={status} className={s.dispose} onClick={() => clickSetStatus(ISSUE_STATE_PROCESS)}>
                   <img className={getSelectImg(ISSUE_STATE_PROCESS)} src={selectDispose} alt="" />
                   处理
                 </Button>);
               } else if (status == ISSUE_STATE_CHECK) {
-                return (<Button
+                return (<Button key={status}
                   className={s.check}
                   onClick={() => clickSetStatus(ISSUE_STATE_CHECK)}
                   disabled={details.state === ISSUE_STATE_PLAN || details.state === ISSUE_STATE_CLOSE}
@@ -131,12 +131,12 @@ const StageFormItem: FC<StageFormItemProps> = observer((props) => {
                   验收
                 </Button>);
               } else if (status == ISSUE_STATE_CLOSE) {
-                return (<Button className={s.close} onClick={() => clickSetStatus(ISSUE_STATE_CLOSE)}>
+                return (<Button key={status} className={s.close} onClick={() => clickSetStatus(ISSUE_STATE_CLOSE)}>
                   <img className={getSelectImg(ISSUE_STATE_CLOSE)} src={selectClose} alt="" />
                   关闭
                 </Button>);
               } else {
-                return <span>111</span>
+                return <span key="" />
               }
             })}
 

@@ -295,3 +295,21 @@ export async function updateExtraInfo(sessionId: string, projectId: string, issu
         return false;
     }
 }
+
+export async function updateProcessStage(sessionId: string, projectId: string, issueId: string, stage: issueApi.PROCESS_STAGE): Promise<boolean> {
+    try {
+        const res = await issueApi.update_process_stage({
+            session_id: sessionId,
+            project_id: projectId,
+            issue_id: issueId,
+            process_stage: stage,
+        });
+        if (res.code == 0) {
+            return true;
+        }
+        message.error(res.err_msg);
+        return false;
+    } catch (_) {
+        return false;
+    }
+}

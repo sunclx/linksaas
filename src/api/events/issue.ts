@@ -41,6 +41,17 @@ function get_issue_state_str(issue_state: number): string {
     return state_str;
 }
 
+function get_process_stage_str(stage: number): string {
+    if (stage == pi.PROCESS_STAGE_TODO) {
+        return "未开始";
+    } else if (stage == pi.PROCESS_STAGE_DONE) {
+        return "执行中";
+    } else if (stage == pi.PROCESS_STAGE_DONE) {
+        return "已完成";
+    }
+    return "";
+}
+
 export type CreateEvent = {
     issue_id: string;
     issue_type: number;
@@ -196,6 +207,7 @@ export type ChangeStateEvent = {
     old_state: number;
     new_state: number;
 };
+
 function get_change_state_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
@@ -214,6 +226,36 @@ function get_change_state_simple_content(
     }
 
     ret_list.push(new LinkNoneInfo(`老状态 ${old_state_str} 新状态 ${new_state_str}`));
+    return ret_list;
+}
+
+export type UpdateProcessStageEvent = {
+    issue_id: string;
+    issue_type: number;
+    title: string;
+    old_stage: number;
+    new_stage: number;
+};
+
+function get_update_process_stage_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UpdateProcessStageEvent,
+): LinkInfo[] {
+    const issue_type_str = get_issue_type_str(inner.issue_type);
+    const old_stage_str = get_process_stage_str(inner.old_stage);
+    const new_stage_str = get_process_stage_str(inner.new_stage);
+
+    const ret_list = [
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更改${issue_type_str} `),
+    ];
+    if (inner.issue_type == pi.ISSUE_TYPE_TASK) {
+        ret_list.push(new LinkTaskInfo(inner.title, ev.project_id, inner.issue_id));
+    } else if (inner.issue_type == pi.ISSUE_TYPE_BUG) {
+        ret_list.push(new LinkBugInfo(inner.title, ev.project_id, inner.issue_id));
+    }
+
+    ret_list.push(new LinkNoneInfo(`老阶段 ${old_stage_str} 新阶段 ${new_stage_str}`));
     return ret_list;
 }
 
@@ -678,6 +720,7 @@ export class AllIssueEvent {
     AssignExecUserEvent?: AssignExecUserEvent;
     AssignCheckUserEvent?: AssignCheckUserEvent;
     ChangeStateEvent?: ChangeStateEvent;
+    UpdateProcessStageEvent?: UpdateProcessStageEvent;
     LinkSpritEvent?: LinkSpritEvent;
     CancelLinkSpritEvent?: CancelLinkSpritEvent;
     SetStartTimeEvent?: SetStartTimeEvent;
@@ -717,6 +760,8 @@ export function get_issue_simple_content(
         return get_assign_check_simple_content(ev, skip_prj_name, inner.AssignCheckUserEvent);
     } else if (inner.ChangeStateEvent !== undefined) {
         return get_change_state_simple_content(ev, skip_prj_name, inner.ChangeStateEvent);
+    } else if (inner.UpdateProcessStageEvent !== undefined) {
+        return get_update_process_stage_simple_content(ev, skip_prj_name, inner.UpdateProcessStageEvent);
     } else if (inner.LinkSpritEvent !== undefined) {
         return get_link_sprit_simple_content(ev, skip_prj_name, inner.LinkSpritEvent);
     } else if (inner.CancelLinkSpritEvent !== undefined) {
