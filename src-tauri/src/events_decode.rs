@@ -352,7 +352,6 @@ pub mod sprit {
     }
 }
 
-
 pub mod book_shelf {
     use prost::Message;
     use proto_gen_rust::events_book_shelf;
@@ -393,6 +392,7 @@ pub mod issue {
         AssignExecUserEvent(events_issue::AssignExecUserEvent),
         AssignCheckUserEvent(events_issue::AssignCheckUserEvent),
         ChangeStateEvent(events_issue::ChangeStateEvent),
+        UpdateProcessStageEvent(events_issue::UpdateProcessStageEvent),
         LinkSpritEvent(events_issue::LinkSpritEvent),
         CancelLinkSpritEvent(events_issue::CancelLinkSpritEvent),
         SetStartTimeEvent(events_issue::SetStartTimeEvent),
@@ -441,6 +441,10 @@ pub mod issue {
         } else if data.type_url == events_issue::ChangeStateEvent::type_url() {
             if let Ok(ev) = events_issue::ChangeStateEvent::decode(data.value.as_slice()) {
                 return Some(Event::ChangeStateEvent(ev));
+            }
+        } else if data.type_url == events_issue::UpdateProcessStageEvent::type_url() {
+            if let Ok(ev) = events_issue::UpdateProcessStageEvent::decode(data.value.as_slice()) {
+                return Some(Event::UpdateProcessStageEvent(ev));
             }
         } else if data.type_url == events_issue::LinkSpritEvent::type_url() {
             if let Ok(ev) = events_issue::LinkSpritEvent::decode(data.value.as_slice()) {
@@ -982,7 +986,7 @@ pub mod atomgit {
             if let Ok(ev) = events_atomgit::PushEvent::decode(data.value.as_slice()) {
                 return Some(Event::PushEvent(ev));
             }
-        } 
+        }
         None
     }
 }

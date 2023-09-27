@@ -233,7 +233,12 @@ const SpritDetail = () => {
                                     <Form.Item label="过滤成员">
                                         <Select value={selMemberUserId} style={{ width: "120px", marginRight: "20px" }}
                                             onChange={value => setSelMemberUserId(value)}>
-                                            <Select.Option value="">全部成员</Select.Option>
+                                            <Select.Option value="">
+                                                <Space>
+                                                    <UserPhoto logoUri="/default_av.jpg" style={{ width: "20px" }} />
+                                                    <span>全部成员</span>
+                                                </Space>
+                                            </Select.Option>
                                             {memberStore.memberList.map(item => (
                                                 <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>
                                                     <Space>

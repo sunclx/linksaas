@@ -865,6 +865,10 @@ export const issueEvOptionList: CheckboxOptionType[] = [
         value: "changeState",
     },
     {
+        label: "变更执行阶段",
+        value: "updateProcessStage"
+    },
+    {
         label: "关联工作计划",
         value: "linkSprit",
     },
@@ -946,6 +950,7 @@ export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
         assign_exec_user: false,
         assign_check_user: false,
         change_state: false,
+        update_process_stage: false,
         link_sprit: false,
         cancel_link_sprit: false,
         set_start_time: false,
@@ -982,6 +987,8 @@ export const calcIssueEvCfg = (values: string[] | undefined): IssueEvCfg => {
             ret.assign_check_user = true;
         } else if (value == "changeState") {
             ret.change_state = true;
+        } else if (value == "updateProcessStage") {
+            ret.update_process_stage = true;
         } else if (value == "linkSprit") {
             ret.link_sprit = true;
         } else if (value == "cancelLinkSprit") {
@@ -1044,6 +1051,9 @@ export const genIssueEvCfgValues = (cfg: IssueEvCfg): string[] => {
     }
     if (cfg.change_state) {
         retList.push("changeState");
+    }
+    if (cfg.update_process_stage) {
+        retList.push("updateProcessStage");
     }
     if (cfg.link_sprit) {
         retList.push("linkSprit");

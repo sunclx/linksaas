@@ -102,6 +102,7 @@ export type IssueEvCfg = {
     assign_exec_user: boolean;
     assign_check_user: boolean;
     change_state: boolean;
+    update_process_stage: boolean;
     link_sprit: boolean;
     cancel_link_sprit: boolean;
     set_start_time: boolean;
