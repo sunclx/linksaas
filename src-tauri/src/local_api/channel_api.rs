@@ -99,9 +99,7 @@ pub fn convert_msg_list(msg_list: Vec<Msg>) -> Vec<models::MsgInfo> {
         let mut sender_type = "";
         if msg.sender_type == SenderType::Member as i32 {
             sender_type = "member";
-        } else if msg.sender_type == SenderType::Robot as i32 {
-            sender_type = "robot";
-        }
+        } 
         ret_list.push(models::MsgInfo {
             msg_id: Some(msg.msg_id.clone()),
             channel_id: Some(msg.channel_id.clone()),

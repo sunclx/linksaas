@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { WebMsg } from '@/stores/chatMsg';
-import { MSG_LINK_BUG, MSG_LINK_TASK, MSG_LINK_CHANNEL, SENDER_TYPE_ROBOT, MSG_LINK_ROBOT_METRIC } from '@/api/project_channel';
+import { MSG_LINK_BUG, MSG_LINK_TASK, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { MSG_LINK_TYPE } from '@/api/project_channel';
 import { observer } from 'mobx-react';
 import { runInAction } from 'mobx';
 import { Badge, Popover, Space } from 'antd';
 import { useStores } from '@/hooks';
 import { useHistory } from 'react-router-dom';
-import { LinkTaskInfo, LinkBugInfo, LinkChannelInfo, LinkRobotMetricInfo, LinkIdeaPageInfo } from '@/stores/linkAux';
+import { LinkTaskInfo, LinkBugInfo, LinkChannelInfo, LinkIdeaPageInfo } from '@/stores/linkAux';
 import { ReadOnlyEditor } from '@/components/Editor';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import styles from './ChatMsg.module.less';
@@ -52,11 +52,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
         new LinkChannelInfo('', msg.msg.project_id, msg.msg.basic_msg.link_dest_id, msg.msg.msg_id),
         history,
       );
-    } else if (msg.msg.basic_msg.link_type == MSG_LINK_ROBOT_METRIC) {
-      linkAuxStore.goToLink(
-        new LinkRobotMetricInfo('', msg.msg.project_id, msg.msg.basic_msg.link_dest_id),
-        history);
-    }
+    } 
   };
   const setHover = (hover: boolean) => {
     if (msg.hovered != hover) {
@@ -108,7 +104,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
               top: '10px',
             }}
           />
-          <span className={styles.chatName}>{msg.msg.sender_type == SENDER_TYPE_ROBOT ? "服务器代理" : msg.msg.sender_display_name}</span>
+          <span className={styles.chatName}>{msg.msg.sender_display_name}</span>
           <span className={styles.chatTime}>{moment(msg.msg.send_time).format("YYYY-MM-DD HH:mm:ss")}</span>
           {msg.msg.has_update_time && (
             <>

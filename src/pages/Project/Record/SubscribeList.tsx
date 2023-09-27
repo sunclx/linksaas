@@ -12,11 +12,12 @@ import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
 import {
-    bookShelfEvOptionList, codeEvOptionList, docEvOptionList, earthlyEvOptionList, extEvOptionList, genBookShelfEvCfgValues,
-    genCodeEvCfgValues, genDocEvCfgValues, genEarthlyEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
-    genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, genRobotEvCfgValues, genScriptEvCfgValues,
+    bookShelfEvOptionList, codeEvOptionList, docEvOptionList,  extEvOptionList, genBookShelfEvCfgValues,
+    genCodeEvCfgValues, genDocEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
+    genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, 
     genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList, robotEvOptionList, scriptEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues, apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues
+    requirementEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues, 
+    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
@@ -142,12 +143,6 @@ const SubscribeList = () => {
                                         <Form.Item label="文档事件">
                                             <Checkbox.Group options={docEvOptionList} value={genDocEvCfgValues(item.event_cfg.doc_ev_cfg)} disabled={true} />
                                         </Form.Item>
-                                        <Form.Item label="自动化事件">
-                                            <Checkbox.Group options={earthlyEvOptionList} value={genEarthlyEvCfgValues(item.event_cfg.earthly_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="服务端脚本事件">
-                                            <Checkbox.Group options={scriptEvOptionList} value={genScriptEvCfgValues(item.event_cfg.script_ev_cfg)} disabled={true} />
-                                        </Form.Item>
                                         <Form.Item label="第三方接入事件">
                                             <Checkbox.Group options={extEvOptionList} value={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />
                                         </Form.Item>
@@ -165,9 +160,6 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="工单事件">
                                             <Checkbox.Group options={issueEvOptionList} value={genIssueEvCfgValues(item.event_cfg.issue_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="服务器事件">
-                                            <Checkbox.Group options={robotEvOptionList} value={genRobotEvCfgValues(item.event_cfg.robot_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="工作计划事件">
                                             <Checkbox.Group options={spritEvOptionList} value={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />

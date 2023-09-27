@@ -4,7 +4,7 @@ import type { ModalProps } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
 import type { LinkInfo } from '@/stores/linkAux';
-import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkScriptSuiteInfo, LinkRequirementInfo } from '@/stores/linkAux';
+import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkRequirementInfo } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import {
   list as list_issue,
@@ -23,8 +23,6 @@ import s from './LinkSelect.module.less';
 import classNames from 'classnames';
 import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
-import type { ScriptSuiteKey } from '@/api/robot_script';
-import { list_script_suite_key } from '@/api/robot_script';
 import type { RequirementInfo } from '@/api/project_requirement';
 import { list_requirement, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 
@@ -87,7 +85,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [requirementList, setRequirementList] = useState([] as RequirementInfo[]);
   const [taskList, setTaskList] = useState([] as IssueInfo[]);
   const [bugList, setBugList] = useState([] as IssueInfo[]);
-  const [scriptList, setscriptList] = useState([] as ScriptSuiteKey[]);
   const [docSpaceList, setDocSpaceList] = useState([ALL_DOC_SPACE] as DocSpace[]);
   const [curDocSpaceId, setCurDocSpaceId] = useState("");
   const [docList, setDocList] = useState([] as DocKey[]);
@@ -250,21 +247,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       setTotalCount(res.total_count);
     });
   }, [tab, curPage, curDocSpaceId])
-
-  useEffect(() => {
-    if (tab != "script") {
-      return;
-    }
-    request(list_script_suite_key({
-      session_id: userStore.sessionId,
-      project_id: projectStore.curProjectId,
-      offset: curPage * PAGE_SIZE,
-      limit: PAGE_SIZE,
-    })).then((res) => {
-      setscriptList(res.script_suite_key_list);
-      setTotalCount(res.total_count);
-    });
-  }, [tab, curPage])
 
   useEffect(() => {
     if (tab != 'requirement') {
@@ -453,32 +435,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
             >
               <div>
                 {item.issue_index}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {item.basic_info.title}
-              </div>
-            </div>
-          ))}
-          <Pagination
-            total={totalCount}
-            pageSize={PAGE_SIZE}
-            current={curPage + 1}
-            onChange={(page: number) => setCurPage(page - 1)}
-          />
-        </div>
-      );
-    } else if (props.showScript && tab === "script") {
-      return (
-        <div className={s.con_item_wrap}>
-          {scriptList.map(item => (
-            <div
-              className={s.con_item}
-              key={item.script_suite_id}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onOk(new LinkScriptSuiteInfo(item.script_suite_name, projectStore.curProjectId, item.script_suite_id, false, 0));
-              }}
-            >
-              <div>
-                {item.script_suite_name}
               </div>
             </div>
           ))}

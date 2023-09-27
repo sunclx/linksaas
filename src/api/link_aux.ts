@@ -42,12 +42,6 @@ export type CheckAccessUserKbResponse = {
     can_access: boolean;
 };
 
-export type CheckAccessRobotMetricResponse = {
-    code: number;
-    err_msg: string;
-    can_access: boolean;
-};
-
 // 是否可以访问项目
 export async function check_access_project(session_id: string, project_id: string): Promise<CheckAccessProjectResponse> {
     const cmd = 'plugin:link_aux_api|check_access_project';
@@ -142,20 +136,6 @@ export async function check_access_user_kb(session_id: string, user_id: string, 
     };
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<CheckAccessUserKbResponse>(cmd, {
-        request,
-    });
-}
-
-//是否可以访问机器人监控
-export async function check_access_robot_metric(session_id: string, project_id: string, robot_id: string): Promise<CheckAccessRobotMetricResponse> {
-    const cmd = 'plugin:link_aux_api|check_access_robot_metric';
-    const request = {
-        session_id,
-        project_id,
-        robot_id,
-    };
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<CheckAccessRobotMetricResponse>(cmd, {
         request,
     });
 }

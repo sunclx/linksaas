@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@linksaas.pro>",
@@ -78,7 +78,6 @@
     "swagger-ui-react": "4.14.0",
     "swiper": "^8.1.4",
     "vite-plugin-svgr": "^2.2.1",
-    "xterm-for-react": "^1.0.4",
     "yaml": "^2.3.1"
   },
   "devDependencies": {

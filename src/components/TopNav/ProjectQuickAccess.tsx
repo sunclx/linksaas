@@ -30,9 +30,6 @@ const MENU_KEY_CREATE_TASK = "create.task";
 const MENU_KEY_SHOW_TOOL_BAR_BUG_MY = "toolbar.bug.my.show";
 const MENU_KEY_SHOW_TOOL_BAR_BUG_ALL = "toolbar.bug.all.show";
 const MENU_KEY_CREATE_BUG = "create.bug";
-const MENU_KEY_SHOW_TOOL_BAR_ROBOT = "toolbar.robot.show";
-const MENU_KEY_SHOW_TOOL_BAR_SCRIPT = "toolbar.script.show";
-const MENU_KEY_SHOW_TOOL_BAR_EARTHLY = "toolbar.earthly.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS = "toolbar.events.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
 const MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS = "toolbar.extEvents.show";
@@ -196,20 +193,6 @@ const ProjectQuickAccess = () => {
                 }
             ],
         });
-        if (projectStore.curProject?.setting.disable_server_agent != true) {
-            tmpItems.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_ROBOT,
-                label: "服务器代理列表",
-            });
-            tmpItems.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_SCRIPT,
-                label: "服务端脚本列表",
-            });
-            tmpItems.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_EARTHLY,
-                label: "CI/CD",
-            });
-        }
         if (projectStore.curProject?.setting.disable_api_collection != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION,
@@ -363,15 +346,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_CREATE_BUG:
                 linkAuxStore.goToCreateBug("", projectStore.curProjectId, history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_ROBOT:
-                linkAuxStore.goToRobotList(history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_SCRIPT:
-                linkAuxStore.goToScriptList(history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_EARTHLY:
-                linkAuxStore.goToRepoList(history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_EVENTS:
                 linkAuxStore.goToEventList(history);

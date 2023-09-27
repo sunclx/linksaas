@@ -9,8 +9,8 @@ export const ALARM_TYPE_ISSUE_DELAY_HIT: ALARM_TYPE = 2;
 export const ALARM_TYPE_ISSUE_DELAY_ALERT: ALARM_TYPE = 3;
 export const ALARM_TYPE_ISSUE_REOPEN_HIT: ALARM_TYPE = 4;
 export const ALARM_TYPE_ISSUE_REOPEN_ALERT: ALARM_TYPE = 5;
-export const ALARM_TYPE_SCRIPT_ERROR_HIT: ALARM_TYPE = 6;
-export const ALARM_TYPE_EARTHLY_ERROR_HIT: ALARM_TYPE = 7;
+// export const ALARM_TYPE_SCRIPT_ERROR_HIT: ALARM_TYPE = 6;
+// export const ALARM_TYPE_EARTHLY_ERROR_HIT: ALARM_TYPE = 7;
 
 export type Config = {
     enable_issue_depend_check: boolean;//进行工单依赖检查
@@ -22,8 +22,8 @@ export type Config = {
     enable_issue_re_open_check: boolean;//进行工单重新打开检查
     issue_re_open_hit_value: number;//工单重新打开触发提示的边界值
     issue_re_open_alert_value: number;//工单重新打开触发警告的边界值
-    enable_script_error_check: boolean;//服务端脚本运行出错检查
-    enable_earthly_error_check: boolean;// earthly运行出错检查
+    // enable_script_error_check: boolean;//服务端脚本运行出错检查
+    // enable_earthly_error_check: boolean;// earthly运行出错检查
 };
 
 export type IssueDependHitInfo = {
@@ -56,17 +56,6 @@ export type IssueReOpenAlertInfo = {
     issue_type: ISSUE_TYPE;
 };
 
-export type ScriptErrorHitInfo = {
-    script_suite_id: string;
-    exec_id: string;
-};
-
-export type EarthlyErrorHitInfo = {
-    repo_id: string;
-    action_id: string;
-    exec_id: string;
-};
-
 export type Content = {
     IssueDependHitInfo?: IssueDependHitInfo;
     IssueDependAlertInfo?: IssueDependAlertInfo;
@@ -74,9 +63,6 @@ export type Content = {
     IssueDelayAlertInfo?: IssueDelayAlertInfo;
     IssueReOpenHitInfo?: IssueReOpenHitInfo;
     IssueReOpenAlertInfo?: IssueReOpenAlertInfo;
-    ScriptErrorHitInfo?: ScriptErrorHitInfo;
-    EarthlyErrorHitInfo?: EarthlyErrorHitInfo;
-
 };
 
 export type Alarm = {

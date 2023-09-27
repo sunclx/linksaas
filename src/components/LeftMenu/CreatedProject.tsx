@@ -46,7 +46,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
           project_id: res.project_id,
           setting: {
             disable_member_appraise: true,
-            disable_server_agent: true,
             disable_ext_event: true,
             disable_app_store: true,
             disable_data_anno: true,

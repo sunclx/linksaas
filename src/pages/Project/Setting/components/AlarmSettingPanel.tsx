@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Button, Card, Checkbox, Form, Select, Space, Switch, message } from "antd";
+import { Button, Card, Form, Select, Space, Switch, message } from "antd";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { get_config as get_alarm_config, set_config as set_alarm_config } from "@/api/project_alarm";
@@ -20,8 +20,6 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
     const [enableIssueReOpenCheck, setEnableIssueReOpenCheck] = useState(false);
     const [issueReOpenHitValue, setIssueReOpenHitValue] = useState(0);
     const [issueReOpenAlertValue, setIssueReOpenAlertValue] = useState(0);
-    const [enableScriptErrorCheck, setEnableScriptErrorCheck] = useState(false);
-    const [enableEarthlyErrorCheck, setEnableEarthlyErrorCheck] = useState(false);
 
     const [hasChange, setHasChange] = useState(false);
 
@@ -39,8 +37,6 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
         setEnableIssueReOpenCheck(res.config.enable_issue_re_open_check);
         setIssueReOpenHitValue(res.config.issue_re_open_hit_value);
         setIssueReOpenAlertValue(res.config.issue_re_open_alert_value);
-        setEnableScriptErrorCheck(res.config.enable_script_error_check);
-        setEnableEarthlyErrorCheck(res.config.enable_earthly_error_check);
     };
 
     const resetConfig = async () => {
@@ -62,8 +58,6 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                 enable_issue_re_open_check: enableIssueReOpenCheck,
                 issue_re_open_hit_value: issueReOpenHitValue,
                 issue_re_open_alert_value: issueReOpenAlertValue,
-                enable_script_error_check: enableScriptErrorCheck,
-                enable_earthly_error_check: enableEarthlyErrorCheck,
             },
         }));
         message.info("保存成功");
@@ -246,20 +240,6 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                         </Select>
                     </Form.Item>
                 </Form>
-            </Card>
-            <Card bordered={false} title="其他预警">
-                <Space direction="vertical">
-                    <Checkbox checked={enableScriptErrorCheck} onChange={e => {
-                        e.stopPropagation();
-                        setEnableScriptErrorCheck(e.target.checked);
-                        setHasChange(true);
-                    }}>服务端脚本执行失败预警</Checkbox>
-                    <Checkbox checked={enableEarthlyErrorCheck} onChange={e => {
-                        e.stopPropagation();
-                        setEnableEarthlyErrorCheck(e.target.checked);
-                        setHasChange(true);
-                    }}>Earthly执行失败预警</Checkbox>
-                </Space>
             </Card>
         </Card>
     );

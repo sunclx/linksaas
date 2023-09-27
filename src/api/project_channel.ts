@@ -18,11 +18,11 @@ export const MSG_LINK_BUG: MSG_LINK_TYPE = 2;
 export const MSG_LINK_CHANNEL: MSG_LINK_TYPE = 3;
 // export const MSG_LINK_DOC: MSG_LINK_TYPE = 4;//移除
 export const MSG_LINK_EXPERT_QA: MSG_LINK_TYPE = 5;
-export const MSG_LINK_ROBOT_METRIC: MSG_LINK_TYPE = 6;
+// export const MSG_LINK_ROBOT_METRIC: MSG_LINK_TYPE = 6;//移除
 
 export type SENDER_TYPE = number;
 export const SENDER_TYPE_MEMBER: SENDER_TYPE = 0;
-export const SENDER_TYPE_ROBOT: SENDER_TYPE = 1;
+// export const SENDER_TYPE_ROBOT: SENDER_TYPE = 1;
 
 
 export type BasicChannelInfo = {

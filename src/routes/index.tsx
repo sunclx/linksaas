@@ -36,13 +36,8 @@ import {
   WORKBENCH_KB_DOC_SUFFIX,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
-  REPO_ACTION_ACTION_DETAIL_SUFFIX,
-  REPO_ACTION_EXEC_RESULT_SUFFIX,
   REQUIRE_MENT_CREATE_SUFFIX,
   REQUIRE_MENT_DETAIL_SUFFIX,
-  ROBOT_METRIC_SUFFIX,
-  SCRIPT_CREATE_SUFFIX,
-  SCRIPT_EXEC_RESULT_SUFFIX,
   TASK_CREATE_SUFFIX,
   TASK_DETAIL_SUFFIX,
   WORKBENCH_PATH,
@@ -62,18 +57,9 @@ import {
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
 import IssueCreate from '@/pages/Issue/IssueCreate';
-import RobotList from '@/pages/Robot/RobotList';
-import MetricList from '@/pages/Robot/MetricList';
-import RepoList from '@/pages/Earthly/RepoList';
-import EarthlyExecResult from '@/pages/Earthly/ExecResult';
-import ScriptExecResult from '@/pages/Script/ExecResult';
-import ActionDetail from '@/pages/Earthly/ActionDetail';
 import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
-import ScriptList from '@/pages/Script/ScriptList';
-import CreateScript from '@/pages/Script/CreateScript';
-import ScriptDetail from '@/pages/Script/ScriptDetail';
 import AdminLayout from '@/layouts/AdminLayout';
 import UserList from '@/pages/Admin/UserAdmin/UserList';
 import UserDetail from '@/pages/Admin/UserAdmin/UserDetail';
@@ -186,60 +172,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + BUG_CREATE_SUFFIX,
       title: '创建缺陷',
       component: IssueCreate,
-      exact: true,
-    },
-    {
-      path: prefix + '/robot',
-      title: '服务器代理列表',
-      component: RobotList,
-      exact: true,
-    },
-    {
-      path: prefix + ROBOT_METRIC_SUFFIX,
-      title: '监控列表',
-      component: MetricList,
-      exact: true,
-    },
-    {
-      path: prefix + "/script",
-      title: "服务端脚本",
-      component: ScriptList,
-      exact: true,
-    },
-    {
-      path: prefix + SCRIPT_CREATE_SUFFIX,
-      title: "创建服务端脚本",
-      component: CreateScript,
-      exact: true,
-    },
-    {
-      path: prefix + "/script/detail",
-      title: "服务端脚本详情",
-      component: ScriptDetail,
-      exact: true,
-    },
-    {
-      path: prefix + SCRIPT_EXEC_RESULT_SUFFIX,
-      title: "服务端脚本执行结果",
-      component: ScriptExecResult,
-      exact: true,
-    },
-    {
-      path: prefix + '/repo',
-      title: '代码仓库列表',
-      component: RepoList,
-      exact: true,
-    },
-    {
-      path: prefix + REPO_ACTION_ACTION_DETAIL_SUFFIX,
-      title: '命令详情',
-      component: ActionDetail,
-      exact: true,
-    },
-    {
-      path: prefix + REPO_ACTION_EXEC_RESULT_SUFFIX,
-      title: '命令执行结果',
-      component: EarthlyExecResult,
       exact: true,
     },
     {
