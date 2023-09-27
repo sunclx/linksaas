@@ -1,5 +1,5 @@
 import type { ExtraBugInfo, ExtraTaskInfo, IssueInfo, ListResponse } from '@/api/project_issue';
-import { list_my_todo } from '@/api/project_issue';
+import { ISSUE_STATE_PROCESS, PROCESS_STAGE_DOING, PROCESS_STAGE_DONE, PROCESS_STAGE_TODO, list_my_todo } from '@/api/project_issue';
 import {
   SORT_KEY_UPDATE_TIME,
   SORT_TYPE_DSC,
@@ -166,7 +166,7 @@ const Backlog: React.FC<BacklogProps> = (props) => {
       ellipsis: true,
       dataIndex: ['basic_info', 'title'],
       width: 250,
-      render: (v: string, row: IssueInfo) => renderTitle(row),
+      render: (_, row: IssueInfo) => renderTitle(row),
     },
     {
       title: "关联需求",
@@ -206,22 +206,38 @@ const Backlog: React.FC<BacklogProps> = (props) => {
       }
     },
     {
+      title: `状态`,
+      dataIndex: 'state',
+      width: 100,
+      align: 'center',
+      render: (val: number) => renderState(val),
+    },
+    {
+      title:"执行阶段",
+      width: 100,
+      render: (_,row: IssueInfo) => {
+        if(row.state == ISSUE_STATE_PROCESS){
+          if(row.process_stage == PROCESS_STAGE_TODO){
+            return "未开始";
+          }else if(row.process_stage == PROCESS_STAGE_DOING){
+            return "执行中";
+          }else if(row.process_stage == PROCESS_STAGE_DONE){
+            return "待检查";
+          }
+        }
+        return "";
+      }
+    },
+    {
       title: '优先级',
       width: 100,
-      render: (row: IssueInfo) => {
+      render: (_,row: IssueInfo) => {
         return RenderSelectOpt(
           issueTypeIsTask(row)
             ? taskPriority[getExtraInfoType(row)?.priority || 0]
             : bugPriority[getExtraInfoType(row)?.priority || 0],
         );
       },
-    },
-    {
-      title: `阶段`,
-      dataIndex: 'state',
-      width: 100,
-      align: 'center',
-      render: (val: number) => renderState(val),
     },
     {
       title: '处理人',

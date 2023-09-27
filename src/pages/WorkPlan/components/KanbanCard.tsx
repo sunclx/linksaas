@@ -4,19 +4,122 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { useDrag } from 'react-dnd';
 import type { IssueInfo } from "@/api/project_issue";
-import { ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG, ISSUE_STATE_PLAN, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from "@/api/project_issue";
-import { Progress, Space, Tag } from "antd";
+import { ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG, ISSUE_STATE_PLAN, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE, assign_exec_user, assign_check_user } from "@/api/project_issue";
+import { Form, Modal, Progress, Select, Space, Tag } from "antd";
 import { ISSUE_STATE_COLOR_ENUM, bugLevel, bugPriority, taskPriority } from "@/utils/constant";
 import UserPhoto from "@/components/Portrait/UserPhoto";
-import { EditOutlined, ExportOutlined, WarningOutlined } from "@ant-design/icons";
+import { EditOutlined, ExportOutlined, PlusOutlined, WarningOutlined } from "@ant-design/icons";
 import { showShortNote } from "@/utils/short_note";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
 import { useHistory } from "react-router-dom";
 import s from "./KanbanCard.module.less";
 import classNames from "classnames";
+import { request } from "@/utils/request";
 
 export const DND_ITEM_TYPE = "issue";
+
+
+interface SelectMemberProps {
+    issue: IssueInfo;
+    onClose: () => void;
+}
+
+const SelectExecMemberModal = observer((props: SelectMemberProps) => {
+    const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
+    const memberStore = useStores('memberStore');
+    const spritStore = useStores('spritStore');
+
+    const [memberUserId, setMemberUserId] = useState<string | null>(null);
+
+    const assignExecUser = async () => {
+        if (memberUserId == null) {
+            return;
+        }
+        await request(assign_exec_user(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, memberUserId));
+        props.onClose();
+        spritStore.updateIssue(props.issue.issue_id);
+    };
+
+    return (
+        <Modal title={`设置${props.issue.issue_type == ISSUE_TYPE_TASK ? "任务" : "缺陷"}#${props.issue.issue_index} 执行人`} open
+            okText="设置" okButtonProps={{ disabled: memberUserId == null }}
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onClose();
+            }}
+            onOk={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                assignExecUser();
+            }}>
+            <Form>
+                <Form.Item label="执行人">
+                    <Select value={memberUserId} onChange={value => setMemberUserId(value)} allowClear>
+                        {memberStore.memberList.filter(item => item.member.member_user_id != props.issue.check_user_id).map(item => (
+                            <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>
+                                <Space>
+                                    <UserPhoto logoUri={item.member.logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
+                                    <span>{item.member.display_name}</span>
+                                </Space>
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+});
+
+const SelectCheckMemberModal = observer((props: SelectMemberProps) => {
+    const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
+    const memberStore = useStores('memberStore');
+    const spritStore = useStores('spritStore');
+
+    const [memberUserId, setMemberUserId] = useState<string | null>(null);
+
+    const assignExecUser = async () => {
+        if (memberUserId == null) {
+            return;
+        }
+        await request(assign_check_user(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, memberUserId));
+        props.onClose();
+        spritStore.updateIssue(props.issue.issue_id);
+    };
+
+    return (
+        <Modal title={`设置${props.issue.issue_type == ISSUE_TYPE_TASK ? "任务" : "缺陷"}#${props.issue.issue_index} 检查人`} open
+            okText="设置" okButtonProps={{ disabled: memberUserId == null }}
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onClose();
+            }}
+            onOk={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                assignExecUser();
+            }}>
+            <Form>
+                <Form.Item label="检查人">
+                    <Select value={memberUserId} onChange={value => setMemberUserId(value)} allowClear>
+                        {memberStore.memberList.filter(item => item.member.member_user_id != props.issue.exec_user_id).map(item => (
+                            <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>
+                                <Space>
+                                    <UserPhoto logoUri={item.member.logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
+                                    <span>{item.member.display_name}</span>
+                                </Space>
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+});
 
 interface KanbanCardProps {
     issue: IssueInfo;
@@ -55,6 +158,8 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
     }));
 
     const [hover, setHover] = useState(false);
+    const [showExecUserModal, setShowExecUserModal] = useState(false);
+    const [showCheckUserModal, setShowCheckUserModal] = useState(false);
 
     return (
         <div ref={drag} style={{
@@ -137,34 +242,52 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </div>
                     </div>
                 )}
-                <div className={s.tips}>
+                <div>
                     {props.issue.exec_user_id == "" && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea", color: "red" }}>
-                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置执行人</span>
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", color: "red", marginTop: "10px" }}>
+                            <span style={{ color: "red" }}>
+                                <WarningOutlined />&nbsp;未设置执行人
+                            </span>
+                            {props.issue.user_issue_perm.can_assign_exec_user && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowExecUserModal(true);
+                                }}>&nbsp;<PlusOutlined /></a>
+                            )}
                         </Tag>
                     )}
                     {props.issue.check_user_id == "" && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
-                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置检查人</span>
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span style={{ color: "red" }}>
+                                <WarningOutlined />&nbsp;未设置检查人
+                            </span>
+                            {props.issue.user_issue_perm.can_assign_check_user && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowCheckUserModal(true);
+                                }}>&nbsp;<PlusOutlined /></a>
+                            )}
                         </Tag>
                     )}
                     {props.issue.re_open_count > 0 && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                             <span style={{ color: "red" }}><WarningOutlined />&nbsp;重新打开次数&nbsp;{props.issue.re_open_count}</span>
                         </Tag>
                     )}
                     {props.issue.msg_count > 0 && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                             <span>&nbsp;评论数&nbsp;{props.issue.msg_count}</span>
                         </Tag>
                     )}
                     {props.issue.state == ISSUE_STATE_PROCESS && props.issue.estimate_minutes <= 0 && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                             <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置预估时间</span>
                         </Tag>
                     )}
                     {props.issue.issue_type == ISSUE_TYPE_TASK && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                             <span style={{ color: taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].color }}>
                                 优先级{taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].label}
                             </span>
@@ -172,10 +295,10 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                     )}
                     {props.issue.issue_type == ISSUE_TYPE_BUG && (
                         <>
-                            <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                            <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                                 <span style={{ color: bugPriority[props.issue.extra_info.ExtraBugInfo?.priority ?? 0].color }}>{bugPriority[props.issue.extra_info.ExtraBugInfo?.priority ?? 0].label}</span>
                             </Tag>
-                            <Tag style={{ border: "none", backgroundColor: "#fffaea" }}>
+                            <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                                 缺陷级别:&nbsp;
                                 <span style={{ color: bugLevel[props.issue.extra_info.ExtraBugInfo?.level ?? 0].color }}>{bugLevel[props.issue.extra_info.ExtraBugInfo?.level ?? 0].label}</span>
                             </Tag>
@@ -183,6 +306,12 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                     )}
                 </div>
             </div>
+            {showExecUserModal == true && (
+                <SelectExecMemberModal issue={props.issue} onClose={() => setShowExecUserModal(false)} />
+            )}
+            {showCheckUserModal == true && (
+                <SelectCheckMemberModal issue={props.issue} onClose={() => setShowCheckUserModal(false)} />
+            )}
         </div>
     );
 };

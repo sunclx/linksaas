@@ -14,6 +14,12 @@ export const ISSUE_STATE_CLOSE: ISSUE_STATE = 3; //关闭
 
 export const ISSUE_STATE_PROCESS_OR_CHECK: ISSUE_STATE = 99;//特殊状态
 
+export type PROCESS_STAGE = number;
+export const PROCESS_STAGE_TODO: PROCESS_STAGE = 0;
+export const PROCESS_STAGE_DOING: PROCESS_STAGE = 1;
+export const PROCESS_STAGE_DONE: PROCESS_STAGE = 2;
+
+
 export type TASK_PRIORITY = number;
 
 export const TASK_PRIORITY_LOW: TASK_PRIORITY = 0;
@@ -230,6 +236,7 @@ export type IssueInfo = {
   create_time: number;
   update_time: number;
   state: ISSUE_STATE;
+  process_stage: PROCESS_STAGE;
   create_user_id: string;
   exec_user_id: string;
   check_user_id: string;
@@ -685,6 +692,18 @@ export type UnwatchResponse = {
   err_msg: string;
 }
 
+export type UpdateProcessStageRequest = {
+  session_id: string;
+  project_id: string;
+  issue_id: string;
+  process_stage: PROCESS_STAGE;
+};
+export type UpdateProcessStageResponse = {
+  code: number;
+  err_msg: string;
+}
+
+
 //创建工单，根据类型区分是任务还是缺陷
 export async function create(request: CreateRequest): Promise<CreateResponse> {
   const cmd = 'plugin:project_issue_api|create';
@@ -825,6 +844,16 @@ export async function change_state(request: ChangeStateRequest): Promise<ChangeS
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ChangeStateResponse>(cmd, {
+    request,
+  });
+}
+
+//更新执行阶段
+export async function update_process_stage(request: UpdateProcessStageRequest): Promise<UpdateProcessStageResponse> {
+  const cmd = 'plugin:project_issue_api|update_process_stage';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+  return invoke<UpdateProcessStageResponse>(cmd, {
     request,
   });
 }

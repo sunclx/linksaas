@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import type { IssueInfo, ISSUE_TYPE } from "@/api/project_issue";
 import type { ColumnType } from 'antd/lib/table';
 import {
-    ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_BUG, ISSUE_TYPE_TASK,
+    ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, PROCESS_STAGE_DOING, PROCESS_STAGE_DONE, PROCESS_STAGE_TODO,
 } from "@/api/project_issue";
 import { useStores } from "@/hooks";
 import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from "@/stores/linkAux";
@@ -123,6 +123,54 @@ const IssueList = (props: IssueListProps) => {
             }
         },
         {
+            title: '状态',
+            dataIndex: 'state',
+            width: 100,
+            align: 'center',
+            render: (val: number, row: IssueInfo) => {
+                const v = issueState[val];
+                let tips = "";
+                if (row.user_issue_perm.next_state_list.length == 0) {
+                    if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
+                        (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
+                    )) {
+                        tips = "请等待同事更新状态"
+                    }
+                }
+                return (
+                    <div
+                        tabIndex={0}
+                        style={{
+                            background: `rgb(${getStateColor(val)} / 20%)`,
+                            width: '60px',
+                            borderRadius: '50px',
+                            textAlign: 'center',
+                            color: `rgb(${getStateColor(val)})`,
+                            margin: '0 auto',
+                        }}
+                    >
+                        <Tooltip title={tips}>{v.label}</Tooltip>
+                    </div>
+                );
+            },
+        },
+        {
+            title: "执行阶段",
+            width: 100,
+            render: (_, row: IssueInfo) => {
+                if (row.state == ISSUE_STATE_PROCESS) {
+                    if (row.process_stage == PROCESS_STAGE_TODO) {
+                        return "未开始";
+                    } else if (row.process_stage == PROCESS_STAGE_DOING) {
+                        return "执行中";
+                    } else if (row.process_stage == PROCESS_STAGE_DONE) {
+                        return "待检查";
+                    }
+                }
+                return "";
+            }
+        },
+        {
             title: `级别`,
             width: 100,
             align: 'left',
@@ -165,38 +213,6 @@ const IssueList = (props: IssueListProps) => {
             render: (_, record: IssueInfo) => <EditText editable={false} content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={false} onChange={async () => {
                 return false;
             }} />,
-        },
-        {
-            title: '当前阶段',
-            dataIndex: 'state',
-            width: 100,
-            align: 'center',
-            render: (val: number, row: IssueInfo) => {
-                const v = issueState[val];
-                let tips = "";
-                if (row.user_issue_perm.next_state_list.length == 0) {
-                    if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
-                        (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
-                    )) {
-                        tips = "请等待同事更新状态"
-                    }
-                }
-                return (
-                    <div
-                        tabIndex={0}
-                        style={{
-                            background: `rgb(${getStateColor(val)} / 20%)`,
-                            width: '60px',
-                            borderRadius: '50px',
-                            textAlign: 'center',
-                            color: `rgb(${getStateColor(val)})`,
-                            margin: '0 auto',
-                        }}
-                    >
-                        <Tooltip title={tips}>{v.label}</Tooltip>
-                    </div>
-                );
-            },
         },
         {
             title: '处理人',
@@ -281,7 +297,7 @@ const IssueList = (props: IssueListProps) => {
             dataIndex: 'start_time',
             width: 120,
             align: 'left',
-            render: (_, record) => <EditDate
+            render: (_, record: IssueInfo) => <EditDate
                 editable={false}
                 hasTimeStamp={record.has_start_time}
                 timeStamp={record.start_time}
@@ -294,7 +310,7 @@ const IssueList = (props: IssueListProps) => {
             dataIndex: 'end_time',
             width: 120,
             align: 'left',
-            render: (_, record) => <EditDate
+            render: (_, record: IssueInfo) => <EditDate
                 editable={false}
                 hasTimeStamp={record.has_end_time}
                 timeStamp={record.end_time}

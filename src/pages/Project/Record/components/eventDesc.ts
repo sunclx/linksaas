@@ -1927,6 +1927,32 @@ const issueEventList: EventDesc[] = [
         ]
     },
     {
+        id: "UpdateProcessStageEvent",
+        name: "修改工单执行阶段",
+        attrList: [
+            {
+                key: "issue_id",
+                desc: "工单ID",
+            },
+            {
+                key: "issue_type",
+                desc: "工单类型",
+            },
+            {
+                key: "title",
+                desc: "工单标题",
+            },
+            {
+                key: "old_stage",
+                desc: "旧工单执行阶段",
+            },
+            {
+                key: "new_stage",
+                desc: "新工单执行阶段",
+            },
+        ]
+    },
+    {
         id: "LinkSpritEvent",
         name: "关联工作计划",
         attrList: [

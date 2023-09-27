@@ -1,6 +1,6 @@
-import type { IssueInfo } from '@/api/project_issue';
+import type { IssueInfo, PROCESS_STAGE } from '@/api/project_issue';
 import {
-  ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG,
+  ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG, PROCESS_STAGE_TODO, PROCESS_STAGE_DOING, PROCESS_STAGE_DONE,
 } from '@/api/project_issue';
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask } from '@/utils/utils';
@@ -21,7 +21,7 @@ import {
   cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes,
   cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser,
   updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser,
-  updateExtraInfo, updateRemainMinutes, updateStartTime, updateTitle
+  updateExtraInfo, updateProcessStage, updateRemainMinutes, updateStartTime, updateTitle
 } from './utils';
 import { EditDate } from '@/components/EditCell/EditDate';
 import type { TagInfo } from "@/api/project";
@@ -211,7 +211,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         }} showEditIcon={true} />,
     },
     {
-      title: `${getIsTask(pathname) ? '任务' : '当前'}阶段`,
+      title: `${getIsTask(pathname) ? '任务' : '当前'}状态`,
       dataIndex: 'state',
       width: 100,
       align: 'center',
@@ -252,6 +252,40 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
           </div>
         );
       },
+    },
+    {
+      title: "执行阶段",
+      width: 100,
+      align: 'left',
+      dataIndex: "process_stage",
+      render: (_, record: IssueInfo) => (
+        <>
+          {record.state == ISSUE_STATE_PROCESS && (
+            <EditSelect editable={record.exec_user_id == userStore.userInfo.userId}
+              curValue={record.process_stage}
+              itemList={[
+                {
+                  value: PROCESS_STAGE_TODO,
+                  label: "未开始",
+                  color: "black",
+                },
+                {
+                  value: PROCESS_STAGE_DOING,
+                  label: "执行中",
+                  color: "black",
+                },
+                {
+                  value: PROCESS_STAGE_DONE,
+                  label: "待检查",
+                  color: "black",
+                },
+              ]} showEditIcon={true} allowClear={false}
+              onChange={async value => {
+                return await updateProcessStage(userStore.sessionId, record.project_id, record.issue_id, value as PROCESS_STAGE);
+              }} />
+          )}
+        </>
+      ),
     },
     {
       title: `级别`,

@@ -302,6 +302,33 @@ async fn change_state<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_process_stage<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateProcessStageRequest,
+) -> Result<UpdateProcessStageResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.update_process_stage(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_process_stage_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_process_stage".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -1351,6 +1378,7 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 assign_exec_user,
                 assign_check_user,
                 change_state,
+                update_process_stage,
                 list,
                 list_id,
                 list_by_id,

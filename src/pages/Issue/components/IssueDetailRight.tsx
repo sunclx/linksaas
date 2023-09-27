@@ -1,5 +1,5 @@
-import type { IssueInfo } from "@/api/project_issue";
-import { ISSUE_STATE_PROCESS } from "@/api/project_issue";
+import type { IssueInfo, PROCESS_STAGE } from "@/api/project_issue";
+import { ISSUE_STATE_PROCESS, PROCESS_STAGE_DOING, PROCESS_STAGE_DONE, PROCESS_STAGE_TODO } from "@/api/project_issue";
 
 import { getIssueText, getIsTask, timeToDateString } from "@/utils/utils";
 import React, { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ import type { ListEventByRefRequest } from '@/api/events';
 import { request } from '@/utils/request';
 import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
-import { cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateRemainMinutes, updateStartTime } from "./utils";
+import { cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateProcessStage, updateRemainMinutes, updateStartTime } from "./utils";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
@@ -62,7 +62,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
         <div className={s.RightCom}>
             <div className={s.basic_info_wrap}>
                 <div className={s.basic_info}>
-                    <span>当前阶段</span>
+                    <span>当前状态</span>
                     <div
                         tabIndex={0}
                         style={{
@@ -86,6 +86,35 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                         {props.issue.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
                     </div>
                 </div>
+                {props.issue.state == ISSUE_STATE_PROCESS && (
+                    <div className={s.basic_info}>
+                        <span>执行阶段</span>
+                        <div>
+                            <EditSelect
+                                allowClear={false}
+                                editable={userStore.userInfo.userId == props.issue.exec_user_id}
+                                curValue={props.issue.process_stage}
+                                itemList={[
+                                    {
+                                        value: PROCESS_STAGE_TODO,
+                                        label: "未开始",
+                                        color: "black",
+                                    },
+                                    {
+                                        value: PROCESS_STAGE_DOING,
+                                        label: "执行中",
+                                        color: "black",
+                                    },
+                                    {
+                                        value: PROCESS_STAGE_DONE,
+                                        label: "待检查",
+                                        color: "black",
+                                    },
+                                ]} onChange={async (value) => {
+                                    return await updateProcessStage(userStore.sessionId, projectStore.curProjectId, props.issue.issue_id, value as PROCESS_STAGE);
+                                }} showEditIcon={true} /></div>
+                    </div>
+                )}
                 {!getIsTask(pathname) && (
                     <>
                         <div className={s.basic_info}>
@@ -351,7 +380,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
             <div
                 className={s.time_line_wrap}
                 style={{
-                    height: `${getIsTask(pathname) ? 'calc(100% - 360px)' : 'calc(100% - 420px)'}`,
+                    height: `${getIsTask(pathname) ? 'calc(100% - 390px)' : 'calc(100% - 450px)'}`,
                 }}
             >
                 <h2>动态</h2>
