@@ -108,9 +108,9 @@ const ProcessIssueColumn = observer((props: ProcessPanelProps) => {
         drop: (item: IssueInfo) => setProcess(item),
         canDrop: (item: IssueInfo) => {
             if (item.exec_user_id != "") {
-                if (item.user_issue_perm.next_state_list.includes(ISSUE_STATE_PROCESS)) {
-                    return true;
-                } else if (item.state == ISSUE_STATE_PROCESS && item.exec_user_id == userStore.userInfo.userId) {
+                if (item.state == ISSUE_STATE_PROCESS && item.exec_user_id == userStore.userInfo.userId) {
+                    return true
+                } else if (item.user_issue_perm.next_state_list.includes(ISSUE_STATE_PROCESS) && props.stage == PROCESS_STAGE_TODO) {
                     return true;
                 }
             }
@@ -237,7 +237,7 @@ const CloseIssueColumn = observer((props: KanbanPanelProps) => {
 });
 
 const KanbanPanel = (props: KanbanPanelProps) => {
-    
+
     const spritStore = useStores('spritStore');
 
     return (
