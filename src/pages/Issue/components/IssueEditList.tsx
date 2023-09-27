@@ -211,7 +211,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         }} showEditIcon={true} />,
     },
     {
-      title: `${getIsTask(pathname) ? '任务' : '当前'}阶段`,
+      title: `${getIsTask(pathname) ? '任务' : '当前'}状态`,
       dataIndex: 'state',
       width: 100,
       align: 'center',
@@ -276,7 +276,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
                 },
                 {
                   value: PROCESS_STAGE_DONE,
-                  label: "已完成",
+                  label: "待检查",
                   color: "black",
                 },
               ]} showEditIcon={true} allowClear={false}
