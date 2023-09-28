@@ -10,6 +10,9 @@ import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_D
 import { LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
+import type { ItemType } from "antd/lib/menu/hooks/useItems";
+import { request } from "@/utils/request";
+import { update_setting } from '@/api/project';
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
@@ -39,7 +42,32 @@ const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
 const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
 
+const MENU_KEY_LAYOUT_PREFIX = "layout.";
+const MENU_KEY_LAYOUT_MAIN_CHAT = "layout.main.chat";
+const MENU_KEY_LAYOUT_MAIN_WORK_PLAN = "layout.main.workplan";
+const MENU_KEY_LAYOUT_MAIN_KB = "layout.main.kb";
+const MENU_KEY_LAYOUT_LEFT_WORK_PLAN = "layout.left.workplan";
+const MENU_KEY_LAYOUT_LEFT_DOC = "layout.left.doc";
+const MENU_KEY_LAYOUT_LEFT_CHANNEL = "layout.left.channel";
+const MENU_KEY_LAYOUT_TOOLBAR_APPRAISE = "layout.toolbar.appraise";
+const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
+const MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO = "layout.toolbar.dataanno";
+const MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT = "layout.toolbar.extev";
+const MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT = "layout.toolbar.codecomment";
+const MENU_KEY_LAYOUT_TOOLBAR_APP_STORE = "layout.toolbar.appstore";
+const MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO = "layout.overview.prjinfo";
+const MENU_KEY_LAYOUT_OVERVIEW_BULLETIN = "layout.overview.bulletin";
+const MENU_KEY_LAYOUT_OVERVIEW_GOAL = "layout.overview.goal";
+const MENU_KEY_LAYOUT_OVERVIEW_AWARD = "layout.overview.award";
+const MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK = "layout.overview.watchtask";
+const MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG = "layout.overview.watchbug";
+const MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK = "layout.overview.todotask";
+const MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG = "layout.overview.todobug";
+const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
+
+
 const ProjectQuickAccess = () => {
+    const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
     const channelStore = useStores('channelStore');
     const linkAuxStore = useStores('linkAuxStore');
@@ -52,8 +80,129 @@ const ProjectQuickAccess = () => {
 
     const [items, setItems] = useState<MenuProps['items']>([]);
 
+    const calcLayoutItems = (): ItemType => {
+        const retItem = {
+            key: "layout",
+            label: "布局设置",
+            children: [
+                {
+                    key: "layout.main",
+                    label: "主面板",
+                    children: [
+                        {
+                            key: MENU_KEY_LAYOUT_MAIN_CHAT,
+                            label: `${projectStore.curProject?.setting.disable_chat == true ? "打开" : "关闭"}沟通`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_MAIN_WORK_PLAN,
+                            label: `${projectStore.curProject?.setting.disable_work_plan == true ? "打开" : "关闭"}工作计划`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_MAIN_KB,
+                            label: `${projectStore.curProject?.setting.disable_kb == true ? "打开" : "关闭"}知识库`
+                        },
+                    ],
+                },
+                {
+                    key: "layout.left",
+                    label: "左侧项目列表",
+                    children: [
+                        {
+                            key: MENU_KEY_LAYOUT_LEFT_WORK_PLAN,
+                            label: `${projectStore.curProject?.setting.hide_watch_walk_plan == true ? "显示" : "隐藏"}工作计划关注列表`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_LEFT_DOC,
+                            label: `${projectStore.curProject?.setting.hide_watch_doc == true ? "显示" : "隐藏"}文档关注列表`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_LEFT_CHANNEL,
+                            label: `${projectStore.curProject?.setting.hide_watch_channel == true ? "显示" : "隐藏"}频道关注列表`
+                        },
+                    ],
+                },
+                {
+                    key: "layout.toolbar",
+                    label: "右侧工具栏",
+                    children: [
+                        {
+                            key: MENU_KEY_LAYOUT_TOOLBAR_APPRAISE,
+                            label: `${projectStore.curProject?.setting.disable_member_appraise == true ? "打开" : "关闭"}成员互评`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION,
+                            label: `${projectStore.curProject?.setting.disable_api_collection == true ? "打开" : "关闭"}接口集合`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO,
+                            label: `${projectStore.curProject?.setting.disable_data_anno == true ? "打开" : "关闭"}数据标注`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT,
+                            label: `${projectStore.curProject?.setting.disable_ext_event == true ? "打开" : "关闭"}外部事件接入`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT,
+                            label: `${projectStore.curProject?.setting.disable_code_comment == true ? "打开" : "关闭"}代码评论`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_TOOLBAR_APP_STORE,
+                            label: `${projectStore.curProject?.setting.disable_app_store == true ? "打开" : "关闭"}应用市场`
+                        },
+                    ],
+                },
+                {
+                    key: "layout.overview",
+                    label: "项目概览",
+                    children: [
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO,
+                            label: `${projectStore.curProject?.setting.hide_project_info == true ? "显示" : "隐藏"}项目信息`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_BULLETIN,
+                            label: `${projectStore.curProject?.setting.hide_bulletin == true ? "显示" : "隐藏"}项目公告`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_GOAL,
+                            label: `${projectStore.curProject?.setting.hide_user_goal == true ? "显示" : "隐藏"}成员目标`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_AWARD,
+                            label: `${projectStore.curProject?.setting.hide_user_award == true ? "显示" : "隐藏"}成员贡献`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK,
+                            label: `${projectStore.curProject?.setting.hide_watch_task == true ? "显示" : "隐藏"}关注任务`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG,
+                            label: `${projectStore.curProject?.setting.hide_watch_bug == true ? "显示" : "隐藏"}关注缺陷`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK,
+                            label: `${projectStore.curProject?.setting.hide_my_todo_task == true ? "显示" : "隐藏"}待处理任务`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG,
+                            label: `${projectStore.curProject?.setting.hide_my_todo_bug == true ? "显示" : "隐藏"}待处理缺陷`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO,
+                            label: `${projectStore.curProject?.setting.hide_extra_info == true ? "显示" : "隐藏"}项目其他信息`
+                        },
+                    ],
+                }
+            ],
+        };
+        return retItem;
+    }
+
     const calcItems = () => {
         const tmpItems: MenuProps['items'] = [];
+        if (projectStore.isAdmin) {
+            tmpItems.push(calcLayoutItems());
+        }
         const memberItem = {
             key: "member",
             label: "成员",
@@ -276,6 +425,63 @@ const ProjectQuickAccess = () => {
         });
     };
 
+    const adjustLayout = async (key: string) => {
+        if (projectStore.curProject == undefined) {
+            return;
+        }
+        const newSetting = { ...projectStore.curProject.setting };
+        if (key == MENU_KEY_LAYOUT_MAIN_CHAT) {
+            newSetting.disable_chat = !projectStore.curProject.setting.disable_chat;
+        } else if (key == MENU_KEY_LAYOUT_MAIN_WORK_PLAN) {
+            newSetting.disable_work_plan = !projectStore.curProject.setting.disable_work_plan;
+        } else if (key == MENU_KEY_LAYOUT_MAIN_KB) {
+            newSetting.disable_kb = !projectStore.curProject.setting.disable_kb;
+        } else if (key == MENU_KEY_LAYOUT_LEFT_WORK_PLAN) {
+            newSetting.hide_watch_walk_plan = !projectStore.curProject.setting.hide_watch_walk_plan;
+        } else if (key == MENU_KEY_LAYOUT_LEFT_DOC) {
+            newSetting.hide_watch_doc = !projectStore.curProject.setting.hide_watch_doc;
+        } else if (key == MENU_KEY_LAYOUT_LEFT_CHANNEL) {
+            newSetting.hide_watch_channel = !projectStore.curProject.setting.hide_watch_channel;
+        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_APPRAISE) {
+            newSetting.disable_member_appraise = !projectStore.curProject.setting.disable_member_appraise;
+        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION) {
+            newSetting.disable_api_collection = !projectStore.curProject.setting.disable_api_collection;
+        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO) {
+            newSetting.disable_data_anno = !projectStore.curProject.setting.disable_data_anno;
+        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT) {
+            newSetting.disable_ext_event = !projectStore.curProject.setting.disable_ext_event;
+        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT) {
+            newSetting.disable_code_comment = !projectStore.curProject.setting.disable_code_comment;
+        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_APP_STORE) {
+            newSetting.disable_app_store = !projectStore.curProject.setting.disable_app_store;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO) {
+            newSetting.hide_project_info = !projectStore.curProject.setting.hide_project_info;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_BULLETIN) {
+            newSetting.hide_bulletin = !projectStore.curProject.setting.hide_bulletin;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_GOAL) {
+            newSetting.hide_user_goal = !projectStore.curProject.setting.hide_user_goal;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_AWARD) {
+            newSetting.hide_user_award = !projectStore.curProject.setting.hide_user_award;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK) {
+            newSetting.hide_watch_task = !projectStore.curProject.setting.hide_watch_task;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG) {
+            newSetting.hide_watch_bug = !projectStore.curProject.setting.hide_watch_bug;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK) {
+            newSetting.hide_my_todo_task = !projectStore.curProject.setting.hide_my_todo_task;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG) {
+            newSetting.hide_my_todo_bug = !projectStore.curProject.setting.hide_my_todo_bug;
+        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO) {
+            newSetting.hide_extra_info = !projectStore.curProject.setting.hide_extra_info;
+        }
+
+        await request(update_setting({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            setting: newSetting,
+        }));
+        await projectStore.updateProject(projectStore.curProjectId);
+    };
+
     const onMenuClick = async (info: MenuInfo) => {
         switch (info.key) {
             case MENU_KEY_SHOW_INVITE_MEMBER:
@@ -371,6 +577,10 @@ const ProjectQuickAccess = () => {
             case MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO:
                 linkAuxStore.goToDataAnnoList(history);
                 break;
+            default:
+                if (info.key.startsWith(MENU_KEY_LAYOUT_PREFIX)) {
+                    adjustLayout(info.key);
+                }
         }
         if (info.key.startsWith(MENU_KEY_MEMBER_PREFIX)) {
             const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
@@ -384,9 +594,10 @@ const ProjectQuickAccess = () => {
     useEffect(() => {
         calcItems();
     }, [projectStore.curProject?.setting, projectStore.curProjectId, memberStore.memberList, channelStore.channelList]);
+
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
-            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 0px" }} title="项目快捷菜单">
+            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 20px", color: "orange", fontSize: "18px" }} title="项目快捷菜单">
                 <MenuOutlined />
             </a>
         </Dropdown >

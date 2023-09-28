@@ -13,6 +13,7 @@ import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
 import ProjectUseTip from './ProjectUseTip';
 import ProjectTipList from './ProjectTipList';
+import ProjectQuickAccess from '../TopNav/ProjectQuickAccess';
 
 const { Header } = Layout;
 
@@ -91,6 +92,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     <div>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
+        {projectStore.curProjectId != "" && appStore.simpleMode == false && (<ProjectQuickAccess />)}
         <div className={style.l}>
           {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
         </div>
