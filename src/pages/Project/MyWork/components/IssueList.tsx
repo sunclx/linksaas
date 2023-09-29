@@ -324,7 +324,7 @@ const IssueList = (props: IssueListProps) => {
     }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
-        <Table rowKey="issue_id" dataSource={props.issueList} style={{ height: "300px", overflowY: "scroll" }}
+        <Table rowKey="issue_id" dataSource={props.issueList} style={{ minHeight: "200px" }}
             columns={columnsList.filter(item => (item.issueType == undefined || item.issueType == props.issueType))}
             pagination={{
                 current: props.curPage + 1,
