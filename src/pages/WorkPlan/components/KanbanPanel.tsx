@@ -43,6 +43,18 @@ const filterIssueList = (taskList: IssueInfo[], bugList: IssueInfo[], state: ISS
     return retList;
 }
 
+function getBackgroundColor(isOver: boolean, canDrop: boolean): string {
+    if (isOver) {
+        if (canDrop) {
+            return "rgb(0 255 0 / 25%)";
+        } else {
+            return "rgb(255 0 0 / 25%)";
+        }
+    } else {
+        return "#e4e4e8";
+    }
+}
+
 interface KanbanPanelProps {
     memberId: string;
 }
@@ -57,15 +69,24 @@ const PlanIssueColumn = observer((props: KanbanPanelProps) => {
     const spritStore = useStores('spritStore');
     const [issueList, setIssueList] = useState<IssueInfo[]>();
 
+    const [{ isOver }, drop] = useDrop(() => ({
+        accept: DND_ITEM_TYPE,
+        drop: () => { },
+        canDrop: () => false,
+        collect: monitor => ({
+            isOver: !!monitor.isOver(),
+        }),
+    }));
+
     useEffect(() => {
         setIssueList(filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_PLAN, props.memberId));
     }, [spritStore.taskList, spritStore.bugList, props.memberId]);
 
     return (
-        <div className={s.kanban_column}>
+        <div className={s.kanban_column} ref={drop}>
             <Card title={`规划中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.规划中颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: "#e4e4e8", overflow: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, false), overflow: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} />
                 ))}
@@ -103,14 +124,14 @@ const ProcessIssueColumn = observer((props: ProcessPanelProps) => {
         await spritStore.updateIssue(issue.issue_id);
     };
 
-    const [{ isOver }, drop] = useDrop(() => ({
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: DND_ITEM_TYPE,
         drop: (item: IssueInfo) => setProcess(item),
         canDrop: (item: IssueInfo) => {
             if (item.exec_user_id != "") {
-                if (item.user_issue_perm.next_state_list.includes(ISSUE_STATE_PROCESS)) {
-                    return true;
-                } else if (item.state == ISSUE_STATE_PROCESS && item.exec_user_id == userStore.userInfo.userId) {
+                if (item.state == ISSUE_STATE_PROCESS && item.exec_user_id == userStore.userInfo.userId) {
+                    return true
+                } else if (item.user_issue_perm.next_state_list.includes(ISSUE_STATE_PROCESS) && props.stage == PROCESS_STAGE_TODO) {
                     return true;
                 }
             }
@@ -118,6 +139,7 @@ const ProcessIssueColumn = observer((props: ProcessPanelProps) => {
         },
         collect: monitor => ({
             isOver: !!monitor.isOver(),
+            canDrop: !!monitor.canDrop(),
         }),
     }));
 
@@ -138,9 +160,9 @@ const ProcessIssueColumn = observer((props: ProcessPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`${getPanelName()}(${issueList?.length ?? 0})`} style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`${getPanelName()}(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.处理颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: "#e4e4e8", overflowY: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflowY: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} />
                 ))}
@@ -168,12 +190,13 @@ const CheckIssueColumn = observer((props: KanbanPanelProps) => {
         await spritStore.updateIssue(issue.issue_id);
     };
 
-    const [{ isOver }, drop] = useDrop(() => ({
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: DND_ITEM_TYPE,
         drop: (item: IssueInfo) => setCheck(item),
         canDrop: (item: IssueInfo) => item.check_user_id != "" && item.user_issue_perm.next_state_list.includes(ISSUE_STATE_CHECK),
         collect: monitor => ({
             isOver: !!monitor.isOver(),
+            canDrop: !!monitor.canDrop(),
         }),
     }));
 
@@ -183,9 +206,9 @@ const CheckIssueColumn = observer((props: KanbanPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`检查中(${issueList?.length ?? 0})`} style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`检查中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.验收颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: "#e4e4e8", overflow: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} />
                 ))}
@@ -210,12 +233,13 @@ const CloseIssueColumn = observer((props: KanbanPanelProps) => {
         await spritStore.updateIssue(issue.issue_id);
     };
 
-    const [{ isOver }, drop] = useDrop(() => ({
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: DND_ITEM_TYPE,
         drop: (item: IssueInfo) => setClose(item),
         canDrop: (item: IssueInfo) => item.user_issue_perm.next_state_list.includes(ISSUE_STATE_CLOSE),
         collect: monitor => ({
             isOver: !!monitor.isOver(),
+            canDrop: !!monitor.canDrop(),
         }),
     }));
 
@@ -225,9 +249,9 @@ const CloseIssueColumn = observer((props: KanbanPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`完成(${issueList?.length ?? 0})`} style={{ backgroundColor: isOver ? "#e4e4e8" : "inherit", border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`完成(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.关闭颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: "#e4e4e8", overflow: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} />
                 ))}
@@ -237,7 +261,7 @@ const CloseIssueColumn = observer((props: KanbanPanelProps) => {
 });
 
 const KanbanPanel = (props: KanbanPanelProps) => {
-    
+
     const spritStore = useStores('spritStore');
 
     return (
