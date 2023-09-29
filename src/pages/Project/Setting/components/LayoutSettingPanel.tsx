@@ -215,6 +215,20 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                         }}>关闭应用市场入口</Checkbox>
                     </Space>
                 </Form.Item>
+                <Form.Item label="我的工作">
+                    <Space direction="vertical">
+                        <Checkbox checked={hideWatchTask} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchTask(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注任务</Checkbox>
+                        <Checkbox checked={hideWatchBug} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchBug(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注缺陷</Checkbox>
+                    </Space>
+                </Form.Item>
                 <Form.Item label="项目概览">
                     <Space direction="vertical">
                         <Checkbox checked={hideProjectInfo} onChange={e => {
@@ -228,16 +242,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setHasChange(true);
                         }}>隐藏项目公告</Checkbox>
 
-                        <Checkbox checked={hideWatchTask} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchTask(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注任务</Checkbox>
-                        <Checkbox checked={hideWatchBug} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchBug(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注缺陷</Checkbox>
+
 
                         <Checkbox checked={hideExtraInfo} onChange={e => {
                             e.stopPropagation();

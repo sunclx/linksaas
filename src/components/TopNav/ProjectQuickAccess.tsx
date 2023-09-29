@@ -57,8 +57,8 @@ const MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT = "layout.toolbar.codecomment";
 const MENU_KEY_LAYOUT_TOOLBAR_APP_STORE = "layout.toolbar.appstore";
 const MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO = "layout.overview.prjinfo";
 const MENU_KEY_LAYOUT_OVERVIEW_BULLETIN = "layout.overview.bulletin";
-const MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK = "layout.overview.watchtask";
-const MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG = "layout.overview.watchbug";
+const MENU_KEY_LAYOUT_MYWORK_WATCH_TASK = "layout.mywork.watchtask";
+const MENU_KEY_LAYOUT_MYWORK_WATCH_BUG = "layout.mywork.watchbug";
 const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 
 
@@ -148,6 +148,20 @@ const ProjectQuickAccess = () => {
                     ],
                 },
                 {
+                    key: "layout.mywork",
+                    label: "我的工作",
+                    children: [
+                        {
+                            key: MENU_KEY_LAYOUT_MYWORK_WATCH_TASK,
+                            label: `${projectStore.curProject?.setting.hide_watch_task == true ? "显示" : "隐藏"}关注任务`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_MYWORK_WATCH_BUG,
+                            label: `${projectStore.curProject?.setting.hide_watch_bug == true ? "显示" : "隐藏"}关注缺陷`
+                        },
+                    ]
+                },
+                {
                     key: "layout.overview",
                     label: "项目概览",
                     children: [
@@ -158,14 +172,6 @@ const ProjectQuickAccess = () => {
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_BULLETIN,
                             label: `${projectStore.curProject?.setting.hide_bulletin == true ? "显示" : "隐藏"}项目公告`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK,
-                            label: `${projectStore.curProject?.setting.hide_watch_task == true ? "显示" : "隐藏"}关注任务`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG,
-                            label: `${projectStore.curProject?.setting.hide_watch_bug == true ? "显示" : "隐藏"}关注缺陷`
                         },
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO,
@@ -438,9 +444,9 @@ const ProjectQuickAccess = () => {
             newSetting.hide_project_info = !projectStore.curProject.setting.hide_project_info;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_BULLETIN) {
             newSetting.hide_bulletin = !projectStore.curProject.setting.hide_bulletin;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK) {
+        } else if (key == MENU_KEY_LAYOUT_MYWORK_WATCH_TASK) {
             newSetting.hide_watch_task = !projectStore.curProject.setting.hide_watch_task;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG) {
+        } else if (key == MENU_KEY_LAYOUT_MYWORK_WATCH_BUG) {
             newSetting.hide_watch_bug = !projectStore.curProject.setting.hide_watch_bug;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO) {
             newSetting.hide_extra_info = !projectStore.curProject.setting.hide_extra_info;
