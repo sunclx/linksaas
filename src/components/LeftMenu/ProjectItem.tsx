@@ -3,7 +3,7 @@ import cls from './index.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge, Input, Popover, message } from "antd";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_STATE_OPT_ENUM } from "@/utils/constant";
 import { FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
@@ -203,7 +203,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                                 } else if (!item.setting.disable_kb) {
                                     history.push(APP_PROJECT_KB_DOC_PATH);
                                 } else if (item.setting.disable_chat && item.setting.disable_kb && item.setting.disable_work_plan) {
-                                    history.push(APP_PROJECT_OVERVIEW_PATH);
+                                    history.push(APP_PROJECT_MY_WORK_PATH);
                                 }
                             });
                         });
@@ -217,7 +217,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                         } else if (!item.setting.disable_kb) {
                             history.push(APP_PROJECT_KB_DOC_PATH);
                         } else if (item.setting.disable_chat && item.setting.disable_kb && item.setting.disable_work_plan) {
-                            history.push(APP_PROJECT_OVERVIEW_PATH);
+                            history.push(APP_PROJECT_MY_WORK_PATH);
                         }
                     });
                 }}><FolderFilled style={{ color: item.project_id == projectStore.curProjectId ? "white" : "inherit" }} />&nbsp;{item.basic_info.project_name} </span>
