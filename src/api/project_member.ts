@@ -99,25 +99,12 @@ type SetMemberRoleResponse = {
   err_msg: string;
 };
 
-export type Okr = {
-  objective: string;
-  key_result_list: string[];
-};
-
-export type BasicGoalInfo = {
-  from_time: number;
-  to_time: number;
-  okr_list: Okr[];
-};
-
 export type MemberInfo = {
   project_id: string;
   member_user_id: string;
   role_id: string;
   role_name: string;
   last_event_id: string;
-  last_goal_id: string;
-  last_goal_info: BasicGoalInfo;
   create_time: number;
   update_time: number;
   display_name: string;
@@ -127,18 +114,6 @@ export type MemberInfo = {
   is_project_owner: boolean;
   can_admin: boolean;
   reminder_channel_id: string;
-};
-
-export type GoalInfo = {
-  goal_id: string;
-  project_id: string;
-  member_user_id: string;
-  basic_info: BasicGoalInfo;
-  create_time: number;
-  update_time: number;
-  member_display_name: string;
-  member_logo_uri: string;
-  lock: boolean;
 };
 
 
@@ -152,78 +127,6 @@ type GetMemberResponse = {
   code: number;
   err_msg: string;
   member: MemberInfo;
-};
-
-export type CreateGoalRequest = {
-  session_id: string;
-  project_id: string;
-  basic_info: BasicGoalInfo;
-};
-
-export type CreateGoalResponse = {
-  code: number;
-  err_msg: string;
-  goal_id: string;
-};
-
-export type UpdateGoalRequest = {
-  session_id: string;
-  project_id: string;
-  goal_id: string;
-  basic_info: BasicGoalInfo;
-};
-
-export type UpdateGoalResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type ListGoalRequest = {
-  session_id: string;
-  project_id: string;
-  member_user_id: string;
-  offset: number;
-  limit: number;
-};
-
-export type ListGoalResponse = {
-  code: number;
-  err_msg: string;
-  total_count: number;
-  goal_list: GoalInfo[];
-}
-
-export type RemoveGoalRequest = {
-  session_id: string;
-  project_id: string;
-  goal_id: string;
-};
-
-export type RemoveGoalResponse = {
-  code: number;
-  err_msg: string;
-}
-
-export type LockGoalRequest = {
-  session_id: string;
-  project_id: string;
-  goal_id: string;
-};
-
-export type LockGoalResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type UnlockGoalRequest = {
-  session_id: string;
-  project_id: string;
-  goal_id: string;
-};
-
-export type UnlockGoalResponse = {
-  code: number;
-  err_msg: string;
 };
 
 //生成加入项目邀请码（ttl单位 小时）
@@ -444,66 +347,6 @@ export async function get_member(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<GetMemberResponse>(cmd, {
-    request,
-  });
-}
-
-//创建目标
-export async function create_goal(request: CreateGoalRequest): Promise<CreateGoalResponse> {
-  const cmd = 'plugin:project_member_api|create_goal';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<CreateGoalResponse>(cmd, {
-    request,
-  });
-}
-
-//更新目标
-export async function update_goal(request: UpdateGoalRequest): Promise<UpdateGoalResponse> {
-  const cmd = 'plugin:project_member_api|update_goal';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<UpdateGoalResponse>(cmd, {
-    request,
-  });
-}
-
-//列出目标
-export async function list_goal(request: ListGoalRequest): Promise<ListGoalResponse> {
-  const cmd = 'plugin:project_member_api|list_goal';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<ListGoalResponse>(cmd, {
-    request,
-  });
-}
-
-//删除目标
-export async function remove_goal(request: RemoveGoalRequest): Promise<RemoveGoalResponse> {
-  const cmd = 'plugin:project_member_api|remove_goal';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<RemoveGoalResponse>(cmd, {
-    request,
-  });
-}
-
-//锁定目标
-export async function lock_goal(request: LockGoalRequest): Promise<LockGoalResponse> {
-  const cmd = 'plugin:project_member_api|lock_goal';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<LockGoalResponse>(cmd, {
-    request,
-  });
-}
-
-//解锁目标
-export async function unlock_goal(request: UnlockGoalRequest): Promise<UnlockGoalResponse> {
-  const cmd = 'plugin:project_member_api|unlock_goal';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<UnlockGoalResponse>(cmd, {
     request,
   });
 }

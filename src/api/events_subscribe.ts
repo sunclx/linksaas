@@ -33,11 +33,6 @@ export type ProjectEvCfg = {
     remove_appraise: boolean;
     add_project_app: boolean;
     remove_project_app: boolean;
-    create_goal: boolean;
-    update_goal: boolean;
-    remove_goal: boolean;
-    lock_goal: boolean;
-    unlock_goal: boolean;
     change_owner: boolean;
     create_subscribe: boolean;
     update_subscribe: boolean;

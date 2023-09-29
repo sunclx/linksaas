@@ -57,8 +57,6 @@ const MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT = "layout.toolbar.codecomment";
 const MENU_KEY_LAYOUT_TOOLBAR_APP_STORE = "layout.toolbar.appstore";
 const MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO = "layout.overview.prjinfo";
 const MENU_KEY_LAYOUT_OVERVIEW_BULLETIN = "layout.overview.bulletin";
-const MENU_KEY_LAYOUT_OVERVIEW_GOAL = "layout.overview.goal";
-const MENU_KEY_LAYOUT_OVERVIEW_AWARD = "layout.overview.award";
 const MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK = "layout.overview.watchtask";
 const MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG = "layout.overview.watchbug";
 const MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK = "layout.overview.todotask";
@@ -162,14 +160,6 @@ const ProjectQuickAccess = () => {
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_BULLETIN,
                             label: `${projectStore.curProject?.setting.hide_bulletin == true ? "显示" : "隐藏"}项目公告`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_GOAL,
-                            label: `${projectStore.curProject?.setting.hide_user_goal == true ? "显示" : "隐藏"}成员目标`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_AWARD,
-                            label: `${projectStore.curProject?.setting.hide_user_award == true ? "显示" : "隐藏"}成员贡献`
                         },
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK,
@@ -458,10 +448,6 @@ const ProjectQuickAccess = () => {
             newSetting.hide_project_info = !projectStore.curProject.setting.hide_project_info;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_BULLETIN) {
             newSetting.hide_bulletin = !projectStore.curProject.setting.hide_bulletin;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_GOAL) {
-            newSetting.hide_user_goal = !projectStore.curProject.setting.hide_user_goal;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_AWARD) {
-            newSetting.hide_user_award = !projectStore.curProject.setting.hide_user_award;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK) {
             newSetting.hide_watch_task = !projectStore.curProject.setting.hide_watch_task;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG) {

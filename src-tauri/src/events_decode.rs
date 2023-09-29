@@ -32,11 +32,6 @@ pub mod project {
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
         AddProjectAppEvent(events_project::AddProjectAppEvent),
         RemoveProjectAppEvent(events_project::RemoveProjectAppEvent),
-        CreateGoalEvent(events_project::CreateGoalEvent),
-        UpdateGoalEvent(events_project::UpdateGoalEvent),
-        RemoveGoalEvent(events_project::RemoveGoalEvent),
-        LockGoalEvent(events_project::LockGoalEvent),
-        UnlockGoalEvent(events_project::UnlockGoalEvent),
         ChangeOwnerEvent(events_project::ChangeOwnerEvent),
         CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
         UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
@@ -155,26 +150,6 @@ pub mod project {
         } else if data.type_url == events_project::RemoveProjectAppEvent::type_url() {
             if let Ok(ev) = events_project::RemoveProjectAppEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveProjectAppEvent(ev));
-            }
-        } else if data.type_url == events_project::CreateGoalEvent::type_url() {
-            if let Ok(ev) = events_project::CreateGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::UpdateGoalEvent::type_url() {
-            if let Ok(ev) = events_project::UpdateGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveGoalEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::LockGoalEvent::type_url() {
-            if let Ok(ev) = events_project::LockGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::LockGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::UnlockGoalEvent::type_url() {
-            if let Ok(ev) = events_project::UnlockGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnlockGoalEvent(ev));
             }
         } else if data.type_url == events_project::ChangeOwnerEvent::type_url() {
             if let Ok(ev) = events_project::ChangeOwnerEvent::decode(data.value.as_slice()) {

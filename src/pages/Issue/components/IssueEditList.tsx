@@ -4,7 +4,7 @@ import {
 } from '@/api/project_issue';
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask } from '@/utils/utils';
-import { EditOutlined, ExportOutlined, LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
+import { EditOutlined, ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
 import { Space, Table, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -15,12 +15,12 @@ import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from '@/api/short_note';
 import { issueState } from '@/utils/constant';
 import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { EditSelect } from '../../../components/EditCell/EditSelect';
-import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
+import { bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
 import { EditText } from '@/components/EditCell/EditText';
 import {
   cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes,
-  cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser,
-  updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser,
+  cancelStartTime, getMemberSelectItems, getStateColor, updateCheckUser,
+  updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecUser,
   updateExtraInfo, updateProcessStage, updateRemainMinutes, updateStartTime, updateTitle
 } from './utils';
 import { EditDate } from '@/components/EditCell/EditDate';
@@ -424,44 +424,6 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
             });
           }} />
       ),
-    },
-    {
-      title: (<span>
-        处理贡献&nbsp;
-        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
-          <a><QuestionCircleOutlined /></a>
-        </Tooltip>
-      </span>),
-      dataIndex: 'exec_award_point',
-      width: 100,
-      align: 'left',
-      render: (v: number, row: IssueInfo) => <EditSelect
-        allowClear={false}
-        editable={row.user_issue_perm.can_set_award}
-        curValue={v}
-        itemList={awardSelectItems}
-        onChange={async (value) => {
-          return await updateExecAward(userStore.sessionId, row.project_id, row.issue_id, value as number);
-        }} showEditIcon={true} />
-    },
-    {
-      title: (<span>
-        验收贡献&nbsp;
-        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
-          <a><QuestionCircleOutlined /></a>
-        </Tooltip>
-      </span>),
-      dataIndex: 'check_award_point',
-      width: 100,
-      align: 'left',
-      render: (v: number, row: IssueInfo) => <EditSelect
-        allowClear={false}
-        editable={row.user_issue_perm.can_set_award}
-        curValue={v}
-        itemList={awardSelectItems}
-        onChange={async (value) => {
-          return await updateCheckAward(userStore.sessionId, row.project_id, row.issue_id, value as number);
-        }} showEditIcon={true} />
     },
     {
       title: '预估开始时间',

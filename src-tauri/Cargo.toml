@@ -29,7 +29,7 @@ libaes = "0.6.5"
 local_api_rust = {git = "https://atomgit.com/openlinksaas/local-api-rust.git", tag = "0.1.6"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://atomgit.com/openlinksaas/proto-gen-rust.git", tag = "0.1.35"}
+proto_gen_rust = {git = "https://atomgit.com/openlinksaas/proto-gen-rust.git", branch = "feature/remove_okr_award"}
 rand = "0.8.5"
 regex = "1.8.4"
 reqwest = {version = "0.11.12", features = ["blocking"] }
@@ -44,7 +44,7 @@ sled = "0.34.7"
 ssh-key = {version = "0.5.1", features = ["alloc", "rsa", "dsa", "p256", "p384"] }
 substring = "1.4.5"
 swagger = {version = "6.1", features = ["serdejson", "server", "client", "tls", "tcp"] }
-tauri = {git = "https://atomgit.com/openlinksaas/tauri.git", branch = "local_ipc_v2", features = [ "fs-all",
+tauri = {git = "https://atomgit.com/openlinksaas/tauri.git", branch = "local_ipc_v3", features = [ "fs-all",
   "clipboard-all",
   "devtools",
   "dialog-all",

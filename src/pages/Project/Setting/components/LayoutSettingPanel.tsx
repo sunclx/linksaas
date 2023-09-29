@@ -33,8 +33,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
-    const [hideUserGoal, setHideUserGoal] = useState(projectStore.curProject?.setting.hide_user_goal ?? false);
-    const [hideUserAward, setHideUserAward] = useState(projectStore.curProject?.setting.hide_user_award ?? false);
     const [hideMyTodoTask, setHideMyTodoTask] = useState(projectStore.curProject?.setting.hide_my_todo_task ?? false);
     const [hideMyTodoBug, setHideMyTodoBug] = useState(projectStore.curProject?.setting.hide_my_todo_bug ?? false);
     const [hideExtraInfo, setHideExtraInfo] = useState(projectStore.curProject?.setting.hide_extra_info ?? false);
@@ -61,8 +59,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
         setHideBulletin(projectStore.curProject?.setting.hide_bulletin ?? false);
-        setHideUserGoal(projectStore.curProject?.setting.hide_user_goal ?? false);
-        setHideUserAward(projectStore.curProject?.setting.hide_user_award ?? false);
         setHideMyTodoTask(projectStore.curProject?.setting.hide_my_todo_task ?? false);
         setHideMyTodoBug(projectStore.curProject?.setting.hide_my_todo_bug ?? false);
         setHideExtraInfo(projectStore.curProject?.setting.hide_extra_info ?? false);
@@ -86,8 +82,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_work_plan: disableWorkPlan,
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
-                hide_user_goal: hideUserGoal,
-                hide_user_award: hideUserAward,
                 hide_my_todo_task: hideMyTodoTask,
                 hide_my_todo_bug: hideMyTodoBug,
                 hide_extra_info: hideExtraInfo,
@@ -239,17 +233,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setHideBulletin(e.target.checked);
                             setHasChange(true);
                         }}>隐藏项目公告</Checkbox>
-                        <Checkbox checked={hideUserGoal} onChange={e => {
-                            e.stopPropagation();
-                            setHideUserGoal(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏成员目标</Checkbox>
-                        <Checkbox checked={hideUserAward} onChange={e => {
-                            e.stopPropagation();
-                            setHideUserAward(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏成员贡献</Checkbox>
-
 
                         <Checkbox checked={hideWatchTask} onChange={e => {
                             e.stopPropagation();

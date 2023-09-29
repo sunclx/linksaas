@@ -111,26 +111,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "removeProjectApp",
     },
     {
-        label: "创建目标",
-        value: "createGoal",
-    },
-    {
-        label: "更新目标",
-        value: "updateGoal",
-    },
-    {
-        label: "删除目标",
-        value: "removeGoal",
-    },
-    {
-        label: "锁定目标",
-        value: "lockGoal",
-    },
-    {
-        label: "解锁目标",
-        value: "unlockGoal",
-    },
-    {
         label: "转移超级管理员",
         value: "changeOwner",
     },
@@ -192,11 +172,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         remove_appraise: false,
         add_project_app: false,
         remove_project_app: false,
-        create_goal: false,
-        update_goal: false,
-        remove_goal: false,
-        lock_goal: false,
-        unlock_goal: false,
         change_owner: false,
         create_subscribe: false,
         update_subscribe: false,
@@ -262,16 +237,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.add_project_app = true;
         } else if (value == "removeProjectApp") {
             ret.remove_project_app = true;
-        } else if (value == "createGoal") {
-            ret.create_goal = true;
-        } else if (value == "updateGoal") {
-            ret.update_goal = true;
-        } else if (value == "removeGoal") {
-            ret.remove_goal = true;
-        } else if (value == "lockGoal") {
-            ret.lock_goal = true;
-        } else if (value == "unlockGoal") {
-            ret.unlock_goal = true;
         } else if (value == "changeOwner") {
             ret.change_owner = true;
         } else if (value == "createSubscribe") {
@@ -372,21 +337,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.remove_project_app) {
         retList.push("removeProjectApp");
-    }
-    if (cfg.create_goal) {
-        retList.push("createGoal");
-    }
-    if (cfg.update_goal) {
-        retList.push("updateGoal");
-    }
-    if (cfg.remove_goal) {
-        retList.push("removeGoal");
-    }
-    if (cfg.lock_goal) {
-        retList.push("lockGoal");
-    }
-    if (cfg.unlock_goal) {
-        retList.push("unlockGoal");
     }
     if (cfg.change_owner) {
         retList.push("changeOwner");

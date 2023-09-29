@@ -5,7 +5,7 @@ import DetailsNav from '@/components/DetailsNav';
 import { getIssueText, getIsTask } from "@/utils/utils";
 import { useHistory, useLocation } from "react-router-dom";
 import s from './IssueCreate.module.less';
-import { DatePicker, Input, Select, Space, Tooltip, message } from "antd";
+import { DatePicker, Input, Select, Space,  message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
 import { LinkSpritInfo, type LinkIssueState, ISSUE_TAB_LIST_TYPE } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
@@ -13,12 +13,11 @@ import { FILE_OWNER_TYPE_ISSUE, FILE_OWNER_TYPE_PROJECT } from "@/api/fs";
 import Button from "@/components/Button";
 import {
     assign_check_user, assign_exec_user, BUG_LEVEL_MINOR, BUG_PRIORITY_LOW, create as create_issue, set_dead_line_time, link_sprit,
-    ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, set_check_award, set_exec_award, TASK_PRIORITY_LOW
+    ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, TASK_PRIORITY_LOW
 } from '@/api/project_issue';
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
-import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, taskPrioritySelectItems } from "./components/constant";
+import { bugLvSelectItems, bugPrioritySelectItems, taskPrioritySelectItems } from "./components/constant";
 import { getMemberSelectItems } from "./components/utils";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import { request } from "@/utils/request";
 import type { Moment } from "moment";
 
@@ -81,8 +80,6 @@ const IssueCreate = () => {
     const [execUserId, setExecUserId] = useState("");
     const [checkUserId, setCheckUserId] = useState("");
     const [deadLineTime, setDeadLineTime] = useState<Moment | null>(null);
-    const [execAward, setExecAward] = useState(1);
-    const [checkAward, setCheckAward] = useState(1);
 
     const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 
@@ -140,20 +137,6 @@ const IssueCreate = () => {
         }
         if (checkUserId != "") {
             await request(assign_check_user(userStore.sessionId, projectStore.curProjectId, createRes.issue_id, checkUserId));
-        }
-        if (projectStore.isAdmin) {
-            await request(set_exec_award({
-                session_id: userStore.sessionId,
-                project_id: projectStore.curProjectId,
-                issue_id: createRes.issue_id,
-                point: execAward,
-            }));
-            await request(set_check_award({
-                session_id: userStore.sessionId,
-                project_id: projectStore.curProjectId,
-                issue_id: createRes.issue_id,
-                point: checkAward,
-            }));
         }
         message.info(`创建${getIssueText(location.pathname)}成功`);
         if (state?.spritId != undefined && projectStore.isAdmin) {
@@ -311,40 +294,6 @@ const IssueCreate = () => {
                                 <DatePicker style={{ width: "120px" }} allowClear onChange={value => setDeadLineTime(value)} />
                             </div>
                         </div>
-                        {projectStore.isAdmin && (
-                            <>
-                                <div className={s.info_item}>
-                                    <span>处理贡献
-                                        <Tooltip title={`当${getIssueText(location.pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
-                                            <a><QuestionCircleOutlined /></a>
-                                        </Tooltip>
-                                    </span>
-                                    <div>
-                                        <RenderSelect itemList={awardSelectItems} value={1}
-                                            allowClear={false}
-                                            onChange={(value) => {
-                                                setExecAward(value as number);
-                                                return true;
-                                            }} />
-                                    </div>
-                                </div>
-                                <div className={s.info_item}>
-                                    <span>验收贡献
-                                        <Tooltip title={`当${getIssueText(location.pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
-                                            <a><QuestionCircleOutlined /></a>
-                                        </Tooltip>
-                                    </span>
-                                    <div>
-                                        <RenderSelect itemList={awardSelectItems} value={1}
-                                            allowClear={false}
-                                            onChange={(value) => {
-                                                setCheckAward(value as number);
-                                                return true;
-                                            }} />
-                                    </div>
-                                </div>
-                            </>
-                        )}
                     </div>
                 </div>
             </div>

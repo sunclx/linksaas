@@ -1,4 +1,4 @@
-use crate::{min_app_plugin::get_min_app_perm, notice_decode::new_wrong_session_notice, user_api_plugin::get_session};
+use crate::notice_decode::new_wrong_session_notice;
 use proto_gen_rust::project_member_api::project_member_api_client::ProjectMemberApiClient;
 use proto_gen_rust::project_member_api::*;
 use tauri::{
@@ -299,30 +299,12 @@ async fn list_member<R: Runtime>(
     window: Window<R>,
     request: ListMemberRequest,
 ) -> Result<ListMemberResponse, String> {
-    let mut new_request = request.clone();
-    if let Some(min_app_perm) = get_min_app_perm(
-        app_handle.clone(),
-        window.clone(),
-        new_request.project_id.clone(),
-    )
-    .await
-    {
-        let member_perm = min_app_perm.member_perm;
-        if member_perm.is_none() {
-            return Err("no permission".into());
-        }
-        if member_perm.unwrap().list_member == false {
-            return Err("no permission".into());
-        }
-        new_request.session_id = get_session(app_handle.clone()).await;
-    }
-
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.list_member(new_request).await {
+    match client.list_member(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_member_response::Code::WrongSession as i32 {
@@ -365,185 +347,6 @@ async fn get_member<R: Runtime>(
     }
 }
 
-#[tauri::command]
-pub async fn create_goal<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: CreateGoalRequest,
-) -> Result<CreateGoalResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.create_goal(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == create_goal_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("create_goal".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-pub async fn update_goal<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UpdateGoalRequest,
-) -> Result<UpdateGoalResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.update_goal(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == update_goal_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_goal".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-pub async fn list_goal<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListGoalRequest,
-) -> Result<ListGoalResponse, String> {
-    let mut new_request = request.clone();
-    if let Some(min_app_perm) = get_min_app_perm(
-        app_handle.clone(),
-        window.clone(),
-        new_request.project_id.clone(),
-    )
-    .await{
-        let member_perm = min_app_perm.member_perm;
-        if member_perm.is_none() {
-            return Err("no permission".into());
-        }
-        if member_perm.unwrap().list_goal_history == false {
-            return Err("no permission".into());
-        }
-        new_request.session_id = get_session(app_handle.clone()).await;
-    }
-
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.list_goal(new_request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_goal_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_goal".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-
-#[tauri::command]
-pub async fn remove_goal<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: RemoveGoalRequest,
-) -> Result<RemoveGoalResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.remove_goal(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == remove_goal_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("remove_goal".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-pub async fn lock_goal<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: LockGoalRequest,
-) -> Result<LockGoalResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.lock_goal(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == lock_goal_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("lock_goal".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-pub async fn unlock_goal<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UnlockGoalRequest,
-) -> Result<UnlockGoalResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectMemberApiClient::new(chan.unwrap());
-    match client.unlock_goal(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == unlock_goal_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("unlock_goal".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
 pub struct ProjectMemberApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -565,12 +368,6 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
                 set_member_role,
                 list_member,
                 get_member,
-                create_goal,
-                update_goal,
-                list_goal,
-                remove_goal,
-                lock_goal,
-                unlock_goal,
             ]),
         }
     }

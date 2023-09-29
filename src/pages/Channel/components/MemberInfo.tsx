@@ -75,32 +75,7 @@ const MemberInfo: React.FC<MemberInfoProps> = (props) => {
           </div>
         </li>
       </ul>
-
-      {member?.member.last_goal_id != "" && (
-        <ul className={styles.task_list}>
-          {member?.member.last_goal_info.okr_list.map((okr, okrIndex) => (
-            <div key={`okr-${okrIndex}`}>
-              <li className={styles.item}>
-                <div className={styles.title}>目标{okrIndex + 1}</div>
-                <div className={styles.cont}>
-                  <div>{okr.objective}</div>
-                </div>
-              </li>
-              {okr.key_result_list.map((kr, krIndex) => (
-                <li className={styles.item} key={`kr-${krIndex}`}>
-                  <div className={styles.title} style={{ paddingLeft: "10px" }}>关键结果{krIndex + 1}</div>
-                  <div className={styles.cont}>
-                    <div>{kr}</div>
-                  </div>
-                </li>
-              ))}
-            </div>
-          ))}
-
-        </ul>
-      )}
-
-
+      
       <ul className={styles.task_list}>
         <li className={styles.item}>
           <div className={styles.title}>未执行任务</div>

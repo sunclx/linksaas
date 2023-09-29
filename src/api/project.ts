@@ -39,8 +39,6 @@ export type Setting = {
   //项目概览页面相关
   hide_project_info: boolean;
   hide_bulletin: boolean;
-  hide_user_goal: boolean;
-  hide_user_award: boolean;
   hide_my_todo_task: boolean;
   hide_my_todo_bug: boolean;
   hide_extra_info: boolean;

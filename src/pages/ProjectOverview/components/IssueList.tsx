@@ -7,13 +7,13 @@ import {
 } from "@/api/project_issue";
 import { useStores } from "@/hooks";
 import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from "@/stores/linkAux";
-import { ExportOutlined, LinkOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { ExportOutlined, LinkOutlined } from "@ant-design/icons";
 import { observer } from 'mobx-react';
 import { showShortNote } from "@/utils/short_note";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { useHistory } from "react-router-dom";
 import { EditSelect } from "@/components/EditCell/EditSelect";
-import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "@/pages/Issue/components/constant";
+import { bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "@/pages/Issue/components/constant";
 import { EditText } from "@/components/EditCell/EditText";
 import { issueState } from "@/utils/constant";
 import { getMemberSelectItems, getStateColor } from "@/pages/Issue/components/utils";
@@ -253,44 +253,6 @@ const IssueList = (props: IssueListProps) => {
                     )}
                 </>
             ),
-        },
-        {
-            title: (<span>
-                处理贡献&nbsp;
-                <Tooltip title={`当前事项关闭后，会给处理人增加的项目贡献值`} trigger="click">
-                    <a><QuestionCircleOutlined /></a>
-                </Tooltip>
-            </span>),
-            dataIndex: 'exec_award_point',
-            width: 100,
-            align: 'left',
-            render: (v: number, row: IssueInfo) => <EditSelect
-                allowClear={false}
-                editable={row.user_issue_perm.can_set_award}
-                curValue={v}
-                itemList={awardSelectItems}
-                onChange={async () => {
-                    return false;
-                }} showEditIcon={false} />
-        },
-        {
-            title: (<span>
-                验收贡献&nbsp;
-                <Tooltip title={`当前事项关闭后，会给验收人增加的项目贡献值`} trigger="click">
-                    <a><QuestionCircleOutlined /></a>
-                </Tooltip>
-            </span>),
-            dataIndex: 'check_award_point',
-            width: 100,
-            align: 'left',
-            render: (v: number) => <EditSelect
-                allowClear={false}
-                editable={false}
-                curValue={v}
-                itemList={awardSelectItems}
-                onChange={async () => {
-                    return false;
-                }} showEditIcon={false} />
         },
         {
             title: '预估开始时间',

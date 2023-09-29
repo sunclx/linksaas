@@ -9,8 +9,7 @@ use hyper::{Body, Request, Response};
 use proto_gen_rust::project_app_api::project_app_api_client::ProjectAppApiClient;
 use proto_gen_rust::project_app_api::MinAppPerm;
 use proto_gen_rust::project_app_api::{
-    GetMinAppPermRequest, MinAppEventPerm, MinAppExtraPerm, MinAppFsPerm, MinAppIssuePerm,
-    MinAppMemberPerm, MinAppNetPerm,
+    GetMinAppPermRequest, MinAppExtraPerm, MinAppFsPerm,  MinAppNetPerm,
 };
 use rand::Rng;
 use regex::Regex;
@@ -1256,20 +1255,6 @@ pub async fn get_min_app_perm<R: Runtime>(
                     proxy_mongo: net_perm.proxy_mongo,
                     proxy_ssh: net_perm.proxy_ssh,
                     net_util: net_perm.net_util,
-                }),
-                member_perm: Some(MinAppMemberPerm {
-                    list_member: false,
-                    list_goal_history: false,
-                }),
-                issue_perm: Some(MinAppIssuePerm {
-                    list_my_task: false,
-                    list_all_task: false,
-                    list_my_bug: false,
-                    list_all_bug: false,
-                }),
-                event_perm: Some(MinAppEventPerm {
-                    list_my_event: false,
-                    list_all_event: false,
                 }),
                 fs_perm: Some(MinAppFsPerm {
                     read_file: fs_perm.read_file,
