@@ -347,6 +347,60 @@ async fn get_member<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn update_state_desc<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateStateDescRequest,
+) -> Result<UpdateStateDescResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.update_state_desc(request.clone()).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_state_desc_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_state_desc".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn update_need_help_desc<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateNeedHelpDescRequest,
+) -> Result<UpdateNeedHelpDescResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectMemberApiClient::new(chan.unwrap());
+    match client.update_need_help_desc(request.clone()).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_need_help_desc_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_need_help_desc".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectMemberApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -368,6 +422,8 @@ impl<R: Runtime> ProjectMemberApiPlugin<R> {
                 set_member_role,
                 list_member,
                 get_member,
+                update_state_desc,
+                update_need_help_desc,
             ]),
         }
     }

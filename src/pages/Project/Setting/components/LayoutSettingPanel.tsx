@@ -33,8 +33,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
-    const [hideMyTodoTask, setHideMyTodoTask] = useState(projectStore.curProject?.setting.hide_my_todo_task ?? false);
-    const [hideMyTodoBug, setHideMyTodoBug] = useState(projectStore.curProject?.setting.hide_my_todo_bug ?? false);
     const [hideExtraInfo, setHideExtraInfo] = useState(projectStore.curProject?.setting.hide_extra_info ?? false);
 
     const [hideWatchDoc, setHideWatchDoc] = useState(projectStore.curProject?.setting.hide_watch_doc ?? false);
@@ -59,8 +57,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
         setHideBulletin(projectStore.curProject?.setting.hide_bulletin ?? false);
-        setHideMyTodoTask(projectStore.curProject?.setting.hide_my_todo_task ?? false);
-        setHideMyTodoBug(projectStore.curProject?.setting.hide_my_todo_bug ?? false);
         setHideExtraInfo(projectStore.curProject?.setting.hide_extra_info ?? false);
         setHasChange(false);
     };
@@ -82,8 +78,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_work_plan: disableWorkPlan,
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
-                hide_my_todo_task: hideMyTodoTask,
-                hide_my_todo_bug: hideMyTodoBug,
                 hide_extra_info: hideExtraInfo,
                 hide_watch_doc: hideWatchDoc,
                 hide_watch_walk_plan: hideWatchWorkPlan,
@@ -245,16 +239,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setHasChange(true);
                         }}>隐藏关注缺陷</Checkbox>
 
-                        <Checkbox checked={hideMyTodoTask} onChange={e => {
-                            e.stopPropagation();
-                            setHideMyTodoTask(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏待处理任务</Checkbox>
-                        <Checkbox checked={hideMyTodoBug} onChange={e => {
-                            e.stopPropagation();
-                            setHideMyTodoBug(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏待处理缺陷</Checkbox>
                         <Checkbox checked={hideExtraInfo} onChange={e => {
                             e.stopPropagation();
                             setHideExtraInfo(e.target.checked);

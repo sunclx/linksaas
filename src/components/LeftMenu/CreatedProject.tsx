@@ -64,8 +64,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
 
             hide_project_info: true,
             hide_bulletin: true,
-            hide_my_todo_task: true,
-            hide_my_todo_bug: true,
             hide_extra_info: true,
 
             hide_watch_doc: true,

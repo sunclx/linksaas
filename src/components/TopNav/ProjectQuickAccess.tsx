@@ -59,8 +59,6 @@ const MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO = "layout.overview.prjinfo";
 const MENU_KEY_LAYOUT_OVERVIEW_BULLETIN = "layout.overview.bulletin";
 const MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK = "layout.overview.watchtask";
 const MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG = "layout.overview.watchbug";
-const MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK = "layout.overview.todotask";
-const MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG = "layout.overview.todobug";
 const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 
 
@@ -168,14 +166,6 @@ const ProjectQuickAccess = () => {
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG,
                             label: `${projectStore.curProject?.setting.hide_watch_bug == true ? "显示" : "隐藏"}关注缺陷`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK,
-                            label: `${projectStore.curProject?.setting.hide_my_todo_task == true ? "显示" : "隐藏"}待处理任务`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG,
-                            label: `${projectStore.curProject?.setting.hide_my_todo_bug == true ? "显示" : "隐藏"}待处理缺陷`
                         },
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO,
@@ -452,10 +442,6 @@ const ProjectQuickAccess = () => {
             newSetting.hide_watch_task = !projectStore.curProject.setting.hide_watch_task;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG) {
             newSetting.hide_watch_bug = !projectStore.curProject.setting.hide_watch_bug;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK) {
-            newSetting.hide_my_todo_task = !projectStore.curProject.setting.hide_my_todo_task;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG) {
-            newSetting.hide_my_todo_bug = !projectStore.curProject.setting.hide_my_todo_bug;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO) {
             newSetting.hide_extra_info = !projectStore.curProject.setting.hide_extra_info;
         }
