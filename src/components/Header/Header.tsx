@@ -11,7 +11,6 @@ import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
-import ProjectUseTip from './ProjectUseTip';
 import ProjectTipList from './ProjectTipList';
 import ProjectQuickAccess from '../TopNav/ProjectQuickAccess';
 
@@ -112,12 +111,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
               </Space>
             </a>
           )}
-
           {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
             <ProjectTipList />
-          )}
-          {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
-            <ProjectUseTip />
           )}
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
             <div

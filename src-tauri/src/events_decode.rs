@@ -327,32 +327,6 @@ pub mod sprit {
     }
 }
 
-pub mod book_shelf {
-    use prost::Message;
-    use proto_gen_rust::events_book_shelf;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        AddBookEvent(events_book_shelf::AddBookEvent),
-        RemoveBookEvent(events_book_shelf::RemoveBookEvent),
-    }
-
-    pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_book_shelf::AddBookEvent::type_url() {
-            if let Ok(ev) = events_book_shelf::AddBookEvent::decode(data.value.as_slice()) {
-                return Some(Event::AddBookEvent(ev));
-            }
-        } else if data.type_url == events_book_shelf::RemoveBookEvent::type_url() {
-            if let Ok(ev) = events_book_shelf::RemoveBookEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveBookEvent(ev));
-            }
-        }
-        None
-    }
-}
-
 pub mod issue {
     use prost::Message;
     use proto_gen_rust::events_issue;
@@ -972,7 +946,6 @@ pub enum EventMessage {
     ProjectDocEvent(project_doc::Event),
     SpritEvent(sprit::Event),
     IssueEvent(issue::Event),
-    BookShelfEvent(book_shelf::Event),
     ExtEvEvent(ext_event::Event),
     GitlabEvent(gitlab::Event),
     GogsEvent(gogs::Event),
@@ -1000,9 +973,6 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = issue::decode_event(data) {
         return Some(EventMessage::IssueEvent(ret));
-    }
-    if let Some(ret) = book_shelf::decode_event(data) {
-        return Some(EventMessage::BookShelfEvent(ret));
     }
     if let Some(ret) = ext_event::decode_event(data) {
         return Some(EventMessage::ExtEvEvent(ret));

@@ -28,14 +28,6 @@ export type IssueResultItem = {
     content: string;
 };
 
-export type BookMarkResultItem = {
-    project_id: string;
-    book_mark_id: string;
-    cate_id: string;
-    title: string;
-    content: string;
-};
-
 export type SearchProjectChannelRequest = {
     session_id: string;
     filter_by_project_id: boolean;
@@ -100,26 +92,6 @@ export type SearchProjectDocResponse = {
     item_list: DocResultItem[],
 };
 
-export type SearchProjectBookMarkRequest = {
-    session_id: string;
-    filter_by_project_id: boolean;
-    project_id: string;
-    keyword: string;
-    filter_by_cate_id: boolean;
-    cate_id: string;
-    filter_by_time_range: boolean;
-    from_time_stamp: number;
-    to_time_stamp: number;
-    offset: number;
-    limit: number;
-};
-
-export type SearchProjectBookMarkResponse = {
-    code: number;
-    err_msg: string;
-    total_count: number;
-    item_list: BookMarkResultItem[];
-};
 
 //搜素频道
 export async function search_project_channel(request: SearchProjectChannelRequest): Promise<SearchProjectChannelResponse> {

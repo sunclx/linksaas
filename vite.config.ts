@@ -49,7 +49,6 @@ export default ({ command, mode }: ConfigEnv) => {
           shortNote: "short_note.html",
           searchResult: "search_result.html",
           localApi: "local_api.html",
-          book: "book.html",
           gitDiff: "git_diff.html",
           dataAnno: "data_anno.html",
           apiGrpc: "api_grpc.html",

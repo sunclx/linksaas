@@ -1638,7 +1638,6 @@ components:
             - doc
             - disk
             - app
-            - bookShelf
             - robot
             - earthly
             - gitlab
@@ -1661,7 +1660,6 @@ components:
             - task
             - bug
             - doc
-            - book
             - robot
             - repo
         refId:

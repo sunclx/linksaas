@@ -63,16 +63,6 @@ export type AppStorePerm = {
     remove_comment: boolean;
 };
 
-export type BookStorePerm = {
-    read: boolean;
-    add_cate: boolean;
-    update_cate: boolean;
-    remove_cate: boolean;
-    add_book: boolean;
-    update_book: boolean;
-    remove_book: boolean;
-};
-
 export type DockerTemplatePerm = {
     read: boolean;
     create_cate: boolean;
@@ -111,7 +101,6 @@ export type AdminPermInfo = {
     menu_perm: MenuPerm;
     ad_perm: AdPerm;
     app_store_perm: AppStorePerm;
-    book_store_perm: BookStorePerm;
     docker_template_perm: DockerTemplatePerm;
     rss_perm: RssPerm;
     pub_search_perm: PubSearchPerm;

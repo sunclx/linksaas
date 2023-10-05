@@ -13,7 +13,6 @@ export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
 export const APP_PROJECT_CHAT_PATH = '/app/project/chat';
 export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
-export const APP_PROJECT_KB_BOOK_SHELF_PATH = '/app/project/kb/book_shelf';
 export const APP_PROJECT_MY_WORK_PATH = '/app/project/my_work';
 export const APP_PROJECT_OVERVIEW_PATH = '/app/project/overview';
 
@@ -47,9 +46,6 @@ export const ADMIN_PATH_PROJECT_CREATE_SUFFIX = '/admin/project/create';
 
 export const ADMIN_PATH_APPSTORE_CATE_SUFFIX = '/admin/appstore/cate';
 export const ADMIN_PATH_APPSTORE_APP_SUFFIX = '/admin/appstore/app';
-
-export const ADMIN_PATH_BOOKSTORE_CATE_SUFFIX = '/admin/bookstore/cate';
-export const ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX = '/admin/bookstore/book';
 
 export const ADMIN_PATH_ORG_LIST_SUFFIX = '/admin/org/list';
 

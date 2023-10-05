@@ -2,7 +2,7 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 import { createBrowserHistory } from 'history';
 import moment from 'moment';
-import { BUG_DETAIL_SUFFIX, APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX, APP_PROJECT_KB_BOOK_SHELF_PATH } from './constant';
+import { BUG_DETAIL_SUFFIX, APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX } from './constant';
 import { nanoid } from 'nanoid'
 
 export const goBack = (/*history: { goBack: () => void }*/) => {
@@ -36,9 +36,6 @@ export const getIssueDetailUrl = (pathname: string): string => {
     return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_DETAIL_SUFFIX;
   } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_DETAIL_SUFFIX;
-  } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
-    return getIsTask(pathname) ? APP_PROJECT_KB_BOOK_SHELF_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_BOOK_SHELF_PATH + BUG_DETAIL_SUFFIX;
-
   }
   return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_DETAIL_SUFFIX;
 };
@@ -48,9 +45,7 @@ export const getIssueCreateUrl = (pathname: string): string => {
     return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_CREATE_SUFFIX;
   } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_CREATE_SUFFIX;
-  } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
-    return getIsTask(pathname) ? APP_PROJECT_KB_BOOK_SHELF_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_BOOK_SHELF_PATH + BUG_CREATE_SUFFIX;
-  }
+  } 
   return getIsTask(pathname) ? APP_PROJECT_CHAT_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_CHAT_PATH + BUG_CREATE_SUFFIX;
 };
 

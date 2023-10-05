@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import {
     apiCollectionEvOptionList,
-    bookShelfEvOptionList,
-    calcBookShelfEvCfg,
     calcCodeEvCfg,
     calcDataAnnoEvCfg,
     calcDocEvCfg,
@@ -46,7 +44,6 @@ interface FormValue {
     chatBotName: string | undefined;
     chatBotAddr: string | undefined;
     chatBotSignCode: string | undefined;
-    bookShelfEvCfg: string[] | undefined;
     docEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
     atomgitEvCfg: string[] | undefined;
@@ -73,9 +70,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(false);
     const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(false);
-
-    const [bookShelfEvCfgCheckAll, setBookShelfEvCfgCheckAll] = useState(false);
-    const [bookShelfEvCfgIndeterminate, setBookShelfEvCfgIndeterminate] = useState(false);
 
     const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(false);
     const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(false);
@@ -137,7 +131,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
             chat_bot_sign_code: formValue.chatBotSignCode ?? "",
             event_cfg: {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
-                book_shelf_ev_cfg: calcBookShelfEvCfg(formValue.bookShelfEvCfg),
                 doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
                 atomgit_ev_cfg: calcAtomgitEvCfg(formValue.atomgitEvCfg),
@@ -231,31 +224,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setProjectEvCfgCheckAll(false);
                                 setProjectEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={bookShelfEvCfgIndeterminate} checked={bookShelfEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setBookShelfEvCfgIndeterminate(false);
-                        if (bookShelfEvCfgCheckAll) {
-                            setBookShelfEvCfgCheckAll(false);
-                            form.setFieldValue("bookShelfEvCfg", []);
-                        } else {
-                            setBookShelfEvCfgCheckAll(true);
-                            form.setFieldValue("bookShelfEvCfg", bookShelfEvOptionList.map(item => item.value));
-                        }
-                    }}>电子书事件</Checkbox>} name="bookShelfEvCfg">
-                        <Checkbox.Group options={bookShelfEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setBookShelfEvCfgCheckAll(false);
-                                setBookShelfEvCfgIndeterminate(false);
-                            } else if (values.length == bookShelfEvOptionList.length) {
-                                setBookShelfEvCfgCheckAll(true);
-                                setBookShelfEvCfgIndeterminate(false);
-                            } else {
-                                setBookShelfEvCfgCheckAll(false);
-                                setBookShelfEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

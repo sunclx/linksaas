@@ -48,10 +48,6 @@ export const EVENT_ICON_LIST = {
     title: 'app',
     icon: appIcon,
   },
-  [API.EVENT_TYPE_BOOK_SHELF]: {
-    title: 'bookShelf',
-    icon: iconApp,
-  },
   [API.EVENT_TYPE_REQUIRE_MENT]: {
     title: 'requirement',
     icon: reqIcon,
