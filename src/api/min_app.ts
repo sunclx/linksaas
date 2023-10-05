@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import type { MinAppPerm } from '@/api/project_app';
+import type { AppPerm } from '@/api/appstore';
 
 export type StartRequest = {
     project_id: string;
@@ -13,16 +13,8 @@ export type StartRequest = {
 };
 
 //启动微应用
-export async function start(request: StartRequest, perm: MinAppPerm): Promise<void> {
+export async function start(request: StartRequest, perm: AppPerm): Promise<void> {
     return invoke<void>("plugin:min_app|start", {
-        request,
-        perm,
-    });
-}
-
-//调试微应用
-export async function start_debug(request: StartRequest, perm: MinAppPerm): Promise<void> {
-    return invoke<void>("plugin:min_app|start_debug", {
         request,
         perm,
     });

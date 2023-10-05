@@ -107,6 +107,26 @@ async fn get_app<R: Runtime>(
 }
 
 #[tauri::command]
+async fn query_perm<R: Runtime>(
+    app_handle: AppHandle<R>,
+    _window: Window<R>,
+    request: QueryPermRequest,
+) -> Result<QueryPermResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = AppstoreApiClient::new(chan.unwrap());
+    match client.query_perm(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn get_cate_path<R: Runtime>(
     app_handle: AppHandle<R>,
     _window: Window<R>,
@@ -120,34 +140,6 @@ async fn get_cate_path<R: Runtime>(
     match client.get_cate_path(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn get_install_info<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: GetInstallInfoRequest,
-) -> Result<GetInstallInfoResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = AppstoreApiClient::new(chan.unwrap());
-    match client.get_install_info(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == get_install_info_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("get_install_info".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
             return Ok(inner_resp);
         }
         Err(status) => Err(status.message().into()),
@@ -294,8 +286,8 @@ impl<R: Runtime> AppstoreApiPlugin<R> {
                 list_sub_minor_cate,
                 list_app,
                 get_app,
+                query_perm,
                 get_cate_path,
-                get_install_info,
                 agree_app,
                 cancel_agree_app,
                 add_comment,

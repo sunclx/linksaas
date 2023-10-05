@@ -12,33 +12,6 @@ export type App = {
     create_time: number;
 };
 
-export type UserAppNetPerm = {
-    cross_domain_http: boolean;
-    proxy_redis: boolean;
-    proxy_mysql: boolean;
-    proxy_post_gres: boolean;
-    proxy_mongo: boolean;
-    proxy_ssh: boolean;
-    net_util: boolean;
-};
-
-export type UserAppFsPerm = {
-    read_file: boolean;
-    write_file: boolean;
-};
-
-export type UserAppExtraPerm = {
-    cross_origin_isolated: boolean;
-    open_browser: boolean;
-};
-
-
-export type UserAppPerm = {
-    net_perm: UserAppNetPerm;
-    fs_perm: UserAppFsPerm;
-    extra_perm: UserAppExtraPerm;
-};
-
 export type ListRequest = {
     session_id: string;
 };
@@ -47,6 +20,17 @@ export type ListResponse = {
     code: number;
     err_msg: string;
     app_list: App[];
+};
+
+export type GetRequest = {
+    session_id: string;
+    app_id: string;
+};
+
+export type GetResponse = {
+    code: number;
+    err_msg: string;
+    app: App;
 };
 
 export type QueryInStoreRequest = {
@@ -82,35 +66,20 @@ export type RemoveResponse = {
     err_msg: string;
 };
 
-
-export type SetUserAppPermRequest = {
-    session_id: string;
-    app_id: string;
-    perm: UserAppPerm;
-};
-
-export type SetUserAppPermResponse = {
-    code: number;
-    err_msg: string;
-};
-
-
-export type GetUserAppPermRequest = {
-    session_id: string;
-    app_id: string;
-};
-
-export type GetUserAppPermResponse = {
-    code: number;
-    err_msg: string;
-    perm: UserAppPerm;
-};
-
 //列出应用
 export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:user_app_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListResponse>(cmd, {
+        request: request,
+    });
+}
+
+//获取单个应用
+export async function get(request: GetRequest): Promise<GetResponse> {
+    const cmd = 'plugin:user_app_api|get';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetResponse>(cmd, {
         request: request,
     });
 }
@@ -138,24 +107,6 @@ export async function remove(request: RemoveRequest): Promise<RemoveResponse> {
     const cmd = 'plugin:user_app_api|remove';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveResponse>(cmd, {
-        request: request,
-    });
-}
-
-//设置权限
-export async function set_user_app_perm(request: SetUserAppPermRequest): Promise<SetUserAppPermResponse> {
-    const cmd = 'plugin:user_app_api|set_user_app_perm';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<SetUserAppPermResponse>(cmd, {
-        request: request,
-    });
-}
-
-//读取权限
-export async function get_user_app_perm(request: GetUserAppPermRequest): Promise<GetUserAppPermResponse> {
-    const cmd = 'plugin:user_app_api|get_user_app_perm';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetUserAppPermResponse>(cmd, {
         request: request,
     });
 }

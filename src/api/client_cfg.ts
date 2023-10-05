@@ -21,7 +21,6 @@ export type ServerCap = {
   search: boolean;
   appraise: boolean;
   issue: boolean;
-  project_app: boolean;
   project_setting: boolean;
 };
 

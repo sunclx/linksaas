@@ -116,7 +116,6 @@ export type AdminAddAppRequest = {
     os_mac: boolean;
     os_linux: boolean;
     user_app: boolean;
-    project_app: boolean;
 };
 
 export type AdminAddAppResponse = {
@@ -199,18 +198,6 @@ export type AdminUpdateAppOsResponse = {
     err_msg: string;
 };
 
-
-export type AdminUpdateAppScopeRequest = {
-    admin_session_id: string;
-    app_id: string;
-    user_app: boolean;
-    project_app: boolean;
-};
-
-export type AdminUpdateAppScopeResponse = {
-    code: number;
-    err_msg: string;
-};
 
 export type AdminRemoveCommentRequest = {
     admin_session_id: string;
@@ -364,15 +351,6 @@ export async function update_app_os(request: AdminUpdateAppOsRequest): Promise<A
     const cmd = 'plugin:appstore_admin_api|update_app_os';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminUpdateAppOsResponse>(cmd, {
-        request,
-    });
-}
-
-//更新应用范围
-export async function update_app_scope(request: AdminUpdateAppScopeRequest): Promise<AdminUpdateAppScopeResponse> {
-    const cmd = 'plugin:appstore_admin_api|update_app_scope';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<AdminUpdateAppScopeResponse>(cmd, {
         request,
     });
 }

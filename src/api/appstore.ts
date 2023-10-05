@@ -1,10 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export type APP_SCOPE = number;
-export const APP_SCOPE_USER: APP_SCOPE = 0;
-export const APP_SCOPE_PROJECT: APP_SCOPE = 1;
-
-
 export type OS_SCOPE = number;
 export const OS_SCOPE_WINDOWS: OS_SCOPE = 0;
 export const OS_SCOPE_MAC: OS_SCOPE = 1;
@@ -77,13 +72,13 @@ export type AppInfo = {
     os_mac: boolean;
     os_linux: boolean;
     user_app: boolean;
-    project_app: boolean;
     create_time: number;
     update_time: number;
     install_count: number;
     agree_count: number;
     comment_count: number;
     my_agree: boolean;
+    my_install: boolean;
 };
 
 export type ListAppParam = {
@@ -93,8 +88,6 @@ export type ListAppParam = {
     minor_cate_id: string;
     filter_by_sub_minor_cate_id: boolean;
     sub_minor_cate_id: string;
-    filter_by_app_scope: boolean;
-    app_scope: APP_SCOPE;
     filter_by_os_scope: boolean;
     os_scope: OS_SCOPE;
     filter_by_keyword: boolean;
@@ -108,17 +101,6 @@ export type CatePath = {
     sub_minor_cate_id: string;
 };
 
-export type ProjectInstallInfo = {
-    project_id: string;
-    project_name: string;
-    has_install: boolean;
-    can_install: boolean;
-};
-
-export type InstallInfo = {
-    user_install: boolean;
-    project_list: ProjectInstallInfo[];
-};
 
 export type AppComment = {
     comment_id: string;
@@ -198,71 +180,69 @@ export type GetAppResponse = {
     app_info: AppInfo;
 };
 
-export type GetInstallInfoRequest = {
+export type QueryPermRequest = {
+    app_id: string;
+};
+export type QueryPermResponse = {
+    code: number;
+    err_msg: string;
+    app_perm: AppPerm;
+};
+
+export type AgreeAppRequest = {
     session_id: string;
     app_id: string;
 };
 
-export type GetInstallInfoResponse = {
+export type AgreeAppResponse = {
     code: number;
     err_msg: string;
-    install_info: InstallInfo;
-};
-
-export type AgreeAppRequest = {
-     session_id: string;
-     app_id: string;
-};
-
-export type AgreeAppResponse = {
-     code: number;
-     err_msg: string;
 };
 
 export type CancelAgreeAppRequest = {
-     session_id: string;
-     app_id: string;
+    session_id: string;
+    app_id: string;
 };
 
 export type CancelAgreeAppResponse = {
-     code: number;
-     err_msg: string;
+    code: number;
+    err_msg: string;
 };
 
 export type AddCommentRequest = {
-     session_id: string;
-     app_id: string;
-     comment: string;
+    session_id: string;
+    app_id: string;
+    comment: string;
 };
 
 export type AddCommentResponse = {
-     code: number;
-     err_msg: string;
-     comment_id: string;
+    code: number;
+    err_msg: string;
+    comment_id: string;
 };
 
 export type RemoveCommentRequest = {
-     session_id: string;
-     app_id: string;
-     comment_id: string;
+    session_id: string;
+    app_id: string;
+    comment_id: string;
 };
 
 export type RemoveCommentResponse = {
-     code: number;
-     err_msg: string;
+    code: number;
+    err_msg: string;
 };
 
 export type ListCommentRequest = {
-     app_id: string;
-     offset: number;
-     limit: number;
+    app_id: string;
+    offset: number;
+    limit: number;
 };
 
 export type ListCommentResponse = {
-     code: number;
-     err_msg: string;
-     total_count: number;
-     comment_list: AppComment[];
+    code: number;
+    err_msg: string;
+    total_count: number;
+    comment_list: AppComment[];
 };
 
 
@@ -324,11 +304,11 @@ export async function get_app(request: GetAppRequest): Promise<GetAppResponse> {
     });
 }
 
-//获取应用的安装情况
-export async function get_install_info(request: GetInstallInfoRequest): Promise<GetInstallInfoResponse> {
-    const cmd = 'plugin:appstore_api|get_install_info';
+//获取权限
+export async function query_perm(request: QueryPermRequest): Promise<QueryPermResponse> {
+    const cmd = 'plugin:appstore_api|query_perm';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetInstallInfoResponse>(cmd, {
+    return invoke<QueryPermResponse>(cmd, {
         request,
     });
 }

@@ -30,8 +30,6 @@ pub mod project {
         CreateAppraiseEvent(events_project::CreateAppraiseEvent),
         UpdateAppraiseEvent(events_project::UpdateAppraiseEvent),
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
-        AddProjectAppEvent(events_project::AddProjectAppEvent),
-        RemoveProjectAppEvent(events_project::RemoveProjectAppEvent),
         ChangeOwnerEvent(events_project::ChangeOwnerEvent),
         CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
         UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
@@ -142,14 +140,6 @@ pub mod project {
         } else if data.type_url == events_project::RemoveAppraiseEvent::type_url() {
             if let Ok(ev) = events_project::RemoveAppraiseEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveAppraiseEvent(ev));
-            }
-        } else if data.type_url == events_project::AddProjectAppEvent::type_url() {
-            if let Ok(ev) = events_project::AddProjectAppEvent::decode(data.value.as_slice()) {
-                return Some(Event::AddProjectAppEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveProjectAppEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveProjectAppEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveProjectAppEvent(ev));
             }
         } else if data.type_url == events_project::ChangeOwnerEvent::type_url() {
             if let Ok(ev) = events_project::ChangeOwnerEvent::decode(data.value.as_slice()) {
