@@ -31,8 +31,6 @@ export type ProjectEvCfg = {
     create_appraise: boolean;
     update_appraise: boolean;
     remove_appraise: boolean;
-    add_project_app: boolean;
-    remove_project_app: boolean;
     change_owner: boolean;
     create_subscribe: boolean;
     update_subscribe: boolean;

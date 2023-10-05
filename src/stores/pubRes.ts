@@ -14,6 +14,7 @@ export default class PubResStore {
     private _appMinorCateId = "";
     private _appSubMinorCateId = "";
     private _showAppId = "";
+    private _appDataVersion = 0;
 
     get appKeyword(): string {
         return this._appKeyword;
@@ -85,6 +86,15 @@ export default class PubResStore {
         });
     }
 
+    get appDataVersion(): number {
+        return this._appDataVersion;
+    }
+
+    incAppDataVersion() {
+        runInAction(() => {
+            this._appDataVersion += 1;
+        });
+    }
     //===================================
     private _dockerKeyword = "";
     private _dockerCateId = "";

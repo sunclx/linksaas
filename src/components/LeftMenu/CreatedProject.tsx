@@ -47,7 +47,6 @@ const CreatedProject: FC<CreatedProjectProps> = (props) => {
           setting: {
             disable_member_appraise: true,
             disable_ext_event: true,
-            disable_app_store: true,
             disable_data_anno: true,
             disable_api_collection: true,
             disable_code_comment: true,

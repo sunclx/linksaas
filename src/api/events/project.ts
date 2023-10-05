@@ -3,7 +3,7 @@ import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
     LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
-    LinkAppraiseInfo, LinkAppInfo
+    LinkAppraiseInfo
 } from '@/stores/linkAux';
 
 function get_chat_bot_type_str(chat_bot_type: number): string {
@@ -403,40 +403,6 @@ function get_remove_appraise_simple_content(
     ];
 }
 
-export type AddProjectAppEvent = {
-    app_id: string;
-    app_name: string;
-    app_url: string;
-    app_open_type: number;
-};
-
-function get_add_project_app_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: AddProjectAppEvent
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 添加应用`),
-        new LinkAppInfo(inner.app_name, ev.project_id, inner.app_id, inner.app_url, inner.app_open_type),
-    ];
-}
-
-export type RemoveProjectAppEvent = {
-    app_id: string;
-    app_name: string;
-}
-
-function get_remove_project_app_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveProjectAppEvent
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除应用`),
-        new LinkNoneInfo(`${inner.app_name}`),
-    ];
-}
-
 export type ChangeOwnerEvent = {
     member_user_id: string;
     member_display_name: string;
@@ -578,8 +544,6 @@ export type AllProjectEvent = {
     CreateAppraiseEvent?: CreateAppraiseEvent;
     UpdateAppraiseEvent?: UpdateAppraiseEvent;
     RemoveAppraiseEvent?: RemoveAppraiseEvent;
-    AddProjectAppEvent?: AddProjectAppEvent;
-    RemoveProjectAppEvent?: RemoveProjectAppEvent;
     ChangeOwnerEvent?: ChangeOwnerEvent;
     CreateEventSubscribeEvent?: CreateEventSubscribeEvent;
     UpdateEventSubscribeEvent?: UpdateEventSubscribeEvent;
@@ -655,10 +619,6 @@ export function get_project_simple_content(
         return get_update_appraise_simple_content(ev, skip_prj_name, inner.UpdateAppraiseEvent);
     } else if (inner.RemoveAppraiseEvent !== undefined) {
         return get_remove_appraise_simple_content(ev, skip_prj_name, inner.RemoveAppraiseEvent);
-    } else if (inner.AddProjectAppEvent !== undefined) {
-        return get_add_project_app_simple_content(ev, skip_prj_name, inner.AddProjectAppEvent);
-    } else if (inner.RemoveProjectAppEvent !== undefined) {
-        return get_remove_project_app_simple_content(ev, skip_prj_name, inner.RemoveProjectAppEvent);
     } else if (inner.ChangeOwnerEvent !== undefined) {
         return get_change_owner_simple_content(ev, skip_prj_name, inner.ChangeOwnerEvent);
     } else if (inner.CreateEventSubscribeEvent !== undefined) {

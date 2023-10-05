@@ -494,38 +494,6 @@ async fn update_app_os<R: Runtime>(
 }
 
 #[tauri::command]
-async fn update_app_scope<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminUpdateAppScopeRequest,
-) -> Result<AdminUpdateAppScopeResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = AppstoreAdminApiClient::new(chan.unwrap());
-    match client.update_app_scope(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_update_app_scope_response::Code::WrongSession as i32
-                || inner_resp.code == admin_update_app_scope_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("update_app_scope".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-
-#[tauri::command]
 async fn remove_comment<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -580,7 +548,6 @@ impl<R: Runtime> AppstoreAdminApiPlugin<R> {
                 move_app,
                 update_app_perm,
                 update_app_os,
-                update_app_scope,
                 remove_comment,
             ]),
         }

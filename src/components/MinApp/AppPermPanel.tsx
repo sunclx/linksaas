@@ -1,8 +1,8 @@
+import { Card, Checkbox, Form, Popover, Space } from "antd";
 import React, { useState } from "react";
-import type { UserAppPerm } from "@/api/user_app";
-import { Checkbox, Form, Popover, Space } from "antd";
 import type { CheckboxOptionType } from 'antd';
 import { InfoCircleOutlined } from "@ant-design/icons";
+import type { AppPerm } from "@/api/appstore";
 
 
 const netOptionList: CheckboxOptionType[] = [
@@ -79,15 +79,17 @@ const extraOptionList: CheckboxOptionType[] = [
     {
         label: "打开浏览器",
         value: "open_browser",
-    }
+    },
 ];
 
-interface UserAppPermPanelProps {
-    perm?: UserAppPerm;
-    onChange: (perm: UserAppPerm) => void;
+interface MinAppPermPanelProps {
+    disable: boolean;
+    showTitle: boolean;
+    perm?: AppPerm;
+    onChange: (perm: AppPerm) => void;
 }
 
-const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
+const AppPermPanel: React.FC<MinAppPermPanelProps> = (props) => {
     const tmpNetValues: string[] = [];
     const tmpFsValues: string[] = [];
     const tmpExtraValues: string[] = [];
@@ -103,7 +105,7 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
         if (props.perm.net_perm.proxy_mysql) {
             tmpNetValues.push("proxy_mysql");
         }
-        if(props.perm.net_perm.proxy_post_gres){
+        if (props.perm.net_perm.proxy_post_gres) {
             tmpNetValues.push("proxy_post_gres");
         }
         if (props.perm.net_perm.proxy_mongo) {
@@ -122,6 +124,7 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
         if (props.perm.fs_perm.write_file) {
             tmpFsValues.push("write_file");
         }
+
         if (props.perm.extra_perm.cross_origin_isolated) {
             tmpExtraValues.push("cross_origin_isolated");
         }
@@ -135,7 +138,7 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
     const [extraValues, setExtraValues] = useState<string[]>(tmpExtraValues);
 
     const calcPerm = (netPermList: string[], fsPermList: string[], extraPermList: string[]) => {
-        const tempPerm: UserAppPerm = {
+        const tempPerm: AppPerm = {
             net_perm: {
                 cross_domain_http: false,
                 proxy_redis: false,
@@ -161,7 +164,7 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
                 tempPerm.net_perm.proxy_redis = true;
             } else if (permStr == "proxy_mysql") {
                 tempPerm.net_perm.proxy_mysql = true;
-            }else if(permStr == "proxy_post_gres"){
+            } else if (permStr == "proxy_post_gres") {
                 tempPerm.net_perm.proxy_post_gres = true;
             } else if (permStr == "proxy_mongo") {
                 tempPerm.net_perm.proxy_mongo = true;
@@ -184,34 +187,37 @@ const UserAppPermPanel: React.FC<UserAppPermPanelProps> = (props) => {
             } else if (permStr == "open_browser") {
                 tempPerm.extra_perm.open_browser = true;
             }
-        })
+        });
         props.onChange(tempPerm);
     };
-    return (
-        <Form labelCol={{ span: 5 }}>
-            <Form.Item label="网络权限">
-                <Checkbox.Group options={netOptionList} value={netValues}
-                    onChange={values => {
-                        setNetValues(values as string[]);
-                        calcPerm(values as string[], fsValues, extraValues);
-                    }} />
-            </Form.Item>
-            <Form.Item label="本地文件权限">
-                <Checkbox.Group options={fsOptionList} value={fsValues}
-                    onChange={values => {
-                        setFsValues(values as string[]);
-                        calcPerm(netValues, values as string[], extraValues);
-                    }} />
-            </Form.Item>
-            <Form.Item label="其他权限">
-                <Checkbox.Group options={extraOptionList} value={extraValues}
-                    onChange={values => {
-                        setExtraValues(values as string[]);
-                        calcPerm(netValues, fsValues, values as string[]);
-                    }} />
-            </Form.Item>
-        </Form>
-    );
-};
 
-export default UserAppPermPanel;
+    return (
+        <Card title={props.showTitle ? "微应用权限" : null} bordered={false}>
+            <Form labelCol={{ span: 5 }}>
+                <Form.Item label="网络权限">
+                    <Checkbox.Group disabled={props.disable} options={netOptionList} value={netValues}
+                        onChange={values => {
+                            setNetValues(values as string[]);
+                            calcPerm(values as string[], fsValues, extraValues);
+                        }} />
+                </Form.Item>
+                <Form.Item label="本地文件权限">
+                    <Checkbox.Group disabled={props.disable} options={fsOptionList} value={fsValues}
+                        onChange={values => {
+                            setFsValues(values as string[]);
+                            calcPerm(netValues, values as string[], extraValues);
+                        }} />
+                </Form.Item>
+                <Form.Item label="其他权限">
+                    <Checkbox.Group disabled={props.disable} options={extraOptionList} value={extraValues}
+                        onChange={values => {
+                            setExtraValues(values as string[]);
+                            calcPerm(netValues, fsValues, values as string[]);
+                        }} />
+                </Form.Item>
+            </Form>
+        </Card>
+    );
+}
+
+export default AppPermPanel;

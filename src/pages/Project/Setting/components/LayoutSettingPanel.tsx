@@ -26,7 +26,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
-    const [disableAppStore, setDisableAppStore] = useState(projectStore.curProject?.setting.disable_app_store ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
     const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
     const [disableCodeComment, setDisableCodeComment] = useState(projectStore.curProject?.setting.disable_code_comment ?? false);
@@ -50,7 +49,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
         setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
-        setDisableAppStore(projectStore.curProject?.setting.disable_app_store ?? false);
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
         setDisableApiCollection(projectStore.curProject?.setting.disable_api_collection ?? false);
         setDisableCodeComment(projectStore.curProject?.setting.disable_code_comment ?? false);
@@ -69,7 +67,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 ...projectStore.curProject!.setting,
                 disable_member_appraise: disableMemberAppraise,
                 disable_ext_event: disableExtEvent,
-                disable_app_store: disableAppStore,
                 disable_data_anno: disableDataAnno,
                 disable_api_collection: disableApiCollection,
                 disable_code_comment: disableCodeComment,
@@ -208,11 +205,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableCodeComment(e.target.checked);
                             setHasChange(true);
                         }}>关闭代码评论入口</Checkbox>
-                        <Checkbox checked={disableAppStore} onChange={e => {
-                            e.stopPropagation();
-                            setDisableAppStore(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭应用市场入口</Checkbox>
                     </Space>
                 </Form.Item>
                 <Form.Item label="我的工作">

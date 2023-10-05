@@ -7,6 +7,7 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+#[allow(unused_variables)]
 #[tauri::command]
 async fn open_browser<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -15,7 +16,7 @@ async fn open_browser<R: Runtime>(
     url: String,
 ) -> Result<(), String> {
     //检查权限
-    let perm = get_min_app_perm(app_handle.clone(), window.clone(), project_id.clone()).await;
+    let perm = get_min_app_perm(app_handle.clone(), window.clone()).await;
     if perm.is_none() {
         return Err("no perm".into());
     }
