@@ -53,6 +53,7 @@ import {
   ADMIN_PATH_RSS_CRAWLER_SUFFIX,
   ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX,
   ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
+  APP_PROJECT_MY_WORK_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -90,6 +91,7 @@ import ThreadList from '@/pages/Project/Code/ThreadList';
 import CrawlerList from '@/pages/Admin/RssAdmin/CrawlerList';
 import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
+import MyWorkLayout from '@/layouts/MyWorkLayout';
 
 export interface IRouteConfig {
   // 路由路径
@@ -299,6 +301,12 @@ const routesConfig: IRouteConfig[] = [
                 routes: getToolbarRoute(APP_PROJECT_KB_BOOK_SHELF_PATH),
               },
             ],
+          },
+          {
+            path: APP_PROJECT_MY_WORK_PATH,
+            title: "我的工作",
+            component: MyWorkLayout,
+            routes: getToolbarRoute(APP_PROJECT_MY_WORK_PATH),
           },
           {
             path: APP_PROJECT_OVERVIEW_PATH,

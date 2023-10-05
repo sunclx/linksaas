@@ -12,9 +12,10 @@ import {
   PROJECT_SETTING_TAB,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_WORK_PLAN_PATH,
+  APP_PROJECT_MY_WORK_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
-import { CommentOutlined, FileDoneOutlined, FlagOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, CommentOutlined, FileDoneOutlined, FlagOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
 import SearchBar from '../SearchBar';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
@@ -81,6 +82,8 @@ const TopNav = () => {
       setActiveKey(APP_PROJECT_CHAT_PATH);
     } else if (location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
       setActiveKey(APP_PROJECT_KB_PATH);
+    } else if(location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+      setActiveKey(APP_PROJECT_MY_WORK_PATH);
     } else if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
       setActiveKey(APP_PROJECT_OVERVIEW_PATH);
     }
@@ -104,6 +107,8 @@ const TopNav = () => {
                 } else if (key == APP_PROJECT_KB_PATH) {
                   docSpaceStore.showDocList("", false);
                   history.push(APP_PROJECT_KB_DOC_PATH);
+                } else if (key == APP_PROJECT_MY_WORK_PATH) {
+                  history.push(APP_PROJECT_MY_WORK_PATH);
                 } else if (key == APP_PROJECT_OVERVIEW_PATH) {
                   history.push(APP_PROJECT_OVERVIEW_PATH);
                 }
@@ -119,6 +124,8 @@ const TopNav = () => {
             } else if (key == APP_PROJECT_KB_PATH) {
               docSpaceStore.showDocList("", false);
               history.push(APP_PROJECT_KB_DOC_PATH);
+            } else if (key == APP_PROJECT_MY_WORK_PATH) {
+              history.push(APP_PROJECT_MY_WORK_PATH);
             } else if (key == APP_PROJECT_OVERVIEW_PATH) {
               history.push(APP_PROJECT_OVERVIEW_PATH);
             }
@@ -137,6 +144,9 @@ const TopNav = () => {
             <>{kbTabPanel}</>
           )}
 
+          <Tabs.TabPane tab={
+            <span className={activeKey == APP_PROJECT_MY_WORK_PATH ? s.tab_my_work_active : s.tab_my_work}><ClockCircleOutlined />我的工作</span>
+          } key={APP_PROJECT_MY_WORK_PATH} />);
 
           <Tabs.TabPane tab={
             <span className={activeKey == APP_PROJECT_OVERVIEW_PATH ? s.tab_overview_active : s.tab_overview}><FundProjectionScreenOutlined />项目概览</span>
@@ -149,6 +159,7 @@ const TopNav = () => {
         {location.pathname.includes(APP_PROJECT_WORK_PLAN_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>项目书籍</div><SearchBar /><RightFloat /></>)}
+        {location.pathname.includes(APP_PROJECT_MY_WORK_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<RightFloat />)}
       </div>
     </div>

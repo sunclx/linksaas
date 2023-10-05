@@ -8,7 +8,6 @@ import Button from "@/components/Button";
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { get_port } from "@/api/local_api";
 import MemberInfoPanel from "./components/MemberInfoPanel";
-import MyIssuePanel from "./components/MyIssuePanel";
 import BulletinListPanel from "./components/BulletinListPanel";
 import { useStores } from "@/hooks";
 
@@ -54,7 +53,7 @@ const ProjectOverview = () => {
             {(projectStore.curProject?.setting.hide_project_info ?? false) == false && <ProjectInfoPanel />}
             {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && <BulletinListPanel />}
             <MemberInfoPanel />
-            <MyIssuePanel />
+            
             {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && (
                 <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
                     <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>

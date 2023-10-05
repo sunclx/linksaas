@@ -10,6 +10,7 @@ import {
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
+  APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_PATH,
   APP_PROJECT_WORK_PLAN_PATH,
@@ -830,6 +831,8 @@ class LinkAuxStore {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
       return APP_PROJECT_KB_BOOK_SHELF_PATH + newSuffix;
+    }else if(pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+      return APP_PROJECT_MY_WORK_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
       return APP_PROJECT_OVERVIEW_PATH + newSuffix;
     }

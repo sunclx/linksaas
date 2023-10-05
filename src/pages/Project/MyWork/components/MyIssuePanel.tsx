@@ -161,28 +161,11 @@ const WatchIssueList = (props: WatchIssueListProps) => {
 const MyTaskPanel = () => {
     const projectStore = useStores('projectStore');
 
-    const getDefaultActiveKey = (): string => {
-        if (projectStore.curProject?.setting.hide_my_todo_task == false) {
-            return "myTask"
-        }
-        if (projectStore.curProject?.setting.hide_my_todo_bug == false) {
-            return "myBug";
-        }
-        if (projectStore.curProject?.setting.hide_watch_task == false) {
-            return "watchTask"
-        }
-        if (projectStore.curProject?.setting.hide_watch_bug == false) {
-            return "watchBug";
-        }
-        return "";
-    };
-
-    const [activeKey, setActiveKey] = useState(getDefaultActiveKey());
+    const [activeKey, setActiveKey] = useState("myTask");
 
     const getTabItems = () => {
-        const retList: Tab[] = [];
-        if (projectStore.curProject?.setting.hide_my_todo_task == false) {
-            retList.push({
+        const retList: Tab[] = [
+            {
                 key: "myTask",
                 label: "待办任务",
                 children: (
@@ -192,10 +175,8 @@ const MyTaskPanel = () => {
                         )}
                     </>
                 ),
-            });
-        }
-        if (projectStore.curProject?.setting.hide_my_todo_task == false) {
-            retList.push({
+            },
+            {
                 key: "myBug",
                 label: "待办缺陷",
                 children: (
@@ -205,8 +186,9 @@ const MyTaskPanel = () => {
                         )}
                     </>
                 ),
-            });
-        }
+            }
+        ];
+
         if (projectStore.curProject?.setting.hide_watch_task == false) {
             retList.push({
                 key: "watchTask",
@@ -237,16 +219,9 @@ const MyTaskPanel = () => {
     };
 
     return (
-        <>
-            {((projectStore.curProject?.setting.hide_my_todo_task == false)
-                || (projectStore.curProject?.setting.hide_my_todo_bug == false)
-                || (projectStore.curProject?.setting.hide_watch_task == false)
-                || (projectStore.curProject?.setting.hide_watch_bug == false)) && (
-                    <Card title="我的任务/缺陷" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }}>
-                        <Tabs type="card" items={getTabItems()} activeKey={activeKey} onChange={key => setActiveKey(key)} />
-                    </Card>
-                )}
-        </>
+        <Card title="我的任务/缺陷" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }}>
+            <Tabs type="card" items={getTabItems()} activeKey={activeKey} onChange={key => setActiveKey(key)} />
+        </Card>
     );
 };
 
