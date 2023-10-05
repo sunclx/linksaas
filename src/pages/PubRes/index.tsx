@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
-import { AppstoreOutlined, BookOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
-import BookStorePanel from './components/BookStorePanel';
 import { useStores } from '@/hooks';
 import { ReactComponent as DockerSvg } from '@/assets/svg/docker.svg';
 import DockerTemplatePanel from './components/DockerTemplatePanel';
@@ -33,8 +32,6 @@ const PubRes = () => {
             tab = "rss"
         } else if (appStore.clientCfg?.enable_pub_app_store == true) {
             tab = "appStore"
-        } else if (appStore.clientCfg?.enable_pub_book_store == true) {
-            tab = "bookStore"
         } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
             tab = "dockerTemplate"
         }
@@ -78,15 +75,6 @@ const PubRes = () => {
                             <div className={s.content_wrap}>
                                 {pubResStore.showAppId == "" && <AppStorePanel />}
                                 {pubResStore.showAppId != "" && <AppStoreDetail />}
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
-                {appStore.clientCfg?.enable_pub_book_store == true && (
-                    <Tabs.TabPane tab={<h2><BookOutlined />&nbsp;书籍</h2>} key="bookStore">
-                        {activeKey == "bookStore" && (
-                            <div className={s.content_wrap}>
-                                <BookStorePanel />
                             </div>
                         )}
                     </Tabs.TabPane>

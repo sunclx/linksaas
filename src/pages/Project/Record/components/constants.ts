@@ -1,6 +1,6 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
-    ProjectEvCfg, BookShelfEvCfg, DocEvCfg, ExtEvCfg,
+    ProjectEvCfg, DocEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg, SpritEvCfg,
     RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg
 } from '@/api/events_subscribe';
@@ -361,46 +361,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.custom_event) {
         retList.push("customEvent");
-    }
-    return retList;
-}
-
-export const bookShelfEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "新增电子书",
-        value: "addBook",
-    },
-    {
-        label: "删除电子书",
-        value: "removeBook",
-    },
-];
-
-export const calcBookShelfEvCfg = (values: string[] | undefined): BookShelfEvCfg => {
-    const ret: BookShelfEvCfg = {
-        add_book: false,
-        remove_book: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "addBook") {
-            ret.add_book = true;
-        } else if (value == "removeBook") {
-            ret.remove_book = true;
-        }
-    })
-    return ret;
-};
-
-export const genBookShelfEvCfgValues = (cfg: BookShelfEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.add_book) {
-        retList.push("addBook");
-    }
-    if (cfg.remove_book) {
-        retList.push("removeBook");
     }
     return retList;
 }

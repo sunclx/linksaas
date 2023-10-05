@@ -6,10 +6,8 @@ import { useStores } from "@/hooks";
 import { 
     apiCollectionEvOptionList, 
     atomgitEvOptionList, 
-    bookShelfEvOptionList, 
     calcApiCollectionEvCfg, 
     calcAtomgitEvCfg, 
-    calcBookShelfEvCfg, 
     calcCodeEvCfg, 
     calcDataAnnoEvCfg, 
     calcDocEvCfg, 
@@ -27,7 +25,6 @@ import {
     extEvOptionList, 
     genApiCollectionEvCfgValues, 
     genAtomgitEvCfgValues, 
-    genBookShelfEvCfgValues, 
     genCodeEvCfgValues, 
     genDataAnnoEvCfgValues, 
     genDocEvCfgValues, 
@@ -59,7 +56,6 @@ interface UpdateSubscribeModalProps {
 
 interface FormValue {
     chatBotName: string | undefined;
-    bookShelfEvCfg: string[] | undefined;
     docEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
     atomgitEvCfg: string[] | undefined;
@@ -84,9 +80,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(projectEvCfgValues.length == projectEvOptionList.length);
     const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(projectEvCfgValues.length > 0 && projectEvCfgValues.length < projectEvOptionList.length);
 
-    const bookShelfEvCfgValues = genBookShelfEvCfgValues(props.subscribe.event_cfg.book_shelf_ev_cfg);
-    const [bookShelfEvCfgCheckAll, setBookShelfEvCfgCheckAll] = useState(bookShelfEvCfgValues.length == bookShelfEvOptionList.length);
-    const [bookShelfEvCfgIndeterminate, setBookShelfEvCfgIndeterminate] = useState(bookShelfEvCfgValues.length > 0 && bookShelfEvCfgValues.length < bookShelfEvOptionList.length);
 
     const docEvCfgValues = genDocEvCfgValues(props.subscribe.event_cfg.doc_ev_cfg);
     const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(docEvCfgValues.length == docEvOptionList.length);
@@ -149,7 +142,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
             chat_bot_name: formValue.chatBotName,
             event_cfg: {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
-                book_shelf_ev_cfg: calcBookShelfEvCfg(formValue.bookShelfEvCfg),
                 doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
                 atomgit_ev_cfg:calcAtomgitEvCfg(formValue.atomgitEvCfg),
@@ -180,7 +172,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
             <div style={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}>
                 <Form form={form} labelCol={{ span: 7 }} initialValues={{
                     "projectEvCfg": projectEvCfgValues,
-                    "bookShelfEvCfg": bookShelfEvCfgValues,
                     "docEvCfg": docEvCfgValues,
                     "extEvCfg": extEvCfgValues,
                     "atomgitEvcfg":atomgitEvCfgValues,
@@ -217,31 +208,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setProjectEvCfgCheckAll(false);
                                 setProjectEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={bookShelfEvCfgIndeterminate} checked={bookShelfEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setBookShelfEvCfgIndeterminate(false);
-                        if (bookShelfEvCfgCheckAll) {
-                            setBookShelfEvCfgCheckAll(false);
-                            form.setFieldValue("bookShelfEvCfg", []);
-                        } else {
-                            setBookShelfEvCfgCheckAll(true);
-                            form.setFieldValue("bookShelfEvCfg", bookShelfEvOptionList.map(item => item.value));
-                        }
-                    }}>电子书事件</Checkbox>} name="bookShelfEvCfg">
-                        <Checkbox.Group options={bookShelfEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setBookShelfEvCfgCheckAll(false);
-                                setBookShelfEvCfgIndeterminate(false);
-                            } else if (values.length == bookShelfEvOptionList.length) {
-                                setBookShelfEvCfgCheckAll(true);
-                                setBookShelfEvCfgIndeterminate(false);
-                            } else {
-                                setBookShelfEvCfgCheckAll(false);
-                                setBookShelfEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

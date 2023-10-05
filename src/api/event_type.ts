@@ -7,7 +7,6 @@ import { type AllProjectEvent, get_project_simple_content } from './events/proje
 import { type AllProjectDocEvent, get_project_doc_simple_content } from './events/project_doc';
 import { type AllSpritEvent, get_sprit_simple_content } from './events/sprit';
 import { type AllIssueEvent, get_issue_simple_content } from './events/issue';
-import { type AllBookShelfEvent, get_book_shelf_simple_content } from './events/book_shelf';
 import { type AllExtEvEvent, get_ext_event_simple_content } from './events/ext_event';
 import { type AllGitlabEvent, get_gitlab_simple_content } from './events/gitlab';
 import { type AllGogsEvent, get_gogs_simple_content } from './events/gogs';
@@ -34,7 +33,6 @@ export class AllEvent {
   ProjectDocEvent?: AllProjectDocEvent;
   SpritEvent?: AllSpritEvent;
   IssueEvent?: AllIssueEvent;
-  BookShelfEvent?: AllBookShelfEvent;
   ExtEvEvent?: AllExtEvEvent;
   GitlabEvent?: AllGitlabEvent;
   GogsEvent?: AllGogsEvent;
@@ -56,8 +54,6 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return get_sprit_simple_content(ev, skip_prj_name, ev.event_data.SpritEvent);
   } else if (ev.event_data.IssueEvent !== undefined) {
     return get_issue_simple_content(ev, skip_prj_name, ev.event_data.IssueEvent);
-  } else if (ev.event_data.BookShelfEvent !== undefined) {
-    return get_book_shelf_simple_content(ev, skip_prj_name, ev.event_data.BookShelfEvent);
   } else if (ev.event_data.ExtEvEvent !== undefined) {
     return get_ext_event_simple_content(ev, skip_prj_name, ev.event_data.ExtEvEvent);
   } else if (ev.event_data.GitlabEvent !== undefined) {

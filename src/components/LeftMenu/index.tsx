@@ -56,7 +56,7 @@ const LeftMenu: React.FC = () => {
         </div>
         <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
         <ProjectList />
-        {(appStore.clientCfg?.enable_pub_app_store == true || appStore.clientCfg?.enable_pub_book_store == true
+        {(appStore.clientCfg?.enable_pub_app_store == true
           || appStore.clientCfg?.enable_pub_docker_template == true || appStore.clientCfg?.enable_rss == true
           || appStore.clientCfg?.enable_pub_search == true) && (
             <>

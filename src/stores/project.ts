@@ -425,26 +425,4 @@ export default class ProjectStore {
       this._alarmVersion = this._alarmVersion + 1;
     });
   }
-  //项目书签变更事件
-  private _bookMarkCateVersion: number = 0;
-  get bookMarkCateVersion(): number {
-    return this._bookMarkCateVersion;
-  }
-  addBookMarkCateVersion() {
-    runInAction(() => {
-      this._bookMarkCateVersion = this._bookMarkCateVersion + 1;
-    });
-  }
-
-  private _curBookMarkCateId: string = ""
-
-  get curBookMarkCateId(): string {
-    return this._curBookMarkCateId;
-  }
-
-  set curBookMarkCateId(val: string) {
-    runInAction(() => {
-      this._curBookMarkCateId = val;
-    });
-  }
 }

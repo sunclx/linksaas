@@ -22,8 +22,6 @@ export type ServerCap = {
   appraise: boolean;
   issue: boolean;
   project_app: boolean;
-  project_book_store: boolean;
-  project_book_shelf: boolean;
   project_setting: boolean;
 };
 
@@ -37,12 +35,10 @@ export type GetCfgResponse = {
   enable_admin: boolean;
   enable_search: boolean;
   enable_pub_app_store: boolean;
-  enable_pub_book_store: boolean;
   enable_pub_docker_template: boolean;
   enable_rss: boolean;
   enable_pub_search: boolean;
   app_store_fs_id: string;
-  book_store_fs_id: string;
   docker_template_fs_id: string;
   rss_fs_id: string;
   pub_search_fs_id: string;

@@ -12,7 +12,7 @@ import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
 import {
-    bookShelfEvOptionList, codeEvOptionList, docEvOptionList,  extEvOptionList, genBookShelfEvCfgValues,
+     codeEvOptionList, docEvOptionList,  extEvOptionList, 
     genCodeEvCfgValues, genDocEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, 
     genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
@@ -136,9 +136,6 @@ const SubscribeList = () => {
                                     <Form labelCol={{ span: 3 }}>
                                         <Form.Item label="项目事件">
                                             <Checkbox.Group options={projectEvOptionList} value={genProjectEvCfgValues(item.event_cfg.project_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="电子书事件">
-                                            <Checkbox.Group options={bookShelfEvOptionList} value={genBookShelfEvCfgValues(item.event_cfg.book_shelf_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="文档事件">
                                             <Checkbox.Group options={docEvOptionList} value={genDocEvCfgValues(item.event_cfg.doc_ev_cfg)} disabled={true} />

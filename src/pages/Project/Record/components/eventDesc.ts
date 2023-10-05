@@ -14,38 +14,6 @@ export interface EventGroup {
     eventDescList: EventDesc[];
 }
 
-
-const bookShelfEventList: EventDesc[] = [
-    {
-        id: "AddBookEvent",
-        name: "增加书本",
-        attrList: [
-            {
-                key: "book_id",
-                desc: "书本ID"
-            },
-            {
-                key: "book_title",
-                desc: "书本标题"
-            }
-        ],
-    },
-    {
-        id: "RemoveBookEvent",
-        name: "删除书本",
-        attrList: [
-            {
-                key: "book_id",
-                desc: "书本ID"
-            },
-            {
-                key: "book_title",
-                desc: "书本标题"
-            }
-        ],
-    }
-];
-
 const codeEventList: EventDesc[] = [
     {
         id: "AddCommentEvent",
@@ -3207,11 +3175,6 @@ export const eventGroupList: EventGroup[] = [
         id: "IssueEvent",
         name: "工单",
         eventDescList: issueEventList,
-    },
-    {
-        id: "BookShelfEvent",
-        name: "项目书籍",
-        eventDescList: bookShelfEventList,
     },
     {
         id: "ExtEvEvent",

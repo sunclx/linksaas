@@ -8,7 +8,6 @@ import {
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_PATH,
-  APP_PROJECT_KB_BOOK_SHELF_PATH,
   PROJECT_SETTING_TAB,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_WORK_PLAN_PATH,
@@ -158,7 +157,6 @@ const TopNav = () => {
         {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_WORK_PLAN_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
-        {location.pathname.includes(APP_PROJECT_KB_BOOK_SHELF_PATH) && (<><div className={s.doc_title}>项目书籍</div><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_MY_WORK_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<RightFloat />)}
       </div>

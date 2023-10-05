@@ -99,7 +99,7 @@ export type ProjectInfo = {
   issue_fs_id: string;
   project_fs_id: string;
   doc_fs_id: string;
-  ebook_fs_id: string;
+  // ebook_fs_id: string;
   // artifact_fs_id: string;
   // test_case_fs_id: string;
   min_app_fs_id: string;

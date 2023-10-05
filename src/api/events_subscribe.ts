@@ -43,11 +43,6 @@ export type ProjectEvCfg = {
     custom_event: boolean;
 };
 
-export type BookShelfEvCfg = {
-    add_book: boolean;
-    remove_book: boolean;
-};
-
 export type DocEvCfg = {
     create_space: boolean;
     update_space: boolean;
@@ -181,7 +176,6 @@ export type AtomgitEvCfg = {
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
-    book_shelf_ev_cfg: BookShelfEvCfg;
     doc_ev_cfg: DocEvCfg;
     ext_ev_cfg: ExtEvCfg;
     gitee_ev_cfg: GiteeEvCfg;

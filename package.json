@@ -45,7 +45,6 @@
     "classnames": "^2.3.1",
     "dayjs": "^1.11.1",
     "ejs": "^3.1.9",
-    "epubjs": "^0.3.93",
     "gantt-task-react": "^0.3.9",
     "indexof": "^0.0.1",
     "js-cookie": "^3.0.1",
