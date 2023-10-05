@@ -115,6 +115,14 @@ class MemberStore {
     return this._memberList;
   }
 
+  get myLastEventId(): string {
+    const memberInfo = this._memberMap.get(this.rootStore.userStore.userInfo.userId);
+    if (memberInfo == undefined) {
+      return "";
+    }
+    return memberInfo.member.last_event_id;
+  }
+
   getMember(userId: string): WebMemberInfo | undefined {
     return this._memberMap.get(userId);
   }

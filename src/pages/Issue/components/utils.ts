@@ -216,42 +216,6 @@ export async function cancelEstimateMinutes(sessionId: string, projectId: string
     }
 }
 
-export async function updateExecAward(sessionId: string, projectId: string, issueId: string, award: number): Promise<boolean> {
-    try {
-        const res = await issueApi.set_exec_award({
-            session_id: sessionId,
-            project_id: projectId,
-            issue_id: issueId,
-            point: award,
-        });
-        if (res.code == 0) {
-            return true
-        }
-        message.error(res.err_msg);
-        return false;
-    } catch (_) {
-        return false;
-    }
-}
-
-export async function updateCheckAward(sessionId: string, projectId: string, issueId: string, award: number): Promise<boolean> {
-    try {
-        const res = await issueApi.set_check_award({
-            session_id: sessionId,
-            project_id: projectId,
-            issue_id: issueId,
-            point: award,
-        });
-        if (res.code == 0) {
-            return true
-        }
-        message.error(res.err_msg);
-        return false;
-    } catch (_) {
-        return false;
-    }
-}
-
 export async function updateExecUser(sessionId: string, projectId: string, issueId: string, execUserId: string): Promise<boolean> {
     try {
         const res = await issueApi.assign_exec_user(sessionId, projectId, issueId, execUserId);

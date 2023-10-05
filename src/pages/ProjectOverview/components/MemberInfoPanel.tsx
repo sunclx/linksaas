@@ -4,16 +4,12 @@ import { observer } from 'mobx-react';
 import Button from "@/components/Button";
 import { MinusCircleOutlined, MoreOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useStores } from "@/hooks";
-import GoalList from "./GoalList";
-import AwardList from "./AwardList";
 import type { RoleInfo } from '@/api/project_member';
 import { list_role, set_member_role, remove_member } from '@/api/project_member';
 import { request } from "@/utils/request";
 import { change_owner } from "@/api/project";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import s from "./MemberInfoPanel.module.less";
-import type { AwardState } from '@/api/project_award';
-import { list_state } from '@/api/project_award';
 import { ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS } from "@/api/project_issue";
 import { useHistory } from "react-router-dom";
 import EventCom from "@/components/EventCom";
@@ -21,23 +17,7 @@ import moment from "moment";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
 import InviteListModal from "./InviteListModal";
-
-const MemberAwardState: React.FC<{ state?: AwardState }> = ({ state }) => {
-    if (state == undefined) {
-        return (<></>);
-    } else {
-        return (
-            <div style={{ paddingRight: "20px" }}>
-                <Space direction="vertical">
-                    <span>上月贡献:&nbsp;{state.last_month_point}</span>
-                    <span>本月贡献:&nbsp;{state.cur_month_point}</span>
-                    <span>上周贡献:&nbsp;{state.last_weak_point}</span>
-                    <span>本周贡献:&nbsp;{state.cur_week_point}</span>
-                </Space>
-            </div>
-        );
-    }
-};
+import { ReadOnlyEditor } from "@/components/Editor";
 
 const MemberInfoPanel = () => {
     const history = useHistory();
@@ -51,7 +31,6 @@ const MemberInfoPanel = () => {
     const [roleList, setRoleList] = useState<RoleInfo[]>([]);
     const [removeMemberUserId, setRemoveMemberUserId] = useState("");
     const [ownerMemberUserId, setOwnerMemberUserId] = useState("");
-    const [awardStateList, setAwardStateList] = useState<AwardState[]>([]);
     const [activeKey, setActiveKey] = useState(userStore.userInfo.userId);
     const [showInviteListModal, setShowInviteListModal] = useState(false);
 
@@ -84,17 +63,8 @@ const MemberInfoPanel = () => {
         message.info("移除用户成功");
     };
 
-    const loadAwardStateList = async () => {
-        const res = await request(list_state({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-        }));
-        setAwardStateList(res.state_list);
-    };
-
     useEffect(() => {
         loadRoleList();
-        loadAwardStateList();
     }, [projectStore.curProjectId]);
 
     return (
@@ -241,6 +211,14 @@ const MemberInfoPanel = () => {
 
                                             </Descriptions.Item>
                                         )}
+                                        <Descriptions.Item label="工作备注" span={2}>
+                                            {(member.member.extra_state_info?.state_end_time ?? 0) > moment().valueOf() && (
+                                                <ReadOnlyEditor content={member.member.extra_state_info?.state_desc ?? ""} />
+                                            )}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="需要帮助" span={2}>
+                                            <ReadOnlyEditor content={member.member.extra_state_info?.need_help_desc ?? ""} />
+                                        </Descriptions.Item>
                                         {member.short_note_list.length > 0 && (
                                             <Descriptions.Item label="桌面便签" span={2}>
                                                 {member.short_note_list.map(item => (
@@ -261,23 +239,6 @@ const MemberInfoPanel = () => {
                                                         )}
                                                     </div>
                                                 ))}
-                                            </Descriptions.Item>
-                                        )}
-                                        {(projectStore.curProject?.setting.hide_user_goal ?? false) == false && (
-                                            <Descriptions.Item label="成员目标" span={2} contentStyle={{ padding: "0px 0px" }}>
-                                                <GoalList memberUserId={member.member.member_user_id} />
-                                            </Descriptions.Item>
-                                        )}
-
-                                        {(projectStore.curProject?.setting.hide_user_award ?? false) == false && (
-                                            <Descriptions.Item label={
-                                                <Space direction="vertical">
-                                                    <span>成员贡献</span>
-                                                    <MemberAwardState state={awardStateList.find(item => item.member_user_id == member.member.member_user_id)} />
-                                                </Space>
-                                            } span={2} contentStyle={{ padding: "0px 0px" }}>
-
-                                                <AwardList memberUserId={member.member.member_user_id} />
                                             </Descriptions.Item>
                                         )}
                                     </Descriptions>

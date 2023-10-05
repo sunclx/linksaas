@@ -33,11 +33,6 @@ export type ProjectEvCfg = {
     remove_appraise: boolean;
     add_project_app: boolean;
     remove_project_app: boolean;
-    create_goal: boolean;
-    update_goal: boolean;
-    remove_goal: boolean;
-    lock_goal: boolean;
-    unlock_goal: boolean;
     change_owner: boolean;
     create_subscribe: boolean;
     update_subscribe: boolean;
@@ -46,11 +41,6 @@ export type ProjectEvCfg = {
     un_watch_channel: boolean;
     set_alarm_config: boolean;
     custom_event: boolean;
-};
-
-export type BookShelfEvCfg = {
-    add_book: boolean;
-    remove_book: boolean;
 };
 
 export type DocEvCfg = {
@@ -186,7 +176,6 @@ export type AtomgitEvCfg = {
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
-    book_shelf_ev_cfg: BookShelfEvCfg;
     doc_ev_cfg: DocEvCfg;
     ext_ev_cfg: ExtEvCfg;
     gitee_ev_cfg: GiteeEvCfg;

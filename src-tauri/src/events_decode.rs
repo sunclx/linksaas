@@ -32,11 +32,6 @@ pub mod project {
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
         AddProjectAppEvent(events_project::AddProjectAppEvent),
         RemoveProjectAppEvent(events_project::RemoveProjectAppEvent),
-        CreateGoalEvent(events_project::CreateGoalEvent),
-        UpdateGoalEvent(events_project::UpdateGoalEvent),
-        RemoveGoalEvent(events_project::RemoveGoalEvent),
-        LockGoalEvent(events_project::LockGoalEvent),
-        UnlockGoalEvent(events_project::UnlockGoalEvent),
         ChangeOwnerEvent(events_project::ChangeOwnerEvent),
         CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
         UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
@@ -155,26 +150,6 @@ pub mod project {
         } else if data.type_url == events_project::RemoveProjectAppEvent::type_url() {
             if let Ok(ev) = events_project::RemoveProjectAppEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveProjectAppEvent(ev));
-            }
-        } else if data.type_url == events_project::CreateGoalEvent::type_url() {
-            if let Ok(ev) = events_project::CreateGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::UpdateGoalEvent::type_url() {
-            if let Ok(ev) = events_project::UpdateGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveGoalEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::LockGoalEvent::type_url() {
-            if let Ok(ev) = events_project::LockGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::LockGoalEvent(ev));
-            }
-        } else if data.type_url == events_project::UnlockGoalEvent::type_url() {
-            if let Ok(ev) = events_project::UnlockGoalEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnlockGoalEvent(ev));
             }
         } else if data.type_url == events_project::ChangeOwnerEvent::type_url() {
             if let Ok(ev) = events_project::ChangeOwnerEvent::decode(data.value.as_slice()) {
@@ -346,32 +321,6 @@ pub mod sprit {
         } else if data.type_url == events_sprit::CancelLinkChannelEvent::type_url() {
             if let Ok(ev) = events_sprit::CancelLinkChannelEvent::decode(data.value.as_slice()) {
                 return Some(Event::CancelLinkChannelEvent(ev));
-            }
-        }
-        None
-    }
-}
-
-pub mod book_shelf {
-    use prost::Message;
-    use proto_gen_rust::events_book_shelf;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        AddBookEvent(events_book_shelf::AddBookEvent),
-        RemoveBookEvent(events_book_shelf::RemoveBookEvent),
-    }
-
-    pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_book_shelf::AddBookEvent::type_url() {
-            if let Ok(ev) = events_book_shelf::AddBookEvent::decode(data.value.as_slice()) {
-                return Some(Event::AddBookEvent(ev));
-            }
-        } else if data.type_url == events_book_shelf::RemoveBookEvent::type_url() {
-            if let Ok(ev) = events_book_shelf::RemoveBookEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveBookEvent(ev));
             }
         }
         None
@@ -997,7 +946,6 @@ pub enum EventMessage {
     ProjectDocEvent(project_doc::Event),
     SpritEvent(sprit::Event),
     IssueEvent(issue::Event),
-    BookShelfEvent(book_shelf::Event),
     ExtEvEvent(ext_event::Event),
     GitlabEvent(gitlab::Event),
     GogsEvent(gogs::Event),
@@ -1025,9 +973,6 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = issue::decode_event(data) {
         return Some(EventMessage::IssueEvent(ret));
-    }
-    if let Some(ret) = book_shelf::decode_event(data) {
-        return Some(EventMessage::BookShelfEvent(ret));
     }
     if let Some(ret) = ext_event::decode_event(data) {
         return Some(EventMessage::ExtEvEvent(ret));

@@ -1,6 +1,6 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
-    ProjectEvCfg, BookShelfEvCfg, DocEvCfg, ExtEvCfg,
+    ProjectEvCfg, DocEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg, SpritEvCfg,
     RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg
 } from '@/api/events_subscribe';
@@ -111,26 +111,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "removeProjectApp",
     },
     {
-        label: "创建目标",
-        value: "createGoal",
-    },
-    {
-        label: "更新目标",
-        value: "updateGoal",
-    },
-    {
-        label: "删除目标",
-        value: "removeGoal",
-    },
-    {
-        label: "锁定目标",
-        value: "lockGoal",
-    },
-    {
-        label: "解锁目标",
-        value: "unlockGoal",
-    },
-    {
         label: "转移超级管理员",
         value: "changeOwner",
     },
@@ -192,11 +172,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         remove_appraise: false,
         add_project_app: false,
         remove_project_app: false,
-        create_goal: false,
-        update_goal: false,
-        remove_goal: false,
-        lock_goal: false,
-        unlock_goal: false,
         change_owner: false,
         create_subscribe: false,
         update_subscribe: false,
@@ -262,16 +237,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.add_project_app = true;
         } else if (value == "removeProjectApp") {
             ret.remove_project_app = true;
-        } else if (value == "createGoal") {
-            ret.create_goal = true;
-        } else if (value == "updateGoal") {
-            ret.update_goal = true;
-        } else if (value == "removeGoal") {
-            ret.remove_goal = true;
-        } else if (value == "lockGoal") {
-            ret.lock_goal = true;
-        } else if (value == "unlockGoal") {
-            ret.unlock_goal = true;
         } else if (value == "changeOwner") {
             ret.change_owner = true;
         } else if (value == "createSubscribe") {
@@ -373,21 +338,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     if (cfg.remove_project_app) {
         retList.push("removeProjectApp");
     }
-    if (cfg.create_goal) {
-        retList.push("createGoal");
-    }
-    if (cfg.update_goal) {
-        retList.push("updateGoal");
-    }
-    if (cfg.remove_goal) {
-        retList.push("removeGoal");
-    }
-    if (cfg.lock_goal) {
-        retList.push("lockGoal");
-    }
-    if (cfg.unlock_goal) {
-        retList.push("unlockGoal");
-    }
     if (cfg.change_owner) {
         retList.push("changeOwner");
     }
@@ -411,46 +361,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.custom_event) {
         retList.push("customEvent");
-    }
-    return retList;
-}
-
-export const bookShelfEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "新增电子书",
-        value: "addBook",
-    },
-    {
-        label: "删除电子书",
-        value: "removeBook",
-    },
-];
-
-export const calcBookShelfEvCfg = (values: string[] | undefined): BookShelfEvCfg => {
-    const ret: BookShelfEvCfg = {
-        add_book: false,
-        remove_book: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "addBook") {
-            ret.add_book = true;
-        } else if (value == "removeBook") {
-            ret.remove_book = true;
-        }
-    })
-    return ret;
-};
-
-export const genBookShelfEvCfgValues = (cfg: BookShelfEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.add_book) {
-        retList.push("addBook");
-    }
-    if (cfg.remove_book) {
-        retList.push("removeBook");
     }
     return retList;
 }

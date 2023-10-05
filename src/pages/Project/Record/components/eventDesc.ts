@@ -14,38 +14,6 @@ export interface EventGroup {
     eventDescList: EventDesc[];
 }
 
-
-const bookShelfEventList: EventDesc[] = [
-    {
-        id: "AddBookEvent",
-        name: "增加书本",
-        attrList: [
-            {
-                key: "book_id",
-                desc: "书本ID"
-            },
-            {
-                key: "book_title",
-                desc: "书本标题"
-            }
-        ],
-    },
-    {
-        id: "RemoveBookEvent",
-        name: "删除书本",
-        attrList: [
-            {
-                key: "book_id",
-                desc: "书本ID"
-            },
-            {
-                key: "book_title",
-                desc: "书本标题"
-            }
-        ],
-    }
-];
-
 const codeEventList: EventDesc[] = [
     {
         id: "AddCommentEvent",
@@ -1553,120 +1521,6 @@ const projectEventList: EventDesc[] = [
             {
                 key: "app_name",
                 desc: "应用名称"
-            },
-        ]
-    },
-    {
-        id: "CreateGoalEvent",
-        name: "创建目标",
-        attrList: [
-            {
-                key: "goal_id",
-                desc: "目标ID",
-            },
-            {
-                key: "from_time",
-                desc: "开始时间",
-            },
-            {
-                key: "to_time",
-                desc: "结束时间",
-            },
-        ]
-    },
-    {
-        id: "UpdateGoalEvent",
-        name: "修改目标",
-        attrList: [
-            {
-                key: "goal_id",
-                desc: "目标ID",
-            },
-            {
-                key: "from_time",
-                desc: "开始时间",
-            },
-            {
-                key: "to_time",
-                desc: "结束时间",
-            },
-        ]
-    },
-    {
-        id: "RemoveGoalEvent",
-        name: "删除目标",
-        attrList: [
-            {
-                key: "goal_id",
-                desc: "目标ID",
-            },
-            {
-                key: "from_time",
-                desc: "开始时间",
-            },
-            {
-                key: "to_time",
-                desc: "结束时间",
-            },
-            {
-                key: "member_user_id",
-                desc: "成员ID",
-            },
-            {
-                key: "member_display_name",
-                desc: "成员名称",
-            },
-        ]
-    },
-    {
-        id: "LockGoalEvent",
-        name: "锁定目标",
-        attrList: [
-            {
-                key: "goal_id",
-                desc: "目标ID",
-            },
-            {
-                key: "from_time",
-                desc: "开始时间",
-            },
-            {
-                key: "to_time",
-                desc: "结束时间",
-            },
-            {
-                key: "member_user_id",
-                desc: "成员ID",
-            },
-            {
-                key: "member_display_name",
-                desc: "成员名称",
-            },
-        ]
-    },
-    {
-        id: "UnlockGoalEvent",
-        name: "解锁目标",
-        attrList: [
-            {
-                key: "goal_id",
-                desc: "目标ID",
-            },
-            {
-                key: "from_time",
-                desc: "开始时间",
-            },
-            {
-                key: "to_time",
-                desc: "结束时间",
-            },
-            {
-                key: "member_user_id",
-                desc: "成员ID",
-            },
-            {
-                key: "member_display_name",
-                desc: "成员名称",
             },
         ]
     },
@@ -3321,11 +3175,6 @@ export const eventGroupList: EventGroup[] = [
         id: "IssueEvent",
         name: "工单",
         eventDescList: issueEventList,
-    },
-    {
-        id: "BookShelfEvent",
-        name: "项目书籍",
-        eventDescList: bookShelfEventList,
     },
     {
         id: "ExtEvEvent",

@@ -32,23 +32,6 @@ export type MinAppNetPerm = {
     net_util: boolean;
 };
 
-export type MinAppMemberPerm = {
-    list_member: boolean;
-    list_goal_history: boolean;
-};
-
-export type MinAppIssuePerm = {
-    list_my_task: boolean;
-    list_all_task: boolean;
-    list_my_bug: boolean;
-    list_all_bug: boolean;
-};
-
-export type MinAppEventPerm = {
-    list_my_event: boolean;
-    list_all_event: boolean;
-};
-
 export type MinAppFsPerm = {
     read_file: boolean;
     write_file: boolean;
@@ -62,9 +45,6 @@ export type MinAppExtraPerm = {
 
 export type MinAppPerm = {
     net_perm: MinAppNetPerm;
-    member_perm: MinAppMemberPerm;
-    issue_perm: MinAppIssuePerm;
-    event_perm: MinAppEventPerm;
     fs_perm: MinAppFsPerm;
     extra_perm: MinAppExtraPerm;
 };

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
-import { LinkChannelInfo } from "@/stores/linkAux";
+import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
+import { LinkChannelInfo, LINK_TARGET_TYPE } from "@/stores/linkAux";
 import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel, watch, un_watch } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
-import { LeftOutlined, MoreOutlined } from "@ant-design/icons";
-import { Card, Form, message, Modal, Popover, Select, Space, Tabs, Tag } from 'antd';
+import { LeftOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
+import { Card, Dropdown, Form, message, Modal, Popover, Select, Space, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
@@ -21,6 +22,9 @@ import BurnDownPanel from "./components/BurnDownPanel";
 import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import SummaryPanel from "./components/SummaryPanel";
 import UserPhoto from "@/components/Portrait/UserPhoto";
+import { ISSUE_TYPE_TASK, type ISSUE_TYPE, ISSUE_TYPE_BUG, link_sprit, list_by_id } from "@/api/project_issue";
+import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
+import AddIssueModal from "./components/AddIssueModal";
 
 
 const SpritDetail = () => {
@@ -40,6 +44,8 @@ const SpritDetail = () => {
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [selMemberUserId, setSelMemberUserId] = useState("");
+    const [refIssueType, setRefIssueType] = useState<ISSUE_TYPE | null>(null);
+    const [showAddIssueModal, setShowAddIssueModal] = useState(false);
 
     const loadSpritInfo = async () => {
         const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
@@ -71,6 +77,39 @@ const SpritDetail = () => {
         }
         await spritStore.loadCurWatchList(projectStore.curProjectId);
     };
+
+    const linkSprit = async (links: LinkInfo[]) => {
+        let issueIdList: string[] = [];
+        for (const link of links) {
+            if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BUG) {
+                issueIdList.push((link as LinkBugInfo).issueId);
+            } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TASK) {
+                issueIdList.push((link as LinkTaskInfo).issueId);
+            }
+        }
+        issueIdList = issueIdList.filter(issueId => {
+            const bugIndex = spritStore.bugList.findIndex(bug => bug.issue_id == issueId);
+            if (bugIndex != -1) {
+                return false;
+            }
+            const taskIndex = spritStore.taskList.findIndex(task => task.issue_id == issueId);
+            if (taskIndex != -1) {
+                return false;
+            }
+            return true;
+        });
+        for (const issueId of issueIdList) {
+            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, spritStore.curSpritId));
+        }
+        const listRes = await request(list_by_id({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            issue_id_list: issueIdList,
+        }));
+        spritStore.addIssueList(listRes.info_list);
+        setRefIssueType(null);
+    }
+
 
     useEffect(() => {
         if (spritStore.curSpritId != "") {
@@ -249,6 +288,26 @@ const SpritDetail = () => {
                                             ))}
                                         </Select>
                                     </Form.Item>
+                                    <Form.Item>
+                                        <Dropdown.Button type="primary" menu={{
+                                            items: [
+                                                {
+                                                    key: "refTask",
+                                                    label: "引用任务",
+                                                    onClick: () => setRefIssueType(ISSUE_TYPE_TASK),
+                                                },
+                                                {
+                                                    key: "refBug",
+                                                    label: "引用缺陷",
+                                                    onClick: () => setRefIssueType(ISSUE_TYPE_BUG),
+                                                }
+                                            ]
+                                        }} onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowAddIssueModal(true);
+                                        }}><PlusOutlined />增加</Dropdown.Button>
+                                    </Form.Item>
                                 </Form>
                             )}
                         </>
@@ -297,6 +356,20 @@ const SpritDetail = () => {
                     }}>
                     删除工作计划后，相关任务和缺陷会被设置成未关联工作计划状态。
                 </Modal>
+            )}
+            {refIssueType != null && (
+                <AddTaskOrBug
+                    open
+                    title={refIssueType == ISSUE_TYPE_TASK ? "选择任务" : "选择缺陷"}
+                    onOK={links => linkSprit(links as LinkInfo[])}
+                    onCancel={() => setRefIssueType(null)}
+                    issueIdList={refIssueType == ISSUE_TYPE_TASK ?
+                        spritStore.taskList.map(item => item.issue_id) : spritStore.bugList.map(item => item.issue_id)}
+                    type={refIssueType == ISSUE_TYPE_TASK ? "task" : "bug"}
+                />
+            )}
+            {showAddIssueModal == true && (
+                <AddIssueModal onClose={() => setShowAddIssueModal(false)} />
             )}
         </Card>
     );

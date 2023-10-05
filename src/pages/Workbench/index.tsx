@@ -20,7 +20,6 @@ import type { UserDocState } from '../UserExtend/UserKb/UserDoc';
 import { runInAction } from 'mobx';
 import MyProjectList from './components/MyProjectList';
 import UserAppList from './components/UserAppList';
-import UserBookList from './components/UserBookList';
 import SetLocalRepoModal from './components/SetLocalRepoModal';
 import LocalRepoList from './components/LocalRepoList';
 import MyRssList from './components/MyRssList';
@@ -130,15 +129,6 @@ const Workbench: React.FC = () => {
                   history.push(`${PUB_RES_PATH}?tab=appStore`);
                 }}>前往应用市场<DoubleRightOutlined /></Button>
             )}
-            {activeKey == "userBook" && (
-              <Button
-                type="link"
-                style={{ marginRight: "20px" }} onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  history.push(`${PUB_RES_PATH}?tab=bookStore`);
-                }}>前往书籍市场<DoubleRightOutlined /></Button>
-            )}
             {activeKey == "localRepo" && (
               <Button style={{ marginRight: "20px" }} onClick={e => {
                 e.stopPropagation();
@@ -198,15 +188,6 @@ const Workbench: React.FC = () => {
             {activeKey == "userApp" && (
               <div className={s.content_wrap}>
                 <UserAppList />
-              </div>
-            )}
-          </Tabs.TabPane>
-        )}
-        {appStore.clientCfg?.enable_pub_book_store == true && (
-          <Tabs.TabPane tab={<h2><BookOutlined />我的书籍</h2>} key="userBook">
-            {activeKey == "userBook" && (
-              <div className={s.content_wrap}>
-                <UserBookList />
               </div>
             )}
           </Tabs.TabPane>

@@ -69,66 +69,7 @@ export const bugPrioritySelectItems: EditSelectItem[] = [
         value: issueApi.BUG_PRIORITY_IMMEDIATE,
         color: '#DF0627',
     }
-]
-
-export const awardSelectItems: EditSelectItem[] = [
-    {
-        label: '0',
-        value: 0,
-        color: '#000',
-    },
-    {
-        label: '1',
-        value: 1,
-        color: '#000',
-    },
-    {
-        label: '2',
-        value: 2,
-        color: '#000',
-    },
-    {
-        label: '3',
-        value: 3,
-        color: '#000',
-    },
-    {
-        label: '4',
-        value: 4,
-        color: '#000',
-    },
-    {
-        label: '5',
-        value: 5,
-        color: '#000',
-    },
-
-    {
-        label: '6',
-        value: 6,
-        color: '#000',
-    },
-    {
-        label: '7',
-        value: 7,
-        color: '#000',
-    },
-    {
-        label: '8',
-        value: 8,
-        color: '#000',
-    },
-    {
-        label: '9',
-        value: 9,
-        color: '#000',
-    },
-    {
-        label: '10',
-        value: 10,
-        color: '#000',
-    }
-]
+];
 
 export const hourSelectItems: EditSelectItem[] =
     [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8,

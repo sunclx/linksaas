@@ -1,7 +1,7 @@
 import type { IssueInfo, PROCESS_STAGE } from "@/api/project_issue";
 import { ISSUE_STATE_PROCESS, PROCESS_STAGE_DOING, PROCESS_STAGE_DONE, PROCESS_STAGE_TODO } from "@/api/project_issue";
 
-import { getIssueText, getIsTask, timeToDateString } from "@/utils/utils";
+import { getIsTask, timeToDateString } from "@/utils/utils";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import s from './IssueDetailRight.module.less';
@@ -14,10 +14,14 @@ import type { ListEventByRefRequest } from '@/api/events';
 import { request } from '@/utils/request';
 import { issueState } from "@/utils/constant";
 import { EditText } from "@/components/EditCell/EditText";
-import { cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, getStateColor, updateCheckAward, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecAward, updateExecUser, updateExtraInfo, updateProcessStage, updateRemainMinutes, updateStartTime } from "./utils";
-import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import {
+    cancelDeadLineTime, cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems,
+    getStateColor, updateCheckUser, updateDeadLineTime, updateEndTime, updateEstimateMinutes, updateExecUser, updateExtraInfo,
+    updateProcessStage, updateRemainMinutes, updateStartTime
+} from "./utils";
+import { EditOutlined } from "@ant-design/icons";
 import { EditSelect } from "@/components/EditCell/EditSelect";
-import { awardSelectItems, bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
+import { bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from "./constant";
 import { EditDate } from "@/components/EditCell/EditDate";
 
 
@@ -248,40 +252,6 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                     </div>
                 </div>
                 <div className={s.basic_info}>
-                    <span>处理贡献
-                        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给处理人增加的项目贡献值`} trigger="click">
-                            <a><QuestionCircleOutlined /></a>
-                        </Tooltip>
-                    </span>
-                    <div>
-                        <EditSelect
-                            allowClear={false}
-                            editable={props.issue.user_issue_perm.can_set_award}
-                            curValue={props.issue.exec_award_point}
-                            itemList={awardSelectItems}
-                            onChange={async (value) => {
-                                return await updateExecAward(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
-                            }} showEditIcon={true} />
-                    </div>
-                </div>
-                <div className={s.basic_info}>
-                    <span>验收贡献
-                        <Tooltip title={`当${getIssueText(pathname)}关闭后，会给验收人增加的项目贡献值`} trigger="click">
-                            <a><QuestionCircleOutlined /></a>
-                        </Tooltip>
-                    </span>
-                    <div>
-                        <EditSelect
-                            allowClear={false}
-                            editable={props.issue.user_issue_perm.can_set_award}
-                            curValue={props.issue.check_award_point}
-                            itemList={awardSelectItems}
-                            onChange={async (value) => {
-                                return await updateCheckAward(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value as number);
-                            }} showEditIcon={true} />
-                    </div>
-                </div>
-                <div className={s.basic_info}>
                     <span>预估开始时间</span>
                     <div>
                         <EditDate
@@ -380,7 +350,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
             <div
                 className={s.time_line_wrap}
                 style={{
-                    height: `${getIsTask(pathname) ? 'calc(100% - 390px)' : 'calc(100% - 450px)'}`,
+                    height: `${getIsTask(pathname) ? 'calc(100% - 330px)' : 'calc(100% - 390px)'}`
                 }}
             >
                 <h2>动态</h2>

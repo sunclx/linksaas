@@ -8,8 +8,8 @@ import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
   APP_PROJECT_CHAT_PATH,
-  APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
+  APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_OVERVIEW_PATH,
   APP_PROJECT_PATH,
   APP_PROJECT_WORK_PLAN_PATH,
@@ -22,7 +22,6 @@ import {
 } from '@/utils/constant';
 import { open } from '@tauri-apps/api/shell';
 import { uniqId } from '@/utils/utils';
-import { openBook } from '@/pages/Book/utils';
 import type { API_COLL_TYPE } from '@/api/api_collection';
 import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
@@ -45,7 +44,7 @@ export enum LINK_TARGET_TYPE {
   // LINK_TARGET_ROBOT_METRIC = 10,
   // LINK_TARGET_EARTHLY_ACTION = 11,
   // LINK_TARGET_EARTHLY_EXEC = 12,
-  LINK_TARGET_BOOK_MARK = 13,
+  // LINK_TARGET_BOOK_MARK = 13,
   // LINK_TARGET_TEST_CASE_ENTRY = 14,
   // LINK_TARGET_SCRIPT_SUITE = 15,
   // LINK_TARGET_SCRIPT_EXEC = 16,
@@ -215,21 +214,6 @@ export class LinkAppInfo {
   appId: string;
   appUrl: string;
   openType: number;
-}
-
-export class LinkBookMarkInfo {
-  constructor(content: string, projectId: string, bookId: string, markId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.bookId = bookId;
-    this.markId = markId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  bookId: string;
-  markId: string;
 }
 
 
@@ -507,18 +491,6 @@ class LinkAuxStore {
       this.rootStore.docSpaceStore.fromLink = true;
       await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
       history.push(APP_PROJECT_KB_DOC_PATH);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOOK_MARK) {
-      const bookMarkLink = link as LinkBookMarkInfo;
-      let canShare = false;
-      if (this.rootStore.projectStore.getProject(bookMarkLink.projectId)?.setting.disable_chat == false && bookMarkLink.projectId != "") {
-        canShare = true;
-      }
-      if (this.rootStore.projectStore.curProjectId != bookMarkLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(bookMarkLink.projectId);
-      }
-      openBook(this.rootStore.userStore.userInfo.userId, bookMarkLink.projectId, bookMarkLink.bookId, bookMarkLink.markId,
-        this.rootStore.appStore.clientCfg?.book_store_fs_id ?? "", this.rootStore.projectStore.curProject?.ebook_fs_id ?? "",
-        canShare);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
       if (this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_work_plan == true) {
@@ -828,8 +800,8 @@ class LinkAuxStore {
       return APP_PROJECT_CHAT_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
-    } else if (pathname.startsWith(APP_PROJECT_KB_BOOK_SHELF_PATH)) {
-      return APP_PROJECT_KB_BOOK_SHELF_PATH + newSuffix;
+    }else if(pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+      return APP_PROJECT_MY_WORK_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
       return APP_PROJECT_OVERVIEW_PATH + newSuffix;
     }

@@ -49,23 +49,6 @@ export type AppNetPerm = {
     net_util: boolean;
 };
 
-export type AppMemberPerm = {
-    list_member: boolean;
-    list_goal_history: boolean;
-};
-
-export type AppIssuePerm = {
-    list_my_task: boolean;
-    list_all_task: boolean;
-    list_my_bug: boolean;
-    list_all_bug: boolean;
-};
-
-export type AppEventPerm = {
-    list_my_event: boolean;
-    list_all_event: boolean;
-};
-
 export type AppFsPerm = {
     read_file: boolean;
     write_file: boolean;
@@ -78,9 +61,6 @@ export type AppExtraPerm = {
 
 export type AppPerm = {
     net_perm: AppNetPerm;
-    member_perm: AppMemberPerm;
-    issue_perm: AppIssuePerm;
-    event_perm: AppEventPerm;
     fs_perm: AppFsPerm;
     extra_perm: AppExtraPerm;
 };

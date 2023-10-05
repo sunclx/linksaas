@@ -30,20 +30,6 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             proxy_ssh: false,
             net_util: false,
         },
-        member_perm: {
-            list_member: false,
-            list_goal_history: false,
-        },
-        issue_perm: {
-            list_my_task: false,
-            list_all_task: false,
-            list_my_bug: false,
-            list_all_bug: false,
-        },
-        event_perm: {
-            list_my_event: false,
-            list_all_event: false,
-        },
         fs_perm: {
             read_file: false,
             write_file: false,

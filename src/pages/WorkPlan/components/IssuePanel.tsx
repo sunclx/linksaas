@@ -3,16 +3,14 @@ import { observer } from 'mobx-react';
 import { Card, Popover, Space, Table, Tooltip } from "antd";
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
-import { EditOutlined, ExclamationCircleOutlined, InfoCircleOutlined, LinkOutlined, MoreOutlined } from "@ant-design/icons";
-import type { ISSUE_TYPE, IssueInfo } from "@/api/project_issue";
+import { EditOutlined, ExclamationCircleOutlined, InfoCircleOutlined, LinkOutlined } from "@ant-design/icons";
+import type { IssueInfo } from "@/api/project_issue";
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE } from "@/api/project_issue";
-import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
 import type LinkAuxStore from "@/stores/linkAux";
-import type { LinkInfo } from "@/stores/linkAux";
-import { LinkBugInfo, LinkTaskInfo, LINK_TARGET_TYPE } from "@/stores/linkAux";
+import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
 import type { ColumnsType } from 'antd/lib/table';
 import s from './Panel.module.less';
-import { link_sprit, list_by_id, cancel_link_sprit } from '@/api/project_issue';
+import { cancel_link_sprit } from '@/api/project_issue';
 import { request } from "@/utils/request";
 import { issueState, ISSUE_STATE_COLOR_ENUM } from "@/utils/constant";
 import type { History } from 'history';
@@ -106,40 +104,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
 
     const history = useHistory();
 
-    const [addIssueType, setAddIssueType] = useState<ISSUE_TYPE | null>(null);
     const [stageIssue, setStageIssue] = useState<IssueInfo | null>(null);
-
-    const linkSprit = async (links: LinkInfo[]) => {
-        let issueIdList: string[] = [];
-        for (const link of links) {
-            if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BUG) {
-                issueIdList.push((link as LinkBugInfo).issueId);
-            } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TASK) {
-                issueIdList.push((link as LinkTaskInfo).issueId);
-            }
-        }
-        issueIdList = issueIdList.filter(issueId => {
-            const bugIndex = spritStore.bugList.findIndex(bug => bug.issue_id == issueId);
-            if (bugIndex != -1) {
-                return false;
-            }
-            const taskIndex = spritStore.taskList.findIndex(task => task.issue_id == issueId);
-            if (taskIndex != -1) {
-                return false;
-            }
-            return true;
-        });
-        for (const issueId of issueIdList) {
-            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, props.spritId));
-        }
-        const listRes = await request(list_by_id({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            issue_id_list: issueIdList,
-        }));
-        spritStore.addIssueList(listRes.info_list);
-        setAddIssueType(null);
-    }
 
     const cancelLinkSprit = async (issueId: string) => {
         await request(cancel_link_sprit(userStore.sessionId, projectStore.curProjectId, issueId));
@@ -165,7 +130,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
     const columns: ColumnsType<IssueInfo> = [
         {
             title: `ID`,
-            width: 80,
+            width: 100,
             fixed: true,
             render: (_, row: IssueInfo) => {
                 let notComplete = row.exec_user_id == "" || row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
@@ -413,33 +378,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
     return (
         <div>
             {spritStore.allTimeReady == false && <Space className={s.tip}><InfoCircleOutlined />所有任务/缺陷设置好执行人,开始时间，结束时间，预估工时和剩余工时后才能访问 甘特图 和 统计信息。</Space>}
-            <Card title="任务列表" bordered={false} extra={
-                <Space size="middle">
-                    <Button type="primary" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setAddIssueType(ISSUE_TYPE_TASK);
-                    }}
-                        title={projectStore.isAdmin ? "" : "只有管理员可以关联任务"}
-                        disabled={!projectStore.isAdmin}>
-                        选择任务
-                    </Button>
-                    <Popover placement="bottom" trigger="click" content={
-                        <div style={{ padding: "10px 10px" }}>
-                            <Button type="link"
-                                title={projectStore.isAdmin ? "" : "只有管理员可以关联任务"}
-                                disabled={!projectStore.isAdmin}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    linkAuxStore.goToCreateTask("", projectStore.curProjectId, history, props.spritId);
-                                }}
-                            >添加任务</Button>
-                        </div>
-                    }>
-                        <MoreOutlined />
-                    </Popover>
-                </Space>}>
+            <Card title="任务列表" bordered={false} headStyle={{ fontSize: "16px", fontWeight: 600 }}>
                 <Table
                     rowKey="issue_id"
                     dataSource={spritStore.taskList.filter(item => {
@@ -457,33 +396,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
                     scroll={{ x: 1100 }}
                 />
             </Card>
-            <Card title="缺陷列表" bordered={false} extra={
-                <Space size="middle">
-                    <Button type="primary" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setAddIssueType(ISSUE_TYPE_BUG);
-                    }}
-                        title={projectStore.isAdmin ? "" : "只有管理员可以关联缺陷"}
-                        disabled={!projectStore.isAdmin}>
-                        选择缺陷
-                    </Button>
-                    <Popover placement="bottom" trigger="click" content={
-                        <div style={{ padding: "10px 10px" }}>
-                            <Button type="link"
-                                title={projectStore.isAdmin ? "" : "只有管理员可以关联缺陷"}
-                                disabled={!projectStore.isAdmin}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    linkAuxStore.goToCreateBug("", projectStore.curProjectId, history, props.spritId);
-                                }}
-                            >添加缺陷</Button>
-                        </div>
-                    }>
-                        <MoreOutlined />
-                    </Popover>
-                </Space>}>
+            <Card title="缺陷列表" bordered={false} headStyle={{ fontSize: "16px", fontWeight: 600 }}>
                 <Table
                     rowKey="issue_id"
                     dataSource={spritStore.bugList.filter(item => {
@@ -500,17 +413,6 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
                     pagination={false}
                     scroll={{ x: 1100 }} />
             </Card>
-            {addIssueType != null && (
-                <AddTaskOrBug
-                    open
-                    title={addIssueType == ISSUE_TYPE_TASK ? "选择任务" : "选择缺陷"}
-                    onOK={links => linkSprit(links as LinkInfo[])}
-                    onCancel={() => setAddIssueType(null)}
-                    issueIdList={addIssueType == ISSUE_TYPE_TASK ?
-                        spritStore.taskList.map(item => item.issue_id) : spritStore.bugList.map(item => item.issue_id)}
-                    type={addIssueType == ISSUE_TYPE_TASK ? "task" : "bug"}
-                />
-            )}
             {stageIssue !== null && <StageModel
                 issue={stageIssue}
                 onCancel={() => setStageIssue(null)}

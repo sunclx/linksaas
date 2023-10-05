@@ -11,8 +11,6 @@ use tonic::transport::{Channel, Endpoint};
 mod admin_auth_api_plugin;
 mod appstore_admin_api_plugin;
 mod appstore_api_plugin;
-mod bookstore_admin_api_plugin;
-mod bookstore_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod data_anno_project_api_plugin;
@@ -33,8 +31,6 @@ mod project_alarm_api_plugin;
 mod project_api_plugin;
 mod project_app_api_plugin;
 mod project_appraise_api_plugin;
-mod project_award_api_plugin;
-mod project_book_shelf_api_plugin;
 mod project_bulletin_api_plugin;
 mod project_channel_api_plugin;
 mod project_code_api_plugin;
@@ -52,7 +48,6 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
-mod user_book_shelf_api_plugin;
 mod user_kb_api_plugin;
 
 mod min_app_fs_plugin;
@@ -414,8 +409,6 @@ fn main() {
         .plugin(project_expert_qa_api_plugin::ProjectExpertQaApiPlugin::new())
         .plugin(search_api_plugin::SearchApiPlugin::new())
         .plugin(project_app_api_plugin::ProjectAppApiPlugin::new())
-        .plugin(project_book_shelf_api_plugin::ProjectBookShelfApiPlugin::new())
-        .plugin(project_award_api_plugin::ProjectAwardApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())
@@ -438,9 +431,6 @@ fn main() {
         .plugin(project_idea_api_plugin::ProjectIdeaApiPlugin::new())
         .plugin(project_tool_api_plugin::ProjectToolApiPlugin::new())
         .plugin(project_alarm_api_plugin::ProjectAlarmApiPlugin::new())
-        .plugin(bookstore_api_plugin::BookstoreApiPlugin::new())
-        .plugin(bookstore_admin_api_plugin::BookstoreAdminApiPlugin::new())
-        .plugin(user_book_shelf_api_plugin::UserBookShelfApiPlugin::new())
         .plugin(project_bulletin_api_plugin::ProjectBulletinApiPlugin::new())
         .plugin(local_repo_plugin::LocalRepoPlugin::new())
         .plugin(data_anno_project_api_plugin::DataAnnoProjectApiPlugin::new())

@@ -210,7 +210,6 @@ type UserIssuePerm = {
   can_remove: boolean;
   can_opt_dependence: boolean;
   can_opt_sub_issue: boolean;
-  can_set_award: boolean;
   can_update: boolean;
 };
 
@@ -264,8 +263,6 @@ export type IssueInfo = {
   remain_minutes: number;
   ///登陆用户权限相关
   user_issue_perm: UserIssuePerm;
-  exec_award_point: number;
-  check_award_point: number;
   extra_info: ExtraInfo;
   //项目需求相关
   requirement_id: string;
@@ -613,30 +610,6 @@ export type ListDependMeResponse = {
   code: number;
   err_msg: string;
   issue_list: IssueInfo[];
-};
-
-export type SetExecAwardRequest = {
-  session_id: string;
-  project_id: string;
-  issue_id: string;
-  point: number;
-};
-
-export type SetExecAwardResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type SetCheckAwardRequest = {
-  session_id: string;
-  project_id: string;
-  issue_id: string;
-  point: number;
-};
-
-export type SetCheckAwardResponse = {
-  code: number;
-  err_msg: string;
 };
 
 export type SetDeadLineTimeRequest = {
@@ -1243,24 +1216,6 @@ export async function list_depend_me(request: ListDependMeRequest): Promise<List
   const cmd = 'plugin:project_issue_api|list_depend_me';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<ListDependMeResponse>(cmd, {
-    request,
-  });
-}
-
-//设置执行奖励
-export async function set_exec_award(request: SetExecAwardRequest): Promise<SetExecAwardResponse> {
-  const cmd = 'plugin:project_issue_api|set_exec_award';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<SetExecAwardResponse>(cmd, {
-    request,
-  });
-}
-
-//设置检查奖励
-export async function set_check_award(request: SetCheckAwardRequest): Promise<SetCheckAwardResponse> {
-  const cmd = 'plugin:project_issue_api|set_check_award';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<SetCheckAwardResponse>(cmd, {
     request,
   });
 }

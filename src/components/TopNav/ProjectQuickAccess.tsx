@@ -6,7 +6,7 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_BOOK_SHELF_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
@@ -23,7 +23,6 @@ const MENU_KEY_WORK_PLAN = "workPlan";
 const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
 const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
 const MENU_KEY_CREATE_DOC = "create.doc";
-const MENU_KEY_KB_BOOK_SHELF = "kb.bookShelf";
 const MENU_KEY_SHOW_TOOL_BAR_IDEA = "toolbar.idea.show"
 const MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT = "toolbar.requirement.show";
 const MENU_KEY_CREATE_REQUIRE_MENT = "crate.requirement";
@@ -57,12 +56,8 @@ const MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT = "layout.toolbar.codecomment";
 const MENU_KEY_LAYOUT_TOOLBAR_APP_STORE = "layout.toolbar.appstore";
 const MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO = "layout.overview.prjinfo";
 const MENU_KEY_LAYOUT_OVERVIEW_BULLETIN = "layout.overview.bulletin";
-const MENU_KEY_LAYOUT_OVERVIEW_GOAL = "layout.overview.goal";
-const MENU_KEY_LAYOUT_OVERVIEW_AWARD = "layout.overview.award";
-const MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK = "layout.overview.watchtask";
-const MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG = "layout.overview.watchbug";
-const MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK = "layout.overview.todotask";
-const MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG = "layout.overview.todobug";
+const MENU_KEY_LAYOUT_MYWORK_WATCH_TASK = "layout.mywork.watchtask";
+const MENU_KEY_LAYOUT_MYWORK_WATCH_BUG = "layout.mywork.watchbug";
 const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 
 
@@ -152,6 +147,20 @@ const ProjectQuickAccess = () => {
                     ],
                 },
                 {
+                    key: "layout.mywork",
+                    label: "我的工作",
+                    children: [
+                        {
+                            key: MENU_KEY_LAYOUT_MYWORK_WATCH_TASK,
+                            label: `${projectStore.curProject?.setting.hide_watch_task == true ? "显示" : "隐藏"}关注任务`
+                        },
+                        {
+                            key: MENU_KEY_LAYOUT_MYWORK_WATCH_BUG,
+                            label: `${projectStore.curProject?.setting.hide_watch_bug == true ? "显示" : "隐藏"}关注缺陷`
+                        },
+                    ]
+                },
+                {
                     key: "layout.overview",
                     label: "项目概览",
                     children: [
@@ -162,30 +171,6 @@ const ProjectQuickAccess = () => {
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_BULLETIN,
                             label: `${projectStore.curProject?.setting.hide_bulletin == true ? "显示" : "隐藏"}项目公告`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_GOAL,
-                            label: `${projectStore.curProject?.setting.hide_user_goal == true ? "显示" : "隐藏"}成员目标`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_AWARD,
-                            label: `${projectStore.curProject?.setting.hide_user_award == true ? "显示" : "隐藏"}成员贡献`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK,
-                            label: `${projectStore.curProject?.setting.hide_watch_task == true ? "显示" : "隐藏"}关注任务`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG,
-                            label: `${projectStore.curProject?.setting.hide_watch_bug == true ? "显示" : "隐藏"}关注缺陷`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK,
-                            label: `${projectStore.curProject?.setting.hide_my_todo_task == true ? "显示" : "隐藏"}待处理任务`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG,
-                            label: `${projectStore.curProject?.setting.hide_my_todo_bug == true ? "显示" : "隐藏"}待处理缺陷`
                         },
                         {
                             key: MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO,
@@ -278,10 +263,6 @@ const ProjectQuickAccess = () => {
                                 label: "创建文档",
                             },
                         ],
-                    },
-                    {
-                        key: MENU_KEY_KB_BOOK_SHELF,
-                        label: "项目书籍",
                     },
                 ],
             });
@@ -458,18 +439,10 @@ const ProjectQuickAccess = () => {
             newSetting.hide_project_info = !projectStore.curProject.setting.hide_project_info;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_BULLETIN) {
             newSetting.hide_bulletin = !projectStore.curProject.setting.hide_bulletin;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_GOAL) {
-            newSetting.hide_user_goal = !projectStore.curProject.setting.hide_user_goal;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_AWARD) {
-            newSetting.hide_user_award = !projectStore.curProject.setting.hide_user_award;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_TASK) {
+        } else if (key == MENU_KEY_LAYOUT_MYWORK_WATCH_TASK) {
             newSetting.hide_watch_task = !projectStore.curProject.setting.hide_watch_task;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_WATCH_BUG) {
+        } else if (key == MENU_KEY_LAYOUT_MYWORK_WATCH_BUG) {
             newSetting.hide_watch_bug = !projectStore.curProject.setting.hide_watch_bug;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_TODO_TASK) {
-            newSetting.hide_my_todo_task = !projectStore.curProject.setting.hide_my_todo_task;
-        } else if (key == MENU_KEY_LAYOUT_OVERVIEW_TODO_BUG) {
-            newSetting.hide_my_todo_bug = !projectStore.curProject.setting.hide_my_todo_bug;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO) {
             newSetting.hide_extra_info = !projectStore.curProject.setting.hide_extra_info;
         }
@@ -514,9 +487,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_CREATE_DOC:
                 linkAuxStore.goToCreateDoc("", projectStore.curProjectId, projectStore.curProject?.default_doc_space_id ?? "", history);
-                break;
-            case MENU_KEY_KB_BOOK_SHELF:
-                history.push(APP_PROJECT_KB_BOOK_SHELF_PATH);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_IDEA:
                 linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);

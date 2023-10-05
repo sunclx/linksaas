@@ -163,20 +163,6 @@ const AppStoreDetail = () => {
             path: path,
         }, {
             net_perm: permRes.perm.net_perm,
-            member_perm: {
-                list_member: false,
-                list_goal_history: false,
-            },
-            issue_perm: {
-                list_my_task: false,
-                list_all_task: false,
-                list_my_bug: false,
-                list_all_bug: false,
-            },
-            event_perm: {
-                list_my_event: false,
-                list_all_event: false,
-            },
             fs_perm: permRes.perm.fs_perm,
             extra_perm: permRes.perm.extra_perm,
         });
@@ -246,9 +232,6 @@ const AppStoreDetail = () => {
             app_id: addRes.app_id,
             perm: {
                 net_perm: appInfo.app_perm.net_perm,
-                member_perm: appInfo.app_perm.member_perm,
-                issue_perm: appInfo.app_perm.issue_perm,
-                event_perm: appInfo.app_perm.event_perm,
                 fs_perm: appInfo.app_perm.fs_perm,
                 extra_perm: appInfo.app_perm.extra_perm,
             },

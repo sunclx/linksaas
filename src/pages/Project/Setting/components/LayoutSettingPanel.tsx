@@ -33,10 +33,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
-    const [hideUserGoal, setHideUserGoal] = useState(projectStore.curProject?.setting.hide_user_goal ?? false);
-    const [hideUserAward, setHideUserAward] = useState(projectStore.curProject?.setting.hide_user_award ?? false);
-    const [hideMyTodoTask, setHideMyTodoTask] = useState(projectStore.curProject?.setting.hide_my_todo_task ?? false);
-    const [hideMyTodoBug, setHideMyTodoBug] = useState(projectStore.curProject?.setting.hide_my_todo_bug ?? false);
     const [hideExtraInfo, setHideExtraInfo] = useState(projectStore.curProject?.setting.hide_extra_info ?? false);
 
     const [hideWatchDoc, setHideWatchDoc] = useState(projectStore.curProject?.setting.hide_watch_doc ?? false);
@@ -61,10 +57,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
 
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
         setHideBulletin(projectStore.curProject?.setting.hide_bulletin ?? false);
-        setHideUserGoal(projectStore.curProject?.setting.hide_user_goal ?? false);
-        setHideUserAward(projectStore.curProject?.setting.hide_user_award ?? false);
-        setHideMyTodoTask(projectStore.curProject?.setting.hide_my_todo_task ?? false);
-        setHideMyTodoBug(projectStore.curProject?.setting.hide_my_todo_bug ?? false);
         setHideExtraInfo(projectStore.curProject?.setting.hide_extra_info ?? false);
         setHasChange(false);
     };
@@ -86,10 +78,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_work_plan: disableWorkPlan,
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
-                hide_user_goal: hideUserGoal,
-                hide_user_award: hideUserAward,
-                hide_my_todo_task: hideMyTodoTask,
-                hide_my_todo_bug: hideMyTodoBug,
                 hide_extra_info: hideExtraInfo,
                 hide_watch_doc: hideWatchDoc,
                 hide_watch_walk_plan: hideWatchWorkPlan,
@@ -227,6 +215,20 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                         }}>关闭应用市场入口</Checkbox>
                     </Space>
                 </Form.Item>
+                <Form.Item label="我的工作">
+                    <Space direction="vertical">
+                        <Checkbox checked={hideWatchTask} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchTask(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注任务</Checkbox>
+                        <Checkbox checked={hideWatchBug} onChange={e => {
+                            e.stopPropagation();
+                            setHideWatchBug(e.target.checked);
+                            setHasChange(true);
+                        }}>隐藏关注缺陷</Checkbox>
+                    </Space>
+                </Form.Item>
                 <Form.Item label="项目概览">
                     <Space direction="vertical">
                         <Checkbox checked={hideProjectInfo} onChange={e => {
@@ -239,39 +241,9 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setHideBulletin(e.target.checked);
                             setHasChange(true);
                         }}>隐藏项目公告</Checkbox>
-                        <Checkbox checked={hideUserGoal} onChange={e => {
-                            e.stopPropagation();
-                            setHideUserGoal(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏成员目标</Checkbox>
-                        <Checkbox checked={hideUserAward} onChange={e => {
-                            e.stopPropagation();
-                            setHideUserAward(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏成员贡献</Checkbox>
 
 
-                        <Checkbox checked={hideWatchTask} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchTask(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注任务</Checkbox>
-                        <Checkbox checked={hideWatchBug} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchBug(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注缺陷</Checkbox>
 
-                        <Checkbox checked={hideMyTodoTask} onChange={e => {
-                            e.stopPropagation();
-                            setHideMyTodoTask(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏待处理任务</Checkbox>
-                        <Checkbox checked={hideMyTodoBug} onChange={e => {
-                            e.stopPropagation();
-                            setHideMyTodoBug(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏待处理缺陷</Checkbox>
                         <Checkbox checked={hideExtraInfo} onChange={e => {
                             e.stopPropagation();
                             setHideExtraInfo(e.target.checked);

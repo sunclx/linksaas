@@ -39,10 +39,6 @@ export type Setting = {
   //项目概览页面相关
   hide_project_info: boolean;
   hide_bulletin: boolean;
-  hide_user_goal: boolean;
-  hide_user_award: boolean;
-  hide_my_todo_task: boolean;
-  hide_my_todo_bug: boolean;
   hide_extra_info: boolean;
 
   hide_watch_doc: boolean;
@@ -103,7 +99,7 @@ export type ProjectInfo = {
   issue_fs_id: string;
   project_fs_id: string;
   doc_fs_id: string;
-  ebook_fs_id: string;
+  // ebook_fs_id: string;
   // artifact_fs_id: string;
   // test_case_fs_id: string;
   min_app_fs_id: string;

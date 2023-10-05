@@ -1,7 +1,4 @@
-use crate::{
-    min_app_plugin::get_min_app_perm, notice_decode::new_wrong_session_notice,
-    user_api_plugin::{get_user_id, get_session},
-};
+use crate::notice_decode::new_wrong_session_notice;
 use proto_gen_rust::project_issue_api::project_issue_api_client::ProjectIssueApiClient;
 use proto_gen_rust::project_issue_api::*;
 use tauri::{
@@ -334,85 +331,12 @@ async fn list<R: Runtime>(
     window: Window<R>,
     request: ListRequest,
 ) -> Result<ListResponse, String> {
-    let mut new_request = request.clone();
-    if let Some(min_app_perm) = get_min_app_perm(
-        app_handle.clone(),
-        window.clone(),
-        new_request.project_id.clone(),
-    )
-    .await
-    {
-        let issue_perm = min_app_perm.issue_perm;
-        if issue_perm.is_none() {
-            return Err("no permission".into());
-        }
-        let issue_perm = issue_perm.unwrap();
-        let list_param = request.list_param;
-        if list_param.is_none() {
-            return Err("no permission".into());
-        }
-        let list_param = list_param.unwrap();
-
-        let mut filter_user_list = Vec::new();
-
-        if list_param.filter_by_assgin_user_id {
-            for user_id in &list_param.assgin_user_id_list {
-                if filter_user_list.contains(user_id) == false {
-                    filter_user_list.push(user_id.clone());
-                }
-            }
-        }
-        if list_param.filter_by_create_user_id {
-            for user_id in &list_param.create_user_id_list {
-                if filter_user_list.contains(user_id) == false {
-                    filter_user_list.push(user_id.clone());
-                }
-            }
-        }
-        let mut valid = true;
-        let cur_user_id = get_user_id(app_handle.clone()).await;
-        if list_param.filter_by_issue_type == false {
-            if issue_perm.list_all_bug && issue_perm.list_all_task {
-                valid = true;
-            } else if issue_perm.list_my_bug
-                && issue_perm.list_my_task
-                && filter_user_list.len() == 1
-                && filter_user_list.get(0).unwrap() == &cur_user_id
-            {
-                valid = true;
-            }
-        } else {
-            if list_param.issue_type == IssueType::Task as i32 {
-                if issue_perm.list_all_task {
-                    valid = true;
-                } else if issue_perm.list_my_task
-                    && filter_user_list.len() == 1
-                    && filter_user_list.get(0).unwrap() == &cur_user_id
-                {
-                    valid = true;
-                }
-            } else if list_param.issue_type == IssueType::Bug as i32 {
-                if issue_perm.list_all_bug {
-                    valid = true;
-                } else if issue_perm.list_my_bug
-                    && filter_user_list.len() == 1
-                    && filter_user_list.get(0).unwrap() == &cur_user_id
-                {
-                    valid = true;
-                }
-            }
-        }
-
-        if valid {
-            new_request.session_id = get_session(app_handle.clone()).await;
-        }
-    }
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectIssueApiClient::new(chan.unwrap());
-    match client.list(new_request).await {
+    match client.list(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_response::Code::WrongSession as i32 {
@@ -1195,61 +1119,6 @@ async fn list_depend_me<R: Runtime>(
 }
 
 #[tauri::command]
-async fn set_exec_award<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: SetExecAwardRequest,
-) -> Result<SetExecAwardResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectIssueApiClient::new(chan.unwrap());
-    match client.set_exec_award(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == set_exec_award_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("set_exec_award".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn set_check_award<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: SetCheckAwardRequest,
-) -> Result<SetCheckAwardResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectIssueApiClient::new(chan.unwrap());
-    match client.set_check_award(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == set_check_award_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("set_check_award".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-
-#[tauri::command]
 async fn set_dead_line_time<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -1408,8 +1277,6 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 remove_dependence,
                 list_my_depend,
                 list_depend_me,
-                set_exec_award,
-                set_check_award,
                 set_dead_line_time,
                 cancel_dead_line_time,
                 watch,

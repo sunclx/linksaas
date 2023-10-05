@@ -30,7 +30,6 @@ import {
   ADMIN_PATH_USER_DETAIL_SUFFIX,
   ADMIN_PATH_USER_LIST_SUFFIX,
   APP_PROJECT_CHAT_PATH,
-  APP_PROJECT_KB_BOOK_SHELF_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
   WORKBENCH_KB_DOC_SUFFIX,
@@ -45,19 +44,17 @@ import {
   ADMIN_PATH_APPSTORE_APP_SUFFIX,
   APP_PROJECT_OVERVIEW_PATH,
   PUB_RES_PATH,
-  ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
-  ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
   APP_PROJECT_WORK_PLAN_PATH,
   ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
   ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
   ADMIN_PATH_RSS_CRAWLER_SUFFIX,
   ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX,
   ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
+  APP_PROJECT_MY_WORK_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
 import IssueCreate from '@/pages/Issue/IssueCreate';
-import BookShelf from '@/pages/KnowledgeBase/BookShelf';
 import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
 import AdminLayout from '@/layouts/AdminLayout';
@@ -79,8 +76,6 @@ import AppList from '@/pages/Admin/AppAdmin/AppList';
 import OverviewLayout from '@/layouts/OverviewLayout';
 import IdeaPage from '@/pages/Idea/IdeaPage';
 import PubRes from '@/pages/PubRes';
-import BookCateList from '@/pages/Admin/BookAdmin/BookCateList';
-import BookList from '@/pages/Admin/BookAdmin/BookList';
 import WorkPlanLayout from '@/layouts/WorkPlanLayout';
 import DataAnnoProjectList from '@/pages/DataAnno/DataAnnoProjectList';
 import TemplateCateList from '@/pages/Admin/DockerTemplateAdmin/TemplateCateList';
@@ -90,6 +85,7 @@ import ThreadList from '@/pages/Project/Code/ThreadList';
 import CrawlerList from '@/pages/Admin/RssAdmin/CrawlerList';
 import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
+import MyWorkLayout from '@/layouts/MyWorkLayout';
 
 export interface IRouteConfig {
   // 路由路径
@@ -292,13 +288,13 @@ const routesConfig: IRouteConfig[] = [
                 component: ProjectDoc,
                 routes: getToolbarRoute(APP_PROJECT_KB_DOC_PATH),
               },
-              {
-                path: APP_PROJECT_KB_BOOK_SHELF_PATH,
-                title: "项目书籍",
-                component: BookShelf,
-                routes: getToolbarRoute(APP_PROJECT_KB_BOOK_SHELF_PATH),
-              },
             ],
+          },
+          {
+            path: APP_PROJECT_MY_WORK_PATH,
+            title: "我的工作",
+            component: MyWorkLayout,
+            routes: getToolbarRoute(APP_PROJECT_MY_WORK_PATH),
           },
           {
             path: APP_PROJECT_OVERVIEW_PATH,
@@ -397,18 +393,6 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_APPSTORE_APP_SUFFIX,
         title: "应用管理",
         component: AppList,
-        exact: true,
-      },
-      {
-        path: ADMIN_PATH_BOOKSTORE_CATE_SUFFIX,
-        title: "书籍类别管理",
-        component: BookCateList,
-        exact: true,
-      },
-      {
-        path: ADMIN_PATH_BOOKSTORE_BOOK_SUFFIX,
-        title: "书籍管理",
-        component: BookList,
         exact: true,
       },
       {
