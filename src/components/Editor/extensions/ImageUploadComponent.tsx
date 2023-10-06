@@ -185,12 +185,12 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
         )}
         {showRawImage == false && (
           <div className={style.img}>
-            <AsyncImage src={thumbImgUrl} preview={false} useRawImg={false}/>
+            <AsyncImage src={thumbImgUrl} preview={false} useRawImg={false} />
           </div>
         )}
         {showRawImage == true && (
           <div style={{ maxWidth: "100%" }}>
-            <AsyncImage src={imgUrl} preview={false} useRawImg={false}/>
+            <AsyncImage src={imgUrl} preview={false} useRawImg={false} />
           </div>
         )}
 
@@ -251,7 +251,7 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
                 bodyStyle: {
                   margin: "40px 60px 0px 200px"
                 },
-                maskStyle:{
+                maskStyle: {
                   margin: "40px 60px 0px 200px"
                 },
                 zIndex: 9999,
@@ -263,7 +263,16 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
         )}
         {props.showRawImage == true && (
           <div style={{ maxWidth: "100%" }}>
-            <AsyncImage src={imageUrl} preview={false} useRawImg={false}/>
+            <AsyncImage src={imageUrl} preview={{
+              src: imageUrl,
+              bodyStyle: {
+                margin: "40px 60px 0px 200px"
+              },
+              maskStyle: {
+                margin: "40px 60px 0px 200px"
+              },
+              zIndex: 9999,
+            }} useRawImg={false} />
           </div>
         )}
 
