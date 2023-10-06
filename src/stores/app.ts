@@ -34,26 +34,15 @@ class AppStore {
     });
   }
 
-  private _showJoinProject: boolean = false;
-  private _showCreateProject: boolean = false;
+  private _showCreateOrJoinProject: boolean = false;
 
-  get showJoinProject(): boolean {
-    return this._showJoinProject;
+  get showCreateOrJoinProject(): boolean {
+    return this._showCreateOrJoinProject;
   }
 
-  get showCreateProject(): boolean {
-    return this._showCreateProject;
-  }
-
-  set showJoinProject(val: boolean) {
+  set showCreateOrJoinProject(val: boolean) {
     runInAction(() => {
-      this._showJoinProject = val;
-    });
-  }
-
-  set showCreateProject(val: boolean) {
-    runInAction(() => {
-      this._showCreateProject = val;
+      this._showCreateOrJoinProject = val;
     });
   }
 

@@ -7,43 +7,10 @@ import { filterProjectItemList } from "@/utils/constant";
 
 import ProjectItem from "./ProjectItem";
 import { runInAction } from "mobx";
-import JoinProject from "./JoinProject";
-import CreatedProject from "./CreatedProject";
+import CreatedOrJoinProject from "./CreatedOrJoinProject";
 import AddMember from "./AddMember";
 import { ProjectOutlined } from "@ant-design/icons";
 
-
-const AddMenu: React.FC = observer(() => {
-    const appStore = useStores('appStore');
-
-    return (
-        <div className={cls.moremenu}
-            onClick={(e) => e.stopPropagation()}>
-            {appStore.clientCfg?.can_invite && (
-                <div
-                    className={cls.item}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appStore.showJoinProject = true;
-                    }}
-                >
-                    加入项目
-                </div>
-            )}
-            <div
-                className={cls.item}
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    appStore.showCreateProject = true;
-                }}
-            >
-                创建新项目
-            </div>
-        </div>
-    );
-});
 
 const FilterMenu = () => {
     const projectStore = useStores('projectStore');
@@ -83,18 +50,15 @@ const ProjectList = () => {
                     <ProjectOutlined style={{ width: "20px" }} />项目
                 </div>
                 <div className={cls.menu_icon_wrap}>
+                    <a className={cls.icon_wrap} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        appStore.showCreateOrJoinProject = true;
+                    }}>
+                        <i className={cls.add} />
+                    </a>
                     <Popover
-                        placement="bottomLeft"
-                        content={<AddMenu />}
-                        trigger="click"
-                        overlayClassName="popover"
-                    >
-                        <a className={cls.icon_wrap}>
-                            <i className={cls.add} />
-                        </a>
-                    </Popover>
-                    <Popover
-                        placement="bottomLeft"
+                        placement="right"
                         content={<FilterMenu />}
                         trigger="click"
                         overlayClassName="popover"
@@ -116,13 +80,10 @@ const ProjectList = () => {
             {projectStore.projectList.length == 0 && (<div className={cls.zero_project_tips}>
                 您的项目列表为空，您可以通过上方的<i className={cls.add} />加入或创建新项目。
             </div>)}
-            {appStore.showJoinProject && <JoinProject
-                visible={appStore.showJoinProject}
-                onChange={(val) => (appStore.showJoinProject = val)}
-            />}
-            {appStore.showCreateProject && <CreatedProject
-                visible={appStore.showCreateProject}
-                onChange={(val) => (appStore.showCreateProject = val)}
+
+            {appStore.showCreateOrJoinProject && <CreatedOrJoinProject
+                visible={appStore.showCreateOrJoinProject}
+                onChange={(val) => (appStore.showCreateOrJoinProject = val)}
             />}
             {
                 memberStore.showInviteMember && <AddMember
