@@ -29,7 +29,6 @@ mod org_admin_api_plugin;
 mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
-mod project_app_api_plugin;
 mod project_appraise_api_plugin;
 mod project_bulletin_api_plugin;
 mod project_channel_api_plugin;
@@ -408,7 +407,6 @@ fn main() {
         .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
         .plugin(project_expert_qa_api_plugin::ProjectExpertQaApiPlugin::new())
         .plugin(search_api_plugin::SearchApiPlugin::new())
-        .plugin(project_app_api_plugin::ProjectAppApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())

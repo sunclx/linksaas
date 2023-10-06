@@ -18,7 +18,6 @@ import UpdateAppBaseInfoModal from "./components/UpdateAppBaseInfoModal";
 import { EditOutlined } from "@ant-design/icons";
 import UpdateAppFileModal from "./components/UpdateAppFileModal";
 import UpdateAppOsModal from "./components/UpdateAppOsModal";
-import UpdateAppScopeModal from "./components/UpdateAppScopeModal";
 import { remove_app } from "@/api/appstore_admin";
 import SelectAppCateModal from "./components/SelectAppCateModal";
 import UpdateAppPermModal from "./components/UpdateAppPermModal";
@@ -45,7 +44,6 @@ const AppList = () => {
     const [showUpdateFile, setShowUpdateFile] = useState<AppInfo | null>(null);
     const [showMoveAppInfo, setShowMoveAppInfo] = useState<AppInfo | null>(null);
     const [showUpdateAppOs, setShowUpdateAppOs] = useState<AppInfo | null>(null);
-    const [showUpdateAppScope, setShowUpdateAppScope] = useState<AppInfo | null>(null);
     const [showRemoveApp, setShowRemoveApp] = useState<AppInfo | null>(null);
     const [showUpdatePerm, setShowUpdatePerm] = useState<AppInfo | null>(null);
     const [showCommentAppInfo, setShowCommentAppInfo] = useState<AppInfo | null>(null);
@@ -59,8 +57,6 @@ const AppList = () => {
                 minor_cate_id: curMinorCateId,
                 filter_by_sub_minor_cate_id: curSubMinorCateId != "",
                 sub_minor_cate_id: curSubMinorCateId,
-                filter_by_app_scope: false,
-                app_scope: 0,
                 filter_by_os_scope: false,
                 os_scope: 0,
                 filter_by_keyword: false,
@@ -176,31 +172,6 @@ const AppList = () => {
                                     e.stopPropagation();
                                     e.preventDefault();
                                     setShowUpdateAppOs(row);
-                                }}><EditOutlined /></Button>
-                        )}
-                    </div>
-                );
-            },
-        },
-        {
-            title: "应用范围",
-            render: (_, row: AppInfo) => {
-                const scopeList = [];
-                if (row.user_app) {
-                    scopeList.push("用户应用");
-                }
-                if (row.project_app) {
-                    scopeList.push("项目应用");
-                }
-                return (
-                    <div>
-                        <span>{scopeList.join(",")}</span>
-                        {(permInfo?.app_store_perm.update_app ?? false) == true && (
-                            <Button type="link" style={{ minWidth: 0, paddingLeft: 5 }}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setShowUpdateAppScope(row);
                                 }}><EditOutlined /></Button>
                         )}
                     </div>
@@ -349,18 +320,6 @@ const AppList = () => {
                             setCurPage(0);
                         }
                         setShowUpdateAppOs(null);
-                    }} />
-            )}
-            {showUpdateAppScope != null && (
-                <UpdateAppScopeModal appId={showUpdateAppScope.app_id} userApp={showUpdateAppScope.user_app} projectApp={showUpdateAppScope.project_app}
-                    onCancel={() => setShowUpdateAppScope(null)}
-                    onOk={() => {
-                        if (curPage == 0) {
-                            loadAppList();
-                        } else {
-                            setCurPage(0);
-                        }
-                        setShowUpdateAppScope(null);
                     }} />
             )}
             {showRemoveApp != null && (

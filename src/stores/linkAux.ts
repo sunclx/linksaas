@@ -709,17 +709,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/code"));
   }
 
-  //跳转到项目应用
-  goToAppList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_app_store == true) {
-      return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appstore"));
-  }
-
   //跳转到数据标注
   goToDataAnnoList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_data_anno == true) {

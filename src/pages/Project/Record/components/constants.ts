@@ -103,14 +103,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "removeAppraise",
     },
     {
-        label: "增加项目应用",
-        value: "addProjectApp",
-    },
-    {
-        label: "删除项目应用",
-        value: "removeProjectApp",
-    },
-    {
         label: "转移超级管理员",
         value: "changeOwner",
     },
@@ -170,8 +162,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         create_appraise: false,
         update_appraise: false,
         remove_appraise: false,
-        add_project_app: false,
-        remove_project_app: false,
         change_owner: false,
         create_subscribe: false,
         update_subscribe: false,
@@ -233,10 +223,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.update_appraise = true;
         } else if (value == "removeAppraise") {
             ret.remove_appraise = true;
-        } else if (value == "addProjectApp") {
-            ret.add_project_app = true;
-        } else if (value == "removeProjectApp") {
-            ret.remove_project_app = true;
         } else if (value == "changeOwner") {
             ret.change_owner = true;
         } else if (value == "createSubscribe") {
@@ -331,12 +317,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.remove_appraise) {
         retList.push("removeAppraise");
-    }
-    if (cfg.add_project_app) {
-        retList.push("addProjectApp");
-    }
-    if (cfg.remove_project_app) {
-        retList.push("removeProjectApp");
     }
     if (cfg.change_owner) {
         retList.push("changeOwner");

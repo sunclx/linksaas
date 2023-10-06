@@ -157,14 +157,6 @@ const Toolbar: React.FC = observer(() => {
           )}
         </>
       )}
-
-      {projectStore.curProject?.setting.disable_app_store != true && (
-        <>
-          <Divider />
-          <Item id="appstore" pathname={pathname} title="更多应用" />
-        </>
-      )}
-
     </div>
   );
 });

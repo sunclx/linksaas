@@ -20,7 +20,7 @@ export type Setting = {
   // disable_test_case: boolean;
   // disable_server_agent: boolean;
   disable_ext_event: boolean;
-  disable_app_store: boolean;
+  // disable_app_store: boolean;
   disable_data_anno: boolean;
   disable_api_collection: boolean;
   disable_code_comment: boolean;
@@ -102,7 +102,7 @@ export type ProjectInfo = {
   // ebook_fs_id: string;
   // artifact_fs_id: string;
   // test_case_fs_id: string;
-  min_app_fs_id: string;
+  // min_app_fs_id: string;
   require_ment_fs_id: string;
   idea_fs_id: string;
   bulletin_fs_id: string;

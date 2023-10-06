@@ -62,8 +62,6 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
     const [osWindows, setOsWindows] = useState(false);
     const [osMac, setOsMac] = useState(false);
     const [osLinux, setOsLinux] = useState(false);
-    const [userApp, setUserApp] = useState(false);
-    const [projectApp, setProjectApp] = useState(false);
 
     const { editor, editorRef } = useCommonEditor({
         content: "",
@@ -144,8 +142,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             os_windows: osWindows,
             os_mac: osMac,
             os_linux: osLinux,
-            user_app: userApp,
-            project_app: projectApp,
+            user_app: true,
         }));
         //设置文件owner
         if (iconFileId != "") {
@@ -260,16 +257,6 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
                                 e.stopPropagation();
                                 setOsLinux(e.target.checked);
                             }}>linux</Checkbox>
-                        </Form.Item>
-                        <Form.Item label="应用范围">
-                            <Checkbox checked={userApp} onChange={e => {
-                                e.stopPropagation();
-                                setUserApp(e.target.checked);
-                            }}>用户应用</Checkbox>
-                            <Checkbox checked={projectApp} onChange={e => {
-                                e.stopPropagation();
-                                setProjectApp(e.target.checked);
-                            }}>项目应用</Checkbox>
                         </Form.Item>
                     </Form>
                     <SelectAppCate

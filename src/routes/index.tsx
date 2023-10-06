@@ -10,7 +10,6 @@ import ProjectAppraise from '@/pages/Project/Appraise';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
-import AppStore from '@/pages/Project/AppStore';
 import IssueList from '@/pages/Issue/IssueList';
 import IssueDetail from '@/pages/Issue/IssueDetail';
 
@@ -192,12 +191,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + '/access/view',
       title: '第三方接入详情',
       component: ProjectAccessView,
-      exact: true,
-    },
-    {
-      path: prefix + "/appstore",
-      title: "更多应用",
-      component: AppStore,
       exact: true,
     },
     {

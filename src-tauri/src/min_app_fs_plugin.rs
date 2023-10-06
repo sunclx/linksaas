@@ -19,6 +19,7 @@ pub struct Filter {
 }
 
 //读取文件,只在微应用里面调用
+#[allow(unused_variables)]
 #[tauri::command]
 async fn read_file<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -29,7 +30,7 @@ async fn read_file<R: Runtime>(
     extensions: Vec<String>,
 ) -> Result<Vec<File>, String> {
     //检查权限
-    let perm = get_min_app_perm(app_handle.clone(), window, project_id.clone()).await;
+    let perm = get_min_app_perm(app_handle.clone(), window).await;
     if perm.is_none() {
         return Err("no perm".into());
     }
@@ -101,6 +102,7 @@ async fn read_file<R: Runtime>(
 }
 
 //写文件,只在微应用里面调用
+#[allow(unused_variables)]
 #[tauri::command]
 async fn write_file<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -110,7 +112,7 @@ async fn write_file<R: Runtime>(
     file_data: Vec<u8>,
 ) -> Result<(), String> {
     //检查权限
-    let perm = get_min_app_perm(app_handle.clone(), window, project_id.clone()).await;
+    let perm = get_min_app_perm(app_handle.clone(), window).await;
     if perm.is_none() {
         return Err("no perm".into());
     }

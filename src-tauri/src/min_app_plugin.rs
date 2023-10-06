@@ -1,16 +1,11 @@
 use crate::min_app_store_plugin::{close_store, start_store};
-use crate::user_api_plugin::get_session;
 use async_zip::read::seek::ZipFileReader;
 use async_zip::write::ZipFileWriter;
 use async_zip::{Compression, ZipEntryBuilder};
 use hyper::server::conn::AddrStream;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Request, Response};
-use proto_gen_rust::project_app_api::project_app_api_client::ProjectAppApiClient;
-use proto_gen_rust::project_app_api::MinAppPerm;
-use proto_gen_rust::project_app_api::{
-    GetMinAppPermRequest, MinAppExtraPerm, MinAppFsPerm,  MinAppNetPerm,
-};
+use proto_gen_rust::appstore_api::AppPerm;
 use rand::Rng;
 use regex::Regex;
 use std::collections::HashMap;
@@ -18,7 +13,6 @@ use std::convert::Infallible;
 use std::net::TcpListener;
 use std::path::PathBuf;
 use std::time::Duration;
-use substring::Substring;
 use tauri::async_runtime::Mutex;
 use tauri::Manager;
 use tauri::{
@@ -481,7 +475,7 @@ pub struct SshProxyMap(pub Mutex<HashMap<String, CommandChild>>);
 pub struct NetUtilMap(pub Mutex<HashMap<String, CommandChild>>);
 
 #[derive(Default)]
-pub struct DebugPerm(pub Mutex<Option<MinAppPerm>>);
+pub struct AppPermMap(pub Mutex<HashMap<String, AppPerm>>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub struct StartRequest {
@@ -624,6 +618,11 @@ async fn start_http_serv<R: Runtime>(
 pub async fn clear_by_close<R: Runtime>(app_handle: AppHandle<R>, label: String) {
     println!("clear min app resource");
     {
+        let app_perm_map = app_handle.state::<AppPermMap>().inner();
+        let mut app_perm_map = app_perm_map.0.lock().await;
+        app_perm_map.remove(&label);
+    }
+    {
         let serv_map = app_handle.state::<HttpServerMap>().inner();
         let mut serv_map_data = serv_map.0.lock().await;
         let tx = serv_map_data.remove(&label);
@@ -694,7 +693,7 @@ async fn start<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
     request: StartRequest,
-    perm: MinAppPerm,
+    perm: AppPerm,
 ) -> Result<(), String> {
     if window.label() != "main" {
         return Err("no permission".into());
@@ -708,7 +707,16 @@ async fn start<R: Runtime>(
         if let Err(err) = dest_win.unwrap().close() {
             return Err(err.to_string());
         }
+        sleep(Duration::from_millis(500)).await;
     }
+
+    //保存权限
+    {
+        let app_perm_map = app_handle.state::<AppPermMap>().inner();
+        let mut app_perm_map = app_perm_map.0.lock().await;
+        app_perm_map.insert(request.label.clone(), perm.clone());
+    }
+
     let mut dest_url = String::from("");
     if request.path.starts_with("http://") {
         dest_url.clone_from(&request.path);
@@ -923,7 +931,8 @@ async fn start_sidecar_proxy<R: Runtime>(
     let mut token: String = "".into();
     while let Some(ev) = res.0.recv().await {
         if let CommandEvent::Stdout(line) = ev {
-            let cap = re.captures(&line);
+            let line = line.trim();
+            let cap = re.captures(line);
             if cap.is_none() {
                 return Err("can't find token".into());
             }
@@ -956,27 +965,6 @@ async fn start_sidecar_proxy<R: Runtime>(
     }
 
     return Ok((addr, token));
-}
-
-#[tauri::command]
-async fn start_debug<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: StartRequest,
-    perm: MinAppPerm,
-) -> Result<(), String> {
-    if &request.label == "main" {
-        return Err("no permission".into());
-    }
-    let debug_perm = app_handle.state::<DebugPerm>().inner();
-    *debug_perm.0.lock().await = Some(perm.clone());
-
-    if let Some(win) = app_handle.get_window(&request.label) {
-        win.close().unwrap();
-        sleep(Duration::from_millis(100)).await;
-    }
-
-    return start(app_handle, window, request, perm).await;
 }
 
 #[tauri::command]
@@ -1192,82 +1180,21 @@ async fn unpack_min_app<R: Runtime>(
 pub async fn get_min_app_perm<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    project_id: String,
-) -> Option<MinAppPerm> {
+) -> Option<AppPerm> {
     let label = window.label();
     if label.starts_with("minApp:") == false {
         return None;
     }
-    let app_id = label.substring(7, label.len());
-    if app_id == "debug" {
-        let cur_value = app_handle.state::<DebugPerm>().inner();
-        let cur_perm = cur_value.0.lock().await;
-        return cur_perm.clone();
-    } else {
-        let chan = super::get_grpc_chan(&app_handle).await;
-        if (&chan).is_none() {
-            return None;
-        }
-        if &project_id != "" {
-            let mut client = ProjectAppApiClient::new(chan.unwrap());
-            let res = client
-                .get_min_app_perm(GetMinAppPermRequest {
-                    session_id: get_session(app_handle).await,
-                    project_id: project_id,
-                    app_id: app_id.into(),
-                })
-                .await;
-            if res.is_err() {
-                return None;
-            }
-            return res.unwrap().into_inner().perm;
-        } else {
-            let mut client =
-                proto_gen_rust::user_app_api::user_app_api_client::UserAppApiClient::new(
-                    chan.unwrap(),
-                );
-            let res = client
-                .get_user_app_perm(proto_gen_rust::user_app_api::GetUserAppPermRequest {
-                    session_id: get_session(app_handle).await,
-                    app_id: app_id.into(),
-                })
-                .await;
-            if res.is_err() {
-                return None;
-            }
-            let perm = res.unwrap().into_inner().perm;
-            if perm.is_none() {
-                return None;
-            }
-            let perm = perm.unwrap();
-            if perm.net_perm.is_none() || perm.fs_perm.is_none() || perm.extra_perm.is_none() {
-                return None;
-            }
-            let net_perm = perm.net_perm.unwrap();
-            let fs_perm = perm.fs_perm.unwrap();
-            let extra_perm = perm.extra_perm.unwrap();
-            return Some(MinAppPerm {
-                net_perm: Some(MinAppNetPerm {
-                    cross_domain_http: net_perm.cross_domain_http,
-                    proxy_redis: net_perm.proxy_redis,
-                    proxy_mysql: net_perm.proxy_mysql,
-                    proxy_post_gres: net_perm.proxy_post_gres,
-                    proxy_mongo: net_perm.proxy_mongo,
-                    proxy_ssh: net_perm.proxy_ssh,
-                    net_util: net_perm.net_util,
-                }),
-                fs_perm: Some(MinAppFsPerm {
-                    read_file: fs_perm.read_file,
-                    write_file: fs_perm.write_file,
-                }),
-                extra_perm: Some(MinAppExtraPerm {
-                    cross_origin_isolated: extra_perm.cross_origin_isolated,
-                    open_browser: extra_perm.open_browser,
-                }),
-            });
-        }
+    let app_perm_map = app_handle.state::<AppPermMap>().inner();
+    let app_perm_map = app_perm_map.0.lock().await;
+    let perm = app_perm_map.get(label).clone();
+    if perm.is_none() {
+        return None;
     }
+    let perm = perm.unwrap().clone();
+    return Some(perm);
 }
+
 pub struct MinAppPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -1277,7 +1204,6 @@ impl<R: Runtime> MinAppPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 start,
-                start_debug,
                 pack_min_app,
                 check_unpark,
                 get_min_app_path,
@@ -1296,7 +1222,7 @@ impl<R: Runtime> Plugin<R> for MinAppPlugin<R> {
     }
 
     fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
-        app.manage(DebugPerm(Default::default()));
+        app.manage(AppPermMap(Default::default()));
         app.manage(HttpServerMap(Default::default()));
         app.manage(RedisProxyMap(Default::default()));
         app.manage(MongoProxyMap(Default::default()));

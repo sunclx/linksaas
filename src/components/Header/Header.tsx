@@ -91,7 +91,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     <div>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
-        {projectStore.curProjectId != "" && appStore.simpleMode == false && (<ProjectQuickAccess />)}
+        {projectStore.curProjectId != "" && appStore.simpleMode == false && userStore.sessionId != "" && (<ProjectQuickAccess />)}
         <div className={style.l}>
           {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
         </div>

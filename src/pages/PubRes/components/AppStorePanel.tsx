@@ -1,4 +1,4 @@
-import { Card, Form, List, Input, Space, Select } from "antd";
+import { Card, Form, List, Input, Space, Select, Popover, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import type { AppInfo, MajorCate, MinorCate, SubMinorCate } from "@/api/appstore";
 import {
@@ -12,8 +12,10 @@ import { useStores } from "@/hooks";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import AsyncImage from "@/components/AsyncImage";
 import { ReadOnlyEditor } from "@/components/Editor";
-import { CommentOutlined, DownloadOutlined, HeartTwoTone } from "@ant-design/icons";
+import { CommentOutlined, DownloadOutlined, HeartTwoTone, MoreOutlined } from "@ant-design/icons";
 import { observer } from 'mobx-react';
+import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
+import DebugMinAppModal from "@/components/MinApp/DebugMinAppModal";
 
 const PAGE_SIZE = 12;
 
@@ -28,6 +30,9 @@ const AppStorePanel = () => {
     const [majorCateList, setMajorCateList] = useState<MajorCate[]>([]);
     const [minorCateList, setMinorCateList] = useState<MinorCate[]>([]);
     const [subMinorCateList, setSubMinorCateList] = useState<SubMinorCate[]>([]);
+
+    const [showStoreStatusModal, setShowStoreStatusModal] = useState(false);
+    const [showDebug, setShowDebug] = useState(false);
 
     const loadMajorCate = async () => {
         const res = await request(list_major_cate({}));
@@ -67,8 +72,6 @@ const AppStorePanel = () => {
                 minor_cate_id: pubResStore.appMinorCateId,
                 filter_by_sub_minor_cate_id: pubResStore.appSubMinorCateId != "",
                 sub_minor_cate_id: pubResStore.appSubMinorCateId,
-                filter_by_app_scope: false,
-                app_scope: 0,
                 filter_by_os_scope: true,
                 os_scope: osScope,
                 filter_by_keyword: pubResStore.appKeyword.trim() != "",
@@ -136,7 +139,7 @@ const AppStorePanel = () => {
 
     useEffect(() => {
         loadAppList();
-    }, [pubResStore.appCurPage]);
+    }, [pubResStore.appCurPage, pubResStore.appDataVersion]);
 
     useEffect(() => {
         if (pubResStore.appCurPage != 0) {
@@ -189,6 +192,24 @@ const AppStorePanel = () => {
                             <Select.Option value={SORT_KEY_AGREE_COUNT}>点赞数量</Select.Option>
                         </Select>
                     </Form.Item>
+                    <Form.Item>
+                        <Popover placement="bottom" trigger="click" content={
+                            <Space direction="vertical" style={{ padding: "10px 10px" }}>
+                                <Button type="link" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowDebug(true);
+                                }}>调试应用</Button>
+                                <Button type="link" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowStoreStatusModal(true);
+                                }}>查看调试存储</Button>
+                            </Space>
+                        }>
+                            <MoreOutlined />
+                        </Popover>
+                    </Form.Item>
                 </Form>
             }>
             <List rowKey="app_id" dataSource={appList}
@@ -221,19 +242,30 @@ const AppStorePanel = () => {
                                     </div>
                                 </Space>
                             }>
-                            <AsyncImage style={{ width: "80px", height: "80px", cursor: "pointer" }}
-                                src={adjustUrl(app.base_info.icon_file_id)} fallback={defaultIcon} preview={false} useRawImg={false}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    pubResStore.showAppId = app.app_id;
-                                }} />
+                            <Space direction="vertical">
+                                <AsyncImage style={{ width: "80px", height: "80px", cursor: "pointer" }}
+                                    src={adjustUrl(app.base_info.icon_file_id)} fallback={defaultIcon} preview={false} useRawImg={false}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        pubResStore.showAppId = app.app_id;
+                                    }} />
+                                {app.my_install == true && (
+                                    <div style={{ width: "80px", textAlign: "center", fontSize: "16px", fontWeight: 600 }}>已安装</div>
+                                )}
+                            </Space>
                             <div style={{ marginLeft: "20px", height: "120px", overflowY: "scroll", width: "100%" }}>
                                 <ReadOnlyEditor content={app.base_info.app_desc} />
                             </div>
                         </Card>
                     </List.Item>
                 )} pagination={{ total: totalCount, current: pubResStore.appCurPage + 1, pageSize: PAGE_SIZE, onChange: (page) => pubResStore.appCurPage = (page - 1) }} />
+            {showStoreStatusModal == true && (
+                <StoreStatusModal minAppId="debug" onCancel={() => { setShowStoreStatusModal(false) }} />
+            )}
+            {showDebug == true && (
+                <DebugMinAppModal onCancel={() => setShowDebug(false)} onOk={() => setShowDebug(false)} />
+            )}
 
         </Card>
     );

@@ -2,11 +2,11 @@ import { Button, Form, Input, Modal, Radio, message } from "antd";
 import React, { useState } from "react";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
-import MinAppPermPanel from "./MinAppPermPanel";
-import type { MinAppPerm } from "@/api/project_app";
+import AppPermPanel from "./AppPermPanel";
 import { observer } from 'mobx-react';
-import { start_debug } from '@/api/min_app';
+import { start } from '@/api/min_app';
 import { useStores } from "@/hooks";
+import type { AppPerm } from "@/api/appstore";
 
 interface DebugMinAppModalProps {
     onCancel: () => void;
@@ -20,7 +20,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
     const [useUrl, setUseUrl] = useState(true);
     const [remoteUrl, setRemoteUrl] = useState("");
     const [localPath, setLocalPath] = useState("");
-    const [debugPerm, setDebugPerm] = useState<MinAppPerm>({
+    const [debugPerm, setDebugPerm] = useState<AppPerm>({
         net_perm: {
             cross_domain_http: false,
             proxy_redis: false,
@@ -71,7 +71,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
             path = localPath;
         }
 
-        await start_debug({
+        await start({
             project_id: projectStore.curProjectId,
             project_name: projectStore.curProject?.basic_info.project_name ?? "",
             member_user_id: userStore.userInfo.userId,
@@ -131,7 +131,7 @@ const DebugMinAppModal: React.FC<DebugMinAppModalProps> = (props) => {
                     </Form.Item>
                 )}
             </Form>
-            <MinAppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} showTitle />
+            <AppPermPanel disable={false} onChange={perm => setDebugPerm(perm)} showTitle />
         </Modal>
     );
 };

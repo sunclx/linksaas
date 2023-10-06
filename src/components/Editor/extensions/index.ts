@@ -7,5 +7,4 @@ export * from './CodeExtension';
 export * from './LinkExtension';
 export * from './KeywordExtension';
 export * from "./TocExtension";
-export * from "./DashboardExtension";
 export * from "./KatexExtension";

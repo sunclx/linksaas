@@ -132,6 +132,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: `ID`,
             width: 100,
             fixed: true,
+            align:"left",
             render: (_, row: IssueInfo) => {
                 let notComplete = row.exec_user_id == "" || row.has_end_time == false || row.has_start_time == false || row.has_estimate_minutes == false || row.has_remain_minutes == false;
                 if (row.has_start_time && row.has_end_time && row.start_time > row.end_time) {
@@ -179,6 +180,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             ellipsis: true,
             dataIndex: ['basic_info', 'title'],
             width: 200,
+            align:"left",
             fixed: true,
             render: (_, row: IssueInfo) =>
                 renderTitle(row, projectStore.curProjectId, linkAuxStore, spritStore.taskList.map(task => task.issue_id), spritStore.bugList.map(bug => bug.issue_id), history),
@@ -235,7 +237,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: '处理人',
             dataIndex: 'exec_display_name',
             width: 100,
-            align: 'center',
+            align:"left",
             render: (_, row: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={row.user_issue_perm.can_assign_exec_user}
@@ -253,7 +255,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: '验收人',
             dataIndex: 'check_display_name',
             width: 100,
-            align: 'center',
+            align:"left",
             render: (_, row: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={row.user_issue_perm.can_assign_check_user}
@@ -271,7 +273,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: '预估开始成时间',
             dataIndex: 'start_time',
             width: 120,
-            align: 'center',
+            align:"left",
             render: (_, record) => <EditDate
                 editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
                 disabledDate={(date) => {
@@ -299,7 +301,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: '预估完成时间',
             dataIndex: 'end_time',
             width: 120,
-            align: 'center',
+            align:"left",
             render: (_, record) => <EditDate
                 editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
                 hasTimeStamp={record.has_end_time}
@@ -327,7 +329,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: '预估工时',
             dataIndex: 'estimate_minutes',
             width: 100,
-            align: 'center',
+            align:"left",
             render: (_, record: IssueInfo) => <EditSelect
                 allowClear={false}
                 editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
@@ -352,7 +354,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
             title: '剩余工时',
             dataIndex: 'remain_minutes',
             width: 100,
-            align: 'center',
+            align:"left",
             render: (_, record: IssueInfo) => <EditSelect
                 allowClear={true}
                 editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
