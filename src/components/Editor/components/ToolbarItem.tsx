@@ -638,16 +638,6 @@ const AddTable = () => {
   );
 };
 
-const AddDashboard = () => {
-  const commands = useCommands();
-
-  return (
-    <Tooltip title="信息面板">
-      <div className="dashboard-btn" onClick={() => commands.insertDashboard()} />
-    </Tooltip>
-  );
-};
-
 const AddKatex = () => {
   const commands = useCommands();
 
@@ -760,7 +750,6 @@ export const newCommItem = (param: NewCommItemParam) => {
         ...items,
         <AddCode key="code" />,
         <AddTable key="table" />,
-        <AddDashboard key="dashboard" />,
         <AddKatex key="katex" />,
         <AddCallout key="callout" />,
       ]}

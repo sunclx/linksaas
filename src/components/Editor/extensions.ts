@@ -16,7 +16,6 @@ import {
   CodeExtension,
   KeywordExtension,
   TocExtension,
-  DashboardExtension,
   KatexExtension,
 } from './extensions/index';
 import {
@@ -83,7 +82,6 @@ export const getExtensions = (param?: {
     new IframeExtension(),
     new CodeExtension(),
     new MarkdownExtension({ copyAsMarkdown: false }),
-    new DashboardExtension(),
     new KatexExtension(),
 
     // Marks
