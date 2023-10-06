@@ -49,13 +49,13 @@ const DangerPanel: React.FC = () => {
         }>
             {(projectStore.curProject?.closed ?? false) == true && (
                 <Form>
-                    <Form.Item label="删除项目" help={
+                    <Form.Item label={<span style={{ color: "red" }}>删除项目</span>} help={
                         <span style={{ color: "red" }}>
                             项目被删除后，将无法再访问该项目的任何内容
                         </span>
                     }>
                         <Space>
-                            <Input style={{ width: "410px" }} placeholder="请输入项目名称" value={prjName} onChange={e => {
+                            <Input style={{ width: "410px" }} placeholder="请确认项目名称" value={prjName} onChange={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setPrjName(e.target.value);
@@ -70,7 +70,7 @@ const DangerPanel: React.FC = () => {
                     </Form.Item>
                 </Form>
             )}
-
+            {(projectStore.curProject?.closed ?? false) == false && "项目处于只读模式下可以删除"}
         </Card>
     );
 };

@@ -138,7 +138,7 @@ const MemberInfoPanel = () => {
                                             )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="操作">
-                                            {userStore.userInfo.userId == member.member.member_user_id && (
+                                            {userStore.userInfo.userId == member.member.member_user_id && userStore.userInfo.userId != (projectStore.curProject?.owner_user_id ?? "") && (
                                                 <Button type="link"
                                                     style={{ minWidth: 0, padding: "0px 0px" }} danger
                                                     onClick={e => {
