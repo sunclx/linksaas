@@ -2,13 +2,15 @@ import { Form, Input, Radio, message, Modal, Tabs } from 'antd';
 import type { FC } from 'react';
 import React, { useState } from 'react';
 import type { BasicProjectInfo } from '@/api/project';
-import { create, update_setting } from '@/api/project';
+import { add_tag, create, update_setting, update_tip_list } from '@/api/project';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
 import { useSimpleEditor } from '@/components/Editor';
 import { useHistory } from 'react-router-dom';
 import { APP_PROJECT_OVERVIEW_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 import { join } from '@/api/project_member';
+import { unixTipList } from '@/pages/Project/Setting/components/TipListSettingPanel';
+import randomColor from 'randomcolor';
 
 type CreatedProjectProps = {
   visible: boolean;
@@ -76,6 +78,30 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
           },
         }));
       }
+      //设置经验集锦
+      const tipList = unixTipList.split("\n").map(tip => tip.trim()).filter(tip => tip != "");
+      await request(update_tip_list({
+        session_id: userStore.sessionId,
+        project_id: res.project_id,
+        tip_list: tipList,
+      }));
+
+      //设置标签
+      for (const tag of ["干的不错", "待改进"]) {
+        await request(add_tag({
+          session_id: userStore.sessionId,
+          project_id: res.project_id,
+          tag_name: tag,
+          bg_color: randomColor({ luminosity: "light", format: "rgba", alpha: 0.8 }),
+          use_in_doc: false,
+          use_in_task: false,
+          use_in_bug: false,
+          use_in_req: false,
+          use_in_idea: false,
+          use_in_sprit_summary: true,
+        }));
+      }
+
       await projectStore.updateProject(res.project_id);
       onChange(false);
       projectStore.setCurProjectId(res.project_id).then(() => {
