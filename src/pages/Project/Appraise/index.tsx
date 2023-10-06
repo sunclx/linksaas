@@ -56,9 +56,9 @@ const Appraise: React.FC = observer(() => {
   return (
     <CardWrap title="成员互评" extra={
       <Space>
-        <Button type="primary" onClick={() => create()} disabled={memberStore.memberList.length < 2}>
-            发起互评
-          </Button>
+        <Button type="primary" onClick={() => create()} disabled={projectStore.isClosed || (memberStore.memberList.length < 2)}>
+          发起互评
+        </Button>
       </Space>
     }>
       <div className={styles.wrap}>

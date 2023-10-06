@@ -55,7 +55,7 @@ const EventSettingPanel: React.FC<PanelProps> = (props) => {
                     }}>保存</Button>
                 </Space>
             }>
-            <Form labelCol={{ span: 9 }}>
+            <Form labelCol={{ span: 9 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="不显示自定义事件(普通用户)" >
                     <Checkbox checked={hideCustomEvent} onChange={e => {
                         e.stopPropagation();

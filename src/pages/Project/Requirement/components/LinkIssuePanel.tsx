@@ -130,6 +130,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
             width: 100,
             render: (_, record: IssueInfo) => (
                 <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
+                    disabled={projectStore.isClosed}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -148,6 +149,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
         <Card title={<h2>相关任务</h2>} bordered={false} extra={
             <Dropdown.Button
                 type="primary"
+                disabled={projectStore.isClosed}
                 menu={{
                     items: [
                         {

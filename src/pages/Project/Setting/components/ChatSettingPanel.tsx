@@ -57,7 +57,7 @@ const ChatSettingPanel: React.FC<PanelProps> = (props) => {
                     }}>保存</Button>
                 </Space>
             }>
-            <Form labelCol={{ span: 9 }}>
+            <Form labelCol={{ span: 9 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="纯文本内容最小长度" help={
                     <div>0&nbsp;表示不做限制。<br />汉字以字符计数。<br />数字和英文累计5个字符算一个计数。</div>
                 }>

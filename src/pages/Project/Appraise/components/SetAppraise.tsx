@@ -161,7 +161,7 @@ const SetAppraise: React.FC<SetAppraiseProps> = (props) => {
                   <div className={styles.result_rate}>
                     <Rate
                       tooltips={desc}
-                      disabled={hasVote}
+                      disabled={projectStore.isClosed || hasVote}
                       value={voteItem.score}
                       onChange={(value) => {
                         runInAction(() => {
@@ -184,16 +184,16 @@ const SetAppraise: React.FC<SetAppraiseProps> = (props) => {
 
         {hasVote == false ? (
           <div className={styles.actions}>
-            <Button key="cancel" ghost onClick={() => saveDraft()} className={styles.btn}>
+            <Button key="cancel" ghost disabled={projectStore.isClosed} onClick={() => saveDraft()} className={styles.btn}>
               暂存
             </Button>
-            <Button onClick={() => comfirm()} className={styles.btn}>
+            <Button disabled={projectStore.isClosed} onClick={() => comfirm()} className={styles.btn}>
               匿名提交
             </Button>
           </div>
         ) : (
           <div className={styles.actions}>
-            <Button key="revoke" ghost onClick={() => revokeVote()} className={styles.btn}>
+            <Button key="revoke" ghost disabled={projectStore.isClosed} onClick={() => revokeVote()} className={styles.btn}>
               撤回投票
             </Button>
             <Button key="cancel" className={styles.btn} onClick={() => onCancel()}>

@@ -87,16 +87,21 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
         <div>
           历史版本
           <div className={s.title}>{oldUpdateTime != null && moment(oldUpdateTime).format("YYYY-MM-DD HH:mm:ss")}</div>
-          <div
-            className={s.btn}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              recoverDoc();
-            }}
-          >
-            恢复
-          </div>
+          {projectStore.isClosed == false && (
+            <div
+              className={s.btn}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (projectStore.isClosed) {
+                  return;
+                }
+                recoverDoc();
+              }}
+            >
+              恢复
+            </div>
+          )}
         </div>
       </div>
       <div style={{ maxHeight: '500px', overflowY: 'scroll' }}>

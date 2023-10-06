@@ -37,11 +37,13 @@ const IdeaPage = () => {
     return (
         <CardWrap title="项目知识点" extra={
             <Space size="middle">
-                <Button onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    ideaStore.setShowCreateIdea("", "");
-                }}>创建知识点</Button>
+                <Button
+                    disabled={projectStore.isClosed}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        ideaStore.setShowCreateIdea("", "");
+                    }}>创建知识点</Button>
                 <Popover placement="bottom" trigger="click" content={
                     <div style={{ padding: "10px 10px" }}>
                         <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {
@@ -60,7 +62,7 @@ const IdeaPage = () => {
                         <TagListPanel tagDefList={tagList} />
                     </div>
                     <div>
-                        <ContentPanel tagDefList={tagList}/>
+                        <ContentPanel tagDefList={tagList} />
                     </div>
                 </div>
             </div>

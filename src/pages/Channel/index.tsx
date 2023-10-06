@@ -36,9 +36,11 @@ const Channel = () => {
         <Collapse accordion activeKey={activeKey} className={styles.panel} bordered={false} onChange={key => setActiveKey(key as string)}>
           <Collapse.Panel key="channel" header="频道列表" extra={
             <div className={styles.header}>
-              <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
+              {!projectStore.isClosed && (
+                <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
                 <i className={styles.icon} />
               </a>
+              )}
               <Popover
                 placement="bottomLeft"
                 content={<RenderMoreMenu />}

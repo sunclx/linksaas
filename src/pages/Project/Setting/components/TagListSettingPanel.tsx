@@ -126,28 +126,33 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
             title: "标签",
             width: 80,
             render: (_, row: ExTagInfo) => (
-                <Input value={row.info.tag_name} onChange={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.tag_name = e.target.value;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Input value={row.info.tag_name}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.tag_name = e.target.value;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "背景色",
             width: 40,
             render: (_, row: ExTagInfo) => (
-                <div style={{ width: "20px", backgroundColor: row.info.bg_color, cursor: "pointer" }}
+                <div style={{ width: "20px", backgroundColor: row.info.bg_color, cursor: (projectStore.isClosed || !projectStore.isAdmin) ? "default" : "pointer" }}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
+                        if (projectStore.isClosed || !projectStore.isAdmin) {
+                            return;
+                        }
                         const tmpList = tagList.slice();
                         const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
                         if (index != -1) {
@@ -163,119 +168,132 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
             title: "文档",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_doc} onChange={e => {
-                    e.stopPropagation();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.use_in_doc = e.target.checked;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Checkbox checked={row.info.use_in_doc}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.use_in_doc = e.target.checked;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "需求",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_req} onChange={e => {
-                    e.stopPropagation();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.use_in_req = e.target.checked;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Checkbox checked={row.info.use_in_req}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.use_in_req = e.target.checked;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "任务",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_task} onChange={e => {
-                    e.stopPropagation();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.use_in_task = e.target.checked;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Checkbox checked={row.info.use_in_task}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.use_in_task = e.target.checked;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "缺陷",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_bug} onChange={e => {
-                    e.stopPropagation();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.use_in_bug = e.target.checked;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Checkbox checked={row.info.use_in_bug}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.use_in_bug = e.target.checked;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "知识点",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_idea} onChange={e => {
-                    e.stopPropagation();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.use_in_idea = e.target.checked;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Checkbox checked={row.info.use_in_idea}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.use_in_idea = e.target.checked;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "工作总结",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_sprit_summary} onChange={e => {
-                    e.stopPropagation();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].info.use_in_sprit_summary = e.target.checked;
-                        tmpList[index].hasUpdate = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }} />
+                <Checkbox checked={row.info.use_in_sprit_summary}
+                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={e => {
+                        e.stopPropagation();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].info.use_in_sprit_summary = e.target.checked;
+                            tmpList[index].hasUpdate = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }} />
             ),
         },
         {
             title: "操作",
             width: 40,
             render: (_, row: ExTagInfo) => (
-                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} danger onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const tmpList = tagList.slice();
-                    const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
-                    if (index != -1) {
-                        tmpList[index].hasRemove = true;
-                        setTagList(tmpList);
-                        setHasChange(true);
-                    }
-                }}>删除</Button>
+                <Button type="link" disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    style={{ minWidth: 0, padding: "0px 0px" }} danger onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpList = tagList.slice();
+                        const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
+                        if (index != -1) {
+                            tmpList[index].hasRemove = true;
+                            setTagList(tmpList);
+                            setHasChange(true);
+                        }
+                    }}>删除</Button>
             ),
         }
     ];
@@ -291,30 +309,31 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
     return (
         <Card bordered={false} title={props.title} bodyStyle={{ height: "calc(100vh - 400px)", overflowY: "scroll" }} extra={
             <Space>
-                <Button onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const tmpList = tagList.slice();
-                    tmpList.unshift({
-                        tag_id: uniqId(),
-                        info: {
-                            tag_id: "",
-                            tag_name: "",
-                            create_time: moment().valueOf(),
-                            bg_color: randomColor({ luminosity: "light", format: "rgba", alpha: 0.8 }),
-                            use_in_doc: true,
-                            use_in_task: true,
-                            use_in_bug: true,
-                            use_in_req: true,
-                            use_in_idea: true,
-                            use_in_sprit_summary: true,
-                        },
-                        hasUpdate: true,
-                        hasRemove: false,
-                    });
-                    setTagList(tmpList);
-                    setHasChange(true);
-                }}>增加标签</Button>
+                <Button disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        const tmpList = tagList.slice();
+                        tmpList.unshift({
+                            tag_id: uniqId(),
+                            info: {
+                                tag_id: "",
+                                tag_name: "",
+                                create_time: moment().valueOf(),
+                                bg_color: randomColor({ luminosity: "light", format: "rgba", alpha: 0.8 }),
+                                use_in_doc: true,
+                                use_in_task: true,
+                                use_in_bug: true,
+                                use_in_req: true,
+                                use_in_idea: true,
+                                use_in_sprit_summary: true,
+                            },
+                            hasUpdate: true,
+                            hasRemove: false,
+                        });
+                        setTagList(tmpList);
+                        setHasChange(true);
+                    }}>增加标签</Button>
                 <Button disabled={!hasChange} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();

@@ -6,12 +6,16 @@ import { Link, useLocation } from 'react-router-dom';
 import style from '../index.module.less';
 import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from '@/utils/constant';
+import { observer } from 'mobx-react';
+import { useStores } from '@/hooks';
 
 const AccessTable: React.FC<{
   data: API.EventSourceInfo[];
   remove: (eventSourceId: string) => void;
 }> = (props) => {
   const { pathname } = useLocation();
+
+  const projectStore = useStores('projectStore');
 
   const columns: ColumnsType<API.EventSourceInfo> = [
     {
@@ -23,6 +27,7 @@ const AccessTable: React.FC<{
     {
       title: '名称',
       dataIndex: 'title',
+      width: 200,
       key: 'title',
       render: (text, record) => {
         let destPath = "";
@@ -34,7 +39,7 @@ const AccessTable: React.FC<{
           destPath = APP_PROJECT_OVERVIEW_PATH + '/access/view';
         } else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
           destPath = APP_PROJECT_WORK_PLAN_PATH + '/access/view';
-        } else if(pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+        } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
           destPath = APP_PROJECT_MY_WORK_PATH + '/access/view';
         }
         return <Link to={`${destPath}?event_source_id=${record.event_source_id}`}>{text}&nbsp;<LinkOutlined /></Link>;
@@ -67,15 +72,17 @@ const AccessTable: React.FC<{
       key: 'action',
       render: (_text, record) => (
         <div className={style.accessTableAction}>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              props.remove(record.event_source_id);
-            }}
-          >
-            删除
-          </a>
+          {(!projectStore.isClosed) && projectStore.isAdmin && (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                props.remove(record.event_source_id);
+              }}
+            >
+              删除
+            </a>
+          )}
         </div>
       ),
       width: 100,
@@ -92,4 +99,4 @@ const AccessTable: React.FC<{
     />
   );
 };
-export default AccessTable;
+export default observer(AccessTable);

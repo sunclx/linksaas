@@ -52,7 +52,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
         new LinkChannelInfo('', msg.msg.project_id, msg.msg.basic_msg.link_dest_id, msg.msg.msg_id),
         history,
       );
-    } 
+    }
   };
   const setHover = (hover: boolean) => {
     if (msg.hovered != hover) {
@@ -156,7 +156,7 @@ const ChatMsg: React.FC<ChatMsgProp> = (props) => {
                 }}><Space>{msg.msg.link_dest_title}<LinkOutlined /></Space></a>
             </span>
           )}
-          {msg.hovered && (
+          {(!projectStore.isClosed) && msg.hovered && (
             <span className={styles.tools}>
               {readonly == false && msg.msg.sender_user_id == userStore.userInfo.userId && moment().diff(msg.msg.send_time) < (900 * 1000) && (<span
                 title="修改"

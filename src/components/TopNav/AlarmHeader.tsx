@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import {  ALARM_TYPE_ISSUE_DELAY_ALERT, ALARM_TYPE_ISSUE_DELAY_HIT, ALARM_TYPE_ISSUE_DEPEND_ALERT, ALARM_TYPE_ISSUE_DEPEND_HIT, ALARM_TYPE_ISSUE_REOPEN_ALERT, ALARM_TYPE_ISSUE_REOPEN_HIT } from "@/api/project_alarm";
+import { ALARM_TYPE_ISSUE_DELAY_ALERT, ALARM_TYPE_ISSUE_DELAY_HIT, ALARM_TYPE_ISSUE_DEPEND_ALERT, ALARM_TYPE_ISSUE_DEPEND_HIT, ALARM_TYPE_ISSUE_REOPEN_ALERT, ALARM_TYPE_ISSUE_REOPEN_HIT } from "@/api/project_alarm";
 import { get_alarm_state, list_alarm, remove_alarm } from "@/api/project_alarm";
 import type { Alarm } from "@/api/project_alarm";
 import { Button, Form, Input, Modal, Popover, Space, Table, message } from "antd";
@@ -166,7 +166,7 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
         } else if (alarm.alarm_type == ALARM_TYPE_ISSUE_REOPEN_ALERT) {
             issueId = alarm.content.IssueReOpenAlertInfo?.issue_id ?? "";
             issueType = alarm.content.IssueReOpenAlertInfo?.issue_type ?? 0;
-        } 
+        }
         if (issueId != "") {
             if (issueType == ISSUE_TYPE_TASK) {
                 linkAuxStore.goToLink(new LinkTaskInfo("", projectStore.curProjectId, issueId), history);
@@ -208,7 +208,7 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
                     return "超时未完成";
                 } else if (record.alarm_type == ALARM_TYPE_ISSUE_REOPEN_HIT || record.alarm_type == ALARM_TYPE_ISSUE_REOPEN_ALERT) {
                     return "重新打开次数过多";
-                } 
+                }
                 return "";
             },
         },
@@ -221,7 +221,7 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
             title: "操作",
             width: 60,
             render: (_, record: Alarm) => (
-                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!projectStore.isAdmin}
+                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={projectStore.isClosed || (!projectStore.isAdmin)}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();

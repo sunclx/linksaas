@@ -77,13 +77,15 @@ const MemberStatePanel = () => {
             <Card title="工作备注" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }} extra={
                 <>
                     {editState == false && (
-                        <Button type="primary" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            descEditor.editorRef.current?.setContent(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_desc ?? "");
-                            setRemainHour(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_remain_hour ?? 0);
-                            setEditState(true);
-                        }}>编辑</Button>
+                        <Button type="primary"
+                            disabled={projectStore.isClosed}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                descEditor.editorRef.current?.setContent(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_desc ?? "");
+                                setRemainHour(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_remain_hour ?? 0);
+                                setEditState(true);
+                            }}>编辑</Button>
                     )}
                     {editState == true && (
                         <Space>
@@ -131,12 +133,14 @@ const MemberStatePanel = () => {
             <Card title="需要帮助" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }} extra={
                 <>
                     {editHelp == false && (
-                        <Button type="primary" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            helpEditor.editorRef.current?.setContent(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.need_help_desc ?? "");
-                            setEditHelp(true);
-                        }}>编辑</Button>
+                        <Button type="primary"
+                            disabled={projectStore.isClosed}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                helpEditor.editorRef.current?.setContent(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.need_help_desc ?? "");
+                                setEditHelp(true);
+                            }}>编辑</Button>
                     )}
                     {editHelp == true && (
                         <Space>

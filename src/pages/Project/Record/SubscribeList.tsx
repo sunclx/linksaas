@@ -12,11 +12,11 @@ import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
 import {
-     codeEvOptionList, docEvOptionList,  extEvOptionList, 
+    codeEvOptionList, docEvOptionList, extEvOptionList,
     genCodeEvCfgValues, genDocEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
-    genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues, 
+    genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues,
     genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues, 
+    requirementEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
     apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
@@ -66,7 +66,7 @@ const SubscribeList = () => {
         <CardWrap>
             <DetailsNav title="研发事件订阅" >
                 <Button
-                    disabled={projectStore.isAdmin == false}
+                    disabled={projectStore.isClosed || (!projectStore.isAdmin)}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -108,7 +108,7 @@ const SubscribeList = () => {
                             {curSubscribeId == item.subscribe_id && (
                                 <Card bordered={false} extra={
                                     <Dropdown.Button
-                                        disabled={projectStore.isAdmin == false}
+                                        disabled={projectStore.isClosed || (!projectStore.isAdmin)}
                                         onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();

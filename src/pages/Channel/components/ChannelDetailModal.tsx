@@ -57,14 +57,14 @@ const ChannelDetailModal: React.FC = () => {
         <Modal open title={
             <Space>
                 <span>{"#" + channelStore.getChannel(channelStore.showDetailChannelId)?.channelInfo.basic_info.channel_name ?? ""}</span>
-                {channelStore.getChannel(channelStore.showDetailChannelId)?.channelInfo.user_channel_perm.can_update && (
+                {channelStore.getChannel(channelStore.showDetailChannelId)?.channelInfo.user_channel_perm.can_update && !projectStore.isClosed && (
                     <Button type="link" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         channelStore.updateChannelId = channelStore.showDetailChannelId;
                     }}>修改频道</Button>
                 )}
-                {channelStore.getChannel(channelStore.showDetailChannelId)?.channelInfo.user_channel_perm.can_leave && (
+                {channelStore.getChannel(channelStore.showDetailChannelId)?.channelInfo.user_channel_perm.can_leave && !projectStore.isClosed && (
                     <Button type="link" danger
                         onClick={e => {
                             e.stopPropagation();

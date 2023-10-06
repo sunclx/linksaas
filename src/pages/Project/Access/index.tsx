@@ -98,25 +98,31 @@ const ProjectInvite: React.FC = () => {
   return (
     <CardWrap title="第三方接入" extra={
       <Space >
-        <Button type="default" onClick={e => {
-          e.stopPropagation();
-          e.preventDefault();
-          localStore.setNewEventSource(API.EVENT_SOURCE_ATOMGIT);
-        }}>
+        <Button type="default"
+          disabled={projectStore.isClosed}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            localStore.setNewEventSource(API.EVENT_SOURCE_ATOMGIT);
+          }}>
           <img src={iconAtomgit} style={{ width: "20px", marginRight: "10px" }} />连接Atomgit
         </Button>
-        <Button type="default" onClick={e => {
-          e.stopPropagation();
-          e.preventDefault();
-          localStore.setNewEventSource(API.EVENT_SOURCE_GITEE);
-        }}>
+        <Button type="default"
+          disabled={projectStore.isClosed}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            localStore.setNewEventSource(API.EVENT_SOURCE_GITEE);
+          }}>
           <img src={iconGitee} style={{ width: "20px", marginRight: "10px" }} />连接Gitee
         </Button>
-        <Button type="default" onClick={e => {
-          e.stopPropagation();
-          e.preventDefault();
-          localStore.setNewEventSource(API.EVENT_SOURCE_GITLAB);
-        }}>
+        <Button type="default"
+          disabled={projectStore.isClosed}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            localStore.setNewEventSource(API.EVENT_SOURCE_GITLAB);
+          }}>
           <img src={iconGitlab} style={{ width: "20px", marginRight: "10px" }} />连接Gitlab
         </Button>
       </Space>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import style from './calendar.module.less';
-import { Calendar as AntdCalendar } from 'antd';
+import { Calendar as AntdCalendar, DatePicker, Space } from 'antd';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import * as API from '@/api/events';
@@ -22,7 +22,7 @@ const Calendar: React.FC<{
     projectId: '',
     memberUserId: '',
     currentDate: moment(),
-    isShowCanlendar: false,
+    isShowCalendar: false,
     //  currentDate: props.value,
     statusList: {} as Record<string, { count: number; event_type: number }[]>,
     updateProps(nextProps: {
@@ -36,8 +36,8 @@ const Calendar: React.FC<{
       this.memberUserId = nextProps.memberUserId;
       this.currentDate = nextProps.currentDate;
     },
-    toggleCanlendar() {
-      this.isShowCanlendar = !this.isShowCanlendar;
+    toggleCalendar() {
+      this.isShowCalendar = !this.isShowCalendar;
     },
     //列出项目维度额事件
     async listProjectEvent(date?: Moment) {
@@ -60,15 +60,15 @@ const Calendar: React.FC<{
       if (resp) this.updateStatusList(resp.status_item_list);
     },
     selectDate(date: Moment) {
-      this.toggleCanlendar();
+      this.toggleCalendar();
       props.onChange(date);
     },
     updateStatusList(list: API.DayEventStatusItem[]) {
       const map: Record<string, { count: number; event_type: number }[]> = {};
       list.forEach(({ count, day, event_type }) => {
         if (map[day]) {
-            map[day].push({ count, event_type });
-          
+          map[day].push({ count, event_type });
+
         } else {
           map[day] = [{ count, event_type }];
         }
@@ -77,7 +77,7 @@ const Calendar: React.FC<{
       this.statusList = map;
       setUpdater((prev) => prev + 1);
     },
-    updateDate(n: 1 | -1) {
+    updateDate(n: 1 | -1 | -7 | 7) {
       props.onChange(this.currentDate.add(n, 'days'));
     },
   }));
@@ -87,9 +87,9 @@ const Calendar: React.FC<{
   }, [props, localStore]);
 
   useEffect(() => {
-    if (localStore.isShowCanlendar) localStore.listProjectEvent();
+    if (localStore.isShowCalendar) localStore.listProjectEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localStore.isShowCanlendar]);
+  }, [localStore.isShowCalendar]);
 
   return (
     <div className={style.component}>
@@ -103,13 +103,13 @@ const Calendar: React.FC<{
         <div
           className={style.value}
           onClick={() => {
-            localStore.toggleCanlendar();
+            localStore.toggleCalendar();
           }}
         >
           {localStore.currentDate.format('YYYY年MM月DD日')}
         </div>
         {localStore.currentDate.isAfter(Date.now()) ? (
-          <div className={style.next} style={{ opacity: '0.5' }} />
+          <div className={style.next} style={{ opacity: '0.5', cursor: "default" }} />
         ) : (
           <div
             className={style.next}
@@ -119,11 +119,11 @@ const Calendar: React.FC<{
           />
         )}
       </div>
-      {localStore.isShowCanlendar && (
+      {localStore.isShowCalendar && (
         <div
           className={style.modelMask}
           onClick={() => {
-            localStore.toggleCanlendar();
+            localStore.toggleCalendar();
           }}
         >
           <div
@@ -143,6 +143,19 @@ const Calendar: React.FC<{
               onPanelChange={(date) => {
                 localStore.listProjectEvent(date);
               }}
+              mode='month'
+              headerRender={() => (
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <Space style={{ marginTop: "10px", marginBottom: "10px" }}>
+                    <DatePicker value={localStore.currentDate} picker="month"
+                      onChange={value => {
+                        if (value != null) {
+                          localStore.listProjectEvent(value);
+                        }
+                      }} />
+                  </Space>
+                </div>
+              )}
               dateFullCellRender={(date) => {
                 // if (date.get('month') != currentDate.get('month')) {
                 //   return null;

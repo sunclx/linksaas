@@ -130,7 +130,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                     }}>保存</Button>
                 </Space>
             }>
-            <Form labelCol={{ span: 5 }}>
+            <Form labelCol={{ span: 5 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="主界面">
                     <Space direction="vertical">
                         <Checkbox checked={disableChat} onChange={e => {

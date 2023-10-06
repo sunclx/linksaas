@@ -94,7 +94,8 @@ const TipListSettingPanel: React.FC<PanelProps> = (props) => {
                 setHasChange(true);
             }}>python编程思想</a></p>
             <p>每一行会被作为独立单元定期进行提示。</p>
-            <Input.TextArea value={tipsContent} onChange={e => {
+            <Input.TextArea value={tipsContent}  disabled={projectStore.isClosed || !projectStore.isAdmin}
+            onChange={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 setTipsContent(e.target.value);

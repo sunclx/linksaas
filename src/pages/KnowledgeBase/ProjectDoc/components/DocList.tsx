@@ -204,7 +204,7 @@ const DocList = () => {
                                 <Switch onChange={checked => {
                                     setFilterWatch(checked);
                                     setCurPage(0);
-                                }} checked={filterWatch}/>
+                                }} checked={filterWatch} />
                             </Form.Item>
                             {tagDefList.length > 0 && (
                                 <Form.Item label="标签">
@@ -221,11 +221,13 @@ const DocList = () => {
                                 </Form.Item>
                             )}
                         </Form>
-                        <Button type="primary" style={{ height: "30px" }} onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            docSpaceStore.showDoc("", true);
-                        }}>新建文档</Button>
+                        <Button type="primary" style={{ height: "30px" }}
+                            disabled={projectStore.isClosed}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                docSpaceStore.showDoc("", true);
+                            }}>新建文档</Button>
                         <Popover placement="bottom" trigger="click" content={
                             <div style={{ padding: "10px 10px" }}>
                                 <Button type="link" disabled={!projectStore.isAdmin} onClick={e => {

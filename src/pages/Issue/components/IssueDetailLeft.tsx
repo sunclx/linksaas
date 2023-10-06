@@ -73,7 +73,7 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
                 }}>更新内容</Button>
             </Space>);
         } else {
-            return (<Button disabled={!props.issue.user_issue_perm.can_update} onClick={e => {
+            return (<Button disabled={projectStore.isClosed || !props.issue.user_issue_perm.can_update} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 setInEdit(true);

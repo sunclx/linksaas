@@ -112,14 +112,14 @@ const ChannelList = observer(() => {
         {channelStore.channelScope == LIST_CHAN_SCOPE_INCLUDE_ME && (
           <>
             <div
-              className={styles.item + ' ' + (permission.canUpdate ? '' : styles.disabled)}
+              className={styles.item + ' ' + ((permission.canUpdate && !projectStore.isClosed) ? '' : styles.disabled)}
               onClick={() => updateChannel()}
             >
               修改频道
             </div>
             <div className={styles.divider} />
             <div
-              className={styles.item + ' ' + (permission.canSetTop ? '' : styles.disabled)}
+              className={styles.item + ' ' + ((permission.canSetTop && !projectStore.isClosed) ? '' : styles.disabled)}
               onClick={() => setTopChannel(channelItem?.channelInfo.top_weight || 0)}
             >
               {(channelItem?.channelInfo.top_weight || 0) > 0 ? '取消置顶' : '置顶频道'}
@@ -130,19 +130,19 @@ const ChannelList = observer(() => {
           <>
             <div className={styles.divider} />
             <div
-              className={styles.item + ' ' + (permission.canExit ? '' : styles.disabled)}
+              className={styles.item + ' ' + ((permission.canExit && !projectStore.isClosed) ? '' : styles.disabled)}
               onClick={() => exitChannel()}
             >
               退出频道
             </div>
             <div
-              className={styles.item + ' ' + (permission.canClose ? '' : styles.disabled)}
+              className={styles.item + ' ' + ((permission.canClose && !projectStore.isClosed) ? '' : styles.disabled)}
               onClick={() => closeChannel()}
             >
               关闭频道
             </div>
             <div
-              className={styles.item + ' ' + (permission.canOpen ? '' : styles.disabled)}
+              className={styles.item + ' ' + ((permission.canOpen && !projectStore.isClosed) ? '' : styles.disabled)}
               onClick={() => openChannel()}
             >
               激活频道
@@ -152,7 +152,7 @@ const ChannelList = observer(() => {
 
         {channelStore.channelScope != LIST_CHAN_SCOPE_INCLUDE_ME && (
           <div
-            className={styles.item}
+            className={styles.item + ' ' + (projectStore.isClosed ? styles.disabled : '')}
             onClick={() => joinChannel()}
           >
             加入频道
@@ -162,7 +162,7 @@ const ChannelList = observer(() => {
           <>
             <div className={styles.divider} />
             <div
-              className={styles.item}
+              className={styles.item + ' ' + (projectStore.isClosed ? styles.disabled : '')}
               style={{ color: "red" }}
               onClick={() => removeChannel()}
             >

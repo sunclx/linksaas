@@ -89,10 +89,11 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                 </Space>
             }>
             <Card bordered={false} title="任务依赖过多预警" extra={
-                <Switch checked={enableIssueDependCheck} onChange={checked => {
-                    setEnableIssueDependCheck(checked);
-                    setHasChange(true);
-                }} />
+                <Switch checked={enableIssueDependCheck} disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={checked => {
+                        setEnableIssueDependCheck(checked);
+                        setHasChange(true);
+                    }} />
             }>
                 <Form>
                     <Form.Item label="提示阈值" help={
@@ -105,7 +106,7 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                             )}
                         </>
                     }>
-                        <Select disabled={!enableIssueDependCheck} value={issueDependHitValue}
+                        <Select disabled={projectStore.isClosed || !projectStore.isAdmin || !enableIssueDependCheck} value={issueDependHitValue}
                             onChange={value => {
                                 setIssueDependHitValue(value);
                                 setHasChange(true);
@@ -126,7 +127,7 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                             )}
                         </>
                     }>
-                        <Select disabled={!enableIssueDependCheck} value={issueDependAlertValue}
+                        <Select disabled={projectStore.isClosed || !projectStore.isAdmin || !enableIssueDependCheck} value={issueDependAlertValue}
                             onChange={value => {
                                 setIssueDependAlertValue(value);
                                 setHasChange(true);
@@ -140,10 +141,11 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                 </Form>
             </Card>
             <Card bordered={false} title="任务延期预警" extra={
-                <Switch checked={enableIssueDelayCheck} onChange={checked => {
-                    setEnableIssueDelayCheck(checked);
-                    setHasChange(true);
-                }} />
+                <Switch checked={enableIssueDelayCheck} disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={checked => {
+                        setEnableIssueDelayCheck(checked);
+                        setHasChange(true);
+                    }} />
             }>
                 <Form>
                     <Form.Item label="提示阈值" help={
@@ -156,7 +158,7 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                             )}
                         </>
                     }>
-                        <Select disabled={!enableIssueDelayCheck} value={issueDelayHitValue}
+                        <Select disabled={projectStore.isClosed || !projectStore.isAdmin || !enableIssueDelayCheck} value={issueDelayHitValue}
                             onChange={value => {
                                 setIssueDelayHitValue(value);
                                 setHasChange(true);
@@ -177,7 +179,7 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                             )}
                         </>
                     }>
-                        <Select disabled={!enableIssueDelayCheck} value={issueDelayAlertValue}
+                        <Select disabled={projectStore.isClosed || !projectStore.isAdmin || !enableIssueDelayCheck} value={issueDelayAlertValue}
                             onChange={value => {
                                 setIssueDelayAlertValue(value);
                                 setHasChange(true);
@@ -191,10 +193,11 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                 </Form>
             </Card>
             <Card bordered={false} title="任务/缺陷重新打开预警" extra={
-                <Switch checked={enableIssueReOpenCheck} onChange={checked => {
-                    setEnableIssueReOpenCheck(checked);
-                    setHasChange(true);
-                }} />
+                <Switch checked={enableIssueReOpenCheck} disabled={projectStore.isClosed || !projectStore.isAdmin}
+                    onChange={checked => {
+                        setEnableIssueReOpenCheck(checked);
+                        setHasChange(true);
+                    }} />
             }>
                 <Form>
                     <Form.Item label="提示阈值" help={
@@ -207,7 +210,7 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                             )}
                         </>
                     }>
-                        <Select disabled={!enableIssueReOpenCheck} value={issueReOpenHitValue}
+                        <Select disabled={projectStore.isClosed || !projectStore.isAdmin || !enableIssueReOpenCheck} value={issueReOpenHitValue}
                             onChange={value => {
                                 setIssueReOpenHitValue(value);
                                 setHasChange(true);
@@ -228,7 +231,7 @@ const AlarmSettingPanel: React.FC<PanelProps> = (props) => {
                             )}
                         </>
                     }>
-                        <Select disabled={!enableIssueReOpenCheck} value={issueReOpenAlertValue}
+                        <Select disabled={projectStore.isClosed || !projectStore.isAdmin || !enableIssueReOpenCheck} value={issueReOpenAlertValue}
                             onChange={value => {
                                 setIssueReOpenAlertValue(value);
                                 setHasChange(true);

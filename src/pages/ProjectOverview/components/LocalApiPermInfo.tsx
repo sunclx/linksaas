@@ -37,7 +37,7 @@ const LocalApiPermInfo = () => {
         <div>
             <div className={s.info_wrap}>
                 <div className={s.info_label}>沟通频道：</div>
-                <Switch checkedChildren="允许" unCheckedChildren="禁止" disabled={!projectStore.isAdmin}
+                <Switch checkedChildren="允许" unCheckedChildren="禁止" disabled={projectStore.isClosed || !projectStore.isAdmin}
                     checked={accessChannel} onChange={checked => changeAccessChannel(checked)} />
             </div>
         </div>

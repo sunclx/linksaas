@@ -106,11 +106,16 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
             }}>
             <Form labelCol={{ span: 2 }}>
                 <Form.Item label="标题">
-                    <Input value={title} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setTitle(e.target.value);
-                    }} disabled={!props.inEdit} />
+                    {props.inEdit == true && (
+                        <Input value={title} onChange={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setTitle(e.target.value);
+                        }} />
+                    )}
+                    {props.inEdit == false && (
+                        <div>{title}</div>
+                    )}
                 </Form.Item>
                 <Form.Item label="内容">
                     {props.inEdit == true && (
@@ -232,7 +237,7 @@ const BulletinListPanel = () => {
     };
 
     const removeBulletin = async () => {
-        if(removeBulletinInfo == null){
+        if (removeBulletinInfo == null) {
             return;
         }
         await request(remove({
@@ -277,14 +282,14 @@ const BulletinListPanel = () => {
             width: 120,
             render: (_, row: BulletinInfoKey) => (
                 <Space size="large">
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!projectStore.isAdmin}
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={projectStore.isClosed || !projectStore.isAdmin}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setInEdit(true);
                             setShowBulletinId(row.bulletin_id);
                         }}>修改</Button>
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!projectStore.isAdmin}
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={projectStore.isClosed || !projectStore.isAdmin}
                         danger
                         onClick={e => {
                             e.stopPropagation();
@@ -319,7 +324,7 @@ const BulletinListPanel = () => {
             <Collapse bordered={true} className={s.bulletin_list_wrap}>
                 <Collapse.Panel key="bulletinList" header={<h1 className={s.head}>项目公告</h1>} extra={
                     <>
-                        {projectStore.isAdmin && (
+                        {projectStore.isAdmin && !projectStore.isClosed && (
                             <Button onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -352,17 +357,17 @@ const BulletinListPanel = () => {
             {removeBulletinInfo != null && (
                 <Modal title="删除公告" open
                     okText="删除" okButtonProps={{ danger: true }}
-                    onCancel={e=>{
+                    onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setRemoveBulletinInfo(null);
                     }}
-                    onOk={e=>{
+                    onOk={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        removeBulletin(); 
+                        removeBulletin();
                     }}>
-                        <p>是否删除公告  {removeBulletinInfo.title}?</p>
+                    <p>是否删除公告  {removeBulletinInfo.title}?</p>
                 </Modal>
             )}
         </>
