@@ -57,10 +57,10 @@ const DataAnnoProjectList = () => {
         new WebviewWindow(label, {
             title: `标注项目(${annoName})`,
             url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
-            width: 1000 ,
-            minWidth: 800 ,
-            height: 800 ,
-            minHeight: 600 ,
+            width: 1000,
+            minWidth: 800,
+            height: 800,
+            minHeight: 600,
             resizable: true,
             center: true,
             x: pos.x + Math.floor(Math.random() * 200),
@@ -99,7 +99,7 @@ const DataAnnoProjectList = () => {
             title: "任务名称",
             width: 150,
             render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
-                <EditText editable={projectStore.isAdmin} content={row.base_info.name} showEditIcon
+                <EditText editable={(!projectStore.isClosed) && projectStore.isAdmin} content={row.base_info.name} showEditIcon
                     onChange={async (value) => {
                         if (value == "") {
                             return false;
@@ -171,16 +171,19 @@ const DataAnnoProjectList = () => {
             width: 200,
             render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
                 <Space size="large">
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setExportAnnoProjectInfo(row);
-                    }}>导出</Button>
-                    <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setRemoveAnnoProjectInfo(row);
-                    }}>删除</Button>
+                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setExportAnnoProjectInfo(row);
+                        }}>导出</Button>
+                    <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
+                        disabled={projectStore.isClosed}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setRemoveAnnoProjectInfo(row);
+                        }}>删除</Button>
                 </Space>
             ),
         }

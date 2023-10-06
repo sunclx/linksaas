@@ -22,6 +22,7 @@ const ReadDoc: React.FC = () => {
   const [tocList, setTocList] = useState<TocInfo[]>([]);
 
   const userStore = useStores('userStore');
+  const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');
   const ideaStore = useStores('ideaStore');
   const linkAuxStore = useStores("linkAuxStore");
@@ -55,6 +56,7 @@ const ReadDoc: React.FC = () => {
             <Button
               type="primary"
               ghost
+              disabled={projectStore.isClosed}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -66,6 +68,7 @@ const ReadDoc: React.FC = () => {
             <Button
               type="ghost"
               danger
+              disabled={projectStore.isClosed}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();

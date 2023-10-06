@@ -58,6 +58,7 @@ const UserTable: React.FC<{
         return (
           <Select
             value={dValue}
+            disabled={projectStore.isClosed}
             onChange={(value: number | string) => {
               console.log(typeof value);
               if (typeof value === 'string') {

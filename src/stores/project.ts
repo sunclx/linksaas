@@ -357,6 +357,14 @@ export default class ProjectStore {
     return false;
   }
 
+  get isClosed(): boolean {
+    const curProject = this.curProject;
+    if (curProject == undefined) {
+      return false;
+    }
+    return curProject.closed;
+  }
+
   //显示代码评论
   private _codeCommentThreadId = "";
   private _codeCommentId = "";

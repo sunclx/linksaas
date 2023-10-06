@@ -101,7 +101,7 @@ const RequirementDetail = () => {
                     }} showEditIcon={true} />
                 }>
                     <Dropdown.Button type="primary"
-                        disabled={!(projectStore.isAdmin)}
+                        disabled={projectStore.isClosed || (!projectStore.isAdmin)}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();

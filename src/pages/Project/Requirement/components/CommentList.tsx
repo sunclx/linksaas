@@ -100,11 +100,14 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
     }, [props.requirementId, curPage]);
 
     return (
-        <Card title={<h2>评论列表</h2>} bordered={false} extra={<Button onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            setShowAddModal(true);
-        }}>新增评论</Button>}>
+        <Card title={<h2>评论列表</h2>} bordered={false} extra={
+            <Button
+                disabled={projectStore.isClosed}
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowAddModal(true);
+                }}>新增评论</Button>}>
             <div style={{ borderTop: '1px solid  #f0f0f5', marginTop: '20px' }}>
                 {commentList.map((item) => {
                     return (

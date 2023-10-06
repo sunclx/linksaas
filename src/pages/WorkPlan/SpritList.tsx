@@ -182,7 +182,7 @@ const SpritList = () => {
                             e.stopPropagation();
                             e.preventDefault();
                             spritStore.showCreateSprit = true;
-                        }} disabled={!projectStore.isAdmin}>
+                        }} disabled={projectStore.isClosed || (!projectStore.isAdmin)}>
                             <img src={addIcon} alt="" />
                             &nbsp;创建工作计划
                         </Button>

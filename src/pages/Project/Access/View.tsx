@@ -126,15 +126,16 @@ const ProjectAccessDetail: React.FC = () => {
                 }}
               />
             )}
-
-            <span
-              className={style.edit}
-              onClick={() => {
-                localStore.editTitle(true);
-              }}
-            >
-              编辑
-            </span>
+            {(!projectStore.isClosed) && (
+              <span
+                className={style.edit}
+                onClick={() => {
+                  localStore.editTitle(true);
+                }}
+              >
+                编辑
+              </span>
+            )}
           </div>
           <div className={style.row}>
             <span className={style.label}>地址</span>

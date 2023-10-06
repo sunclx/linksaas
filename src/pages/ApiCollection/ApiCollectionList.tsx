@@ -82,7 +82,7 @@ const ApiCollectionList = () => {
             title: "名称",
             width: 200,
             render: (_, row) => (
-                <EditText editable={row.can_update}
+                <EditText editable={(!projectStore.isClosed) && row.can_update}
                     content={row.name} showEditIcon={true} onChange={async value => {
                         if (value.trim() == "") {
                             return false;
@@ -125,7 +125,7 @@ const ApiCollectionList = () => {
             title: "服务地址",
             width: 200,
             render: (_, row) => (
-                <EditText editable={row.can_update}
+                <EditText editable={(!projectStore.isClosed) && row.can_update}
                     content={row.default_addr} showEditIcon={true} onChange={async value => {
                         if (value.trim() == "") {
                             return false;
@@ -170,14 +170,16 @@ const ApiCollectionList = () => {
                             </Space>
                         </Tag>
                     ))}
-                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!(projectStore.isAdmin)}
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setUpdateMemberApiCollInfo(row);
-                        }}>
-                        <EditOutlined />
-                    </Button>
+                    {(!projectStore.isClosed) && projectStore.isAdmin && (
+                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setUpdateMemberApiCollInfo(row);
+                            }}>
+                            <EditOutlined />
+                        </Button>
+                    )}
                 </div>
             ),
         },
@@ -193,7 +195,7 @@ const ApiCollectionList = () => {
                         }}>打开</Button>
                     {row.api_coll_type == API_COLL_GRPC && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                            disabled={!(row.can_update)}
+                            disabled={projectStore.isClosed || (!row.can_update)}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -202,7 +204,7 @@ const ApiCollectionList = () => {
                     )}
                     {row.api_coll_type == API_COLL_OPENAPI && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                            disabled={!(row.can_update)}
+                            disabled={projectStore.isClosed || (!row.can_update)}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -211,7 +213,7 @@ const ApiCollectionList = () => {
                     )}
                     {row.api_coll_type == API_COLL_CUSTOM && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                            disabled={!(row.can_update)}
+                            disabled={projectStore.isClosed || (!row.can_update)}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -219,7 +221,7 @@ const ApiCollectionList = () => {
                             }}>更新接口协议</Button>
                     )}
                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
-                        disabled={!(projectStore.isAdmin)}
+                        disabled={projectStore.isClosed || (!projectStore.isAdmin)}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -237,11 +239,13 @@ const ApiCollectionList = () => {
     return (
         <CardWrap title="接口集合列表" extra={
             <Space size="middle">
-                <Button onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowCreateModal(true);
-                }}>
+                <Button
+                    disabled={projectStore.isClosed}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowCreateModal(true);
+                    }}>
                     <img src={addIcon} alt="" />创建接口集合
                 </Button>
             </Space>

@@ -70,12 +70,15 @@ const RenderDocBtns = () => {
         <>
           <div style={{ flex: 1 }}>
             <span
-              style={{ marginLeft: "15px" }}
+              style={{ marginLeft: "15px", cursor: projectStore.isClosed ? "default" : "pointer" }}
               className={(docSpaceStore.curDoc?.my_watch ?? false) ? s.isCollect : s.no_Collect}
               title={(docSpaceStore.curDoc?.my_watch ?? false) ? "已关注文档" : "未关注文档"}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
+                if (projectStore.isClosed) {
+                  return;
+                }
                 toggleWatch();
               }}
             />
@@ -107,7 +110,7 @@ const RenderDocBtns = () => {
               <span title='修改历史'><Historysvg style={{ marginLeft: "15px" }} /></span>
             </Popover>
 
-            <span title="删除文档"><RemoveDocBtn/></span>
+            <span title="删除文档"><RemoveDocBtn /></span>
 
             {projectStore.isAdmin && (
               <Popover
@@ -123,6 +126,7 @@ const RenderDocBtns = () => {
             <Button
               type="primary"
               style={{ marginLeft: '40px', verticalAlign: "top" }}
+              disabled={projectStore.isClosed}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();

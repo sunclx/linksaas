@@ -101,7 +101,9 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
   }, [props.issueId, curPage]);
 
   return (
-    <Card title={<h2>评论列表</h2>} bordered={false} extra={<Button onClick={e => {
+    <Card title={<h2>评论列表</h2>} bordered={false} extra={<Button 
+      disabled={projectStore.isClosed}
+      onClick={e => {
       e.stopPropagation();
       e.preventDefault();
       setShowAddModal(true);

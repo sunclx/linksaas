@@ -59,7 +59,7 @@ const EditPermBtn = () => {
                             });
                             setHasChange(false);
                         }}>取消</Button>
-                        <Button disabled={!hasChange} type="primary" onClick={e => {
+                        <Button disabled={projectStore.isClosed || !hasChange} type="primary" onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             updatePerm();
@@ -70,7 +70,7 @@ const EditPermBtn = () => {
 
             </>
         }>
-            <Form labelCol={{ span: 4 }} disabled={!projectStore.isAdmin}>
+            <Form labelCol={{ span: 4 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="读权限">
                     <Checkbox checked={docPerm.read_for_all}
                         onChange={e => {

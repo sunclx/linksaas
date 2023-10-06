@@ -88,7 +88,7 @@ const FourQPanel: React.FC<FourQPanelProps> = (props) => {
             bodyStyle={{ padding: "0px 0px" }} extra={
                 <>
                     {inEdit == false && (
-                        <Button disabled={((!projectStore.isAdmin) || (fourQInfo == null))} onClick={e => {
+                        <Button disabled={(projectStore.isClosed || (!projectStore.isAdmin) || (fourQInfo == null))} onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setInEdit(true);
