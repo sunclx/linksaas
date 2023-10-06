@@ -6,7 +6,7 @@ import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { update_tip_list } from "@/api/project";
 
-const unixTipList = `模块原则，Modularity：写简单的程序，并用好的接口连接它们
+export const unixTipList = `模块原则，Modularity：写简单的程序，并用好的接口连接它们
 清晰原则，Clarity：清楚透明的算法比“高明”的算法更好
 组装原则，Composition：写能够跟其他程序一起工作的程序
 隔离原则，Separation：分离接口（使用引擎的方法）和引擎
