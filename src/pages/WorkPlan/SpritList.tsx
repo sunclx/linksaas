@@ -126,7 +126,7 @@ const SpritList = () => {
             render: (_, record: SpritInfo) => (
                 <div>
                     {record.basic_info.non_work_day_list.map(item => (
-                        <Tag key={item}>{moment(item).format("YYYY-MM-DD")}</Tag>
+                        <Tag key={item} style={{ marginTop: "2px" }}>{moment(item).format("YYYY-MM-DD")}</Tag>
                     ))}
                 </div>
             ),
