@@ -4,7 +4,7 @@ import type { ProjectInfo } from '@/api/project';
 import { list as listProject, get_project as getProject } from '@/api/project';
 import { request } from '@/utils/request';
 import type { PROJECT_SETTING_TAB } from '@/utils/constant';
-import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM, PROJECT_CHAT_TYPE } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
 import { list_read_msg_stat } from '@/api/project_channel';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
@@ -77,7 +77,6 @@ export default class ProjectStore {
       this.rootStore.appraiseStore.clearData();
       this.setCodeCommentInfo("", "");
       this.showProjectSetting = null;
-      this.projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL;
     }
   }
 
@@ -394,19 +393,6 @@ export default class ProjectStore {
   set showProjectSetting(val: PROJECT_SETTING_TAB | null) {
     runInAction(() => {
       this._showProjectSetting = val;
-    });
-  }
-
-  //项目沟通模式
-  private _projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL;
-
-  get projectChatType(): PROJECT_CHAT_TYPE {
-    return this._projectChatType;
-  }
-
-  set projectChatType(val: PROJECT_CHAT_TYPE) {
-    runInAction(() => {
-      this._projectChatType = val;
     });
   }
 

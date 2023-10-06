@@ -18,7 +18,6 @@ import {
 import { request } from '@/utils/request';
 import { List, Modal, Popover, message } from 'antd';
 import ActionMember, { ActionMemberType } from './ActionMember';
-import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 import { UserOutlined } from '@ant-design/icons';
 
 
@@ -208,7 +207,7 @@ const ChannelList = observer(() => {
               className={
                 styles.menu_item + ' ' +
                 (item.channelInfo.closed ? styles.closed : '') + ' ' +
-                ((projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
+                ((item.channelInfo.channel_id == channelStore.curChannelId) ? styles.current : '')
               }
 
               onMouseEnter={e => {

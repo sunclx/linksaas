@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import s from './index.module.less';
 import { Button, DatePicker, Form, Input, Modal, Popover, Select } from "antd";
 import { useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, PROJECT_CHAT_TYPE } from "@/utils/constant";
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type moment from 'moment';
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
@@ -42,15 +42,11 @@ const SearchBar = () => {
     const calcScopeList = () => {
         const tmpList: SearchScopeItem[] = [];
         if (location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-            if (projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL) {
-                tmpList.push({
-                    label: "当前频道",
-                    value: SEARCH_SCOPE_CUR_CHANNEL,
-                });
-                setCurScope(SEARCH_SCOPE_CUR_CHANNEL);
-            } else {
-                setCurScope(SEARCH_SCOPE_ALL_CHANNEL);
-            }
+            tmpList.push({
+                label: "当前频道",
+                value: SEARCH_SCOPE_CUR_CHANNEL,
+            });
+            setCurScope(SEARCH_SCOPE_CUR_CHANNEL);
             tmpList.push({
                 label: "全部频道",
                 value: SEARCH_SCOPE_ALL_CHANNEL,
@@ -136,9 +132,9 @@ const SearchBar = () => {
         new WebviewWindow(label, {
             url: `search_result.html?projectId=${projectStore.curProjectId}&keyword=${encodeURIComponent(keyword)}&scope=${searchScope}&scopeValue=${scopeValue}&fromTime=${fromTime}&toTime=${toTime}`,
             width: width ?? 800,
-            minWidth: 300 ,
-            height: height ?? 600 ,
-            minHeight: 200 ,
+            minWidth: 300,
+            height: height ?? 600,
+            minHeight: 200,
             decorations: false,
             alwaysOnTop: false,
             skipTaskbar: false,
