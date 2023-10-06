@@ -70,7 +70,7 @@ const PubRes = () => {
                     </Tabs.TabPane>
                 )}
                 {appStore.clientCfg?.enable_pub_app_store == true && (
-                    <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用</h2>} key="appStore">
+                    <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用市场</h2>} key="appStore">
                         {activeKey == "appStore" && (
                             <div className={s.content_wrap}>
                                 {pubResStore.showAppId == "" && <AppStorePanel />}
