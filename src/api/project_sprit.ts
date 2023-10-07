@@ -20,6 +20,7 @@ export type BasicSpritInfo = {
   hide_burndown_panel: boolean;
   hide_stat_panel: boolean;
   hide_summary_panel: boolean;
+  hide_channel: boolean;
 };
 
 export type CreateResponse = {

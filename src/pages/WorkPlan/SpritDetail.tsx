@@ -204,7 +204,7 @@ const SpritDetail = () => {
                         </div>
                     </div>
                 )}
-                {projectStore.curProject?.setting.disable_chat === false && (
+                {projectStore.curProject?.setting.disable_chat === false && spritInfo?.basic_info.hide_channel == false && (
                     <div className={s.info_wrap}>
                         <div className={s.label} style={{ lineHeight: "28px" }}>关联频道：</div>
                         {spritInfo !== null && (<div>
