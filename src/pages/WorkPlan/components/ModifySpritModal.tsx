@@ -1,9 +1,10 @@
-import { Form, Modal, Input, DatePicker, Tag, message } from "antd";
+import { Form, Modal, Input, DatePicker, Tag, message, Radio, Checkbox } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import s from './ModifySpritModal.module.less';
 import type { Moment } from 'moment';
 import moment from 'moment';
+import { type ISSUE_LIST_TYPE, ISSUE_LIST_ALL, ISSUE_LIST_LIST, ISSUE_LIST_KANBAN } from '@/api/project_sprit';
 import { create as create_sprit, update as update_sprit, get as get_sprit } from '@/api/project_sprit';
 import { request } from '@/utils/request';
 import { useStores } from "@/hooks";
@@ -17,6 +18,13 @@ interface CreateSpritModalProps {
 interface FormValue {
     title: string | undefined;
     dateRange: Moment[] | undefined;
+    issueListType: ISSUE_LIST_TYPE;
+    hideDocPanel: boolean;
+    hideGanttPanel: boolean;
+    hideBurndownPanel: boolean;
+    hideStatPanel: boolean;
+    hideSummaryPanel: boolean;
+    hideChannel: boolean;
 }
 
 const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
@@ -59,6 +67,13 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
             start_time: getDayTime(formValue.dateRange[0]),
             end_time: getDayTime(formValue.dateRange[1]),
             non_work_day_list: nowWorkDayList,
+            issue_list_type: formValue.issueListType,
+            hide_doc_panel: formValue.hideDocPanel,
+            hide_gantt_panel: formValue.hideGanttPanel,
+            hide_burndown_panel: formValue.hideBurndownPanel,
+            hide_stat_panel: formValue.hideStatPanel,
+            hide_summary_panel: formValue.hideSummaryPanel,
+            hide_channel: formValue.hideChannel,
         }));
         props.onOk();
     };
@@ -80,6 +95,13 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                 start_time: getDayTime(formValue.dateRange[0]),
                 end_time: getDayTime(formValue.dateRange[1]),
                 non_work_day_list: nowWorkDayList,
+                issue_list_type: formValue.issueListType,
+                hide_doc_panel: formValue.hideDocPanel,
+                hide_gantt_panel: formValue.hideGanttPanel,
+                hide_burndown_panel: formValue.hideBurndownPanel,
+                hide_stat_panel: formValue.hideStatPanel,
+                hide_summary_panel: formValue.hideSummaryPanel,
+                hide_channel: formValue.hideChannel,
             }));
         props.onOk();
     };
@@ -92,16 +114,34 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
         const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, props.spritId ?? ""));
         const formValue: FormValue = {
             title: res.info.basic_info.title,
-            dateRange: [moment(res.info.basic_info.start_time), moment(res.info.basic_info.end_time)]
+            dateRange: [moment(res.info.basic_info.start_time), moment(res.info.basic_info.end_time)],
+            issueListType: res.info.basic_info.issue_list_type,
+            hideDocPanel: res.info.basic_info.hide_doc_panel,
+            hideGanttPanel: res.info.basic_info.hide_gantt_panel,
+            hideBurndownPanel: res.info.basic_info.hide_burndown_panel,
+            hideStatPanel: res.info.basic_info.hide_stat_panel,
+            hideSummaryPanel: res.info.basic_info.hide_summary_panel,
+            hideChannel: res.info.basic_info.hide_channel,
         }
         form.setFieldsValue(formValue);
         setDateRangeOk(true);
-        setNowWorkDayList(res.info.basic_info.non_work_day_list);
     };
 
     useEffect(() => {
         if (props.spritId != undefined) {
             loadSprit();
+        } else {
+            form.setFieldsValue({
+                title: "",
+                dateRange: undefined,
+                issueListType: ISSUE_LIST_ALL,
+                hideDocPanel: false,
+                hideGanttPanel: false,
+                hideBurndownPanel: false,
+                hideStatPanel: false,
+                hideSummaryPanel: false,
+                hideChannel: false,
+            });
         }
     }, []);
 
@@ -132,7 +172,7 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                 </Form.Item>
                 <Form.Item label="非工作日">
                     {nowWorkDayList.map(dayTime => (
-                        <Tag key={dayTime} style={{lineHeight:"26px",marginTop:"2px"}}
+                        <Tag key={dayTime} style={{ lineHeight: "26px", marginTop: "2px" }}
                             closable onClose={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -158,6 +198,34 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                                 }
                             }
                         }} />
+                </Form.Item>
+                <Form.Item name="issueListType" label="列表样式">
+                    <Radio.Group>
+                        <Radio value={ISSUE_LIST_ALL}>列表和看板</Radio>
+                        <Radio value={ISSUE_LIST_LIST}>列表</Radio>
+                        <Radio value={ISSUE_LIST_KANBAN}>看板</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item name="hideDocPanel" label="隐藏相关文档" valuePropName="checked">
+                    <Checkbox />
+                </Form.Item>
+                <Form.Item name="hideGanttPanel" label="隐藏甘特图" valuePropName="checked">
+                    <Checkbox />
+                </Form.Item>
+                <Form.Item name="hideBurndownPanel" label="隐藏燃尽图" valuePropName="checked">
+                    <Checkbox />
+                </Form.Item>
+                <Form.Item name="hideStatPanel" label="隐藏统计信息" valuePropName="checked">
+                    <Checkbox />
+                </Form.Item>
+                <Form.Item name="hideSummaryPanel" label="隐藏工作总结" valuePropName="checked">
+                    <Checkbox />
+                </Form.Item>
+                <Form.Item name="hideSummaryPanel" label="隐藏工作总结" valuePropName="checked">
+                    <Checkbox />
+                </Form.Item>
+                <Form.Item name="hideChannel" label="隐藏关联频道" valuePropName="checked">
+                    <Checkbox />
                 </Form.Item>
             </Form>
         </Modal>
