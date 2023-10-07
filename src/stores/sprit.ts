@@ -149,6 +149,7 @@ export default class SpritStore {
     removeIssue(issueId: string) {
         const tmpTaskList = this._taskList.filter(item => item.issue_id != issueId);
         const tmpBugList = this._bugList.filter(item => item.issue_id != issueId);
+        console.log("xxxxxxxxx", issueId, tmpTaskList.map(item => item.issue_id), this._taskList.map(item => item.issue_id));
         runInAction(() => {
             this._taskList = tmpTaskList;
             this._bugList = tmpBugList;
@@ -183,12 +184,13 @@ export default class SpritStore {
     }
 
     async updateIssue(issueId: string) {
+        const res = await request(get_issue(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, issueId));
         const taskIndex = this._taskList.findIndex(item => item.issue_id == issueId);
         const bugIndex = this._bugList.findIndex(item => item.issue_id == issueId);
         if (taskIndex == -1 && bugIndex == -1) {
             return;
         }
-        const res = await request(get_issue(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, issueId));
+        console.log("yyyyyyyyyy", issueId);
         runInAction(() => {
             if (taskIndex != -1) {
                 const tmpList = this._taskList.slice();

@@ -221,9 +221,6 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                 <Form.Item name="hideSummaryPanel" label="隐藏工作总结" valuePropName="checked">
                     <Checkbox />
                 </Form.Item>
-                <Form.Item name="hideSummaryPanel" label="隐藏工作总结" valuePropName="checked">
-                    <Checkbox />
-                </Form.Item>
                 <Form.Item name="hideChannel" label="隐藏关联频道" valuePropName="checked">
                     <Checkbox />
                 </Form.Item>

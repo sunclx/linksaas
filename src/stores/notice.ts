@@ -437,8 +437,8 @@ class NoticeStore {
         }
       }
     } else if (notice.RemoveIssueNotice !== undefined) {
-      this.rootStore.projectStore.updateProjectIssueCount(notice.RemoveIssueNotice.project_id);
-      this.rootStore.spritStore.removeIssue(notice.RemoveIssueNotice.issue_id);
+      await this.rootStore.projectStore.updateProjectIssueCount(notice.RemoveIssueNotice.project_id);
+      await this.rootStore.spritStore.removeIssue(notice.RemoveIssueNotice.issue_id);
       if (notice.RemoveIssueNotice.create_user_id != "") {
         await this.rootStore.memberStore.updateIssueState(notice.RemoveIssueNotice.project_id, notice.RemoveIssueNotice.create_user_id);
       }
@@ -456,7 +456,7 @@ class NoticeStore {
       }
     } else if (notice.SetSpritNotice !== undefined) {
       if (this.rootStore.spritStore.curSpritId == notice.SetSpritNotice.old_sprit_id) {
-        this.rootStore.spritStore.removeIssue(notice.SetSpritNotice.issue_id);
+        await this.rootStore.spritStore.removeIssue(notice.SetSpritNotice.issue_id);
       }
       if (this.rootStore.spritStore.curSpritId != "" && this.rootStore.spritStore.curSpritId == notice.SetSpritNotice.new_sprit_id) {
         await this.rootStore.spritStore.onNewIssue(notice.SetSpritNotice.issue_id);

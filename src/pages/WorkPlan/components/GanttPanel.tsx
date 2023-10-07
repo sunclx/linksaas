@@ -67,7 +67,7 @@ const TooltipContent: React.FC<{
         }
     }, [props.task.id]);
     return (
-        <div style={{ backgroundColor: "white", padding: "10px 10px" ,border:"1px solid #e4e4e8"}}>
+        <div style={{ backgroundColor: "white", padding: "10px 10px", border: "1px solid #e4e4e8" }}>
             {issue !== null && (
                 <Descriptions title={`${issue.issue_type == ISSUE_TYPE_TASK ? "任务" : "缺陷"}:${issue.basic_info.title}`} bordered={true}>
                     <Descriptions.Item label="阶段">{renderState(issue.state)}</Descriptions.Item>
@@ -160,7 +160,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
                     onClick={task => {
                         if (spritStore.taskList.map(item => item.issue_id).includes(task.id)) {
                             linkAuxStore.goToLink(new LinkTaskInfo("", projectStore.curProjectId, task.id, spritStore.taskList.map(item => item.issue_id)), history);
-                        } else {
+                        } else if (spritStore.bugList.map(item => item.issue_id).includes(task.id)) {
                             linkAuxStore.goToLink(new LinkBugInfo("", projectStore.curProjectId, task.id, spritStore.bugList.map(item => item.issue_id)), history);
                         }
                     }} />

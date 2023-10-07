@@ -299,24 +299,28 @@ const SpritDetail = () => {
                                             </Select>
                                         </Form.Item>
                                         <Form.Item>
-                                            <Dropdown.Button type="primary" menu={{
-                                                items: [
-                                                    {
-                                                        key: "refTask",
-                                                        label: "引用任务",
-                                                        onClick: () => setRefIssueType(ISSUE_TYPE_TASK),
-                                                    },
-                                                    {
-                                                        key: "refBug",
-                                                        label: "引用缺陷",
-                                                        onClick: () => setRefIssueType(ISSUE_TYPE_BUG),
-                                                    }
-                                                ]
-                                            }} onClick={e => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                setShowAddIssueModal(true);
-                                            }}><PlusOutlined />增加</Dropdown.Button>
+                                            <Dropdown.Button type="primary"
+                                                disabled={(projectStore.isClosed || (!projectStore.isAdmin))}
+                                                menu={{
+                                                    items: [
+                                                        {
+                                                            key: "refTask",
+                                                            label: "引用任务",
+                                                            disabled: (projectStore.isClosed || (!projectStore.isAdmin)),
+                                                            onClick: () => setRefIssueType(ISSUE_TYPE_TASK),
+                                                        },
+                                                        {
+                                                            key: "refBug",
+                                                            label: "引用缺陷",
+                                                            disabled: (projectStore.isClosed || (!projectStore.isAdmin)),
+                                                            onClick: () => setRefIssueType(ISSUE_TYPE_BUG),
+                                                        }
+                                                    ]
+                                                }} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    setShowAddIssueModal(true);
+                                                }}><PlusOutlined />增加</Dropdown.Button>
                                         </Form.Item>
                                     </Form>
                                 )}
