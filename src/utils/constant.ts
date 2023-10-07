@@ -187,13 +187,6 @@ export const filterProjectItemList = [
   },
 ];
 
-export enum PROJECT_STATE_OPT_ENUM {
-  FINISH = 'finish',
-  ACTIVATE = 'activate',
-  QUIT = 'quit',
-  REMOVE = 'remove',
-}
-
 export enum FILTER_DOC_ENUM {
   ALL = 'all',
   CONCERN = 'concern',
@@ -222,9 +215,5 @@ export enum PROJECT_SETTING_TAB {
   PROJECT_SETTING_TIPLIST,
   PROJECT_SETTING_TAGLIST,
   PROJECT_SETTING_EVENT,
-}
-
-export enum PROJECT_CHAT_TYPE {
-  PROJECT_CHAT_CHANNEL,
-  PROJECT_CHAT_AI,
+  PROJECT_SETTING_DANGER,
 }

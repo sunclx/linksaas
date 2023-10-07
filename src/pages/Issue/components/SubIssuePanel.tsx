@@ -137,7 +137,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         <Button
                             type="link"
                             disabled={!props.canOptSubIssue}
-                            style={{minWidth:"10px" }}
+                            style={{ minWidth: "10px" }}
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -145,7 +145,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                             }}>{record.done ? "标记成未完成" : "标记成已完成"}</Button>
                         <Button
                             type="link"
-                            disabled={!props.canOptSubIssue}
+                            disabled={projectStore.isClosed || !props.canOptSubIssue}
                             style={{ minWidth: "10px" }}
                             onClick={e => {
                                 e.stopPropagation();
@@ -157,7 +157,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         <Button
                             type="link"
                             style={{ minWidth: "10px" }}
-                            disabled={!props.canOptSubIssue}
+                            disabled={projectStore.isClosed || !props.canOptSubIssue}
                             danger onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -180,7 +180,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                 <Button
                     style={{ position: "absolute", right: "10px" }}
                     type="primary"
-                    disabled={!props.canOptSubIssue}
+                    disabled={projectStore.isClosed || !props.canOptSubIssue}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();

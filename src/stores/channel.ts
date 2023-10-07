@@ -10,7 +10,6 @@ import {
 } from '@/api/project_channel';
 import type { ChannelInfo, LIST_CHAN_SCOPE } from '@/api/project_channel';
 import { LIST_CHAN_SCOPE_INCLUDE_ME, LIST_CHAN_SCOPE_WITHOUT_ME, LIST_CHAN_SCOPE_ORPHAN } from '@/api/project_channel';
-import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 
 /*
  * 只保存当前项目的频道列表
@@ -63,7 +62,6 @@ class ChannelStore {
         this.rootStore.channelMemberStore.loadChannelMemberList(this.rootStore.projectStore.curProjectId, val);
         this.rootStore.chatMsgStore.loadMsg(this.rootStore.projectStore.curProjectId, val);
       });
-      this.rootStore.projectStore.projectChatType = PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL;
     }
   }
   get curChannelId(): string {

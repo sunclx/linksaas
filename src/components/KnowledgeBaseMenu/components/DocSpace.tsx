@@ -87,6 +87,7 @@ const RenderMoreMenu: React.FC<{ docSpaceId: string, canUpdate: boolean, canRemo
 
 const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace }) => {
     const history = useHistory();
+    const projectStore = useStores('projectStore');
     const docSpaceStore = useStores('docSpaceStore');
     const [hover, setHover] = useState(false);
 
@@ -119,6 +120,7 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
         >
             {docSpace.base_info.title}
         </div>
+
         <Popover
             placement="left"
             content={<RenderMoreMenu
@@ -128,12 +130,13 @@ const DocSpaceItem: React.FC<{ docSpace: DocSpaceType }> = observer(({ docSpace 
                 title={docSpace.base_info.title} />}
             autoAdjustOverflow={false}
         >
-            {hover && !docSpace.system_doc_space &&
+            {hover && !docSpace.system_doc_space && !projectStore.isClosed &&
                 <a className={s.more}>
                     <i className={s.icon} />
                 </a>
             }
         </Popover>
+
     </li>);
 });
 

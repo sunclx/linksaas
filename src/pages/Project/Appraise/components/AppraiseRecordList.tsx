@@ -163,7 +163,7 @@ const AppraiseRecordList: React.FC<AppraiseRecordListProps> = (props) => {
           return <div className={styles.list_item} key={item.appraise_id}>
             <div className={styles.list_hd}>
               <div className={styles.list_title}>
-                <EditText editable={projectStore.isAdmin} content={item.basic_info?.title || ' '} showEditIcon={true} onChange={async (value) => {
+                <EditText editable={(!projectStore.isClosed) && projectStore.isAdmin} content={item.basic_info?.title || ' '} showEditIcon={true} onChange={async (value) => {
                   return await updateTitle(item.appraise_id, value);
                 }} />
               </div>

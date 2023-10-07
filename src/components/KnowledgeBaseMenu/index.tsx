@@ -1,6 +1,6 @@
 import { useStores } from '@/hooks';
 import { APP_PROJECT_KB_DOC_PATH } from '@/utils/constant';
-import { Popover, Modal, Input, message } from 'antd';
+import { Popover, Modal, Input, message, Form } from 'antd';
 import classNames from 'classnames';
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
@@ -47,7 +47,7 @@ const KnowledgeBaseMenu = () => {
   const docRightTop = () => {
     return (
       <div className={s.submenu_icon_wrap}>
-        {projectStore.isAdmin && (
+        {projectStore.isAdmin && !projectStore.isClosed && (
           <Popover
             placement="bottomLeft"
             trigger="click"
@@ -125,11 +125,15 @@ const KnowledgeBaseMenu = () => {
             addDocSpace();
           }}
         >
-          <Input addonBefore="文档空间名称" onChange={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            setSpaceTitle(e.target.value);
-          }} />
+          <Form>
+            <Form.Item label="文档空间名称">
+              <Input onChange={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setSpaceTitle(e.target.value);
+              }} />
+            </Form.Item>
+          </Form>
         </Modal>
       )}
     </div>

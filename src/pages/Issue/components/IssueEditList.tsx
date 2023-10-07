@@ -118,7 +118,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       render: (v: string, record: IssueInfo) => {
         return (
           <div style={{ lineHeight: "28px" }}>
-            <EditText editable={record.user_issue_perm.can_update} content={v} showEditIcon={true} onChange={async (value) => {
+            <EditText editable={(!projectStore.isClosed) && record.user_issue_perm.can_update} content={v} showEditIcon={true} onChange={async (value) => {
               return await updateTitle(userStore.sessionId, record.project_id, record.issue_id, value);
             }} onClick={() => {
               if (record.issue_type == ISSUE_TYPE_TASK) {
@@ -200,7 +200,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       width: 120,
       align: 'left',
       render: (_, record: IssueInfo) => <EditDate
-        editable={projectStore.isAdmin && record.user_issue_perm.can_update}
+        editable={(!projectStore.isClosed) && projectStore.isAdmin && record.user_issue_perm.can_update}
         hasTimeStamp={record.has_dead_line_time}
         timeStamp={record.dead_line_time}
         onChange={async (value) => {
@@ -217,10 +217,12 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'center',
       render: (val: number, row: IssueInfo) => {
         const v = issueState[val];
-        let cursor = "auto";
+        let cursor = "default";
         let tips = "";
         if (row.user_issue_perm.next_state_list.length > 0) {
-          cursor = "pointer";
+          if (!projectStore.isClosed) {
+            cursor = "pointer";
+          }
         } else {
           if ([ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK].includes(row.state) && (
             (userStore.userInfo.userId == row.exec_user_id) || (userStore.userInfo.userId == row.check_user_id)
@@ -242,13 +244,16 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
             }}
             onClick={(e) => {
               e.stopPropagation();
+              if (projectStore.isClosed) {
+                return;
+              }
               if (row.user_issue_perm.next_state_list.length > 0) {
                 showStage(row.issue_id);
               }
             }}
           >
             <Tooltip title={tips}>{v.label}</Tooltip>
-            {row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
+            {(!projectStore.isClosed) && row.user_issue_perm.next_state_list.length > 0 && <a><EditOutlined /></a>}
           </div>
         );
       },
@@ -261,7 +266,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       render: (_, record: IssueInfo) => (
         <>
           {record.state == ISSUE_STATE_PROCESS && (
-            <EditSelect editable={record.exec_user_id == userStore.userInfo.userId}
+            <EditSelect editable={(!projectStore.isClosed) && (record.exec_user_id == userStore.userInfo.userId)}
               curValue={record.process_stage}
               itemList={[
                 {
@@ -294,7 +299,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       dataIndex: ['extra_info', 'ExtraBugInfo', 'level'],
       render: (v: number, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={record.user_issue_perm.can_update}
+        editable={(!projectStore.isClosed) && record.user_issue_perm.can_update}
         curValue={v}
         itemList={bugLvSelectItems}
         onChange={async (value) => {
@@ -318,7 +323,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'left',
       render: (val: number, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={record.user_issue_perm.can_update}
+        editable={(!projectStore.isClosed) && record.user_issue_perm.can_update}
         curValue={val}
         itemList={getIsTask(pathname) ? taskPrioritySelectItems : bugPrioritySelectItems}
         onChange={async (value) => {
@@ -346,14 +351,15 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       ellipsis: true,
       dataIndex: ['extra_info', 'ExtraBugInfo', 'software_version'],
       hideInTable: getIsTask(pathname),
-      render: (_, record: IssueInfo) => <EditText editable={record.user_issue_perm.can_update} content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={true} onChange={async (value) => {
-        return await updateExtraInfo(userStore.sessionId, record.project_id, record.issue_id, {
-          ExtraBugInfo: {
-            ...record.extra_info.ExtraBugInfo!,
-            software_version: value,
-          },
-        });
-      }} />,
+      render: (_, record: IssueInfo) => <EditText editable={(!projectStore.isClosed) && record.user_issue_perm.can_update}
+        content={record.extra_info.ExtraBugInfo?.software_version ?? ""} showEditIcon={true} onChange={async (value) => {
+          return await updateExtraInfo(userStore.sessionId, record.project_id, record.issue_id, {
+            ExtraBugInfo: {
+              ...record.extra_info.ExtraBugInfo!,
+              software_version: value,
+            },
+          });
+        }} />,
     },
     {
       title: '处理人',
@@ -362,7 +368,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'left',
       render: (_, row: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={row.user_issue_perm.can_assign_exec_user}
+        editable={(!projectStore.isClosed) && row.user_issue_perm.can_assign_exec_user}
         curValue={row.exec_user_id}
         itemList={memberSelectItems}
         onChange={async (value) => {
@@ -380,7 +386,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'left',
       render: (_, row: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={row.user_issue_perm.can_assign_check_user}
+        editable={(!projectStore.isClosed) && row.user_issue_perm.can_assign_check_user}
         curValue={row.check_user_id}
         itemList={memberSelectItems}
         onChange={async (value) => {
@@ -412,7 +418,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       dataIndex: ["basic_info", "tag_id_list"],
       width: 200,
       render: (_, row: IssueInfo) => (
-        <EditTag editable={row.user_issue_perm.can_update} tagIdList={row.basic_info.tag_id_list} tagDefList={tagDefList}
+        <EditTag editable={(!projectStore.isClosed) && row.user_issue_perm.can_update} tagIdList={row.basic_info.tag_id_list} tagDefList={tagDefList}
           onChange={(tagIdList: string[]) => {
             request(update_tag_id_list({
               session_id: userStore.sessionId,
@@ -431,7 +437,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       width: 120,
       align: 'left',
       render: (_, record) => <EditDate
-        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
+        editable={(!projectStore.isClosed) && (record.exec_user_id == userStore.userInfo.userId) && (record.state == ISSUE_STATE_PROCESS)}
         hasTimeStamp={record.has_start_time}
         timeStamp={record.start_time}
         onChange={async (value) => {
@@ -447,7 +453,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       width: 120,
       align: 'left',
       render: (_, record) => <EditDate
-        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
+        editable={(!projectStore.isClosed) && (record.exec_user_id == userStore.userInfo.userId) && (record.state == ISSUE_STATE_PROCESS)}
         hasTimeStamp={record.has_end_time}
         timeStamp={record.end_time}
         onChange={async (value) => {
@@ -464,7 +470,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'left',
       render: (_, record: IssueInfo) => <EditSelect
         allowClear={false}
-        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
+        editable={(!projectStore.isClosed) && (record.exec_user_id == userStore.userInfo.userId) && (record.state == ISSUE_STATE_PROCESS)}
         curValue={record.has_estimate_minutes ? record.estimate_minutes : -1}
         itemList={hourSelectItems}
         onChange={async (value) => {
@@ -481,7 +487,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       align: 'left',
       render: (_, record: IssueInfo) => <EditSelect
         allowClear={true}
-        editable={record.exec_user_id == userStore.userInfo.userId && record.state == ISSUE_STATE_PROCESS}
+        editable={(!projectStore.isClosed) && (record.exec_user_id == userStore.userInfo.userId) && (record.state == ISSUE_STATE_PROCESS)}
         curValue={record.has_remain_minutes ? record.remain_minutes : -1}
         itemList={hourSelectItems}
         onChange={async (value) => {

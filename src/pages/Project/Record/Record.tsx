@@ -164,7 +164,7 @@ const ProjectRecord: React.FC = () => {
       <Space>
         <Button
           type="primary"
-          disabled={moment().diff(localStore.date) > 7 * 24 * 3600 * 1000}
+          disabled={projectStore.isClosed || (moment().diff(localStore.date) > 7 * 24 * 3600 * 1000)}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

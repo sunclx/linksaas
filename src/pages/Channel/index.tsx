@@ -8,7 +8,6 @@ import ChannelList from './components/ChannelList';
 import ActionMember, { ActionMemberType } from './components/ActionMember';
 import { RenderMoreMenu } from './components/ChannelPanel';
 import { CloseOutlined, EyeOutlined } from '@ant-design/icons';
-import { PROJECT_CHAT_TYPE } from '@/utils/constant';
 import ReplayMsgList from './components/ReplayMsgList';
 
 const { Sider, Content } = Layout;
@@ -30,15 +29,17 @@ const Channel = () => {
   return (
     <Layout className={styles.layout}>
       <Content className={styles.content}>
-        {projectStore.projectChatType == PROJECT_CHAT_TYPE.PROJECT_CHAT_CHANNEL && <Chat />}
+        <Chat />
       </Content>
       <Sider className={styles.sider}>
         <Collapse accordion activeKey={activeKey} className={styles.panel} bordered={false} onChange={key => setActiveKey(key as string)}>
           <Collapse.Panel key="channel" header="频道列表" extra={
             <div className={styles.header}>
-              <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
-                <i className={styles.icon} />
-              </a>
+              {!projectStore.isClosed && (
+                <a className={styles.add} onClick={() => channelStore.showCreateChannel = true}>
+                  <i className={styles.icon} />
+                </a>
+              )}
               <Popover
                 placement="bottomLeft"
                 content={<RenderMoreMenu />}

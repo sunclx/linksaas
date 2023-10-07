@@ -107,7 +107,7 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
 
     return (
         <Modal
-            title={`${props.spritId == undefined?"创建":"修改"}工作计划`}
+            title={`${props.spritId == undefined ? "创建" : "修改"}工作计划`}
             open
             onCancel={e => {
                 e.stopPropagation();
@@ -123,7 +123,7 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                     updateSprit();
                 }
             }}>
-            <Form form={form} labelCol={{ span: 4 }}>
+            <Form form={form} labelCol={{ span: 5 }}>
                 <Form.Item name="title" label="工作计划名称" rules={[{ required: true }]}>
                     <Input />
                 </Form.Item>
@@ -132,12 +132,13 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                 </Form.Item>
                 <Form.Item label="非工作日">
                     {nowWorkDayList.map(dayTime => (
-                        <Tag key={dayTime} closable onClose={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            const tmpList = nowWorkDayList.filter(item => item != dayTime);
-                            setNowWorkDayList(tmpList);
-                        }}>
+                        <Tag key={dayTime} style={{lineHeight:"26px",marginTop:"2px"}}
+                            closable onClose={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                const tmpList = nowWorkDayList.filter(item => item != dayTime);
+                                setNowWorkDayList(tmpList);
+                            }}>
                             {moment(dayTime).format("YYYY-MM-DD")}
                         </Tag>
                     ))}

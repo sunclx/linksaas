@@ -76,20 +76,25 @@ const DocComment: React.FC = () => {
     <div className={s.DocComment_wrap}>
       <div className={s.title_wrap}>
         <span>文档评论</span>
-        <div
-          className={s.btn}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            setShowModal(true);
-            setTimeout(() => {
-              editorRef?.current?.clearContent();
-            }, 100);
-          }}
-        >
-          <PlusOutlined />
-          添加评论
-        </div>
+        {projectStore.isClosed == false && (
+          <div
+            className={s.btn}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (projectStore.isClosed) {
+                return
+              }
+              setShowModal(true);
+              setTimeout(() => {
+                editorRef?.current?.clearContent();
+              }, 100);
+            }}
+          >
+            <PlusOutlined />
+            添加评论
+          </div>
+        )}
       </div>
 
       <ul className={s.item_wrap}>

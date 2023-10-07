@@ -9,6 +9,7 @@ import AlarmSettingPanel from "./components/AlarmSettingPanel";
 import TipListSettingPanel from "./components/TipListSettingPanel";
 import TagListSettingPanel from "./components/TagListSettingPanel";
 import EventSettingPanel from "./components/EventSettingPanel";
+import DangerPanel from "./components/DangerPanel";
 
 
 const ProjectSettingModal = () => {
@@ -30,6 +31,8 @@ const ProjectSettingModal = () => {
             setActiveKey("tags");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT) {
             setActiveKey("event");
+        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_DANGER) {
+            setActiveKey("danger");
         }
     }, [projectStore.showProjectSetting]);
 
@@ -63,6 +66,8 @@ const ProjectSettingModal = () => {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
                     } else if (key == "event") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT;
+                    } else if (key == "danger") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_DANGER;
                     }
                 }}>
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
@@ -85,6 +90,9 @@ const ProjectSettingModal = () => {
                 </Tabs.TabPane>
                 <Tabs.TabPane key="tags" tab="标签设置" disabled={disableTabs}>
                     {activeKey == "tags" && <TagListSettingPanel onChange={value => setDisableTabs(value)} title="标签设置" />}
+                </Tabs.TabPane>
+                <Tabs.TabPane key="danger" tab={<span style={{ color: "red" }}>危险操作</span>} disabled={disableTabs}>
+                    {activeKey == "danger" && <DangerPanel />}
                 </Tabs.TabPane>
             </Tabs>
         </Modal>

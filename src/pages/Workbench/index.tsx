@@ -80,16 +80,11 @@ const Workbench: React.FC = () => {
           <div>
             {activeKey == "myProject" && (
               <Space size="small">
-                <Button type="default" onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  appStore.showCreateProject = true;
-                }}>创建项目</Button>
                 <Button onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
-                  appStore.showJoinProject = true;
-                }}>加入项目</Button>
+                  appStore.showCreateOrJoinProject = true;
+                }}>创建/加入项目</Button>
                 <Select value={projectStore.filterProjectType} style={{ width: "100px", marginLeft: "20px", marginRight: "20px" }}
                   onSelect={value => {
                     runInAction(() => {

@@ -126,7 +126,7 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                 return (
                     <Button
                         type="link"
-                        disabled={!props.canOptDependence}
+                        disabled={projectStore.isClosed || !props.canOptDependence}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -147,7 +147,7 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
                 <Button
                     style={{ position: "absolute", right: "10px" }}
                     type="primary"
-                    disabled={!props.canOptDependence}
+                    disabled={projectStore.isClosed || !props.canOptDependence}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();

@@ -5,7 +5,7 @@ import Button from "@/components/Button";
 import { MinusCircleOutlined, MoreOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useStores } from "@/hooks";
 import type { RoleInfo } from '@/api/project_member';
-import { list_role, set_member_role, remove_member } from '@/api/project_member';
+import { list_role, set_member_role, remove_member, leave as leave_project } from '@/api/project_member';
 import { request } from "@/utils/request";
 import { change_owner } from "@/api/project";
 import UserPhoto from "@/components/Portrait/UserPhoto";
@@ -61,6 +61,13 @@ const MemberInfoPanel = () => {
         await memberStore.loadMemberList(projectStore.curProjectId);
         setRemoveMemberUserId("");
         message.info("移除用户成功");
+    };
+
+    const leaveProject = async () => {
+        await request(leave_project(userStore.sessionId, projectStore.curProjectId));
+        setRemoveMemberUserId("");
+        projectStore.removeProject(projectStore.curProjectId, history);
+        message.info("退出项目成功");
     };
 
     useEffect(() => {
@@ -131,20 +138,32 @@ const MemberInfoPanel = () => {
                                             )}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="操作">
-                                            <Button
-                                                type="link"
-                                                style={{ minWidth: 0, padding: "0px 0px" }}
-                                                disabled={!projectStore.isAdmin || member.member.member_user_id == userStore.userInfo.userId}
-                                                danger
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    e.preventDefault();
-                                                    setRemoveMemberUserId(member.member.member_user_id);
-                                                }}
-                                            >
-                                                <MinusCircleOutlined />
-                                                移除
-                                            </Button>
+                                            {userStore.userInfo.userId == member.member.member_user_id && userStore.userInfo.userId != (projectStore.curProject?.owner_user_id ?? "") && (
+                                                <Button type="link"
+                                                    style={{ minWidth: 0, padding: "0px 0px" }} danger
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        setRemoveMemberUserId(member.member.member_user_id);
+                                                    }}>退出项目</Button>
+                                            )}
+                                            {userStore.userInfo.userId != member.member.member_user_id && (
+                                                <Button
+                                                    type="link"
+                                                    style={{ minWidth: 0, padding: "0px 0px" }}
+                                                    disabled={projectStore.isClosed || !projectStore.isAdmin}
+                                                    danger
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        e.preventDefault();
+                                                        setRemoveMemberUserId(member.member.member_user_id);
+                                                    }}
+                                                >
+                                                    <MinusCircleOutlined />
+                                                    移除
+                                                </Button>
+                                            )}
+
                                         </Descriptions.Item>
                                         <Descriptions.Item label="未执行任务">
                                             {member.issue_member_state?.task_un_exec_count ?? 0}
@@ -266,9 +285,9 @@ const MemberInfoPanel = () => {
                 </Modal>
             )}
             {removeMemberUserId != "" && (
-                <Modal title="移除人员" open
+                <Modal title={userStore.userInfo.userId == removeMemberUserId ? "退出项目" : "移除人员"} open
                     okButtonProps={{ danger: true }}
-                    okText="移除"
+                    okText={userStore.userInfo.userId == removeMemberUserId ? "退出" : "移除"}
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -277,18 +296,24 @@ const MemberInfoPanel = () => {
                     onOk={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        removeMember();
+                        if (userStore.userInfo.userId == removeMemberUserId) {
+                            leaveProject();
+                        } else {
+                            removeMember();
+                        }
                     }}>
                     <div
                         style={{
-                            textAlign: 'center',
                             fontSize: '14px',
                             lineHeight: '20px',
                             marginBottom: '20px',
                             color: ' #2C2D2E',
                         }}
                     >
-                        是否确认移除成员 {memberStore.getMember(removeMemberUserId)?.member.display_name ?? ""}？
+                        {userStore.userInfo.userId == removeMemberUserId && "是否确定退出项目?"}
+                        {userStore.userInfo.userId != removeMemberUserId &&
+                            <span>是否确认移除成员 {memberStore.getMember(removeMemberUserId)?.member.display_name ?? ""}？</span>
+                        }
                     </div>
                 </Modal>
             )}

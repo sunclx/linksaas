@@ -126,7 +126,7 @@ const SpritList = () => {
             render: (_, record: SpritInfo) => (
                 <div>
                     {record.basic_info.non_work_day_list.map(item => (
-                        <Tag key={item}>{moment(item).format("YYYY-MM-DD")}</Tag>
+                        <Tag key={item} style={{ marginTop: "2px" }}>{moment(item).format("YYYY-MM-DD")}</Tag>
                     ))}
                 </div>
             ),
@@ -182,7 +182,7 @@ const SpritList = () => {
                             e.stopPropagation();
                             e.preventDefault();
                             spritStore.showCreateSprit = true;
-                        }} disabled={!projectStore.isAdmin}>
+                        }} disabled={projectStore.isClosed || (!projectStore.isAdmin)}>
                             <img src={addIcon} alt="" />
                             &nbsp;创建工作计划
                         </Button>

@@ -68,12 +68,13 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
     const renderContentBtn = () => {
         if (inEdit) {
             return (<Space>
-                <Button type="default" onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    editor.editorRef.current?.setContent(reqContent);
-                    setInEdit(false);
-                }}>取消</Button>
+                <Button type="default"
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        editor.editorRef.current?.setContent(reqContent);
+                        setInEdit(false);
+                    }}>取消</Button>
                 <Button onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -81,11 +82,15 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
                 }}>更新内容</Button>
             </Space>);
         } else {
-            return (<Button onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                setInEdit(true);
-            }}>修改</Button>);
+            return (
+                <Button
+                    disabled={projectStore.isClosed}
+                    onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setInEdit(true);
+                    }}>修改</Button>
+            );
         }
     };
 

@@ -238,7 +238,7 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
             extra={
                 <>
                     {inEdit == false && (
-                        <Button disabled={((!projectStore.isAdmin) || (kanoInfo == null))} onClick={e => {
+                        <Button disabled={(projectStore.isClosed || (!projectStore.isAdmin) || (kanoInfo == null))} onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setInEdit(true);
