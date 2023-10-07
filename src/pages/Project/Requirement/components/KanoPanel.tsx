@@ -3,14 +3,14 @@ import { useLocalObservable, observer } from 'mobx-react';
 import { Card, InputNumber, List, Modal, Space } from "antd";
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
-import type { KanoInfo } from "@/api/project_requirement";
+import type { KanoInfo, RequirementInfo } from "@/api/project_requirement";
 import { get_kano_info, set_kano_info } from "@/api/project_requirement";
 import { runInAction } from "mobx";
 import { request } from "@/utils/request";
 import s from "./KanoPanel.module.less";
 
 interface KanoPanelProps {
-    requirementId: string;
+    requirement: RequirementInfo;
     onUpdate: () => void;
 }
 
@@ -161,7 +161,7 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
         const res = await request(get_kano_info({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            requirement_id: props.requirementId,
+            requirement_id: props.requirement.requirement_id,
         }));
         localStore.initData(res.kano_info);
         setKanoInfo(res.kano_info);
@@ -171,9 +171,9 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
         await request(set_kano_info({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            requirement_id: props.requirementId,
+            requirement_id: props.requirement.requirement_id,
             kano_info: {
-                requirement_id: props.requirementId,
+                requirement_id: props.requirement.requirement_id,
                 like_vs_row: {
                     like: localStore.likeVsLike,
                     expect: localStore.likeVsExpect,
@@ -223,7 +223,7 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
 
     useEffect(() => {
         loadKanoInfo();
-    }, [props.requirementId]);
+    }, [props.requirement.requirement_id]);
 
     return (
         <Card bordered={false} title={<Space>
@@ -238,7 +238,7 @@ const KanoPanel: React.FC<KanoPanelProps> = (props) => {
             extra={
                 <>
                     {inEdit == false && (
-                        <Button disabled={(projectStore.isClosed || (!projectStore.isAdmin) || (kanoInfo == null))} onClick={e => {
+                        <Button disabled={(projectStore.isClosed || (!props.requirement.user_requirement_perm.can_update) || (kanoInfo == null))} onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setInEdit(true);

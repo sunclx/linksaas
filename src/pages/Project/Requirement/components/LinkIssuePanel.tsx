@@ -5,7 +5,7 @@ import { LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import AddTaskOrBug from '@/components/Editor/components/AddTaskOrBug';
 import type { LinkInfo } from '@/stores/linkAux';
 import { LinkTaskInfo } from '@/stores/linkAux';
-import { link_issue, unlink_issue, list_issue_link } from '@/api/project_requirement';
+import { link_issue, unlink_issue, list_issue_link, type RequirementInfo } from '@/api/project_requirement';
 import { request } from '@/utils/request';
 import { useStores } from '@/hooks';
 import BatchCreateTask from './BatchCreateTask';
@@ -18,7 +18,7 @@ import SingleCreateTask from './SingleCreateTask';
 import { useHistory } from 'react-router-dom';
 
 interface LinkIssuePanelProps {
-    requirementId: string;
+    requirement: RequirementInfo;
     onUpdate: () => void;
 }
 
@@ -57,7 +57,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
         const linkRes = await request(list_issue_link({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            requirement_id: props.requirementId,
+            requirement_id: props.requirement.requirement_id,
         }));
         const res = await request(list_issue_by_id({
             session_id: userStore.sessionId,
@@ -77,7 +77,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
                 await request(link_issue({
                     session_id: userStore.sessionId,
                     project_id: projectStore.curProjectId,
-                    requirement_id: props.requirementId,
+                    requirement_id: props.requirement.requirement_id,
                     issue_id: taskLink.issueId,
                 }));
             } catch (e) {
@@ -94,7 +94,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
         await request(unlink_issue({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            requirement_id: props.requirementId,
+            requirement_id: props.requirement.requirement_id,
             issue_id: issueId,
         }));
         props.onUpdate();
@@ -130,7 +130,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
             width: 100,
             render: (_, record: IssueInfo) => (
                 <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
-                    disabled={projectStore.isClosed}
+                    disabled={projectStore.isClosed || (!props.requirement.user_requirement_perm.can_update)}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -149,7 +149,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
         <Card title={<h2>相关任务</h2>} bordered={false} extra={
             <Dropdown.Button
                 type="primary"
-                disabled={projectStore.isClosed}
+                disabled={projectStore.isClosed || (!props.requirement.user_requirement_perm.can_update)}
                 menu={{
                     items: [
                         {
@@ -178,7 +178,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
         }>
             <Table rowKey="issue_id" columns={columns} dataSource={issueList} pagination={false} />
             {showAddModal == true && (
-                <SingleCreateTask requirementId={props.requirementId}
+                <SingleCreateTask requirementId={props.requirement.requirement_id}
                     onCancel={() => setShowAddModal(false)}
                     onOk={() => {
                         setShowAddModal(false);
@@ -198,7 +198,7 @@ const LinkIssuePanel: React.FC<LinkIssuePanelProps> = (props) => {
                     issueIdList={issueList.map(item => item.issue_id)} />
             )}
             {showBatchModal == true && (
-                <BatchCreateTask requirementId={props.requirementId}
+                <BatchCreateTask requirementId={props.requirement.requirement_id}
                     onCancel={() => setShowBatchModal(false)}
                     onOk={() => {
                         setShowBatchModal(false);

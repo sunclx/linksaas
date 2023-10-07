@@ -101,7 +101,7 @@ const RequirementDetail = () => {
                     }} showEditIcon={true} />
                 }>
                     <Dropdown.Button type="primary"
-                        disabled={projectStore.isClosed || (!projectStore.isAdmin)}
+                        disabled={projectStore.isClosed || (!(requirementInfo.user_requirement_perm.can_open || requirementInfo.user_requirement_perm.can_close))}
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -117,7 +117,7 @@ const RequirementDetail = () => {
                                     label: "删除",
                                     key: "remove",
                                     danger: true,
-                                    disabled: !((projectStore.isAdmin || requirementInfo.create_user_id == userStore.userInfo.userId) && requirementInfo.issue_link_count == 0),
+                                    disabled: !(requirementInfo.issue_link_count == 0 && requirementInfo.user_requirement_perm.can_remove && (!projectStore.isClosed)),
                                 },
                             ],
                             onClick: (e) => {

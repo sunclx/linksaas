@@ -19,6 +19,14 @@ export type RequirementTag = {
     bg_color: string;
 };
 
+export type UserRequirementPerm = {
+    can_update: boolean;
+    can_remove: boolean;
+    can_open: boolean;
+    can_close: boolean;
+}
+
+
 export type RequirementInfo = {
     requirement_id: string;
     project_id: string;
@@ -44,6 +52,8 @@ export type RequirementInfo = {
     kano_dubiouse_value: number;//可疑数值
     four_q_urgency_value: number;//紧急层度
     four_q_important_value: number;//重要层度
+
+    user_requirement_perm: UserRequirementPerm;
 };
 
 export type KanoRow = {
