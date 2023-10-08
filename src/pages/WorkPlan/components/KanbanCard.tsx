@@ -16,6 +16,9 @@ import { useHistory } from "react-router-dom";
 import s from "./KanbanCard.module.less";
 import classNames from "classnames";
 import { request } from "@/utils/request";
+import { EditDate } from "@/components/EditCell/EditDate";
+import { cancelEndTime, cancelStartTime, updateEndTime, updateStartTime } from "@/pages/Issue/components/utils";
+import type { SpritInfo } from "@/api/project_sprit";
 
 export const DND_ITEM_TYPE = "issue";
 
@@ -194,8 +197,10 @@ const EstimateModal = observer((props: ModalProps) => {
     );
 });
 
+
 interface KanbanCardProps {
     issue: IssueInfo;
+    spritInfo: SpritInfo;
 }
 
 const getColor = (v: number) => {
@@ -220,6 +225,7 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
     const memberStore = useStores('memberStore');
+    const spritStore = useStores('spritStore');
 
     const [{ isDragging }, drag] = useDrag(() => ({
         type: DND_ITEM_TYPE,
@@ -304,6 +310,62 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </Space>
                     </div>
                 )}
+                {props.issue.sub_issue_status.total_count > 0 && (
+                    <>
+                        <h2 style={{ fontSize: "16px", fontWeight: 600, marginTop: "10px" }}>子任务</h2>
+                        <ul style={{ listStyleType: "disc", marginLeft: "20px" }}>
+                            {props.issue.sub_issue_status.sub_issue_list.map(subItem => (
+                                <li key={subItem.sub_issue_id} style={{ textDecoration: subItem.done ? "line-through" : "" }}>{subItem.title}</li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+                {props.issue.state == ISSUE_STATE_PROCESS && (
+                    <>
+                        <div>
+                            <Space>
+                                <span style={{lineHeight:"30px"}}>预估开始时间:</span>
+                                <EditDate
+                                    editable={(!projectStore.isClosed) && props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
+                                    hasTimeStamp={props.issue.has_start_time}
+                                    timeStamp={props.issue.start_time}
+                                    onChange={async (value) => {
+                                        if (value === undefined) {
+                                            const ret = await cancelStartTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                            spritStore.updateIssue(props.issue.issue_id);
+                                            return ret;
+                                        }
+                                        const ret = await updateStartTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                        spritStore.updateIssue(props.issue.issue_id);
+                                        return ret;
+                                    }}
+                                    showEditIcon={hover}
+                                />
+                            </Space>
+                        </div>
+                        <div>
+                            <Space>
+                                <span style={{lineHeight:"30px"}}>预估结束时间:</span>
+                                <EditDate
+                                    editable={(!projectStore.isClosed) && props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
+                                    hasTimeStamp={props.issue.has_end_time}
+                                    timeStamp={props.issue.end_time}
+                                    onChange={async (value) => {
+                                        if (value === undefined) {
+                                            const ret = await cancelEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id);
+                                            spritStore.updateIssue(props.issue.issue_id);
+                                            return ret;
+                                        }
+                                        const ret = await updateEndTime(userStore.sessionId, props.issue.project_id, props.issue.issue_id, value);
+                                        spritStore.updateIssue(props.issue.issue_id);
+                                        return ret;
+                                    }}
+                                    showEditIcon={hover}
+                                />
+                            </Space>
+                        </div>
+                    </>
+                )}
                 {props.issue.estimate_minutes > 0 && props.issue.remain_minutes >= 0 && props.issue.state == ISSUE_STATE_PROCESS && (
                     <div>
                         <Progress
@@ -323,6 +385,36 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </div>
                     </div>
                 )}
+                <div>
+                    {props.issue.re_open_count > 0 && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;重新打开次数&nbsp;{props.issue.re_open_count}</span>
+                        </Tag>
+                    )}
+                    {props.issue.msg_count > 0 && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span>&nbsp;评论数&nbsp;{props.issue.msg_count}</span>
+                        </Tag>
+                    )}
+                    {props.issue.issue_type == ISSUE_TYPE_TASK && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span style={{ color: taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].color }}>
+                                优先级{taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].label}
+                            </span>
+                        </Tag>
+                    )}
+                    {props.issue.issue_type == ISSUE_TYPE_BUG && (
+                        <>
+                            <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                                <span style={{ color: bugPriority[props.issue.extra_info.ExtraBugInfo?.priority ?? 0].color }}>{bugPriority[props.issue.extra_info.ExtraBugInfo?.priority ?? 0].label}</span>
+                            </Tag>
+                            <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                                缺陷级别:&nbsp;
+                                <span style={{ color: bugLevel[props.issue.extra_info.ExtraBugInfo?.level ?? 0].color }}>{bugLevel[props.issue.extra_info.ExtraBugInfo?.level ?? 0].label}</span>
+                            </Tag>
+                        </>
+                    )}
+                </div>
                 <div>
                     {props.issue.exec_user_id == "" && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea", color: "red", marginTop: "10px" }}>
@@ -352,16 +444,6 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                             )}
                         </Tag>
                     )}
-                    {props.issue.re_open_count > 0 && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;重新打开次数&nbsp;{props.issue.re_open_count}</span>
-                        </Tag>
-                    )}
-                    {props.issue.msg_count > 0 && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                            <span>&nbsp;评论数&nbsp;{props.issue.msg_count}</span>
-                        </Tag>
-                    )}
                     {props.issue.state == ISSUE_STATE_PROCESS && props.issue.estimate_minutes <= 0 && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                             <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置预估时间</span>
@@ -374,23 +456,32 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                             )}
                         </Tag>
                     )}
-                    {props.issue.issue_type == ISSUE_TYPE_TASK && (
+                    {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_start_time == false && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                            <span style={{ color: taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].color }}>
-                                优先级{taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].label}
-                            </span>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置预估开始时间</span>
                         </Tag>
                     )}
-                    {props.issue.issue_type == ISSUE_TYPE_BUG && (
-                        <>
+                    {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_end_time == false && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;未设置预估结束时间</span>
+                        </Tag>
+                    )}
+                    {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_start_time &&
+                        (props.issue.start_time < props.spritInfo.basic_info.start_time || props.issue.start_time > props.spritInfo.basic_info.end_time) && (
                             <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                                <span style={{ color: bugPriority[props.issue.extra_info.ExtraBugInfo?.priority ?? 0].color }}>{bugPriority[props.issue.extra_info.ExtraBugInfo?.priority ?? 0].label}</span>
+                                <span style={{ color: "red" }}><WarningOutlined />&nbsp;预估开始时间不合理</span>
                             </Tag>
+                        )}
+                    {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_end_time &&
+                        (props.issue.end_time < props.spritInfo.basic_info.start_time || props.issue.end_time > props.spritInfo.basic_info.end_time) && (
                             <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                                缺陷级别:&nbsp;
-                                <span style={{ color: bugLevel[props.issue.extra_info.ExtraBugInfo?.level ?? 0].color }}>{bugLevel[props.issue.extra_info.ExtraBugInfo?.level ?? 0].label}</span>
+                                <span style={{ color: "red" }}><WarningOutlined />&nbsp;预估结束时间不合理</span>
                             </Tag>
-                        </>
+                        )}
+                    {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_start_time && props.issue.has_end_time && props.issue.end_time <= props.issue.start_time && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;预估结束时间早于预估开始时间</span>
+                        </Tag>
                     )}
                 </div>
             </div>

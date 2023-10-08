@@ -13,6 +13,7 @@ import { Card } from "antd";
 import { request } from "@/utils/request";
 import KanbanCard, { DND_ITEM_TYPE } from "./KanbanCard";
 import { ISSUE_STATE_COLOR_ENUM } from "@/utils/constant";
+import type { SpritInfo } from "@/api/project_sprit";
 
 const filterIssueList = (taskList: IssueInfo[], bugList: IssueInfo[], state: ISSUE_STATE, memberId: string) => {
     const retList: IssueInfo[] = [];
@@ -57,11 +58,13 @@ function getBackgroundColor(isOver: boolean, canDrop: boolean): string {
 
 interface KanbanPanelProps {
     memberId: string;
+    spritInfo: SpritInfo;
 }
 
 interface ProcessPanelProps {
     memberId: string;
     stage: PROCESS_STAGE;
+    spritInfo: SpritInfo;
 }
 
 
@@ -84,11 +87,11 @@ const PlanIssueColumn = observer((props: KanbanPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`规划中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`规划中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.规划中颜色} / 80%)`, textAlign: "center" }}
                 bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, false), overflow: "scroll" }}>
                 {issueList?.map(item => (
-                    <KanbanCard issue={item} key={item.issue_id} />
+                    <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo}/>
                 ))}
             </Card>
         </div>
@@ -160,11 +163,11 @@ const ProcessIssueColumn = observer((props: ProcessPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`${getPanelName()}(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`${getPanelName()}(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.处理颜色} / 80%)`, textAlign: "center" }}
                 bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflowY: "scroll" }}>
                 {issueList?.map(item => (
-                    <KanbanCard issue={item} key={item.issue_id} />
+                    <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} />
                 ))}
             </Card>
         </div>
@@ -206,11 +209,11 @@ const CheckIssueColumn = observer((props: KanbanPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`检查中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`检查中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.验收颜色} / 80%)`, textAlign: "center" }}
                 bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
                 {issueList?.map(item => (
-                    <KanbanCard issue={item} key={item.issue_id} />
+                    <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} />
                 ))}
             </Card>
         </div>
@@ -249,11 +252,11 @@ const CloseIssueColumn = observer((props: KanbanPanelProps) => {
 
     return (
         <div className={s.kanban_column} ref={drop}>
-            <Card title={`完成(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "250px" }}
+            <Card title={`完成(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.关闭颜色} / 80%)`, textAlign: "center" }}
                 bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
                 {issueList?.map(item => (
-                    <KanbanCard issue={item} key={item.issue_id} />
+                    <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} />
                 ))}
             </Card>
         </div>
@@ -268,13 +271,13 @@ const KanbanPanel = (props: KanbanPanelProps) => {
         <DndProvider backend={HTML5Backend}>
             <div className={s.kanban_column_list}>
                 {props.memberId == "" && filterIssueList(spritStore.taskList, spritStore.bugList, ISSUE_STATE_PLAN, props.memberId).length > 0 && (
-                    <PlanIssueColumn memberId={props.memberId} />
+                    <PlanIssueColumn memberId={props.memberId} spritInfo={props.spritInfo} />
                 )}
-                <ProcessIssueColumn memberId={props.memberId} stage={PROCESS_STAGE_TODO} />
-                <ProcessIssueColumn memberId={props.memberId} stage={PROCESS_STAGE_DOING} />
-                <ProcessIssueColumn memberId={props.memberId} stage={PROCESS_STAGE_DONE} />
-                <CheckIssueColumn memberId={props.memberId} />
-                <CloseIssueColumn memberId={props.memberId} />
+                <ProcessIssueColumn memberId={props.memberId} stage={PROCESS_STAGE_TODO} spritInfo={props.spritInfo} />
+                <ProcessIssueColumn memberId={props.memberId} stage={PROCESS_STAGE_DOING} spritInfo={props.spritInfo} />
+                <ProcessIssueColumn memberId={props.memberId} stage={PROCESS_STAGE_DONE} spritInfo={props.spritInfo} />
+                <CheckIssueColumn memberId={props.memberId} spritInfo={props.spritInfo} />
+                <CloseIssueColumn memberId={props.memberId} spritInfo={props.spritInfo} />
             </div>
         </DndProvider>
     );

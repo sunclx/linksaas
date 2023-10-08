@@ -225,6 +225,19 @@ export type WatchUser = {
   logo_uri: string;
 };
 
+export type SimpleSubIssue = {
+  sub_issue_id: string;
+  title: string;
+  done: boolean;
+  issue_id: string;
+};
+
+export type SubIssueStatus = {
+  sub_issue_list: SimpleSubIssue[];
+  total_count: number;
+  done_count: number;
+};
+
 
 export type IssueInfo = {
   issue_id: string;
@@ -248,7 +261,8 @@ export type IssueInfo = {
   depend_me_count: number;
   re_open_count: number;
   tag_info_list: IssueTag[];
-  watch_user_list?: WatchUser[];
+  watch_user_list: WatchUser[];
+  sub_issue_status: SubIssueStatus;
 
   ///计划相关字段
   has_start_time: boolean;
