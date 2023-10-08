@@ -183,12 +183,12 @@ export default class SpritStore {
     }
 
     async updateIssue(issueId: string) {
+        const res = await request(get_issue(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, issueId));
         const taskIndex = this._taskList.findIndex(item => item.issue_id == issueId);
         const bugIndex = this._bugList.findIndex(item => item.issue_id == issueId);
         if (taskIndex == -1 && bugIndex == -1) {
             return;
         }
-        const res = await request(get_issue(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, issueId));
         runInAction(() => {
             if (taskIndex != -1) {
                 const tmpList = this._taskList.slice();

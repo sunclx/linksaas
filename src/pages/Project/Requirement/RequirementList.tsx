@@ -81,7 +81,7 @@ const RequirementList = () => {
             width: 250,
             render: (_, row: RequirementInfo) => (
                 <Space size="middle" style={{ lineHeight: "28px" }}>
-                    <EditText editable={!projectStore.isClosed} content={row.base_info.title}
+                    <EditText editable={(!projectStore.isClosed) && row.user_requirement_perm.can_update} content={row.base_info.title}
                         onChange={async (value: string) => {
                             const title = value.trim();
                             if (title == "") {
@@ -122,7 +122,7 @@ const RequirementList = () => {
             render: (_, row: RequirementInfo) => (
                 <>
                     {tagDefList != null && (
-                        <EditTag editable={(!projectStore.isClosed) && projectStore.isAdmin} tagIdList={row.base_info.tag_id_list} tagDefList={tagDefList}
+                        <EditTag editable={(!projectStore.isClosed) && row.user_requirement_perm.can_update} tagIdList={row.base_info.tag_id_list} tagDefList={tagDefList}
                             onChange={(tagIdList: string[]) => {
                                 request(update_tag_id_list({
                                     session_id: userStore.sessionId,
@@ -153,7 +153,7 @@ const RequirementList = () => {
             title: "状态",
             width: 120,
             render: (_, row: RequirementInfo) => (
-                <EditSelect editable={(!projectStore.isClosed) && projectStore.isAdmin} curValue={row.closed ? 1 : 0} itemList={[
+                <EditSelect editable={(!projectStore.isClosed) && (row.user_requirement_perm.can_open || row.user_requirement_perm.can_close)} curValue={row.closed ? 1 : 0} itemList={[
                     {
                         value: 1,
                         label: "关闭状态",
@@ -250,7 +250,7 @@ const RequirementList = () => {
     return (
         <CardWrap title="需求列表" extra={
             <Space size="middle">
-                <Button disabled={projectStore.isClosed || !projectStore.isAdmin} onClick={e => {
+                <Button disabled={projectStore.isClosed} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, history);

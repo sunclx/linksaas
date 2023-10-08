@@ -84,7 +84,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
         } else {
             return (
                 <Button
-                    disabled={projectStore.isClosed}
+                    disabled={projectStore.isClosed || (!props.requirement.user_requirement_perm.can_update)}
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -108,14 +108,14 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
                 )}
             </Card>
             <hr />
-            <LinkIssuePanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+            <LinkIssuePanel requirement={props.requirement} onUpdate={() => props.onUpdate()} />
             <Card title={<h2>需求分析</h2>} bordered={false}>
                 <Tabs defaultActiveKey='fourQ' type="card">
                     <Tabs.TabPane tab="四象限分析" key="fourQ">
-                        <FourQPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+                        <FourQPanel requirement={props.requirement} onUpdate={() => props.onUpdate()} />
                     </Tabs.TabPane>
                     <Tabs.TabPane tab="Kano分析" key="kano">
-                        <KanoPanel requirementId={props.requirement.requirement_id} onUpdate={() => props.onUpdate()} />
+                        <KanoPanel requirement={props.requirement} onUpdate={() => props.onUpdate()} />
                     </Tabs.TabPane>
                 </Tabs>
             </Card>

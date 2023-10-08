@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { observer, useLocalObservable } from 'mobx-react';
 import { useStores } from "@/hooks";
-import type { FourQInfo } from "@/api/project_requirement";
+import type { FourQInfo, RequirementInfo } from "@/api/project_requirement";
 import { get_four_q_info, set_four_q_info } from "@/api/project_requirement";
 import { runInAction } from "mobx";
 import { request } from "@/utils/request";
@@ -10,7 +10,7 @@ import s from "./FourQPanel.module.less";
 import Button from "@/components/Button";
 
 interface FourQPanelProps {
-    requirementId: string;
+    requirement: RequirementInfo;
     onUpdate: () => void;
 }
 
@@ -54,7 +54,7 @@ const FourQPanel: React.FC<FourQPanelProps> = (props) => {
         const res = await request(get_four_q_info({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            requirement_id: props.requirementId,
+            requirement_id: props.requirement.requirement_id,
         }));
         localStore.initData(res.four_q_info);
         setFourInfo(res.four_q_info);
@@ -64,9 +64,9 @@ const FourQPanel: React.FC<FourQPanelProps> = (props) => {
         await request(set_four_q_info({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            requirement_id: props.requirementId,
+            requirement_id: props.requirement.requirement_id,
             four_q_info: {
-                requirement_id: props.requirementId,
+                requirement_id: props.requirement.requirement_id,
                 urgent_and_important: localStore.urgentAndImportant,
                 urgent_and_not_important: localStore.urgentAndNotImportant,
                 not_urgent_and_not_important: localStore.notUrgentAndNotImportant,
@@ -81,14 +81,14 @@ const FourQPanel: React.FC<FourQPanelProps> = (props) => {
 
     useEffect(() => {
         loadFourQInfo();
-    }, [props.requirementId]);
+    }, [props.requirement.requirement_id]);
 
     return (
         <Card bordered={false} title={<h3 className={s.head}>调研结果</h3>}
             bodyStyle={{ padding: "0px 0px" }} extra={
                 <>
                     {inEdit == false && (
-                        <Button disabled={(projectStore.isClosed || (!projectStore.isAdmin) || (fourQInfo == null))} onClick={e => {
+                        <Button disabled={(projectStore.isClosed || (!props.requirement.user_requirement_perm.can_update) || (fourQInfo == null))} onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setInEdit(true);

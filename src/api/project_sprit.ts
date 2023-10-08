@@ -4,11 +4,23 @@ export type SUMMARY_STATE = number;
 export const SUMMARY_COLLECT: SUMMARY_STATE = 0;  //收集反馈
 export const SUMMARY_SHOW: SUMMARY_STATE = 1;     //展示反馈
 
+export type ISSUE_LIST_TYPE = number;
+export const ISSUE_LIST_ALL: ISSUE_LIST_TYPE = 0;
+export const ISSUE_LIST_LIST: ISSUE_LIST_TYPE = 1;
+export const ISSUE_LIST_KANBAN: ISSUE_LIST_TYPE = 2;
+
 export type BasicSpritInfo = {
   title: string;
   start_time: number;
   end_time: number;
-  non_work_day_list: number[],
+  non_work_day_list: number[];
+  issue_list_type: ISSUE_LIST_TYPE;
+  hide_doc_panel: boolean;
+  hide_gantt_panel: boolean;
+  hide_burndown_panel: boolean;
+  hide_stat_panel: boolean;
+  hide_summary_panel: boolean;
+  hide_channel: boolean;
 };
 
 export type CreateResponse = {

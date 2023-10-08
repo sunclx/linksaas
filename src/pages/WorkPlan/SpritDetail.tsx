@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
 import { LinkChannelInfo, LINK_TARGET_TYPE } from "@/stores/linkAux";
-import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel, watch, un_watch } from "@/api/project_sprit";
+import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel, watch, un_watch, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -113,7 +113,6 @@ const SpritDetail = () => {
 
     useEffect(() => {
         if (spritStore.curSpritId != "") {
-            setActiveKey("issue");
             loadSpritInfo();
         }
     }, [spritStore.curSpritId]);
@@ -129,6 +128,16 @@ const SpritDetail = () => {
             setActiveKey(tabStr);
         }
     }, [tabStr]);
+
+    useEffect(() => {
+        if (spritInfo != null && activeKey == "" && tabStr == "") {
+            if (spritInfo.basic_info.issue_list_type == ISSUE_LIST_KANBAN) {
+                setActiveKey("kanban");
+            } else {
+                setActiveKey("issue");
+            }
+        }
+    }, [spritInfo]);
 
     return (
         <Card bordered={false}
@@ -195,7 +204,7 @@ const SpritDetail = () => {
                         </div>
                     </div>
                 )}
-                {projectStore.curProject?.setting.disable_chat === false && (
+                {projectStore.curProject?.setting.disable_chat === false && spritInfo?.basic_info.hide_channel == false && (
                     <div className={s.info_wrap}>
                         <div className={s.label} style={{ lineHeight: "28px" }}>关联频道：</div>
                         {spritInfo !== null && (<div>
@@ -260,85 +269,104 @@ const SpritDetail = () => {
                 )}
             </div>
             <div>
-                <Tabs
-                    activeKey={activeKey}
-                    type="card"
-                    onChange={value => {
-                        history.push(`${location.pathname}?tab=${value}`);
-                    }} tabBarExtraContent={
-                        <>
-                            {(activeKey == "issue" || activeKey == "kanban") && (
-                                <Form layout="inline">
-                                    <Form.Item label="过滤成员">
-                                        <Select value={selMemberUserId} style={{ width: "120px", marginRight: "20px" }}
-                                            onChange={value => setSelMemberUserId(value)}>
-                                            <Select.Option value="">
-                                                <Space>
-                                                    <UserPhoto logoUri="/default_av.jpg" style={{ width: "20px" }} />
-                                                    <span>全部成员</span>
-                                                </Space>
-                                            </Select.Option>
-                                            {memberStore.memberList.map(item => (
-                                                <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>
+                {spritInfo != null && (
+                    <Tabs
+                        activeKey={activeKey}
+                        type="card"
+                        onChange={value => {
+                            history.push(`${location.pathname}?tab=${value}`);
+                        }} tabBarExtraContent={
+                            <>
+                                {(activeKey == "issue" || activeKey == "kanban") && (
+                                    <Form layout="inline">
+                                        <Form.Item label="过滤成员">
+                                            <Select value={selMemberUserId} style={{ width: "120px", marginRight: "20px" }}
+                                                onChange={value => setSelMemberUserId(value)}>
+                                                <Select.Option value="">
                                                     <Space>
-                                                        <UserPhoto logoUri={item.member.logo_uri} style={{ width: "20px" }} />
-                                                        <span>{item.member.display_name}</span>
+                                                        <UserPhoto logoUri="/default_av.jpg" style={{ width: "20px" }} />
+                                                        <span>全部成员</span>
                                                     </Space>
                                                 </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item>
-                                        <Dropdown.Button type="primary" menu={{
-                                            items: [
-                                                {
-                                                    key: "refTask",
-                                                    label: "引用任务",
-                                                    onClick: () => setRefIssueType(ISSUE_TYPE_TASK),
-                                                },
-                                                {
-                                                    key: "refBug",
-                                                    label: "引用缺陷",
-                                                    onClick: () => setRefIssueType(ISSUE_TYPE_BUG),
-                                                }
-                                            ]
-                                        }} onClick={e => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            setShowAddIssueModal(true);
-                                        }}><PlusOutlined />增加</Dropdown.Button>
-                                    </Form.Item>
-                                </Form>
-                            )}
-                        </>
-                    }>
-                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
-                        {activeKey == "issue" && spritInfo != null && (
-                            <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time}
-                                memberId={selMemberUserId} />
+                                                {memberStore.memberList.map(item => (
+                                                    <Select.Option key={item.member.member_user_id} value={item.member.member_user_id}>
+                                                        <Space>
+                                                            <UserPhoto logoUri={item.member.logo_uri} style={{ width: "20px" }} />
+                                                            <span>{item.member.display_name}</span>
+                                                        </Space>
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <Dropdown.Button type="primary"
+                                                disabled={(projectStore.isClosed || (!projectStore.isAdmin))}
+                                                menu={{
+                                                    items: [
+                                                        {
+                                                            key: "refTask",
+                                                            label: "引用任务",
+                                                            disabled: (projectStore.isClosed || (!projectStore.isAdmin)),
+                                                            onClick: () => setRefIssueType(ISSUE_TYPE_TASK),
+                                                        },
+                                                        {
+                                                            key: "refBug",
+                                                            label: "引用缺陷",
+                                                            disabled: (projectStore.isClosed || (!projectStore.isAdmin)),
+                                                            onClick: () => setRefIssueType(ISSUE_TYPE_BUG),
+                                                        }
+                                                    ]
+                                                }} onClick={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    setShowAddIssueModal(true);
+                                                }}><PlusOutlined />增加</Dropdown.Button>
+                                        </Form.Item>
+                                    </Form>
+                                )}
+                            </>
+                        }>
+                        {spritInfo.basic_info.issue_list_type != ISSUE_LIST_KANBAN && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
+                                {activeKey == "issue" && (
+                                    <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time}
+                                        memberId={selMemberUserId} />
+                                )}
+                            </Tabs.TabPane>
                         )}
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
-                        {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} />}
-                    </Tabs.TabPane>
-                    {!projectStore.curProject?.setting.disable_kb && (
-                        <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>相关文档</span>} key="linkDoc">
-                            {activeKey == "linkDoc" && <LinkDocPanel />}
-                        </Tabs.TabPane>
-                    )}
-                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
-                        {activeKey == "gantt" && spritInfo != null && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>燃尽图</span>} key="burnDown" disabled={!spritStore.allTimeReady}>
-                        {activeKey == "burnDown" && spritInfo != null && <BurnDownPanel spritInfo={spritInfo} />}
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>统计信息</span>} key="statistics" disabled={!spritStore.allTimeReady}>
-                        {activeKey == "statistics" && <StatPanel />}
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>工作总结</span>} key="summary">
-                        {activeKey == "summary" && spritInfo != null && <SummaryPanel state={spritInfo.summary_state} />}
-                    </Tabs.TabPane>
-                </Tabs>
+                        {spritInfo.basic_info.issue_list_type != ISSUE_LIST_LIST && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
+                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo}/>}
+                            </Tabs.TabPane>
+                        )}
+
+                        {!projectStore.curProject?.setting.disable_kb && spritInfo.basic_info.hide_doc_panel == false && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>相关文档</span>} key="linkDoc">
+                                {activeKey == "linkDoc" && <LinkDocPanel />}
+                            </Tabs.TabPane>
+                        )}
+                        {spritInfo.basic_info.hide_gantt_panel == false && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
+                                {activeKey == "gantt" && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                            </Tabs.TabPane>
+                        )}
+                        {spritInfo.basic_info.hide_burndown_panel == false && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>燃尽图</span>} key="burnDown" disabled={!spritStore.allTimeReady}>
+                                {activeKey == "burnDown" && <BurnDownPanel spritInfo={spritInfo} />}
+                            </Tabs.TabPane>
+                        )}
+                        {spritInfo.basic_info.hide_stat_panel == false && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>统计信息</span>} key="statistics" disabled={!spritStore.allTimeReady}>
+                                {activeKey == "statistics" && <StatPanel />}
+                            </Tabs.TabPane>
+                        )}
+                        {spritInfo.basic_info.hide_summary_panel == false && (
+                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>工作总结</span>} key="summary">
+                                {activeKey == "summary" && <SummaryPanel state={spritInfo.summary_state} />}
+                            </Tabs.TabPane>
+                        )}
+                    </Tabs>
+                )}
             </div>
             {showRemoveModal == true && (
                 <Modal

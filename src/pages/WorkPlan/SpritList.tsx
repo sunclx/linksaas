@@ -150,13 +150,13 @@ const SpritList = () => {
             title: "操作",
             width: 120,
             render: (_, record: SpritInfo) => (
-                <div>
-                    <a onClick={e => {
+                <Button type="link"
+                    disabled={(projectStore.isClosed || (!projectStore.isAdmin))}
+                    onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setUpdateSpritId(record.sprit_id);
-                    }}>修改</a>
-                </div>
+                    }}>修改</Button>
             )
         }
 
