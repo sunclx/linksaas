@@ -324,7 +324,7 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                     <>
                         <div>
                             <Space>
-                                <span style={{lineHeight:"30px"}}>预估开始时间:</span>
+                                <span style={{ lineHeight: "30px" }}>预估开始时间:</span>
                                 <EditDate
                                     editable={(!projectStore.isClosed) && props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
                                     hasTimeStamp={props.issue.has_start_time}
@@ -345,7 +345,7 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </div>
                         <div>
                             <Space>
-                                <span style={{lineHeight:"30px"}}>预估结束时间:</span>
+                                <span style={{ lineHeight: "30px" }}>预估结束时间:</span>
                                 <EditDate
                                     editable={(!projectStore.isClosed) && props.issue.exec_user_id == userStore.userInfo.userId && props.issue.state == ISSUE_STATE_PROCESS}
                                     hasTimeStamp={props.issue.has_end_time}
@@ -386,11 +386,6 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                     </div>
                 )}
                 <div>
-                    {props.issue.re_open_count > 0 && (
-                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;重新打开次数&nbsp;{props.issue.re_open_count}</span>
-                        </Tag>
-                    )}
                     {props.issue.msg_count > 0 && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                             <span>&nbsp;评论数&nbsp;{props.issue.msg_count}</span>
@@ -416,6 +411,11 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                     )}
                 </div>
                 <div>
+                    {props.issue.re_open_count > 0 && (
+                        <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
+                            <span style={{ color: "red" }}><WarningOutlined />&nbsp;重新打开次数&nbsp;{props.issue.re_open_count}</span>
+                        </Tag>
+                    )}
                     {props.issue.exec_user_id == "" && (
                         <Tag style={{ border: "none", backgroundColor: "#fffaea", color: "red", marginTop: "10px" }}>
                             <span style={{ color: "red" }}>
