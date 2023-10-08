@@ -97,7 +97,6 @@ const LinkDocPanel = () => {
                     showRequirement={false}
                     showTask={false}
                     showBug={false}
-                    showScript={false}
                     showExterne={false}
                     onCancel={() => setShowAddModal(false)}
                     onOk={link => linkDoc(link)} />
