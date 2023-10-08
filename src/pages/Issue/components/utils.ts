@@ -2,6 +2,7 @@ import type { MemberInfo } from "@/api/project_member";
 import type { EditSelectItem } from "@/components/EditCell/EditSelect";
 import * as issueApi from '@/api/project_issue';
 import { message } from 'antd';
+import moment from "moment";
 
 export function getStateColor(v: number) {
     switch (v) {
@@ -67,7 +68,7 @@ export async function updateContent(sessionId: string, projectId: string, issueI
 
 export async function updateStartTime(sessionId: string, projectId: string, issueId: string, startTime: number): Promise<boolean> {
     try {
-        const res = await issueApi.set_start_time(sessionId, projectId, issueId, startTime);
+        const res = await issueApi.set_start_time(sessionId, projectId, issueId, moment(startTime).startOf("day").valueOf());
         if (res.code == 0) {
             return true
         }
@@ -132,7 +133,7 @@ export async function cancelDeadLineTime(sessionId: string, projectId: string, i
 
 export async function updateEndTime(sessionId: string, projectId: string, issueId: string, endTime: number): Promise<boolean> {
     try {
-        const res = await issueApi.set_end_time(sessionId, projectId, issueId, endTime);
+        const res = await issueApi.set_end_time(sessionId, projectId, issueId, moment(endTime).endOf("day").valueOf());
         if (res.code == 0) {
             return true
         }

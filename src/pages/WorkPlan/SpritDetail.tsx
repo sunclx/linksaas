@@ -336,7 +336,7 @@ const SpritDetail = () => {
                         )}
                         {spritInfo.basic_info.issue_list_type != ISSUE_LIST_LIST && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
-                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} />}
+                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo}/>}
                             </Tabs.TabPane>
                         )}
 

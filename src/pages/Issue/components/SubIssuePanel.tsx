@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Input, message } from 'antd';
+import { Table, Modal, Input, message, Form } from 'antd';
 import type { SubIssueInfo } from '@/api/project_issue';
 import type { ColumnsType } from 'antd/lib/table';
 import { create_sub_issue, list_sub_issue, update_sub_issue, update_sub_issue_state, remove_sub_issue } from '@/api/project_issue';
@@ -202,11 +202,16 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                         e.preventDefault();
                         addSubIssue();
                     }}>
-                    <Input addonBefore="子任务标题" onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSubIssueTitle(e.target.value);
-                    }} />
+                    <Form>
+                        <Form.Item label="标题">
+                            <Input onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSubIssueTitle(e.target.value);
+                            }} />
+                        </Form.Item>
+                    </Form>
+
                 </Modal>)}
             {showUpdateSubIssue == true && (
                 <Modal
