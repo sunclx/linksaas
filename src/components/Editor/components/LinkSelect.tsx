@@ -52,7 +52,6 @@ export interface LinkSelectProps {
   showRequirement: boolean;
   showTask: boolean;
   showBug: boolean;
-  showScript: boolean;
   showExterne: boolean;
   onOk: (link: LinkInfo) => void;
   onCancel: () => void;
@@ -76,8 +75,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     defaultTab = 'task';
   } else if (props.showBug) {
     defaultTab = 'bug';
-  } else if (props.showScript) {
-    defaultTab = "script";
   } else if (props.showExterne) {
     defaultTab = 'externe';
   }
@@ -121,12 +118,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     tabList.push({
       label: '缺陷',
       value: 'bug',
-    });
-  }
-  if (props.showScript) {
-    tabList.push({
-      label: '服务端脚本',
-      value: 'script',
     });
   }
   if (props.showExterne) {
@@ -496,7 +487,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
                 key={item.value}
                 onClick={() => {
                   setTab(item.value);
-                  if (item.value === 'task' || item.value === 'bug' || item.value === "script" || item.value == "requirement") {
+                  if (item.value === 'task' || item.value === 'bug' || item.value == "requirement") {
                     setKeyword("");
                     setTotalCount(0);
                     setCurPage(0);

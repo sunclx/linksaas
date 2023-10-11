@@ -44,7 +44,6 @@ const LinkBtn = observer(() => {
           showTask={projectStore.curProjectId != ""}
           showBug={projectStore.curProjectId != ""}
           showDoc={projectStore.curProjectId != ""}
-          showScript={projectStore.curProjectId != ""}
           showExterne={true}
           onOk={(link) => {
             setShowModal(false);

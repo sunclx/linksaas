@@ -5,6 +5,8 @@ import { PORT, VITE_BASE_PATH } from './config/constant';
 import { createVitePlugins } from './config/vite/plugins';
 import { themeVariables } from './config/theme';
 import svgr from 'vite-plugin-svgr';
+import topLevelAwait from "vite-plugin-top-level-await";
+
 const { name, version } = pkg;
 
 const __APP_INFO__ = {
@@ -17,7 +19,16 @@ export default ({ command, mode }: ConfigEnv) => {
 
   return {
     base: VITE_BASE_PATH,
-    plugins: [createVitePlugins(mode, isBuild), svgr()],
+    plugins: [
+      createVitePlugins(mode, isBuild),
+      svgr(),
+      topLevelAwait({
+        // The export name of top-level await promise for each chunk module
+        promiseExportName: "__tla",
+        // The function to generate import names of top-level await promise in each chunk module
+        promiseImportName: i => `__tla_${i}`
+      }),
+    ],
     css: {
       preprocessorOptions: {
         less: {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { HTTP_BODY_NONE, type ApiItemInfo, remove_api_item, update_api_item, HTTP_BODY_TEXT, HTTP_BODY_URL_ENCODE, HTTP_BODY_MULTI_PART } from "@/api/http_custom";
 import { Card, Form, Input, Modal, Popover, Select, Space, Tabs } from "antd";
 import Button from "@/components/Button";
-import { MoreOutlined } from "@ant-design/icons";
+import { CodeOutlined, MoreOutlined } from "@ant-design/icons";
 import { useCustomStores } from "./stores";
 import { observer } from 'mobx-react';
 import ParamPanel from "./ParamPanel";
@@ -12,6 +12,7 @@ import { request } from "@/utils/request";
 import { type HttpVerb, type Response, Body, fetch, ResponseType } from '@tauri-apps/api/http';
 import { readBinaryFile } from '@tauri-apps/api/fs';
 import ResponsePanel from "./ResponsePanel";
+import CodeModal from "./CodeModal";
 
 interface ApiDetailProps {
     apiItem: ApiItemInfo;
@@ -24,6 +25,7 @@ const ApiDetail = (props: ApiDetailProps) => {
     const [hasChange, setHasChange] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [response, setResponse] = useState<Response<unknown> | null>(null);
+    const [showCodeModal, setShowCodeModal] = useState(false);
 
     const removeApiItem = async () => {
         await request(remove_api_item({
@@ -56,13 +58,17 @@ const ApiDetail = (props: ApiDetailProps) => {
         setHasChange(false);
     };
 
-    const sendRequest = async () => {
+    const calcUrl = (): string => {
         const url = new URL(`${store.api.protocol}://${store.api.remoteAddr}${apiItem.url}`);
         for (const param of apiItem.param_list) {
             if (param.key != "") {
                 url.searchParams.append(param.key, param.value);
             }
         }
+        return url.toString();
+    };
+
+    const calcHeaders = (): Record<string, any> => {
         const headers: Map<string, string> = new Map();
         if (apiItem.content_type != "") {
             headers.set("Content-Type", apiItem.content_type);
@@ -72,6 +78,11 @@ const ApiDetail = (props: ApiDetailProps) => {
                 headers.set(header.key, header.value);
             }
         }
+        return Object.fromEntries(headers);
+    }
+
+    const sendRequest = async () => {
+
         let body: Body | undefined = undefined;
         if (apiItem.body_type == HTTP_BODY_TEXT) {
             body = Body.text(apiItem.body.TextBody ?? "");
@@ -98,9 +109,9 @@ const ApiDetail = (props: ApiDetailProps) => {
             body = Body.form(form);
         }
 
-        const resp = await fetch(url.toString(), {
+        const resp = await fetch(calcUrl(), {
             method: apiItem.method as HttpVerb,
-            headers: Object.fromEntries(headers),
+            headers: calcHeaders(),
             body: body,
             responseType: ResponseType.Binary,
         });
@@ -185,40 +196,50 @@ const ApiDetail = (props: ApiDetailProps) => {
                     sendRequest();
                 }}>发送</Button>
             </div>
-            <Tabs type="card" style={{ marginTop: "10px" }} items={[
-                {
-                    key: "param",
-                    label: "参数",
-                    children: (
-                        <ParamPanel paramList={apiItem.param_list} onChange={newParamList => {
-                            setApiItem({ ...apiItem, param_list: newParamList });
-                            setHasChange(true);
-                        }} />
-                    ),
-                },
-                {
-                    key: "body",
-                    label: "请求内容",
-                    disabled: ["GET", "HEAD", "OPTIONS"].includes(apiItem.method),
-                    children: (
-                        <BodyPanel bodyType={apiItem.body_type} body={apiItem.body} contentType={apiItem.content_type}
-                            onChange={(newBodyType, newBody, newContentType) => {
-                                setApiItem({ ...apiItem, body_type: newBodyType, body: newBody, content_type: newContentType });
+            <Tabs type="card" style={{ marginTop: "10px" }}
+                tabBarExtraContent={
+                    <Button type="link" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowCodeModal(true);
+                    }}>
+                        <CodeOutlined />生成代码
+                    </Button>
+                }
+                items={[
+                    {
+                        key: "param",
+                        label: "参数",
+                        children: (
+                            <ParamPanel paramList={apiItem.param_list} onChange={newParamList => {
+                                setApiItem({ ...apiItem, param_list: newParamList });
                                 setHasChange(true);
                             }} />
-                    ),
-                },
-                {
-                    key: "header",
-                    label: "请求头",
-                    children: (
-                        <HeaderPanel headerList={apiItem.header_list} onChange={newHeaderList => {
-                            setApiItem({ ...apiItem, header_list: newHeaderList });
-                            setHasChange(true);
-                        }} />
-                    ),
-                }
-            ]} />
+                        ),
+                    },
+                    {
+                        key: "body",
+                        label: "请求内容",
+                        disabled: ["GET", "HEAD", "OPTIONS"].includes(apiItem.method),
+                        children: (
+                            <BodyPanel bodyType={apiItem.body_type} body={apiItem.body} contentType={apiItem.content_type}
+                                onChange={(newBodyType, newBody, newContentType) => {
+                                    setApiItem({ ...apiItem, body_type: newBodyType, body: newBody, content_type: newContentType });
+                                    setHasChange(true);
+                                }} />
+                        ),
+                    },
+                    {
+                        key: "header",
+                        label: "请求头",
+                        children: (
+                            <HeaderPanel headerList={apiItem.header_list} onChange={newHeaderList => {
+                                setApiItem({ ...apiItem, header_list: newHeaderList });
+                                setHasChange(true);
+                            }} />
+                        ),
+                    }
+                ]} />
             {response != null && (
                 <ResponsePanel response={response} onClose={() => setResponse(null)} />
             )}
@@ -237,6 +258,10 @@ const ApiDetail = (props: ApiDetailProps) => {
                     }}>
                     是否删除接口&nbsp;{props.apiItem.api_item_name}&nbsp;?
                 </Modal>
+            )}
+            {showCodeModal == true && (
+                <CodeModal url={calcUrl()} method={apiItem.method as HttpVerb} headers={calcHeaders()}
+                    bodyType={apiItem.body_type} body={apiItem.body} onClose={() => setShowCodeModal(false)} />
             )}
         </Card>
     );
