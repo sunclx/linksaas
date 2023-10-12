@@ -111,22 +111,6 @@ export type PipeLinePerm = {
     extra_exec_user_id_list: string[];
 };
 
-export type SimplePipeLine = {
-    pipe_line_id: string;
-    pipe_line_name: string;
-    plat_form: PLATFORM_TYPE;
-    git_url: string;
-    create_user_id: string;
-    create_display_name: string;
-    create_logo_uri: string;
-    create_time: number;
-    update_user_id: string;
-    update_display_name: string;
-    update_logo_uri: string;
-    update_time: number;
-    pipe_line_perm: PipeLinePerm;
-};
-
 export type PipeLine = {
     pipe_line_id: string;
     pipe_line_name: string;
@@ -282,9 +266,8 @@ export type ListPipeLineResponse = {
     code: number;
     err_msg: string;
     total_count: number;
-    pipe_line_list: SimplePipeLine[];
+    pipe_line_list: PipeLine[];
 };
-
 
 export type GetPipeLineRequest = {
     session_id: string;

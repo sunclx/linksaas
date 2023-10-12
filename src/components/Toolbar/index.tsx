@@ -5,7 +5,7 @@ import { Badge, Divider, Tooltip } from 'antd';
 import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
-import { APP_PROJECT_CHAT_PATH,  APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
+import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
@@ -109,6 +109,17 @@ const Toolbar: React.FC = observer(() => {
         title="缺陷列表"
         badge={projectStore.curProject?.project_status.undone_bug_count || 0}
       />
+
+      {projectStore.curProject?.setting.disable_ci_cd != true && (
+        <>
+          <Divider />
+          <Item
+            id="cicd"
+            pathname={pathname}
+            title="CI/CD"
+          />
+        </>
+      )}
 
       {projectStore.curProject?.setting.disable_api_collection != true && (
         <>
