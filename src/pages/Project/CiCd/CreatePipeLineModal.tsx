@@ -38,11 +38,11 @@ const CreatePipeLineModal = (props: CreatePipeLineModalProps) => {
         setCredList(res.credential_list);
     };
 
-    const valid = (): boolean => { 
-        if(pipeLineName == ""){
+    const valid = (): boolean => {
+        if (pipeLineName == "") {
             return false;
         }
-        if(gitUrl == ""){
+        if (gitUrl == "") {
             return false;
         }
         return true;
@@ -58,6 +58,10 @@ const CreatePipeLineModal = (props: CreatePipeLineModalProps) => {
                 job_id: uniqId(),
                 credential_id: credId,
                 git_url: gitUrl,
+                position: {
+                    x: 0,
+                    y: 0,
+                },
             },
             exec_job_list: [],
         }));

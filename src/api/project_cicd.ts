@@ -58,10 +58,17 @@ export type Credential = {
     cred: Cred;
 };
 
+export type Position = {
+    x: number;
+    y: number;
+};
+
+
 export type GitsourceJob = {
     job_id: string;
     credential_id: string;
     git_url: string;
+    position: Position;
 };
 
 export type ExecEnv = {
@@ -101,6 +108,7 @@ export type ExecJob = {
     run_on_param_list: string[];
     env_list: ExecEnv[];
     job: Job;
+    position: Position;
 };
 
 
@@ -126,6 +134,7 @@ export type PipeLine = {
     update_logo_uri: string;
     update_time: number;
     pipe_line_perm: PipeLinePerm;
+    exec_count: number;
 };
 
 export type ExecResult = {
