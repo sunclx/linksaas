@@ -5,6 +5,10 @@ use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
+use async_zip::write::ZipFileWriter;
+use async_zip::{Compression, ZipEntryBuilder};
 
 #[tauri::command]
 async fn get_agent_token<R: Runtime>(
@@ -385,6 +389,72 @@ async fn calc_req_sign<R: Runtime>(
 }
 
 
+#[tauri::command]
+async fn pack_docker_compose<R: Runtime>(
+    window: Window<R>,
+    trace: String,
+    path: String,
+) -> Result<String, String> {
+    if !window.label().starts_with("pipeLine:") {
+        return Err("no permission".into());
+    }
+    let app_tmp_dir = crate::get_tmp_dir();
+    if app_tmp_dir.is_none() {
+        return Err("no tmp dir".into());
+    }
+    let tmp_dir = mktemp::Temp::new_dir_in(app_tmp_dir.unwrap());
+    if tmp_dir.is_err() {
+        return Err(tmp_dir.err().unwrap().to_string());
+    }
+    let tmp_dir = tmp_dir.unwrap();
+    let mut tmp_path = tmp_dir.release();
+    tmp_path.push("compose.zip");
+    let tmp_file = File::create(&tmp_path).await;
+    if tmp_file.is_err() {
+        return Err(tmp_file.err().unwrap().to_string());
+    }
+    let mut tmp_file = tmp_file.unwrap();
+    let mut writer = ZipFileWriter::new(&mut tmp_file);
+
+    for entry in walkdir::WalkDir::new(&path) {
+        let entry = entry.unwrap();
+        if entry.file_type().is_dir() {
+            continue;
+        }
+        let full_path = entry.path();
+        let path_in_zip = full_path.strip_prefix(&path).unwrap();
+        let zip_entry = ZipEntryBuilder::new(
+            String::from(path_in_zip.to_str().unwrap()),
+            Compression::Deflate,
+        );
+        let f = tokio::fs::File::open(full_path).await;
+        if f.is_err() {
+            return Err(f.err().unwrap().to_string());
+        }
+        let mut f = f.unwrap();
+        let mut data: Vec<u8> = Vec::new();
+        let read_res = f.read_to_end(&mut data).await;
+        if read_res.is_err() {
+            return Err(read_res.err().unwrap().to_string());
+        }
+        let write_res = writer.write_entry_whole(zip_entry, data.as_ref()).await;
+        if write_res.is_err() {
+            return Err(write_res.err().unwrap().to_string());
+        }
+        if &trace != "" {
+            let res = window.emit(&trace, String::from(path_in_zip.to_str().unwrap()));
+            if res.is_err() {
+                println!("{}", res.err().unwrap());
+            }
+        }
+    }
+    let res = writer.close().await;
+    if res.is_err() {
+        return Err(res.err().unwrap().to_string());
+    }
+    return Ok(String::from(tmp_path.to_str().unwrap()));
+}
+
 pub struct ProjectCiCdApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -407,6 +477,7 @@ impl<R: Runtime> ProjectCiCdApiPlugin<R> {
                 remove_pipe_line,
                 list_exec_result,
                 calc_req_sign,
+                pack_docker_compose,
             ]),
         }
     }

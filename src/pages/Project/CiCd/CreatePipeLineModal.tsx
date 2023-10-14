@@ -6,6 +6,7 @@ import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { uniqId } from "@/utils/utils";
 import UserPhoto from "@/components/Portrait/UserPhoto";
+import { OpenPipeLineWindow } from "./utils";
 
 export interface CreatePipeLineModalProps {
     onCancel: () => void;
@@ -62,6 +63,7 @@ const CreatePipeLineModal = (props: CreatePipeLineModalProps) => {
                     x: 0,
                     y: 0,
                 },
+                timeout: 600,
             },
             exec_job_list: [],
         }));
@@ -75,7 +77,16 @@ const CreatePipeLineModal = (props: CreatePipeLineModalProps) => {
         }
         props.onOk();
         message.info("创建成功");
-        //TODO 打开流水线编辑页面
+        //打开流水线编辑页面
+        let canUpdate = false;
+        if (projectStore.isAdmin || perm.update_for_all || perm.extra_update_user_id_list.includes(userStore.userInfo.userId)) {
+            canUpdate = true;
+        }
+        let canExec = false;
+        if (projectStore.isAdmin || perm.exec_for_all || perm.extra_exec_user_id_list.includes(userStore.userInfo.userId)) {
+            canExec = true;
+        }
+        OpenPipeLineWindow(pipeLineName, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", res.pipe_line_id, canUpdate, canExec);
     };
 
     useEffect(() => {

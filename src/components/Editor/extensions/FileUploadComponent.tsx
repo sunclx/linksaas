@@ -162,29 +162,16 @@ export const ViewFile: React.FC<ViewFileProps> = (props) => {
     if (!download) {
       return;
     }
-    let opened = false;
     const trackId = uniqId();
     const unListenFn = listen('downloadFile_' + trackId, (ev) => {
       const payload = ev.payload as FsProgressEvent;
       if (payload.total_step <= 0) {
         payload.total_step = 1;
       }
-      setProgress(Math.floor(payload.cur_step * 100) / payload.total_step);
-      if (payload.cur_step >= payload.total_step) {
-        get_cache_file(props.fsId, props.fileId, props.fileName).then((res) => {
-          if (res.exist_in_local) {
-            if (!opened) {
-              opened = true;
-              shell_open(res.local_dir);
-            }
-          }
-        });
-        setDownload(false);
-      }
+      setProgress(Math.floor(payload.cur_step * 100 / payload.total_step));
     });
     download_file(userStore.sessionId, props.fsId, props.fileId, trackId).then((res) => {
       if (res.exist_in_local) {
-        opened = true;
         setDownload(false);
         shell_open(res.local_dir);
       }

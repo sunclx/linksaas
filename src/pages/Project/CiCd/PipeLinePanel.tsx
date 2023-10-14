@@ -13,6 +13,7 @@ import UserPhoto from "@/components/Portrait/UserPhoto";
 import { EditOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { EditSelect, type EditSelectItem } from "@/components/EditCell/EditSelect";
+import { OpenPipeLineWindow } from "./utils";
 
 
 interface UpdatePermModalProps {
@@ -193,7 +194,15 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
                         }
                     }}
                     onClick={() => {
-                        //TODO
+                        let canUpdate = false;
+                        if (projectStore.isAdmin || row.pipe_line_perm.update_for_all || row.pipe_line_perm.extra_update_user_id_list.includes(userStore.userInfo.userId)) {
+                            canUpdate = true;
+                        }
+                        let canExec = false;
+                        if (projectStore.isAdmin || row.pipe_line_perm.exec_for_all || row.pipe_line_perm.extra_exec_user_id_list.includes(userStore.userInfo.userId)) {
+                            canExec = true;
+                        }
+                        OpenPipeLineWindow(row.pipe_line_name, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", row.pipe_line_id, canUpdate, canExec);
                     }}
                 />
             ),

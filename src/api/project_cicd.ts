@@ -63,15 +63,16 @@ export type Position = {
     y: number;
 };
 
-
 export type GitsourceJob = {
     job_id: string;
     credential_id: string;
     git_url: string;
     position: Position;
+    timeout: number;
 };
 
 export type ExecEnv = {
+    env_id: string;
     name: string;
     value: string;
 };
@@ -109,6 +110,7 @@ export type ExecJob = {
     env_list: ExecEnv[];
     job: Job;
     position: Position;
+    timeout: number;
 };
 
 
@@ -454,5 +456,13 @@ export async function calc_req_sign(request: CalcReqSignRequest): Promise<CalcRe
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<CalcReqSignResponse>(cmd, {
         request,
+    });
+}
+
+//打包目录
+export async function pack_docker_compose(path: string, trace: string): Promise<string> {
+    return invoke<string>("plugin:project_cicd_api|pack_docker_compose", {
+        path,
+        trace,
     });
 }

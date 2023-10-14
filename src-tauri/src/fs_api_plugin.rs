@@ -508,6 +508,19 @@ pub async fn write_file<R: Runtime>(
 }
 
 #[tauri::command]
+pub async fn get_file_name(file_path: String) -> Result<String, String> {
+    let file_name = Path::new(file_path.as_str()).file_name();
+    if file_name.is_none() {
+        return Err("no file name".into());
+    }
+    let file_name = file_name.unwrap().to_str();
+    if file_name.is_none() {
+        return Err("no file name".into());
+    }
+    return Ok(file_name.unwrap().to_string());
+}
+
+#[tauri::command]
 pub async fn write_thumb_image_file<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -663,7 +676,8 @@ impl<R: Runtime> FsApiPlugin<R> {
                 copy_file,
                 get_fs_status,
                 save_tmp_file_base64,
-                make_tmp_dir
+                make_tmp_dir,
+                get_file_name,
             ]),
         }
     }

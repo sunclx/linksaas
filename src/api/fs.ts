@@ -127,6 +127,11 @@ export async function download_file(
         asName: as_name,
     });
 }
+
+export async function get_file_name(file_path: string): Promise<string> {
+    return invoke<string>('plugin:fs_api|get_file_name', { filePath: file_path });
+}
+
 export async function write_file_base64(
     session_id: string,
     fs_id: string,
