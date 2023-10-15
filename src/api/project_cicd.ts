@@ -24,8 +24,8 @@ export const JOB_TYPE_SERVICE: JOB_TYPE = 2;
 
 
 
-export type ExecAgent = {
-    agent_id: string;
+export type ExecRunner = {
+    runner_id: string;
     serv_addr: string;
     plat_form_type: PLATFORM_TYPE;
     online: boolean;
@@ -143,9 +143,10 @@ export type ExecResult = {
     exec_id: string;
     pipe_line_id: string;
     pipe_line_time: number;
-    agent_id: string;
-    agent_serv_addr: string;
-    agent_plat_form: PLATFORM_TYPE;
+    pipe_line_name: string;
+    runner_id: string;
+    runner_serv_addr: string;
+    runner_plat_form: PLATFORM_TYPE;
     success: boolean;
     exec_user_id: string;
     exec_display_name: string;
@@ -154,37 +155,37 @@ export type ExecResult = {
     exec_end_time: number;
 };
 
-export type GetAgentTokenRequest = {
+export type GetRunnerTokenRequest = {
     session_id: string;
     project_id: string;
 };
 
-export type GetAgentTokenResponse = {
+export type GetRunnerTokenResponse = {
     code: number;
     err_msg: string;
     token: string;
 };
 
-export type RenewAgentTokenRequest = {
+export type RenewRunnerTokenRequest = {
     session_id: string;
     project_id: string;
 };
 
-export type RenewAgentTokenResponse = {
+export type RenewRunnerTokenResponse = {
     code: number;
     err_msg: string;
     token: string;
 };
 
-export type ListAgentRequest = {
+export type ListRunnerRequest = {
     session_id: string;
     project_id: string;
 };
 
-export type ListAgentResponse = {
+export type ListRunnerResponse = {
     code: number;
     err_msg: string;
-    agent_list: ExecAgent[];
+    runner_list: ExecRunner[];
 };
 
 export type CreateCredentialRequest = {
@@ -239,17 +240,40 @@ export type CreatePipeLineResponse = {
     pipe_line_id: string;
 };
 
-export type UpdatePipeLineRequest = {
+export type UpdatePipeLineJobRequest = {
     session_id: string;
     project_id: string;
     pipe_line_id: string;
-    pipe_line_name: string;
-    plat_form: PLATFORM_TYPE;
+
     gitsource_job: GitsourceJob;
     exec_job_list: ExecJob[];
 };
 
-export type UpdatePipeLineResponse = {
+export type UpdatePipeLineJobResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type UpdatePipeLineNameRequest = {
+    session_id: string;
+    project_id: string;
+    pipe_line_id: string;
+    pipe_line_name: string;
+};
+
+export type UpdatePipeLineNameResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type UpdatePipeLinePlatFormRequest = {
+    session_id: string;
+    project_id: string;
+    pipe_line_id: string;
+    plat_form_type: PLATFORM_TYPE;
+};
+
+export type UpdatePipeLinePlatFormResponse = {
     code: number;
     err_msg: string;
 };
@@ -308,6 +332,7 @@ export type RemovePipeLineResponse = {
 export type ListExecResultRequest = {
     session_id: string;
     project_id: string;
+    filter_by_pipe_line_id: boolean;
     pipe_line_id: string;
     offset: number;
     limit: number;
@@ -333,29 +358,29 @@ export type CalcReqSignResponse = {
     sign: string;
 };
 
-//获取Agent令牌
-export async function get_agent_token(request: GetAgentTokenRequest): Promise<GetAgentTokenResponse> {
-    const cmd = 'plugin:project_cicd_api|get_agent_token';
+//获取Runner令牌
+export async function get_runner_token(request: GetRunnerTokenRequest): Promise<GetRunnerTokenResponse> {
+    const cmd = 'plugin:project_cicd_api|get_runner_token';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetAgentTokenResponse>(cmd, {
+    return invoke<GetRunnerTokenResponse>(cmd, {
         request,
     });
 }
 
-//更新Agent令牌
-export async function renew_agent_token(request: RenewAgentTokenRequest): Promise<RenewAgentTokenResponse> {
-    const cmd = 'plugin:project_cicd_api|renew_agent_token';
+//更新Runner令牌
+export async function renew_runner_token(request: RenewRunnerTokenRequest): Promise<RenewRunnerTokenResponse> {
+    const cmd = 'plugin:project_cicd_api|renew_runner_token';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<RenewAgentTokenResponse>(cmd, {
+    return invoke<RenewRunnerTokenResponse>(cmd, {
         request,
     });
 }
 
-//列出Agent
-export async function list_agent(request: ListAgentRequest): Promise<ListAgentResponse> {
-    const cmd = 'plugin:project_cicd_api|list_agent';
+//列出Runner
+export async function list_runner(request: ListRunnerRequest): Promise<ListRunnerResponse> {
+    const cmd = 'plugin:project_cicd_api|list_runner';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListAgentResponse>(cmd, {
+    return invoke<ListRunnerResponse>(cmd, {
         request,
     });
 }
@@ -396,11 +421,27 @@ export async function create_pipe_line(request: CreatePipeLineRequest): Promise<
     });
 }
 
-//更新流程
-export async function update_pipe_line(request: UpdatePipeLineRequest): Promise<UpdatePipeLineResponse> {
-    const cmd = 'plugin:project_cicd_api|update_pipe_line';
+//更新流程任务
+export async function update_pipe_line_job(request: UpdatePipeLineJobRequest): Promise<UpdatePipeLineJobResponse> {
+    const cmd = 'plugin:project_cicd_api|update_pipe_line_job';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UpdatePipeLineResponse>(cmd, {
+    return invoke<UpdatePipeLineJobResponse>(cmd, {
+        request,
+    });
+}
+
+export async function update_pipe_line_name(request: UpdatePipeLineNameRequest): Promise<UpdatePipeLineNameResponse> {
+    const cmd = 'plugin:project_cicd_api|update_pipe_line_name';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdatePipeLineNameResponse>(cmd, {
+        request,
+    });
+}
+
+export async function update_pipe_line_plat_form(request: UpdatePipeLinePlatFormRequest): Promise<UpdatePipeLinePlatFormResponse> {
+    const cmd = 'plugin:project_cicd_api|update_pipe_line_plat_form';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdatePipeLinePlatFormResponse>(cmd, {
         request,
     });
 }

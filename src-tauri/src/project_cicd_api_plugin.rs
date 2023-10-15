@@ -11,22 +11,22 @@ use async_zip::write::ZipFileWriter;
 use async_zip::{Compression, ZipEntryBuilder};
 
 #[tauri::command]
-async fn get_agent_token<R: Runtime>(
+async fn get_runner_token<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: GetAgentTokenRequest,
-) -> Result<GetAgentTokenResponse, String> {
+    request: GetRunnerTokenRequest,
+) -> Result<GetRunnerTokenResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectCiCdApiClient::new(chan.unwrap());
-    match client.get_agent_token(request).await {
+    match client.get_runner_token(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == get_agent_token_response::Code::WrongSession as i32 {
+            if inner_resp.code == get_runner_token_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("get_agent_token".into()))
+                    window.emit("notice", new_wrong_session_notice("get_runner_token".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -38,22 +38,22 @@ async fn get_agent_token<R: Runtime>(
 }
 
 #[tauri::command]
-async fn renew_agent_token<R: Runtime>(
+async fn renew_runner_token<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: RenewAgentTokenRequest,
-) -> Result<RenewAgentTokenResponse, String> {
+    request: RenewRunnerTokenRequest,
+) -> Result<RenewRunnerTokenResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectCiCdApiClient::new(chan.unwrap());
-    match client.renew_agent_token(request).await {
+    match client.renew_runner_token(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == renew_agent_token_response::Code::WrongSession as i32 {
+            if inner_resp.code == renew_runner_token_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("renew_agent_token".into()))
+                    window.emit("notice", new_wrong_session_notice("renew_runner_token".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -65,22 +65,22 @@ async fn renew_agent_token<R: Runtime>(
 }
 
 #[tauri::command]
-async fn list_agent<R: Runtime>(
+async fn list_runner<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: ListAgentRequest,
-) -> Result<ListAgentResponse, String> {
+    request: ListRunnerRequest,
+) -> Result<ListRunnerResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectCiCdApiClient::new(chan.unwrap());
-    match client.list_agent(request).await {
+    match client.list_runner(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == list_agent_response::Code::WrongSession as i32 {
+            if inner_resp.code == list_runner_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_agent".into()))
+                    window.emit("notice", new_wrong_session_notice("list_runner".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -200,22 +200,76 @@ async fn create_pipe_line<R: Runtime>(
 }
 
 #[tauri::command]
-async fn update_pipe_line<R: Runtime>(
+async fn update_pipe_line_job<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: UpdatePipeLineRequest,
-) -> Result<UpdatePipeLineResponse, String> {
+    request: UpdatePipeLineJobRequest,
+) -> Result<UpdatePipeLineJobResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectCiCdApiClient::new(chan.unwrap());
-    match client.update_pipe_line(request).await {
+    match client.update_pipe_line_job(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == update_pipe_line_response::Code::WrongSession as i32 {
+            if inner_resp.code == update_pipe_line_job_response::Code::WrongSession as i32 {
                 if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_pipe_line".into()))
+                    window.emit("notice", new_wrong_session_notice("update_pipe_line_job".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn update_pipe_line_name<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdatePipeLineNameRequest,
+) -> Result<UpdatePipeLineNameResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectCiCdApiClient::new(chan.unwrap());
+    match client.update_pipe_line_name(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_pipe_line_name_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_pipe_line_name".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn update_pipe_line_plat_form<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdatePipeLinePlatFormRequest,
+) -> Result<UpdatePipeLinePlatFormResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectCiCdApiClient::new(chan.unwrap());
+    match client.update_pipe_line_plat_form(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_pipe_line_plat_form_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_pipe_line_plat_form".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -463,14 +517,16 @@ impl<R: Runtime> ProjectCiCdApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                get_agent_token,
-                renew_agent_token,
-                list_agent,
+                get_runner_token,
+                renew_runner_token,
+                list_runner,
                 create_credential,
                 list_credential,
                 remove_credential,
                 create_pipe_line,
-                update_pipe_line,
+                update_pipe_line_job,
+                update_pipe_line_name,
+                update_pipe_line_plat_form,
                 update_pipe_line_perm,
                 list_pipe_line,
                 get_pipe_line,

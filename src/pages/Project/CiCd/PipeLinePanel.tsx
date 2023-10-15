@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import type { PipeLine, PipeLinePerm, SimpleCredential } from "@/api/project_cicd";
 import {
     PLATFORM_TYPE_LINUX, PLATFORM_TYPE_DARWIN, PLATFORM_TYPE_WINDOWS, list_pipe_line, get_pipe_line, remove_pipe_line,
-    update_pipe_line_perm, update_pipe_line, list_credential, CREDENTIAL_TYPE_KEY
+    update_pipe_line_perm, update_pipe_line_job, update_pipe_line_name, update_pipe_line_plat_form, list_credential, CREDENTIAL_TYPE_KEY
 } from "@/api/project_cicd";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
@@ -178,14 +178,11 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
                             return false;
                         }
                         try {
-                            await request(update_pipe_line({
+                            await request(update_pipe_line_name({
                                 session_id: userStore.sessionId,
                                 project_id: projectStore.curProjectId,
                                 pipe_line_id: row.pipe_line_id,
                                 pipe_line_name: value.trim(),
-                                plat_form: row.plat_form,
-                                gitsource_job: row.gitsource_job,
-                                exec_job_list: row.exec_job_list,
                             }));
                             return true;
                         } catch (e) {
@@ -232,14 +229,11 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
                         ]}
                         onChange={async value => {
                             try {
-                                await request(update_pipe_line({
+                                await request(update_pipe_line_plat_form({
                                     session_id: userStore.sessionId,
                                     project_id: projectStore.curProjectId,
                                     pipe_line_id: row.pipe_line_id,
-                                    pipe_line_name: row.pipe_line_name,
-                                    plat_form: value as number,
-                                    gitsource_job: row.gitsource_job,
-                                    exec_job_list: row.exec_job_list,
+                                    plat_form_type: value as number,
                                 }));
                                 return true;
                             } catch (e) {
@@ -261,12 +255,10 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
                             return false;
                         }
                         try {
-                            await request(update_pipe_line({
+                            await request(update_pipe_line_job({
                                 session_id: userStore.sessionId,
                                 project_id: projectStore.curProjectId,
                                 pipe_line_id: row.pipe_line_id,
-                                pipe_line_name: row.pipe_line_name,
-                                plat_form: row.plat_form,
                                 gitsource_job: { ...row.gitsource_job, git_url: value.trim() },
                                 exec_job_list: row.exec_job_list,
                             }));
@@ -302,12 +294,10 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
                         curValue={row.gitsource_job.credential_id} itemList={itemList}
                         onChange={async value => {
                             try {
-                                await request(update_pipe_line({
+                                await request(update_pipe_line_job({
                                     session_id: userStore.sessionId,
                                     project_id: projectStore.curProjectId,
                                     pipe_line_id: row.pipe_line_id,
-                                    pipe_line_name: row.pipe_line_name,
-                                    plat_form: row.plat_form,
                                     gitsource_job: { ...row.gitsource_job, credential_id: value as string },
                                     exec_job_list: row.exec_job_list,
                                 }));

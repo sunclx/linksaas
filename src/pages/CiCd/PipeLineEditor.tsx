@@ -8,7 +8,7 @@ import GitSourceNode from "./nodes/GitSourceNode";
 import { Button, Space, message } from "antd";
 import { PlusCircleOutlined, PlusOutlined, PlusSquareOutlined, SaveOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
-import { JOB_TYPE_DOCKER, JOB_TYPE_SERVICE, JOB_TYPE_SHELL, SHELL_TYPE_SH, type Position as JobPosition, update_pipe_line } from "@/api/project_cicd";
+import { JOB_TYPE_DOCKER, JOB_TYPE_SERVICE, JOB_TYPE_SHELL, SHELL_TYPE_SH, type Position as JobPosition, update_pipe_line_job } from "@/api/project_cicd";
 import DockerNode from "./nodes/DockerNode";
 import ShellNode from "./nodes/ShellNode";
 import ServiceNode from "./nodes/ServiceNode";
@@ -235,12 +235,10 @@ const PipeLineEditor = () => {
             return;
         }
         const sessionId = await get_session();
-        await request(update_pipe_line({
+        await request(update_pipe_line_job({
             session_id: sessionId,
             project_id: store.paramStore.projectId,
             pipe_line_id: store.pipeLineStore.pipeLine.pipe_line_id,
-            pipe_line_name: store.pipeLineStore.pipeLine.pipe_line_name,
-            plat_form: store.pipeLineStore.pipeLine.plat_form,
             gitsource_job: store.pipeLineStore.pipeLine.gitsource_job,
             exec_job_list: store.pipeLineStore.pipeLine.exec_job_list,
         }));
