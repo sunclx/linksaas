@@ -43,6 +43,7 @@ mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_tool_api_plugin;
 mod project_cicd_api_plugin;
+mod cicd_runner_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_admin_api_plugin;
@@ -444,6 +445,7 @@ fn main() {
         .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())
         .plugin(project_cicd_api_plugin::ProjectCiCdApiPlugin::new())
+        .plugin(cicd_runner_api_plugin::CiCdRunnerApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
