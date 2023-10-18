@@ -11,6 +11,7 @@ use tonic::transport::{Channel, Endpoint};
 mod admin_auth_api_plugin;
 mod appstore_admin_api_plugin;
 mod appstore_api_plugin;
+mod cicd_runner_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod data_anno_project_api_plugin;
@@ -32,6 +33,7 @@ mod project_api_plugin;
 mod project_appraise_api_plugin;
 mod project_bulletin_api_plugin;
 mod project_channel_api_plugin;
+mod project_cicd_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
 mod project_expert_qa_api_plugin;
@@ -42,8 +44,6 @@ mod project_member_api_plugin;
 mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_tool_api_plugin;
-mod project_cicd_api_plugin;
-mod cicd_runner_api_plugin;
 mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_admin_api_plugin;
@@ -57,9 +57,9 @@ mod min_app_shell_plugin;
 mod min_app_store_plugin;
 
 mod api_collection_api_plugin;
-mod http_custom_api_plugin;
 mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
+mod http_custom_api_plugin;
 
 mod rss_admin_api_plugin;
 mod rss_api_plugin;
@@ -121,11 +121,14 @@ Object.defineProperty(window, "__TAURI_POST_MESSAGE__", {
 #[derive(Default)]
 struct GrpcChan(Mutex<Option<Channel>>);
 
+#[derive(Default)]
+struct GrpcServerAddr(Mutex<String>);
+
 #[tauri::command]
 async fn conn_grpc_server(app_handle: AppHandle, _window: Window, addr: String) -> bool {
     let mut u = url::Url::parse(&addr);
     if u.is_err() {
-        let new_addr = format!("http://{}", addr);
+        let new_addr = format!("http://{}", &addr);
         u = url::Url::parse(&new_addr);
         if u.is_err() {
             return false;
@@ -148,6 +151,8 @@ async fn conn_grpc_server(app_handle: AppHandle, _window: Window, addr: String) 
         {
             let grpc_chan = app_handle.state::<GrpcChan>().inner();
             *grpc_chan.0.lock().await = Some(chan);
+            let gprc_server_addr = app_handle.state::<GrpcServerAddr>().inner();
+            *gprc_server_addr.0.lock().await = addr;
             return true;
         }
     }
@@ -159,6 +164,13 @@ async fn is_conn_server(app_handle: AppHandle, _window: Window) -> bool {
     let grpc_chan = app_handle.state::<GrpcChan>().inner();
     let chan = grpc_chan.0.lock().await;
     return chan.is_some();
+}
+
+#[tauri::command]
+async fn get_conn_server_addr(app_handle: AppHandle) -> String {
+    let grpc_server_addr = app_handle.state::<GrpcServerAddr>().inner();
+    let addr = grpc_server_addr.0.lock().await;
+    return addr.clone();
 }
 
 async fn get_grpc_chan<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) -> Option<Channel> {
@@ -305,6 +317,7 @@ fn main() {
         .add_item(CustomMenuItem::new("exit_app", "退出"));
     let app = tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
+        .manage(GrpcServerAddr(Default::default()))
         .setup(|_app| {
             return tauri::async_runtime::block_on(async {
                 let init_res = init_local_storage().await;
@@ -317,6 +330,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             conn_grpc_server,
             is_conn_server,
+            get_conn_server_addr,
             check_update,
         ])
         .on_window_event(|ev| match ev.event() {

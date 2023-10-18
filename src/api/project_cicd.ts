@@ -1,31 +1,39 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
 export type PLATFORM_TYPE = number;
+
 export const PLATFORM_TYPE_LINUX: PLATFORM_TYPE = 0;
 export const PLATFORM_TYPE_DARWIN: PLATFORM_TYPE = 1;
 export const PLATFORM_TYPE_WINDOWS: PLATFORM_TYPE = 2;
 
 
 export type CREDENTIAL_TYPE = number;
+
 export const CREDENTIAL_TYPE_KEY: CREDENTIAL_TYPE = 0;
 export const CREDENTIAL_TYPE_PASSWORD: CREDENTIAL_TYPE = 1;
 
 
 export type SHELL_TYPE = number;
+
 export const SHELL_TYPE_SH: SHELL_TYPE = 0;
 export const SHELL_TYPE_CMD: SHELL_TYPE = 1;
 export const SHELL_TYPE_POWER_SHELL: SHELL_TYPE = 2;
 
 
 export type JOB_TYPE = number;
+
 export const JOB_TYPE_DOCKER: JOB_TYPE = 0;
 export const JOB_TYPE_SHELL: JOB_TYPE = 1;
 export const JOB_TYPE_SERVICE: JOB_TYPE = 2;
 
+export type GIT_REF_TYPE = number;
 
+export const GIT_REF_TYPE_BRANCH: GIT_REF_TYPE = 0;
+export const GIT_REF_TYPE_TAG: GIT_REF_TYPE = 1;
 
 export type ExecRunner = {
     runner_id: string;
+    hostname: string;
     serv_addr: string;
     plat_form_type: PLATFORM_TYPE;
     online: boolean;
@@ -139,20 +147,28 @@ export type PipeLine = {
     exec_count: number;
 };
 
+export type ExecParam = {
+    name: string;
+    value: string;
+};
+
 export type ExecResult = {
     exec_id: string;
     pipe_line_id: string;
     pipe_line_time: number;
-    pipe_line_name: string;
     runner_id: string;
     runner_serv_addr: string;
     runner_plat_form: PLATFORM_TYPE;
     success: boolean;
+    exec_start_time: number;
+    exec_stop_time: number;
+    param_list: ExecParam[];
+    git_ref_type: GIT_REF_TYPE;
+    git_ref_name: string;
     exec_user_id: string;
     exec_display_name: string;
     exec_logo_uri: string;
-    exec_start_time: number;
-    exec_end_time: number;
+    pipe_line_name: string;
 };
 
 export type GetRunnerTokenRequest = {

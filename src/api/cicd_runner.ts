@@ -1,10 +1,16 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
 export type EXEC_STATE = number;
+
 export const EXEC_STATE_UN_START: EXEC_STATE = 0;  //未开始
 export const EXEC_STATE_RUNNING: EXEC_STATE = 1;   //执行中
 export const EXEC_STATE_STOP: EXEC_STATE = 2;      //已停止(结束)
 export const EXEC_STATE_SKIP: EXEC_STATE = 3;      //跳过执行
+
+export type GIT_REF_TYPE = number;
+
+export const  GIT_REF_TYPE_BRANCH: GIT_REF_TYPE = 0;
+export const  GIT_REF_TYPE_TAG: GIT_REF_TYPE = 1;
 
 export type DownloadResult = {
     exist_in_local: boolean;
@@ -12,26 +18,30 @@ export type DownloadResult = {
     local_dir: string;
 };
 
+export type ExecParam = {
+    name: string;
+    value: string;
+};
+
 export type JobExecState = {
     job_id: string;
     exec_state: EXEC_STATE,
     success: boolean;
-    start_time: boolean;
-    stop_time: boolean;
+    start_time: number;
+    stop_time: number;
 };
 
 export type PipeLineExecState = {
     exec_state: EXEC_STATE,
     success: boolean;
-    start_time: boolean;
-    stop_time: boolean;
+    start_time: number;
+    stop_time: number;
     job_exec_state_list: JobExecState[];
 };
 
 export type LogData = {
     time_offset: number;
-    has_more_date: boolean;
-    content: Uint8Array;
+    content: number[];
 };
 
 export type FsEntry = {
@@ -44,6 +54,9 @@ export type StartExecRequest = {
     project_id: string;
     pipe_line_id: string;
     pipe_line_time: number;
+    param_list: ExecParam[];
+    git_ref_type: GIT_REF_TYPE;
+    git_ref_name: string;
     exec_user_id: string;
     random_str: string;
     time_stamp: number;

@@ -8,6 +8,9 @@ import CreatePipeLineModal from "./CreatePipeLineModal";
 import CreateCredModal from "./CreateCredModal";
 import CredPanel from "./CredPanel";
 import PipeLinePanel from "./PipeLinePanel";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import InstallRunnerModal from "./InstallRunnerModal";
+import RunnerPanel from "./RunnerPanel";
 
 const ProjectCiCd = () => {
     const location = useLocation();
@@ -20,6 +23,7 @@ const ProjectCiCd = () => {
     const [credVersion, setCredVersion] = useState(0);
     const [showPipeLineModal, setShowPipeLineModal] = useState(false);
     const [showCredModal, setShowCredModal] = useState(false);
+    const [showHowInstallRunner,setShowHowInstallRunner] = useState(false);
 
     return (
         <CardWrap title="CI/CD">
@@ -47,6 +51,13 @@ const ProjectCiCd = () => {
                                     setShowCredModal(true);
                                 }}>增加</Button>
                         )}
+                        {tabStr == "runner" && (!projectStore.isClosed) && projectStore.isAdmin && (
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setShowHowInstallRunner(true);
+                            }}><QuestionCircleOutlined />&nbsp;运行代理安装说明</Button>
+                        )}
                     </>
                 }
                 items={[
@@ -71,11 +82,13 @@ const ProjectCiCd = () => {
                         ),
                     },
                     {
-                        key: "agent",
-                        label: "执行代理",
+                        key: "runner",
+                        label: "运行代理",
                         children: (
                             <div style={{ height: "calc(100vh - 220px)", overflowY: "scroll" }}>
-                                xx
+                                {tabStr == "runner" && (
+                                    <RunnerPanel />
+                                )}
                             </div>
                         ),
                     },
@@ -102,6 +115,9 @@ const ProjectCiCd = () => {
                     setShowCredModal(false);
                     setCredVersion(oldValue => oldValue + 1);
                 }} />
+            )}
+            {showHowInstallRunner == true && (
+                <InstallRunnerModal onCancel={()=>setShowHowInstallRunner(false)} />
             )}
         </CardWrap>
     );
