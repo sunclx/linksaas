@@ -43,7 +43,7 @@ export class PipeLineStore {
             this._pipeLine = val;
         });
     }
-    async loadPipeLine(projectId: string, pipeLineId: string) {
+    async loadPipeLine(projectId: string, pipeLineId: string, withUpdateTime: boolean, updateTime: number) {
         runInAction(() => {
             this._pipeLine = null;
         });
@@ -52,8 +52,8 @@ export class PipeLineStore {
             session_id: sessionId,
             project_id: projectId,
             pipe_line_id: pipeLineId,
-            with_update_time: false,
-            update_time: 0,
+            with_update_time: withUpdateTime,
+            update_time: updateTime,
         }));
         runInAction(() => {
             this._pipeLine = res.pipe_line;
@@ -130,6 +130,4 @@ export class PipeLineStore {
             this._credList = res.credential_list;
         });
     }
-
-
 }

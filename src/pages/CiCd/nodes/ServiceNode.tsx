@@ -255,20 +255,22 @@ const ServiceNode = (props: NodeProps) => {
                             }}>查看</Button>
                         </Space>
                     )}
-                    <Space size="small">
-                        <Button type="link" icon={<UploadOutlined />} style={{ minWidth: 0, padding: "0px 0px" }}
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                uploadFile();
-                            }}>上传文件</Button>
-                        <Button type="link" icon={<UploadOutlined />} style={{ minWidth: 0, padding: "0px 0px" }}
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                preUploadDir();
-                            }}>上传目录</Button>
-                    </Space>
+                    {store.paramStore.canUpdate && (
+                        <Space size="small">
+                            <Button type="link" icon={<UploadOutlined />} style={{ minWidth: 0, padding: "0px 0px" }}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    uploadFile();
+                                }}>上传文件</Button>
+                            <Button type="link" icon={<UploadOutlined />} style={{ minWidth: 0, padding: "0px 0px" }}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    preUploadDir();
+                                }}>上传目录</Button>
+                        </Space>
+                    )}
                 </Form.Item>
             </Form>
             <RunOnParam jobId={props.id} />

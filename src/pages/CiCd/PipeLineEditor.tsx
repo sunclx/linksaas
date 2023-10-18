@@ -4,16 +4,15 @@ import type { Node, Edge, OnNodesChange, OnEdgesChange, OnConnect, OnNodesDelete
 import ReactFlow, { Background, BackgroundVariant, Controls, MarkerType, MiniMap, Panel, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
 import { observer } from 'mobx-react';
 import 'reactflow/dist/style.css';
+import "./flow.css";
 import GitSourceNode from "./nodes/GitSourceNode";
-import { Button, Space, message } from "antd";
-import { PlusCircleOutlined, PlusOutlined, PlusSquareOutlined, SaveOutlined } from "@ant-design/icons";
+import { Button, Space } from "antd";
+import { PlusCircleOutlined, PlusOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
-import { JOB_TYPE_DOCKER, JOB_TYPE_SERVICE, JOB_TYPE_SHELL, SHELL_TYPE_SH, type Position as JobPosition, update_pipe_line_job } from "@/api/project_cicd";
+import { JOB_TYPE_DOCKER, JOB_TYPE_SERVICE, JOB_TYPE_SHELL, SHELL_TYPE_SH, type Position as JobPosition } from "@/api/project_cicd";
 import DockerNode from "./nodes/DockerNode";
 import ShellNode from "./nodes/ShellNode";
 import ServiceNode from "./nodes/ServiceNode";
-import { request } from "@/utils/request";
-import { get_session } from "@/api/user";
 
 const PipeLineEditor = () => {
     const store = useStores();
@@ -48,7 +47,9 @@ const PipeLineEditor = () => {
                     }
                 }
             }
+
             return applyNodeChanges(changes, nds);
+
         }),
         [setNodes]
     );
@@ -102,6 +103,8 @@ const PipeLineEditor = () => {
             },
             selectable: true,
             deletable: false,
+            draggable: store.paramStore.canUpdate,
+            connectable: store.paramStore.canUpdate,
             data: null,
         });
 
@@ -121,6 +124,9 @@ const PipeLineEditor = () => {
                 data: null,
                 selectable: true,
                 deletable: store.paramStore.canUpdate,
+                draggable: store.paramStore.canUpdate,
+                connectable: store.paramStore.canUpdate,
+                zIndex: 10,
             });
             for (const dependJobId of job.depend_job_list) {
                 tmpEdges.push({
@@ -133,7 +139,7 @@ const PipeLineEditor = () => {
                         color: 'black',
                         strokeWidth: 3,
                     },
-                    zIndex: 10,
+                    zIndex: 20,
                 });
             }
         }
@@ -230,23 +236,6 @@ const PipeLineEditor = () => {
         store.pipeLineStore.incInitVersion();
     };
 
-    const updatePipeLine = async () => {
-        if (store.pipeLineStore.pipeLine == null) {
-            return;
-        }
-        const sessionId = await get_session();
-        await request(update_pipe_line_job({
-            session_id: sessionId,
-            project_id: store.paramStore.projectId,
-            pipe_line_id: store.pipeLineStore.pipeLine.pipe_line_id,
-            gitsource_job: store.pipeLineStore.pipeLine.gitsource_job,
-            exec_job_list: store.pipeLineStore.pipeLine.exec_job_list,
-        }));
-        store.pipeLineStore.hasChange = false;
-        store.pipeLineStore.loadPipeLine(store.paramStore.projectId, store.pipeLineStore.pipeLine.pipe_line_id);
-        message.info("保存成功");
-    };
-
     useEffect(() => {
         initNodeAndEdge();
     }, [store.pipeLineStore.initVersion]);
@@ -277,14 +266,14 @@ const PipeLineEditor = () => {
                         color: 'black',
                         strokeWidth: 3,
                     },
-                    zIndex: 10,
+                    zIndex: 20,
                 }}
             >
-                <Background color="#ccc" variant={BackgroundVariant.Cross} />
-                <Controls />
+                <Background color="#aaa" variant={BackgroundVariant.Cross} style={{ backgroundColor: "#eee" }} />
+                <Controls showInteractive={false} />
                 <MiniMap nodeStrokeWidth={3} zoomable pannable />
                 {store.paramStore.canUpdate && (
-                    <Panel position="top-left">
+                    <Panel position="top-center">
                         <Space style={{ background: "white", padding: "0px 10px" }} size="large">
                             <Button type="text" onClick={e => {
                                 e.stopPropagation();
@@ -304,18 +293,6 @@ const PipeLineEditor = () => {
                         </Space>
                     </Panel>
                 )}
-                <Panel position="top-right">
-                    <Space style={{ background: "white", padding: "0px 10px" }} size="large">
-                        {store.paramStore.canUpdate && (
-                            <Button type="text" title="保存" icon={<SaveOutlined style={{ fontSize: "40px" }} />} disabled={!store.pipeLineStore.hasChange}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    updatePipeLine();
-                                }} />
-                        )}
-                    </Space>
-                </Panel>
             </ReactFlow>
         </div>
     );

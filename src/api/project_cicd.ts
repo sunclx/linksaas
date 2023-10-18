@@ -31,6 +31,11 @@ export type GIT_REF_TYPE = number;
 export const GIT_REF_TYPE_BRANCH: GIT_REF_TYPE = 0;
 export const GIT_REF_TYPE_TAG: GIT_REF_TYPE = 1;
 
+export type REQ_ACTION = number;
+export const REQ_ACTION_READ: REQ_ACTION = 0;
+export const REQ_ACTION_EXEC: REQ_ACTION = 1;
+export const REQ_ACTION_RUNNER: REQ_ACTION = 2;
+
 export type ExecRunner = {
     runner_id: string;
     hostname: string;
@@ -159,6 +164,7 @@ export type ExecResult = {
     runner_id: string;
     runner_serv_addr: string;
     runner_plat_form: PLATFORM_TYPE;
+    runner_hostname: string;
     success: boolean;
     exec_start_time: number;
     exec_stop_time: number;
@@ -361,9 +367,23 @@ export type ListExecResultResponse = {
     result_list: ExecResult[];
 };
 
+export type GetExecResultRequest = {
+    session_id: string;
+    project_id: string;
+    pipe_line_id: string;
+    exec_id: string;
+};
+
+export type GetExecResultResponse = {
+    code: number;
+    err_msg: string;
+    result: ExecResult;
+};
+
 export type CalcReqSignRequest = {
     session_id: string;
     project_id: string;
+    req_action: REQ_ACTION;
 };
 
 export type CalcReqSignResponse = {
@@ -503,6 +523,15 @@ export async function list_exec_result(request: ListExecResultRequest): Promise<
     const cmd = 'plugin:project_cicd_api|list_exec_result';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListExecResultResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个运行结果
+export async function get_exec_result(request: GetExecResultRequest): Promise<GetExecResultResponse> {
+    const cmd = 'plugin:project_cicd_api|get_exec_result';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetExecResultResponse>(cmd, {
         request,
     });
 }

@@ -11,6 +11,7 @@ import PipeLinePanel from "./PipeLinePanel";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import InstallRunnerModal from "./InstallRunnerModal";
 import RunnerPanel from "./RunnerPanel";
+import ExecResultPanel from "./ExecResultPanel";
 
 const ProjectCiCd = () => {
     const location = useLocation();
@@ -23,7 +24,7 @@ const ProjectCiCd = () => {
     const [credVersion, setCredVersion] = useState(0);
     const [showPipeLineModal, setShowPipeLineModal] = useState(false);
     const [showCredModal, setShowCredModal] = useState(false);
-    const [showHowInstallRunner,setShowHowInstallRunner] = useState(false);
+    const [showHowInstallRunner, setShowHowInstallRunner] = useState(false);
 
     return (
         <CardWrap title="CI/CD">
@@ -77,7 +78,9 @@ const ProjectCiCd = () => {
                         label: "运行结果",
                         children: (
                             <div style={{ height: "calc(100vh - 220px)", overflowY: "scroll" }}>
-                                xx
+                                {tabStr == "exec" && (
+                                    <ExecResultPanel />
+                                )}
                             </div>
                         ),
                     },
@@ -117,7 +120,7 @@ const ProjectCiCd = () => {
                 }} />
             )}
             {showHowInstallRunner == true && (
-                <InstallRunnerModal onCancel={()=>setShowHowInstallRunner(false)} />
+                <InstallRunnerModal onCancel={() => setShowHowInstallRunner(false)} />
             )}
         </CardWrap>
     );

@@ -16,7 +16,7 @@ export async function OpenPipeLineWindow(pipeLineName: string, projectId: string
         height: 600,
         minHeight: 600,
         center: true,
-        title: `流水线 ${pipeLineName}`,
+        title: `流水线 ${pipeLineName}${execId == "" ? "" : "(运行结果)"}`,
         resizable: true,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),

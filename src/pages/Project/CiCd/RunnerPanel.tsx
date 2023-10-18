@@ -39,6 +39,10 @@ const RunnerPanel = () => {
                     return "windows"
                 }
             }
+        },
+        {
+            title: "是否在线",
+            render: (_, row: ExecRunner) => row.online ? "是" : "否",
         }
     ];
     useEffect(() => {

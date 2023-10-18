@@ -415,6 +415,34 @@ async fn list_exec_result<R: Runtime>(
     }
 }
 
+
+#[tauri::command]
+async fn get_exec_result<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetExecResultRequest,
+) -> Result<GetExecResultResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectCiCdApiClient::new(chan.unwrap());
+    match client.get_exec_result(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_exec_result_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_exec_result".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 #[tauri::command]
 async fn calc_req_sign<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -532,6 +560,7 @@ impl<R: Runtime> ProjectCiCdApiPlugin<R> {
                 get_pipe_line,
                 remove_pipe_line,
                 list_exec_result,
+                get_exec_result,
                 calc_req_sign,
                 pack_docker_compose,
             ]),
