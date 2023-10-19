@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import type { ReactFlowInstance } from 'reactflow';
 
 export class ParamStore {
     constructor() {
@@ -49,6 +50,19 @@ export class ParamStore {
     set canExec(val: boolean) {
         runInAction(() => {
             this._canExec = val;
+        });
+    }
+
+    //==========================reactFlow相关===========================
+    private _flowInstance: ReactFlowInstance | null = null;
+
+    get flowInstance(): ReactFlowInstance | null {
+        return this._flowInstance;
+    }
+
+    set flowInstance(val: ReactFlowInstance | null) {
+        runInAction(() => {
+            this._flowInstance = val;
         });
     }
 }

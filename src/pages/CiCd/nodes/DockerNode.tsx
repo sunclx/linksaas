@@ -8,6 +8,7 @@ import { useStores } from "../stores";
 import { DeleteOutlined } from "@ant-design/icons";
 import RunOnParam from "./RunOnParam";
 import EnvList from "./EnvList";
+import { sourceHandleStyle, targetHandleStyle } from "./style";
 
 
 const DockerNode = (props: NodeProps) => {
@@ -50,8 +51,8 @@ const DockerNode = (props: NodeProps) => {
                 )}
             </>
         }>
-            <Handle type="target" position={Position.Left} />
-            <Handle type="source" position={Position.Right} />
+            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle}/>
+            <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             <Form>
                 <Form.Item label="镜像地址">
                     <Input value={store.pipeLineStore.getExecJob(props.id)?.job.DockerJob?.image_url ?? ""} onChange={e => {

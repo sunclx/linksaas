@@ -4,13 +4,14 @@ import { Handle, Position } from 'reactflow';
 import { Card, Form, Input, InputNumber, Select } from "antd";
 import { useStores } from "../stores";
 import { CREDENTIAL_TYPE_KEY } from "@/api/project_cicd";
+import { sourceHandleStyle } from "./style";
 
 const GitSourceNode = () => {
     const store = useStores();
 
     return (
         <Card title="Git Clone" style={{ width: "320px" }}>
-            <Handle type="source" position={Position.Right} />
+            <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             {store.pipeLineStore.pipeLine != null && (
                 <Form labelCol={{ span: 6 }}>
                     <Form.Item label="Git地址">

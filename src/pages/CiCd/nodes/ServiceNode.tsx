@@ -17,6 +17,7 @@ import { pack_docker_compose } from "@/api/project_cicd";
 import { uniqId } from "@/utils/utils";
 import { listen } from '@tauri-apps/api/event';
 import { open as shell_open } from '@tauri-apps/api/shell';
+import { sourceHandleStyle, targetHandleStyle } from "./style";
 
 interface UploadDirModalProps {
     dirPath: string;
@@ -238,8 +239,8 @@ const ServiceNode = (props: NodeProps) => {
                 )}
             </>
         }>
-            <Handle type="target" position={Position.Left} />
-            <Handle type="source" position={Position.Right} />
+            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle}/>
+            <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             <Form>
                 <Form.Item label="服务配置" help={<ul>
                     <li>支持docker-compose.yml文件</li>

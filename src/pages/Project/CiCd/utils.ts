@@ -20,5 +20,6 @@ export async function OpenPipeLineWindow(pipeLineName: string, projectId: string
         resizable: true,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
+        fileDropEnabled: false,
     });
 }

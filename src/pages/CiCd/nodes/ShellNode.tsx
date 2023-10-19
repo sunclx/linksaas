@@ -9,6 +9,7 @@ import { Handle, Position } from 'reactflow';
 import RunOnParam from "./RunOnParam";
 import EnvList from "./EnvList";
 import { SHELL_TYPE_CMD, SHELL_TYPE_POWER_SHELL, SHELL_TYPE_SH } from "@/api/project_cicd";
+import { sourceHandleStyle, targetHandleStyle } from "./style";
 
 const ShellNode = (props: NodeProps) => {
     const store = useStores();
@@ -50,8 +51,8 @@ const ShellNode = (props: NodeProps) => {
                 )}
             </>
         }>
-            <Handle type="target" position={Position.Left} />
-            <Handle type="source" position={Position.Right} />
+            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle} />
+            <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             <Form>
                 <Form.Item label="脚本类型">
                     <Select value={store.pipeLineStore.getExecJob(props.id)?.job.ShellJob?.shell_type ?? SHELL_TYPE_SH}

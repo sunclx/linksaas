@@ -1,24 +1,101 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStores } from "./stores";
 import type { Node, Edge, OnNodesChange, OnEdgesChange, OnConnect, OnNodesDelete, OnEdgesDelete, NodePositionChange } from 'reactflow';
-import ReactFlow, { Background, BackgroundVariant, Controls, MarkerType, MiniMap, Panel, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, MarkerType, MiniMap, Panel, ReactFlowProvider, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow';
 import { observer } from 'mobx-react';
 import 'reactflow/dist/style.css';
 import "./flow.css";
 import GitSourceNode from "./nodes/GitSourceNode";
-import { Button, Space } from "antd";
-import { PlusCircleOutlined, PlusOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
 import { JOB_TYPE_DOCKER, JOB_TYPE_SERVICE, JOB_TYPE_SHELL, SHELL_TYPE_SH, type Position as JobPosition } from "@/api/project_cicd";
 import DockerNode from "./nodes/DockerNode";
 import ShellNode from "./nodes/ShellNode";
 import ServiceNode from "./nodes/ServiceNode";
+import NodePanel, { DND_ITEM_TYPE, type NewNodeInfo } from "./NodePanel";
+import { type DropTargetMonitor, useDrop } from "react-dnd";
 
 const PipeLineEditor = () => {
     const store = useStores();
 
+    const reactFlowWrapper = useRef<HTMLDivElement>(null);
+
     const [nodes, setNodes] = useState<Node[]>([]);
     const [edges, setEdges] = useState<Edge[]>([]);
+
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, drop] = useDrop(() => ({
+        accept: DND_ITEM_TYPE,
+        drop: (item: NewNodeInfo, monitor: DropTargetMonitor<NewNodeInfo, void>) => {
+            if (reactFlowWrapper.current != null && store.paramStore.flowInstance != null && store.pipeLineStore.pipeLine != null) {
+                const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+                const clientOffset = monitor.getClientOffset();
+                const position: JobPosition = store.paramStore.flowInstance.project({
+                    x: (clientOffset?.x ?? 0) - reactFlowBounds.left,
+                    y: (clientOffset?.y ?? 0) - reactFlowBounds.top,
+                });
+
+                if (item.nodeType == "ShellNode") {
+                    store.pipeLineStore.pipeLine.exec_job_list.push({
+                        job_id: uniqId(),
+                        job_name: "脚本任务",
+                        job_type: JOB_TYPE_SHELL,
+                        depend_job_list: [],
+                        run_on_param_list: [],
+                        env_list: [],
+                        job: {
+                            ShellJob: {
+                                shell_type: SHELL_TYPE_SH,
+                                script_content: "",
+                            },
+                        },
+                        position: position,
+                        timeout: 600,
+                    });
+                } else if (item.nodeType == "DockerNode") {
+                    store.pipeLineStore.pipeLine.exec_job_list.push({
+                        job_id: uniqId(),
+                        job_name: "Docker任务",
+                        job_type: JOB_TYPE_DOCKER,
+                        depend_job_list: [],
+                        run_on_param_list: [],
+                        env_list: [],
+                        job: {
+                            DockerJob: {
+                                image_url: "",
+                                script_content: "",
+                                src_data_vol: "",
+                                shared_data_vol: "",
+                                persistent_data_vol: "",
+                            }
+                        },
+                        position: position,
+                        timeout: 600,
+                    });
+                } else if (item.nodeType == "ServiceNode") {
+                    store.pipeLineStore.pipeLine.exec_job_list.push({
+                        job_id: uniqId(),
+                        job_name: "服务",
+                        job_type: JOB_TYPE_SERVICE,
+                        depend_job_list: [],
+                        run_on_param_list: [],
+                        env_list: [],
+                        job: {
+                            ServiceJob: {
+                                docker_compose_file_id: "",
+                                docker_compose_file_name: "",
+                            },
+                        },
+                        position: position,
+                        timeout: 600,
+                    });
+                }
+                store.pipeLineStore.hasChange = true;
+                store.pipeLineStore.incInitVersion();
+            }
+        },
+        canDrop: () => store.paramStore.canUpdate,
+    }));
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => setNodes((nds) => {
@@ -147,95 +224,6 @@ const PipeLineEditor = () => {
         setEdges(tmpEdges);
     };
 
-    const genJobPositon = (): JobPosition => {
-        if (store.pipeLineStore.pipeLine == null) {
-            return { x: 0, y: 0 };
-        }
-        const retPos = { x: store.pipeLineStore.pipeLine.gitsource_job.position.x, y: 0 };
-        for (const job of store.pipeLineStore.pipeLine.exec_job_list) {
-            if (job.position.x > retPos.x) {
-                retPos.x = job.position.x;
-            }
-        }
-        retPos.x += 400;
-        return retPos;
-    }
-
-    const addDockerJob = async () => {
-        if (store.pipeLineStore.pipeLine == null) {
-            return;
-        }
-        store.pipeLineStore.pipeLine.exec_job_list.push({
-            job_id: uniqId(),
-            job_name: "Docker任务",
-            job_type: JOB_TYPE_DOCKER,
-            depend_job_list: [],
-            run_on_param_list: [],
-            env_list: [],
-            job: {
-                DockerJob: {
-                    image_url: "",
-                    script_content: "",
-                    src_data_vol: "",
-                    shared_data_vol: "",
-                    persistent_data_vol: "",
-                }
-            },
-            position: genJobPositon(),
-            timeout: 600,
-        });
-        store.pipeLineStore.hasChange = true;
-        store.pipeLineStore.incInitVersion();
-    };
-
-    const addShellJob = async () => {
-        if (store.pipeLineStore.pipeLine == null) {
-            return;
-        }
-        store.pipeLineStore.pipeLine.exec_job_list.push({
-            job_id: uniqId(),
-            job_name: "脚本任务",
-            job_type: JOB_TYPE_SHELL,
-            depend_job_list: [],
-            run_on_param_list: [],
-            env_list: [],
-            job: {
-                ShellJob: {
-                    shell_type: SHELL_TYPE_SH,
-                    script_content: "",
-                },
-            },
-            position: genJobPositon(),
-            timeout: 600,
-        });
-        store.pipeLineStore.hasChange = true;
-        store.pipeLineStore.incInitVersion();
-    };
-
-    const addServiceJob = async () => {
-        if (store.pipeLineStore.pipeLine == null) {
-            return;
-        }
-        store.pipeLineStore.pipeLine.exec_job_list.push({
-            job_id: uniqId(),
-            job_name: "服务",
-            job_type: JOB_TYPE_SERVICE,
-            depend_job_list: [],
-            run_on_param_list: [],
-            env_list: [],
-            job: {
-                ServiceJob: {
-                    docker_compose_file_id: "",
-                    docker_compose_file_name: "",
-                },
-            },
-            position: genJobPositon(),
-            timeout: 600,
-        });
-        store.pipeLineStore.hasChange = true;
-        store.pipeLineStore.incInitVersion();
-    };
-
     useEffect(() => {
         initNodeAndEdge();
     }, [store.pipeLineStore.initVersion]);
@@ -248,53 +236,41 @@ const PipeLineEditor = () => {
     }), []);
 
     return (
-        <div style={{ height: "calc(100vh - 40px)", width: "100vw" }}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onNodesDelete={onNodesDelete}
-                onEdgesDelete={onEdgesDelete}
-                deleteKeyCode={["Backspace", "Delete"]}
-                fitView
-                nodeTypes={nodeTypes}
-                defaultEdgeOptions={{
-                    animated: true, deletable: store.paramStore.canUpdate, markerEnd: {
-                        type: MarkerType.Arrow,
-                        color: 'black',
-                        strokeWidth: 3,
-                    },
-                    zIndex: 20,
-                }}
-            >
-                <Background color="#aaa" variant={BackgroundVariant.Cross} style={{ backgroundColor: "#eee" }} />
-                <Controls showInteractive={false} />
-                <MiniMap nodeStrokeWidth={3} zoomable pannable />
-                {store.paramStore.canUpdate && (
-                    <Panel position="top-center">
-                        <Space style={{ background: "white", padding: "0px 10px" }} size="large">
-                            <Button type="text" onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                addDockerJob();
-                            }} title="增加Docker任务" icon={<PlusOutlined style={{ fontSize: "40px" }} />} />
-                            <Button type="text" onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                addShellJob();
-                            }} title="增加脚本任务" icon={<PlusCircleOutlined style={{ fontSize: "40px" }} />} />
-                            <Button type="text" onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                addServiceJob();
-                            }} title="增加服务任务" icon={<PlusSquareOutlined style={{ fontSize: "40px" }} />} />
-                        </Space>
-                    </Panel>
-                )}
-            </ReactFlow>
-        </div>
+        <ReactFlowProvider>
+            <div className="reactflow-wrapper" style={{ height: "calc(100vh - 40px)", width: "100vw" }} ref={reactFlowWrapper}>
+                <ReactFlow
+                    ref={drop}
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    onNodesDelete={onNodesDelete}
+                    onEdgesDelete={onEdgesDelete}
+                    onInit={(instance) => store.paramStore.flowInstance = instance}
+                    deleteKeyCode={["Backspace", "Delete"]}
+                    fitView
+                    nodeTypes={nodeTypes}
+                    defaultEdgeOptions={{
+                        animated: true, deletable: store.paramStore.canUpdate, markerEnd: {
+                            type: MarkerType.Arrow,
+                            color: 'black',
+                            strokeWidth: 3,
+                        },
+                        zIndex: 20,
+                    }}
+                >
+                    <Background color="#aaa" variant={BackgroundVariant.Cross} style={{ backgroundColor: "#eee" }} />
+                    <Controls showInteractive={false} />
+                    <MiniMap nodeStrokeWidth={3} zoomable pannable />
+                    {store.paramStore.canUpdate && (
+                        <Panel position="top-left">
+                            <NodePanel />
+                        </Panel>
+                    )}
+                </ReactFlow>
+            </div>
+        </ReactFlowProvider>
     );
 };
 

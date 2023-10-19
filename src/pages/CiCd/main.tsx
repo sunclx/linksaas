@@ -8,13 +8,17 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from 'mobx-react';
 import stores from './stores';
 import CiCdApp from "./CiCdApp";
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
 
 const App = () => {
     return (
         <Provider {...stores}>
             <ConfigProvider locale={zhCN}>
                 <BrowserRouter>
-                    <CiCdApp />
+                    <DndProvider backend={HTML5Backend}>
+                        <CiCdApp />
+                    </DndProvider>
                 </BrowserRouter>
             </ConfigProvider>
         </Provider>
