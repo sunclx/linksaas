@@ -16,6 +16,7 @@ const DockerNode = (props: NodeProps) => {
 
     const [showScriptModal, setShowScriptModal] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [tmpScriptContent, setTmpScriptContent] = useState("");
 
     return (
         <Card style={{ width: "320px" }} title={
@@ -88,11 +89,15 @@ const DockerNode = (props: NodeProps) => {
                     }} disabled={!store.paramStore.canUpdate} />
                 </Form.Item>
                 <Form.Item label="入口脚本">
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowScriptModal(true);
-                    }}>{store.paramStore.canUpdate ? "修改" : "查看"}脚本</Button>
+                    <Input.TextArea autoSize={{ minRows: 5, maxRows: 5 }} value={store.pipeLineStore.getExecJob(props.id)?.job.DockerJob?.script_content ?? ""} readOnly />
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setTmpScriptContent(store.pipeLineStore.getExecJob(props.id)?.job.DockerJob?.script_content ?? "");
+                            setShowScriptModal(true);
+                        }}>{store.paramStore.canUpdate ? "修改" : "查看"}脚本</Button>
+                    </div>
                 </Form.Item>
                 <Form.Item label="代码路径" help="把git代码映射到容器内">
                     <Input value={store.pipeLineStore.getExecJob(props.id)?.job.DockerJob?.src_data_vol ?? ""} onChange={e => {
@@ -174,20 +179,22 @@ const DockerNode = (props: NodeProps) => {
                 </Form.Item>
             </Form>
             {showScriptModal == true && (
-                <Modal open={true} title={`${store.paramStore.canUpdate ? "修改" : "查看"}脚本`} footer={null}
+                <Modal open={true} title={`${store.paramStore.canUpdate ? "修改" : "查看"}脚本`}
+                    footer={store.paramStore.canUpdate ? undefined : null}
+                    okText="保存" okButtonProps={{ disabled: (store.pipeLineStore.getExecJob(props.id)?.job.DockerJob?.script_content ?? "") == tmpScriptContent }}
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowScriptModal(false);
-                    }}>
-                    <Input.TextArea autoSize={{ minRows: 10, maxRows: 10 }} value={store.pipeLineStore.getExecJob(props.id)?.job.DockerJob?.script_content ?? ""} onChange={e => {
+                    }}
+                    onOk={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         if (store.pipeLineStore.pipeLine != null) {
                             const tmpJobList = store.pipeLineStore.pipeLine.exec_job_list.slice();
                             for (const tmpJob of tmpJobList) {
                                 if (tmpJob.job_id == props.id) {
-                                    tmpJob.job.DockerJob!.script_content = e.target.value;
+                                    tmpJob.job.DockerJob!.script_content = tmpScriptContent;
                                 }
                             }
                             store.pipeLineStore.pipeLine = {
@@ -196,6 +203,12 @@ const DockerNode = (props: NodeProps) => {
                             };
                             store.pipeLineStore.hasChange = true;
                         }
+                        setShowScriptModal(false);
+                    }}>
+                    <Input.TextArea autoSize={{ minRows: 10, maxRows: 10 }} value={tmpScriptContent} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setTmpScriptContent(e.target.value);
                     }} disabled={!store.paramStore.canUpdate} />
                 </Modal>
             )}
@@ -210,7 +223,7 @@ const DockerNode = (props: NodeProps) => {
                     <h2>环境变量</h2>
                     <Descriptions bordered>
                         <Descriptions.Item label="参数变量">
-                                {`PARAM_{参数名}={参数值}`}
+                            {`PARAM_{参数名}={参数值}`}
                         </Descriptions.Item>
                     </Descriptions>
                 </Modal>

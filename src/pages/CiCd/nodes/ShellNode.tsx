@@ -16,6 +16,7 @@ const ShellNode = (props: NodeProps) => {
 
     const [showScriptModal, setShowScriptModal] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [tmpScriptContent, setTmpScriptContent] = useState("");
 
     return (
         <Card style={{ width: "320px" }} title={
@@ -91,11 +92,15 @@ const ShellNode = (props: NodeProps) => {
                     </Select>
                 </Form.Item>
                 <Form.Item label="运行脚本">
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowScriptModal(true);
-                    }}>{store.paramStore.canUpdate ? "修改" : "查看"}脚本</Button>
+                    <Input.TextArea autoSize={{ minRows: 5, maxRows: 5 }} value={store.pipeLineStore.getExecJob(props.id)?.job.ShellJob?.script_content ?? ""} readOnly />
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setTmpScriptContent(store.pipeLineStore.getExecJob(props.id)?.job.ShellJob?.script_content ?? "");
+                            setShowScriptModal(true);
+                        }}>{store.paramStore.canUpdate ? "修改" : "查看"}脚本</Button>
+                    </div>
                 </Form.Item>
             </Form>
             <RunOnParam jobId={props.id} />
@@ -120,20 +125,22 @@ const ShellNode = (props: NodeProps) => {
                 </Form.Item>
             </Form>
             {showScriptModal == true && (
-                <Modal open={true} title={`${store.paramStore.canUpdate ? "修改" : "查看"}脚本`} footer={null}
+                <Modal open={true} title={`${store.paramStore.canUpdate ? "修改" : "查看"}脚本`}
+                    footer={store.paramStore.canUpdate ? undefined : null}
+                    okText="保存" okButtonProps={{ disabled: (store.pipeLineStore.getExecJob(props.id)?.job.ShellJob?.script_content ?? "") == tmpScriptContent }}
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setShowScriptModal(false);
-                    }}>
-                    <Input.TextArea autoSize={{ minRows: 10, maxRows: 10 }} value={store.pipeLineStore.getExecJob(props.id)?.job.ShellJob?.script_content ?? ""} onChange={e => {
+                    }}
+                    onOk={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         if (store.pipeLineStore.pipeLine != null) {
                             const tmpJobList = store.pipeLineStore.pipeLine.exec_job_list.slice();
                             for (const tmpJob of tmpJobList) {
                                 if (tmpJob.job_id == props.id) {
-                                    tmpJob.job.ShellJob!.script_content = e.target.value;
+                                    tmpJob.job.ShellJob!.script_content = tmpScriptContent;
                                 }
                             }
                             store.pipeLineStore.pipeLine = {
@@ -142,6 +149,12 @@ const ShellNode = (props: NodeProps) => {
                             };
                             store.pipeLineStore.hasChange = true;
                         }
+                        setShowScriptModal(false);
+                    }}>
+                    <Input.TextArea autoSize={{ minRows: 10, maxRows: 10 }} value={tmpScriptContent} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setTmpScriptContent(e.target.value);
                     }} disabled={!store.paramStore.canUpdate} />
                 </Modal>
             )}
