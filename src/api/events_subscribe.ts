@@ -167,6 +167,11 @@ export type ApiCollectionEvCfg = {
     remove: boolean;
 }
 
+export type CiCdEvCfg = {
+    create_pipe_line: boolean;
+    remove_pipe_line: boolean;
+};
+
 export type AtomgitEvCfg = {
     push: boolean;
     issue: boolean;
@@ -186,6 +191,7 @@ export type EventCfg = {
     data_anno_ev_cfg: DataAnnoEvCfg;
     api_collection_ev_cfg: ApiCollectionEvCfg;
     atomgit_ev_cfg: AtomgitEvCfg;
+    ci_cd_ev_cfg: CiCdEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -256,14 +262,14 @@ export type RemoveResponse = {
 };
 
 export function adjust_event_cfg(cfg: EventCfg): EventCfg {
-    if (cfg.code_ev_cfg == undefined) {
+    if (cfg.code_ev_cfg == undefined || cfg.code_ev_cfg == null) {
         cfg.code_ev_cfg = {
             add_comment: false,
             update_comment: false,
             remove_comment: false,
         };
     }
-    if (cfg.idea_ev_cfg == undefined) {
+    if (cfg.idea_ev_cfg == undefined || cfg.idea_ev_cfg == null) {
         cfg.idea_ev_cfg = {
             create_idea: false,
             update_idea_content: false,
@@ -276,7 +282,7 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             cancel_appraise: false,
         };
     }
-    if (cfg.data_anno_ev_cfg == undefined) {
+    if (cfg.data_anno_ev_cfg == undefined || cfg.data_anno_ev_cfg == null) {
         cfg.data_anno_ev_cfg = {
             create_anno_project: false,
             remove_anno_project: false,
@@ -284,17 +290,23 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             remove_anno_member: false,
         };
     }
-    if (cfg.api_collection_ev_cfg == undefined) {
+    if (cfg.api_collection_ev_cfg == undefined || cfg.api_collection_ev_cfg == null) {
         cfg.api_collection_ev_cfg = {
             create: false,
             remove: false,
         };
     }
-    if (cfg.atomgit_ev_cfg == undefined) {
+    if (cfg.atomgit_ev_cfg == undefined || cfg.atomgit_ev_cfg == null) {
         cfg.atomgit_ev_cfg = {
             push: false,
             issue: false,
         };
+    }
+    if (cfg.ci_cd_ev_cfg == undefined || cfg.atomgit_ev_cfg == null) {
+        cfg.ci_cd_ev_cfg = {
+            create_pipe_line: false,
+            remove_pipe_line: false,
+        }
     }
     return cfg;
 }

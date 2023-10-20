@@ -114,8 +114,8 @@ pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
             event_type = "doc";
         } else if item.event_type == EventType::Disk as i32 {
             event_type = "disk";
-        } else if item.event_type == EventType::App as i32 {
-            event_type = "app";
+        } else if item.event_type == EventType::Cicd as i32 {
+            event_type = "cicd";
         } else if item.event_type == EventType::Gitlab as i32 {
             event_type = "gitlab";
         } else if item.event_type == EventType::Github as i32 {

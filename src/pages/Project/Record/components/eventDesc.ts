@@ -475,6 +475,37 @@ const extEventList: EventDesc[] = [
     },
 ];
 
+const ciCdEventList: EventDesc[] = [
+    {
+        id: "CreatePipeLineEvent",
+        name: "创建流水线",
+        attrList: [
+            {
+                key: "pipe_line_id",
+                desc: "流水线ID",
+            },
+            {
+                key: "pipe_line_name",
+                desc: "流水线名称",
+            },
+        ],
+    },
+    {
+        id: "RemovePipeLineEvent",
+        name: "删除流水线",
+        attrList: [
+            {
+                key: "pipe_line_id",
+                desc: "流水线ID",
+            },
+            {
+                key: "pipe_line_name",
+                desc: "流水线名称",
+            },
+        ],
+    }
+];
+
 const ideaEventList: EventDesc[] = [
     {
         id: "CreateIdeaEvent",
@@ -3180,6 +3211,11 @@ export const eventGroupList: EventGroup[] = [
         id: "ExtEvEvent",
         name: "外部接入",
         eventDescList: extEventList,
+    },
+    {
+        id: "CiCdEvent",
+        name: "CI/CD",
+        eventDescList: ciCdEventList,
     },
     {
         id: "AtomgitEvent",

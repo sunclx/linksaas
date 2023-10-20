@@ -25,6 +25,7 @@ import { uniqId } from '@/utils/utils';
 import type { API_COLL_TYPE } from '@/api/api_collection';
 import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
+import { OpenPipeLineWindow } from '@/pages/Project/CiCd/utils';
 
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -35,7 +36,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_CHANNEL = 1,
   LINK_TARGET_EVENT = 2,
   LINK_TARGET_DOC = 3,
-  LINK_TARGET_APP = 4,
+  // LINK_TARGET_APP = 4,
   LINK_TARGET_SPRIT = 5,
   LINK_TARGET_TASK = 6,
   LINK_TARGET_BUG = 7,
@@ -52,6 +53,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_CODE_COMMENT = 18,
   // LINK_TARGET_BOOK_MARK_CATE = 19,
   LINK_TARGET_IDEA_PAGE = 20,
+  LINK_TARGET_PIPE_LINE = 21,
 
   LINK_TARGET_NONE = 100,
   LINK_TARGET_IMAGE = 101,
@@ -199,23 +201,6 @@ export class LinkUserKbInfo {
   docId: string;
 }
 
-export class LinkAppInfo {
-  constructor(content: string, projectId: string, appId: string, appUrl: string, openType: number) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_APP;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.appId = appId;
-    this.appUrl = appUrl;
-    this.openType = openType;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  appId: string;
-  appUrl: string;
-  openType: number;
-}
-
 
 export class LinkNoneInfo {
   constructor(content: string) {
@@ -269,6 +254,20 @@ export class LinkIdeaPageInfo {
   tagId: string;
   keywordList: string[];
   ideaId: string;
+}
+
+export class LinkPipeLineInfo {
+  constructor(content: string, projectId: string, pipeLineId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_PIPE_LINE;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.pipeLineId = pipeLineId;
+  }
+
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  pipeLineId: string;
 }
 
 export class LinkImageInfo {
@@ -538,6 +537,13 @@ class LinkAuxStore {
         ideaId: ideaPageLink.ideaId,
       };
       history.push(this.genUrl(ideaPageLink.projectId, pathname, "/idea"), state);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_PIPE_LINE) {
+      const pipeLineLink = link as LinkPipeLineInfo;
+      if (this.rootStore.projectStore.curProjectId != pipeLineLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(pipeLineLink.projectId);
+      }
+      await OpenPipeLineWindow(`${pipeLineLink}(只读模式)`, pipeLineLink.projectId,
+        this.rootStore.projectStore.curProject?.ci_cd_fs_id ?? "", pipeLineLink.pipeLineId, false, false);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       let destUrl = externLink.destUrl;
@@ -789,7 +795,7 @@ class LinkAuxStore {
       return APP_PROJECT_CHAT_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
-    }else if(pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+    } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
       return APP_PROJECT_MY_WORK_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
       return APP_PROJECT_OVERVIEW_PATH + newSuffix;
