@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import type { NodeProps } from "reactflow";
 import { observer } from 'mobx-react';
 import { useStores } from "../stores";
-import { Button, Card, Form, Input, InputNumber, Modal, Select } from "antd";
+import { Button, Card, Descriptions, Form, Input, InputNumber, Modal, Popover, Select, Space } from "antd";
 import { EditText } from "@/components/EditCell/EditText";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, MoreOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Handle, Position } from 'reactflow';
 import RunOnParam from "./RunOnParam";
 import EnvList from "./EnvList";
@@ -15,6 +15,7 @@ const ShellNode = (props: NodeProps) => {
     const store = useStores();
 
     const [showScriptModal, setShowScriptModal] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     return (
         <Card style={{ width: "320px" }} title={
@@ -39,17 +40,29 @@ const ShellNode = (props: NodeProps) => {
                     return true;
                 }} showEditIcon={true} />
         } extra={
-            <>
+            <Space>
+                <Button type="text" icon={<QuestionCircleOutlined />} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowHelp(true);
+                }} />
                 {store.paramStore.canUpdate && (
-                    <Button type="text" danger icon={<DeleteOutlined />} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        store.pipeLineStore.removeExecJob(props.id);
-                        store.pipeLineStore.hasChange = true;
-                        store.pipeLineStore.incInitVersion();
-                    }} />
+                    <Popover trigger={["hover", "click"]} placement="bottom" mouseEnterDelay={1.5}
+                        content={
+                            <div>
+                                <Button type="link" danger icon={<DeleteOutlined />} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    store.pipeLineStore.removeExecJob(props.id);
+                                    store.pipeLineStore.hasChange = true;
+                                    store.pipeLineStore.incInitVersion();
+                                }} >删除</Button>
+                            </div>
+                        }>
+                        <MoreOutlined />
+                    </Popover>
                 )}
-            </>
+            </Space>
         }>
             <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle} />
             <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
@@ -130,6 +143,37 @@ const ShellNode = (props: NodeProps) => {
                             store.pipeLineStore.hasChange = true;
                         }
                     }} disabled={!store.paramStore.canUpdate} />
+                </Modal>
+            )}
+            {showHelp == true && (
+                <Modal open title="脚本任务说明" footer={null}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowHelp(false);
+                    }}>
+                    <p>脚本任务之间在系统上执行脚本。</p>
+                    <h2>脚本引擎</h2>
+                    <ul style={{ listStyleType: "disc", marginLeft: "20px" }}>
+                        <li>/bin/sh</li>
+                        <li>cmd.exe</li>
+                        <li>powershell.exe</li>
+                    </ul>
+                    <h2>环境变量</h2>
+                    <Descriptions bordered column={1}>
+                        <Descriptions.Item label="参数变量">
+                            {`PARAM_{参数名}={参数值}`}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="源代码路径">
+                            JOB_SOURCE_PATH
+                        </Descriptions.Item>
+                        <Descriptions.Item label="共享数据路径">
+                            JOB_SHARE_PATH
+                        </Descriptions.Item>
+                        <Descriptions.Item label="结果数据路径">
+                            JOB_PERSISTENT_PATH
+                        </Descriptions.Item>
+                    </Descriptions>
                 </Modal>
             )}
         </Card>

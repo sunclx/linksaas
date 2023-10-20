@@ -1,16 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import { Handle, Position } from 'reactflow';
-import { Card, Form, Input, InputNumber, Select } from "antd";
+import { Button, Card, Form, Input, InputNumber, Modal, Select } from "antd";
 import { useStores } from "../stores";
 import { CREDENTIAL_TYPE_KEY } from "@/api/project_cicd";
 import { sourceHandleStyle } from "./style";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const GitSourceNode = () => {
     const store = useStores();
 
+    const [showHelp, setShowHelp] = useState(false);
+
     return (
-        <Card title="Git Clone" style={{ width: "320px" }}>
+        <Card title="Git Clone" style={{ width: "320px" }} extra={
+            <Button type="text" icon={<QuestionCircleOutlined />} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                setShowHelp(true);
+            }} />
+        }>
             <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             {store.pipeLineStore.pipeLine != null && (
                 <Form labelCol={{ span: 6 }}>
@@ -46,6 +55,17 @@ const GitSourceNode = () => {
                         }} disabled={!store.paramStore.canUpdate} />
                     </Form.Item>
                 </Form>
+            )}
+            {showHelp == true && (
+                <Modal open title="GIT CLONE任务说明" footer={null}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowHelp(false);
+                    }}>
+                    <p>GIT CLONE任务作为CI/CD的起点任务，用于下载代码用于后续任务。</p>
+                    <p>对于需要密码和公钥验证的代码仓库，需要指定登录凭证。</p>
+                </Modal>
             )}
         </Card>
     );

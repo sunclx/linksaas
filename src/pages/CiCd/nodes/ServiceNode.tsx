@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import type { NodeProps } from "reactflow";
 import { observer } from 'mobx-react';
 import { useStores } from "../stores";
-import { Button, Card, Descriptions, Form, InputNumber, Modal, Progress, Space, message } from "antd";
+import { Button, Card, Descriptions, Form, InputNumber, Modal, Popover, Progress, Space, message } from "antd";
 import { EditText } from "@/components/EditCell/EditText";
-import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, MoreOutlined, QuestionCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import { Handle, Position } from 'reactflow';
 import RunOnParam from "./RunOnParam";
 import EnvList from "./EnvList";
@@ -144,6 +144,7 @@ const ServiceNode = (props: NodeProps) => {
 
     const [upDirPath, setUpDirPath] = useState("");
     const [showDownload, setShowDownload] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const uploadFile = async () => {
         if (store.pipeLineStore.pipeLine == null) {
@@ -227,19 +228,31 @@ const ServiceNode = (props: NodeProps) => {
                     return true;
                 }} showEditIcon={true} />
         } extra={
-            <>
+            <Space>
+                <Button type="text" icon={<QuestionCircleOutlined />} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowHelp(true);
+                }} />
                 {store.paramStore.canUpdate && (
-                    <Button type="text" danger icon={<DeleteOutlined />} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        store.pipeLineStore.removeExecJob(props.id);
-                        store.pipeLineStore.hasChange = true;
-                        store.pipeLineStore.incInitVersion();
-                    }} />
+                    <Popover trigger={["hover", "click"]} placement="bottom" mouseEnterDelay={1.5}
+                        content={
+                            <div>
+                                <Button type="link" danger icon={<DeleteOutlined />} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    store.pipeLineStore.removeExecJob(props.id);
+                                    store.pipeLineStore.hasChange = true;
+                                    store.pipeLineStore.incInitVersion();
+                                }} >删除</Button>
+                            </div>
+                        }>
+                        <MoreOutlined />
+                    </Popover>
                 )}
-            </>
+            </Space>
         }>
-            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle}/>
+            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle} />
             <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             <Form>
                 <Form.Item label="服务配置" help={<ul>
@@ -321,6 +334,22 @@ const ServiceNode = (props: NodeProps) => {
             {showDownload == true && (
                 <DownloadModal fsId={store.paramStore.fsId} fileId={store.pipeLineStore.getExecJob(props.id)?.job.ServiceJob?.docker_compose_file_id ?? ""}
                     fileName={store.pipeLineStore.getExecJob(props.id)?.job.ServiceJob?.docker_compose_file_name ?? ""} onCancel={() => setShowDownload(false)} />
+            )}
+            {showHelp == true && (
+                <Modal open title="服务任务说明" footer={null}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowHelp(false);
+                    }}>
+                    <p>服务任务使用Docker Compose运行服务。服务会在整个流水线停止后被清理。</p>
+                    <h2>环境变量</h2>
+                    <Descriptions bordered>
+                        <Descriptions.Item label="参数变量">
+                            {`PARAM_{参数名}={参数值}`}
+                        </Descriptions.Item>
+                    </Descriptions>
+                </Modal>
             )}
         </Card>
     );

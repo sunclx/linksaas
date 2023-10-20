@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import type { NodeProps } from "reactflow";
 import { observer } from 'mobx-react';
-import { Button, Card, Form, Input, InputNumber, Modal } from "antd";
+import { Button, Card, Descriptions, Form, Input, InputNumber, Modal, Popover, Space } from "antd";
 import { Handle, Position } from 'reactflow';
 import { EditText } from "@/components/EditCell/EditText";
 import { useStores } from "../stores";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, MoreOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import RunOnParam from "./RunOnParam";
 import EnvList from "./EnvList";
 import { sourceHandleStyle, targetHandleStyle } from "./style";
@@ -15,6 +15,7 @@ const DockerNode = (props: NodeProps) => {
     const store = useStores();
 
     const [showScriptModal, setShowScriptModal] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     return (
         <Card style={{ width: "320px" }} title={
@@ -39,19 +40,32 @@ const DockerNode = (props: NodeProps) => {
                     return true;
                 }} showEditIcon={true} />
         } extra={
-            <>
+            <Space>
+                <Button type="text" icon={<QuestionCircleOutlined />} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowHelp(true);
+                }} />
                 {store.paramStore.canUpdate && (
-                    <Button type="text" danger icon={<DeleteOutlined />} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        store.pipeLineStore.removeExecJob(props.id);
-                        store.pipeLineStore.hasChange = true;
-                        store.pipeLineStore.incInitVersion();
-                    }} />
+                    <Popover trigger={["hover", "click"]} placement="bottom" mouseEnterDelay={1.5}
+                        content={
+                            <div>
+                                <Button type="link" danger icon={<DeleteOutlined />} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    store.pipeLineStore.removeExecJob(props.id);
+                                    store.pipeLineStore.hasChange = true;
+                                    store.pipeLineStore.incInitVersion();
+                                }} >删除</Button>
+                            </div>
+                        }>
+                        <MoreOutlined />
+                    </Popover>
+
                 )}
-            </>
+            </Space>
         }>
-            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle}/>
+            <Handle type="target" position={Position.Left} isConnectableStart={false} style={targetHandleStyle} />
             <Handle type="source" position={Position.Right} isConnectableEnd={false} style={sourceHandleStyle} />
             <Form>
                 <Form.Item label="镜像地址">
@@ -183,6 +197,22 @@ const DockerNode = (props: NodeProps) => {
                             store.pipeLineStore.hasChange = true;
                         }
                     }} disabled={!store.paramStore.canUpdate} />
+                </Modal>
+            )}
+            {showHelp == true && (
+                <Modal open title="Docker任务说明" footer={null}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowHelp(false);
+                    }}>
+                    <p>Docker使用docker运行指定脚本。</p>
+                    <h2>环境变量</h2>
+                    <Descriptions bordered>
+                        <Descriptions.Item label="参数变量">
+                                {`PARAM_{参数名}={参数值}`}
+                        </Descriptions.Item>
+                    </Descriptions>
                 </Modal>
             )}
         </Card>
