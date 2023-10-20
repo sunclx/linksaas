@@ -8,6 +8,7 @@ import { get_session } from '@/api/user';
 import { request } from '@/utils/request';
 import { update_pipe_line_job } from '@/api/project_cicd';
 import RunParamModal from './RunParamModal';
+import ResultReport from './ResultReport';
 
 
 const CiCdApp = () => {
@@ -57,6 +58,7 @@ const CiCdApp = () => {
                 store.pipeLineStore.loadPipeLine(projectId, pipeLineId, true, store.resultStore.execResult?.pipe_line_time ?? 0).then(() => {
                     store.pipeLineStore.incInitVersion();
                 });
+                store.resultStore.loadExecState(projectId, pipeLineId);
             })
         }
     }, []);
@@ -69,6 +71,12 @@ const CiCdApp = () => {
                         key: "pipeline",
                         label: "流水线",
                         children: <PipeLineEditor />
+                    },
+                    {
+                        key: "result",
+                        label: "运行结果",
+                        disabled: store.resultStore.execResult == null,
+                        children: <ResultReport />
                     }
                 ]}
                 type="card" style={{ backgroundColor: "white" }}
@@ -95,7 +103,10 @@ const CiCdApp = () => {
                     </div>
                 } />
             {showRunModal == true && (
-                <RunParamModal onClose={() => setShowRunModal(false)} />
+                <RunParamModal onCancel={() => setShowRunModal(false)} onOk={() => {
+                    setShowRunModal(false);
+                    setActiveKey("result");
+                }} />
             )}
         </div>
     );

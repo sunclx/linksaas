@@ -43,10 +43,8 @@ export class PipeLineStore {
             this._pipeLine = val;
         });
     }
+    
     async loadPipeLine(projectId: string, pipeLineId: string, withUpdateTime: boolean, updateTime: number) {
-        runInAction(() => {
-            this._pipeLine = null;
-        });
         const sessionId = await get_session();
         const res = await request(get_pipe_line({
             session_id: sessionId,

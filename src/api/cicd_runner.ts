@@ -194,7 +194,7 @@ export async function get_exec_state(serv_addr: string, request: GetExecStateReq
 }
 
 //获取任务日志
-export async function get_job_log(serv_addr: string, trace_id: string, request: GetExecStateRequest): Promise<void> {
+export async function get_job_log(serv_addr: string, trace_id: string, request: GetJobLogRequest): Promise<void> {
     const cmd = 'plugin:cicd_runner_api|get_job_log';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<void>(cmd, {

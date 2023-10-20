@@ -9,6 +9,7 @@ import { useStores } from "./stores";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
 import { start_exec } from "@/api/cicd_runner";
+import { sleep } from "@/utils/time";
 
 interface ExecParam {
     id: string;
@@ -17,7 +18,8 @@ interface ExecParam {
 }
 
 export interface RunParamModalProps {
-    onClose: () => void;
+    onCancel: () => void;
+    onOk: () => void;
 }
 
 const RunParamModal = (props: RunParamModalProps) => {
@@ -78,7 +80,7 @@ const RunParamModal = (props: RunParamModalProps) => {
         } catch (e) {
             console.log(e);
             return "";
-        } 
+        }
     }
 
     const runPipeLine = async () => {
@@ -89,6 +91,9 @@ const RunParamModal = (props: RunParamModalProps) => {
             setInRun(false);
             return;
         }
+        
+        store.resultStore.reset();
+
         let execId = "";
         for (const runner of runnerList) {
             execId = await runByRunner(runner);
@@ -96,15 +101,30 @@ const RunParamModal = (props: RunParamModalProps) => {
                 break;
             }
         }
-        console.log("execId:", execId);
         if (execId == "") {
             message.error("运行代理繁忙");
             setInRun(false);
             return;
         }
         setInRun(false);
-        props.onClose();
-        //TODO 加载执行信息
+        for (let i = 0; i < 3; i++) {
+            sleep((i + 1) * 1000);
+            try {
+                await store.resultStore.loadExecResult(store.paramStore.projectId, store.pipeLineStore.pipeLine?.pipe_line_id ?? "", execId);
+            } catch (e) {
+                console.log(e);
+            }
+            if (store.resultStore.execResult == null) {
+                continue;
+            }
+            try {
+                await store.resultStore.loadExecState(store.paramStore.projectId, store.pipeLineStore.pipeLine?.pipe_line_id ?? "");
+                props.onOk();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
     }
 
     return (
@@ -113,7 +133,7 @@ const RunParamModal = (props: RunParamModalProps) => {
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                props.onClose();
+                props.onCancel();
             }}
             onOk={e => {
                 e.stopPropagation();
