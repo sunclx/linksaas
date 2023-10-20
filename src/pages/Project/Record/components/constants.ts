@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, DocEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg, SpritEvCfg,
-    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg
+    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -1533,6 +1533,47 @@ export const genAtomgitEvCfgValues = (cfg: AtomgitEvCfg): string[] => {
     }
     if (cfg.push) {
         retList.push("push");
+    }
+    return retList;
+};
+
+
+export const ciCdEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建流水线",
+        value: "create_pipe_line",
+    },
+    {
+        label: "删除流水线",
+        value: "remove_pipe_line",
+    }
+];
+
+export const calcCiCdEvCfg = (values: string[] | undefined): CiCdEvCfg => {
+    const ret: CiCdEvCfg = {
+        create_pipe_line: false,
+        remove_pipe_line: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create_pipe_line") {
+            ret.create_pipe_line = true;
+        } else if (value == "remove_pipe_line") {
+            ret.remove_pipe_line = true;
+        }
+    });
+    return ret;
+};
+
+export const genCiCdEvCfgValues = (cfg: CiCdEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create_pipe_line) {
+        retList.push("create_pipe_line");
+    }
+    if (cfg.remove_pipe_line) {
+        retList.push("remove_pipe_line");
     }
     return retList;
 };

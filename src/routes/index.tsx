@@ -85,6 +85,7 @@ import CrawlerList from '@/pages/Admin/RssAdmin/CrawlerList';
 import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
+import ProjectCiCd from "@/pages/Project/CiCd"
 
 export interface IRouteConfig {
   // 路由路径
@@ -209,6 +210,12 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/code",
       title: "代码评论",
       component: ThreadList,
+      exact: true,
+    },
+    {
+      path: prefix+"/cicd",
+      title: "",
+      component: ProjectCiCd,
       exact: true,
     }
   ];

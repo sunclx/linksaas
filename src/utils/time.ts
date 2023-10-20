@@ -13,3 +13,7 @@ export const getTimeDescFromNow = (msTime?: number | null): string => {
         return `${(msDiff / dayMsTime).toFixed(0)}天前`;
     }
 }
+
+export const sleep = async (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};

@@ -3,47 +3,50 @@ import type { SubscribeInfo } from '@/api/events_subscribe';
 import { update as update_subscribe } from '@/api/events_subscribe';
 import { Checkbox, Form, Input, Modal } from "antd";
 import { useStores } from "@/hooks";
-import { 
-    apiCollectionEvOptionList, 
-    atomgitEvOptionList, 
-    calcApiCollectionEvCfg, 
-    calcAtomgitEvCfg, 
-    calcCodeEvCfg, 
-    calcDataAnnoEvCfg, 
-    calcDocEvCfg, 
-    calcExtEvCfg, 
-    calcGiteeEvCfg, 
-    calcGitlabEvCfg, 
-    calcIdeaEvCfg, 
-    calcIssueEvCfg, 
-    calcProjectEvCfg, 
-    calcRequirementEvCfg,  
-    calcSpritEvCfg, 
-    codeEvOptionList, 
-    dataAnnoEvOptionList, 
-    docEvOptionList, 
-    extEvOptionList, 
-    genApiCollectionEvCfgValues, 
-    genAtomgitEvCfgValues, 
-    genCodeEvCfgValues, 
-    genDataAnnoEvCfgValues, 
-    genDocEvCfgValues, 
-    genExtEvCfgValues, 
-    genGiteeEvCfgValues, 
-    genGitlabEvCfgValues, 
-    genIdeaEvCfgValues, 
-    genIssueEvCfgValues, 
-    genProjectEvCfgValues, 
-    genRequirementEvCfgValues, 
-    genSpritEvCfgValues, 
-    giteeEvOptionList, 
-    gitlabEvOptionList, 
-    ideaEvOptionList, 
-    issueEvOptionList, 
-    projectEvOptionList, 
-    requirementEvOptionList, 
-    spritEvOptionList, 
- } from "./constants";
+import {
+    apiCollectionEvOptionList,
+    atomgitEvOptionList,
+    calcApiCollectionEvCfg,
+    calcAtomgitEvCfg,
+    calcCiCdEvCfg,
+    calcCodeEvCfg,
+    calcDataAnnoEvCfg,
+    calcDocEvCfg,
+    calcExtEvCfg,
+    calcGiteeEvCfg,
+    calcGitlabEvCfg,
+    calcIdeaEvCfg,
+    calcIssueEvCfg,
+    calcProjectEvCfg,
+    calcRequirementEvCfg,
+    calcSpritEvCfg,
+    ciCdEvOptionList,
+    codeEvOptionList,
+    dataAnnoEvOptionList,
+    docEvOptionList,
+    extEvOptionList,
+    genApiCollectionEvCfgValues,
+    genAtomgitEvCfgValues,
+    genCiCdEvCfgValues,
+    genCodeEvCfgValues,
+    genDataAnnoEvCfgValues,
+    genDocEvCfgValues,
+    genExtEvCfgValues,
+    genGiteeEvCfgValues,
+    genGitlabEvCfgValues,
+    genIdeaEvCfgValues,
+    genIssueEvCfgValues,
+    genProjectEvCfgValues,
+    genRequirementEvCfgValues,
+    genSpritEvCfgValues,
+    giteeEvOptionList,
+    gitlabEvOptionList,
+    ideaEvOptionList,
+    issueEvOptionList,
+    projectEvOptionList,
+    requirementEvOptionList,
+    spritEvOptionList,
+} from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
 
@@ -69,6 +72,7 @@ interface FormValue {
     ideaEvCfg: string[] | undefined;
     dataAnnoEvCfg: string[] | undefined;
     apiCollectionEvCfg: string[] | undefined;
+    ciCdEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -80,20 +84,22 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(projectEvCfgValues.length == projectEvOptionList.length);
     const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(projectEvCfgValues.length > 0 && projectEvCfgValues.length < projectEvOptionList.length);
 
-
     const docEvCfgValues = genDocEvCfgValues(props.subscribe.event_cfg.doc_ev_cfg);
     const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(docEvCfgValues.length == docEvOptionList.length);
     const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(docEvCfgValues.length > 0 && docEvCfgValues.length < docEvOptionList.length);
-
 
     const extEvCfgValues = genExtEvCfgValues(props.subscribe.event_cfg.ext_ev_cfg);
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(extEvCfgValues.length == extEvOptionList.length);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(extEvCfgValues.length > 0 && extEvCfgValues.length < extEvOptionList.length);
 
+    const ciCdEvCfgValues = genCiCdEvCfgValues(props.subscribe.event_cfg.ci_cd_ev_cfg);
+    const [ciCdEvCfgCheckAll, setCiCdEvCfgCheckAll] = useState(ciCdEvCfgValues.length == ciCdEvOptionList.length);
+    const [ciCdEvCfgIndeterminate, setCiCdEvCfgIndeterminate] = useState(ciCdEvCfgValues.length > 0 && ciCdEvCfgValues.length < ciCdEvOptionList.length);
+
     const atomgitEvCfgValues = genAtomgitEvCfgValues(props.subscribe.event_cfg.atomgit_ev_cfg);
     const [atomgitEvCfgCheckAll, setAtomgitEvCfgCheckAll] = useState(atomgitEvCfgValues.length == atomgitEvOptionList.length);
     const [atomgitEvCfgIndeterminate, setAtomgitEvCfgIndeterminate] = useState(atomgitEvCfgValues.length > 0 && atomgitEvCfgValues.length < atomgitEvOptionList.length);
-    
+
     const giteeEvCfgValues = genGiteeEvCfgValues(props.subscribe.event_cfg.gitee_ev_cfg);
     const [giteeEvCfgCheckAll, setGiteeEvCfgCheckAll] = useState(giteeEvCfgValues.length == giteeEvOptionList.length);
     const [giteeEvCfgIndeterminate, setGiteeEvCfgIndeterminate] = useState(giteeEvCfgValues.length > 0 && giteeEvCfgValues.length < giteeEvOptionList.length);
@@ -144,7 +150,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
                 doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
-                atomgit_ev_cfg:calcAtomgitEvCfg(formValue.atomgitEvCfg),
+                atomgit_ev_cfg: calcAtomgitEvCfg(formValue.atomgitEvCfg),
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
                 gitlab_ev_cfg: calcGitlabEvCfg(formValue.gitlabEvCfg),
                 issue_ev_cfg: calcIssueEvCfg(formValue.issueEvCfg),
@@ -154,6 +160,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
                 api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
+                ci_cd_ev_cfg: calcCiCdEvCfg(formValue.ciCdEvCfg),
             },
         }));
         props.onOk();
@@ -174,7 +181,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "projectEvCfg": projectEvCfgValues,
                     "docEvCfg": docEvCfgValues,
                     "extEvCfg": extEvCfgValues,
-                    "atomgitEvcfg":atomgitEvCfgValues,
+                    "atomgitEvcfg": atomgitEvCfgValues,
                     "giteeEvCfg": giteeEvCfgValues,
                     "gitlabEvCfg": gitlabEvCfgValues,
                     "issueEvCfg": issueEvCfgValues,
@@ -261,6 +268,33 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
+
+                    <Form.Item label={<Checkbox indeterminate={ciCdEvCfgIndeterminate} checked={ciCdEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setCiCdEvCfgIndeterminate(false);
+                        if (ciCdEvCfgCheckAll) {
+                            setCiCdEvCfgCheckAll(false);
+                            form.setFieldValue("ciCdEvCfg", []);
+                        } else {
+                            setCiCdEvCfgCheckAll(true);
+                            form.setFieldValue("ciCdEvCfg", ciCdEvOptionList.map(item => item.value));
+                        }
+                    }}>CI/CD事件</Checkbox>} name="ciCdEvCfg">
+                        <Checkbox.Group options={ciCdEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setCiCdEvCfgCheckAll(false);
+                                setCiCdEvCfgIndeterminate(false);
+                            } else if (values.length == ciCdEvOptionList.length) {
+                                setCiCdEvCfgCheckAll(true);
+                                setCiCdEvCfgIndeterminate(false);
+                            } else {
+                                setCiCdEvCfgCheckAll(false);
+                                setCiCdEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    
                     <Form.Item label={<Checkbox indeterminate={atomgitEvCfgIndeterminate} checked={atomgitEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
