@@ -7,6 +7,7 @@ import { platform as get_platform } from '@tauri-apps/api/os';
 import { get_conn_server_addr } from "@/api/main";
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { writeText } from '@tauri-apps/api/clipboard';
+import { open as open_shell} from '@tauri-apps/api/shell';
 
 export interface InstallRunnerModalProps {
     onCancel: () => void;
@@ -82,7 +83,7 @@ const InstallRunnerModal = (props: InstallRunnerModalProps) => {
                                     下载&nbsp;<a onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        open_shell("https://www.linksaas.pro/release/easy_runner_windows.exe");
                                     }}>easy_runner_windows.exe</a>
                                 </p>
                             ),
@@ -95,7 +96,7 @@ const InstallRunnerModal = (props: InstallRunnerModalProps) => {
                                     下载&nbsp;<a onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        open_shell("https://www.linksaas.pro/release/easy_runner_macos");
                                     }}>easy_runner_macos</a>
                                 </p>
                             ),
@@ -108,7 +109,7 @@ const InstallRunnerModal = (props: InstallRunnerModalProps) => {
                                     下载&nbsp;<a onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        open_shell("https://www.linksaas.pro/release/easy_runner_linux");
                                     }}>easy_runner_linux</a>
                                 </p>
                             ),
@@ -248,7 +249,73 @@ const InstallRunnerModal = (props: InstallRunnerModalProps) => {
                     } />
             )}
             <h1 style={{ fontSize: "16px", fontWeight: 600, marginTop: "20px" }}>启动执行代理</h1>
-            <p>TODO</p>
+            <p>打开具有管理员权限的终端界面</p>
+            {linkOsType != "" && (
+                <Tabs activeKey={linkOsType} type="card"
+                    onChange={value => setLinkOsType(value)}
+                    items={[
+                        {
+                            key: "windows",
+                            label: "windows",
+                            children: (
+                                <CodeEditor
+                                    value={`easy_runner_windows.exe start`}
+                                    language="powershell"
+                                    disabled
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
+                            ),
+                        },
+                        {
+                            key: "macos",
+                            label: "macos",
+                            children: (
+                                <CodeEditor
+                                    value={`./easy_runner_macos start`}
+                                    language="bash"
+                                    disabled
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
+                            ),
+                        },
+                        {
+                            key: "linux",
+                            label: "linux",
+                            children: (
+                                <CodeEditor
+                                    value={`./easy_runner_linux start`}
+                                    language="bash"
+                                    disabled
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                    }}
+                                />
+                            ),
+                        }
+                    ]}
+                    tabBarExtraContent={
+                        <Button type="link" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (linkOsType == "windows") {
+                                writeText(`easy_runner_windows.exe start`);
+                            } else if (linkOsType == "macos") {
+                                writeText(`./easy_runner_macos start`);
+                            } else {
+                                writeText(`./easy_runner_linux start`);
+                            }
+                            message.info("复制成功");
+                        }}>复制</Button>
+                    }
+                />
+            )}
         </Modal>
     );
 };
