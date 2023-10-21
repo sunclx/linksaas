@@ -1,7 +1,6 @@
 import React from 'react';
 import s from './EditDoc.module.less';
 import { ReactComponent as Historysvg } from '@/assets/svg/history.svg';
-import { ReactComponent as Msgsvg } from '@/assets/svg/msg.svg';
 import { ReactComponent as Permsvg } from "@/assets/svg/perm.svg"
 import RemoveDocBtn from './RemoveDocBtn';
 import { observer } from 'mobx-react';
@@ -10,7 +9,6 @@ import { request } from '@/utils/request';
 import * as docApi from '@/api/project_doc';
 import { message, Popover } from 'antd';
 import DocHistory from './DocHistory';
-import DocComment from './DocComment';
 import { runInAction } from 'mobx';
 import { SwapOutlined } from '@ant-design/icons';
 import SwitchDocSpace from './SwitchDocSpace';
@@ -88,16 +86,6 @@ const RenderDocBtns = () => {
               content={() => <EditPermBtn />}
             >
               <span title='文档权限'><Permsvg style={{ marginLeft: "15px" }} /></span>
-            </Popover>
-            <Popover
-              placement="bottom"
-              content={() => <DocComment />}
-              onOpenChange={(v) => {
-                docSpaceStore.showDocComment = v;
-              }}
-              trigger="click"
-            >
-              <span title="文档评论列表"><Msgsvg style={{ marginLeft: "15px" }} /></span>
             </Popover>
             <Popover
               placement="bottom"

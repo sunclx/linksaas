@@ -10,7 +10,6 @@ import { Card, Empty, Space, Tabs, message } from 'antd';
 import Button from '@/components/Button';
 import { request } from '@/utils/request';
 import LinkIssuePanel from './LinkIssuePanel';
-import { CommentList } from './CommentList';
 import KanoPanel from './KanoPanel';
 import FourQPanel from './FourQPanel';
 
@@ -118,7 +117,6 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
                     </Tabs.TabPane>
                 </Tabs>
             </Card>
-            <CommentList requirementId={props.requirement.requirement_id} />
         </div>
     );
 };

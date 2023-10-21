@@ -69,8 +69,6 @@ export type Doc = {
 };
 
 export type ListDocParam = {
-    // filter_by_tag: boolean;
-    // tag_list: string[];
     filter_by_watch: boolean;
     watch: boolean;
     filter_by_tag_id: boolean;
@@ -84,26 +82,6 @@ export type DocKeyHistory = {
     update_user_id: string;
     doc_key: DocKey;
 };
-
-export type BasicComment = {
-    comment_data: string;
-    ref_comment_id: string;
-};
-
-export type Comment = {
-    comment_id: string;
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-    basic_comment: BasicComment;
-    sender_user_id: string;
-    send_time: number;
-    sender_logo_uri: string;
-    sender_display_name: string;
-    ref_comment_data: string;
-    ref_user_logo_uri: string;
-    ref_user_display_name: string;
-}
 
 export type DocSpace = {
     doc_space_id: string;
@@ -466,53 +444,6 @@ export type UnWatchDocResponse = {
     err_msg: string;
 };
 
-
-export type AddCommentRequest = {
-    session_id: string;
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-    comment: BasicComment;
-};
-
-export type AddCommentResponse = {
-    code: number;
-    err_msg: string;
-    comment_id: string;
-};
-
-
-export type ListCommentRequest = {
-    session_id: string;
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-    offset: number;
-    limit: number;
-};
-
-export type ListCommentResponse = {
-    code: number;
-    err_msg: string;
-    total_count: number;
-    comment_list: Comment[];
-};
-
-
-export type RemoveCommentRequest = {
-    session_id: string;
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-    comment_id: string;
-};
-
-
-export type RemoveCommentResponse = {
-    code: number;
-    err_msg: string;
-};
-
 export type GetLastViewDocRequest = {
     session_id: string;
     project_id: string;
@@ -756,33 +687,6 @@ export async function un_watch_doc(request: UnWatchDocRequest): Promise<UnWatchD
     const cmd = 'plugin:project_doc_api|un_watch_doc';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UnWatchDocResponse>(cmd, {
-        request,
-    });
-}
-
-//增加评论
-export async function add_comment(request: AddCommentRequest): Promise<AddCommentResponse> {
-    const cmd = 'plugin:project_doc_api|add_comment';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<AddCommentResponse>(cmd, {
-        request,
-    });
-}
-
-//列出评论
-export async function list_comment(request: ListCommentRequest): Promise<ListCommentResponse> {
-    const cmd = 'plugin:project_doc_api|list_comment';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListCommentResponse>(cmd, {
-        request,
-    });
-}
-
-//删除评论
-export async function remove_comment(request: RemoveCommentRequest): Promise<ListCommentResponse> {
-    const cmd = 'plugin:project_doc_api|remove_comment';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListCommentResponse>(cmd, {
         request,
     });
 }

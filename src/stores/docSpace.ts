@@ -230,18 +230,7 @@ export default class DocSpaceStore {
     }
 
     //文档额外信息
-    private _showDocComment = false;
     private _showDocHistory = false;
-
-    get showDocComment(): boolean {
-        return this._showDocComment;
-    }
-
-    set showDocComment(val: boolean) {
-        runInAction(() => {
-            this._showDocComment = val;
-        });
-    }
 
     get showDocHistory(): boolean {
         return this._showDocHistory;
@@ -285,7 +274,6 @@ export default class DocSpaceStore {
             this._curDoc = undefined;
             this._recycleBin = false;
             this._inEdit = false;
-            this._showDocComment = false;
             this._showDocHistory = false;
         });
     }

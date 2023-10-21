@@ -15,7 +15,6 @@ pub mod project {
         UserOfflineNotice(notices_project::UserOfflineNotice),
         NewEventNotice(notices_project::NewEventNotice),
         SetMemberRoleNotice(notices_project::SetMemberRoleNotice),
-        ReminderNotice(notices_project::ReminderNotice),
         UpdateShortNoteNotice(notices_project::UpdateShortNoteNotice),
         UpdateAlarmStatNotice(notices_project::UpdateAlarmStatNotice),
         CreateBulletinNotice(notices_project::CreateBulletinNotice),
@@ -66,10 +65,6 @@ pub mod project {
             if let Ok(notice) = notices_project::SetMemberRoleNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::SetMemberRoleNotice(notice));
-            }
-        } else if data.type_url == notices_project::ReminderNotice::type_url() {
-            if let Ok(notice) = notices_project::ReminderNotice::decode(data.value.as_slice()) {
-                return Some(Notice::ReminderNotice(notice));
             }
         } else if data.type_url == notices_project::UpdateShortNoteNotice::type_url() {
             if let Ok(notice) =
