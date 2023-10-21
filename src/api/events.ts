@@ -12,7 +12,7 @@ export const EVENT_TYPE_SPRIT: EVENT_TYPE = 4; //项目计划事件
 export const EVENT_TYPE_DOC: EVENT_TYPE = 5; //文档事件
 export const EVENT_TYPE_DISK: EVENT_TYPE = 6; //网盘事件
 // export const EVENT_TYPE_WORK_SNAPSHOT: EVENT_TYPE = 7; //快照
-export const EVENT_TYPE_APP: EVENT_TYPE = 8; //项目应用
+// export const EVENT_TYPE_APP: EVENT_TYPE = 8; //项目应用
 // export const EVENT_TYPE_BOOK_SHELF: EVENT_TYPE = 9; //电子书
 // export const EVENT_TYPE_ROBOT: EVENT_TYPE = 10;         //机器人
 // export const EVENT_TYPE_EARTHLY: EVENT_TYPE = 11;       // ci/cd
@@ -24,6 +24,7 @@ export const EVENT_TYPE_IDEA: EVENT_TYPE = 16; //知识点相关
 // export const EVENT_TYPE_BOOK_MARK: EVENT_TYPE = 17; //书签相关
 export const EVENT_TYPE_DATA_ANNO: EVENT_TYPE = 18; //数据标注
 export const EVENT_TYPE_API_COLLECTION: EVENT_TYPE = 19; //API集合
+export const EVENT_TYPE_CICD: EVENT_TYPE = 20; //CICD
 
 export const EVENT_TYPE_CUSTOM_EVENT = 99;
 

@@ -29,6 +29,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
     const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
     const [disableCodeComment, setDisableCodeComment] = useState(projectStore.curProject?.setting.disable_code_comment ?? false);
+    const [disableCiCd,setDisableCiCd] = useState(projectStore.curProject?.setting.disable_ci_cd ?? false);
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
@@ -52,6 +53,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
         setDisableApiCollection(projectStore.curProject?.setting.disable_api_collection ?? false);
         setDisableCodeComment(projectStore.curProject?.setting.disable_code_comment ?? false);
+        setDisableCiCd(projectStore.curProject?.setting.disable_ci_cd ?? false)
 
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
         setHideBulletin(projectStore.curProject?.setting.hide_bulletin ?? false);
@@ -68,6 +70,7 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_member_appraise: disableMemberAppraise,
                 disable_ext_event: disableExtEvent,
                 disable_data_anno: disableDataAnno,
+                disable_ci_cd: disableCiCd,
                 disable_api_collection: disableApiCollection,
                 disable_code_comment: disableCodeComment,
                 disable_chat: disableChat,
@@ -185,6 +188,11 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableMemberAppraise(e.target.checked);
                             setHasChange(true);
                         }}>关闭成员互评入口</Checkbox>
+                        <Checkbox checked={disableCiCd} onChange={e => {
+                            e.stopPropagation();
+                            setDisableCiCd(e.target.checked);
+                            setHasChange(true);
+                        }}>关闭CI/CD</Checkbox>
                         <Checkbox checked={disableApiCollection} onChange={e => {
                             e.stopPropagation();
                             setDisableApiCollection(e.target.checked);

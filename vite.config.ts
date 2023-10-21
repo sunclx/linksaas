@@ -65,6 +65,7 @@ export default ({ command, mode }: ConfigEnv) => {
           apiGrpc: "api_grpc.html",
           apiSwagger: "api_swagger.html",
           apiCustom: "api_custom.html",
+          cicd: "cicd.html"
         },
       },
       terserOptions: {

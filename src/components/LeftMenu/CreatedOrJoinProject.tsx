@@ -55,6 +55,7 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
             disable_data_anno: true,
             disable_api_collection: true,
             disable_code_comment: true,
+            disable_ci_cd: false,
 
             disable_chat: true,
             disable_kb: true,

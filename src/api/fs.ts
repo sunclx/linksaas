@@ -32,6 +32,7 @@ export const FILE_OWNER_TYPE_DOCKER_TEMPLATE: FILE_OWNER_TYPE = 18;
 export const FILE_OWNER_TYPE_API_COLLECTION: FILE_OWNER_TYPE = 19;
 export const FILE_OWNER_TYPE_RSS_ENTRY: FILE_OWNER_TYPE = 20;
 export const FILE_OWNER_TYPE_SEARCH_SITE: FILE_OWNER_TYPE = 21;
+export const FILE_OWNER_TYPE_PIPE_LINE: FILE_OWNER_TYPE = 22;
 
 export const FILE_OWNER_TYPE_PROJECT: FILE_OWNER_TYPE = 99; //项目范围 
 
@@ -126,6 +127,11 @@ export async function download_file(
         asName: as_name,
     });
 }
+
+export async function get_file_name(file_path: string): Promise<string> {
+    return invoke<string>('plugin:fs_api|get_file_name', { filePath: file_path });
+}
+
 export async function write_file_base64(
     session_id: string,
     fs_id: string,

@@ -20,8 +20,7 @@ export function request<T>(func: Promise<T & SuccessData>): Promise<T & SuccessD
         }
       })
       .catch((err) => {
-        console.log(err);
-        throw Error(err);
+        reject(err);
       });
   });
 }

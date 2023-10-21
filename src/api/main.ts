@@ -12,6 +12,11 @@ export async function is_conn_server(): Promise<boolean> {
   return invoke<boolean>('is_conn_server', {});
 }
 
+//获取连接服务器地址
+export async function get_conn_server_addr(): Promise<string> {
+  return invoke<string>('get_conn_server_addr', {});
+}
+
 //检查更新
 export async function check_update(): Promise<void> {
   return invoke<void>("check_update", {});
