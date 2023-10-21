@@ -10,7 +10,6 @@ export const RESET_TEXT = 'resetPassword';
 
 export const APP_PROJECT_PATH = '/app/project';
 export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
-export const APP_PROJECT_CHAT_PATH = '/app/project/chat';
 export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
 export const APP_PROJECT_MY_WORK_PATH = '/app/project/my_work';
@@ -21,14 +20,6 @@ export const BUG_DETAIL_SUFFIX = '/bug/detail';
 
 export const TASK_CREATE_SUFFIX = '/task/create';
 export const BUG_CREATE_SUFFIX = '/bug/create';
-// export const SCRIPT_CREATE_SUFFIX = '/script/create';
-
-// export const ROBOT_METRIC_SUFFIX = '/robot/metric';
-
-// export const REPO_ACTION_ACTION_DETAIL_SUFFIX = '/repo/action_detail';
-// export const REPO_ACTION_EXEC_RESULT_SUFFIX = '/repo/exec_result';
-
-// export const SCRIPT_EXEC_RESULT_SUFFIX = '/script/exec_result';
 
 export const REQUIRE_MENT_CREATE_SUFFIX = '/req/create';
 export const REQUIRE_MENT_DETAIL_SUFFIX = '/req/detail';
@@ -210,7 +201,6 @@ export const filterDocItemList = [
 
 export enum PROJECT_SETTING_TAB {
   PROJECT_SETTING_LAYOUT,
-  PROJECT_SETTING_CHAT,
   PROJECT_SETTING_ALARM,
   PROJECT_SETTING_TIPLIST,
   PROJECT_SETTING_TAGLIST,

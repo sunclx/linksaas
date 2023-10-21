@@ -122,7 +122,7 @@ export type MemberInfo = {
   is_cur_user: boolean;
   is_project_owner: boolean;
   can_admin: boolean;
-  reminder_channel_id: string;
+  // reminder_channel_id: string;
 };
 
 

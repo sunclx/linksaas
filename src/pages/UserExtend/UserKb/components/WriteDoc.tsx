@@ -35,7 +35,6 @@ const WriteDoc: React.FC<WriteDocProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: true,
         showReminder: false,
-        channelMember: false,
     });
 
     const encContent = async (content: string) => {

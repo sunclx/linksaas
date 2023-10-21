@@ -5,7 +5,7 @@ import { Badge, Divider, Tooltip } from 'antd';
 import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
+import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
@@ -20,8 +20,6 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
       history.push(APP_PROJECT_WORK_PLAN_PATH + '/' + id);
     } else if (props.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       history.push(APP_PROJECT_KB_DOC_PATH + '/' + id);
-    } else if (props.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-      history.push(APP_PROJECT_CHAT_PATH + '/' + id);
     } else if (props.pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
       history.push(APP_PROJECT_MY_WORK_PATH + "/" + id);
     } else if (props.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
@@ -68,7 +66,7 @@ const Toolbar: React.FC = observer(() => {
 
   return (
     <div className={style.toolbar}>
-      {(!projectStore.curProject?.setting.disable_chat || !projectStore.curProject?.setting.disable_kb) && (
+      {(!projectStore.curProject?.setting.disable_kb) && (
         <>
           <Item
             id="idea"

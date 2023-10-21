@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
-import { LinkChannelInfo, LINK_TARGET_TYPE } from "@/stores/linkAux";
-import { get as get_sprit, remove as remove_sprit, link_channel, cancel_link_channel, watch, un_watch, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
+import {  LINK_TARGET_TYPE } from "@/stores/linkAux";
+import { get as get_sprit, remove as remove_sprit, watch, un_watch, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -16,7 +16,6 @@ import IssuePanel from "./components/IssuePanel";
 import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
 import LinkDocPanel from "./components/LinkDocPanel";
-import { EditSelect } from "@/components/EditCell/EditSelect";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
 import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
@@ -30,9 +29,7 @@ import AddIssueModal from "./components/AddIssueModal";
 const SpritDetail = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    const linkAuxStore = useStores('linkAuxStore');
     const spritStore = useStores('spritStore');
-    const channelStore = useStores('channelStore');
     const memberStore = useStores('memberStore');
 
     const location = useLocation();
@@ -202,69 +199,6 @@ const SpritDetail = () => {
                                 <Tag key={item}>{moment(item).format("YYYY-MM-DD")}</Tag>
                             ))}
                         </div>
-                    </div>
-                )}
-                {projectStore.curProject?.setting.disable_chat === false && spritInfo?.basic_info.hide_channel == false && (
-                    <div className={s.info_wrap}>
-                        <div className={s.label} style={{ lineHeight: "28px" }}>关联频道：</div>
-                        {spritInfo !== null && (<div>
-                            <EditSelect
-                                width="150px"
-                                editable={projectStore.isAdmin}
-                                curValue={spritInfo?.link_channel_id ?? ""}
-                                itemList={[
-                                    { value: "", label: "-", color: "black" },
-                                    ...(channelStore.channelList.filter(ch => ch.channelInfo.system_channel == false).map(ch => {
-                                        return { value: ch.channelInfo.channel_id, label: ch.channelInfo.basic_info.channel_name, color: "black" };
-                                    })),
-                                ]}
-                                onChange={async (value) => {
-                                    if (value == undefined) {
-                                        return false;
-                                    }
-                                    try {
-                                        if (value == "") {
-                                            const res = await cancel_link_channel(userStore.sessionId, projectStore.curProjectId, spritInfo?.sprit_id ?? "");
-                                            if (res.code != 0) {
-                                                return false;
-                                            }
-                                            if (spritInfo !== null) {
-                                                setSpritInfo({
-                                                    ...spritInfo,
-                                                    link_channel_id: "",
-                                                    link_channel_title: "",
-                                                });
-                                            }
-                                        } else {
-                                            const res = await link_channel(userStore.sessionId, projectStore.curProjectId, spritInfo?.sprit_id ?? "", value as string);
-                                            if (res.code != 0) {
-                                                return false;
-                                            }
-                                            if (spritInfo !== null) {
-                                                setSpritInfo({
-                                                    ...spritInfo,
-                                                    link_channel_id: value as string,
-                                                    link_channel_title: channelStore.getChannel(value as string)?.channelInfo.basic_info.channel_name ?? "",
-                                                });
-                                            }
-                                        }
-                                        return true;
-                                    } catch (e) {
-                                        console.log(e);
-                                    }
-                                    return false;
-                                }} showEditIcon={!projectStore.curProject?.setting.disable_chat} allowClear={false} />
-                            {((spritInfo?.link_channel_id.length ?? 0) > 0) && (
-                                <Button type="link" style={{ marginLeft: "20px" }}
-                                    disabled={projectStore.curProject?.setting.disable_chat}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        linkAuxStore.goToLink(new LinkChannelInfo("", projectStore.curProjectId, spritInfo.link_channel_id ?? ""), history);
-                                    }}>进入沟通频道</Button>
-                            )}
-                        </div>
-                        )}
                     </div>
                 )}
             </div>

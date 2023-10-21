@@ -6,10 +6,8 @@ import { useStores } from "@/hooks";
 import { update_setting } from "@/api/project";
 import { request } from "@/utils/request";
 import { useHistory, useLocation } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from "@/utils/constant";
+import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from "@/utils/constant";
 import type { PanelProps } from "./common";
-
-
 
 const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const location = useLocation();
@@ -21,7 +19,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const spritStore = useStores('spritStore');
 
     const [disableWorkPlan, setDisableWorkPlan] = useState(projectStore.curProject?.setting.disable_work_plan ?? false);
-    const [disableChat, setDisableChat] = useState(projectStore.curProject?.setting.disable_chat ?? false);
     const [disableKb, setDisableKb] = useState(projectStore.curProject?.setting.disable_kb ?? false);
 
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
@@ -39,13 +36,11 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [hideWatchWorkPlan, setHideWatchWorkPlan] = useState(projectStore.curProject?.setting.hide_watch_walk_plan ?? false);
     const [hideWatchTask, setHideWatchTask] = useState(projectStore.curProject?.setting.hide_watch_task ?? false);
     const [hideWatchBug, setHideWatchBug] = useState(projectStore.curProject?.setting.hide_watch_bug ?? false);
-    const [hideWatchChannel, setHideWatchChannel] = useState(projectStore.curProject?.setting.hide_watch_channel ?? false);
 
     const [hasChange, setHasChange] = useState(false);
 
     const resetConfig = () => {
         setDisableWorkPlan(projectStore.curProject?.setting.disable_work_plan ?? false);
-        setDisableChat(projectStore.curProject?.setting.disable_chat ?? false);
         setDisableKb(projectStore.curProject?.setting.disable_kb ?? false);
 
         setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
@@ -73,7 +68,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_ci_cd: disableCiCd,
                 disable_api_collection: disableApiCollection,
                 disable_code_comment: disableCodeComment,
-                disable_chat: disableChat,
                 disable_kb: disableKb,
                 disable_work_plan: disableWorkPlan,
                 hide_project_info: hideProjectInfo,
@@ -83,7 +77,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 hide_watch_walk_plan: hideWatchWorkPlan,
                 hide_watch_task: hideWatchTask,
                 hide_watch_bug: hideWatchBug,
-                hide_watch_channel: hideWatchChannel,
             },
         }));
         message.info("保存成功");
@@ -98,8 +91,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         //特殊处理
         if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
             //do nothing
-        } else if (!disableChat && !location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-            history.push(APP_PROJECT_CHAT_PATH);
         } else if (!disableKb && !location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
             history.push(APP_PROJECT_KB_DOC_PATH);
         } else if (!disableWorkPlan && !location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
@@ -136,14 +127,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
             <Form labelCol={{ span: 5 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="主界面">
                     <Space direction="vertical">
-                        <Checkbox checked={disableChat} onChange={e => {
-                            e.stopPropagation();
-                            setDisableChat(e.target.checked);
-                            if (e.target.checked) {
-                                setHideWatchChannel(true);
-                            }
-                            setHasChange(true);
-                        }}>关闭沟通</Checkbox>
                         <Checkbox checked={disableWorkPlan} onChange={e => {
                             e.stopPropagation();
                             setDisableWorkPlan(e.target.checked);
@@ -174,11 +157,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setHideWatchDoc(e.target.checked);
                             setHasChange(true);
                         }}>隐藏关注文档</Checkbox>
-                        <Checkbox checked={hideWatchChannel} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchChannel(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注频道</Checkbox>
                     </Space>
                 </Form.Item>
                 <Form.Item label="右侧工具栏">

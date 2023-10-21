@@ -4,7 +4,6 @@ import { Modal, Tabs, message } from "antd";
 import { useStores } from "@/hooks";
 import { PROJECT_SETTING_TAB } from "@/utils/constant";
 import LayoutSettingPanel from "./components/LayoutSettingPanel";
-import ChatSettingPanel from "./components/ChatSettingPanel";
 import AlarmSettingPanel from "./components/AlarmSettingPanel";
 import TipListSettingPanel from "./components/TipListSettingPanel";
 import TagListSettingPanel from "./components/TagListSettingPanel";
@@ -21,8 +20,6 @@ const ProjectSettingModal = () => {
     useEffect(() => {
         if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT) {
             setActiveKey("layout");
-        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_CHAT) {
-            setActiveKey("chat");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_ALARM) {
             setActiveKey("alarm");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_TIPLIST) {
@@ -56,8 +53,6 @@ const ProjectSettingModal = () => {
                 onChange={key => {
                     if (key == "layout") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
-                    } else if (key == "chat") {
-                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_CHAT;
                     } else if (key == "alarm") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_ALARM;
                     } else if (key == "tips") {
@@ -73,11 +68,6 @@ const ProjectSettingModal = () => {
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
                     {activeKey == "layout" && <LayoutSettingPanel onChange={value => setDisableTabs(value)} title="界面布局" />}
                 </Tabs.TabPane>
-                {projectStore.curProject?.setting.disable_chat === false && (
-                    <Tabs.TabPane key="chat" tab="沟通设置" disabled={disableTabs}>
-                        {activeKey == "chat" && <ChatSettingPanel onChange={value => setDisableTabs(value)} title="沟通设置" />}
-                    </Tabs.TabPane>
-                )}
                 <Tabs.TabPane key="alarm" tab="项目预警" disabled={disableTabs}>
                     {activeKey == "alarm" && <AlarmSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
                 </Tabs.TabPane>

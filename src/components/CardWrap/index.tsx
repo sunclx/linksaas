@@ -3,7 +3,7 @@ import React from 'react';
 import s from './index.module.less';
 import { ReactComponent as Packupsvg } from '@/assets/svg/packup.svg';
 import { useHistory, useLocation } from 'react-router-dom';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from '@/utils/constant';
 
 type CardWrapProps = {
   title?: string;
@@ -31,8 +31,6 @@ const CardWrap: FC<CardWrapProps> = (props) => {
   let backUrl = "";
   if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
     backUrl = APP_PROJECT_WORK_PLAN_PATH;
-  } else if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-    backUrl = APP_PROJECT_CHAT_PATH;
   } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     backUrl = APP_PROJECT_KB_DOC_PATH;
   } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {

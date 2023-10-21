@@ -35,7 +35,6 @@ const WriteDoc: React.FC = () => {
     clipboardInToolbar: true,
     widgetInToolbar: true,
     showReminder: true,
-    channelMember: false,
     tocCallback: (result) => setTocList(result),
   });
 

@@ -141,8 +141,6 @@ pub fn convert_event_list(event_list: Vec<Event>) -> Vec<models::EventInfo> {
             ref_type = "user";
         } else if item.ref_type == EventRefType::Project as i32 {
             ref_type = "project";
-        } else if item.ref_type == EventRefType::Channel as i32 {
-            ref_type = "channel";
         } else if item.ref_type == EventRefType::Sprit as i32 {
             ref_type = "sprit";
         } else if item.ref_type == EventRefType::Task as i32 {

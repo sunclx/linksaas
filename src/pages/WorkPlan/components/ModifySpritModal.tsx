@@ -24,7 +24,6 @@ interface FormValue {
     hideBurndownPanel: boolean;
     hideStatPanel: boolean;
     hideSummaryPanel: boolean;
-    hideChannel: boolean;
 }
 
 const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
@@ -73,7 +72,6 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
             hide_burndown_panel: formValue.hideBurndownPanel,
             hide_stat_panel: formValue.hideStatPanel,
             hide_summary_panel: formValue.hideSummaryPanel,
-            hide_channel: formValue.hideChannel,
         }));
         props.onOk();
     };
@@ -101,7 +99,6 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
                 hide_burndown_panel: formValue.hideBurndownPanel,
                 hide_stat_panel: formValue.hideStatPanel,
                 hide_summary_panel: formValue.hideSummaryPanel,
-                hide_channel: formValue.hideChannel,
             }));
         props.onOk();
     };
@@ -121,7 +118,6 @@ const CreateSpritModal: React.FC<CreateSpritModalProps> = (props) => {
             hideBurndownPanel: res.info.basic_info.hide_burndown_panel,
             hideStatPanel: res.info.basic_info.hide_stat_panel,
             hideSummaryPanel: res.info.basic_info.hide_summary_panel,
-            hideChannel: res.info.basic_info.hide_channel,
         }
         form.setFieldsValue(formValue);
         setDateRangeOk(true);

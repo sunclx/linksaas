@@ -32,11 +32,9 @@ mod project_alarm_api_plugin;
 mod project_api_plugin;
 mod project_appraise_api_plugin;
 mod project_bulletin_api_plugin;
-mod project_channel_api_plugin;
 mod project_cicd_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
-mod project_expert_qa_api_plugin;
 mod project_idea_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
@@ -44,7 +42,6 @@ mod project_member_api_plugin;
 mod project_requirement_api_plugin;
 mod project_sprit_api_plugin;
 mod project_tool_api_plugin;
-mod search_api_plugin;
 mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
@@ -409,7 +406,6 @@ fn main() {
         .system_tray(SystemTray::new().with_menu(tray_menu))
         .plugin(client_cfg_api_plugin::ClientCfgApiPlugin::new())
         .plugin(project_api_plugin::ProjectApiPlugin::new())
-        .plugin(project_channel_api_plugin::ProjectChannelApiPlugin::new())
         .plugin(project_member_api_plugin::ProjectMemberApiPlugin::new())
         .plugin(user_api_plugin::UserApiPlugin::new())
         .plugin(events_api_plugin::EventsApiPlugin::new())
@@ -421,8 +417,6 @@ fn main() {
         .plugin(project_appraise_api_plugin::ProjectAppraiseApiPlugin::new())
         .plugin(user_kb_api_plugin::UserKbApiPlugin::new())
         .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
-        .plugin(project_expert_qa_api_plugin::ProjectExpertQaApiPlugin::new())
-        .plugin(search_api_plugin::SearchApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())

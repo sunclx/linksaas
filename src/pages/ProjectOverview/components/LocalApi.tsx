@@ -7,7 +7,6 @@ import { Space, message } from "antd";
 import { writeText } from '@tauri-apps/api/clipboard';
 import { PROTO } from "@/pages/LocalApi/proto";
 import { RelProjectList } from "./RelProjectList";
-import LocalApiPermInfo from "./LocalApiPermInfo";
 
 
 const LocalApi = () => {
@@ -76,12 +75,6 @@ const LocalApi = () => {
                         </div>
                     )}
                 </div>
-                {projectStore.isAdmin && (
-                    <>
-                        <h2 className={s.head}>接口权限</h2>
-                        <LocalApiPermInfo />
-                    </>
-                )}
                 <h2 className={s.head}>相关项目</h2>
                 <RelProjectList />
             </div>

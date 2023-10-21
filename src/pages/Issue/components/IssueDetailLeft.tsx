@@ -37,7 +37,6 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: true,
         showReminder: false,
-        channelMember: false,
     });
 
     const updateContent = async () => {

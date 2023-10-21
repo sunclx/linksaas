@@ -2,7 +2,7 @@ import * as es from '../events_subscribe';
 import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
-    LinkNoneInfo, LinkProjectInfo, LinkChannelInfo,
+    LinkNoneInfo, LinkProjectInfo,
     LinkAppraiseInfo
 } from '@/stores/linkAux';
 
@@ -228,129 +228,6 @@ function get_set_role_simple_content(
     ];
 }
 
-export type CreateChannelEvent = {
-    channel_id: string;
-    channel_name: string;
-    pub_channel: boolean;
-    channel_type: number;
-};
-function get_create_chan_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateChannelEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建项目频道 ${inner.pub_channel ? '公开频道' : '私有频道'}`),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-    ];
-}
-
-export type UpdateChannelEvent = {
-    channel_id: string;
-    old_channel_name: string;
-    old_pub_channel: boolean;
-    new_channel_name: string;
-    new_pub_channel: boolean;
-};
-function get_update_chan_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UpdateChannelEvent,
-): LinkInfo[] {
-    const ret_list = [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目频道 ${inner.old_pub_channel ? '公开频道' : '私有频道'}`),
-        new LinkChannelInfo(inner.old_channel_name, ev.project_id, inner.channel_id),
-    ];
-    if (inner.old_channel_name != inner.new_channel_name) {
-        ret_list.push(new LinkNoneInfo(`新频道名称 ${inner.new_channel_name}`));
-    }
-    if (inner.old_pub_channel != inner.new_pub_channel) {
-        ret_list.push(new LinkNoneInfo(`新的可见级别 ${inner.new_pub_channel ? '公开频道' : '私有频道'}`));
-    }
-    return ret_list;
-}
-
-export type OpenChannelEvent = {
-    channel_id: string;
-    channel_name: string;
-};
-function get_open_chan_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: OpenChannelEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 激活项目频道`),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-    ];
-}
-
-export type CloseChannelEvent = {
-    channel_id: string;
-    channel_name: string;
-};
-
-function get_close_chan_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CloseChannelEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关闭项目频道`),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-    ];
-}
-
-export type RemoveChannelEvent = {
-    channel_id: string;
-    channel_name: string;
-};
-function get_remove_chan_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveChannelEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除项目频道`),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-    ];
-}
-
-export type AddChannelMemberEvent = {
-    channel_id: string;
-    channel_name: string;
-    member_user_id: string;
-    member_display_name: string;
-};
-function get_add_chan_member_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: AddChannelMemberEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在频道`),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-        new LinkNoneInfo(`新增成员${inner.member_display_name}`),
-    ];
-}
-export type RemoveChannelMemberEvent = {
-    channel_id: string;
-    channel_name: string;
-    member_user_id: string;
-    member_display_name: string;
-};
-function get_remove_chan_member_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveChannelMemberEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在频道`),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-        new LinkNoneInfo(`移除成员${inner.member_display_name}`),
-    ];
-}
-
 export type CreateAppraiseEvent = {
     appraise_id: string;
     title: string;
@@ -459,38 +336,6 @@ function get_remove_subscribe_simple_content(
     return [new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除事件订阅 ${get_chat_bot_type_str(inner.chat_bot_type)} ${inner.chat_bot_name}`)];
 }
 
-export type WatchChannelEvent = {
-    channel_id: string;
-    channel_name: string;
-};
-
-function get_watch_channel_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: WatchChannelEvent
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注频道 `),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-    ];
-}
-
-export type UnWatchChannelEvent = {
-    channel_id: string;
-    channel_name: string;
-};
-
-function get_unwatch_channel_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UnWatchChannelEvent
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消关注频道 `),
-        new LinkChannelInfo(inner.channel_name, ev.project_id, inner.channel_id),
-    ];
-}
-
 export type SetAlarmConfigEvent = {};
 
 function get_set_alarm_config_simple_content(
@@ -534,13 +379,7 @@ export type AllProjectEvent = {
     UpdateProjectMemberEvent?: UpdateProjectMemberEvent;
     RemoveProjectMemberEvent?: RemoveProjectMemberEvent;
     SetProjectMemberRoleEvent?: SetProjectMemberRoleEvent;
-    CreateChannelEvent?: CreateChannelEvent;
-    UpdateChannelEvent?: UpdateChannelEvent;
-    OpenChannelEvent?: OpenChannelEvent;
-    CloseChannelEvent?: CloseChannelEvent;
-    RemoveChannelEvent?: RemoveChannelEvent;
-    AddChannelMemberEvent?: AddChannelMemberEvent;
-    RemoveChannelMemberEvent?: RemoveChannelMemberEvent;
+
     CreateAppraiseEvent?: CreateAppraiseEvent;
     UpdateAppraiseEvent?: UpdateAppraiseEvent;
     RemoveAppraiseEvent?: RemoveAppraiseEvent;
@@ -548,8 +387,6 @@ export type AllProjectEvent = {
     CreateEventSubscribeEvent?: CreateEventSubscribeEvent;
     UpdateEventSubscribeEvent?: UpdateEventSubscribeEvent;
     RemoveEventSubscribeEvent?: RemoveEventSubscribeEvent;
-    WatchChannelEvent?: WatchChannelEvent;
-    UnWatchChannelEvent?: UnWatchChannelEvent;
     SetAlarmConfigEvent?: SetAlarmConfigEvent;
     CustomEvent?: CustomEvent;
 };
@@ -595,24 +432,6 @@ export function get_project_simple_content(
         );
     } else if (inner.SetProjectMemberRoleEvent !== undefined) {
         return get_set_role_simple_content(ev, skip_prj_name, inner.SetProjectMemberRoleEvent);
-    } else if (inner.CreateChannelEvent !== undefined) {
-        return get_create_chan_simple_content(ev, skip_prj_name, inner.CreateChannelEvent);
-    } else if (inner.UpdateChannelEvent !== undefined) {
-        return get_update_chan_simple_content(ev, skip_prj_name, inner.UpdateChannelEvent);
-    } else if (inner.OpenChannelEvent !== undefined) {
-        return get_open_chan_simple_content(ev, skip_prj_name, inner.OpenChannelEvent);
-    } else if (inner.CloseChannelEvent !== undefined) {
-        return get_close_chan_simple_content(ev, skip_prj_name, inner.CloseChannelEvent);
-    } else if (inner.RemoveChannelEvent !== undefined) {
-        return get_remove_chan_simple_content(ev, skip_prj_name, inner.RemoveChannelEvent);
-    } else if (inner.AddChannelMemberEvent !== undefined) {
-        return get_add_chan_member_simple_content(ev, skip_prj_name, inner.AddChannelMemberEvent);
-    } else if (inner.RemoveChannelMemberEvent !== undefined) {
-        return get_remove_chan_member_simple_content(
-            ev,
-            skip_prj_name,
-            inner.RemoveChannelMemberEvent,
-        );
     } else if (inner.CreateAppraiseEvent !== undefined) {
         return get_create_appraise_simple_content(ev, skip_prj_name, inner.CreateAppraiseEvent);
     } else if (inner.UpdateAppraiseEvent !== undefined) {
@@ -627,10 +446,6 @@ export function get_project_simple_content(
         return get_update_subscribe_simple_content(ev, skip_prj_name, inner.UpdateEventSubscribeEvent);
     } else if (inner.RemoveEventSubscribeEvent !== undefined) {
         return get_remove_subscribe_simple_content(ev, skip_prj_name, inner.RemoveEventSubscribeEvent);
-    } else if (inner.WatchChannelEvent !== undefined) {
-        return get_watch_channel_simple_content(ev, skip_prj_name, inner.WatchChannelEvent);
-    } else if (inner.UnWatchChannelEvent !== undefined) {
-        return get_unwatch_channel_simple_content(ev, skip_prj_name, inner.UnWatchChannelEvent);
     } else if (inner.SetAlarmConfigEvent !== undefined) {
         return get_set_alarm_config_simple_content(ev, skip_prj_name);
     } else if (inner.CustomEvent !== undefined) {

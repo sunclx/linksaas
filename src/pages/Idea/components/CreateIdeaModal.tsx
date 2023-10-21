@@ -29,7 +29,6 @@ const CreateModal = () => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const [tagList, setTagList] = useState<TagInfo[]>([]);

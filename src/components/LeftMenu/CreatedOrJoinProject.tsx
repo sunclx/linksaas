@@ -57,12 +57,8 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
             disable_code_comment: true,
             disable_ci_cd: false,
 
-            disable_chat: true,
             disable_kb: true,
             disable_work_plan: false,
-
-            min_pure_text_len_in_chat: 0,
-            disable_widget_in_chat: true,
 
             hide_custom_event: true,
             hide_custom_event_for_admin: false,
@@ -75,7 +71,6 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
             hide_watch_walk_plan: true,
             hide_watch_task: true,
             hide_watch_bug: true,
-            hide_watch_channel: true,
           },
         }));
       }

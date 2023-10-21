@@ -6,8 +6,8 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
-import { LinkChannelInfo, LinkIdeaPageInfo } from "@/stores/linkAux";
+import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
+import { LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
@@ -17,8 +17,6 @@ import { update_setting } from '@/api/project';
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
 const MENU_KEY_MEMBER_PREFIX = "member:";
-const MENU_KEY_CREATE_CHANNEL = "create.channel";
-const MENU_KEY_CHANNEL_PREFIX = "channel:";
 const MENU_KEY_WORK_PLAN = "workPlan";
 const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
 const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
@@ -41,12 +39,10 @@ const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
 const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
 
 const MENU_KEY_LAYOUT_PREFIX = "layout.";
-const MENU_KEY_LAYOUT_MAIN_CHAT = "layout.main.chat";
 const MENU_KEY_LAYOUT_MAIN_WORK_PLAN = "layout.main.workplan";
 const MENU_KEY_LAYOUT_MAIN_KB = "layout.main.kb";
 const MENU_KEY_LAYOUT_LEFT_WORK_PLAN = "layout.left.workplan";
 const MENU_KEY_LAYOUT_LEFT_DOC = "layout.left.doc";
-const MENU_KEY_LAYOUT_LEFT_CHANNEL = "layout.left.channel";
 const MENU_KEY_LAYOUT_TOOLBAR_APPRAISE = "layout.toolbar.appraise";
 const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
 const MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO = "layout.toolbar.dataanno";
@@ -62,7 +58,6 @@ const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 const ProjectQuickAccess = () => {
     const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
-    const channelStore = useStores('channelStore');
     const linkAuxStore = useStores('linkAuxStore');
     const projectStore = useStores('projectStore');
     const docSpaceStore = useStores('docSpaceStore');
@@ -82,10 +77,6 @@ const ProjectQuickAccess = () => {
                     key: "layout.main",
                     label: "主面板",
                     children: [
-                        {
-                            key: MENU_KEY_LAYOUT_MAIN_CHAT,
-                            label: `${projectStore.curProject?.setting.disable_chat == true ? "打开" : "关闭"}沟通`
-                        },
                         {
                             key: MENU_KEY_LAYOUT_MAIN_WORK_PLAN,
                             label: `${projectStore.curProject?.setting.disable_work_plan == true ? "打开" : "关闭"}工作计划`
@@ -107,10 +98,6 @@ const ProjectQuickAccess = () => {
                         {
                             key: MENU_KEY_LAYOUT_LEFT_DOC,
                             label: `${projectStore.curProject?.setting.hide_watch_doc == true ? "显示" : "隐藏"}文档关注列表`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_LEFT_CHANNEL,
-                            label: `${projectStore.curProject?.setting.hide_watch_channel == true ? "显示" : "隐藏"}频道关注列表`
                         },
                     ],
                 },
@@ -209,26 +196,6 @@ const ProjectQuickAccess = () => {
             });
         }
         tmpItems.push(memberItem);
-        if (!projectStore.curProject?.setting.disable_chat) {
-            tmpItems.push({
-                key: "channel",
-                label: "沟通",
-                children: [
-                    {
-                        key: MENU_KEY_CREATE_CHANNEL,
-                        label: "创建频道",
-                    },
-                    {
-                        key: "channels",
-                        label: "频道列表",
-                        children: channelStore.channelList.map(item => ({
-                            key: `${MENU_KEY_CHANNEL_PREFIX}${item.channelInfo.channel_id}`,
-                            label: `${item.channelInfo.basic_info.channel_name}(${item.channelInfo.closed ? "关闭状态" : "激活状态"})`,
-                        }))
-                    },
-                ],
-            });
-        }
         if (!projectStore.curProject?.setting.disable_work_plan) {
             tmpItems.push({
                 key: MENU_KEY_WORK_PLAN,
@@ -261,7 +228,7 @@ const ProjectQuickAccess = () => {
                 ],
             });
         }
-        if (projectStore.curProject?.setting.disable_kb != true || projectStore.curProject?.setting.disable_chat != true) {
+        if (projectStore.curProject?.setting.disable_kb != true) {
             tmpItems.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_IDEA,
                 label: "项目知识点",
@@ -399,9 +366,7 @@ const ProjectQuickAccess = () => {
             return;
         }
         const newSetting = { ...projectStore.curProject.setting };
-        if (key == MENU_KEY_LAYOUT_MAIN_CHAT) {
-            newSetting.disable_chat = !projectStore.curProject.setting.disable_chat;
-        } else if (key == MENU_KEY_LAYOUT_MAIN_WORK_PLAN) {
+        if (key == MENU_KEY_LAYOUT_MAIN_WORK_PLAN) {
             newSetting.disable_work_plan = !projectStore.curProject.setting.disable_work_plan;
         } else if (key == MENU_KEY_LAYOUT_MAIN_KB) {
             newSetting.disable_kb = !projectStore.curProject.setting.disable_kb;
@@ -409,8 +374,6 @@ const ProjectQuickAccess = () => {
             newSetting.hide_watch_walk_plan = !projectStore.curProject.setting.hide_watch_walk_plan;
         } else if (key == MENU_KEY_LAYOUT_LEFT_DOC) {
             newSetting.hide_watch_doc = !projectStore.curProject.setting.hide_watch_doc;
-        } else if (key == MENU_KEY_LAYOUT_LEFT_CHANNEL) {
-            newSetting.hide_watch_channel = !projectStore.curProject.setting.hide_watch_channel;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_APPRAISE) {
             newSetting.disable_member_appraise = !projectStore.curProject.setting.disable_member_appraise;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION) {
@@ -448,10 +411,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_APPRAISE:
                 linkAuxStore.goToAppriaseList(history);
-                break;
-            case MENU_KEY_CREATE_CHANNEL:
-                history.push(APP_PROJECT_CHAT_PATH);
-                channelStore.showCreateChannel = true;
                 break;
             case MENU_KEY_WORK_PLAN:
                 spritStore.setCurSpritId("");
@@ -536,17 +495,14 @@ const ProjectQuickAccess = () => {
                 }
         }
         if (info.key.startsWith(MENU_KEY_MEMBER_PREFIX)) {
-            const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
-            memberStore.floatMemberUserId = memberUserId;
-        } else if (info.key.startsWith(MENU_KEY_CHANNEL_PREFIX)) {
-            const channelId = info.key.substring(MENU_KEY_CHANNEL_PREFIX.length);
-            linkAuxStore.goToLink(new LinkChannelInfo("", projectStore.curProjectId, channelId), history);
+            // const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
+            // memberStore.floatMemberUserId = memberUserId;
         }
     }
 
     useEffect(() => {
         calcItems();
-    }, [projectStore.curProject?.setting, projectStore.curProjectId, memberStore.memberList, channelStore.channelList]);
+    }, [projectStore.curProject?.setting, projectStore.curProjectId, memberStore.memberList]);
 
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >

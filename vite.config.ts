@@ -58,7 +58,6 @@ export default ({ command, mode }: ConfigEnv) => {
           default: 'index.html',
           about: 'about.html',
           shortNote: "short_note.html",
-          searchResult: "search_result.html",
           localApi: "local_api.html",
           gitDiff: "git_diff.html",
           dataAnno: "data_anno.html",

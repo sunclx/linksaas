@@ -72,7 +72,6 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const changeIcon = async () => {

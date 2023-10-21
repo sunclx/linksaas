@@ -3,7 +3,6 @@ import type { NodeViewComponentProps } from '@remirror/react';
 import { useCommands } from '@remirror/react';
 import type {
   LinkInfo,
-  LinkChannelInfo,
   LinkTaskInfo,
   LinkBugInfo,
   LinkDocInfo,
@@ -15,7 +14,6 @@ import { useStores } from '@/hooks';
 import { useHistory } from 'react-router-dom';
 import { Popover } from 'antd';
 import { request } from '@/utils/request';
-import { get_channel } from '@/api/project_channel';
 import { get as get_issue } from '@/api/project_issue';
 import { get_doc_key } from '@/api/project_doc';
 import { LinkOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -41,15 +39,7 @@ const Link: React.FC<{
       return;
     }
     const sessionId = await get_session();
-    if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CHANNEL) {
-      const channelLink = link as unknown as LinkChannelInfo;
-      const res = await request(
-        get_channel(sessionId, channelLink.projectId, channelLink.channelId),
-      );
-      if (res) {
-        setTitle('频道:' + res.info.basic_info.channel_name);
-      }
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
+    if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as unknown as LinkRequirementInfo;
       const res = await request(get_requirement({
         session_id: sessionId,

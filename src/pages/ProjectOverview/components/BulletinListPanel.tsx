@@ -36,7 +36,6 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const loadBulletin = async () => {
@@ -152,7 +151,6 @@ const CreateModal: React.FC<CreateModalProps> = observer((props) => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const createBulletin = async () => {

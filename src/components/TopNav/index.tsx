@@ -6,7 +6,6 @@ import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   APP_PROJECT_KB_DOC_PATH,
-  APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_PATH,
   PROJECT_SETTING_TAB,
   APP_PROJECT_OVERVIEW_PATH,
@@ -14,8 +13,7 @@ import {
   APP_PROJECT_MY_WORK_PATH,
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
-import { ClockCircleOutlined, CommentOutlined, FileDoneOutlined, FlagOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
-import SearchBar from '../SearchBar';
+import { ClockCircleOutlined, FileDoneOutlined, FlagOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import AlarmHeader from './AlarmHeader';
@@ -48,16 +46,6 @@ const TopNav = () => {
   const projectStore = useStores('projectStore');
   const spritStore = useStores('spritStore');
 
-
-
-  const chatTabPanel = (
-    <Tabs.TabPane tab={
-      <Tooltip title="主界面: 沟通面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-        placement="left" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
-        <span className={activeKey == APP_PROJECT_CHAT_PATH ? s.tab_chat_active : s.tab_chat}><CommentOutlined />沟通</span>
-      </Tooltip>
-    } key={APP_PROJECT_CHAT_PATH} />);
-
   const workPanlTabPanel = (<Tabs.TabPane tab={
     <Tooltip title="主界面: 工作计划面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
       placement="top" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
@@ -77,8 +65,6 @@ const TopNav = () => {
   useEffect(() => {
     if (location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
       setActiveKey(APP_PROJECT_WORK_PLAN_PATH);
-    } else if (location.pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-      setActiveKey(APP_PROJECT_CHAT_PATH);
     } else if (location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
       setActiveKey(APP_PROJECT_KB_PATH);
     } else if(location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
@@ -101,8 +87,6 @@ const TopNav = () => {
                 if (key == APP_PROJECT_WORK_PLAN_PATH) {
                   spritStore.setCurSpritId("");
                   history.push(APP_PROJECT_WORK_PLAN_PATH);
-                } else if (key == APP_PROJECT_CHAT_PATH) {
-                  history.push(APP_PROJECT_CHAT_PATH);
                 } else if (key == APP_PROJECT_KB_PATH) {
                   docSpaceStore.showDocList("", false);
                   history.push(APP_PROJECT_KB_DOC_PATH);
@@ -118,8 +102,6 @@ const TopNav = () => {
             if (key == APP_PROJECT_WORK_PLAN_PATH) {
               spritStore.setCurSpritId("");
               history.push(APP_PROJECT_WORK_PLAN_PATH);
-            } else if (key == APP_PROJECT_CHAT_PATH) {
-              history.push(APP_PROJECT_CHAT_PATH);
             } else if (key == APP_PROJECT_KB_PATH) {
               docSpaceStore.showDocList("", false);
               history.push(APP_PROJECT_KB_DOC_PATH);
@@ -130,10 +112,6 @@ const TopNav = () => {
             }
           }}
         >
-
-          {!projectStore.curProject?.setting.disable_chat && (
-            <>{chatTabPanel}</>
-          )}
 
           {!projectStore.curProject?.setting.disable_work_plan && (
             <>{workPanlTabPanel}</>
@@ -154,9 +132,8 @@ const TopNav = () => {
       </div>
       {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<span />)}
       <div className={s.right}>
-        {location.pathname.includes(APP_PROJECT_CHAT_PATH) && (<><SearchBar /><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_WORK_PLAN_PATH) && (<RightFloat />)}
-        {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><SearchBar /><RightFloat /></>)}
+        {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><RightFloat /></>)}
         {location.pathname.includes(APP_PROJECT_MY_WORK_PATH) && (<RightFloat />)}
         {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<RightFloat />)}
       </div>
