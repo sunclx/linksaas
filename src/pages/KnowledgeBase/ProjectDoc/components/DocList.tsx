@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import * as prjDocApi from "@/api/project_doc";
 import { request } from '@/utils/request';
-import { Pagination, Card, Table, Form, Switch, message, Select, Space, Popover } from 'antd';
+import { Pagination, Card, Table, Form, message, Select, Space, Popover } from 'antd';
 import { DeleteOutlined, FileTextOutlined, MoreOutlined } from "@ant-design/icons";
 import type { ColumnsType } from 'antd/es/table';
 import UserPhoto from "@/components/Portrait/UserPhoto";
@@ -28,7 +28,6 @@ const DocList = () => {
     const [docKeyList, setDocKeyList] = useState<prjDocApi.DocKey[]>([]);
     const [tagDefList, setTagDefList] = useState<TagInfo[]>([]);
     const [filterTagId, setFilterTagId] = useState("");
-    const [filterWatch, setFilterWatch] = useState(false);
 
     const loadDocKey = async () => {
         if (docSpaceStore.recycleBin) {
@@ -49,8 +48,6 @@ const DocList = () => {
                 filter_by_doc_space_id: docSpaceStore.curDocSpaceId != "",
                 doc_space_id: docSpaceStore.curDocSpaceId,
                 list_param: {
-                    filter_by_watch: filterWatch,
-                    watch: filterWatch,
                     filter_by_tag_id: filterTagId != "",
                     tag_id_list: filterTagId == "" ? [] : [filterTagId],
                 },
@@ -72,38 +69,6 @@ const DocList = () => {
         }));
         setTagDefList(res.tag_info_list);
     }
-
-    const unWatchDoc = async (docSpaceId: string, docId: string) => {
-        await request(prjDocApi.un_watch_doc({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            doc_space_id: docSpaceId,
-            doc_id: docId,
-        }));
-        const tmpList = docKeyList.slice();
-        const index = tmpList.findIndex(item => item.doc_id == docId);
-        if (index != -1) {
-            tmpList[index].my_watch = false;
-            setDocKeyList(tmpList);
-        }
-        await docSpaceStore.loadCurWatchDocList(projectStore.curProjectId);
-    }
-
-    const watchDoc = async (docSpaceId: string, docId: string) => {
-        await request(prjDocApi.watch_doc({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            doc_space_id: docSpaceId,
-            doc_id: docId,
-        }));
-        const tmpList = docKeyList.slice();
-        const index = tmpList.findIndex(item => item.doc_id == docId);
-        if (index != -1) {
-            tmpList[index].my_watch = true;
-            setDocKeyList(tmpList);
-        }
-        await docSpaceStore.loadCurWatchDocList(projectStore.curProjectId);
-    };
 
     const getSpaceName = () => {
         if (docSpaceStore.recycleBin) {
@@ -141,23 +106,6 @@ const DocList = () => {
     }
 
     const columns: ColumnsType<prjDocApi.DocKey> = [
-        {
-            title: "",
-            width: 20,
-            render: (_, record: prjDocApi.DocKey) => (
-                <a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if (record.my_watch) {
-                        unWatchDoc(record.doc_space_id, record.doc_id);
-                    } else {
-                        watchDoc(record.doc_space_id, record.doc_id);
-                    }
-                }}>
-                    {!docSpaceStore.recycleBin && <span className={record.my_watch ? s.isCollect : s.noCollect} />}
-                </a>
-            ),
-        },
         {
             title: "文档标题",
             dataIndex: "title",
@@ -200,12 +148,6 @@ const DocList = () => {
                 (
                     <Space size="middle">
                         <Form layout="inline">
-                            <Form.Item label="我的关注">
-                                <Switch onChange={checked => {
-                                    setFilterWatch(checked);
-                                    setCurPage(0);
-                                }} checked={filterWatch} />
-                            </Form.Item>
                             {tagDefList.length > 0 && (
                                 <Form.Item label="标签">
                                     <Select style={{ width: "100px" }} value={filterTagId} onChange={value => {
@@ -246,16 +188,13 @@ const DocList = () => {
 
     useEffect(() => {
         loadDocKey();
-    }, [filterWatch, filterTagId, curPage]);
+    }, [filterTagId, curPage]);
 
 
     useEffect(() => {
-        if (!filterWatch && filterTagId == "" && curPage == 0) {
+        if (filterTagId == "" && curPage == 0) {
             loadDocKey();
         } else {
-            if (filterWatch) {
-                setFilterWatch(false);
-            }
             if (filterTagId != "") {
                 setFilterTagId("");
             }

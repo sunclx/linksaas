@@ -668,60 +668,6 @@ async fn recover_doc_in_recycle<R: Runtime>(
 }
 
 #[tauri::command]
-async fn watch_doc<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: WatchDocRequest,
-) -> Result<WatchDocResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectDocApiClient::new(chan.unwrap());
-    match client.watch_doc(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == watch_doc_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("watch_doc".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn un_watch_doc<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UnWatchDocRequest,
-) -> Result<UnWatchDocResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectDocApiClient::new(chan.unwrap());
-    match client.un_watch_doc(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == un_watch_doc_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("un_watch_doc".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn get_last_view_doc<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -781,8 +727,6 @@ impl<R: Runtime> ProjectDocApiPlugin<R> {
                 get_doc_in_recycle,
                 remove_doc_in_recycle,
                 recover_doc_in_recycle,
-                watch_doc,
-                un_watch_doc,
                 get_last_view_doc,
             ]),
         }

@@ -67,8 +67,6 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
             hide_bulletin: true,
             hide_extra_info: true,
 
-            hide_watch_doc: true,
-            hide_watch_walk_plan: true,
             hide_watch_task: true,
             hide_watch_bug: true,
           },

@@ -126,7 +126,7 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
     const [spritList, setSpritList] = useState<SpritInfo[]>([]);
 
     const loadSpritInfo = async () => {
-        const res = await request(list_sprit(userStore.sessionId, projectStore.curProjectId, false, false, 0, 999));
+        const res = await request(list_sprit(userStore.sessionId, projectStore.curProjectId, 0, 999));
         setSpritList(res.info_list);
     };
 

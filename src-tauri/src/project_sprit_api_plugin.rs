@@ -132,57 +132,6 @@ async fn remove<R: Runtime>(
 }
 
 #[tauri::command]
-async fn watch<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: WatchRequest,
-) -> Result<WatchResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectSpritApiClient::new(chan.unwrap());
-    match client.watch(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == watch_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("watch".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn un_watch<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UnWatchRequest,
-) -> Result<UnWatchResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectSpritApiClient::new(chan.unwrap());
-    match client.un_watch(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == un_watch_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("un_watch".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn link_doc<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -525,8 +474,6 @@ impl<R: Runtime> ProjectSpritApiPlugin<R> {
                 list,
                 get,
                 remove,
-                watch,
-                un_watch,
                 link_doc,
                 cancel_link_doc,
                 list_link_doc,

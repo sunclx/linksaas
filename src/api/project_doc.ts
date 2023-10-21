@@ -26,7 +26,6 @@ export type DocKey = {
     create_logo_uri: string;
     update_display_name: string;
     update_logo_uri: string;
-    my_watch: boolean;
     user_perm: UserPerm;
 };
 
@@ -63,14 +62,11 @@ export type Doc = {
     create_logo_uri: string;
     update_display_name: string;
     update_logo_uri: string;
-    my_watch: boolean;
     tag_info_list: DocTag[];
     user_perm: UserPerm;
 };
 
 export type ListDocParam = {
-    filter_by_watch: boolean;
-    watch: boolean;
     filter_by_tag_id: boolean;
     tag_id_list: string[];
 
@@ -417,33 +413,6 @@ export type RecoverDocInRecycleResponse = {
     err_msg: string;
 };
 
-
-export type WatchDocRequest = {
-    session_id: string;
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-};
-
-export type WatchDocResponse = {
-    code: number;
-    err_msg: string;
-};
-
-
-export type UnWatchDocRequest = {
-    session_id: string;
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-};
-
-
-export type UnWatchDocResponse = {
-    code: number;
-    err_msg: string;
-};
-
 export type GetLastViewDocRequest = {
     session_id: string;
     project_id: string;
@@ -669,24 +638,6 @@ export async function recover_doc_in_recycle(request: RecoverDocInRecycleRequest
     const cmd = 'plugin:project_doc_api|recover_doc_in_recycle';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RecoverDocInRecycleResponse>(cmd, {
-        request,
-    });
-}
-
-//关注文档
-export async function watch_doc(request: WatchDocRequest): Promise<WatchDocResponse> {
-    const cmd = 'plugin:project_doc_api|watch_doc';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<WatchDocResponse>(cmd, {
-        request,
-    });
-}
-
-//取消关注文档
-export async function un_watch_doc(request: UnWatchDocRequest): Promise<UnWatchDocResponse> {
-    const cmd = 'plugin:project_doc_api|un_watch_doc';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UnWatchDocResponse>(cmd, {
         request,
     });
 }

@@ -41,8 +41,6 @@ export type DocEvCfg = {
     move_doc_to_recycle: boolean;
     remove_doc: boolean;
     recover_doc: boolean;
-    watch_doc: boolean;
-    un_watch_doc: boolean;
     move_doc: boolean;
     update_tag: boolean;
 };
@@ -109,8 +107,6 @@ export type SpritEvCfg = {
     remove: boolean;
     link_doc: boolean;
     cancel_link_doc: boolean;
-    watch: boolean;
-    un_watch: boolean;
 }
 
 export type RequirementEvCfg = {

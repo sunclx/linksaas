@@ -4,8 +4,8 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC } from '@/api/project_issue';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, list as list_issue, get as get_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
-import type { SpritDocInfo, SpritInfo } from '@/api/project_sprit';
-import { list_link_doc, get_link_doc, list as list_sprit } from '@/api/project_sprit';
+import type { SpritDocInfo } from '@/api/project_sprit';
+import { list_link_doc, get_link_doc } from '@/api/project_sprit';
 
 export default class SpritStore {
     constructor(rootStore: RootStore) {
@@ -262,27 +262,6 @@ export default class SpritStore {
     set showCreateSprit(val: boolean) {
         runInAction(() => {
             this._showCreateSprit = val;
-        });
-    }
-
-    //当前关注的工作计划列表
-    private _curWatchList: SpritInfo[] = [];
-
-    get curWatchList(): SpritInfo[] {
-        return this._curWatchList;
-    }
-
-    async loadCurWatchList(projectId: string) {
-        runInAction(() => {
-            this._curWatchList = [];
-        });
-        const curProject = this.rootStore.projectStore.getProject(projectId);
-        if (curProject?.setting.disable_work_plan == true || curProject?.setting.hide_watch_walk_plan == true) {
-            return;
-        }
-        const res = await request(list_sprit(this.rootStore.userStore.sessionId, projectId, true, true, 0, 100));
-        runInAction(() => {
-            this._curWatchList = res.info_list;
         });
     }
 }

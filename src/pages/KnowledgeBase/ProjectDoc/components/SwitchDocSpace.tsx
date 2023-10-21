@@ -24,7 +24,6 @@ const SwitchDocSpace: React.FC = () => {
         if (res) {
             await docSpaceStore.updateDocSpace(docSpaceStore.curDoc!.doc_space_id);
             await docSpaceStore.updateDocSpace(destDocSpaceId);
-            await docSpaceStore.loadCurWatchDocList(docSpaceStore.curDoc!.project_id);
             runInAction(() => {
                 docSpaceStore.curDoc!.doc_space_id = destDocSpaceId;
                 if (docSpaceStore.curDocSpaceId != "") {

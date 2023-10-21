@@ -152,8 +152,6 @@ pub mod project_doc {
         MoveDocEvent(events_doc::MoveDocEvent),
         RemoveDocEvent(events_doc::RemoveDocEvent),
         RecoverDocEvent(events_doc::RecoverDocEvent),
-        WatchDocEvent(events_doc::WatchDocEvent),
-        UnWatchDocEvent(events_doc::UnWatchDocEvent),
         UpdateTagEvent(events_doc::UpdateTagEvent),
     }
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -193,14 +191,6 @@ pub mod project_doc {
             if let Ok(ev) = events_doc::RecoverDocEvent::decode(data.value.as_slice()) {
                 return Some(Event::RecoverDocEvent(ev));
             }
-        } else if data.type_url == events_doc::WatchDocEvent::type_url() {
-            if let Ok(ev) = events_doc::WatchDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::UnWatchDocEvent::type_url() {
-            if let Ok(ev) = events_doc::UnWatchDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnWatchDocEvent(ev));
-            }
         } else if data.type_url == events_doc::UpdateTagEvent::type_url() {
             if let Ok(ev) = events_doc::UpdateTagEvent::decode(data.value.as_slice()) {
                 return Some(Event::UpdateTagEvent(ev));
@@ -221,8 +211,6 @@ pub mod sprit {
         CreateEvent(events_sprit::CreateEvent),
         UpdateEvent(events_sprit::UpdateEvent),
         RemoveEvent(events_sprit::RemoveEvent),
-        WatchEvent(events_sprit::WatchEvent),
-        UnWatchEvent(events_sprit::UnWatchEvent),
         LinkDocEvent(events_sprit::LinkDocEvent),
         CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
     }
@@ -239,14 +227,6 @@ pub mod sprit {
         } else if data.type_url == events_sprit::RemoveEvent::type_url() {
             if let Ok(ev) = events_sprit::RemoveEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveEvent(ev));
-            }
-        } else if data.type_url == events_sprit::WatchEvent::type_url() {
-            if let Ok(ev) = events_sprit::WatchEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchEvent(ev));
-            }
-        } else if data.type_url == events_sprit::UnWatchEvent::type_url() {
-            if let Ok(ev) = events_sprit::UnWatchEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnWatchEvent(ev));
             }
         } else if data.type_url == events_sprit::LinkDocEvent::type_url() {
             if let Ok(ev) = events_sprit::LinkDocEvent::decode(data.value.as_slice()) {

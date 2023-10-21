@@ -41,8 +41,6 @@ const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
 const MENU_KEY_LAYOUT_PREFIX = "layout.";
 const MENU_KEY_LAYOUT_MAIN_WORK_PLAN = "layout.main.workplan";
 const MENU_KEY_LAYOUT_MAIN_KB = "layout.main.kb";
-const MENU_KEY_LAYOUT_LEFT_WORK_PLAN = "layout.left.workplan";
-const MENU_KEY_LAYOUT_LEFT_DOC = "layout.left.doc";
 const MENU_KEY_LAYOUT_TOOLBAR_APPRAISE = "layout.toolbar.appraise";
 const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
 const MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO = "layout.toolbar.dataanno";
@@ -84,20 +82,6 @@ const ProjectQuickAccess = () => {
                         {
                             key: MENU_KEY_LAYOUT_MAIN_KB,
                             label: `${projectStore.curProject?.setting.disable_kb == true ? "打开" : "关闭"}知识库`
-                        },
-                    ],
-                },
-                {
-                    key: "layout.left",
-                    label: "左侧项目列表",
-                    children: [
-                        {
-                            key: MENU_KEY_LAYOUT_LEFT_WORK_PLAN,
-                            label: `${projectStore.curProject?.setting.hide_watch_walk_plan == true ? "显示" : "隐藏"}工作计划关注列表`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_LEFT_DOC,
-                            label: `${projectStore.curProject?.setting.hide_watch_doc == true ? "显示" : "隐藏"}文档关注列表`
                         },
                     ],
                 },
@@ -370,10 +354,6 @@ const ProjectQuickAccess = () => {
             newSetting.disable_work_plan = !projectStore.curProject.setting.disable_work_plan;
         } else if (key == MENU_KEY_LAYOUT_MAIN_KB) {
             newSetting.disable_kb = !projectStore.curProject.setting.disable_kb;
-        } else if (key == MENU_KEY_LAYOUT_LEFT_WORK_PLAN) {
-            newSetting.hide_watch_walk_plan = !projectStore.curProject.setting.hide_watch_walk_plan;
-        } else if (key == MENU_KEY_LAYOUT_LEFT_DOC) {
-            newSetting.hide_watch_doc = !projectStore.curProject.setting.hide_watch_doc;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_APPRAISE) {
             newSetting.disable_member_appraise = !projectStore.curProject.setting.disable_member_appraise;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION) {

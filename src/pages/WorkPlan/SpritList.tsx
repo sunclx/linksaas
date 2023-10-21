@@ -4,8 +4,8 @@ import Button from "@/components/Button";
 import addIcon from '@/assets/image/addIcon.png';
 import ModifySpritModal from "./components/ModifySpritModal";
 import type { SpritInfo } from '@/api/project_sprit';
-import { list as list_sprit, get as get_sprit, watch, un_watch } from '@/api/project_sprit';
-import { Card, Form, Switch, Table, Tag } from "antd";
+import { list as list_sprit, get as get_sprit } from '@/api/project_sprit';
+import { Card, Form, Table, Tag } from "antd";
 import Pagination from "@/components/Pagination";
 import type { ColumnsType } from "antd/lib/table";
 import { useStores } from "@/hooks";
@@ -13,7 +13,6 @@ import { request } from "@/utils/request";
 import moment from "moment";
 import { LinkSpritInfo } from "@/stores/linkAux";
 import { useHistory } from "react-router-dom";
-import s from "./SpritList.module.less";
 
 const PAGE_SIZE = 10;
 
@@ -28,7 +27,6 @@ const SpritList = () => {
     const [spritList, setSpritList] = useState<SpritInfo[]>([]);
     const [curPage, setCurPage] = useState(0);
     const [totalCount, setTotalCount] = useState(0);
-    const [filterByWatch, setFilterByWatch] = useState(false);
 
     const [updateSpritId, setUpdateSpritId] = useState("");
 
@@ -37,7 +35,6 @@ const SpritList = () => {
             list_sprit(
                 userStore.sessionId,
                 projectStore.curProjectId,
-                filterByWatch, filterByWatch,
                 curPage * PAGE_SIZE, PAGE_SIZE));
         setTotalCount(res.total_count);
         setSpritList(res.info_list);
@@ -55,45 +52,7 @@ const SpritList = () => {
         setUpdateSpritId("");
     }
 
-    const watchSprit = async (spritId: string) => {
-        await request(watch(userStore.sessionId, projectStore.curProjectId, spritId));
-        const tmpList = spritList.slice();
-        const index = tmpList.findIndex(item => item.sprit_id == spritId);
-        if (index != -1) {
-            tmpList[index].my_watch = true;
-            setSpritList(tmpList);
-        }
-        await spritStore.loadCurWatchList(projectStore.curProjectId);
-    };
-
-    const unWatchSprit = async (spritId: string) => {
-        await request(un_watch(userStore.sessionId, projectStore.curProjectId, spritId));
-        const tmpList = spritList.slice();
-        const index = tmpList.findIndex(item => item.sprit_id == spritId);
-        if (index != -1) {
-            tmpList[index].my_watch = false;
-            setSpritList(tmpList);
-        }
-        await spritStore.loadCurWatchList(projectStore.curProjectId);
-    };
-
     const columns: ColumnsType<SpritInfo> = [
-        {
-            title: "",
-            width: 40,
-            render: (_, record: SpritInfo) => (
-                <a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if (record.my_watch) {
-                        unWatchSprit(record.sprit_id);
-                    } else {
-                        watchSprit(record.sprit_id);
-                    }
-                }}>
-                    <i className={record.my_watch ? s.isCollect : s.noCollect} />
-                </a>),
-        },
         {
             title: "工作计划名称",
             width: 200,
@@ -164,7 +123,7 @@ const SpritList = () => {
 
     useEffect(() => {
         loadSprit();
-    }, [projectStore.curProjectId, curPage, filterByWatch]);
+    }, [projectStore.curProjectId, curPage]);
 
     return (
         <Card bordered={false}
@@ -172,11 +131,6 @@ const SpritList = () => {
             bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll" }}
             extra={
                 <Form layout="inline">
-                    <Form.Item label="我的关注">
-                        <Switch checked={filterByWatch} onChange={checked => {
-                            setFilterByWatch(checked);
-                        }} />
-                    </Form.Item>
                     <Form.Item>
                         <Button onClick={e => {
                             e.stopPropagation();

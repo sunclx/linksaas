@@ -197,42 +197,6 @@ function get_recover_doc_simple_content(
     ];
 }
 
-export type WatchDocEvent = {
-    doc_space_id: string;
-    doc_space_name: string;
-    doc_id: string;
-    title: string;
-}
-
-function get_watch_doc_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: WatchDocEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在 文档空间 ${inner.doc_space_name} 关注文档`),
-        new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
-    ];
-}
-
-export type UnWatchDocEvent = {
-    doc_space_id: string;
-    doc_space_name: string;
-    doc_id: string;
-    title: string;
-}
-
-function get_unwatch_doc_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UnWatchDocEvent,
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 在 文档空间 ${inner.doc_space_name} 取消关注文档`),
-        new LinkDocInfo(inner.title, ev.project_id, inner.doc_space_id, inner.doc_id),
-    ];
-}
-
 export type AllProjectDocEvent = {
     CreateSpaceEvent?: CreateSpaceEvent;
     UpdateSpaceEvent?: UpdateSpaceEvent;
@@ -244,8 +208,6 @@ export type AllProjectDocEvent = {
     MoveDocEvent?: MoveDocEvent;
     RemoveDocEvent?: RemoveDocEvent;
     RecoverDocEvent?: RecoverDocEvent;
-    WatchDocEvent?: WatchDocEvent;
-    UnWatchDocEvent?: UnWatchDocEvent;
 };
 
 export function get_project_doc_simple_content(
@@ -272,10 +234,6 @@ export function get_project_doc_simple_content(
         return get_remove_doc_simple_content(ev, skip_prj_name, inner.RemoveDocEvent);
     } else if (inner.RecoverDocEvent !== undefined) {
         return get_recover_doc_simple_content(ev, skip_prj_name, inner.RecoverDocEvent);
-    } else if (inner.WatchDocEvent !== undefined) {
-        return get_watch_doc_simple_content(ev, skip_prj_name, inner.WatchDocEvent);
-    } else if (inner.UnWatchDocEvent !== undefined) {
-        return get_unwatch_doc_simple_content(ev, skip_prj_name, inner.UnWatchDocEvent);
-    }
+    } 
     return [new LinkNoneInfo('未知事件')];
 }

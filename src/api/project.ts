@@ -42,8 +42,8 @@ export type Setting = {
   hide_bulletin: boolean;
   hide_extra_info: boolean;
 
-  hide_watch_doc: boolean;
-  hide_watch_walk_plan: boolean;
+  // hide_watch_doc: boolean;
+  // hide_watch_walk_plan: boolean;
   hide_watch_task: boolean;
   hide_watch_bug: boolean;
   // hide_watch_channel: boolean;

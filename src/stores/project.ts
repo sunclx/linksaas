@@ -61,8 +61,6 @@ export default class ProjectStore {
       await Promise.all([
         this.rootStore.memberStore.loadMemberList(val),
         this.rootStore.ideaStore.loadKeyword(val),
-        this.rootStore.docSpaceStore.loadCurWatchDocList(val),
-        this.rootStore.spritStore.loadCurWatchList(val),
       ]);
 
 

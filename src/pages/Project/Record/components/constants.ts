@@ -293,14 +293,6 @@ export const docEvOptionList: CheckboxOptionType[] = [
         value: "recoverDoc",
     },
     {
-        label: "关注文档",
-        value: "watchDoc",
-    },
-    {
-        label: "取消关注文档",
-        value: "unWatchDoc",
-    },
-    {
         label: "移动文档",
         value: "moveDoc",
     },
@@ -316,8 +308,6 @@ export const calcDocEvCfg = (values: string[] | undefined): DocEvCfg => {
         move_doc_to_recycle: false,
         remove_doc: false,
         recover_doc: false,
-        watch_doc: false,
-        un_watch_doc: false,
         move_doc: false,
         update_tag: false,
     };
@@ -341,10 +331,6 @@ export const calcDocEvCfg = (values: string[] | undefined): DocEvCfg => {
             ret.remove_doc = true;
         } else if (value == "recoverDoc") {
             ret.recover_doc = true;
-        } else if (value == "watchDoc") {
-            ret.watch_doc = true;
-        } else if (value == "unWatchDoc") {
-            ret.un_watch_doc = true;
         } else if (value == "moveDoc") {
             ret.move_doc = true;
         } else if (value == "updateTag") {
@@ -379,12 +365,6 @@ export const genDocEvCfgValues = (cfg: DocEvCfg): string[] => {
     }
     if (cfg.recover_doc) {
         retList.push("recoverDoc");
-    }
-    if (cfg.watch_doc) {
-        retList.push("watchDoc");
-    }
-    if (cfg.un_watch_doc) {
-        retList.push("unWatchDoc");
     }
     if (cfg.move_doc) {
         retList.push("moveDoc");
@@ -1049,14 +1029,6 @@ export const spritEvOptionList: CheckboxOptionType[] = [
         value: "remove",
     },
     {
-        label: "关注工作计划",
-        value: "watch",
-    },
-    {
-        label: "取消关注工作计划",
-        value: "unWatch",
-    },
-    {
         label: "关联文档",
         value: "linkDoc",
     },
@@ -1073,8 +1045,6 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
         remove: false,
         link_doc: false,
         cancel_link_doc: false,
-        watch: false,
-        un_watch: false,
     };
     if (values == undefined) {
         return ret;
@@ -1090,11 +1060,7 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
             ret.link_doc = true;
         } else if (value == "cancelLinkDoc") {
             ret.cancel_link_doc = true;
-        } else if (value == "watch") {
-            ret.watch = true;
-        } else if (value == "unWatch") {
-            ret.un_watch = true;
-        }
+        } 
     });
     return ret;
 };
@@ -1115,12 +1081,6 @@ export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
     }
     if (cfg.cancel_link_doc) {
         retList.push("cancelLinkDoc");
-    }
-    if (cfg.watch) {
-        retList.push("watch");
-    }
-    if (cfg.un_watch) {
-        retList.push("unWatch");
     }
     return retList;
 };

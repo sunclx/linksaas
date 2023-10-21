@@ -216,8 +216,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
       filter_by_doc_space_id: curDocSpaceId != "",
       doc_space_id: curDocSpaceId,
       list_param: {
-        filter_by_watch: false,
-        watch: false,
         filter_by_tag_id: false,
         tag_id_list: [],
       },

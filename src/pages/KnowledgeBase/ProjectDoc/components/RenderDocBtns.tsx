@@ -5,11 +5,8 @@ import { ReactComponent as Permsvg } from "@/assets/svg/perm.svg"
 import RemoveDocBtn from './RemoveDocBtn';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
-import { request } from '@/utils/request';
-import * as docApi from '@/api/project_doc';
-import { message, Popover } from 'antd';
+import { Popover } from 'antd';
 import DocHistory from './DocHistory';
-import { runInAction } from 'mobx';
 import { SwapOutlined } from '@ant-design/icons';
 import SwitchDocSpace from './SwitchDocSpace';
 import Button from '@/components/Button';
@@ -17,69 +14,15 @@ import EditPermBtn from "./SetPermBtn";
 
 
 const RenderDocBtns = () => {
-  const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docSpaceStore = useStores('docSpaceStore');
 
-  const toggleWatch = async () => {
-    if (docSpaceStore.curDoc == undefined) {
-      return;
-    }
-    const nextValue = !docSpaceStore.curDoc.my_watch;
-    if (nextValue) {
-      const res = await request(
-        docApi.watch_doc({
-          session_id: userStore.sessionId,
-          project_id: docSpaceStore.curDoc.project_id,
-          doc_space_id: docSpaceStore.curDoc.doc_space_id,
-          doc_id: docSpaceStore.curDocId,
-        }),
-      );
-      if (!res) {
-        return;
-      }
-      message.success('已关注此文档');
-      docSpaceStore.loadCurWatchDocList(docSpaceStore.curDoc.project_id);
-    } else {
-      const res = await request(
-        docApi.un_watch_doc({
-          session_id: userStore.sessionId,
-          project_id: docSpaceStore.curDoc.project_id,
-          doc_space_id: docSpaceStore.curDoc.doc_space_id,
-          doc_id: docSpaceStore.curDocId,
-        }),
-      );
-      if (!res) {
-        return;
-      }
-      message.success('已取消关注此文档');
-      docSpaceStore.loadCurWatchDocList(docSpaceStore.curDoc.project_id);
-    }
-    runInAction(() => {
-      if (docSpaceStore.curDoc != undefined) {
-        docSpaceStore.curDoc.my_watch = nextValue;
-      }
-    });
-  };
 
   return (
     <div className={s.docbtns_wrap}>
       {!docSpaceStore.recycleBin && (
         <>
           <div style={{ flex: 1 }}>
-            <span
-              style={{ marginLeft: "15px", cursor: projectStore.isClosed ? "default" : "pointer" }}
-              className={(docSpaceStore.curDoc?.my_watch ?? false) ? s.isCollect : s.no_Collect}
-              title={(docSpaceStore.curDoc?.my_watch ?? false) ? "已关注文档" : "未关注文档"}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (projectStore.isClosed) {
-                  return;
-                }
-                toggleWatch();
-              }}
-            />
             <Popover
               placement="bottom"
               trigger="click"

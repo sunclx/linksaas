@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
 import {  LINK_TARGET_TYPE } from "@/stores/linkAux";
-import { get as get_sprit, remove as remove_sprit, watch, un_watch, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
+import { get as get_sprit, remove as remove_sprit, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -54,25 +54,7 @@ const SpritDetail = () => {
         message.info("删除工作计划成功");
         setShowRemoveModal(false);
         await spritStore.setCurSpritId("");
-        if (spritInfo?.my_watch) {
-            spritStore.loadCurWatchList(projectStore.curProjectId);
-        }
-    };
 
-    const watchSprit = async () => {
-        await request(watch(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
-        if (spritInfo != null) {
-            setSpritInfo({ ...spritInfo, my_watch: true });
-        }
-        await spritStore.loadCurWatchList(projectStore.curProjectId);
-    };
-
-    const unWatchSprit = async () => {
-        await request(un_watch(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
-        if (spritInfo != null) {
-            setSpritInfo({ ...spritInfo, my_watch: false });
-        }
-        await spritStore.loadCurWatchList(projectStore.curProjectId);
     };
 
     const linkSprit = async (links: LinkInfo[]) => {
@@ -161,19 +143,6 @@ const SpritDetail = () => {
 
                 </h2>} extra={
                     <Space>
-                        <a onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            if (spritInfo != null) {
-                                if (spritInfo.my_watch) {
-                                    unWatchSprit();
-                                } else {
-                                    watchSprit();
-                                }
-                            }
-                        }}>
-                            <i className={spritInfo?.my_watch ? s.isCollect : s.noCollect} />
-                        </a>
                         {projectStore.isAdmin && (
                             <Popover trigger="click" placement="bottom" content={
                                 <div style={{ padding: "10px 10px" }}>

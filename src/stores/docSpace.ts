@@ -277,38 +277,4 @@ export default class DocSpaceStore {
             this._showDocHistory = false;
         });
     }
-
-    //当前关注的文档列表
-    private _curWatchDocList: prjDocApi.DocKey[] = [];
-
-    get curWatchDocList(): prjDocApi.DocKey[] {
-        return this._curWatchDocList;
-    }
-
-    async loadCurWatchDocList(projectId: string) {
-        runInAction(() => {
-            this._curWatchDocList = [];
-        });
-        const curProject = this.rootStore.projectStore.getProject(projectId);
-        if (curProject?.setting.disable_kb == true || curProject?.setting.hide_watch_doc == true) {
-            return;
-        }
-        const res = await request(prjDocApi.list_doc_key({
-            session_id: this.rootStore.userStore.sessionId,
-            project_id: projectId,
-            filter_by_doc_space_id: false,
-            doc_space_id: "",
-            list_param: {
-                filter_by_watch: true,
-                watch: true,
-                filter_by_tag_id: false,
-                tag_id_list: [],
-            },
-            offset: 0,
-            limit: 99,
-        }));
-        runInAction(() => {
-            this._curWatchDocList = res.doc_key_list;
-        });
-    }
 }
