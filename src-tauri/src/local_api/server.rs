@@ -1051,10 +1051,10 @@ where
     /// 列出沟通内容
     async fn project_project_id_channel_msg_channel_id_get(
         &self,
-        project_id: String,
-        channel_id: String,
-        limit: i32,
-        ref_msg_id: Option<String>,
+        _project_id: String,
+        _channel_id: String,
+        _limit: i32,
+        _ref_msg_id: Option<String>,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelMsgChannelIdGetResponse, ApiError> {
         return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
@@ -1069,7 +1069,7 @@ where
     /// 我的沟通频道
     async fn project_project_id_channel_my_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelMyGetResponse, ApiError> {
         return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
@@ -1083,7 +1083,7 @@ where
     /// 我未加入的频道
     async fn project_project_id_channel_not_join_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelNotJoinGetResponse, ApiError> {
         return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
@@ -1097,7 +1097,7 @@ where
     /// 孤儿频道
     async fn project_project_id_channel_orphan_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelOrphanGetResponse, ApiError> {
         return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
