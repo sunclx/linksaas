@@ -4,7 +4,7 @@ import type { ModalProps } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
 import type { LinkInfo } from '@/stores/linkAux';
-import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkRequirementInfo } from '@/stores/linkAux';
+import { LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkRequirementInfo } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import {
   list as list_issue,
@@ -47,7 +47,6 @@ const ALL_DOC_SPACE: DocSpace = {
 
 export interface LinkSelectProps {
   title: string;
-  showChannel: boolean;
   showDoc: boolean;
   showRequirement: boolean;
   showTask: boolean;
@@ -58,16 +57,13 @@ export interface LinkSelectProps {
 }
 
 export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
-  const channelStore = useStores('channelStore');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
 
   const modalProps: ModalProps = {};
   modalProps.footer = null;
   let defaultTab = '';
-  if (props.showChannel) {
-    defaultTab = 'channel';
-  } else if (props.showDoc) {
+  if (props.showDoc) {
     defaultTab = 'doc';
   } else if (props.showRequirement) {
     defaultTab = "requirement";
@@ -90,12 +86,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [externeUrl, setExterneUrl] = useState('');
 
   const tabList = [];
-  if (props.showChannel) {
-    tabList.push({
-      label: '频道',
-      value: 'channel',
-    });
-  }
   if (props.showDoc) {
     tabList.push({
       label: '项目文档',
@@ -264,31 +254,7 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   }, [tab, curPage, keyword]);
 
   const renderItemContent = () => {
-    if (props.showChannel && tab === 'channel') {
-      return (
-        <div className={s.con_item_wrap}>
-          {channelStore.channelList.map((item) => (
-            <div
-              className={s.con_item}
-              key={item.channelInfo.channel_id}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onOk(
-                  new LinkChannelInfo(
-                    item.channelInfo.basic_info.channel_name,
-                    item.channelInfo.project_id,
-                    item.channelInfo.channel_id,
-                  ),
-                );
-              }}
-            >
-              <div># {item.channelInfo.basic_info.channel_name}</div>
-            </div>
-          ))}
-        </div>
-      );
-    } else if (props.showDoc && tab === 'doc') {
+    if (props.showDoc && tab === 'doc') {
       return (
         <Card bordered={false} extra={
           <Select value={curDocSpaceId} onChange={value => setCurDocSpaceId(value)}>

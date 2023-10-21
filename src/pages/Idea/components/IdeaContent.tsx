@@ -51,7 +51,6 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const setAgree = async (appraiseType: APPRAISE_TYPE) => {

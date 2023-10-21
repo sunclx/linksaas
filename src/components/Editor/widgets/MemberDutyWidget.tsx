@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import type { WidgetProps } from './common';
-import { Input, Popover } from 'antd';
+import { Input } from 'antd';
 import { useStores } from '@/hooks';
 import s from './MemberDutyWidget.module.less';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import EditorWrap from '../components/EditorWrap';
-import MemberInfo from '@/pages/Channel/components/MemberInfo';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 //为了防止编辑器出错，WidgetData结构必须保存稳定
@@ -166,21 +165,10 @@ const ViewMemberDuty: React.FC<WidgetProps> = (props) => {
           <div className={s.list_wrap}>
             {data.dutyList.map((item) => (
               <div className={s.list_item} key={item.memberUserId}>
-                <Popover
-                  placement="right"
-                  content={
-                    <MemberInfo
-                      memberId={item.memberUserId}
-                      showLink={true}
-                      hideMemberInfo={() => {}}
-                    />
-                  }
-                >
-                  <div className={s.item_member_info}>
-                    <UserPhoto logoUri={item.logoUrl} />
-                    <label>{item.displayName}</label>
-                  </div>
-                </Popover>
+                <div className={s.item_member_info}>
+                  <UserPhoto logoUri={item.logoUrl} />
+                  <label>{item.displayName}</label>
+                </div>
                 <span>{item.duty}</span>
               </div>
             ))}

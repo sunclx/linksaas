@@ -39,7 +39,6 @@ const LinkBtn = observer(() => {
       {showModal && (
         <LinkSelect
           title="设置链接"
-          showChannel={projectStore.curProjectId != ""}
           showRequirement={projectStore.curProjectId != ""}
           showTask={projectStore.curProjectId != ""}
           showBug={projectStore.curProjectId != ""}

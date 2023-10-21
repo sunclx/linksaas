@@ -3,19 +3,17 @@ import type * as NoticeType from '@/api/notice_type'
 import { listen } from '@tauri-apps/api/event';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import type { RootStore } from '.';
-import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
-import { MSG_LINK_TASK, MSG_LINK_BUG, MSG_LINK_CHANNEL } from '@/api/project_channel';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { showShortNote } from '@/utils/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_CHANNEL, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MEMBER, SHORT_NOTE_MODE_CREATE } from '@/api/short_note';
-import { LinkBugInfo, LinkDocInfo, LinkTaskInfo, LinkChannelInfo } from './linkAux';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MODE_CREATE } from '@/api/short_note';
+import { LinkBugInfo, LinkDocInfo, LinkTaskInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get as get_issue } from '@/api/project_issue';
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, USER_LOGIN_PATH } from '@/utils/constant';
+import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, USER_LOGIN_PATH } from '@/utils/constant';
 import { message } from 'antd';
 
 
@@ -208,8 +206,6 @@ class NoticeStore {
               //TODO work plan
               if (this.rootStore.projectStore.curProject?.setting.disable_kb == false) {
                 this.history.push(APP_PROJECT_KB_DOC_PATH);
-              } else if (this.rootStore.projectStore.curProject?.setting.disable_chat == false) {
-                this.history.push(APP_PROJECT_CHAT_PATH);
               } else {
                 this.history.push(APP_PROJECT_OVERVIEW_PATH);
               }
@@ -221,8 +217,6 @@ class NoticeStore {
           //TODO work plan
           if (this.rootStore.projectStore.curProject?.setting.disable_kb == false) {
             this.history.push(APP_PROJECT_KB_DOC_PATH);
-          } else if (this.rootStore.projectStore.curProject?.setting.disable_chat == false) {
-            this.history.push(APP_PROJECT_CHAT_PATH);
           } else {
             this.history.push(APP_PROJECT_OVERVIEW_PATH);
           }
@@ -264,52 +258,6 @@ class NoticeStore {
       } else if (notice.RemoveMemberNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.loadMemberList(notice.RemoveMemberNotice.project_id);
       }
-    } else if (notice.AddChannelNotice !== undefined) {
-      if (notice.AddChannelNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        await this.rootStore.channelStore.updateChannel(notice.AddChannelNotice.channel_id);
-      }
-    } else if (notice.UpdateChannelNotice !== undefined) {
-      if (notice.UpdateChannelNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        await this.rootStore.channelStore.updateChannel(notice.UpdateChannelNotice.channel_id);
-      }
-    } else if (notice.RemoveChannelNotice !== undefined) {
-      if (notice.RemoveChannelNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.channelStore.removeChannel(notice.RemoveChannelNotice.channel_id);
-      }
-    } else if (notice.AddChannelMemberNotice !== undefined) {
-      if (notice.AddChannelMemberNotice.project_id == this.rootStore.projectStore.curProjectId &&
-        notice.AddChannelMemberNotice.member_user_id == this.rootStore.userStore.userInfo.userId) {
-        await this.rootStore.channelStore.updateChannel(notice.AddChannelMemberNotice.channel_id);
-      } else if (notice.AddChannelMemberNotice.project_id == this.rootStore.projectStore.curProjectId &&
-        notice.AddChannelMemberNotice.channel_id == this.rootStore.channelStore.curChannelId) {
-        await this.rootStore.channelMemberStore.loadChannelMemberList(notice.AddChannelMemberNotice.project_id, notice.AddChannelMemberNotice.channel_id);
-      }
-    } else if (notice.RemoveChannelMemberNotice !== undefined) {
-      if (notice.RemoveChannelMemberNotice.project_id == this.rootStore.projectStore.curProjectId &&
-        notice.RemoveChannelMemberNotice.member_user_id == this.rootStore.userStore.userInfo.userId) {
-        //重新加载频道列表
-        await this.rootStore.channelStore.loadChannelList(this.rootStore.projectStore.curProjectId);
-      } else if (notice.RemoveChannelMemberNotice.project_id == this.rootStore.projectStore.curProjectId &&
-        notice.RemoveChannelMemberNotice.channel_id == this.rootStore.channelStore.curChannelId) {
-        await this.rootStore.channelMemberStore.loadChannelMemberList(notice.RemoveChannelMemberNotice.project_id,
-          notice.RemoveChannelMemberNotice.channel_id);
-      }
-    } else if (notice.NewMsgNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId == notice.NewMsgNotice.project_id) {
-        //更新频道消息数量
-        await this.rootStore.channelStore.updateUnReadMsgCount(notice.NewMsgNotice.channel_id);
-      }
-      //更新当前频道消息
-      if (this.rootStore.projectStore.curProjectId == notice.NewMsgNotice.project_id && this.rootStore.channelStore.curChannelId == notice.NewMsgNotice.channel_id) {
-        await this.rootStore.chatMsgStore.onNewMsg(notice.NewMsgNotice.project_id, notice.NewMsgNotice.channel_id);
-      }
-      //更新未读消息数量
-      this.rootStore.projectStore.updateProjectUnreadMsgCount(notice.NewMsgNotice.project_id);
-    } else if (notice.UpdateMsgNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId == notice.UpdateMsgNotice.project_id && this.rootStore.channelStore.curChannelId == notice.UpdateMsgNotice.channel_id) {
-        //替换内容
-        this.rootStore.chatMsgStore.updateMsg(notice.UpdateMsgNotice.msg_id);
-      }
     } else if (notice.UserOnlineNotice !== undefined) {
       await this.rootStore.memberStore.updateOnline(notice.UserOnlineNotice.user_id, true);
     } else if (notice.UserOfflineNotice !== undefined) {
@@ -322,24 +270,6 @@ class NoticeStore {
     } else if (notice.SetMemberRoleNotice !== undefined) {
       if (notice.SetMemberRoleNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.updateMemberRole(notice.SetMemberRoleNotice.member_user_id, notice.SetMemberRoleNotice.role_id);
-      }
-    } else if (notice.ReminderNotice !== undefined) {
-      let permissionGranted = await isPermissionGranted();
-      if (!permissionGranted) {
-        const permission = await requestPermission();
-        permissionGranted = permission === 'granted';
-      }
-      if (permissionGranted) {
-        let linkType = "";
-        if (notice.ReminderNotice.link_type == MSG_LINK_TASK) {
-          linkType = "任务";
-        } else if (notice.ReminderNotice.link_type == MSG_LINK_BUG) {
-          linkType = "缺陷";
-        } else if (notice.ReminderNotice.link_type == MSG_LINK_CHANNEL) {
-          linkType = "频道";
-        }
-        const body = `在项目 ${notice.ReminderNotice.project_name} ${linkType} ${notice.ReminderNotice.link_title} 提到了你`;
-        sendNotification({ title: "凌鲨", body: body });
       }
     } else if (notice.UpdateShortNoteNotice !== undefined) {
       if (notice.UpdateShortNoteNotice.project_id == this.rootStore.projectStore.curProjectId) {
@@ -499,26 +429,7 @@ class NoticeStore {
       } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
         await this.rootStore.linkAuxStore.goToCreateDoc("", ev.projectId, ev.targetId, this.history);
       }
-    } else if (ev.shortNoteType == SHORT_NOTE_CHANNEL) {
-      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
-        this.rootStore.linkAuxStore.goToLink(new LinkChannelInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
-      }
-    } else if (ev.shortNoteType == SHORT_NOTE_MEMBER) {
-      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
-        if (this.rootStore.projectStore.curProjectId != ev.projectId) {
-          if (this.rootStore.projectStore.curProjectId == "") {
-            await this.rootStore.projectStore.setCurProjectId(ev.projectId);
-            this.rootStore.memberStore.floatMemberUserId = ev.targetId;
-            this.history.push(APP_PROJECT_CHAT_PATH);
-          } else {
-            await this.rootStore.projectStore.setCurProjectId(ev.projectId);
-            this.rootStore.memberStore.floatMemberUserId = ev.targetId;
-          }
-        } else {
-          this.rootStore.memberStore.floatMemberUserId = ev.targetId;
-        }
-      }
-    }
+    } 
     await appWindow.show();
     await appWindow.unminimize();
     await appWindow.setAlwaysOnTop(true);

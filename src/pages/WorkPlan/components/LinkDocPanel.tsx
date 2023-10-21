@@ -92,7 +92,6 @@ const LinkDocPanel = () => {
             </Card>
             {showAddModal == true && (
                 <LinkSelect title="关联文档"
-                    showChannel={false}
                     showDoc={true}
                     showRequirement={false}
                     showTask={false}

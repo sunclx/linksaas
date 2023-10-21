@@ -290,61 +290,6 @@ async fn get_link_doc<R: Runtime>(
 }
 
 #[tauri::command]
-async fn link_channel<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: LinkChannelRequest,
-) -> Result<LinkChannelResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectSpritApiClient::new(chan.unwrap());
-    match client.link_channel(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == link_channel_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("link_channel".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn cancel_link_channel<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: CancelLinkChannelRequest,
-) -> Result<CancelLinkChannelResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectSpritApiClient::new(chan.unwrap());
-    match client.cancel_link_channel(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == cancel_link_channel_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("cancel_link_channel".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn update_burn_down<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -586,8 +531,6 @@ impl<R: Runtime> ProjectSpritApiPlugin<R> {
                 cancel_link_doc,
                 list_link_doc,
                 get_link_doc,
-                link_channel,
-                cancel_link_channel,
                 update_burn_down,
                 list_burn_down,
                 set_summary_state,

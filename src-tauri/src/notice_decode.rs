@@ -11,13 +11,6 @@ pub mod project {
         AddMemberNotice(notices_project::AddMemberNotice),
         UpdateMemberNotice(notices_project::UpdateMemberNotice),
         RemoveMemberNotice(notices_project::RemoveMemberNotice),
-        AddChannelNotice(notices_project::AddChannelNotice),
-        UpdateChannelNotice(notices_project::UpdateChannelNotice),
-        RemoveChannelNotice(notices_project::RemoveChannelNotice),
-        AddChannelMemberNotice(notices_project::AddChannelMemberNotice),
-        RemoveChannelMemberNotice(notices_project::RemoveChannelMemberNotice),
-        NewMsgNotice(notices_project::NewMsgNotice),
-        UpdateMsgNotice(notices_project::UpdateMsgNotice),
         UserOnlineNotice(notices_project::UserOnlineNotice),
         UserOfflineNotice(notices_project::UserOfflineNotice),
         NewEventNotice(notices_project::NewEventNotice),
@@ -56,40 +49,6 @@ pub mod project {
         } else if data.type_url == notices_project::RemoveMemberNotice::type_url() {
             if let Ok(notice) = notices_project::RemoveMemberNotice::decode(data.value.as_slice()) {
                 return Some(Notice::RemoveMemberNotice(notice));
-            }
-        } else if data.type_url == notices_project::AddChannelNotice::type_url() {
-            if let Ok(notice) = notices_project::AddChannelNotice::decode(data.value.as_slice()) {
-                return Some(Notice::AddChannelNotice(notice));
-            }
-        } else if data.type_url == notices_project::UpdateChannelNotice::type_url() {
-            if let Ok(notice) = notices_project::UpdateChannelNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::UpdateChannelNotice(notice));
-            }
-        } else if data.type_url == notices_project::RemoveChannelNotice::type_url() {
-            if let Ok(notice) = notices_project::RemoveChannelNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveChannelNotice(notice));
-            }
-        } else if data.type_url == notices_project::AddChannelMemberNotice::type_url() {
-            if let Ok(notice) =
-                notices_project::AddChannelMemberNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::AddChannelMemberNotice(notice));
-            }
-        } else if data.type_url == notices_project::RemoveChannelMemberNotice::type_url() {
-            if let Ok(notice) =
-                notices_project::RemoveChannelMemberNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveChannelMemberNotice(notice));
-            }
-        } else if data.type_url == notices_project::NewMsgNotice::type_url() {
-            if let Ok(notice) = notices_project::NewMsgNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewMsgNotice(notice));
-            }
-        } else if data.type_url == notices_project::UpdateMsgNotice::type_url() {
-            if let Ok(notice) = notices_project::UpdateMsgNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateMsgNotice(notice));
             }
         } else if data.type_url == notices_project::UserOnlineNotice::type_url() {
             if let Ok(notice) = notices_project::UserOnlineNotice::decode(data.value.as_slice()) {

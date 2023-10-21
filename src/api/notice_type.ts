@@ -18,37 +18,6 @@ export namespace project {
     project_id: string;
     member_user_id: string;
   };
-  export type AddChannelNotice = {
-    project_id: string;
-    channel_id: string;
-  };
-  export type UpdateChannelNotice = {
-    project_id: string;
-    channel_id: string;
-  };
-  export type RemoveChannelNotice = {
-    project_id: string;
-    channel_id: string;
-  };
-  export type AddChannelMemberNotice = {
-    project_id: string;
-    channel_id: string;
-    member_user_id: string;
-  };
-  export type RemoveChannelMemberNotice = {
-    project_id: string;
-    channel_id: string;
-    member_user_id: string;
-  };
-  export type NewMsgNotice = {
-    project_id: string;
-    channel_id: string;
-  };
-  export type UpdateMsgNotice = {
-    project_id: string;
-    channel_id: string;
-    msg_id: string;
-  };
 
   export type UserOnlineNotice = {
     user_id: string;
@@ -66,11 +35,6 @@ export namespace project {
     member_user_id: string;
     role_id: string;
   }
-  export type ReminderNotice = {
-    project_name: string;
-    link_type: number;
-    link_title: string;
-  };
 
   export type UpdateShortNoteNotice = {
     project_id: string;
@@ -122,18 +86,10 @@ export namespace project {
     AddMemberNotice?: AddMemberNotice;
     UpdateMemberNotice?: UpdateMemberNotice;
     RemoveMemberNotice?: RemoveMemberNotice;
-    AddChannelNotice?: AddChannelNotice;
-    UpdateChannelNotice?: UpdateChannelNotice;
-    RemoveChannelNotice?: RemoveChannelNotice;
-    AddChannelMemberNotice?: AddChannelMemberNotice;
-    RemoveChannelMemberNotice?: RemoveChannelMemberNotice;
-    NewMsgNotice?: NewMsgNotice;
-    UpdateMsgNotice?: UpdateMsgNotice;
     UserOnlineNotice?: UserOnlineNotice;
     UserOfflineNotice?: UserOfflineNotice;
     NewEventNotice?: NewEventNotice;
     SetMemberRoleNotice?: SetMemberRoleNotice;
-    ReminderNotice?: ReminderNotice;
     UpdateShortNoteNotice?: UpdateShortNoteNotice;
     UpdateAlarmStatNotice?: UpdateAlarmStatNotice;
     CreateBulletinNotice?: CreateBulletinNotice;

@@ -37,7 +37,6 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: true,
         showReminder: false,
-        channelMember: false,
     });
 
     const updateContent = async () => {

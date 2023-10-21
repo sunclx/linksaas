@@ -29,7 +29,6 @@ const SingleCreateTask: React.FC<SingleCreateTaskProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const createIssue = async () => {

@@ -2,7 +2,6 @@ use crate::notice_decode::new_git_post_hook_notice;
 use async_trait::async_trait;
 use local_api_rust::server::MakeService;
 use proto_gen_rust::events_api::{EventRefType, EventType};
-use proto_gen_rust::project_channel_api::ListChanScope;
 use proto_gen_rust::project_issue_api::IssueType;
 use serde_json::json;
 use std::marker::PhantomData;
@@ -1052,214 +1051,61 @@ where
     /// 列出沟通内容
     async fn project_project_id_channel_msg_channel_id_get(
         &self,
-        project_id: String,
-        channel_id: String,
-        limit: i32,
-        ref_msg_id: Option<String>,
+        _project_id: String,
+        _channel_id: String,
+        _limit: i32,
+        _ref_msg_id: Option<String>,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelMsgChannelIdGetResponse, ApiError> {
-        let perm = super::access_check::get_perm(&self.app, &project_id).await;
-        if perm.is_err() {
-            return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(perm.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else if perm.unwrap().access_channel == false {
-            return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("没有访问权限".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let ref_msg_id = ref_msg_id.unwrap_or_default();
-        let res =
-            super::channel_api::list_msg(&self.app, &project_id, &channel_id, &ref_msg_id, limit)
-                .await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status200 {
-                body: super::channel_api::convert_msg_list(res.msg_list),
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
+        return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
+            body: ErrInfo {
+                err_msg: Some("".into()),
+            },
+            access_control_allow_origin: Some("*".into()),
+        });
+
     }
 
     /// 我的沟通频道
     async fn project_project_id_channel_my_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelMyGetResponse, ApiError> {
-        let perm = super::access_check::get_perm(&self.app, &project_id).await;
-        if perm.is_err() {
-            return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(perm.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else if perm.unwrap().access_channel == false {
-            return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("没有访问权限".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let res = super::channel_api::list(&self.app, &project_id).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdChannelMyGetResponse::Status200 {
-                body: super::channel_api::convert_channel_list(res.info_list),
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
+        return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
+            body: ErrInfo {
+                err_msg: Some("".into()),
+            },
+            access_control_allow_origin: Some("*".into()),
+        });
     }
 
     /// 我未加入的频道
     async fn project_project_id_channel_not_join_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelNotJoinGetResponse, ApiError> {
-        let perm = super::access_check::get_perm(&self.app, &project_id).await;
-        if perm.is_err() {
-            return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(perm.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else if perm.unwrap().access_channel == false {
-            return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("没有访问权限".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let res =
-            super::channel_api::list_by_admin(&self.app, &project_id, ListChanScope::WithoutMe)
-                .await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status200 {
-                body: super::channel_api::convert_channel_list(res.info_list),
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
+        return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
+            body: ErrInfo {
+                err_msg: Some("".into()),
+            },
+            access_control_allow_origin: Some("*".into()),
+        });
     }
 
     /// 孤儿频道
     async fn project_project_id_channel_orphan_get(
         &self,
-        project_id: String,
+        _project_id: String,
         _context: &C,
     ) -> Result<ProjectProjectIdChannelOrphanGetResponse, ApiError> {
-        let perm = super::access_check::get_perm(&self.app, &project_id).await;
-        if perm.is_err() {
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(perm.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else if perm.unwrap().access_channel == false {
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("没有访问权限".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let perm = super::access_check::get_perm(&self.app, &project_id).await;
-        if perm.is_err() {
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(perm.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else if perm.unwrap().access_channel == false {
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("没有访问权限".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let res =
-            super::channel_api::list_by_admin(&self.app, &project_id, ListChanScope::Orphan).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdChannelOrphanGetResponse::Status200 {
-                body: super::channel_api::convert_channel_list(res.info_list),
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
+        return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
+            body: ErrInfo {
+                err_msg: Some("".into()),
+            },
+            access_control_allow_origin: Some("*".into()),
+        });
     }
 
     /// 删除代码评论

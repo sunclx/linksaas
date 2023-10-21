@@ -1,7 +1,7 @@
 import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
-  LinkNoneInfo, LinkChannelInfo,
+  LinkNoneInfo,
   LinkSpritInfo,  LinkDocInfo,
 } from '@/stores/linkAux';
 
@@ -159,48 +159,6 @@ export type CreateEvent = {
     ];
   }
 
-
-  export type LinkChannelEvent = {
-    sprit_id: string;
-    sprit_title: string;
-    channel_id: string;
-    channel_title: string;
-  };
-
-  function get_link_channel_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: LinkChannelEvent,
-  ): LinkInfo[] {
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关联工作计划`),
-      new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
-      new LinkNoneInfo("和频道"),
-      new LinkChannelInfo(inner.channel_title, ev.project_id, inner.channel_id),
-    ];
-  }
-
-  export type CancelLinkChannelEvent = {
-    sprit_id: string;
-    sprit_title: string;
-    channel_id: string;
-    channel_title: string;
-  };
-
-  function get_cancel_link_channel_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CancelLinkChannelEvent,
-  ): LinkInfo[] {
-    return [
-      new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 取消工作计划`),
-      new LinkSpritInfo(inner.sprit_title, ev.project_id, inner.sprit_id),
-      new LinkNoneInfo("和频道"),
-      new LinkChannelInfo(inner.channel_title, ev.project_id, inner.channel_id),
-      new LinkNoneInfo("关联"),
-    ];
-  }
-
   export type AllSpritEvent = {
     CreateEvent?: CreateEvent;
     UpdateEvent?: UpdateEvent;
@@ -209,8 +167,6 @@ export type CreateEvent = {
     UnWatchEvent?: UnWatchEvent;
     LinkDocEvent?: LinkDocEvent;
     CancelLinkDocEvent?: CancelLinkDocEvent;
-    LinkChannelEvent?: LinkChannelEvent;
-    CancelLinkChannelEvent?: CancelLinkChannelEvent;
   };
 
   export function get_sprit_simple_content(
@@ -232,10 +188,6 @@ export type CreateEvent = {
       return get_link_doc_simple_content(ev, skip_prj_name, inner.LinkDocEvent)
     } else if (inner.CancelLinkDocEvent !== undefined) {
       return get_cancel_link_doc_simple_content(ev, skip_prj_name, inner.CancelLinkDocEvent);
-    } else if (inner.LinkChannelEvent !== undefined) {
-      return get_link_channel_simple_content(ev, skip_prj_name, inner.LinkChannelEvent);
-    } else if (inner.CancelLinkChannelEvent !== undefined) {
-      return get_cancel_link_channel_simple_content(ev, skip_prj_name, inner.CancelLinkChannelEvent);
-    }
+    } 
     return [new LinkNoneInfo('未知事件')];
   }

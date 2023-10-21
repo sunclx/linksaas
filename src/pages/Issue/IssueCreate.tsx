@@ -69,7 +69,6 @@ const IssueCreate = () => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
     const [title, setTitle] = useState("");

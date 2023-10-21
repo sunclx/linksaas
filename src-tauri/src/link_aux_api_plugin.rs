@@ -30,30 +30,7 @@ async fn check_access_project<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
-#[tauri::command]
-async fn check_access_channel<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: CheckAccessChannelRequest,
-) -> Result<CheckAccessChannelResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = LinkAuxApiClient::new(chan.unwrap());
-    match client.check_access_channel(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == check_access_channel_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("check_access_channel".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
+
 #[tauri::command]
 async fn check_access_event<R: Runtime>(
     app_handle: AppHandle<R>,
@@ -186,7 +163,6 @@ impl<R: Runtime> LinkAuxApiPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 check_access_project,
-                check_access_channel,
                 check_access_event,
                 check_access_doc,
                 check_access_issue,

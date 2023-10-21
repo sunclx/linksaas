@@ -3,7 +3,7 @@ import cls from './index.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge } from "antd";
-import { APP_PROJECT_CHAT_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH, } from "@/utils/constant";
+import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH, } from "@/utils/constant";
 import { FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
@@ -28,13 +28,11 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                     if (docSpaceStore.inEdit) {
                         docSpaceStore.showCheckLeave(() => {
                             projectStore.setCurProjectId(item.project_id).then(() => {
-                                if (!item.setting.disable_chat) {
-                                    history.push(APP_PROJECT_CHAT_PATH);
-                                } else if (!item.setting.disable_work_plan) {
+                                if (!item.setting.disable_work_plan) {
                                     history.push(APP_PROJECT_WORK_PLAN_PATH);
                                 } else if (!item.setting.disable_kb) {
                                     history.push(APP_PROJECT_KB_DOC_PATH);
-                                } else if (item.setting.disable_chat && item.setting.disable_kb && item.setting.disable_work_plan) {
+                                } else if (item.setting.disable_kb && item.setting.disable_work_plan) {
                                     history.push(APP_PROJECT_MY_WORK_PATH);
                                 }
                             });
@@ -42,13 +40,11 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                         return;
                     }
                     projectStore.setCurProjectId(item.project_id).then(() => {
-                        if (!item.setting.disable_chat) {
-                            history.push(APP_PROJECT_CHAT_PATH);
-                        } else if (!item.setting.disable_work_plan) {
+                        if (!item.setting.disable_work_plan) {
                             history.push(APP_PROJECT_WORK_PLAN_PATH);
                         } else if (!item.setting.disable_kb) {
                             history.push(APP_PROJECT_KB_DOC_PATH);
-                        } else if (item.setting.disable_chat && item.setting.disable_kb && item.setting.disable_work_plan) {
+                        } else if (item.setting.disable_kb && item.setting.disable_work_plan) {
                             history.push(APP_PROJECT_MY_WORK_PATH);
                         }
                     });

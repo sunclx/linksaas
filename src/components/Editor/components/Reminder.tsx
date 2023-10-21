@@ -10,25 +10,15 @@ import UserPhoto from '@/components/Portrait/UserPhoto';
 
 interface ReminderProps {
   enabled: boolean;
-  channelMember: boolean;
 }
 
 export const Reminder: React.FC<ReminderProps> = (props) => {
   const memberStore = useStores('memberStore');
-  const channelMemberStore = useStores('channelMemberStore');
   const commands = useCommands();
 
   const [searchValue, setSearchValue] = useState("");
 
   const memberList = () => {
-    if (props.channelMember) {
-      const memberUserIdLsit = channelMemberStore.channelMemberList.map(
-        (item) => item.member_user_id,
-      );
-      return memberStore.memberList.filter((item) =>
-        memberUserIdLsit.includes(item.member.member_user_id),
-      );
-    }
     return memberStore.memberList;
   };
 

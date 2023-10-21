@@ -20,13 +20,6 @@ pub mod project {
         UpdateProjectMemberEvent(events_project::UpdateProjectMemberEvent),
         RemoveProjectMemberEvent(events_project::RemoveProjectMemberEvent),
         SetProjectMemberRoleEvent(events_project::SetProjectMemberRoleEvent),
-        CreateChannelEvent(events_project::CreateChannelEvent),
-        UpdateChannelEvent(events_project::UpdateChannelEvent),
-        OpenChannelEvent(events_project::OpenChannelEvent),
-        CloseChannelEvent(events_project::CloseChannelEvent),
-        RemoveChannelEvent(events_project::RemoveChannelEvent),
-        AddChannelMemberEvent(events_project::AddChannelMemberEvent),
-        RemoveChannelMemberEvent(events_project::RemoveChannelMemberEvent),
         CreateAppraiseEvent(events_project::CreateAppraiseEvent),
         UpdateAppraiseEvent(events_project::UpdateAppraiseEvent),
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
@@ -34,8 +27,6 @@ pub mod project {
         CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
         UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
         RemoveEventSubscribeEvent(events_project::RemoveEventSubscribeEvent),
-        WatchChannelEvent(events_project::WatchChannelEvent),
-        UnWatchChannelEvent(events_project::UnWatchChannelEvent),
         SetAlarmConfigEvent(events_project::SetAlarmConfigEvent),
         CustomEvent(events_project::CustomEvent),
     }
@@ -100,35 +91,6 @@ pub mod project {
             {
                 return Some(Event::SetProjectMemberRoleEvent(ev));
             }
-        } else if data.type_url == events_project::CreateChannelEvent::type_url() {
-            if let Ok(ev) = events_project::CreateChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::UpdateChannelEvent::type_url() {
-            if let Ok(ev) = events_project::UpdateChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::OpenChannelEvent::type_url() {
-            if let Ok(ev) = events_project::OpenChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::OpenChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::CloseChannelEvent::type_url() {
-            if let Ok(ev) = events_project::CloseChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::CloseChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveChannelEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::AddChannelMemberEvent::type_url() {
-            if let Ok(ev) = events_project::AddChannelMemberEvent::decode(data.value.as_slice()) {
-                return Some(Event::AddChannelMemberEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveChannelMemberEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveChannelMemberEvent::decode(data.value.as_slice())
-            {
-                return Some(Event::RemoveChannelMemberEvent(ev));
-            }
         } else if data.type_url == events_project::CreateAppraiseEvent::type_url() {
             if let Ok(ev) = events_project::CreateAppraiseEvent::decode(data.value.as_slice()) {
                 return Some(Event::CreateAppraiseEvent(ev));
@@ -159,14 +121,6 @@ pub mod project {
             if let Ok(ev) = events_project::RemoveEventSubscribeEvent::decode(data.value.as_slice())
             {
                 return Some(Event::RemoveEventSubscribeEvent(ev));
-            }
-        } else if data.type_url == events_project::WatchChannelEvent::type_url() {
-            if let Ok(ev) = events_project::WatchChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::UnWatchChannelEvent::type_url() {
-            if let Ok(ev) = events_project::UnWatchChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnWatchChannelEvent(ev));
             }
         } else if data.type_url == events_project::SetAlarmConfigEvent::type_url() {
             if let Ok(ev) = events_project::SetAlarmConfigEvent::decode(data.value.as_slice()) {
@@ -271,8 +225,6 @@ pub mod sprit {
         UnWatchEvent(events_sprit::UnWatchEvent),
         LinkDocEvent(events_sprit::LinkDocEvent),
         CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
-        LinkChannelEvent(events_sprit::LinkChannelEvent),
-        CancelLinkChannelEvent(events_sprit::CancelLinkChannelEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -304,15 +256,7 @@ pub mod sprit {
             if let Ok(ev) = events_sprit::CancelLinkDocEvent::decode(data.value.as_slice()) {
                 return Some(Event::CancelLinkDocEvent(ev));
             }
-        } else if data.type_url == events_sprit::LinkChannelEvent::type_url() {
-            if let Ok(ev) = events_sprit::LinkChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::LinkChannelEvent(ev));
-            }
-        } else if data.type_url == events_sprit::CancelLinkChannelEvent::type_url() {
-            if let Ok(ev) = events_sprit::CancelLinkChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::CancelLinkChannelEvent(ev));
-            }
-        }
+        } 
         None
     }
 }

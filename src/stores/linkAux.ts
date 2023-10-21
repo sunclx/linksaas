@@ -1,13 +1,11 @@
 import type { RootStore } from '.';
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import * as linkAuxApi from '@/api/link_aux';
 import { request } from '@/utils/request';
 import { message } from 'antd';
 import type { History } from 'history';
-import { CHANNEL_STATE } from './channel';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
-  APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_OVERVIEW_PATH,
@@ -33,7 +31,7 @@ import { OpenPipeLineWindow } from '@/pages/Project/CiCd/utils';
 
 export enum LINK_TARGET_TYPE {
   LINK_TARGET_PROJECT = 0,
-  LINK_TARGET_CHANNEL = 1,
+  // LINK_TARGET_CHANNEL = 1,
   LINK_TARGET_EVENT = 2,
   LINK_TARGET_DOC = 3,
   // LINK_TARGET_APP = 4,
@@ -77,20 +75,6 @@ export class LinkProjectInfo {
   projectId: string;
 }
 
-export class LinkChannelInfo {
-  constructor(content: string, projectId: string, channelId: string, msgId: string = '') {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_CHANNEL;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.channelId = channelId;
-    this.msgId = msgId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  channelId: string;
-  msgId: string;
-}
 
 export class LinkEventlInfo {
   constructor(
@@ -355,39 +339,7 @@ class LinkAuxStore {
       this.rootStore.appStore.simpleMode = false;
     }
     const pathname = history.location.pathname;
-    if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_CHANNEL) {
-      const channelLink = link as LinkChannelInfo;
-      if (this.rootStore.projectStore.getProject(channelLink.projectId)?.setting.disable_chat) {
-        return;
-      }
-      if (remoteCheck) {
-        const res = await request(
-          linkAuxApi.check_access_channel(
-            this.rootStore.userStore.sessionId,
-            channelLink.projectId,
-            channelLink.channelId,
-          ),
-        );
-        if (!res) {
-          return;
-        }
-        if (res.can_access == false) {
-          message.warn('不是目标频道的成员');
-          return;
-        }
-      }
-      if (this.rootStore.projectStore.curProjectId != channelLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(channelLink.projectId);
-      }
-      runInAction(() => {
-        this.rootStore.channelStore.filterChanelState = CHANNEL_STATE.CHANNEL_STATE_ALL;
-      });
-      if (channelLink.msgId != '') {
-        this.rootStore.chatMsgStore.listRefMsgId = channelLink.msgId;
-      }
-      this.rootStore.channelStore.curChannelId = channelLink.channelId;
-      history.push(APP_PROJECT_CHAT_PATH);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EVENT) {
+    if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EVENT) {
       const eventLink = link as LinkEventlInfo;
       if (remoteCheck) {
         const res = await request(
@@ -520,8 +472,6 @@ class LinkAuxStore {
         //TODO work plan
         if (this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.disable_kb == false) {
           history.push(APP_PROJECT_KB_DOC_PATH);
-        } else if (this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.disable_chat == false) {
-          history.push(APP_PROJECT_CHAT_PATH);
         } else {
           history.push(APP_PROJECT_OVERVIEW_PATH);
         }
@@ -739,7 +689,7 @@ class LinkAuxStore {
 
   //跳转到知识点列表
   goToIdeaList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_chat == true && this.rootStore.projectStore.curProject?.setting.disable_kb == true) {
+    if (this.rootStore.projectStore.curProject?.setting.disable_kb == true) {
       return;
     }
     if (this.rootStore.appStore.simpleMode) {
@@ -791,8 +741,6 @@ class LinkAuxStore {
     }
     if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
       return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
-    } else if (pathname.startsWith(APP_PROJECT_CHAT_PATH)) {
-      return APP_PROJECT_CHAT_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
@@ -802,12 +750,10 @@ class LinkAuxStore {
     }
     const projectInfo = this.rootStore.projectStore.getProject(projectId);
     if (projectInfo == undefined) {
-      return APP_PROJECT_CHAT_PATH + newSuffix;
+      return APP_PROJECT_OVERVIEW_PATH + newSuffix;
     }
 
-    if (projectInfo.setting.disable_chat == false) {
-      return APP_PROJECT_CHAT_PATH + newSuffix;
-    } else if (projectInfo.setting.disable_work_plan == false) {
+    if (projectInfo.setting.disable_work_plan == false) {
       return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
     } else if (projectInfo.setting.disable_kb == false) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;

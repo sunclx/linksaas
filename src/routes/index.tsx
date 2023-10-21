@@ -16,7 +16,6 @@ import IssueDetail from '@/pages/Issue/IssueDetail';
 import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
-import ChatLayout from '@/layouts/ChatLayout';
 import {
   ADMIN_PATH,
   ADMIN_PATH_CLIENT_AD_SUFFIX,
@@ -28,7 +27,6 @@ import {
   ADMIN_PATH_USER_CREATE_SUFFIX,
   ADMIN_PATH_USER_DETAIL_SUFFIX,
   ADMIN_PATH_USER_LIST_SUFFIX,
-  APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
   WORKBENCH_KB_DOC_SUFFIX,
@@ -270,12 +268,6 @@ const routesConfig: IRouteConfig[] = [
             title: "工作计划",
             component: WorkPlanLayout,
             routes: getToolbarRoute(APP_PROJECT_WORK_PLAN_PATH),
-          },
-          {
-            path: APP_PROJECT_CHAT_PATH,
-            title: '沟通',
-            component: ChatLayout,
-            routes: getToolbarRoute(APP_PROJECT_CHAT_PATH),
           },
           {
             path: APP_PROJECT_KB_PATH,

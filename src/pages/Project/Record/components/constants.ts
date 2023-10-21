@@ -63,34 +63,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "setProjectMemberRole",
     },
     {
-        label: "创建频道",
-        value: "createChannel",
-    },
-    {
-        label: "更新频道",
-        value: "updateChannel",
-    },
-    {
-        label: "激活频道",
-        value: "openChannel",
-    },
-    {
-        label: "关闭频道",
-        value: "closeChannel",
-    },
-    {
-        label: "删除频道",
-        value: "removeChannel",
-    },
-    {
-        label: "添加频道成员",
-        value: "addChannelMember",
-    },
-    {
-        label: "删除频道成员",
-        value: "removeChannelMember",
-    },
-    {
         label: "创建评估",
         value: "createAppraise",
     },
@@ -119,14 +91,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "removeSubscribe",
     },
     {
-        label: "关注频道",
-        value: "watchChannel",
-    },
-    {
-        label: "取消关注频道",
-        value: "unWatchChannel",
-    },
-    {
         label: "更新预警配置",
         value: "setAlarmConfig",
     },
@@ -152,13 +116,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         update_project_member: false,
         remove_project_member: false,
         set_project_member_role: false,
-        create_channel: false,
-        update_channel: false,
-        open_channel: false,
-        close_channel: false,
-        remove_channel: false,
-        add_channel_member: false,
-        remove_channel_member: false,
         create_appraise: false,
         update_appraise: false,
         remove_appraise: false,
@@ -166,8 +123,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         create_subscribe: false,
         update_subscribe: false,
         remove_subscribe: false,
-        watch_channel: false,
-        un_watch_channel: false,
         set_alarm_config: false,
         custom_event: false,
     };
@@ -203,20 +158,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.remove_project_member = true;
         } else if (value == "setProjectMemberRole") {
             ret.set_project_member_role = true;
-        } else if (value == "createChannel") {
-            ret.create_channel = true;
-        } else if (value == "updateChannel") {
-            ret.update_channel = true;
-        } else if (value == "openChannel") {
-            ret.open_channel = true;
-        } else if (value == "closeChannel") {
-            ret.close_channel = true;
-        } else if (value == "removeChannel") {
-            ret.remove_channel = true;
-        } else if (value == "addChannelMember") {
-            ret.add_channel_member = true;
-        } else if (value == "removeChannelMember") {
-            ret.remove_channel_member = true;
         } else if (value == "createAppraise") {
             ret.create_appraise = true;
         } else if (value == "updateAppraise") {
@@ -231,10 +172,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.update_subscribe = true;
         } else if (value == "removeSubscribe") {
             ret.remove_subscribe = true;
-        } else if (value == "watchChannel") {
-            ret.watch_channel = true;
-        } else if (value == "unWatchChannel") {
-            ret.un_watch_channel = true;
         } else if (value == "setAlarmConfig") {
             ret.set_alarm_config = true;
         } else if (value == "customEvent") {
@@ -288,27 +225,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     if (cfg.set_project_member_role) {
         retList.push("setProjectMemberRole");
     }
-    if (cfg.create_channel) {
-        retList.push("createChannel");
-    }
-    if (cfg.update_channel) {
-        retList.push("updateChannel");
-    }
-    if (cfg.open_channel) {
-        retList.push("openChannel");
-    }
-    if (cfg.close_channel) {
-        retList.push("closeChannel");
-    }
-    if (cfg.remove_channel) {
-        retList.push("removeChannel");
-    }
-    if (cfg.add_channel_member) {
-        retList.push("addChannelMember");
-    }
-    if (cfg.remove_channel_member) {
-        retList.push("removeChannelMember");
-    }
     if (cfg.create_appraise) {
         retList.push("createAppraise");
     }
@@ -329,12 +245,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.remove_subscribe) {
         retList.push("removeSubscribe");
-    }
-    if (cfg.watch_channel) {
-        retList.push("watchChannel");
-    }
-    if (cfg.un_watch_channel) {
-        retList.push("unWatchChannel");
     }
     if (cfg.set_alarm_config) {
         retList.push("setAlarmConfig");
@@ -1154,14 +1064,6 @@ export const spritEvOptionList: CheckboxOptionType[] = [
         label: "取消关联文档",
         value: "cancelLinkDoc",
     },
-    {
-        label: "关联频道",
-        value: "linkChannel",
-    },
-    {
-        label: "取消关联文档",
-        value: "cancelLinkChannel",
-    },
 ];
 
 export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
@@ -1171,8 +1073,6 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
         remove: false,
         link_doc: false,
         cancel_link_doc: false,
-        link_channel: false,
-        cancel_link_channel: false,
         watch: false,
         un_watch: false,
     };
@@ -1190,10 +1090,6 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
             ret.link_doc = true;
         } else if (value == "cancelLinkDoc") {
             ret.cancel_link_doc = true;
-        } else if (value == "linkChannel") {
-            ret.link_channel = true;
-        } else if (value == "cancelLinkChannel") {
-            ret.cancel_link_channel = true;
         } else if (value == "watch") {
             ret.watch = true;
         } else if (value == "unWatch") {
@@ -1219,12 +1115,6 @@ export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
     }
     if (cfg.cancel_link_doc) {
         retList.push("cancelLinkDoc");
-    }
-    if (cfg.link_channel) {
-        retList.push("linkChannel");
-    }
-    if (cfg.cancel_link_channel) {
-        retList.push("cancelLinkChannel");
     }
     if (cfg.watch) {
         retList.push("watch");

@@ -8,11 +8,6 @@ export const SHORT_NOTE_BUG: SHORT_NOTE_TYPE = 1;
 export const SHORT_NOTE_DOC: SHORT_NOTE_TYPE = 2;
 // export const SHORT_NOTE_TEST_CASE: SHORT_NOTE_TYPE = 3;
 
-
-export const SHORT_NOTE_CHANNEL: SHORT_NOTE_TYPE = 999; //自定义属性
-export const SHORT_NOTE_MEMBER: SHORT_NOTE_TYPE = 998; //自定义属性
-
-
 export type SHORT_NOTE_MODE_TYPE = number;
 
 export const SHORT_NOTE_MODE_DETAIL: SHORT_NOTE_MODE_TYPE = 0; //显示详情

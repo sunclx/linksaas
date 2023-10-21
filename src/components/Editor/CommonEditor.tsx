@@ -36,7 +36,6 @@ export interface UseCommonEditorAttrs {
   clipboardInToolbar: boolean;
   widgetInToolbar: boolean;
   showReminder: boolean;
-  channelMember: boolean;
   tocCallback?: (tocList: TocInfo[]) => void;
   eventsOption?: EventsOptions;
   placeholder?: string;
@@ -107,7 +106,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
           <Toolbar items={toolbarItems} />
           <FloatToolBar />
           {attrs.showReminder && (
-            <Reminder enabled={showReminder} channelMember={attrs.channelMember} />
+            <Reminder enabled={showReminder}/>
           )}
           <ImperativeHandle ref={editorRef} />
           <EditorComponent />

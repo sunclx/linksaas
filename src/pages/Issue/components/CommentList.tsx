@@ -36,7 +36,6 @@ export const CommentList: React.FC<CommentListProp> = (props) => {
     clipboardInToolbar: true,
     widgetInToolbar: true,
     showReminder: false,
-    channelMember: false,
   });
 
   const loadComment = async () => {

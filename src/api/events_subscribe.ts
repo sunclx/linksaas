@@ -21,13 +21,6 @@ export type ProjectEvCfg = {
     update_project_member: boolean;
     remove_project_member: boolean;
     set_project_member_role: boolean;
-    create_channel: boolean;
-    update_channel: boolean;
-    open_channel: boolean;
-    close_channel: boolean;
-    remove_channel: boolean;
-    add_channel_member: boolean;
-    remove_channel_member: boolean;
     create_appraise: boolean;
     update_appraise: boolean;
     remove_appraise: boolean;
@@ -35,8 +28,6 @@ export type ProjectEvCfg = {
     create_subscribe: boolean;
     update_subscribe: boolean;
     remove_subscribe: boolean;
-    watch_channel: boolean;
-    un_watch_channel: boolean;
     set_alarm_config: boolean;
     custom_event: boolean;
 };
@@ -118,8 +109,6 @@ export type SpritEvCfg = {
     remove: boolean;
     link_doc: boolean;
     cancel_link_doc: boolean;
-    link_channel: boolean;
-    cancel_link_channel: boolean;
     watch: boolean;
     un_watch: boolean;
 }
