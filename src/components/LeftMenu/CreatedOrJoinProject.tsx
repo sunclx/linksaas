@@ -93,6 +93,7 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
           use_in_req: false,
           use_in_idea: false,
           use_in_sprit_summary: true,
+          use_in_entry: false,
         }));
       }
 

@@ -78,6 +78,7 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
                     use_in_req: tagInfo.info.use_in_req,
                     use_in_idea: tagInfo.info.use_in_idea,
                     use_in_sprit_summary: tagInfo.info.use_in_sprit_summary,
+                    use_in_entry: tagInfo.info.use_in_entry,
                 }));
             } catch (e) {
                 console.log(e);
@@ -98,6 +99,7 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
                     use_in_req: tagInfo.info.use_in_req,
                     use_in_idea: tagInfo.info.use_in_idea,
                     use_in_sprit_summary: tagInfo.info.use_in_sprit_summary,
+                    use_in_entry: tagInfo.info.use_in_entry,
                 }));
             } catch (e) {
                 console.log(e);
@@ -327,6 +329,7 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
                                 use_in_req: true,
                                 use_in_idea: true,
                                 use_in_sprit_summary: true,
+                                use_in_entry: true,
                             },
                             hasUpdate: true,
                             hasRemove: false,
