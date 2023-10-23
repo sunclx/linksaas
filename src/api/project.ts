@@ -2,14 +2,13 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 export type TAG_SCOPRE_TYPE = number;
 export const TAG_SCOPRE_ALL: TAG_SCOPRE_TYPE = 0;
-export const TAG_SCOPRE_DOC: TAG_SCOPRE_TYPE = 1;
+// export const TAG_SCOPRE_DOC: TAG_SCOPRE_TYPE = 1;
 export const TAG_SCOPRE_TASK: TAG_SCOPRE_TYPE = 2;
 export const TAG_SCOPRE_BUG: TAG_SCOPRE_TYPE = 3;
 export const TAG_SCOPRE_REQ: TAG_SCOPRE_TYPE = 4;
 export const TAG_SCOPRE_IDEA: TAG_SCOPRE_TYPE = 5;
 export const TAG_SCOPRE_SPRIT_SUMMARY: TAG_SCOPRE_TYPE = 6;
 export const TAG_SCOPRE_ENTRY: TAG_SCOPRE_TYPE = 7;
-
 
 export type BasicProjectInfo = {
   project_name: string;
@@ -28,8 +27,8 @@ export type Setting = {
   disable_ci_cd: boolean;
 
   // disable_chat: boolean;
-  disable_kb: boolean;
-  disable_work_plan: boolean;
+  // disable_kb: boolean;
+  // disable_work_plan: boolean;
 
   // min_pure_text_len_in_chat: number;
   // disable_widget_in_chat: boolean;
@@ -77,7 +76,6 @@ export type TagInfo = {
   tag_name: string;
   create_time: number;
   bg_color: string;
-  use_in_doc: boolean;
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
@@ -112,7 +110,7 @@ export type ProjectInfo = {
   data_anno_fs_id: string;
   api_coll_fs_id: string;
   ci_cd_fs_id: string;
-  default_doc_space_id: string;
+  // default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;
   tip_list?: string[];
@@ -177,7 +175,6 @@ export type AddTagRequest = {
   project_id: string;
   tag_name: string;
   bg_color: string;
-  use_in_doc: boolean;
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
@@ -198,7 +195,6 @@ export type UpdateTagRequest = {
   tag_id: string;
   tag_name: string;
   bg_color: string;
-  use_in_doc: boolean;
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;

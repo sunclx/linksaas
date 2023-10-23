@@ -1,22 +1,17 @@
-import { Button, Tabs, Tooltip } from 'antd';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { Button, Space, Tooltip } from 'antd';
 import React from 'react';
 import s from './index.module.less';
-import { useHistory, useLocation } from 'react-router-dom';
 import {
-  APP_PROJECT_KB_DOC_PATH,
-  APP_PROJECT_KB_PATH,
-  PROJECT_SETTING_TAB,
-  APP_PROJECT_OVERVIEW_PATH,
-  APP_PROJECT_WORK_PLAN_PATH,
+  APP_PROJECT_HOME_PATH,
   APP_PROJECT_MY_WORK_PATH,
+  APP_PROJECT_OVERVIEW_PATH,
+  PROJECT_SETTING_TAB
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
-import { ClockCircleOutlined, FileDoneOutlined, FlagOutlined, FundProjectionScreenOutlined, SettingOutlined } from '@ant-design/icons';
+import { HomeTwoTone, SettingOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
-import classNames from 'classnames';
 import AlarmHeader from './AlarmHeader';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const RightFloat = observer(() => {
   const projectStore = useStores('projectStore');
@@ -38,104 +33,32 @@ const RightFloat = observer(() => {
 });
 
 const TopNav = () => {
-  const history = useHistory();
   const location = useLocation();
-  const [activeKey, setActiveKey] = useState(location.pathname);
-
-  const docSpaceStore = useStores('docSpaceStore');
-  const projectStore = useStores('projectStore');
-  const spritStore = useStores('spritStore');
-
-  const workPanlTabPanel = (<Tabs.TabPane tab={
-    <Tooltip title="主界面: 工作计划面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-      placement="top" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
-      <span className={activeKey == APP_PROJECT_WORK_PLAN_PATH ? s.tab_work_plan_active : s.tab_work_plan}><FlagOutlined />工作计划</span>
-    </Tooltip>
-  } key={APP_PROJECT_WORK_PLAN_PATH} />);
-
-  const kbTabPanel = (
-    <Tabs.TabPane tab={
-      <Tooltip title="主界面: 知识库面板" open={projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT}
-        placement="right" color="orange" overlayInnerStyle={{ color: 'black' }} trigger={[]}>
-        <span className={activeKey == APP_PROJECT_KB_PATH ? s.tab_kb_active : s.tab_kb}><FileDoneOutlined />知识库</span>
-      </Tooltip>
-    } key={APP_PROJECT_KB_PATH} />);
-
-
-  useEffect(() => {
-    if (location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
-      setActiveKey(APP_PROJECT_WORK_PLAN_PATH);
-    } else if (location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
-      setActiveKey(APP_PROJECT_KB_PATH);
-    } else if(location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
-      setActiveKey(APP_PROJECT_MY_WORK_PATH);
-    } else if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
-      setActiveKey(APP_PROJECT_OVERVIEW_PATH);
-    }
-  }, [location.pathname, history]);
+  const history = useHistory();
 
   return (
     <div className={s.topnav}>
-      <div>
-        <Tabs
-          className={classNames(s.tabs)}
-          activeKey={activeKey}
-          onChange={(key) => {
-            if (docSpaceStore.inEdit) {
-              docSpaceStore.showCheckLeave(() => {
-                setActiveKey(key);
-                if (key == APP_PROJECT_WORK_PLAN_PATH) {
-                  spritStore.setCurSpritId("");
-                  history.push(APP_PROJECT_WORK_PLAN_PATH);
-                } else if (key == APP_PROJECT_KB_PATH) {
-                  docSpaceStore.showDocList("", false);
-                  history.push(APP_PROJECT_KB_DOC_PATH);
-                } else if (key == APP_PROJECT_MY_WORK_PATH) {
-                  history.push(APP_PROJECT_MY_WORK_PATH);
-                } else if (key == APP_PROJECT_OVERVIEW_PATH) {
-                  history.push(APP_PROJECT_OVERVIEW_PATH);
-                }
-              });
-              return;
-            }
-            setActiveKey(key);
-            if (key == APP_PROJECT_WORK_PLAN_PATH) {
-              spritStore.setCurSpritId("");
-              history.push(APP_PROJECT_WORK_PLAN_PATH);
-            } else if (key == APP_PROJECT_KB_PATH) {
-              docSpaceStore.showDocList("", false);
-              history.push(APP_PROJECT_KB_DOC_PATH);
-            } else if (key == APP_PROJECT_MY_WORK_PATH) {
-              history.push(APP_PROJECT_MY_WORK_PATH);
-            } else if (key == APP_PROJECT_OVERVIEW_PATH) {
-              history.push(APP_PROJECT_OVERVIEW_PATH);
-            }
-          }}
-        >
-
-          {!projectStore.curProject?.setting.disable_work_plan && (
-            <>{workPanlTabPanel}</>
-          )}
-
-          {!projectStore.curProject?.setting.disable_kb && (
-            <>{kbTabPanel}</>
-          )}
-
-          <Tabs.TabPane tab={
-            <span className={activeKey == APP_PROJECT_MY_WORK_PATH ? s.tab_my_work_active : s.tab_my_work}><ClockCircleOutlined />我的工作</span>
-          } key={APP_PROJECT_MY_WORK_PATH} />);
-
-          <Tabs.TabPane tab={
-            <span className={activeKey == APP_PROJECT_OVERVIEW_PATH ? s.tab_overview_active : s.tab_overview}><FundProjectionScreenOutlined />项目概览</span>
-          } key={APP_PROJECT_OVERVIEW_PATH} />);
-        </Tabs>
-      </div>
-      {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<span />)}
+      <Space className={s.left}>
+        <Button type="text" icon={<HomeTwoTone style={{ fontSize: "20px" }} twoToneColor={["orange", "white"]} />} onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          history.push(APP_PROJECT_HOME_PATH);
+        }} />
+        {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) && (
+          <>
+            <span>/</span>
+            <span>我的工作</span>
+          </>
+        )}
+        {location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) && (
+          <>
+            <span>/</span>
+            <span>项目概览</span>
+          </>
+        )}
+      </Space>
       <div className={s.right}>
-        {location.pathname.includes(APP_PROJECT_WORK_PLAN_PATH) && (<RightFloat />)}
-        {location.pathname.includes(APP_PROJECT_KB_DOC_PATH) && (<><div className={s.doc_title}>知识库</div><RightFloat /></>)}
-        {location.pathname.includes(APP_PROJECT_MY_WORK_PATH) && (<RightFloat />)}
-        {location.pathname.includes(APP_PROJECT_OVERVIEW_PATH) && (<RightFloat />)}
+        <RightFloat />
       </div>
     </div>
   );

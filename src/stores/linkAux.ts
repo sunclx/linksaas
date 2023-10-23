@@ -6,6 +6,7 @@ import { message } from 'antd';
 import type { History } from 'history';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
+  APP_PROJECT_HOME_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_OVERVIEW_PATH,
@@ -100,17 +101,15 @@ export class LinkEventlInfo {
 }
 
 export class LinkDocInfo {
-  constructor(content: string, projectId: string, docSpaceId: string, docId: string) {
+  constructor(content: string, projectId: string, docId: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_DOC;
     this.linkContent = content;
     this.projectId = projectId;
-    this.docSpaceId = docSpaceId;
     this.docId = docId;
   }
   linkTargeType: LINK_TARGET_TYPE;
   linkContent: string;
   projectId: string;
-  docSpaceId: string;
   docId: string;
 }
 
@@ -415,9 +414,7 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
-      if (this.rootStore.projectStore.getProject(docLink.projectId)?.setting.disable_kb) {
-        return;
-      }
+
       if (remoteCheck) {
         const res = await request(
           linkAuxApi.check_access_doc(
@@ -436,21 +433,18 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
       }
-      if (this.rootStore.docSpaceStore.curDocSpaceId != docLink.docSpaceId) {
-        await this.rootStore.docSpaceStore.showDocList(docLink.docSpaceId, false);
-      }
-      this.rootStore.docSpaceStore.fromLink = true;
-      await this.rootStore.docSpaceStore.showDoc(docLink.docId, false);
+
+      this.rootStore.docStore.fromLink = true;
+      await this.rootStore.projectStore.loadEntry(docLink.docId);
+      await this.rootStore.docStore.loadDoc();
       history.push(APP_PROJECT_KB_DOC_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
-      if (this.rootStore.projectStore.getProject(spritLink.projectId)?.setting.disable_work_plan == true) {
-        return;
-      }
       if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
       }
-      await this.rootStore.spritStore.setCurSpritId(spritLink.spritId);
+      await this.rootStore.projectStore.loadEntry(spritLink.spritId);
+      await this.rootStore.spritStore.loadCurSprit();
       history.push(APP_PROJECT_WORK_PLAN_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as LinkRequirementInfo;
@@ -469,12 +463,7 @@ class LinkAuxStore {
       }
       this.rootStore.projectStore.setCodeCommentInfo(commentLink.threadId, commentLink.commentId);
       if (!history.location.pathname.startsWith(APP_PROJECT_PATH)) {
-        //TODO work plan
-        if (this.rootStore.projectStore.getProject(commentLink.projectId)?.setting.disable_kb == false) {
-          history.push(APP_PROJECT_KB_DOC_PATH);
-        } else {
-          history.push(APP_PROJECT_OVERVIEW_PATH);
-        }
+        history.push(APP_PROJECT_HOME_PATH);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_IDEA_PAGE) {
       const ideaPageLink = link as LinkIdeaPageInfo;
@@ -502,30 +491,6 @@ class LinkAuxStore {
       }
       await open(destUrl);
     }
-  }
-
-  //跳转到创建文档
-  async goToCreateDoc(content: string, projectId: string, docSpaceId: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
-    if (this.rootStore.projectStore.getProject(projectId)?.setting.disable_kb) {
-      return;
-    }
-    if (projectId != this.rootStore.projectStore.curProjectId) {
-      await this.rootStore.projectStore.setCurProjectId(projectId);
-    }
-    if (docSpaceId != "") {
-      await this.rootStore.docSpaceStore.loadDocSpace();
-      this.rootStore.docSpaceStore.showDocList(docSpaceId, false);
-    }
-    await this.rootStore.docSpaceStore.showDoc("", true);
-    history.push(APP_PROJECT_KB_DOC_PATH, {
-      writeDoc: true,
-      content: content,
-      docSpaceId: docSpaceId,
-      docId: '',
-    } as LinkDocState);
   }
 
   //跳转到创建任务
@@ -689,9 +654,6 @@ class LinkAuxStore {
 
   //跳转到知识点列表
   goToIdeaList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_kb == true) {
-      return;
-    }
     if (this.rootStore.appStore.simpleMode) {
       this.rootStore.appStore.simpleMode = false;
     }
@@ -750,16 +712,9 @@ class LinkAuxStore {
     }
     const projectInfo = this.rootStore.projectStore.getProject(projectId);
     if (projectInfo == undefined) {
-      return APP_PROJECT_OVERVIEW_PATH + newSuffix;
+      return APP_PROJECT_HOME_PATH + newSuffix;
     }
-
-    if (projectInfo.setting.disable_work_plan == false) {
-      return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
-    } else if (projectInfo.setting.disable_kb == false) {
-      return APP_PROJECT_KB_DOC_PATH + newSuffix;
-    } else {
-      return APP_PROJECT_OVERVIEW_PATH + newSuffix;
-    }
+    return APP_PROJECT_HOME_PATH + newSuffix;
   }
 }
 

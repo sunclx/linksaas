@@ -20,8 +20,6 @@ import moment from 'moment';
 import { EditText } from "@/components/EditCell/EditText";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { LinkRequirementInfo } from "@/stores/linkAux";
-import type { TagInfo } from "@/api/project";
-import { list_tag, TAG_SCOPRE_REQ } from "@/api/project";
 import { EditTag } from "@/components/EditCell/EditTag";
 import { PROJECT_SETTING_TAB } from "@/utils/constant";
 
@@ -43,17 +41,7 @@ const RequirementList = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [reqInfoList, setReqInfoList] = useState<RequirementInfo[]>([]);
 
-    const [tagDefList, setTagDefList] = useState<TagInfo[]>([]);
     const [filterTagId, setFilterTagId] = useState<string | null>(null);
-
-    const loadTagDefList = async () => {
-        const res = await request(list_tag({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            tag_scope_type: TAG_SCOPRE_REQ,
-        }));
-        setTagDefList(res.tag_info_list);
-    };
 
     const loadReqInfoList = async () => {
         const res = await request(list_requirement({
@@ -121,31 +109,30 @@ const RequirementList = () => {
             width: 200,
             render: (_, row: RequirementInfo) => (
                 <>
-                    {tagDefList != null && (
-                        <EditTag editable={(!projectStore.isClosed) && row.user_requirement_perm.can_update} tagIdList={row.base_info.tag_id_list} tagDefList={tagDefList}
-                            onChange={(tagIdList: string[]) => {
-                                request(update_tag_id_list({
-                                    session_id: userStore.sessionId,
-                                    project_id: row.project_id,
-                                    requirement_id: row.requirement_id,
-                                    tag_id_list: tagIdList,
-                                })).then(() => {
-                                    const tmpList = reqInfoList.slice();
-                                    const index = tmpList.findIndex(item => item.requirement_id == row.requirement_id);
-                                    if (index != -1) {
-                                        tmpList[index].base_info.tag_id_list = tagIdList;
-                                        tmpList[index].tag_info_list = tagDefList.filter(tag => tagIdList.includes(tag.tag_id)).map(tag => (
-                                            {
-                                                tag_id: tag.tag_id,
-                                                tag_name: tag.tag_name,
-                                                bg_color: tag.bg_color,
-                                            }
-                                        ));
-                                        setReqInfoList(tmpList);
-                                    }
-                                });
-                            }} />
-                    )}
+                    <EditTag editable={(!projectStore.isClosed) && row.user_requirement_perm.can_update} tagIdList={row.base_info.tag_id_list} tagDefList={(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_req)}
+                        onChange={(tagIdList: string[]) => {
+                            request(update_tag_id_list({
+                                session_id: userStore.sessionId,
+                                project_id: row.project_id,
+                                requirement_id: row.requirement_id,
+                                tag_id_list: tagIdList,
+                            })).then(() => {
+                                const tmpList = reqInfoList.slice();
+                                const index = tmpList.findIndex(item => item.requirement_id == row.requirement_id);
+                                if (index != -1) {
+                                    tmpList[index].base_info.tag_id_list = tagIdList;
+                                    tmpList[index].tag_info_list = (projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_req).filter(tag => tagIdList.includes(tag.tag_id)).map(tag => (
+                                        {
+                                            tag_id: tag.tag_id,
+                                            tag_name: tag.tag_name,
+                                            bg_color: tag.bg_color,
+                                        }
+                                    ));
+                                    setReqInfoList(tmpList);
+                                }
+                            });
+                        }} />
+
                 </>
             ),
         },
@@ -238,10 +225,6 @@ const RequirementList = () => {
     ];
 
     useEffect(() => {
-        loadTagDefList();
-    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
-
-    useEffect(() => {
         loadReqInfoList();
     }, [curPage, keyword, hasLinkIssue, filterClosed, sortType, filterTagId]);
 
@@ -287,16 +270,14 @@ const RequirementList = () => {
                                 </Select>
                             </Form.Item>
                             <Form.Item>
-                                {tagDefList != null && (
-                                    <Select style={{ width: 100 }} value={filterTagId} onChange={value => setFilterTagId(value ?? null)}
-                                        placeholder="标签" allowClear>
-                                        {tagDefList.map(tag => (
-                                            <Select.Option key={tag.tag_id} value={tag.tag_id}>
-                                                <span style={{ padding: "2px 4px", backgroundColor: tag.bg_color }}>{tag.tag_name}</span>
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                )}
+                                <Select style={{ width: 100 }} value={filterTagId} onChange={value => setFilterTagId(value ?? null)}
+                                    placeholder="标签" allowClear>
+                                    {(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_req).map(tag => (
+                                        <Select.Option key={tag.tag_id} value={tag.tag_id}>
+                                            <span style={{ padding: "2px 4px", backgroundColor: tag.bg_color }}>{tag.tag_name}</span>
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
                             <Form.Item>
                                 <Select style={{ width: 100 }} value={filterClosed} onChange={value => setFilterClosed(value ?? null)}

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/styles/global.less';
 import randomColor from 'randomcolor';
@@ -8,7 +8,7 @@ import type { ShortNoteEvent } from '@/utils/short_note';
 import { useLocation } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
 import type { SHORT_NOTE_TYPE } from '@/api/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC,SHORT_NOTE_MODE_DETAIL } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_MODE_DETAIL } from '@/api/short_note';
 import { get_session } from '@/api/user';
 import { remove } from '@/api/short_note';
 import { request } from '@/utils/request';
@@ -30,8 +30,6 @@ const Content = () => {
         shortNoteType = SHORT_NOTE_TASK;
     } else if (shortNoteTypeStr == "bug") {
         shortNoteType = SHORT_NOTE_BUG;
-    } else if (shortNoteTypeStr == "doc") {
-        shortNoteType = SHORT_NOTE_DOC;
     }
 
     const randomBgColor = () => {
@@ -44,9 +42,7 @@ const Content = () => {
             return "任务";
         } else if (shortNoteType == SHORT_NOTE_BUG) {
             return "缺陷";
-        } else if (shortNoteType == SHORT_NOTE_DOC) {
-            return "文档";
-        }
+        } 
         return "";
     };
 
@@ -75,7 +71,7 @@ const Content = () => {
         }
     };
 
-    useMemo(() => {
+    useEffect(() => {
         randomBgColor();
     }, []);
 

@@ -57,31 +57,6 @@ async fn update<R: Runtime>(
 }
 
 #[tauri::command]
-async fn list<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListRequest,
-) -> Result<ListResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectSpritApiClient::new(chan.unwrap());
-    match client.list(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn get<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -471,7 +446,6 @@ impl<R: Runtime> ProjectSpritApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 create,
                 update,
-                list,
                 get,
                 remove,
                 link_doc,

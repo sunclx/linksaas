@@ -48,6 +48,7 @@ import {
   ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX,
   ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
   APP_PROJECT_MY_WORK_PATH,
+  APP_PROJECT_HOME_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -84,6 +85,7 @@ import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
 import ProjectCiCd from "@/pages/Project/CiCd"
+import HomeLayout from '@/layouts/HomeLayout';
 
 export interface IRouteConfig {
   // 路由路径
@@ -211,7 +213,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
-      path: prefix+"/cicd",
+      path: prefix + "/cicd",
       title: "",
       component: ProjectCiCd,
       exact: true,
@@ -263,6 +265,12 @@ const routesConfig: IRouteConfig[] = [
         title: '项目',
         component: ProjectLayout,
         routes: [
+          {
+            path: APP_PROJECT_HOME_PATH,
+            title: "主面板入口",
+            component: HomeLayout,
+            routes: getToolbarRoute(APP_PROJECT_HOME_PATH),
+          },
           {
             path: APP_PROJECT_WORK_PLAN_PATH,
             title: "工作计划",

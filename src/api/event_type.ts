@@ -4,7 +4,6 @@ import { LinkNoneInfo } from '@/stores/linkAux';
 import * as pi from './project_issue';
 
 import { type AllProjectEvent, get_project_simple_content } from './events/project';
-import { type AllProjectDocEvent, get_project_doc_simple_content } from './events/project_doc';
 import { type AllSpritEvent, get_sprit_simple_content } from './events/sprit';
 import { type AllIssueEvent, get_issue_simple_content } from './events/issue';
 import { type AllExtEvEvent, get_ext_event_simple_content } from './events/ext_event';
@@ -32,7 +31,6 @@ export function get_issue_type_str(issue_type: number): string {
 
 export class AllEvent {
   ProjectEvent?: AllProjectEvent;
-  ProjectDocEvent?: AllProjectDocEvent;
   SpritEvent?: AllSpritEvent;
   IssueEvent?: AllIssueEvent;
   ExtEvEvent?: AllExtEvEvent;
@@ -51,8 +49,6 @@ export class AllEvent {
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
   if (ev.event_data.ProjectEvent !== undefined) {
     return get_project_simple_content(ev, skip_prj_name, ev.event_data.ProjectEvent);
-  } else if (ev.event_data.ProjectDocEvent !== undefined) {
-    return get_project_doc_simple_content(ev, skip_prj_name, ev.event_data.ProjectDocEvent);
   } else if (ev.event_data.SpritEvent !== undefined) {
     return get_sprit_simple_content(ev, skip_prj_name, ev.event_data.SpritEvent);
   } else if (ev.event_data.IssueEvent !== undefined) {

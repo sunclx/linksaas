@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
-import {  LINK_TARGET_TYPE } from "@/stores/linkAux";
-import { get as get_sprit, remove as remove_sprit, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
+import { LINK_TARGET_TYPE } from "@/stores/linkAux";
+import { get as get_sprit, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import Button from "@/components/Button";
-import { LeftOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
-import { Card, Dropdown, Form, message, Modal, Popover, Select, Space, Tabs, Tag } from 'antd';
+import { LeftOutlined,  PlusOutlined } from "@ant-design/icons";
+import { Card, Dropdown, Form, Select, Space, Tabs, Tag } from 'antd';
 import s from './SpritDetail.module.less';
 import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
@@ -18,7 +17,6 @@ import GanttPanel from "./components/GanttPanel";
 import LinkDocPanel from "./components/LinkDocPanel";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
-import { APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import SummaryPanel from "./components/SummaryPanel";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import { ISSUE_TYPE_TASK, type ISSUE_TYPE, ISSUE_TYPE_BUG, link_sprit, list_by_id } from "@/api/project_issue";
@@ -39,22 +37,13 @@ const SpritDetail = () => {
 
     const [activeKey, setActiveKey] = useState("");
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
-    const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [selMemberUserId, setSelMemberUserId] = useState("");
     const [refIssueType, setRefIssueType] = useState<ISSUE_TYPE | null>(null);
     const [showAddIssueModal, setShowAddIssueModal] = useState(false);
 
     const loadSpritInfo = async () => {
-        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
+        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, projectStore.curEntry?.entry_id ?? ""));
         setSpritInfo(res.info);
-    };
-
-    const removeSprit = async () => {
-        await request(remove_sprit(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId));
-        message.info("删除工作计划成功");
-        setShowRemoveModal(false);
-        await spritStore.setCurSpritId("");
-
     };
 
     const linkSprit = async (links: LinkInfo[]) => {
@@ -78,7 +67,7 @@ const SpritDetail = () => {
             return true;
         });
         for (const issueId of issueIdList) {
-            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, spritStore.curSpritId));
+            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, projectStore.curEntry?.entry_id ?? ""));
         }
         const listRes = await request(list_by_id({
             session_id: userStore.sessionId,
@@ -91,13 +80,13 @@ const SpritDetail = () => {
 
 
     useEffect(() => {
-        if (spritStore.curSpritId != "") {
+        if (projectStore.curEntry != null) {
             loadSpritInfo();
         }
-    }, [spritStore.curSpritId]);
+    }, [projectStore.curEntry]);
 
     useEffect(() => {
-        if (spritStore.curSpritId != "") {
+        if (projectStore.curEntry != null) {
             loadSpritInfo();
         }
     }, [spritStore.curSpritVersion]);
@@ -127,44 +116,27 @@ const SpritDetail = () => {
                     <a onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        spritStore.setCurSpritId("");
-                        history.push(APP_PROJECT_WORK_PLAN_PATH);
+                        history.goBack();
                     }}><LeftOutlined /></a>
-                    &nbsp;{spritInfo?.basic_info.title ?? ""}&nbsp;
+                    &nbsp;{projectStore.curEntry?.entry_title ?? ""}&nbsp;
                     {spritInfo != null && (
                         <span>
                             (
-                            {moment(spritInfo.basic_info.start_time).format("YYYY-MM-DD")}
+                            {moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0).format("YYYY-MM-DD")}
                             &nbsp;至&nbsp;
-                            {moment(spritInfo.basic_info.end_time).format("YYYY-MM-DD")}
+                            {moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0).format("YYYY-MM-DD")}
                             )
                         </span>
                     )}
 
-                </h2>} extra={
-                    <Space>
-                        {projectStore.isAdmin && (
-                            <Popover trigger="click" placement="bottom" content={
-                                <div style={{ padding: "10px 10px" }}>
-                                    <Button type="link" danger onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setShowRemoveModal(true);
-                                    }}>删除工作计划</Button>
-                                </div>
-                            }>
-                                <MoreOutlined />
-                            </Popover>
-                        )}
-                    </Space>
-                }>
+                </h2>}>
 
             <div className={s.sprit_wrap}>
-                {(spritInfo?.basic_info.non_work_day_list.length ?? 0) > 0 && (
+                {(projectStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? []).length > 0 && (
                     <div className={s.info_wrap}>
                         <div className={s.label}>非工作日：</div>
                         <div>
-                            {spritInfo?.basic_info.non_work_day_list.map(item => (
+                            {(projectStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? []).map(item => (
                                 <Tag key={item}>{moment(item).format("YYYY-MM-DD")}</Tag>
                             ))}
                         </div>
@@ -232,25 +204,28 @@ const SpritDetail = () => {
                         {spritInfo.basic_info.issue_list_type != ISSUE_LIST_KANBAN && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
                                 {activeKey == "issue" && (
-                                    <IssuePanel spritId={spritStore.curSpritId} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time}
+                                    <IssuePanel spritId={projectStore.curEntry?.entry_id ?? ""} startTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
+                                        endTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0}
                                         memberId={selMemberUserId} />
                                 )}
                             </Tabs.TabPane>
                         )}
                         {spritInfo.basic_info.issue_list_type != ISSUE_LIST_LIST && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
-                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo}/>}
+                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo} entryInfo={projectStore.curEntry}/>}
                             </Tabs.TabPane>
                         )}
 
-                        {!projectStore.curProject?.setting.disable_kb && spritInfo.basic_info.hide_doc_panel == false && (
+                        {spritInfo.basic_info.hide_doc_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>相关文档</span>} key="linkDoc">
                                 {activeKey == "linkDoc" && <LinkDocPanel />}
                             </Tabs.TabPane>
                         )}
                         {spritInfo.basic_info.hide_gantt_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
-                                {activeKey == "gantt" && <GanttPanel spritName={spritInfo.basic_info.title} startTime={spritInfo.basic_info.start_time} endTime={spritInfo.basic_info.end_time} />}
+                                {activeKey == "gantt" && <GanttPanel spritName={projectStore.curEntry?.entry_title ?? ""}
+                                    startTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
+                                    endTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0} />}
                             </Tabs.TabPane>
                         )}
                         {spritInfo.basic_info.hide_burndown_panel == false && (
@@ -271,23 +246,6 @@ const SpritDetail = () => {
                     </Tabs>
                 )}
             </div>
-            {showRemoveModal == true && (
-                <Modal
-                    title="删除工作计划"
-                    open
-                    onCancel={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowRemoveModal(false);
-                    }}
-                    onOk={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        removeSprit();
-                    }}>
-                    删除工作计划后，相关任务和缺陷会被设置成未关联工作计划状态。
-                </Modal>
-            )}
             {refIssueType != null && (
                 <AddTaskOrBug
                     open

@@ -194,9 +194,11 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
     const calcBurnDownInfoList = async () => {
         const tmpDayList: number[] = [];
         //计算工作日
-        for (const dayTime = moment(props.spritInfo.basic_info.start_time).startOf("day"); dayTime <= moment(props.spritInfo.basic_info.end_time).startOf("day"); dayTime.add(1, "days")) {
+        for (const dayTime = moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0).startOf("day");
+            dayTime <= moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0).startOf("day");
+            dayTime.add(1, "days")) {
             let matchNonWorkDay = false;
-            for (const nonWorkDayTime of props.spritInfo.basic_info.non_work_day_list) {
+            for (const nonWorkDayTime of (projectStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? [])) {
                 if (dayTime.valueOf() == moment(nonWorkDayTime).startOf("day").valueOf()) {
                     matchNonWorkDay = true;
                     break;

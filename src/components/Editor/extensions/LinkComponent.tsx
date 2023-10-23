@@ -15,10 +15,10 @@ import { useHistory } from 'react-router-dom';
 import { Popover } from 'antd';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
-import { get_doc_key } from '@/api/project_doc';
 import { LinkOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { get_requirement } from '@/api/project_requirement';
 import { get_session } from '@/api/user';
+import {get as get_entry} from "@/api/project_entry"
 
 const Link: React.FC<{
   link: LinkInfo;
@@ -66,15 +66,14 @@ const Link: React.FC<{
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as unknown as LinkDocInfo;
       const res = await request(
-        get_doc_key({
+        get_entry({
           session_id: sessionId,
           project_id: docLink.projectId,
-          doc_space_id: '',
-          doc_id: docLink.docId,
+          entry_id: docLink.docId,
         }),
       );
       if (res) {
-        setTitle('文档:' + res.doc_key.title);
+        setTitle('文档:' + res.entry.entry_title);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as unknown as LinkExterneInfo;

@@ -12,8 +12,8 @@ import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
 import {
-    codeEvOptionList, docEvOptionList, extEvOptionList,
-    genCodeEvCfgValues, genDocEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
+    codeEvOptionList, extEvOptionList,
+    genCodeEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues,
     genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
     requirementEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
@@ -136,9 +136,6 @@ const SubscribeList = () => {
                                     <Form labelCol={{ span: 3 }}>
                                         <Form.Item label="项目事件">
                                             <Checkbox.Group options={projectEvOptionList} value={genProjectEvCfgValues(item.event_cfg.project_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="文档事件">
-                                            <Checkbox.Group options={docEvOptionList} value={genDocEvCfgValues(item.event_cfg.doc_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="第三方接入事件">
                                             <Checkbox.Group options={extEvOptionList} value={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />

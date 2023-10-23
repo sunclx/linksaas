@@ -28,13 +28,13 @@ const LinkDocPanel = () => {
 
     const linkDoc = async (link: LinkInfo) => {
         const docId = (link as LinkDocInfo).docId;
-        await request(link_doc(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId, docId));
+        await request(link_doc(userStore.sessionId, projectStore.curProjectId, projectStore.curEntry?.entry_id ?? "", docId));
         await spritStore.onLinkDoc(docId);
         setShowAddModal(false);
     };
 
     const cancelLinkDoc = async (docId: string) => {
-        await request(cancel_link_doc(userStore.sessionId, projectStore.curProjectId, spritStore.curSpritId, docId));
+        await request(cancel_link_doc(userStore.sessionId, projectStore.curProjectId, projectStore.curEntry?.entry_id ?? "", docId));
         spritStore.onCancelLinkDoc(docId);
     }
 
@@ -55,7 +55,7 @@ const LinkDocPanel = () => {
                     <a onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        linkAuxStore.goToLink(new LinkDocInfo("", record.project_id, "", record.doc_id), history);
+                        linkAuxStore.goToLink(new LinkDocInfo("", record.project_id, record.doc_id), history);
                     }}><LinkOutlined />&nbsp;{record.title}</a>
                 </div>
             ),

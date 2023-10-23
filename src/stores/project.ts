@@ -1,13 +1,16 @@
 import type { RootStore } from './index';
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { ProjectInfo } from '@/api/project';
-import { list as listProject, get_project as getProject } from '@/api/project';
+import type { ProjectInfo, TagInfo } from '@/api/project';
+import { list as listProject, get_project as getProject, list_tag, TAG_SCOPRE_ALL } from '@/api/project';
 import { request } from '@/utils/request';
 import type { PROJECT_SETTING_TAB } from '@/utils/constant';
 import { APP_PROJECT_OVERVIEW_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
+import type { EntryInfo } from "@/api/project_entry";
+import { get as get_entry } from "@/api/project_entry";
+
 
 export class WebProjectStatus {
   constructor() {
@@ -32,7 +35,7 @@ export class WebProjectStatus {
 export type WebProjectInfo = ProjectInfo & {
   project_status: WebProjectStatus;
   bulletin_version: number;
-  tag_version: number;
+  tag_list: TagInfo[];
 };
 
 export default class ProjectStore {
@@ -108,7 +111,7 @@ export default class ProjectStore {
         ...info,
         project_status: new WebProjectStatus(),
         bulletin_version: 0,
-        tag_version: 0,
+        tag_list: [],
       };
     });
     const prjMap: Map<string, WebProjectInfo> = new Map();
@@ -122,18 +125,18 @@ export default class ProjectStore {
     //更新项目状态
     const projectIdList = this._projectList.map((item) => item.project_id);
     projectIdList.forEach(async (projectId: string) => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 100);
-      });
       const status = await this.clacProjectStatus(projectId);
+      const tagList = await this.listTag(projectId);
       runInAction(() => {
         const index = this._projectList.findIndex((item) => item.project_id == projectId);
         if (index != -1) {
           this._projectList[index].project_status = status;
+          this._projectList[index].tag_list = tagList;
         }
         const value = this._projectMap.get(projectId);
         if (value !== undefined) {
           value.project_status = status;
+          value.tag_list = tagList;
           this._projectMap.set(projectId, value);
         }
       });
@@ -161,6 +164,30 @@ export default class ProjectStore {
     }
     return new Promise((resolve) => {
       resolve(status);
+    });
+  }
+
+  private async listTag(projectId: string): Promise<TagInfo[]> {
+    const res = await request(list_tag({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+      tag_scope_type: TAG_SCOPRE_ALL,
+    }));
+    return res.tag_info_list;
+  }
+
+  async updateTagList(projectId: string) {
+    const tagList = await this.listTag(projectId);
+    runInAction(() => {
+      const index = this._projectList.findIndex((item) => item.project_id == projectId);
+      if (index != -1) {
+        this._projectList[index].tag_list = tagList;
+      }
+      const prj = this._projectMap.get(projectId);
+      if (prj !== undefined) {
+        prj.tag_list = tagList;
+        this._projectMap.set(projectId, prj);
+      }
     });
   }
 
@@ -246,7 +273,8 @@ export default class ProjectStore {
     const res = await request(getProject(this.rootStore.userStore.sessionId, projectId));
     if (res) {
       const status = await this.clacProjectStatus(projectId);
-      const prj = { ...res.info, project_status: status, bulletin_version: 0, tag_version: 0 };
+      const tagList = await this.listTag(projectId);
+      const prj = { ...res.info, project_status: status, bulletin_version: 0, tag_list: tagList };
       runInAction(() => {
         this._projectMap.set(prj.project_id, prj);
         const tmpList = this._projectList.slice()
@@ -267,18 +295,6 @@ export default class ProjectStore {
       const index = tmpList.findIndex(prj => prj.project_id == projectId);
       if (index != -1) {
         tmpList[index].bulletin_version += 1;
-        this._projectMap.set(tmpList[index].project_id, tmpList[index]);
-        this._projectList = tmpList;
-      }
-    });
-  }
-
-  incTagVersion(projectId: string) {
-    const tmpList = this._projectList.slice();
-    runInAction(() => {
-      const index = tmpList.findIndex(prj => prj.project_id == projectId);
-      if (index != -1) {
-        tmpList[index].tag_version += 1;
         this._projectMap.set(tmpList[index].project_id, tmpList[index]);
         this._projectList = tmpList;
       }
@@ -380,6 +396,31 @@ export default class ProjectStore {
   addAlarmVersion() {
     runInAction(() => {
       this._alarmVersion = this._alarmVersion + 1;
+    });
+  }
+
+  //内容入口
+  private _curEntry: EntryInfo | null = null;
+
+  get curEntry(): EntryInfo | null {
+    return this._curEntry;
+  }
+
+  set curEntry(val: EntryInfo | null) {
+    runInAction(() => {
+      this._curEntry = val;
+    });
+  }
+
+  async loadEntry(entryId: string) {
+    const res = await request(get_entry({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: this.curProjectId,
+      entry_id: entryId,
+    }));
+
+    runInAction(() => {
+      this._curEntry = res.entry;
     });
   }
 }

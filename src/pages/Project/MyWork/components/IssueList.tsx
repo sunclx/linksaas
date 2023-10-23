@@ -1,5 +1,5 @@
 import { Table, Tooltip } from "antd";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import type { IssueInfo, ISSUE_TYPE } from "@/api/project_issue";
 import type { ColumnType } from 'antd/lib/table';
 import {
@@ -17,10 +17,9 @@ import { bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPriority
 import { EditText } from "@/components/EditCell/EditText";
 import { issueState } from "@/utils/constant";
 import { getMemberSelectItems, getStateColor } from "@/pages/Issue/components/utils";
-import { list_tag, TAG_SCOPRE_ALL, type TagInfo } from "@/api/project";
-import { request } from "@/utils/request";
 import { EditTag } from "@/components/EditCell/EditTag";
 import { EditDate } from "@/components/EditCell/EditDate";
+import { getIsTask } from "@/utils/utils";
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
     issueType?: ISSUE_TYPE;
@@ -44,17 +43,20 @@ const IssueList = (props: IssueListProps) => {
     const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
 
-    const [tagDefList, setTagDefList] = useState<TagInfo[] | null>(null);
 
     const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 
-    const loadTagDefList = async () => {
-        const res = await request(list_tag({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            tag_scope_type: TAG_SCOPRE_ALL,
-        }));
-        setTagDefList(res.tag_info_list);
+    const getTagDefList = () => {
+        if (projectStore.curProject == undefined) {
+            return [];
+        }
+        return projectStore.curProject.tag_list.filter(item => {
+            if (getIsTask(location.pathname)) {
+                return item.use_in_task;
+            } else {
+                return item.use_in_bug;
+            }
+        });
     };
 
     const columnsList: ColumnsTypes[] = [
@@ -247,11 +249,7 @@ const IssueList = (props: IssueListProps) => {
             dataIndex: ["basic_info", "tag_id_list"],
             width: 200,
             render: (_, row: IssueInfo) => (
-                <>
-                    {tagDefList != null && (
-                        <EditTag editable={false} tagIdList={row.basic_info.tag_id_list} tagDefList={tagDefList} onChange={() => { }} />
-                    )}
-                </>
+                <EditTag editable={false} tagIdList={row.basic_info.tag_id_list} tagDefList={getTagDefList()} onChange={() => { }} />
             ),
         },
         {
@@ -318,10 +316,6 @@ const IssueList = (props: IssueListProps) => {
             },
         },
     ];
-
-    useEffect(() => {
-        loadTagDefList();
-    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <Table rowKey="issue_id" dataSource={props.issueList} style={{ minHeight: "200px" }}

@@ -11,7 +11,6 @@ import {
     calcCiCdEvCfg,
     calcCodeEvCfg,
     calcDataAnnoEvCfg,
-    calcDocEvCfg,
     calcExtEvCfg,
     calcGiteeEvCfg,
     calcGitlabEvCfg,
@@ -23,14 +22,12 @@ import {
     ciCdEvOptionList,
     codeEvOptionList,
     dataAnnoEvOptionList,
-    docEvOptionList,
     extEvOptionList,
     genApiCollectionEvCfgValues,
     genAtomgitEvCfgValues,
     genCiCdEvCfgValues,
     genCodeEvCfgValues,
     genDataAnnoEvCfgValues,
-    genDocEvCfgValues,
     genExtEvCfgValues,
     genGiteeEvCfgValues,
     genGitlabEvCfgValues,
@@ -59,7 +56,6 @@ interface UpdateSubscribeModalProps {
 
 interface FormValue {
     chatBotName: string | undefined;
-    docEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
     atomgitEvCfg: string[] | undefined;
     giteeEvCfg: string[] | undefined;
@@ -83,10 +79,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const projectEvCfgValues = genProjectEvCfgValues(props.subscribe.event_cfg.project_ev_cfg);
     const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(projectEvCfgValues.length == projectEvOptionList.length);
     const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(projectEvCfgValues.length > 0 && projectEvCfgValues.length < projectEvOptionList.length);
-
-    const docEvCfgValues = genDocEvCfgValues(props.subscribe.event_cfg.doc_ev_cfg);
-    const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(docEvCfgValues.length == docEvOptionList.length);
-    const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(docEvCfgValues.length > 0 && docEvCfgValues.length < docEvOptionList.length);
 
     const extEvCfgValues = genExtEvCfgValues(props.subscribe.event_cfg.ext_ev_cfg);
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(extEvCfgValues.length == extEvOptionList.length);
@@ -148,7 +140,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
             chat_bot_name: formValue.chatBotName,
             event_cfg: {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
-                doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
                 atomgit_ev_cfg: calcAtomgitEvCfg(formValue.atomgitEvCfg),
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
@@ -179,7 +170,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
             <div style={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}>
                 <Form form={form} labelCol={{ span: 7 }} initialValues={{
                     "projectEvCfg": projectEvCfgValues,
-                    "docEvCfg": docEvCfgValues,
                     "extEvCfg": extEvCfgValues,
                     "atomgitEvcfg": atomgitEvCfgValues,
                     "giteeEvCfg": giteeEvCfgValues,
@@ -215,31 +205,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setProjectEvCfgCheckAll(false);
                                 setProjectEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={docEvCfgIndeterminate} checked={docEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setDocEvCfgIndeterminate(false);
-                        if (docEvCfgCheckAll) {
-                            setDocEvCfgCheckAll(false);
-                            form.setFieldValue("docEvCfg", []);
-                        } else {
-                            setDocEvCfgCheckAll(true);
-                            form.setFieldValue("docEvCfg", docEvOptionList.map(item => item.value));
-                        }
-                    }}>文档事件</Checkbox>} name="docEvCfg">
-                        <Checkbox.Group options={docEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setDocEvCfgCheckAll(false);
-                                setDocEvCfgIndeterminate(false);
-                            } else if (values.length == docEvOptionList.length) {
-                                setDocEvCfgCheckAll(true);
-                                setDocEvCfgIndeterminate(false);
-                            } else {
-                                setDocEvCfgCheckAll(false);
-                                setDocEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

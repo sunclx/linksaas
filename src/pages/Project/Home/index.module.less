@@ -1,0 +1,40 @@
+.home_wrap {
+    width: calc(100% - 60px);
+    height: 100%;
+    // border: 1px solid red;
+    background-color: white;
+    overflow-y: scroll;
+    padding: 10px 10px;
+
+    .card {
+        width: 200px;
+        height: 100px;
+        border: 1px solid #e4e4e8;
+        cursor: pointer;
+        border-radius: 10px;
+        padding: 10px 10px;
+        position: relative;
+        background-color: #e4e4e8;
+
+        h1 {
+            position: absolute;
+            right: 20px;
+            bottom: 10px;
+            font-size: 24px;
+        }
+    }
+
+    h1.header {
+        color: red;
+    }
+
+    .filter_wrap {
+        position: relative;
+        height: 30px;
+
+        .filter {
+            position: absolute;
+            right: 80px
+        }
+    }
+}

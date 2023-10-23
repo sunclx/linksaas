@@ -32,19 +32,6 @@ export type ProjectEvCfg = {
     custom_event: boolean;
 };
 
-export type DocEvCfg = {
-    create_space: boolean;
-    update_space: boolean;
-    remove_space: boolean;
-    create_doc: boolean;
-    update_doc: boolean;
-    move_doc_to_recycle: boolean;
-    remove_doc: boolean;
-    recover_doc: boolean;
-    move_doc: boolean;
-    update_tag: boolean;
-};
-
 export type ExtEvCfg = {
     create: boolean;
     update: boolean;
@@ -102,9 +89,6 @@ export type IssueEvCfg = {
 };
 
 export type SpritEvCfg = {
-    create: boolean;
-    update: boolean;
-    remove: boolean;
     link_doc: boolean;
     cancel_link_doc: boolean;
 }
@@ -164,7 +148,6 @@ export type AtomgitEvCfg = {
 
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
-    doc_ev_cfg: DocEvCfg;
     ext_ev_cfg: ExtEvCfg;
     gitee_ev_cfg: GiteeEvCfg;
     gitlab_ev_cfg: GitlabEvCfg;

@@ -6,8 +6,6 @@ import { SUMMARY_COLLECT, SUMMARY_SHOW, set_summary_state, list_summary_item, ad
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
-import type { TagInfo } from "@/api/project";
-import { list_tag, TAG_SCOPRE_SPRIT_SUMMARY } from "@/api/project";
 import { CheckOutlined, CloseOutlined, EditOutlined, ExportOutlined, LeftOutlined, MoreOutlined, RightOutlined } from "@ant-design/icons";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import { PROJECT_SETTING_TAB } from "@/utils/constant";
@@ -20,7 +18,6 @@ interface SummaryGroup {
 }
 
 interface AddModalProps {
-    tagDefList: TagInfo[];
     onCancel: () => void;
     onCreate: () => void;
 }
@@ -28,7 +25,6 @@ interface AddModalProps {
 const AddModal: React.FC<AddModalProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    const spritStore = useStores('spritStore');
 
     const [tagId, setTagId] = useState("");
     const [content, setContent] = useState("");
@@ -37,7 +33,7 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
         await request(add_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
             tag_id: tagId,
             content: content,
         }));
@@ -57,17 +53,15 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
                 addSummaryItem();
             }}>
             <Form>
-                {props.tagDefList.length > 0 && (
-                    <Form.Item label="建议类型">
-                        <Select value={tagId} onChange={value => setTagId(value ?? "")} allowClear>
-                            {props.tagDefList.map(tagDef => (
-                                <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
-                                    <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                )}
+                <Form.Item label="建议类型">
+                    <Select value={tagId} onChange={value => setTagId(value ?? "")} allowClear>
+                        {(projectStore.curProject?.tag_list ?? []).filter(tagDef => tagDef.use_in_sprit_summary).map(tagDef => (
+                            <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
+                                <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
 
                 <Form.Item label="建议内容">
                     <Input.TextArea value={content} autoSize={{ minRows: 5, maxRows: 5 }}
@@ -83,7 +77,6 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
 });
 
 interface SummaryCardProps {
-    tagDefList: TagInfo[];
     summaryItem: SummaryItemInfo;
     onChange: () => void;
 }
@@ -91,7 +84,6 @@ interface SummaryCardProps {
 const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    const spritStore = useStores('spritStore');
 
     const [inEdit, setInEdit] = useState(false);
     const [tagId, setTagId] = useState(props.summaryItem.tag_info.tag_id);
@@ -104,7 +96,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             summary_item_id: props.summaryItem.summary_item_id,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
         }));
         props.onChange();
     };
@@ -114,7 +106,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             summary_item_id: props.summaryItem.summary_item_id,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
             tag_id: tagId,
             content: content,
         }));
@@ -179,20 +171,18 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
             )}
             {inEdit == true && (
                 <Form>
-                    {props.tagDefList.length > 0 && (
-                        <Form.Item label="建议类型">
-                            <Select value={tagId} onChange={value => {
-                                setTagId(value ?? "");
-                                setHasChange(true);
-                            }} allowClear>
-                                {props.tagDefList.map(tagDef => (
-                                    <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
-                                        <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                    )}
+                    <Form.Item label="建议类型">
+                        <Select value={tagId} onChange={value => {
+                            setTagId(value ?? "");
+                            setHasChange(true);
+                        }} allowClear>
+                            {(projectStore.curProject?.tag_list ?? []).filter(tagDef => tagDef.use_in_sprit_summary).map(tagDef => (
+                                <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
+                                    <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
                     <Form.Item >
                         <Input.TextArea value={content} autoSize={{ minRows: 5, maxRows: 5 }}
                             onChange={e => {
@@ -233,7 +223,6 @@ interface GroupCardProps {
 const GroupCard: React.FC<GroupCardProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
-    const spritStore = useStores('spritStore');
 
     const [curSummaryIndex, setCurSummaryIndex] = useState(0);
     const [bgColor, setBgColor] = useState(props.groupItem.summaryList[0].tag_info.bg_color);
@@ -242,7 +231,7 @@ const GroupCard: React.FC<GroupCardProps> = observer((props) => {
         await request(group_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
             summary_item_id_list: [props.groupItem.summaryList[curSummaryIndex].summary_item_id],
         }));
         setCurSummaryIndex(0);
@@ -328,7 +317,6 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
     const [groupList, setGroupList] = useState<SummaryGroup[]>([]);
     const [summaryList, setSummaryList] = useState<SummaryItemInfo[]>([]);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [tagDefList, setTagDefList] = useState<TagInfo[]>([]);
     const [filterTagId, setFilterTagId] = useState<string | null>(null);
 
 
@@ -336,7 +324,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
         await request(set_summary_state({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
             summary_state: state,
         }));
         spritStore.incCurSpritVersion();
@@ -346,7 +334,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
         const res = await request(list_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
             filter_by_tag_id: filterTagId != null,
             tag_id: filterTagId ?? "",
         }));
@@ -389,28 +377,17 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
         await request(group_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: spritStore.curSpritId,
+            sprit_id: projectStore.curEntry?.entry_id ?? "",
             summary_item_id_list: summaryItemIdList,
         }));
         await loadSummaryAndGroup();
     };
 
-    const loadTagList = async () => {
-        const res = await request(list_tag({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            tag_scope_type: TAG_SCOPRE_SPRIT_SUMMARY,
-        }));
-        setTagDefList(res.tag_info_list);
-    };
+
 
     useEffect(() => {
         loadSummaryAndGroup();
     }, [filterTagId]);
-
-    useEffect(() => {
-        loadTagList();
-    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <Card title={
@@ -436,16 +413,15 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
             </Space>
         } bordered={false} extra={
             <Space size="middle">
-                {tagDefList.length > 0 && (
-                    <Select placeholder="标签:" style={{ width: "100px" }} value={filterTagId} allowClear onChange={value => setFilterTagId(value ?? null)}>
-                        <Select.Option value="">空标签</Select.Option>
-                        {tagDefList.map(tagDef => (
-                            <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
-                                <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
-                            </Select.Option>
-                        ))}
-                    </Select>
-                )}
+                <Select placeholder="标签:" style={{ width: "100px" }} value={filterTagId} allowClear onChange={value => setFilterTagId(value ?? null)}>
+                    <Select.Option value="">空标签</Select.Option>
+                    {(projectStore.curProject?.tag_list ?? []).filter(tagDef => tagDef.use_in_sprit_summary).map(tagDef => (
+                        <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
+                            <span style={{ padding: "4px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
+                        </Select.Option>
+                    ))}
+                </Select>
+
                 {props.state == SUMMARY_COLLECT && (
                     <Button onClick={e => {
                         e.stopPropagation();
@@ -476,7 +452,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
             {props.state == SUMMARY_COLLECT && (
                 <List rowKey="summary_item_id" grid={{ gutter: 16 }} dataSource={summaryList} renderItem={summaryItem => (
                     <List.Item>
-                        <SummaryCard tagDefList={tagDefList} summaryItem={summaryItem} onChange={() => loadSummaryAndGroup()} />
+                        <SummaryCard summaryItem={summaryItem} onChange={() => loadSummaryAndGroup()} />
                     </List.Item>
                 )} />
             )}
@@ -496,7 +472,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
                 )} />
             )}
             {showAddModal == true && (
-                <AddModal tagDefList={tagDefList}
+                <AddModal
                     onCancel={() => setShowAddModal(false)}
                     onCreate={() => {
                         loadSummaryAndGroup();

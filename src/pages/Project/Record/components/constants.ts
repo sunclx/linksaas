@@ -1,6 +1,6 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
-    ProjectEvCfg, DocEvCfg, ExtEvCfg,
+    ProjectEvCfg,  ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg, SpritEvCfg,
     RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg
 } from '@/api/events_subscribe';
@@ -251,126 +251,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.custom_event) {
         retList.push("customEvent");
-    }
-    return retList;
-}
-
-export const docEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "创建文档空间",
-        value: "createSpace",
-    },
-    {
-        label: "更新文档空间",
-        value: "updateSpace",
-    },
-    {
-        label: "删除文档空间",
-        value: "removeSpace",
-    },
-    {
-        label: "创建文档",
-        value: "createDoc",
-    },
-    {
-        label: "更新文档",
-        value: "updateDoc",
-    },
-    {
-        label: "更新标签",
-        value: "updateTag"
-    },
-    {
-        label: "移动到回收站",
-        value: "moveDocToRecycle",
-    },
-    {
-        label: "删除文档",
-        value: "removeDoc",
-    },
-    {
-        label: "恢复文档",
-        value: "recoverDoc",
-    },
-    {
-        label: "移动文档",
-        value: "moveDoc",
-    },
-];
-
-export const calcDocEvCfg = (values: string[] | undefined): DocEvCfg => {
-    const ret: DocEvCfg = {
-        create_space: false,
-        update_space: false,
-        remove_space: false,
-        create_doc: false,
-        update_doc: false,
-        move_doc_to_recycle: false,
-        remove_doc: false,
-        recover_doc: false,
-        move_doc: false,
-        update_tag: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "createSpace") {
-            ret.create_space = true;
-        } else if (value == "updateSpace") {
-            ret.update_space = true;
-        } else if (value == "removeSpace") {
-            ret.remove_space = true;
-        } else if (value == "createDoc") {
-            ret.create_doc = true;
-        } else if (value == "updateDoc") {
-            ret.update_doc = true;
-        } else if (value == "moveDocToRecycle") {
-            ret.move_doc_to_recycle = true;
-        } else if (value == "removeDoc") {
-            ret.remove_doc = true;
-        } else if (value == "recoverDoc") {
-            ret.recover_doc = true;
-        } else if (value == "moveDoc") {
-            ret.move_doc = true;
-        } else if (value == "updateTag") {
-            ret.update_tag = true;
-        }
-    });
-    return ret;
-};
-
-export const genDocEvCfgValues = (cfg: DocEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.create_space) {
-        retList.push("createSpace");
-    }
-    if (cfg.update_space) {
-        retList.push("updateSpace");
-    }
-    if (cfg.remove_space) {
-        retList.push("removeSpace");
-    }
-    if (cfg.create_doc) {
-        retList.push("createDoc");
-    }
-    if (cfg.update_doc) {
-        retList.push("updateDoc");
-    }
-    if (cfg.move_doc_to_recycle) {
-        retList.push("moveDocToRecycle");
-    }
-    if (cfg.remove_doc) {
-        retList.push("removeDoc");
-    }
-    if (cfg.recover_doc) {
-        retList.push("recoverDoc");
-    }
-    if (cfg.move_doc) {
-        retList.push("moveDoc");
-    }
-    if (cfg.update_tag) {
-        retList.push("updateTag");
     }
     return retList;
 }
@@ -1017,18 +897,6 @@ export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
 
 export const spritEvOptionList: CheckboxOptionType[] = [
     {
-        label: "创建工作计划",
-        value: "create",
-    },
-    {
-        label: "更新工作计划",
-        value: "update",
-    },
-    {
-        label: "删除工作计划",
-        value: "remove",
-    },
-    {
         label: "关联文档",
         value: "linkDoc",
     },
@@ -1040,9 +908,6 @@ export const spritEvOptionList: CheckboxOptionType[] = [
 
 export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
     const ret: SpritEvCfg = {
-        create: false,
-        update: false,
-        remove: false,
         link_doc: false,
         cancel_link_doc: false,
     };
@@ -1050,13 +915,7 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
         return ret;
     }
     values.forEach(value => {
-        if (value == "create") {
-            ret.create = true;
-        } else if (value == "update") {
-            ret.update = true;
-        } else if (value == "remove") {
-            ret.remove = true;
-        } else if (value == "linkDoc") {
+        if (value == "linkDoc") {
             ret.link_doc = true;
         } else if (value == "cancelLinkDoc") {
             ret.cancel_link_doc = true;
@@ -1067,15 +926,6 @@ export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
 
 export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
     const retList: string[] = [];
-    if (cfg.create) {
-        retList.push("create");
-    }
-    if (cfg.update) {
-        retList.push("update");
-    }
-    if (cfg.remove) {
-        retList.push("remove");
-    }
     if (cfg.link_doc) {
         retList.push("linkDoc");
     }

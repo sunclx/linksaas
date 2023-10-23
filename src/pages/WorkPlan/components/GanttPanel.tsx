@@ -142,7 +142,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
             totalRemain += bug.remain_minutes;
         }
         const spritTask: GanttTask = {
-            id: spritStore.curSpritId,
+            id: projectStore.curEntry?.entry_id??"",
             type: "project",
             name: `${props.spritName}(${moment(props.startTime).format("YYYY-MM-DD")}至${moment(props.endTime).format("YYYY-MM-DD")})`,
             start: moment(props.startTime).startOf("day").toDate(),

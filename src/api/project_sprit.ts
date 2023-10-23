@@ -10,10 +10,6 @@ export const ISSUE_LIST_LIST: ISSUE_LIST_TYPE = 1;
 export const ISSUE_LIST_KANBAN: ISSUE_LIST_TYPE = 2;
 
 export type BasicSpritInfo = {
-  title: string;
-  start_time: number;
-  end_time: number;
-  non_work_day_list: number[];
   issue_list_type: ISSUE_LIST_TYPE;
   hide_doc_panel: boolean;
   hide_gantt_panel: boolean;
@@ -38,16 +34,8 @@ export type SpritInfo = {
   sprit_id: string;
   basic_info: BasicSpritInfo;
   project_id: string;
-  create_time: number;
-  update_time: number;
   task_count: number;
   bug_count: number;
-  create_user_id: string;
-  create_display_name: string;
-  create_logo_uri: string;
-  update_user_id: string;
-  update_display_name: string;
-  update_logo_uri: string;
   summary_state: SUMMARY_STATE;
 };
 
@@ -74,13 +62,6 @@ export type SummaryItemInfo = {
   create_time: number;
   group_id: string;
   tag_info: SummaryTag;
-};
-
-export type ListResponse = {
-  code: number;
-  err_msg: string;
-  total_count: number;
-  info_list: SpritInfo[];
 };
 
 export type GetResponse = {
@@ -266,27 +247,6 @@ export async function update(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<UpdateResponse>(cmd, {
-    request,
-  });
-}
-
-//列出工作计划信息
-export async function list(
-  session_id: string,
-  project_id: string,
-  offset: number,
-  limit: number,
-): Promise<ListResponse> {
-  const cmd = 'plugin:project_sprit_api|list';
-  const request = {
-    session_id,
-    project_id,
-    offset,
-    limit,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<ListResponse>(cmd, {
     request,
   });
 }

@@ -135,71 +135,6 @@ pub mod project {
     }
 }
 
-pub mod project_doc {
-    use prost::Message;
-    use proto_gen_rust::events_doc;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        CreateSpaceEvent(events_doc::CreateSpaceEvent),
-        UpdateSpaceEvent(events_doc::UpdateSpaceEvent),
-        RemoveSpaceEvent(events_doc::RemoveSpaceEvent),
-        CreateDocEvent(events_doc::CreateDocEvent),
-        UpdateDocEvent(events_doc::UpdateDocEvent),
-        MoveDocToRecycleEvent(events_doc::MoveDocToRecycleEvent),
-        MoveDocEvent(events_doc::MoveDocEvent),
-        RemoveDocEvent(events_doc::RemoveDocEvent),
-        RecoverDocEvent(events_doc::RecoverDocEvent),
-        UpdateTagEvent(events_doc::UpdateTagEvent),
-    }
-    pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_doc::CreateSpaceEvent::type_url() {
-            if let Ok(ev) = events_doc::CreateSpaceEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateSpaceEvent(ev));
-            }
-        } else if data.type_url == events_doc::UpdateSpaceEvent::type_url() {
-            if let Ok(ev) = events_doc::UpdateSpaceEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateSpaceEvent(ev));
-            }
-        } else if data.type_url == events_doc::RemoveSpaceEvent::type_url() {
-            if let Ok(ev) = events_doc::RemoveSpaceEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveSpaceEvent(ev));
-            }
-        } else if data.type_url == events_doc::CreateDocEvent::type_url() {
-            if let Ok(ev) = events_doc::CreateDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::UpdateDocEvent::type_url() {
-            if let Ok(ev) = events_doc::UpdateDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::MoveDocToRecycleEvent::type_url() {
-            if let Ok(ev) = events_doc::MoveDocToRecycleEvent::decode(data.value.as_slice()) {
-                return Some(Event::MoveDocToRecycleEvent(ev));
-            }
-        } else if data.type_url == events_doc::MoveDocEvent::type_url() {
-            if let Ok(ev) = events_doc::MoveDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::MoveDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::RemoveDocEvent::type_url() {
-            if let Ok(ev) = events_doc::RemoveDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::RecoverDocEvent::type_url() {
-            if let Ok(ev) = events_doc::RecoverDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::RecoverDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::UpdateTagEvent::type_url() {
-            if let Ok(ev) = events_doc::UpdateTagEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateTagEvent(ev));
-            }
-        }
-        None
-    }
-}
-
 pub mod sprit {
     use prost::Message;
     use proto_gen_rust::events_sprit;
@@ -208,27 +143,12 @@ pub mod sprit {
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
     pub enum Event {
-        CreateEvent(events_sprit::CreateEvent),
-        UpdateEvent(events_sprit::UpdateEvent),
-        RemoveEvent(events_sprit::RemoveEvent),
         LinkDocEvent(events_sprit::LinkDocEvent),
         CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_sprit::CreateEvent::type_url() {
-            if let Ok(ev) = events_sprit::CreateEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateEvent(ev));
-            }
-        } else if data.type_url == events_sprit::UpdateEvent::type_url() {
-            if let Ok(ev) = events_sprit::UpdateEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateEvent(ev));
-            }
-        } else if data.type_url == events_sprit::RemoveEvent::type_url() {
-            if let Ok(ev) = events_sprit::RemoveEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveEvent(ev));
-            }
-        } else if data.type_url == events_sprit::LinkDocEvent::type_url() {
+       if data.type_url == events_sprit::LinkDocEvent::type_url() {
             if let Ok(ev) = events_sprit::LinkDocEvent::decode(data.value.as_slice()) {
                 return Some(Event::LinkDocEvent(ev));
             }
@@ -883,7 +803,6 @@ pub mod cicd {
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
-    ProjectDocEvent(project_doc::Event),
     SpritEvent(sprit::Event),
     IssueEvent(issue::Event),
     ExtEvEvent(ext_event::Event),
@@ -905,9 +824,6 @@ use proto_gen_rust::google::protobuf::Any;
 pub fn decode_event(data: &Any) -> Option<EventMessage> {
     if let Some(ret) = project::decode_event(data) {
         return Some(EventMessage::ProjectEvent(ret));
-    }
-    if let Some(ret) = project_doc::decode_event(data) {
-        return Some(EventMessage::ProjectDocEvent(ret));
     }
     if let Some(ret) = sprit::decode_event(data) {
         return Some(EventMessage::SpritEvent(ret));

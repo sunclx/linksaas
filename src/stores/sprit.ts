@@ -14,15 +14,11 @@ export default class SpritStore {
     }
     rootStore: RootStore;
 
-    private _curSpritId: string = "";
     private _curSpritVersion: number = 0;
     private _taskList: IssueInfo[] = [];
     private _bugList: IssueInfo[] = [];
     private _spritDocList: SpritDocInfo[] = [];
 
-    get curSpritId(): string {
-        return this._curSpritId;
-    }
 
     get taskList(): IssueInfo[] {
         return this._taskList;
@@ -46,33 +42,31 @@ export default class SpritStore {
         });
     }
 
-    async setCurSpritId(val: string) {
-        if (val == this._curSpritId) {
-            return;
-        }
+    async loadCurSprit() {
         runInAction(() => {
             this._curSpritVersion = 0;
             this._taskList = [];
             this._bugList = [];
         });
-        if (val != "") {
-            await this.loadIssue(val, ISSUE_TYPE_TASK);
-            await this.loadIssue(val, ISSUE_TYPE_BUG);
-            await this.loadSpritDoc(val);
-        }
-        runInAction(() => {
-            this._curSpritId = val;
-        });
+        await this.loadIssue(ISSUE_TYPE_TASK);
+        await this.loadIssue(ISSUE_TYPE_BUG);
+        await this.loadSpritDoc();
     }
 
-    private async loadSpritDoc(spritId: string) {
-        const res = await request(list_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, spritId));
+    private async loadSpritDoc() {
+        if (this.rootStore.projectStore.curEntry == null) {
+            return;
+        }
+        const res = await request(list_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this.rootStore.projectStore.curEntry.entry_id));
         runInAction(() => {
             this._spritDocList = res.info_list;
         });
     }
 
-    private async loadIssue(spritId: string, issueType: ISSUE_TYPE) {
+    private async loadIssue(issueType: ISSUE_TYPE) {
+        if (this.rootStore.projectStore.curEntry == null) {
+            return;
+        }
         const res = await request(list_issue({
             session_id: this.rootStore.userStore.sessionId,
             project_id: this.rootStore.projectStore.curProjectId,
@@ -87,7 +81,7 @@ export default class SpritStore {
                 assgin_user_id_list: [],
                 assgin_user_type: 0,
                 filter_by_sprit_id: true,
-                sprit_id_list: [spritId],
+                sprit_id_list: [this.rootStore.projectStore.curEntry.entry_id],
                 filter_by_create_time: false,
                 from_create_time: 0,
                 to_create_time: 0,
@@ -204,7 +198,7 @@ export default class SpritStore {
     }
 
     async onLinkDoc(docId: string) {
-        const res = await request(get_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this._curSpritId, docId));
+        const res = await request(get_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this.rootStore.projectStore.curEntry?.entry_id ?? "", docId));
         const tmpList = this._spritDocList.slice();
         const index = tmpList.findIndex(item => item.doc_id == docId);
         if (index != -1) {

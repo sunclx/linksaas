@@ -1,16 +1,14 @@
 
 import type { IssueInfo } from '@/api/project_issue';
-import type { Doc } from '@/api/project_doc';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import type { SHORT_NOTE_TYPE, SHORT_NOTE_MODE_TYPE } from '@/api/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, add, list_my } from '@/api/short_note';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, add, list_my } from '@/api/short_note';
 import { request } from '@/utils/request';
 
 export type ShortNoteData = {
     shortNoteType: SHORT_NOTE_TYPE;
-    data: IssueInfo | Doc;
+    data: IssueInfo;
 };
-
 
 export interface ShortNoteEvent {
     projectId: string;
@@ -25,26 +23,21 @@ function getShortNoteTypeStr(shortNoteType: SHORT_NOTE_TYPE): string {
         return "task";
     } else if (shortNoteType == SHORT_NOTE_BUG) {
         return "bug";
-    } else if (shortNoteType == SHORT_NOTE_DOC) {
-        return "doc";
     }
     return "";
 }
 
 export async function showShortNote(sessionId: string, data: ShortNoteData, projectName: string) {
     let id = "";
-    let projectId = "";
     let title = "";
+    let projectId = "";
     if (data.shortNoteType == SHORT_NOTE_TASK || data.shortNoteType == SHORT_NOTE_BUG) {
         const issue = data.data as IssueInfo;
         id = issue.issue_id;
-        projectId = issue.project_id;
         title = issue.basic_info.title;
-    } else if (data.shortNoteType == SHORT_NOTE_DOC) {
-        const doc = data.data as Doc;
-        id = doc.doc_id;
-        projectId = doc.project_id;
-        title = doc.base_info.title;
+        projectId = issue.project_id;
+    } else {
+        return;
     }
     const label = `shortNote-${id}`;
     const view = WebviewWindow.getByLabel(label);
@@ -79,7 +72,7 @@ export async function showShortNote(sessionId: string, data: ShortNoteData, proj
 
 export async function showMyShortNote(sessionId: string) {
     const res = await request(list_my({ session_id: sessionId }));
-    
+
     if (res) {
         for (const item of res.short_note_list) {
             const label = `shortNote-${item.target_id}`;

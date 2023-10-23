@@ -72,7 +72,6 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
                     project_id: projectStore.curProjectId,
                     tag_name: tagInfo.info.tag_name.trim(),
                     bg_color: tagInfo.info.bg_color,
-                    use_in_doc: tagInfo.info.use_in_doc,
                     use_in_task: tagInfo.info.use_in_task,
                     use_in_bug: tagInfo.info.use_in_bug,
                     use_in_req: tagInfo.info.use_in_req,
@@ -93,7 +92,6 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
                     tag_id: tagInfo.info.tag_id,
                     tag_name: tagInfo.info.tag_name.trim(),
                     bg_color: tagInfo.info.bg_color,
-                    use_in_doc: tagInfo.info.use_in_doc,
                     use_in_task: tagInfo.info.use_in_task,
                     use_in_bug: tagInfo.info.use_in_bug,
                     use_in_req: tagInfo.info.use_in_req,
@@ -119,7 +117,7 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
         }
         await loadTagList();
         setHasChange(false);
-        projectStore.incTagVersion(projectStore.curProjectId);
+        projectStore.updateTagList(projectStore.curProjectId);
         message.info("保存成功");
     };
 
@@ -167,17 +165,17 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
             ),
         },
         {
-            title: "文档",
+            title: "内容",
             width: 20,
             render: (_, row: ExTagInfo) => (
-                <Checkbox checked={row.info.use_in_doc}
+                <Checkbox checked={row.info.use_in_entry}
                     disabled={projectStore.isClosed || !projectStore.isAdmin}
                     onChange={e => {
                         e.stopPropagation();
                         const tmpList = tagList.slice();
                         const index = tmpList.findIndex(tag => tag.tag_id == row.tag_id);
                         if (index != -1) {
-                            tmpList[index].info.use_in_doc = e.target.checked;
+                            tmpList[index].info.use_in_entry = e.target.checked;
                             tmpList[index].hasUpdate = true;
                             setTagList(tmpList);
                             setHasChange(true);
@@ -323,7 +321,6 @@ const TagListSettingPanel: React.FC<PanelProps> = (props) => {
                                 tag_name: "",
                                 create_time: moment().valueOf(),
                                 bg_color: randomColor({ luminosity: "light", format: "rgba", alpha: 0.8 }),
-                                use_in_doc: true,
                                 use_in_task: true,
                                 use_in_bug: true,
                                 use_in_req: true,

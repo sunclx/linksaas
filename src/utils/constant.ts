@@ -9,6 +9,7 @@ export const EXTRA_MENU_PATH = '/app/extra_menu';
 export const RESET_TEXT = 'resetPassword';
 
 export const APP_PROJECT_PATH = '/app/project';
+export const APP_PROJECT_HOME_PATH = '/app/project/home';
 export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
 export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';

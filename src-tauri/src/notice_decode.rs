@@ -122,55 +122,12 @@ pub mod project_doc {
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
-        NewDocSpaceNotice(notices_doc::NewDocSpaceNotice),
-        UpdateDocSpaceNotice(notices_doc::UpdateDocSpaceNotice),
-        RemoveDocSpaceNotice(notices_doc::RemoveDocSpaceNotice),
-        NewDocNotice(notices_doc::NewDocNotice),
-        UpdateDocNotice(notices_doc::UpdateDocNotice),
-        RemoveDocNotice(notices_doc::RemoveDocNotice),
-        RecoverDocInRecycleNotice(notices_doc::RecoverDocInRecycleNotice),
-        RemoveDocInRecycleNotice(notices_doc::RemoveDocInRecycleNotice),
         LinkSpritNotice(notices_doc::LinkSpritNotice),
         CancelLinkSpritNotice(notices_doc::CancelLinkSpritNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_doc::NewDocSpaceNotice::type_url() {
-            if let Ok(notice) = notices_doc::NewDocSpaceNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewDocSpaceNotice(notice));
-            }
-        } else if data.type_url == notices_doc::UpdateDocSpaceNotice::type_url() {
-            if let Ok(notice) = notices_doc::UpdateDocSpaceNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateDocSpaceNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RemoveDocSpaceNotice::type_url() {
-            if let Ok(notice) = notices_doc::RemoveDocSpaceNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RemoveDocSpaceNotice(notice));
-            }
-        } else if data.type_url == notices_doc::NewDocNotice::type_url() {
-            if let Ok(notice) = notices_doc::NewDocNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewDocNotice(notice));
-            }
-        } else if data.type_url == notices_doc::UpdateDocNotice::type_url() {
-            if let Ok(notice) = notices_doc::UpdateDocNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateDocNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RemoveDocNotice::type_url() {
-            if let Ok(notice) = notices_doc::RemoveDocNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RemoveDocNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RecoverDocInRecycleNotice::type_url() {
-            if let Ok(notice) =
-                notices_doc::RecoverDocInRecycleNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RecoverDocInRecycleNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RemoveDocInRecycleNotice::type_url() {
-            if let Ok(notice) = notices_doc::RemoveDocInRecycleNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveDocInRecycleNotice(notice));
-            }
-        } else if data.type_url == notices_doc::LinkSpritNotice::type_url() {
+        if data.type_url == notices_doc::LinkSpritNotice::type_url() {
             if let Ok(notice) = notices_doc::LinkSpritNotice::decode(data.value.as_slice()) {
                 return Some(Notice::LinkSpritNotice(notice));
             }

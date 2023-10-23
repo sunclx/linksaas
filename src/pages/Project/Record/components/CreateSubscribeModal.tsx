@@ -5,7 +5,6 @@ import {
     apiCollectionEvOptionList,
     calcCodeEvCfg,
     calcDataAnnoEvCfg,
-    calcDocEvCfg,
     calcExtEvCfg,
     calcGiteeEvCfg,
     calcGitlabEvCfg,
@@ -16,7 +15,6 @@ import {
     calcSpritEvCfg,
     codeEvOptionList,
     dataAnnoEvOptionList,
-    docEvOptionList,
     extEvOptionList,
     giteeEvOptionList,
     gitlabEvOptionList,
@@ -46,7 +44,6 @@ interface FormValue {
     chatBotName: string | undefined;
     chatBotAddr: string | undefined;
     chatBotSignCode: string | undefined;
-    docEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
     atomgitEvCfg: string[] | undefined;
     giteeEvCfg: string[] | undefined;
@@ -73,9 +70,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(false);
     const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(false);
-
-    const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(false);
-    const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(false);
 
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(false);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(false);
@@ -137,7 +131,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
             chat_bot_sign_code: formValue.chatBotSignCode ?? "",
             event_cfg: {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
-                doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
                 atomgit_ev_cfg: calcAtomgitEvCfg(formValue.atomgitEvCfg),
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
@@ -234,31 +227,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={docEvCfgIndeterminate} checked={docEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setDocEvCfgIndeterminate(false);
-                        if (docEvCfgCheckAll) {
-                            setDocEvCfgCheckAll(false);
-                            form.setFieldValue("docEvCfg", []);
-                        } else {
-                            setDocEvCfgCheckAll(true);
-                            form.setFieldValue("docEvCfg", docEvOptionList.map(item => item.value));
-                        }
-                    }}>文档事件</Checkbox>} name="docEvCfg">
-                        <Checkbox.Group options={docEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setDocEvCfgCheckAll(false);
-                                setDocEvCfgIndeterminate(false);
-                            } else if (values.length == docEvOptionList.length) {
-                                setDocEvCfgCheckAll(true);
-                                setDocEvCfgIndeterminate(false);
-                            } else {
-                                setDocEvCfgCheckAll(false);
-                                setDocEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
+                    
                     <Form.Item label={<Checkbox indeterminate={extEvCfgIndeterminate} checked={extEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();

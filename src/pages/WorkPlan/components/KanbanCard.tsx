@@ -19,6 +19,7 @@ import { request } from "@/utils/request";
 import { EditDate } from "@/components/EditCell/EditDate";
 import { cancelEndTime, cancelStartTime, updateEndTime, updateStartTime } from "@/pages/Issue/components/utils";
 import type { SpritInfo } from "@/api/project_sprit";
+import type { EntryInfo } from "@/api/project_entry";
 
 export const DND_ITEM_TYPE = "issue";
 
@@ -201,6 +202,7 @@ const EstimateModal = observer((props: ModalProps) => {
 interface KanbanCardProps {
     issue: IssueInfo;
     spritInfo: SpritInfo;
+    entryInfo: EntryInfo | null;
 }
 
 const getColor = (v: number) => {
@@ -467,13 +469,13 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                         </Tag>
                     )}
                     {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_start_time &&
-                        (props.issue.start_time < props.spritInfo.basic_info.start_time || props.issue.start_time > props.spritInfo.basic_info.end_time) && (
+                        (props.issue.start_time < (props.entryInfo?.extra_info.ExtraSpritInfo?.start_time ?? 0) || props.issue.start_time > (props.entryInfo?.extra_info.ExtraSpritInfo?.end_time ?? 0)) && (
                             <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                                 <span style={{ color: "red" }}><WarningOutlined />&nbsp;预估开始时间不合理</span>
                             </Tag>
                         )}
                     {props.issue.state == ISSUE_STATE_PROCESS && props.issue.has_end_time &&
-                        (props.issue.end_time < props.spritInfo.basic_info.start_time || props.issue.end_time > props.spritInfo.basic_info.end_time) && (
+                        (props.issue.end_time < (props.entryInfo?.extra_info.ExtraSpritInfo?.start_time ?? 0) || props.issue.end_time > (props.entryInfo?.extra_info.ExtraSpritInfo?.end_time ?? 0)) && (
                             <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                                 <span style={{ color: "red" }}><WarningOutlined />&nbsp;预估结束时间不合理</span>
                             </Tag>
