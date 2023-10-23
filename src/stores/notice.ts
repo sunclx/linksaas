@@ -48,8 +48,6 @@ class NoticeStore {
         console.log("notice", notice);
         if (notice.ProjectNotice !== undefined) {
           this.processProjectNotice(notice.ProjectNotice);
-        } else if (notice.ProjectDocNotice !== undefined) {
-          this.processProjectDocNotice(notice.ProjectDocNotice);
         } else if (notice.IssueNotice !== undefined) {
           this.processIssueNotice(notice.IssueNotice);
         } else if (notice.AppraiseNotice !== undefined) {
@@ -90,22 +88,6 @@ class NoticeStore {
       this.unlistenShortNoteFn = unlistenShortNoteFn;
     });
 
-  }
-
-  private async processProjectDocNotice(notice: NoticeType.project_doc.AllNotice) {
-    if (notice.LinkSpritNotice !== undefined) {
-      if (notice.LinkSpritNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if ((this.rootStore.projectStore.curEntry?.entry_id??"") == notice.LinkSpritNotice.sprit_id) {
-          await this.rootStore.spritStore.onLinkDoc(notice.LinkSpritNotice.doc_id);
-        }
-      }
-    } else if (notice.CancelLinkSpritNotice !== undefined) {
-      if (notice.CancelLinkSpritNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if ((this.rootStore.projectStore.curEntry?.entry_id??"") == notice.CancelLinkSpritNotice.sprit_id) {
-          this.rootStore.spritStore.onCancelLinkDoc(notice.CancelLinkSpritNotice.doc_id);
-        }
-      }
-    }
   }
 
   private processAppraiseNotice(notice: NoticeType.appraise.AllNotice) {

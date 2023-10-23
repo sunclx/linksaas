@@ -135,32 +135,6 @@ pub mod project {
     }
 }
 
-pub mod sprit {
-    use prost::Message;
-    use proto_gen_rust::events_sprit;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        LinkDocEvent(events_sprit::LinkDocEvent),
-        CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
-    }
-
-    pub fn decode_event(data: &Any) -> Option<Event> {
-       if data.type_url == events_sprit::LinkDocEvent::type_url() {
-            if let Ok(ev) = events_sprit::LinkDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::LinkDocEvent(ev));
-            }
-        } else if data.type_url == events_sprit::CancelLinkDocEvent::type_url() {
-            if let Ok(ev) = events_sprit::CancelLinkDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::CancelLinkDocEvent(ev));
-            }
-        } 
-        None
-    }
-}
-
 pub mod issue {
     use prost::Message;
     use proto_gen_rust::events_issue;
@@ -803,7 +777,6 @@ pub mod cicd {
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
-    SpritEvent(sprit::Event),
     IssueEvent(issue::Event),
     ExtEvEvent(ext_event::Event),
     GitlabEvent(gitlab::Event),
@@ -824,9 +797,6 @@ use proto_gen_rust::google::protobuf::Any;
 pub fn decode_event(data: &Any) -> Option<EventMessage> {
     if let Some(ret) = project::decode_event(data) {
         return Some(EventMessage::ProjectEvent(ret));
-    }
-    if let Some(ret) = sprit::decode_event(data) {
-        return Some(EventMessage::SpritEvent(ret));
     }
     if let Some(ret) = issue::decode_event(data) {
         return Some(EventMessage::IssueEvent(ret));

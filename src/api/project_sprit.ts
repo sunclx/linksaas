@@ -11,7 +11,7 @@ export const ISSUE_LIST_KANBAN: ISSUE_LIST_TYPE = 2;
 
 export type BasicSpritInfo = {
   issue_list_type: ISSUE_LIST_TYPE;
-  hide_doc_panel: boolean;
+  // hide_doc_panel: boolean;
   hide_gantt_panel: boolean;
   hide_burndown_panel: boolean;
   hide_stat_panel: boolean;
@@ -73,39 +73,6 @@ export type GetResponse = {
 export type RemoveResponse = {
   code: number;
   err_msg: string;
-};
-
-export type LinkDocResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type CancelLinkDocResponse = {
-  code: number;
-  err_msg: string;
-};
-
-//对应grpc生成代码的LinkDocInfo，为了和linuxAuxStore里面定义的类型区分开发
-export type SpritDocInfo = {
-  doc_id: string;
-  project_id: string;
-  title: string;
-  link_user_id: string;
-  link_display_name: string;
-  link_logo_uri: string;
-  link_time: number;
-};
-
-export type ListLinkDocResponse = {
-  code: number;
-  err_msg: string;
-  info_list: SpritDocInfo[]
-};
-
-export type GetLinkDocResponse = {
-  code: number;
-  err_msg: string;
-  info: SpritDocInfo;
 };
 
 
@@ -285,88 +252,6 @@ export async function remove(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RemoveResponse>(cmd, {
-    request,
-  });
-}
-
-//关联文档
-export async function link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  doc_id: string,
-): Promise<LinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    doc_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<LinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//取消关联文档
-export async function cancel_link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  doc_id: string,
-): Promise<CancelLinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|cancel_link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    doc_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<CancelLinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//列出相关文档
-export async function list_link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-): Promise<ListLinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|list_link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<ListLinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//获取单个相关文档
-export async function get_link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  doc_id: string,
-): Promise<GetLinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|get_link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    doc_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<GetLinkDocResponse>(cmd, {
     request,
   });
 }

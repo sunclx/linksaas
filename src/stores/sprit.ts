@@ -4,8 +4,6 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC } from '@/api/project_issue';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, list as list_issue, get as get_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
-import type { SpritDocInfo } from '@/api/project_sprit';
-import { list_link_doc, get_link_doc } from '@/api/project_sprit';
 
 export default class SpritStore {
     constructor(rootStore: RootStore) {
@@ -17,8 +15,6 @@ export default class SpritStore {
     private _curSpritVersion: number = 0;
     private _taskList: IssueInfo[] = [];
     private _bugList: IssueInfo[] = [];
-    private _spritDocList: SpritDocInfo[] = [];
-
 
     get taskList(): IssueInfo[] {
         return this._taskList;
@@ -26,10 +22,6 @@ export default class SpritStore {
 
     get bugList(): IssueInfo[] {
         return this._bugList;
-    }
-
-    get spritDocList(): SpritDocInfo[] {
-        return this._spritDocList;
     }
 
     get curSpritVersion(): number {
@@ -50,17 +42,6 @@ export default class SpritStore {
         });
         await this.loadIssue(ISSUE_TYPE_TASK);
         await this.loadIssue(ISSUE_TYPE_BUG);
-        await this.loadSpritDoc();
-    }
-
-    private async loadSpritDoc() {
-        if (this.rootStore.projectStore.curEntry == null) {
-            return;
-        }
-        const res = await request(list_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this.rootStore.projectStore.curEntry.entry_id));
-        runInAction(() => {
-            this._spritDocList = res.info_list;
-        });
     }
 
     private async loadIssue(issueType: ISSUE_TYPE) {
@@ -197,26 +178,6 @@ export default class SpritStore {
         });
     }
 
-    async onLinkDoc(docId: string) {
-        const res = await request(get_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this.rootStore.projectStore.curEntry?.entry_id ?? "", docId));
-        const tmpList = this._spritDocList.slice();
-        const index = tmpList.findIndex(item => item.doc_id == docId);
-        if (index != -1) {
-            tmpList[index] = res.info;
-        } else {
-            tmpList.unshift(res.info);
-        }
-        runInAction(() => {
-            this._spritDocList = tmpList;
-        });
-    }
-
-    onCancelLinkDoc(docId: string) {
-        const tmpList = this._spritDocList.filter(item => item.doc_id != docId);
-        runInAction(() => {
-            this._spritDocList = tmpList;
-        });
-    }
 
     get allTimeReady(): boolean {
         if (this._bugList.length == 0 && this._taskList.length == 0) {

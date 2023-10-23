@@ -15,8 +15,8 @@ import {
     codeEvOptionList, extEvOptionList,
     genCodeEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues,
-    genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
+     giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
+    requirementEvOptionList,  ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
     apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genCiCdEvCfgValues, ciCdEvOptionList
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
@@ -157,9 +157,6 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="工单事件">
                                             <Checkbox.Group options={issueEvOptionList} value={genIssueEvCfgValues(item.event_cfg.issue_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="工作计划事件">
-                                            <Checkbox.Group options={spritEvOptionList} value={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="代码事件">
                                             <Checkbox.Group options={codeEvOptionList} value={genCodeEvCfgValues(item.event_cfg.code_ev_cfg)} disabled={true} />

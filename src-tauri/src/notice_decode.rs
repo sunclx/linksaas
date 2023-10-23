@@ -114,32 +114,6 @@ pub mod project {
     }
 }
 
-pub mod project_doc {
-    use prost::Message;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::notices_doc;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    pub enum Notice {
-        LinkSpritNotice(notices_doc::LinkSpritNotice),
-        CancelLinkSpritNotice(notices_doc::CancelLinkSpritNotice),
-    }
-
-    pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_doc::LinkSpritNotice::type_url() {
-            if let Ok(notice) = notices_doc::LinkSpritNotice::decode(data.value.as_slice()) {
-                return Some(Notice::LinkSpritNotice(notice));
-            }
-        } else if data.type_url == notices_doc::CancelLinkSpritNotice::type_url() {
-            if let Ok(notice) = notices_doc::CancelLinkSpritNotice::decode(data.value.as_slice()) {
-                return Some(Notice::CancelLinkSpritNotice(notice));
-            }
-        }
-        None
-    }
-}
-
 pub mod issue {
     use prost::Message;
     use proto_gen_rust::google::protobuf::Any;
@@ -285,7 +259,6 @@ pub mod client {
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
 pub enum NoticeMessage {
     ProjectNotice(project::Notice),
-    ProjectDocNotice(project_doc::Notice),
     IssueNotice(issue::Notice),
     AppraiseNotice(appraise::Notice),
     IdeaNotice(idea::Notice),
@@ -297,9 +270,6 @@ use proto_gen_rust::google::protobuf::Any;
 pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     if let Some(ret) = project::decode_notice(data) {
         return Some(NoticeMessage::ProjectNotice(ret));
-    }
-    if let Some(ret) = project_doc::decode_notice(data) {
-        return Some(NoticeMessage::ProjectDocNotice(ret));
     }
     if let Some(ret) = issue::decode_notice(data) {
         return Some(NoticeMessage::IssueNotice(ret));

@@ -114,11 +114,6 @@ export namespace project_doc {
     doc_id: string;
     sprit_id: string;
   };
-
-  export type AllNotice = {
-    LinkSpritNotice?: LinkSpritNotice;
-    CancelLinkSpritNotice?: CancelLinkSpritNotice;
-  }
 }
 
 export namespace issue {
@@ -242,7 +237,6 @@ export namespace idea {
 
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
-  ProjectDocNotice?: project_doc.AllNotice;
   IssueNotice?: issue.AllNotice;
   AppraiseNotice?: appraise.AllNotice;
   ClientNotice?: client.AllNotice;

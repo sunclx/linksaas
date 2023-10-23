@@ -12,7 +12,6 @@ import {
     calcIssueEvCfg,
     calcProjectEvCfg,
     calcRequirementEvCfg,
-    calcSpritEvCfg,
     codeEvOptionList,
     dataAnnoEvOptionList,
     extEvOptionList,
@@ -22,7 +21,6 @@ import {
     issueEvOptionList,
     projectEvOptionList,
     requirementEvOptionList,
-    spritEvOptionList,
     calcApiCollectionEvCfg,
     calcAtomgitEvCfg,
     atomgitEvOptionList,
@@ -89,9 +87,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(false);
     const [issueEvCfgIndeterminate, setIssueEvCfgIndeterminate] = useState(false);
 
-    const [spritEvCfgCheckAll, setSpritEvCfgCheckAll] = useState(false);
-    const [spritEvCfgIndeterminate, setSpritEvCfgIndeterminate] = useState(false);
-
     const [requirementEvCfgCheckAll, setRequirementEvCfgCheckAll] = useState(false);
     const [requirementEvCfgIndeterminate, setRequirementEvCfgIndeterminate] = useState(false);
 
@@ -136,7 +131,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
                 gitlab_ev_cfg: calcGitlabEvCfg(formValue.gitlabEvCfg),
                 issue_ev_cfg: calcIssueEvCfg(formValue.issueEvCfg),
-                sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
@@ -400,31 +394,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setIssueEvCfgCheckAll(false);
                                 setIssueEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={spritEvCfgIndeterminate} checked={spritEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSpritEvCfgIndeterminate(false);
-                        if (spritEvCfgCheckAll) {
-                            setSpritEvCfgCheckAll(false);
-                            form.setFieldValue("spritEvCfg", []);
-                        } else {
-                            setSpritEvCfgCheckAll(true);
-                            form.setFieldValue("spritEvCfg", spritEvOptionList.map(item => item.value));
-                        }
-                    }}>工作计划事件</Checkbox>} name="spritEvCfg">
-                        <Checkbox.Group options={spritEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setSpritEvCfgCheckAll(false);
-                                setSpritEvCfgIndeterminate(false);
-                            } else if (values.length == spritEvOptionList.length) {
-                                setSpritEvCfgCheckAll(true);
-                                setSpritEvCfgIndeterminate(false);
-                            } else {
-                                setSpritEvCfgCheckAll(false);
-                                setSpritEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

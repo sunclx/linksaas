@@ -18,7 +18,6 @@ import {
     calcIssueEvCfg,
     calcProjectEvCfg,
     calcRequirementEvCfg,
-    calcSpritEvCfg,
     ciCdEvOptionList,
     codeEvOptionList,
     dataAnnoEvOptionList,
@@ -35,14 +34,12 @@ import {
     genIssueEvCfgValues,
     genProjectEvCfgValues,
     genRequirementEvCfgValues,
-    genSpritEvCfgValues,
     giteeEvOptionList,
     gitlabEvOptionList,
     ideaEvOptionList,
     issueEvOptionList,
     projectEvOptionList,
     requirementEvOptionList,
-    spritEvOptionList,
 } from "./constants";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
@@ -104,10 +101,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(issueEvCfgValues.length == issueEvOptionList.length);
     const [issueEvCfgIndeterminate, setIssueEvCfgIndeterminate] = useState(issueEvCfgValues.length > 0 && issueEvCfgValues.length < issueEvOptionList.length);
 
-    const spritEvCfgValues = genSpritEvCfgValues(props.subscribe.event_cfg.sprit_ev_cfg);
-    const [spritEvCfgCheckAll, setSpritEvCfgCheckAll] = useState(spritEvCfgValues.length == spritEvOptionList.length);
-    const [spritEvCfgIndeterminate, setSpritEvCfgIndeterminate] = useState(spritEvCfgValues.length > 0 && spritEvCfgValues.length < spritEvOptionList.length);
-
     const requirementEvCfgValues = genRequirementEvCfgValues(props.subscribe.event_cfg.requirement_ev_cfg);
     const [requirementEvCfgCheckAll, setRequirementEvCfgCheckAll] = useState(requirementEvCfgValues.length == requirementEvOptionList.length);
     const [requirementEvCfgIndeterminate, setRequirementEvCfgIndeterminate] = useState(requirementEvCfgValues.length > 0 && requirementEvCfgValues.length < requirementEvOptionList.length);
@@ -145,7 +138,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
                 gitlab_ev_cfg: calcGitlabEvCfg(formValue.gitlabEvCfg),
                 issue_ev_cfg: calcIssueEvCfg(formValue.issueEvCfg),
-                sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
@@ -175,7 +167,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "giteeEvCfg": giteeEvCfgValues,
                     "gitlabEvCfg": gitlabEvCfgValues,
                     "issueEvCfg": issueEvCfgValues,
-                    "spritEvCfg": spritEvCfgValues,
                     "requirementEvCfg": requirementEvCfgValues,
                     "codeEvCfg": codeEvCfgValues,
                     "ideaEvCfg": ideaEvCfgValues,
@@ -382,31 +373,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setIssueEvCfgCheckAll(false);
                                 setIssueEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={spritEvCfgIndeterminate} checked={spritEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSpritEvCfgIndeterminate(false);
-                        if (spritEvCfgCheckAll) {
-                            setSpritEvCfgCheckAll(false);
-                            form.setFieldValue("spritEvCfg", []);
-                        } else {
-                            setSpritEvCfgCheckAll(true);
-                            form.setFieldValue("spritEvCfg", spritEvOptionList.map(item => item.value));
-                        }
-                    }}>工作计划事件</Checkbox>} name="spritEvCfg">
-                        <Checkbox.Group options={spritEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setSpritEvCfgCheckAll(false);
-                                setSpritEvCfgIndeterminate(false);
-                            } else if (values.length == spritEvOptionList.length) {
-                                setSpritEvCfgCheckAll(true);
-                                setSpritEvCfgIndeterminate(false);
-                            } else {
-                                setSpritEvCfgCheckAll(false);
-                                setSpritEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

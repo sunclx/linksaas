@@ -14,7 +14,6 @@ import moment from "moment";
 import IssuePanel from "./components/IssuePanel";
 import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
-import LinkDocPanel from "./components/LinkDocPanel";
 import KanbanPanel from "./components/KanbanPanel";
 import BurnDownPanel from "./components/BurnDownPanel";
 import SummaryPanel from "./components/SummaryPanel";
@@ -216,11 +215,6 @@ const SpritDetail = () => {
                             </Tabs.TabPane>
                         )}
 
-                        {spritInfo.basic_info.hide_doc_panel == false && (
-                            <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>相关文档</span>} key="linkDoc">
-                                {activeKey == "linkDoc" && <LinkDocPanel />}
-                            </Tabs.TabPane>
-                        )}
                         {spritInfo.basic_info.hide_gantt_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
                                 {activeKey == "gantt" && <GanttPanel spritName={projectStore.curEntry?.entry_title ?? ""}

@@ -10,10 +10,12 @@ export type Doc = {
     base_info: BaseDoc;
 };
 
-export type DocKeyHistory = {
+export type DocHistory = {
     history_id: string;
     time_stamp: number;
     update_user_id: string;
+    update_display_name: string;
+    update_logo_uri: string;
 };
 
 export type CreateDocRequest = {
@@ -85,17 +87,17 @@ export type RemoveDocResponse = {
     err_msg: string;
 };
 
-export type ListDocKeyHistoryRequest = {
+export type ListDocHistoryRequest = {
     session_id: string;
     project_id: string;
     doc_id: string;
 };
 
 
-export type ListDocKeyHistoryResponse = {
+export type ListDocHistoryResponse = {
     code: number;
     err_msg: string;
-    history_list: DocKeyHistory[];
+    history_list: DocHistory[];
 };
 
 export type GetDocInHistoryRequest = {
@@ -182,10 +184,10 @@ export async function remove_doc(request: RemoveDocRequest): Promise<RemoveDocRe
 }
 
 //列出文档历史版本
-export async function list_doc_key_history(request: ListDocKeyHistoryRequest): Promise<ListDocKeyHistoryResponse> {
-    const cmd = 'plugin:project_doc_api|list_doc_key_history';
+export async function list_doc_history(request: ListDocHistoryRequest): Promise<ListDocHistoryResponse> {
+    const cmd = 'plugin:project_doc_api|list_doc_history';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<ListDocKeyHistoryResponse>(cmd, {
+    return invoke<ListDocHistoryResponse>(cmd, {
         request,
     });
 }

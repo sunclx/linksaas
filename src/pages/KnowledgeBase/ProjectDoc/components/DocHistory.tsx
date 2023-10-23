@@ -1,7 +1,7 @@
 import { useStores } from '@/hooks';
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-// import UserPhoto from '@/components/Portrait/UserPhoto';
+import UserPhoto from '@/components/Portrait/UserPhoto';
 import DocDiff from './DocDiff';
 import s from './DocHistory.module.less';
 import moment from 'moment';
@@ -13,10 +13,10 @@ const DocHistory: React.FC = () => {
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
   const [historyId, setHistoryId] = useState('');
-  const [historyList, setHistoryList] = useState<prjDocApi.DocKeyHistory[]>([]);
+  const [historyList, setHistoryList] = useState<prjDocApi.DocHistory[]>([]);
 
   const loadHistory = async () => {
-    const res = await request(prjDocApi.list_doc_key_history({
+    const res = await request(prjDocApi.list_doc_history({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
       doc_id: projectStore.curEntry?.entry_id ?? "",
@@ -44,10 +44,10 @@ const DocHistory: React.FC = () => {
       <ul>
         {historyList.map((item, index) => (
           <li key={item.history_id}>
-            {/* <div className={s.top}>
-              <UserPhoto logoUri={item.doc_key?.update_logo_uri} width="20px" height="20px" />
-              {item.doc_key?.update_display_name}
-            </div> */}
+            <div className={s.top}>
+              <UserPhoto logoUri={item.update_logo_uri} width="20px" height="20px" />
+              {item.update_display_name}
+            </div>
             <div className={s.time}>{moment(item.time_stamp).format('YYYY-MM-DD HH:mm:ss')}</div>
             <div className={s.des}>更新了此文档</div>
             {index > 0 && (

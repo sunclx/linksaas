@@ -1,7 +1,7 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg,  ExtEvCfg,
-    GiteeEvCfg, GitlabEvCfg, IssueEvCfg, SpritEvCfg,
+    GiteeEvCfg, GitlabEvCfg, IssueEvCfg,
     RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg
 } from '@/api/events_subscribe';
 
@@ -894,46 +894,6 @@ export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
     }
     return retList;
 }
-
-export const spritEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "关联文档",
-        value: "linkDoc",
-    },
-    {
-        label: "取消关联文档",
-        value: "cancelLinkDoc",
-    },
-];
-
-export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
-    const ret: SpritEvCfg = {
-        link_doc: false,
-        cancel_link_doc: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "linkDoc") {
-            ret.link_doc = true;
-        } else if (value == "cancelLinkDoc") {
-            ret.cancel_link_doc = true;
-        } 
-    });
-    return ret;
-};
-
-export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.link_doc) {
-        retList.push("linkDoc");
-    }
-    if (cfg.cancel_link_doc) {
-        retList.push("cancelLinkDoc");
-    }
-    return retList;
-};
 
 export const codeEvOptionList: CheckboxOptionType[] = [
     {

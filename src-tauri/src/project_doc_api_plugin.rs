@@ -172,23 +172,23 @@ async fn remove_doc<R: Runtime>(
 }
 
 #[tauri::command]
-async fn list_doc_key_history<R: Runtime>(
+async fn list_doc_history<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: ListDocKeyHistoryRequest,
-) -> Result<ListDocKeyHistoryResponse, String> {
+    request: ListDocHistoryRequest,
+) -> Result<ListDocHistoryResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = ProjectDocApiClient::new(chan.unwrap());
-    match client.list_doc_key_history(request).await {
+    match client.list_doc_history(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == list_doc_key_history_response::Code::WrongSession as i32 {
+            if inner_resp.code == list_doc_history_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit(
                     "notice",
-                    new_wrong_session_notice("list_doc_key_history".into()),
+                    new_wrong_session_notice("list_doc_history".into()),
                 ) {
                     println!("{:?}", err);
                 }
@@ -269,7 +269,7 @@ impl<R: Runtime> ProjectDocApiPlugin<R> {
                 update_doc_content,
                 get_doc,
                 remove_doc,
-                list_doc_key_history,
+                list_doc_history,
                 get_doc_in_history,
                 recover_doc_in_history,
             ]),

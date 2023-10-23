@@ -88,11 +88,6 @@ export type IssueEvCfg = {
     update_tag: boolean;
 };
 
-export type SpritEvCfg = {
-    link_doc: boolean;
-    cancel_link_doc: boolean;
-}
-
 export type RequirementEvCfg = {
     create_requirement: boolean;
     update_requirement: boolean;
@@ -152,7 +147,6 @@ export type EventCfg = {
     gitee_ev_cfg: GiteeEvCfg;
     gitlab_ev_cfg: GitlabEvCfg;
     issue_ev_cfg: IssueEvCfg;
-    sprit_ev_cfg: SpritEvCfg;
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;
     idea_ev_cfg: IdeaEvCfg;
