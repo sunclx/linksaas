@@ -2,19 +2,22 @@ import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
 import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
-import { Button, Layout, Progress, Space, message } from 'antd';
+import { Button, Layout, Popover, Progress, Space, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { ArrowsAltOutlined, BugOutlined, HomeTwoTone, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { ArrowsAltOutlined, BugOutlined, EditOutlined, HomeTwoTone, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
-import ProjectTipList from './ProjectTipList';
-import { APP_PROJECT_HOME_PATH } from '@/utils/constant';
+import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from '@/utils/constant';
 import { useHistory, useLocation } from 'react-router-dom';
 import ProjectQuickAccess from './ProjectQuickAccess';
+import EntryPopover from '@/pages/Project/Home/EntryPopover';
+import { ENTRY_TYPE_SPRIT, watch, unwatch } from '@/api/project_entry';
+import moment from 'moment';
+import { request } from '@/utils/request';
 
 const { Header } = Layout;
 
@@ -67,6 +70,34 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     }
   };
 
+  const genEntryTitle = (): string => {
+    if (entryStore.curEntry == null) {
+      return "";
+    }
+    if (entryStore.curEntry.entry_type == ENTRY_TYPE_SPRIT) {
+      return `${entryStore.curEntry.entry_title}(${moment(entryStore.curEntry.extra_info.ExtraSpritInfo?.start_time ?? 0).format("YYYY-MM-DD")}至${moment(entryStore.curEntry.extra_info.ExtraSpritInfo?.end_time ?? 0).format("YYYY-MM-DD")})`;
+    }
+    return entryStore.curEntry.entry_title;
+  }
+
+  const watchEntry = async () => {
+    await request(watch({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      entry_id: entryStore.curEntry?.entry_id ?? "",
+    }));
+    entryStore.updateEntry(entryStore.curEntry?.entry_id ?? "");
+  };
+
+  const unwatchEntry = async () => {
+    await request(unwatch({
+      session_id: userStore.sessionId,
+      project_id: projectStore.curProjectId,
+      entry_id: entryStore.curEntry?.entry_id ?? "",
+    }));
+    entryStore.updateEntry(entryStore.curEntry?.entry_id ?? "");
+  }
+
   useEffect(() => {
     if (props.type == "login") {
       checkUpdate().then(res => {
@@ -94,13 +125,16 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
       unlisten.then(f => f());
     }
   }, []);
+
+
   return (
     <div>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
         {projectStore.curProjectId != "" && appStore.simpleMode == false && (
           <div>
-            <Button type="text" style={{ marginLeft: "6px" }}
+            <ProjectQuickAccess />
+            <Button type="text"
               icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", location.pathname.startsWith(APP_PROJECT_HOME_PATH) ? "white" : "orange"]} />}
               onClick={e => {
                 e.stopPropagation();
@@ -115,7 +149,52 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
                   history.push(APP_PROJECT_HOME_PATH);
                 }
               }} />
-            <ProjectQuickAccess />
+            <Space size="small" style={{ fontSize: "16px", marginLeft: "10px", lineHeight: "26px", cursor: "default" }}>
+              {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) && (
+                <>
+                  <span>/</span>
+                  <span>我的工作</span>
+                </>
+              )}
+              {location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) && (
+                <>
+                  <span>/</span>
+                  <span>项目概览</span>
+                </>
+              )}
+              {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) == false && location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) == false
+                && location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false
+                && entryStore.curEntry != null && (
+                  <>
+                    <span>/</span>
+                    <Popover trigger={["hover", "click"]} placement='top' content={<EntryPopover entryInfo={entryStore.curEntry} />}>
+                      <InfoCircleOutlined />
+                    </Popover>
+                    <span>
+                      <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (entryStore.curEntry?.my_watch == true) {
+                          unwatchEntry();
+                        } else {
+                          watchEntry();
+                        }
+                      }}>
+                        <span className={(entryStore.curEntry?.my_watch ?? false) ? style.isCollect : style.noCollect} />
+                      </a>
+                    </span>
+                    <div style={{ maxWidth: "200px", textOverflow: "clip", overflow: "hidden", whiteSpace: "nowrap" }} title={genEntryTitle()}>{genEntryTitle()}</div>
+                    {entryStore.curEntry.can_update && (
+                      <Button type="link" icon={<EditOutlined />} style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        entryStore.editEntryId = entryStore.curEntry?.entry_id ?? "";
+                      }} />
+                    )}
+
+                  </>
+                )}
+            </Space>
           </div>
         )}
 
@@ -138,9 +217,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
               </Space>
             </a>
           )}
-          {appStore.simpleMode == false && projectStore.curProjectId != "" && userStore.sessionId != "" && (
-            <ProjectTipList />
-          )}
+
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
             <div
               className={style.btnSimpleMode}

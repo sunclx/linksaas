@@ -130,7 +130,7 @@ const ProjectQuickAccess = () => {
         if (projectStore.isAdmin) {
             tmpItems.push(calcLayoutItems());
         }
-        const memberItem = {
+        const memberItem: ItemType = {
             key: "member",
             label: "成员",
             children: [
@@ -153,7 +153,6 @@ const ProjectQuickAccess = () => {
             memberItem.children.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_APPRAISE,
                 label: "查看成员互评",
-                children: [],
             });
         }
         tmpItems.push(memberItem);
@@ -406,7 +405,7 @@ const ProjectQuickAccess = () => {
 
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
-            <a onClick={(e) => e.preventDefault()} style={{margin: "0px 20px",  color: "orange", fontSize: "18px" }} title="项目快捷菜单">
+            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 10px", color: "orange", fontSize: "18px" }} title="项目快捷菜单">
                 <MenuOutlined />
             </a>
         </Dropdown >
