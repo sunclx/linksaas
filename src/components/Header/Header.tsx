@@ -13,7 +13,7 @@ import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
 import ProjectTipList from './ProjectTipList';
 import { APP_PROJECT_HOME_PATH } from '@/utils/constant';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import ProjectQuickAccess from './ProjectQuickAccess';
 
 const { Header } = Layout;
@@ -25,6 +25,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   ...props
 }) => {
   const history = useHistory();
+  const location = useLocation();
 
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
@@ -99,8 +100,9 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
         {projectStore.curProjectId != "" && appStore.simpleMode == false && (
           <div>
-            <Button type="text" style={{marginLeft:"6px"}}
-              icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", "white"]} />} onClick={e => {
+            <Button type="text" style={{ marginLeft: "6px" }}
+              icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", location.pathname.startsWith(APP_PROJECT_HOME_PATH) ? "white" : "orange"]} />}
+              onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 if (docStore.inEdit) {

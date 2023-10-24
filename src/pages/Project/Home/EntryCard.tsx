@@ -139,15 +139,15 @@ const EntryCard = (props: EntryCardPorps) => {
                             )}
                             {props.entryInfo.mark_remove == true && (
                                 <>
-                                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                                    disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setRemoveMark(false).then(()=>{
-                                            message.info("打开成功");
-                                        });
-                                    }}>打开</Button>
+                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                                        disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setRemoveMark(false).then(() => {
+                                                message.info("打开成功");
+                                            });
+                                        }}>打开</Button>
                                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
                                         disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
                                         onClick={e => {
@@ -167,7 +167,7 @@ const EntryCard = (props: EntryCardPorps) => {
                 e.stopPropagation();
                 e.preventDefault();
                 openEntry();
-            }}>
+            }} style={{ width: "180px", display: "block", height: "70px" }}>
                 <h1 className={s.title}>{props.entryInfo.entry_title}</h1>
                 <Space className={s.tagList}>
                     {props.entryInfo.tag_list.map(tag => (
@@ -177,7 +177,7 @@ const EntryCard = (props: EntryCardPorps) => {
             </a>
             {showCloseModal == true && (
                 <Modal open title={`关闭内容入口`}
-                mask={false}
+                    mask={false}
                     okText="关闭"
                     onCancel={e => {
                         e.stopPropagation();

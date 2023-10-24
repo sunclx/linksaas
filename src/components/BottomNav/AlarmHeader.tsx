@@ -288,21 +288,21 @@ const AlarmHeader = () => {
         <div style={{ marginRight: "80px" }}>
             <Space size="middle">
                 {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && (
-                    <Popover trigger={["hover", "click"]} content={<BulletinList />} placement="topLeft" destroyTooltipOnHide>
+                    <Popover trigger={["hover", "click"]} content={<BulletinList />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
                         <Badge count={bulletinCount} size="small">
                             <BellTwoTone style={{ fontSize: "20px" }} twoToneColor={bulletinCount == 0 ? "#ccc" : ["#aaa", "cyan"]} title="项目公告" />
                         </Badge>
                     </Popover>
                 )}
 
-                <Popover trigger={["hover", "click"]} content={<AlarmList includeHit={true} includeAlert={false} />} placement="topLeft" destroyTooltipOnHide>
+                <Popover trigger={["hover", "click"]} content={<AlarmList includeHit={true} includeAlert={false} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
                     <Badge count={hitCount} size="small">
                         <AlertTwoTone style={{ fontSize: "20px" }} twoToneColor={hitCount == 0 ? "#ccc" : ["#aaa", "yellow"]} title="风险提示" />
                     </Badge>
                 </Popover>
 
 
-                <Popover trigger={["hover", "click"]} content={<AlarmList includeHit={false} includeAlert={true} />} placement="topLeft" destroyTooltipOnHide>
+                <Popover trigger={["hover", "click"]} content={<AlarmList includeHit={false} includeAlert={true} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
                     <Badge count={alertCount} size="small">
                         <AlertTwoTone style={{ fontSize: "20px" }} twoToneColor={alertCount == 0 ? "#ccc" : ["#aaa", "red"]} title="风险警告" />
                     </Badge>
