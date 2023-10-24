@@ -40,7 +40,7 @@
     "@types/swagger-ui-react": "^4.11.0",
     "@uiw/react-textarea-code-editor": "^2.0.3",
     "ahooks": "^3.3.10",
-    "antd": "^4.20.1",
+    "antd": "^4.24.14",
     "classnames": "^2.3.1",
     "curlconverter": "^4.8.0",
     "dayjs": "^1.11.1",

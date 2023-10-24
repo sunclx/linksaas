@@ -45,7 +45,7 @@ export default class SpritStore {
     }
 
     private async loadIssue(issueType: ISSUE_TYPE) {
-        if (this.rootStore.projectStore.curEntry == null) {
+        if (this.rootStore.entryStore.curEntry == null) {
             return;
         }
         const res = await request(list_issue({
@@ -62,7 +62,7 @@ export default class SpritStore {
                 assgin_user_id_list: [],
                 assgin_user_type: 0,
                 filter_by_sprit_id: true,
-                sprit_id_list: [this.rootStore.projectStore.curEntry.entry_id],
+                sprit_id_list: [this.rootStore.entryStore.curEntry.entry_id],
                 filter_by_create_time: false,
                 from_create_time: 0,
                 to_create_time: 0,
@@ -206,17 +206,5 @@ export default class SpritStore {
             }
         }
         return true;
-    }
-
-    //创建工作计划标记
-    private _showCreateSprit = false;
-
-    get showCreateSprit(): boolean {
-        return this._showCreateSprit;
-    }
-    set showCreateSprit(val: boolean) {
-        runInAction(() => {
-            this._showCreateSprit = val;
-        });
     }
 }

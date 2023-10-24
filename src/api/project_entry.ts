@@ -163,6 +163,18 @@ export type UpdateMarkRemoveResponse = {
     err_msg: string;
 };
 
+export type UpdateExtraInfoRequest = {
+    session_id: string;
+    project_id: string;
+    entry_id: string;
+    extra_info: ExtraInfo;
+};
+
+export type UpdateExtraInfoResponse = {
+    code: number;
+    err_msg: string;
+};
+
 //列出入口
 export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:project_entry_api|list';
@@ -231,6 +243,15 @@ export async function update_mark_remove(request: UpdateMarkRemoveRequest): Prom
     const cmd = 'plugin:project_entry_api|update_mark_remove';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateMarkRemoveResponse>(cmd, {
+        request,
+    });
+}
+
+//更新额外信息
+export async function update_extra_info(request: UpdateExtraInfoRequest): Promise<UpdateExtraInfoResponse> {
+    const cmd = 'plugin:project_entry_api|update_extra_info';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateExtraInfoResponse>(cmd, {
         request,
     });
 }

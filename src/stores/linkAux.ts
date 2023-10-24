@@ -435,7 +435,7 @@ class LinkAuxStore {
       }
 
       this.rootStore.docStore.fromLink = true;
-      await this.rootStore.projectStore.loadEntry(docLink.docId);
+      await this.rootStore.entryStore.loadEntry(docLink.docId);
       await this.rootStore.docStore.loadDoc();
       history.push(APP_PROJECT_KB_DOC_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
@@ -443,7 +443,7 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
       }
-      await this.rootStore.projectStore.loadEntry(spritLink.spritId);
+      await this.rootStore.entryStore.loadEntry(spritLink.spritId);
       await this.rootStore.spritStore.loadCurSprit();
       history.push(APP_PROJECT_WORK_PLAN_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {

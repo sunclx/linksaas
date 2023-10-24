@@ -8,8 +8,6 @@ import { APP_PROJECT_OVERVIEW_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
-import type { EntryInfo } from "@/api/project_entry";
-import { get as get_entry } from "@/api/project_entry";
 
 
 export class WebProjectStatus {
@@ -61,11 +59,11 @@ export default class ProjectStore {
       this._curProjectId = val;
     });
     if (val !== '' && val != oldProjectId) {
+      this.rootStore.entryStore.reset();
       await Promise.all([
         this.rootStore.memberStore.loadMemberList(val),
         this.rootStore.ideaStore.loadKeyword(val),
       ]);
-
 
       if (this.rootStore.appStore.simpleMode) {
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_TASK);
@@ -396,31 +394,6 @@ export default class ProjectStore {
   addAlarmVersion() {
     runInAction(() => {
       this._alarmVersion = this._alarmVersion + 1;
-    });
-  }
-
-  //内容入口
-  private _curEntry: EntryInfo | null = null;
-
-  get curEntry(): EntryInfo | null {
-    return this._curEntry;
-  }
-
-  set curEntry(val: EntryInfo | null) {
-    runInAction(() => {
-      this._curEntry = val;
-    });
-  }
-
-  async loadEntry(entryId: string) {
-    const res = await request(get_entry({
-      session_id: this.rootStore.userStore.sessionId,
-      project_id: this.curProjectId,
-      entry_id: entryId,
-    }));
-
-    runInAction(() => {
-      this._curEntry = res.entry;
     });
   }
 }

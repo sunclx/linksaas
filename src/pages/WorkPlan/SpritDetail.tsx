@@ -7,10 +7,7 @@ import { get as get_sprit, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/proj
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import { LeftOutlined,  PlusOutlined } from "@ant-design/icons";
-import { Card, Dropdown, Form, Select, Space, Tabs, Tag } from 'antd';
-import s from './SpritDetail.module.less';
-import moment from "moment";
+import { Card, Dropdown, Form, Select, Space, Tabs } from 'antd';
 import IssuePanel from "./components/IssuePanel";
 import StatPanel from "./components/StatPanel";
 import GanttPanel from "./components/GanttPanel";
@@ -21,6 +18,7 @@ import UserPhoto from "@/components/Portrait/UserPhoto";
 import { ISSUE_TYPE_TASK, type ISSUE_TYPE, ISSUE_TYPE_BUG, link_sprit, list_by_id } from "@/api/project_issue";
 import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
 import AddIssueModal from "./components/AddIssueModal";
+import { PlusOutlined } from "@ant-design/icons";
 
 
 const SpritDetail = () => {
@@ -28,6 +26,8 @@ const SpritDetail = () => {
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
     const memberStore = useStores('memberStore');
+    const entryStore = useStores('entryStore');
+
 
     const location = useLocation();
     const tabStr = new URLSearchParams(location.search).get('tab') ?? "";
@@ -41,7 +41,7 @@ const SpritDetail = () => {
     const [showAddIssueModal, setShowAddIssueModal] = useState(false);
 
     const loadSpritInfo = async () => {
-        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, projectStore.curEntry?.entry_id ?? ""));
+        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, entryStore.curEntry?.entry_id ?? ""));
         setSpritInfo(res.info);
     };
 
@@ -66,7 +66,7 @@ const SpritDetail = () => {
             return true;
         });
         for (const issueId of issueIdList) {
-            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, projectStore.curEntry?.entry_id ?? ""));
+            await request(link_sprit(userStore.sessionId, projectStore.curProjectId, issueId, entryStore.curEntry?.entry_id ?? ""));
         }
         const listRes = await request(list_by_id({
             session_id: userStore.sessionId,
@@ -79,13 +79,13 @@ const SpritDetail = () => {
 
 
     useEffect(() => {
-        if (projectStore.curEntry != null) {
+        if (entryStore.curEntry != null) {
             loadSpritInfo();
         }
-    }, [projectStore.curEntry]);
+    }, [entryStore.curEntry]);
 
     useEffect(() => {
-        if (projectStore.curEntry != null) {
+        if (entryStore.curEntry != null) {
             loadSpritInfo();
         }
     }, [spritStore.curSpritVersion]);
@@ -109,39 +109,7 @@ const SpritDetail = () => {
     return (
         <Card bordered={false}
             style={{ marginRight: "60px" }}
-            bodyStyle={{ height: "calc(100vh - 130px)", overflowY: "scroll", overflowX: "hidden" }}
-            title={
-                <h2 className={s.head}>
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        history.goBack();
-                    }}><LeftOutlined /></a>
-                    &nbsp;{projectStore.curEntry?.entry_title ?? ""}&nbsp;
-                    {spritInfo != null && (
-                        <span>
-                            (
-                            {moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0).format("YYYY-MM-DD")}
-                            &nbsp;至&nbsp;
-                            {moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0).format("YYYY-MM-DD")}
-                            )
-                        </span>
-                    )}
-
-                </h2>}>
-
-            <div className={s.sprit_wrap}>
-                {(projectStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? []).length > 0 && (
-                    <div className={s.info_wrap}>
-                        <div className={s.label}>非工作日：</div>
-                        <div>
-                            {(projectStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? []).map(item => (
-                                <Tag key={item}>{moment(item).format("YYYY-MM-DD")}</Tag>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </div>
+            bodyStyle={{ height: "calc(100vh - 90px)", overflowY: "scroll", overflowX: "hidden", padding: "0px 0px" }}>
             <div>
                 {spritInfo != null && (
                     <Tabs
@@ -203,23 +171,23 @@ const SpritDetail = () => {
                         {spritInfo.basic_info.issue_list_type != ISSUE_LIST_KANBAN && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
                                 {activeKey == "issue" && (
-                                    <IssuePanel spritId={projectStore.curEntry?.entry_id ?? ""} startTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
-                                        endTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0}
+                                    <IssuePanel spritId={entryStore.curEntry?.entry_id ?? ""} startTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
+                                        endTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0}
                                         memberId={selMemberUserId} />
                                 )}
                             </Tabs.TabPane>
                         )}
                         {spritInfo.basic_info.issue_list_type != ISSUE_LIST_LIST && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
-                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo} entryInfo={projectStore.curEntry}/>}
+                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo} entryInfo={entryStore.curEntry} />}
                             </Tabs.TabPane>
                         )}
 
                         {spritInfo.basic_info.hide_gantt_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
-                                {activeKey == "gantt" && <GanttPanel spritName={projectStore.curEntry?.entry_title ?? ""}
-                                    startTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
-                                    endTime={projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0} />}
+                                {activeKey == "gantt" && <GanttPanel spritName={entryStore.curEntry?.entry_title ?? ""}
+                                    startTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
+                                    endTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0} />}
                             </Tabs.TabPane>
                         )}
                         {spritInfo.basic_info.hide_burndown_panel == false && (

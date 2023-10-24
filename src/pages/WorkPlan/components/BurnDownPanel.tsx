@@ -44,6 +44,7 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
     const memberStore = useStores('memberStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
+    const entryStore = useStores('entryStore');
 
     const domRef = useRef<HTMLDivElement>(null);
     const domRefSize = useSize(domRef);
@@ -194,11 +195,11 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
     const calcBurnDownInfoList = async () => {
         const tmpDayList: number[] = [];
         //计算工作日
-        for (const dayTime = moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0).startOf("day");
-            dayTime <= moment(projectStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0).startOf("day");
+        for (const dayTime = moment(entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0).startOf("day");
+            dayTime <= moment(entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0).startOf("day");
             dayTime.add(1, "days")) {
             let matchNonWorkDay = false;
-            for (const nonWorkDayTime of (projectStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? [])) {
+            for (const nonWorkDayTime of (entryStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? [])) {
                 if (dayTime.valueOf() == moment(nonWorkDayTime).startOf("day").valueOf()) {
                     matchNonWorkDay = true;
                     break;

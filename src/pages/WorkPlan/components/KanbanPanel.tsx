@@ -92,7 +92,7 @@ const PlanIssueColumn = observer((props: KanbanPanelProps) => {
         <div className={s.kanban_column} ref={drop}>
             <Card title={`规划中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.规划中颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, false), overflow: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 210px)", backgroundColor: getBackgroundColor(isOver, false), overflow: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} entryInfo={props.entryInfo} />
                 ))}
@@ -168,7 +168,7 @@ const ProcessIssueColumn = observer((props: ProcessPanelProps) => {
         <div className={s.kanban_column} ref={drop}>
             <Card title={`${getPanelName()}(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.处理颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflowY: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 210px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflowY: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} entryInfo={props.entryInfo} />
                 ))}
@@ -214,7 +214,7 @@ const CheckIssueColumn = observer((props: KanbanPanelProps) => {
         <div className={s.kanban_column} ref={drop}>
             <Card title={`检查中(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.验收颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 210px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} entryInfo={props.entryInfo} />
                 ))}
@@ -257,7 +257,7 @@ const CloseIssueColumn = observer((props: KanbanPanelProps) => {
         <div className={s.kanban_column} ref={drop}>
             <Card title={`完成(${issueList?.length ?? 0})`} style={{ border: "2px solid #e4e4e8", borderBottom: "none", width: "300px" }}
                 headStyle={{ fontSize: "18px", fontWeight: 700, backgroundColor: `rgb(${ISSUE_STATE_COLOR_ENUM.关闭颜色} / 80%)`, textAlign: "center" }}
-                bodyStyle={{ height: "calc(100vh - 310px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
+                bodyStyle={{ height: "calc(100vh - 210px)", backgroundColor: getBackgroundColor(isOver, canDrop), overflow: "scroll" }}>
                 {issueList?.map(item => (
                     <KanbanCard issue={item} key={item.issue_id} spritInfo={props.spritInfo} entryInfo={props.entryInfo} />
                 ))}

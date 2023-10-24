@@ -1,4 +1,4 @@
-import TopNav from '@/components/TopNav';
+import BottomNav from '@/components/BottomNav';
 import { useStores } from '@/hooks';
 import type { IRouteConfig } from '@/routes';
 import { WORKBENCH_PATH } from '@/utils/constant';
@@ -99,16 +99,16 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
           <LeftMenu />
           <Layout>
             <Header />
-            {curProjectId != '' && <TopNav />}
             <Content
               className={classNames(
                 style.basicContent,
-                pathname !== WORKBENCH_PATH && style.showtopnav,
+                pathname !== WORKBENCH_PATH && style.showbottomnav,
               )}
             >
               {renderRoutes(route.routes, { sessionId, projectId: curProjectId })}
             </Content>
             {curProjectId && <Toolbar />}
+            {curProjectId != '' && <BottomNav />}
           </Layout>
         </Layout>
       )}

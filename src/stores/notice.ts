@@ -238,7 +238,7 @@ class NoticeStore {
     } else if (notice.RemoveTagNotice !== undefined) {
       this.rootStore.projectStore.updateTagList(notice.RemoveTagNotice.project_id);
     } else if (notice.UpdateSpritNotice !== undefined) {
-      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == (this.rootStore.projectStore.curEntry?.entry_id??"")) {
+      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == (this.rootStore.entryStore.curEntry?.entry_id??"")) {
         this.rootStore.spritStore.incCurSpritVersion();
       }
     }
@@ -331,10 +331,10 @@ class NoticeStore {
         }
       }
     } else if (notice.SetSpritNotice !== undefined) {
-      if ((this.rootStore.projectStore.curEntry?.entry_id??"") == notice.SetSpritNotice.old_sprit_id) {
+      if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.old_sprit_id) {
         await this.rootStore.spritStore.removeIssue(notice.SetSpritNotice.issue_id);
       }
-      if ((this.rootStore.projectStore.curEntry?.entry_id??"") == notice.SetSpritNotice.new_sprit_id) {
+      if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.new_sprit_id) {
         await this.rootStore.spritStore.onNewIssue(notice.SetSpritNotice.issue_id);
       }
     }

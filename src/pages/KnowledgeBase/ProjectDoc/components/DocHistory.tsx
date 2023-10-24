@@ -12,6 +12,8 @@ const DocHistory: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
+  const entryStore = useStores('entryStore');
+
   const [historyId, setHistoryId] = useState('');
   const [historyList, setHistoryList] = useState<prjDocApi.DocHistory[]>([]);
 
@@ -19,7 +21,7 @@ const DocHistory: React.FC = () => {
     const res = await request(prjDocApi.list_doc_history({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      doc_id: projectStore.curEntry?.entry_id ?? "",
+      doc_id: entryStore.curEntry?.entry_id ?? "",
     }));
     if (res) {
       setHistoryList(res.history_list);
@@ -36,7 +38,7 @@ const DocHistory: React.FC = () => {
       return;
     }
     loadHistory();
-  }, [docStore.showDocHistory, projectStore.curEntry]);
+  }, [docStore.showDocHistory, entryStore.curEntry]);
 
   return (
     <div className={s.history_wrap}>

@@ -37,7 +37,6 @@ export default class DocStore {
         });
     }
 
-
     async loadDoc() {
         runInAction(() => {
             this._curDoc = null;
@@ -48,7 +47,7 @@ export default class DocStore {
             prjDocApi.get_doc({
                 session_id: this.rootStore.userStore.sessionId,
                 project_id: this.rootStore.projectStore.curProjectId,
-                doc_id: this.rootStore.projectStore.curEntry?.entry_id ?? "",
+                doc_id: this.rootStore.entryStore.curEntry?.entry_id ?? "",
             }),
         );
         runInAction(() => {

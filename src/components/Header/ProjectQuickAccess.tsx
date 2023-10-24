@@ -406,7 +406,7 @@ const ProjectQuickAccess = () => {
 
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
-            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 20px", color: "orange", fontSize: "18px" }} title="项目快捷菜单">
+            <a onClick={(e) => e.preventDefault()} style={{margin: "0px 20px",  color: "orange", fontSize: "18px" }} title="项目快捷菜单">
                 <MenuOutlined />
             </a>
         </Dropdown >

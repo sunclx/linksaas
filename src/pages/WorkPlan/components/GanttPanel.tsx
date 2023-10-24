@@ -97,6 +97,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
     const spritStore = useStores('spritStore');
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
+    const entryStore = useStores('entryStore');
 
     const history = useHistory();
 
@@ -142,7 +143,7 @@ const GanttPanel: React.FC<GanttPanelProps> = (props) => {
             totalRemain += bug.remain_minutes;
         }
         const spritTask: GanttTask = {
-            id: projectStore.curEntry?.entry_id??"",
+            id: entryStore.curEntry?.entry_id??"",
             type: "project",
             name: `${props.spritName}(${moment(props.startTime).format("YYYY-MM-DD")}至${moment(props.endTime).format("YYYY-MM-DD")})`,
             start: moment(props.startTime).startOf("day").toDate(),

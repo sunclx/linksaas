@@ -25,6 +25,7 @@ interface AddModalProps {
 const AddModal: React.FC<AddModalProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const entryStore = useStores('entryStore');
 
     const [tagId, setTagId] = useState("");
     const [content, setContent] = useState("");
@@ -33,7 +34,7 @@ const AddModal: React.FC<AddModalProps> = observer((props) => {
         await request(add_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
             tag_id: tagId,
             content: content,
         }));
@@ -84,6 +85,7 @@ interface SummaryCardProps {
 const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const entryStore = useStores('entryStore');
 
     const [inEdit, setInEdit] = useState(false);
     const [tagId, setTagId] = useState(props.summaryItem.tag_info.tag_id);
@@ -96,7 +98,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             summary_item_id: props.summaryItem.summary_item_id,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
         }));
         props.onChange();
     };
@@ -106,7 +108,7 @@ const SummaryCard: React.FC<SummaryCardProps> = observer((props) => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             summary_item_id: props.summaryItem.summary_item_id,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
             tag_id: tagId,
             content: content,
         }));
@@ -223,6 +225,7 @@ interface GroupCardProps {
 const GroupCard: React.FC<GroupCardProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const entryStore = useStores('entryStore');
 
     const [curSummaryIndex, setCurSummaryIndex] = useState(0);
     const [bgColor, setBgColor] = useState(props.groupItem.summaryList[0].tag_info.bg_color);
@@ -231,7 +234,7 @@ const GroupCard: React.FC<GroupCardProps> = observer((props) => {
         await request(group_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
             summary_item_id_list: [props.groupItem.summaryList[curSummaryIndex].summary_item_id],
         }));
         setCurSummaryIndex(0);
@@ -313,6 +316,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
+    const entryStore = useStores('entryStore');
 
     const [groupList, setGroupList] = useState<SummaryGroup[]>([]);
     const [summaryList, setSummaryList] = useState<SummaryItemInfo[]>([]);
@@ -324,7 +328,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
         await request(set_summary_state({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
             summary_state: state,
         }));
         spritStore.incCurSpritVersion();
@@ -334,7 +338,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
         const res = await request(list_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
             filter_by_tag_id: filterTagId != null,
             tag_id: filterTagId ?? "",
         }));
@@ -377,7 +381,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
         await request(group_summary_item({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            sprit_id: projectStore.curEntry?.entry_id ?? "",
+            sprit_id: entryStore.curEntry?.entry_id ?? "",
             summary_item_id_list: summaryItemIdList,
         }));
         await loadSummaryAndGroup();

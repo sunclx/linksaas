@@ -1,32 +1,31 @@
 import { useStores } from '@/hooks';
 import React, { useEffect } from 'react';
-import { Input, message, Space } from 'antd';
+import { message, Space } from 'antd';
 import { useCommonEditor, change_file_fs } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT_DOC } from '@/api/fs';
 import { request } from '@/utils/request';
 import * as docApi from '@/api/project_doc';
 import { useState } from 'react';
-import s from './EditDoc.module.less';
 import { observer } from 'mobx-react';
 import Button from '@/components/Button';
 import type { TocInfo } from '@/components/Editor/extensions/index';
 import DocTocPanel from './DocTocPanel';
 import classNames from 'classnames';
-import { update_title } from "@/api/project_entry"
+import s from "./EditDoc.module.less";
 
 const WriteDoc: React.FC = () => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
+  const entryStore = useStores('entryStore');
 
-  const [newTitle, setNewTitle] = useState(''); //新建文档时有空
   const [tocList, setTocList] = useState<TocInfo[]>([]);
 
   const { editor, editorRef } = useCommonEditor({
     content: '',
     fsId: projectStore.curProject?.doc_fs_id ?? '',
     ownerType: FILE_OWNER_TYPE_PROJECT_DOC,
-    ownerId: projectStore.curEntry?.entry_id ?? "",
+    ownerId: entryStore.curEntry?.entry_id ?? "",
     historyInToolbar: true,
     clipboardInToolbar: true,
     widgetInToolbar: true,
@@ -39,7 +38,7 @@ const WriteDoc: React.FC = () => {
       request(
         docApi.keep_update_doc({
           session_id: userStore.sessionId,
-          doc_id: projectStore.curEntry?.entry_id ?? "",
+          doc_id: entryStore.curEntry?.entry_id ?? "",
         }),
       ).catch((e) => {
         console.log(e);
@@ -51,7 +50,7 @@ const WriteDoc: React.FC = () => {
       docApi.start_update_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_id: projectStore.curEntry?.entry_id ?? "",
+        doc_id: entryStore.curEntry?.entry_id ?? "",
       }),
     ).catch((e) => {
       console.log(e);
@@ -63,7 +62,7 @@ const WriteDoc: React.FC = () => {
       docApi.get_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_id: projectStore.curEntry?.entry_id ?? "",
+        doc_id: entryStore.curEntry?.entry_id ?? "",
       }),
     ).then((res) => {
       editorRef.current?.setContent(res.doc.base_info.content);
@@ -72,7 +71,7 @@ const WriteDoc: React.FC = () => {
       clearInterval(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectStore.curEntry]);
+  }, [entryStore.curEntry]);
 
   //更新文档
   const updateDoc = async () => {
@@ -84,22 +83,13 @@ const WriteDoc: React.FC = () => {
       projectStore.curProject?.doc_fs_id ?? '',
       userStore.sessionId,
       FILE_OWNER_TYPE_PROJECT_DOC,
-      projectStore.curEntry?.entry_id ?? "",
+      entryStore.curEntry?.entry_id ?? "",
     );
-    if (newTitle != (projectStore.curEntry?.entry_title ?? "")) {
-      await request(update_title({
-        session_id: userStore.sessionId,
-        project_id: projectStore.curProjectId,
-        entry_id: projectStore.curEntry?.entry_id ?? "",
-        title: newTitle,
-      }));
-      await projectStore.loadEntry(projectStore.curEntry?.entry_id ?? "");
-    }
     await request(
       docApi.update_doc_content({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_id: projectStore.curEntry?.entry_id ?? "",
+        doc_id: entryStore.curEntry?.entry_id ?? "",
         content: JSON.stringify(content),
       }),
     );
@@ -107,48 +97,37 @@ const WriteDoc: React.FC = () => {
     docStore.inEdit = false;
   };
 
-  return (
-    <div className={s.editdoc_wrap}>
-      <div className={s.editdoc_title_wrap}>
-        <Input
-          placeholder="请输入新文档名称"
-          defaultValue={projectStore.curEntry?.entry_title ?? ""}
-          bordered={false}
-          onChange={(e) => {
+  useEffect(() => {
+    entryStore.entryExtra = (
+      <Space size="large">
+        <Button
+          type="default"
+          onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            setNewTitle(e.target.value.trim());
+            docStore.inEdit = false;
+          }}>取消</Button>
+        <Button
+          type="primary"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            updateDoc();
           }}
-        />
-        <div className={s.save}>
-          <Space size="large">
-            <Button
-              type="default"
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                docStore.inEdit = false;
-              }}>取消</Button>
-            <Button
-              type="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                updateDoc();
-              }}
-            >
-              保存
-            </Button>
-          </Space>
-        </div>
-      </div>
+        >
+          保存
+        </Button>
+      </Space>
+    );
+  }, []);
+
+  return (
       <div className={s.doc_wrap}>
-        <div className={classNames(s.read_doc, "_docContext")} >{editor}</div>
+        <div className={classNames(s.read_doc, "_docContext")}>{editor}</div>
         {tocList.length > 0 && (
           <DocTocPanel tocList={tocList} />
         )}
       </div>
-    </div>
   );
 };
 

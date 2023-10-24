@@ -2,17 +2,19 @@ import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
 import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
-import { Layout, Progress, Space, message } from 'antd';
+import { Button, Layout, Progress, Space, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { ArrowsAltOutlined, BugOutlined, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { ArrowsAltOutlined, BugOutlined, HomeTwoTone, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
 import ProjectTipList from './ProjectTipList';
-import ProjectQuickAccess from '../TopNav/ProjectQuickAccess';
+import { APP_PROJECT_HOME_PATH } from '@/utils/constant';
+import { useHistory } from 'react-router-dom';
+import ProjectQuickAccess from './ProjectQuickAccess';
 
 const { Header } = Layout;
 
@@ -22,9 +24,13 @@ let windowPostion: PhysicalPosition = new PhysicalPosition(0, 0);
 const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className?: string }> = ({
   ...props
 }) => {
+  const history = useHistory();
+
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const appStore = useStores('appStore');
+  const entryStore = useStores('entryStore');
+  const docStore = useStores('docStore');
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
@@ -91,7 +97,26 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     <div>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
-        {projectStore.curProjectId != "" && appStore.simpleMode == false && userStore.sessionId != "" && (<ProjectQuickAccess />)}
+        {projectStore.curProjectId != "" && appStore.simpleMode == false && (
+          <div>
+            <Button type="text" style={{marginLeft:"6px"}}
+              icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", "white"]} />} onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (docStore.inEdit) {
+                  docStore.showCheckLeave(() => {
+                    entryStore.reset();
+                    history.push(APP_PROJECT_HOME_PATH);
+                  });
+                } else {
+                  entryStore.reset();
+                  history.push(APP_PROJECT_HOME_PATH);
+                }
+              }} />
+            <ProjectQuickAccess />
+          </div>
+        )}
+
         <div className={style.l}>
           {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
         </div>

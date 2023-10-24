@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from "react";
 import s from "./index.module.less";
 import { observer } from 'mobx-react';
-import { Button, Card, Divider, Form, Input, List, Radio, Select, Space, Switch } from "antd";
-import { useHistory } from "react-router-dom";
-import { APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
+import { Button, Card, Divider, Form, Input, List, Popover, Radio, Select, Space, Switch, Tooltip } from "antd";
+import { useHistory, useLocation } from "react-router-dom";
+import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
-import type { EntryInfo, ENTRY_TYPE } from "@/api/project_entry";
+import type { ENTRY_TYPE } from "@/api/project_entry";
 import { list as list_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import { request } from "@/utils/request";
+import { CreditCardFilled } from "@ant-design/icons";
+import EntryCard from "./EntryCard";
 
 const PAGE_SIZE = 24;
 
 const ProjectHome = () => {
+    const location = useLocation();
     const history = useHistory();
 
     const userStore = useStores("userStore");
     const projectStore = useStores("projectStore");
+    const entryStore = useStores("entryStore");
 
-    const [entryList, setEntryList] = useState<EntryInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
 
@@ -29,6 +32,8 @@ const ProjectHome = () => {
     const [entryTypeList, setEntryTypeList] = useState<ENTRY_TYPE[]>([]);
     const [markRemove, setMarkRemove] = useState(false);
     const [myWatch, setMyWatch] = useState(false);
+
+    const [preClose, setPreClose] = useState(false);
 
     const loadEntryList = async () => {
         const res = await request(list_entry({
@@ -50,12 +55,30 @@ const ProjectHome = () => {
             limit: PAGE_SIZE,
         }));
         setTotalCount(res.total_count);
-        setEntryList(res.entry_list);
+        entryStore.entryList = res.entry_list;
     };
 
     useEffect(() => {
         if (curPage != 0) {
             setCurPage(0);
+        }
+        if (keyword != "") {
+            setKeyword("");
+        }
+        if (tagIdList.length != 0) {
+            setTagIdList([]);
+        }
+        if (entryTypeList.length != 0) {
+            setEntryTypeList([]);
+        }
+        if (markRemove) {
+            setMarkRemove(false);
+        }
+        if (myWatch) {
+            setMyWatch(false);
+        }
+        if (showFilterBar) {
+            setShowFilterBar(false);
         }
         setDataVersion(oldValue => oldValue + 1);
     }, [projectStore.curProjectId]);
@@ -66,14 +89,14 @@ const ProjectHome = () => {
 
     return (
         <div className={s.home_wrap}>
-            <h1 className={s.header}>系统面板</h1>
+            <h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;系统面板</h1>
             <List rowKey="id"
                 grid={{ gutter: 16 }}
                 dataSource={[
                     {
                         id: "mywork",
                         content: (
-                            <div className={s.card} onClick={e => {
+                            <div className={s.card} style={{ backgroundColor: "#A8E0A3" }} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 history.push(APP_PROJECT_MY_WORK_PATH);
@@ -85,7 +108,7 @@ const ProjectHome = () => {
                     {
                         id: "summary",
                         content: (
-                            <div className={s.card} style={{ backgroundColor: "orange" }}
+                            <div className={s.card} style={{ backgroundColor: "#E8EDC9" }}
                                 onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
@@ -101,32 +124,64 @@ const ProjectHome = () => {
                     </List.Item>
                 )} />
             <Divider style={{ margin: "4px 0px" }} />
-            <Card title={<h1 className={s.header}>内容面板</h1>}
-                headStyle={{ paddingLeft: "0px", border: "none" }} bodyStyle={{ paddingLeft: "0px", paddingTop: "0px" }}
+            <Card title={<h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;内容面板</h1>}
+                headStyle={{ paddingLeft: "0px" }} bodyStyle={{ paddingLeft: "0px" }}
                 bordered={false} extra={
                     <Space size="small">
                         <Form layout="inline">
                             <Form.Item label="我的关注">
-                                <Switch checkedChildren="是" unCheckedChildren="否" checked={myWatch} onChange={value => setMyWatch(value)} />
+                                <Switch checked={myWatch} onChange={value => setMyWatch(value)} />
                             </Form.Item>
                             <Form.Item label="面板状态">
-                                <Radio.Group optionType="button" buttonStyle="solid" value={markRemove} onChange={e => {
-                                    e.stopPropagation();
-                                    setMarkRemove(e.target.value);
-                                }}>
-                                    <Radio value={false}>打开</Radio>
-                                    <Radio value={true}>关闭</Radio>
-                                </Radio.Group>
+                                <Tooltip open={preClose} placement="right" title="从这里切换 打开/关闭 状态">
+                                    <Radio.Group optionType="button" buttonStyle="solid" value={markRemove} onChange={e => {
+                                        e.stopPropagation();
+                                        setMarkRemove(e.target.value);
+                                    }}>
+                                        <Radio value={false}>打开</Radio>
+                                        <Radio value={true}>关闭</Radio>
+                                    </Radio.Group>
+                                </Tooltip>
                             </Form.Item>
                             <Form.Item label="更多条件">
-                                <Switch checkedChildren="是" unCheckedChildren="否" checked={showFilterBar} onChange={value => {
-                                    setShowFilterBar(value);
-                                    if (value == false) {
-                                        setTagIdList([]);
-                                        setEntryTypeList([]);
-                                        setKeyword("");
-                                    }
-                                }} />
+                                <Popover placement="top" open={showFilterBar && (location.pathname == APP_PROJECT_HOME_PATH)}
+                                    content={
+                                        <Form style={{ padding: "10px 10px" }}>
+                                            <Form.Item label="标题">
+                                                <Input style={{ width: "200px" }} value={keyword} onChange={e => {
+                                                    e.stopPropagation();
+                                                    e.preventDefault();
+                                                    setKeyword(e.target.value.trim());
+                                                }} />
+                                            </Form.Item>
+                                            <Form.Item label="标签">
+                                                <Select mode="multiple" style={{ width: "200px" }} size="large"
+                                                    allowClear value={tagIdList} onChange={value => setTagIdList(value)}>
+                                                    {(projectStore.curProject?.tag_list ?? []).filter(item => item.use_in_entry).map(item => (
+                                                        <Select.Option key={item.tag_id} value={item.tag_id}>
+                                                            <div style={{ backgroundColor: item.bg_color, padding: "0px 4px" }}>{item.tag_name}</div></Select.Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                            <Form.Item label="类型">
+                                                <Select mode="multiple" value={entryTypeList} onChange={value => setEntryTypeList(value)}
+                                                    allowClear
+                                                    style={{ width: "200px" }}>
+                                                    <Select.Option value={ENTRY_TYPE_SPRIT}>工作计划</Select.Option>
+                                                    <Select.Option value={ENTRY_TYPE_DOC}>文档</Select.Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Form>
+                                    }>
+                                    <Switch checked={showFilterBar} onChange={value => {
+                                        setShowFilterBar(value);
+                                        if (value == false) {
+                                            setTagIdList([]);
+                                            setEntryTypeList([]);
+                                            setKeyword("");
+                                        }
+                                    }} />
+                                </Popover>
                             </Form.Item>
                         </Form>
                         <Button type="primary" onClick={e => {
@@ -136,45 +191,15 @@ const ProjectHome = () => {
                         }}>创建内容</Button>
                     </Space>
                 }>
-
-                {showFilterBar == true && (
-                    <div className={s.filter_wrap}>
-                        <Form layout="inline" className={s.filter}>
-                            <Form.Item label="标题">
-                                <Input style={{ width: "100px" }} size="large" value={keyword} onChange={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setKeyword(e.target.value.trim());
-                                }} />
-                            </Form.Item>
-                            <Form.Item label="标签">
-                                <Select mode="multiple" style={{ minWidth: "100px" }} size="large"
-                                    allowClear value={tagIdList} onChange={value => setTagIdList(value)}>
-                                    {(projectStore.curProject?.tag_list ?? []).filter(item => item.use_in_entry).map(item => (
-                                        <Select.Option key={item.tag_id} value={item.tag_id}>
-                                            <div style={{ backgroundColor: item.bg_color, padding: "0px 4px" }}>{item.tag_name}</div></Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                            <Form.Item label="类型">
-                                <Select mode="multiple" value={entryTypeList} onChange={value => setEntryTypeList(value)}
-                                    allowClear size="large"
-                                    style={{ minWidth: "100px" }}>
-                                    <Select.Option value={ENTRY_TYPE_SPRIT}>工作计划</Select.Option>
-                                    <Select.Option value={ENTRY_TYPE_DOC}>文档</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </Form>
-                    </div>
-                )}
-
-                <Divider style={{ margin: "4px 0px" }} />
-                <List rowKey="entry_id" dataSource={entryList} grid={{ gutter: 16 }}
+                <List rowKey="entry_id" dataSource={entryStore.entryList} grid={{ gutter: 16 }}
                     renderItem={item => (
                         <List.Item>
-                            <div className={s.card}>
-                                <h1>{item.entry_title}</h1>
-                            </div>
+                            <EntryCard entryInfo={item} onRemove={() => loadEntryList()}
+                                onPreClose={value => {
+                                    if (value != preClose) {
+                                        setPreClose(value);
+                                    }
+                                }} />
                         </List.Item>
                     )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             </Card>
