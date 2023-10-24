@@ -120,11 +120,6 @@ const BottomNav = () => {
                   }}>
                     <span className={(entryStore.curEntry?.my_watch ?? false) ? s.isCollect : s.noCollect} />
                   </a>
-                  {entryStore.entryExtra != null && (
-                    <>
-                      {entryStore.entryExtra}
-                    </>
-                  )}
                 </Space>
               </div>
 

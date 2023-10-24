@@ -1,11 +1,12 @@
 import { useStores } from '@/hooks';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ReadOnlyEditor } from '@/components/Editor';
 import { observer } from 'mobx-react';
 import RenderDocBtns from './RenderDocBtns';
 import type { TocInfo } from '@/components/Editor/extensions/index';
 import DocTocPanel from './DocTocPanel';
 import s from "./EditDoc.module.less";
+import { Card } from 'antd';
 
 
 const ReadDoc: React.FC = () => {
@@ -14,25 +15,21 @@ const ReadDoc: React.FC = () => {
 
   const docStore = useStores('docStore');
   const ideaStore = useStores('ideaStore');
-  const entryStore = useStores('entryStore');
-
-  useEffect(() => {
-    entryStore.entryExtra = (
-      <RenderDocBtns keyWordList={matchKeywordList} />
-    );
-  }, [matchKeywordList]);
 
   return (
-    <div className={s.doc_wrap}>
-      <div className={s.read_doc}>
-        {<ReadOnlyEditor content={docStore.curDoc?.base_info.content ?? ""} keywordList={ideaStore.keywordList}
-          keywordCallback={(kwList) => setMatchKeywordList(kwList)}
-          tocCallback={(result) => setTocList(result)} />}
+    <Card extra={<RenderDocBtns keyWordList={matchKeywordList} />} bordered={false}
+      bodyStyle={{ paddingBottom: "0px" }}>
+      <div className={s.doc_wrap}>
+        <div className={s.read_doc}>
+          {<ReadOnlyEditor content={docStore.curDoc?.base_info.content ?? ""} keywordList={ideaStore.keywordList}
+            keywordCallback={(kwList) => setMatchKeywordList(kwList)}
+            tocCallback={(result) => setTocList(result)} />}
+        </div>
+        {tocList.length > 0 && (
+          <DocTocPanel tocList={tocList} />
+        )}
       </div>
-      {tocList.length > 0 && (
-        <DocTocPanel tocList={tocList} />
-      )}
-    </div>
+    </Card>
   );
 };
 

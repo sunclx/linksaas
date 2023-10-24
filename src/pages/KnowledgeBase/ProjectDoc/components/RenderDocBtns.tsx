@@ -52,14 +52,14 @@ const RenderDocBtns = (props: RenderDocBtnsProps) => {
         }}
         trigger="click"
       >
-        <Button type="text" style={{ padding: "10px 0px", minWidth: 0 }}>
+        <Button type="text" style={{ padding: "0px 0px", minWidth: 0 }}>
           <Historysvg style={{ fontSize: "28px" }} />
         </Button>
       </Popover>
 
       <Button
         type="primary"
-        style={{ padding: "0px 0px", marginBottom: "14px" }}
+        style={{marginLeft:"40px", padding: "0px 0px" }}
         disabled={projectStore.isClosed || !(entryStore.curEntry?.can_update ?? false)}
         onClick={(e) => {
           e.stopPropagation();

@@ -3,7 +3,6 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import type { EntryInfo } from "@/api/project_entry";
 import { get as get_entry } from "@/api/project_entry";
 import { request } from '@/utils/request';
-import React from 'react';
 
 export default class EntryStore {
     constructor(rootStore: RootStore) {
@@ -15,13 +14,11 @@ export default class EntryStore {
     private _curEntry: EntryInfo | null = null;
     private _editEntryId = "";
     private _entryList: EntryInfo[] = [];
-    private _entryExtra: React.ReactNode | null = null;
 
     reset() {
         runInAction(() => {
             this._curEntry = null;
             this._editEntryId = "";
-            this._entryExtra = null;
         });
     }
 
@@ -52,16 +49,6 @@ export default class EntryStore {
     set entryList(val: EntryInfo[]) {
         runInAction(() => {
             this._entryList = val;
-        });
-    }
-
-    get entryExtra(): React.ReactNode | null {
-        return this._entryExtra;
-    }
-
-    set entryExtra(val: React.ReactNode | null) {
-        runInAction(()=>{
-            this._entryExtra = val;
         });
     }
 

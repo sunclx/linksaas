@@ -29,7 +29,6 @@ import {
   WIDGET_TYPE_TECH_COMPARE,
   WIDGET_TYPE_TIME_RANGE,
   WIDGET_TYPE_MERMAID,
-  WIDGET_TYPE_MARK_MAP,
   WIDGET_TYPE_SURVEY_CHOICE,
   WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
@@ -384,10 +383,6 @@ const ContentWidget = observer(() => {
     key: 'design',
     label: '软件设计',
     children: [
-      {
-        key: WIDGET_TYPE_MARK_MAP,
-        label: 'markmap',
-      },
       {
         key: WIDGET_TYPE_MERMAID,
         label: 'mermaid',

@@ -1,6 +1,6 @@
 import { useStores } from '@/hooks';
 import React, { useEffect } from 'react';
-import { message, Space } from 'antd';
+import { Card, message, Space } from 'antd';
 import { useCommonEditor, change_file_fs } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT_DOC } from '@/api/fs';
 import { request } from '@/utils/request';
@@ -97,8 +97,9 @@ const WriteDoc: React.FC = () => {
     docStore.inEdit = false;
   };
 
-  useEffect(() => {
-    entryStore.entryExtra = (
+
+  return (
+    <Card bordered={false} extra={
       <Space size="large">
         <Button
           type="default"
@@ -117,17 +118,14 @@ const WriteDoc: React.FC = () => {
         >
           保存
         </Button>
-      </Space>
-    );
-  }, []);
-
-  return (
+      </Space>}>
       <div className={s.doc_wrap}>
         <div className={classNames(s.read_doc, "_docContext")}>{editor}</div>
         {tocList.length > 0 && (
           <DocTocPanel tocList={tocList} />
         )}
       </div>
+    </Card>
   );
 };
 
