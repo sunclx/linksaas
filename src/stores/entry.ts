@@ -1,6 +1,6 @@
 import type { RootStore } from './index';
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { EntryInfo } from "@/api/project_entry";
+import type { EntryInfo, ENTRY_TYPE } from "@/api/project_entry";
 import { get as get_entry } from "@/api/project_entry";
 import { request } from '@/utils/request';
 
@@ -14,11 +14,14 @@ export default class EntryStore {
     private _curEntry: EntryInfo | null = null;
     private _editEntryId = "";
     private _entryList: EntryInfo[] = [];
+    private _createEntryType: ENTRY_TYPE | null = null;
 
     reset() {
         runInAction(() => {
             this._curEntry = null;
             this._editEntryId = "";
+            this._entryList = [];
+            this._createEntryType = null;
         });
     }
 
@@ -49,6 +52,16 @@ export default class EntryStore {
     set entryList(val: EntryInfo[]) {
         runInAction(() => {
             this._entryList = val;
+        });
+    }
+
+    get createEntryType(): ENTRY_TYPE | null {
+        return this._createEntryType;
+    }
+
+    set createEntryType(val: ENTRY_TYPE | null) {
+        runInAction(() => {
+            this._createEntryType = val;
         });
     }
 

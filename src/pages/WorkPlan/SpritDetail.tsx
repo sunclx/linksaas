@@ -142,19 +142,19 @@ const SpritDetail = () => {
                                         </Form.Item>
                                         <Form.Item>
                                             <Dropdown.Button type="primary"
-                                                disabled={(projectStore.isClosed || (!projectStore.isAdmin))}
+                                                disabled={(projectStore.isClosed || !(entryStore.curEntry?.can_update ?? false))}
                                                 menu={{
                                                     items: [
                                                         {
                                                             key: "refTask",
                                                             label: "引用任务",
-                                                            disabled: (projectStore.isClosed || (!projectStore.isAdmin)),
+                                                            disabled: (projectStore.isClosed || !(entryStore.curEntry?.can_update ?? false)),
                                                             onClick: () => setRefIssueType(ISSUE_TYPE_TASK),
                                                         },
                                                         {
                                                             key: "refBug",
                                                             label: "引用缺陷",
-                                                            disabled: (projectStore.isClosed || (!projectStore.isAdmin)),
+                                                            disabled: (projectStore.isClosed || !(entryStore.curEntry?.can_update ?? false)),
                                                             onClick: () => setRefIssueType(ISSUE_TYPE_BUG),
                                                         }
                                                     ]

@@ -7,6 +7,31 @@ use tauri::{
 };
 
 #[tauri::command]
+async fn create<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CreateRequest,
+) -> Result<CreateResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.create(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == create_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("create".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -21,9 +46,7 @@ async fn list<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list".into()))
-                {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("list".into())) {
                     println!("{:?}", err);
                 }
             }
@@ -48,9 +71,7 @@ async fn get<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("get".into()))
-                {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get".into())) {
                     println!("{:?}", err);
                 }
             }
@@ -75,9 +96,7 @@ async fn watch<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == watch_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("watch".into()))
-                {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("watch".into())) {
                     println!("{:?}", err);
                 }
             }
@@ -102,8 +121,7 @@ async fn unwatch<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == unwatch_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("unwatch".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("unwatch".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -210,9 +228,10 @@ async fn update_mark_remove<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_mark_remove_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_mark_remove".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_mark_remove".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -237,9 +256,10 @@ async fn update_extra_info<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_extra_info_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_extra_info".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_extra_info".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -249,7 +269,6 @@ async fn update_extra_info<R: Runtime>(
     }
 }
 
-
 pub struct ProjectEntryApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -258,6 +277,7 @@ impl<R: Runtime> ProjectEntryApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
+                create,
                 list,
                 get,
                 watch,

@@ -47,7 +47,6 @@ export type EntryInfo = {
     extra_info: ExtraInfo;
 };
 
-
 export type ListParam = {
     filter_by_watch: boolean;
     watch: boolean;
@@ -59,6 +58,22 @@ export type ListParam = {
     mark_remove: boolean;
     filter_by_entry_type: boolean;
     entry_type_list: ENTRY_TYPE[];
+};
+
+export type CreateRequest = {
+    session_id: string;
+    project_id: string;
+    entry_id: string;
+    entry_type: ENTRY_TYPE;
+    entry_title: string;
+    tag_id_list: string[];
+    entry_perm: EntryPerm;
+    extra_info?: ExtraInfo;
+};
+
+export type CreateResponse = {
+    code: number;
+    err_msg: string;
 };
 
 export type ListRequest = {
@@ -174,6 +189,15 @@ export type UpdateExtraInfoResponse = {
     code: number;
     err_msg: string;
 };
+
+//创建入口
+export async function create(request: CreateRequest): Promise<CreateResponse> {
+    const cmd = 'plugin:project_entry_api|create';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<CreateResponse>(cmd, {
+        request,
+    });
+}
 
 //列出入口
 export async function list(request: ListRequest): Promise<ListResponse> {

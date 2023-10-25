@@ -405,7 +405,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = (props) => {
                         label: "总结阶段",
                         value: SUMMARY_SHOW,
                     }
-                ]} value={props.state} optionType="button" buttonStyle="solid" disabled={!projectStore.isAdmin}
+                ]} value={props.state} optionType="button" buttonStyle="solid" disabled={!(entryStore.curEntry?.can_update ?? false)}
                     onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();

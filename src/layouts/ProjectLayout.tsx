@@ -9,6 +9,7 @@ import ProjectSettingModal from '@/pages/Project/Setting/ProjectSettingModal';
 import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';
 import GitPostHookModal from '@/pages/Project/ProjectTool/GitPostHookModal';
 import UpdateEntryModal from '@/pages/Project/Home/UpdateEntryModal';
+import CreateEntryModal from '@/pages/Project/Home/CreateEntryModal';
 
 
 
@@ -34,6 +35,9 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
             )}
             {projectStore.curProjectId != "" && entryStore.editEntryId != "" && (
                 <UpdateEntryModal/>
+            )}
+            {entryStore.createEntryType != null && (
+                <CreateEntryModal />
             )}
         </div>
     );

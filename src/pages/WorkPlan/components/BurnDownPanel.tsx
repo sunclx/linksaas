@@ -164,7 +164,7 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
                             {row.memberUserId == "" && <span>{dayInfo.remainMinutes == undefined ? "-" : (dayInfo.remainMinutes / 60).toFixed(2)}</span>}
                             {row.memberUserId != "" && (
                                 <EditNumber
-                                    editable={projectStore.isAdmin || row.memberUserId == userStore.userInfo.userId}
+                                    editable={(entryStore.curEntry?.can_update ?? false) || row.memberUserId == userStore.userInfo.userId}
                                     value={dayInfo.remainMinutes == undefined ? undefined : dayInfo.remainMinutes / 60.0} onChange={async (value) => {
                                         if (value < 0.0) {
                                             return false;

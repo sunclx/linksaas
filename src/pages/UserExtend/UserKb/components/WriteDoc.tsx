@@ -7,7 +7,7 @@ import { useCommonEditor } from "@/components/Editor";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_USER_DOC } from "@/api/fs";
 import { useHistory } from "react-router-dom";
-import { create_doc, encrypt, get_doc, decrypt, update_doc } from "@/api/user_kb";
+import { encrypt, get_doc, decrypt, update_doc } from "@/api/user_kb";
 import { request } from "@/utils/request";
 import type { UserDocState } from "../UserDoc";
 import { WORKBENCH_KB_DOC_SUFFIX, WORKBENCH_PATH } from "@/utils/constant";
@@ -52,36 +52,6 @@ const WriteDoc: React.FC<WriteDocProps> = (props) => {
             }
         }
         return encList.join("\t");
-    };
-
-    const createDoc = async () => {
-        const titleValue = title.trim();
-        if (titleValue == "") {
-            message.error("请输入文档标题");
-            return;
-        }
-        if (editorRef.current == null) {
-            return;
-        }
-        let content = JSON.stringify(editorRef.current.getContent());
-        if (props.sshPubKey != "") {
-            content = await encContent(content);
-        }
-        const res = await request(create_doc({
-            session_id: userStore.sessionId,
-            basic_info: {
-                space_id: props.spaceId,
-                title: titleValue,
-                content: content,
-            },
-        }));
-        const state: UserDocState = {
-            spaceId: props.spaceId,
-            sshPubKey: props.sshPubKey,
-            docId: res.doc_id,
-            readMode: true,
-        };
-        history.push(WORKBENCH_KB_DOC_SUFFIX, state);
     };
 
     const updateDoc = async () => {
@@ -170,8 +140,6 @@ const WriteDoc: React.FC<WriteDocProps> = (props) => {
                             e.preventDefault();
                             if (props.docId != "") {
                                 updateDoc();
-                            } else {
-                                createDoc();
                             }
                         }}>保存</Button>
                 </Space>

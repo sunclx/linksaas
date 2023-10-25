@@ -8,7 +8,7 @@ import { useStores } from "@/hooks";
 import type { ENTRY_TYPE } from "@/api/project_entry";
 import { list as list_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import { request } from "@/utils/request";
-import { CreditCardFilled } from "@ant-design/icons";
+import { CreditCardFilled, PlusOutlined } from "@ant-design/icons";
 import EntryCard from "./EntryCard";
 
 const PAGE_SIZE = 24;
@@ -187,8 +187,8 @@ const ProjectHome = () => {
                         <Button type="primary" onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            //TODO
-                        }}>创建内容</Button>
+                            entryStore.createEntryType = ENTRY_TYPE_SPRIT;
+                        }} icon={<PlusOutlined />}>创建内容</Button>
                     </Space>
                 }>
                 <List rowKey="entry_id" dataSource={entryStore.entryList} grid={{ gutter: 16 }}

@@ -62,7 +62,10 @@ const UpdateEntryModal = () => {
                 session_id: userStore.sessionId,
                 project_id: projectStore.curProjectId,
                 entry_id: entryInfo.entry_id,
-                entry_perm: entryInfo.entry_perm,
+                entry_perm: {
+                    update_for_all: entryInfo.entry_perm.update_for_all,
+                    extra_update_user_id_list: entryInfo.entry_perm.update_for_all ? [] : entryInfo.entry_perm.extra_update_user_id_list,
+                },
             }));
         }
         if (entryInfo == null) {
