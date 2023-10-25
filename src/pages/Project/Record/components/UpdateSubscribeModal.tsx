@@ -129,7 +129,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const [entryEvCfgCheckAll, setEntryEvCfgCheckAll] = useState(entryEvCfgValues.length == entryEvOptionList.length);
     const [entryEvCfgIndeterminate, setEntryEvCfgIndeterminate] = useState(entryEvCfgValues.length > 0 && entryEvCfgValues.length < entryEvOptionList.length);
 
-    
+
     const updateSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -173,13 +173,17 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 <Form form={form} labelCol={{ span: 7 }} initialValues={{
                     "projectEvCfg": projectEvCfgValues,
                     "extEvCfg": extEvCfgValues,
-                    "atomgitEvcfg": atomgitEvCfgValues,
+                    "atomgitEvCfg": atomgitEvCfgValues,
                     "giteeEvCfg": giteeEvCfgValues,
                     "gitlabEvCfg": gitlabEvCfgValues,
                     "issueEvCfg": issueEvCfgValues,
                     "requirementEvCfg": requirementEvCfgValues,
                     "codeEvCfg": codeEvCfgValues,
                     "ideaEvCfg": ideaEvCfgValues,
+                    "dataAnnoEvCfg": dataAnnoEvCfgValues,
+                    "apiCollectionEvCfg": apiCollectionEvCfgValues,
+                    "ciCdEvCfg": ciCdEvCfgValues,
+                    "entryEvCfg": entryEvCfgValues,
                 }}>
                     <Form.Item label="订阅名称" name="chatBotName" rules={[{ required: true }]}>
                         <Input defaultValue={props.subscribe.chat_bot_name} />
@@ -235,7 +239,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
-                    
+
                     <Form.Item label={<Checkbox indeterminate={extEvCfgIndeterminate} checked={extEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -261,7 +265,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
-
                     <Form.Item label={<Checkbox indeterminate={ciCdEvCfgIndeterminate} checked={ciCdEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -313,6 +316,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
+
                     <Form.Item label={<Checkbox indeterminate={giteeEvCfgIndeterminate} checked={giteeEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
