@@ -2,8 +2,8 @@ import { Checkbox, DatePicker, Form, Input, Modal, Radio, Tag } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import { create_doc } from "@/api/project_doc";
-import { ISSUE_LIST_ALL, create as create_sprit } from "@/api/project_sprit";
-import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT, create as create_entry } from "@/api/project_entry";
+import { create as create_sprit } from "@/api/project_sprit";
+import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
 import { useStores } from "@/hooks";
 import type { EntryPerm, ExtraSpritInfo, CreateRequest } from "@/api/project_entry";
 import UserPhoto from "@/components/Portrait/UserPhoto";
@@ -34,6 +34,11 @@ const CreateEntryModal = () => {
         start_time: moment().startOf("day").valueOf(),
         end_time: moment().add(7, "days").endOf("day").valueOf(),
         non_work_day_list: [],
+        issue_list_type: ISSUE_LIST_ALL,
+        hide_gantt_panel: false,
+        hide_burndown_panel: false,
+        hide_stat_panel: false,
+        hide_summary_panel: false,
     });
 
     const checkDayValid = (day: Moment): boolean => {
@@ -49,13 +54,7 @@ const CreateEntryModal = () => {
         }
         let entryId = "";
         if (entryStore.createEntryType == ENTRY_TYPE_SPRIT) {
-            const res = await request(create_sprit(userStore.sessionId, projectStore.curProjectId, {
-                issue_list_type: ISSUE_LIST_ALL,
-                hide_gantt_panel: false,
-                hide_burndown_panel: false,
-                hide_stat_panel: false,
-                hide_summary_panel: false,
-            }));
+            const res = await request(create_sprit(userStore.sessionId, projectStore.curProjectId));
             entryId = res.sprit_id;
         } else if (entryStore.createEntryType == ENTRY_TYPE_DOC) {
             const res = await request(create_doc({
@@ -215,6 +214,61 @@ const CreateEntryModal = () => {
                                         }
                                     }
                                 }} />
+                        </Form.Item>
+                        <Form.Item label="列表样式">
+                            <Radio.Group value={spritExtraInfo.issue_list_type} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSpritExtraInfo({
+                                    ...spritExtraInfo,
+                                    issue_list_type: e.target.value,
+                                });
+                            }}>
+                                <Radio value={ISSUE_LIST_ALL}>列表和看板</Radio>
+                                <Radio value={ISSUE_LIST_LIST}>列表</Radio>
+                                <Radio value={ISSUE_LIST_KANBAN}>看板</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+
+                        <Form.Item label="隐藏甘特图">
+                            <Checkbox checked={spritExtraInfo.hide_gantt_panel} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSpritExtraInfo({
+                                    ...spritExtraInfo,
+                                    hide_gantt_panel: e.target.checked,
+                                });
+                            }} />
+                        </Form.Item>
+                        <Form.Item label="隐藏燃尽图">
+                            <Checkbox checked={spritExtraInfo.hide_burndown_panel} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSpritExtraInfo({
+                                    ...spritExtraInfo,
+                                    hide_burndown_panel: e.target.checked,
+                                });
+                            }} />
+                        </Form.Item>
+                        <Form.Item label="隐藏统计信息">
+                            <Checkbox checked={spritExtraInfo.hide_stat_panel} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSpritExtraInfo({
+                                    ...spritExtraInfo,
+                                    hide_stat_panel: e.target.checked,
+                                });
+                            }} />
+                        </Form.Item>
+                        <Form.Item label="隐藏工作总结">
+                            <Checkbox checked={spritExtraInfo.hide_summary_panel} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setSpritExtraInfo({
+                                    ...spritExtraInfo,
+                                    hide_summary_panel: e.target.checked,
+                                });
+                            }} />
                         </Form.Item>
                     </>
                 )}

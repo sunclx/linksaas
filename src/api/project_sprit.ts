@@ -4,20 +4,6 @@ export type SUMMARY_STATE = number;
 export const SUMMARY_COLLECT: SUMMARY_STATE = 0;  //收集反馈
 export const SUMMARY_SHOW: SUMMARY_STATE = 1;     //展示反馈
 
-export type ISSUE_LIST_TYPE = number;
-export const ISSUE_LIST_ALL: ISSUE_LIST_TYPE = 0;
-export const ISSUE_LIST_LIST: ISSUE_LIST_TYPE = 1;
-export const ISSUE_LIST_KANBAN: ISSUE_LIST_TYPE = 2;
-
-export type BasicSpritInfo = {
-  issue_list_type: ISSUE_LIST_TYPE;
-  // hide_doc_panel: boolean;
-  hide_gantt_panel: boolean;
-  hide_burndown_panel: boolean;
-  hide_stat_panel: boolean;
-  hide_summary_panel: boolean;
-  // hide_channel: boolean;
-};
 
 export type CreateResponse = {
   code: number;
@@ -25,14 +11,8 @@ export type CreateResponse = {
   sprit_id: string;
 };
 
-export type UpdateResponse = {
-  code: number;
-  err_msg: string;
-};
-
 export type SpritInfo = {
   sprit_id: string;
-  basic_info: BasicSpritInfo;
   project_id: string;
   task_count: number;
   bug_count: number;
@@ -183,37 +163,14 @@ export type GroupSummaryItemResponse = {
 export async function create(
   session_id: string,
   project_id: string,
-  basic_info: BasicSpritInfo,
 ): Promise<CreateResponse> {
   const cmd = 'plugin:project_sprit_api|create';
   const request = {
     session_id,
     project_id,
-    basic_info,
   };
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<CreateResponse>(cmd, {
-    request,
-  });
-}
-
-//更新工作计划信息
-export async function update(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  basic_info: BasicSpritInfo,
-): Promise<UpdateResponse> {
-  const cmd = 'plugin:project_sprit_api|update';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    basic_info,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<UpdateResponse>(cmd, {
     request,
   });
 }
