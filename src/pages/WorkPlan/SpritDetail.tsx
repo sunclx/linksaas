@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { useHistory, useLocation } from "react-router-dom";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
 import { LINK_TARGET_TYPE } from "@/stores/linkAux";
-import { get as get_sprit, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_sprit";
+import { get as get_sprit } from "@/api/project_sprit";
 import type { SpritInfo } from "@/api/project_sprit";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -19,6 +19,7 @@ import { ISSUE_TYPE_TASK, type ISSUE_TYPE, ISSUE_TYPE_BUG, link_sprit, list_by_i
 import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
 import AddIssueModal from "./components/AddIssueModal";
 import { PlusOutlined } from "@ant-design/icons";
+import { ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_entry";
 
 
 const SpritDetail = () => {
@@ -97,8 +98,8 @@ const SpritDetail = () => {
     }, [tabStr]);
 
     useEffect(() => {
-        if (spritInfo != null && activeKey == "" && tabStr == "") {
-            if (spritInfo.basic_info.issue_list_type == ISSUE_LIST_KANBAN) {
+        if (entryStore.curEntry != null && activeKey == "" && tabStr == "") {
+            if (entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
                 setActiveKey("kanban");
             } else {
                 setActiveKey("issue");
@@ -168,7 +169,7 @@ const SpritDetail = () => {
                                 )}
                             </>
                         }>
-                        {spritInfo.basic_info.issue_list_type != ISSUE_LIST_KANBAN && (
+                        {entryStore.curEntry?.extra_info.ExtraSpritInfo?.issue_list_type != ISSUE_LIST_KANBAN && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
                                 {activeKey == "issue" && (
                                     <IssuePanel spritId={entryStore.curEntry?.entry_id ?? ""} startTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
@@ -177,30 +178,30 @@ const SpritDetail = () => {
                                 )}
                             </Tabs.TabPane>
                         )}
-                        {spritInfo.basic_info.issue_list_type != ISSUE_LIST_LIST && (
+                        {entryStore.curEntry?.extra_info.ExtraSpritInfo?.issue_list_type != ISSUE_LIST_LIST && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
                                 {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo} entryInfo={entryStore.curEntry} />}
                             </Tabs.TabPane>
                         )}
 
-                        {spritInfo.basic_info.hide_gantt_panel == false && (
+                        {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_gantt_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
                                 {activeKey == "gantt" && <GanttPanel spritName={entryStore.curEntry?.entry_title ?? ""}
                                     startTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
                                     endTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0} />}
                             </Tabs.TabPane>
                         )}
-                        {spritInfo.basic_info.hide_burndown_panel == false && (
+                        {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_burndown_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>燃尽图</span>} key="burnDown" disabled={!spritStore.allTimeReady}>
                                 {activeKey == "burnDown" && <BurnDownPanel spritInfo={spritInfo} />}
                             </Tabs.TabPane>
                         )}
-                        {spritInfo.basic_info.hide_stat_panel == false && (
+                        {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_stat_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>统计信息</span>} key="statistics" disabled={!spritStore.allTimeReady}>
                                 {activeKey == "statistics" && <StatPanel />}
                             </Tabs.TabPane>
                         )}
-                        {spritInfo.basic_info.hide_summary_panel == false && (
+                        {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_summary_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>工作总结</span>} key="summary">
                                 {activeKey == "summary" && <SummaryPanel state={spritInfo.summary_state} />}
                             </Tabs.TabPane>
