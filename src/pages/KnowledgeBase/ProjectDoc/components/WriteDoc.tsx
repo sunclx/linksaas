@@ -29,7 +29,7 @@ const WriteDoc: React.FC = () => {
     historyInToolbar: true,
     clipboardInToolbar: true,
     widgetInToolbar: true,
-    showReminder: true,
+    showReminder: false,
     tocCallback: (result) => setTocList(result),
   });
 
