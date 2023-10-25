@@ -12,6 +12,8 @@ import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
 import { request } from "@/utils/request";
 import { update_setting } from '@/api/project';
+import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
+import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT } from "@/api/project_entry";
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
@@ -32,7 +34,6 @@ const MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT = "toolbar.codeComment.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
 const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
-
 const MENU_KEY_LAYOUT_PREFIX = "layout.";
 const MENU_KEY_LAYOUT_TOOLBAR_APPRAISE = "layout.toolbar.appraise";
 const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
@@ -45,6 +46,12 @@ const MENU_KEY_LAYOUT_MYWORK_WATCH_TASK = "layout.mywork.watchtask";
 const MENU_KEY_LAYOUT_MYWORK_WATCH_BUG = "layout.mywork.watchbug";
 const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 
+const MENU_KEY_SHOW_PROJECT_OVERVIEW = "project.overview.show";
+const MENU_KEY_SHOW_MY_WORK = "project.mywork.show";
+const MENU_KEY_SHOW_HOME = "project.home.show";
+const MENU_KEY_ENTRY_CREATE_SPRIT = "project.entry.sprit.create";
+const MENU_KEY_ENTRY_CREATE_DOC = "project.entry.doc.create";
+
 
 const ProjectQuickAccess = () => {
     const userStore = useStores('userStore');
@@ -52,6 +59,7 @@ const ProjectQuickAccess = () => {
     const linkAuxStore = useStores('linkAuxStore');
     const projectStore = useStores('projectStore');
     const appStore = useStores('appStore');
+    const entryStore = useStores('entryStore');
 
     const history = useHistory();
 
@@ -156,6 +164,40 @@ const ProjectQuickAccess = () => {
             });
         }
         tmpItems.push(memberItem);
+
+        tmpItems.push({
+            key: "sysPanel",
+            label: "系统面板",
+            children: [
+                {
+                    key: MENU_KEY_SHOW_HOME,
+                    label: "查看所有面板",
+                },
+                {
+                    key: MENU_KEY_SHOW_MY_WORK,
+                    label: "我的工作",
+                },
+                {
+                    key: MENU_KEY_SHOW_PROJECT_OVERVIEW,
+                    label: "项目概览"
+                }
+            ],
+        });
+
+        tmpItems.push({
+            key: "contentEntry",
+            label: "内容入口",
+            children: [
+                {
+                    key: MENU_KEY_ENTRY_CREATE_SPRIT,
+                    label: "创建工作计划",
+                },
+                {
+                    key: MENU_KEY_ENTRY_CREATE_DOC,
+                    label: "创建文档",
+                }
+            ],
+        });
 
         tmpItems.push({
             key: MENU_KEY_SHOW_TOOL_BAR_IDEA,
@@ -388,14 +430,31 @@ const ProjectQuickAccess = () => {
             case MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO:
                 linkAuxStore.goToDataAnnoList(history);
                 break;
+            case MENU_KEY_SHOW_PROJECT_OVERVIEW:
+                memberStore.showDetailMemberId = "";
+                history.push(APP_PROJECT_OVERVIEW_PATH);
+                break;
+            case MENU_KEY_SHOW_MY_WORK:
+                history.push(APP_PROJECT_MY_WORK_PATH);
+                break;
+            case MENU_KEY_SHOW_HOME:
+                history.push(APP_PROJECT_HOME_PATH);
+                break;
+            case MENU_KEY_ENTRY_CREATE_SPRIT:
+                entryStore.createEntryType = ENTRY_TYPE_SPRIT;
+                break;
+            case MENU_KEY_ENTRY_CREATE_DOC:
+                entryStore.createEntryType = ENTRY_TYPE_DOC;
+                break;
             default:
                 if (info.key.startsWith(MENU_KEY_LAYOUT_PREFIX)) {
                     adjustLayout(info.key);
                 }
         }
         if (info.key.startsWith(MENU_KEY_MEMBER_PREFIX)) {
-            // const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
-            // memberStore.floatMemberUserId = memberUserId;
+            const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
+            memberStore.showDetailMemberId = memberUserId;
+            history.push(APP_PROJECT_OVERVIEW_PATH);
         }
     }
 

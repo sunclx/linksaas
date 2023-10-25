@@ -60,6 +60,7 @@ export default class ProjectStore {
     });
     if (val !== '' && val != oldProjectId) {
       this.rootStore.entryStore.reset();
+      this.rootStore.memberStore.showDetailMemberId = "";
       await Promise.all([
         this.rootStore.memberStore.loadMemberList(val),
         this.rootStore.ideaStore.loadKeyword(val),
