@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import { Form, Input, Modal, Select, message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
@@ -8,8 +8,6 @@ import { create_idea } from "@/api/project_idea";
 import { request } from "@/utils/request";
 import { useHistory } from "react-router-dom";
 import { LinkIdeaPageInfo } from "@/stores/linkAux";
-import type { TagInfo } from "@/api/project";
-import { list_tag, TAG_SCOPRE_IDEA } from "@/api/project";
 
 
 const CreateModal = () => {
@@ -31,20 +29,10 @@ const CreateModal = () => {
         showReminder: false,
     });
 
-    const [tagList, setTagList] = useState<TagInfo[]>([]);
-
     const [title, setTitle] = useState(ideaStore.createTitle);
     const [tagIdList, setTagIdList] = useState<string[]>([]);
     const [keywordList, setKeywordList] = useState<string[]>([]);
 
-    const loadTagList = async () => {
-        const res = await request(list_tag({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            tag_scope_type: TAG_SCOPRE_IDEA,
-        }));
-        setTagList(res.tag_info_list);
-    };
 
     const createIdea = async () => {
         if (title.trim() == "") {
@@ -78,9 +66,6 @@ const CreateModal = () => {
         linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);
     };
 
-    useEffect(() => {
-        loadTagList();
-    }, [projectStore.curProjectId, projectStore.curProject?.tag_version]);
 
     return (
         <Modal open title="创建知识点"
@@ -112,7 +97,7 @@ const CreateModal = () => {
                 <Form.Item label="标签">
                     <Select mode="multiple" onChange={value => setTagIdList(value as string[])}
                         placement="topLeft" placeholder="请选择对应的知识点标签">
-                        {tagList.map(item => (
+                        {(projectStore.curProject?.tag_list??[]).filter(item=>item.use_in_idea).map(item => (
                             <Select.Option key={item.tag_id} value={item.tag_id}>
                                 <span style={{ backgroundColor: item.bg_color, padding: "4px 4px" }}>{item.tag_name}</span>
                             </Select.Option>

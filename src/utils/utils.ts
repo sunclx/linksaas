@@ -2,7 +2,7 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 import { createBrowserHistory } from 'history';
 import moment from 'moment';
-import { BUG_DETAIL_SUFFIX, APP_PROJECT_KB_DOC_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH } from './constant';
+import { BUG_DETAIL_SUFFIX, APP_PROJECT_KB_DOC_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH, APP_PROJECT_HOME_PATH } from './constant';
 import { nanoid } from 'nanoid'
 
 export const goBack = (/*history: { goBack: () => void }*/) => {
@@ -34,7 +34,9 @@ export const getIssue_type = (pathname: string): ISSUE_TYPE => {
 
 
 export const getIssueDetailUrl = (pathname: string): string => {
-  if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
+  if (pathname.startsWith(APP_PROJECT_HOME_PATH)){
+    return getIsTask(pathname) ? APP_PROJECT_HOME_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_HOME_PATH + BUG_DETAIL_SUFFIX;
+  }else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_WORK_PLAN_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_WORK_PLAN_PATH + BUG_DETAIL_SUFFIX;
   }else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_DETAIL_SUFFIX;
@@ -45,7 +47,9 @@ export const getIssueDetailUrl = (pathname: string): string => {
 };
 
 export const getIssueCreateUrl = (pathname: string): string => {
-  if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
+  if (pathname.startsWith(APP_PROJECT_HOME_PATH)) {
+    return getIsTask(pathname) ? APP_PROJECT_HOME_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_HOME_PATH + BUG_CREATE_SUFFIX;
+  }else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_WORK_PLAN_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_WORK_PLAN_PATH + BUG_CREATE_SUFFIX;
   }else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_CREATE_SUFFIX;

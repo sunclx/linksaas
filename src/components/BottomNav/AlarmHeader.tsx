@@ -5,7 +5,7 @@ import { request } from "@/utils/request";
 import { ALARM_TYPE_ISSUE_DELAY_ALERT, ALARM_TYPE_ISSUE_DELAY_HIT, ALARM_TYPE_ISSUE_DEPEND_ALERT, ALARM_TYPE_ISSUE_DEPEND_HIT, ALARM_TYPE_ISSUE_REOPEN_ALERT, ALARM_TYPE_ISSUE_REOPEN_HIT } from "@/api/project_alarm";
 import { get_alarm_state, list_alarm, remove_alarm } from "@/api/project_alarm";
 import type { Alarm } from "@/api/project_alarm";
-import { Button, Form, Input, Modal, Popover, Space, Table, message } from "antd";
+import { Badge, Button, Form, Input, Modal, Popover, Space, Table, message } from "antd";
 import type { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { useHistory } from "react-router-dom";
@@ -15,6 +15,7 @@ import type { BulletinInfoKey, GetResponse } from "@/api/project_bulletin";
 import { list_key as list_bulletin_key, get as get_bulletin, mark_read } from "@/api/project_bulletin";
 import UserPhoto from "../Portrait/UserPhoto";
 import { ReadOnlyEditor } from "../Editor";
+import { AlertTwoTone, BellTwoTone } from "@ant-design/icons";
 
 const PAGE_SIZE = 5;
 
@@ -284,23 +285,29 @@ const AlarmHeader = () => {
     }, [projectStore.curProject?.bulletin_version]);
 
     return (
-        <div style={{ marginRight: "20px" }}>
-            <Space size="small">
-                {bulletinCount > 0 && (projectStore.curProject?.setting.hide_bulletin ?? false) == false && (
-                    <Popover trigger="click" content={<BulletinList />} placement="bottomLeft" destroyTooltipOnHide>
-                        <a style={{ backgroundColor: "#2997ff", padding: "4px 8px", fontWeight: 500, borderRadius: 20, color: "black" }}>未读公告:{bulletinCount}</a>
+        <div style={{ marginRight: "80px" }}>
+            <Space size="middle">
+                {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && (
+                    <Popover open={bulletinCount == 0 ? false : undefined} trigger={["hover", "click"]} content={<BulletinList />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
+                        <Badge count={bulletinCount} size="small">
+                            <BellTwoTone style={{ fontSize: "20px", cursor: bulletinCount == 0 ? "default" : "pointer" }} twoToneColor={bulletinCount == 0 ? "#ccc" : ["#aaa", "cyan"]} title="项目公告" />
+                        </Badge>
                     </Popover>
                 )}
-                {hitCount > 0 && (
-                    <Popover trigger="click" content={<AlarmList includeHit={true} includeAlert={false} />} placement="bottomLeft" destroyTooltipOnHide>
-                        <a style={{ backgroundColor: "yellow", padding: "4px 8px", fontWeight: 500, borderRadius: 20, color: "black" }}>风险提示:{hitCount}</a>
-                    </Popover>
-                )}
-                {alertCount > 0 && (
-                    <Popover trigger="click" content={<AlarmList includeHit={false} includeAlert={true} />} placement="bottomLeft" destroyTooltipOnHide>
-                        <a style={{ backgroundColor: "red", padding: "4px 8px", fontWeight: 500, borderRadius: 20, color: "black" }}>风险警告:{alertCount}</a>
-                    </Popover>
-                )}
+
+                <Popover open={hitCount == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={true} includeAlert={false} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
+                    <Badge count={hitCount} size="small">
+                        <AlertTwoTone style={{ fontSize: "20px", cursor: hitCount == 0 ? "default" : "pointer" }} twoToneColor={hitCount == 0 ? "#ccc" : ["#aaa", "yellow"]} title="风险提示" />
+                    </Badge>
+                </Popover>
+
+
+                <Popover open={alertCount == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={false} includeAlert={true} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
+                    <Badge count={alertCount} size="small">
+                        <AlertTwoTone style={{ fontSize: "20px", cursor: alertCount == 0 ? "default" : "pointer" }} twoToneColor={alertCount == 0 ? "#ccc" : ["#aaa", "red"]} title="风险警告" />
+                    </Badge>
+                </Popover>
+
             </Space>
         </div >
     );

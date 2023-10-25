@@ -4,32 +4,25 @@ import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import ReadDoc from './components/ReadDoc';
 import WriteDoc from './components/WriteDoc';
-import { PAGE_TYPE } from '@/stores/docSpace';
-import DocList from './components/DocList';
 import ActionModal from '@/components/ActionModal';
 
 const ProjectDoc = () => {
-  const docSpaceStore = useStores('docSpaceStore');
+  const docStore = useStores('docStore');
 
   return (
-    <div className={s.doc_wrap} style={{ width: docSpaceStore.pageType == PAGE_TYPE.PAGE_DOC ? "100%" : "calc(100% - 200px)" }}>
-      {docSpaceStore.pageType == PAGE_TYPE.PAGE_DOC_LIST && <DocList />}
-      {docSpaceStore.pageType == PAGE_TYPE.PAGE_DOC && (
-        <>
-          {docSpaceStore.inEdit && <WriteDoc />}
-          {!docSpaceStore.inEdit && <ReadDoc />}
-        </>
-      )}
-      {docSpaceStore.checkLeave && <ActionModal
-        open={docSpaceStore.checkLeave}
+    <div className={s.doc_wrap} style={{ width: "100%" }}>
+      {docStore.inEdit && <WriteDoc />}
+      {!docStore.inEdit && <ReadDoc />}
+      {docStore.checkLeave && <ActionModal
+        open={docStore.checkLeave}
         title="离开页面"
         width={330}
         okText="离开"
-        onCancel={() => docSpaceStore.clearCheckLeave()}
+        onCancel={() => docStore.clearCheckLeave()}
         onOK={() => {
-          const onLeave = docSpaceStore.onLeave;
-          docSpaceStore.clearCheckLeave();
-          docSpaceStore.reset();
+          const onLeave = docStore.onLeave;
+          docStore.clearCheckLeave();
+          docStore.reset();
           if (onLeave != undefined) {
             onLeave();
           }

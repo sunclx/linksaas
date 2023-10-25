@@ -21,7 +21,7 @@ const LeftMenu: React.FC = () => {
   const userStore = useStores('userStore');
   const appStore = useStores('appStore');
   const projectStore = useStores('projectStore');
-  const docSpaceStore = useStores('docSpaceStore');
+  const docStore = useStores('docStore');
   const [curExtraMenuId, setCurExtraMenuId] = useState("");
 
   return (
@@ -41,8 +41,8 @@ const LeftMenu: React.FC = () => {
           onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            if (docSpaceStore.inEdit) {
-              docSpaceStore.showCheckLeave(() => {
+            if (docStore.inEdit) {
+              docStore.showCheckLeave(() => {
                 history.push(WORKBENCH_PATH);
                 projectStore.setCurProjectId("");
               });
@@ -65,8 +65,8 @@ const LeftMenu: React.FC = () => {
                 onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (docSpaceStore.inEdit) {
-                    docSpaceStore.showCheckLeave(() => {
+                  if (docStore.inEdit) {
+                    docStore.showCheckLeave(() => {
                       history.push(PUB_RES_PATH);
                       projectStore.setCurProjectId("");
                     });

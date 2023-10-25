@@ -15,10 +15,8 @@ import Button from "@/components/Button";
 import { FILE_OWNER_TYPE_IDEA } from "@/api/fs";
 import IdeaAppraiseModal from "./IdeaAppraiseModal";
 import IdeaEventModal from "./IdeaEventModal";
-import type { TagInfo } from "@/api/project";
 
 interface IdeaContentProps {
-    tagDefList: TagInfo[];
     idea: Idea;
     onChange: () => void;
     onRemove: () => void;
@@ -252,7 +250,7 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                     <h3>标签:</h3>
                     {inEditTag == false && (
                         <div>
-                            {props.tagDefList.filter(tag => props.idea.basic_info.tag_id_list.includes(tag.tag_id)).map(tag => (
+                            {(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_idea).filter(tag => props.idea.basic_info.tag_id_list.includes(tag.tag_id)).map(tag => (
                                 <Tag key={tag.tag_id}><span style={{ backgroundColor: tag.bg_color, padding: "0px 4px" }}>{tag.tag_name}</span></Tag>
                             ))}
                             {props.idea.user_perm.can_update && <a onClick={e => {
@@ -264,14 +262,14 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                     )}
                     {inEditTag == true && (
                         <>
-                            <Select value={tagIdList.filter(tagId => props.tagDefList.map(tagDef => tagDef.tag_id).includes(tagId))} mode="multiple" style={{ width: "100%" }}
+                            <Select value={tagIdList.filter(tagId => (projectStore.curProject?.tag_list ?? []).filter(tagDef => tagDef.use_in_idea).map(tagDef => tagDef.tag_id).includes(tagId))} mode="multiple" style={{ width: "100%" }}
                                 onChange={value => {
                                     if ((value as string[]).length > 0) {
                                         setTagIdList(value as string[]);
                                     }
                                 }}
                                 placement="topLeft">
-                                {props.tagDefList.map(tag => (
+                                {(projectStore.curProject?.tag_list ?? []).filter(tag=>tag.use_in_idea).map(tag => (
                                     <Select.Option key={tag.tag_id} value={tag.tag_id}>
                                         <span style={{ backgroundColor: tag.bg_color, padding: "0px 4px" }}>{tag.tag_name}</span>
                                     </Select.Option>

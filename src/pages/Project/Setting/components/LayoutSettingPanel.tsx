@@ -5,19 +5,15 @@ import { Button, Card, Checkbox, Form, Space, message } from "antd";
 import { useStores } from "@/hooks";
 import { update_setting } from "@/api/project";
 import { request } from "@/utils/request";
-import { useHistory, useLocation } from "react-router-dom";
-import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_KB_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from "@/utils/constant";
+import { PROJECT_SETTING_TAB } from "@/utils/constant";
 import type { PanelProps } from "./common";
 
 const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
-    const location = useLocation();
-    const history = useHistory();
+
 
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
-    const [disableWorkPlan, setDisableWorkPlan] = useState(projectStore.curProject?.setting.disable_work_plan ?? false);
-    const [disableKb, setDisableKb] = useState(projectStore.curProject?.setting.disable_kb ?? false);
 
     const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
@@ -36,9 +32,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [hasChange, setHasChange] = useState(false);
 
     const resetConfig = () => {
-        setDisableWorkPlan(projectStore.curProject?.setting.disable_work_plan ?? false);
-        setDisableKb(projectStore.curProject?.setting.disable_kb ?? false);
-
         setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
@@ -64,8 +57,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_ci_cd: disableCiCd,
                 disable_api_collection: disableApiCollection,
                 disable_code_comment: disableCodeComment,
-                disable_kb: disableKb,
-                disable_work_plan: disableWorkPlan,
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
                 hide_extra_info: hideExtraInfo,
@@ -77,16 +68,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         await projectStore.updateProject(projectStore.curProjectId);
         setHasChange(false);
 
-        //特殊处理
-        if (location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
-            //do nothing
-        } else if (!disableKb && !location.pathname.startsWith(APP_PROJECT_KB_PATH)) {
-            history.push(APP_PROJECT_KB_DOC_PATH);
-        } else if (!disableWorkPlan && !location.pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
-            history.push(APP_PROJECT_WORK_PLAN_PATH);
-        } else if (!location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
-            history.push(APP_PROJECT_OVERVIEW_PATH);
-        }
         projectStore.showProjectSetting = null;
         setTimeout(() => {
             projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_LAYOUT;
@@ -114,20 +95,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 </Space>
             }>
             <Form labelCol={{ span: 5 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
-                <Form.Item label="主界面">
-                    <Space direction="vertical">
-                        <Checkbox checked={disableWorkPlan} onChange={e => {
-                            e.stopPropagation();
-                            setDisableWorkPlan(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭工作计划</Checkbox>
-                        <Checkbox checked={disableKb} onChange={e => {
-                            e.stopPropagation();
-                            setDisableKb(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭知识库</Checkbox>
-                    </Space>
-                </Form.Item>
                 <Form.Item label="右侧工具栏">
                     <Space direction="vertical">
                         <Checkbox checked={disableMemberAppraise} onChange={e => {

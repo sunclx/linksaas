@@ -32,19 +32,6 @@ export type ProjectEvCfg = {
     custom_event: boolean;
 };
 
-export type DocEvCfg = {
-    create_space: boolean;
-    update_space: boolean;
-    remove_space: boolean;
-    create_doc: boolean;
-    update_doc: boolean;
-    move_doc_to_recycle: boolean;
-    remove_doc: boolean;
-    recover_doc: boolean;
-    move_doc: boolean;
-    update_tag: boolean;
-};
-
 export type ExtEvCfg = {
     create: boolean;
     update: boolean;
@@ -101,14 +88,6 @@ export type IssueEvCfg = {
     update_tag: boolean;
 };
 
-export type SpritEvCfg = {
-    create: boolean;
-    update: boolean;
-    remove: boolean;
-    link_doc: boolean;
-    cancel_link_doc: boolean;
-}
-
 export type RequirementEvCfg = {
     create_requirement: boolean;
     update_requirement: boolean;
@@ -162,14 +141,21 @@ export type AtomgitEvCfg = {
     issue: boolean;
 }
 
+export type EntryEvCfg = {
+    create: boolean;
+    open: boolean;
+    close: boolean;
+    remove: boolean;
+    watch: boolean;
+    unwatch: boolean;
+};
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
-    doc_ev_cfg: DocEvCfg;
     ext_ev_cfg: ExtEvCfg;
     gitee_ev_cfg: GiteeEvCfg;
     gitlab_ev_cfg: GitlabEvCfg;
     issue_ev_cfg: IssueEvCfg;
-    sprit_ev_cfg: SpritEvCfg;
     requirement_ev_cfg: RequirementEvCfg;
     code_ev_cfg: CodeEvCfg;
     idea_ev_cfg: IdeaEvCfg;
@@ -177,6 +163,7 @@ export type EventCfg = {
     api_collection_ev_cfg: ApiCollectionEvCfg;
     atomgit_ev_cfg: AtomgitEvCfg;
     ci_cd_ev_cfg: CiCdEvCfg;
+    entry_ev_cfg: EntryEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -287,10 +274,20 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             issue: false,
         };
     }
-    if (cfg.ci_cd_ev_cfg == undefined || cfg.atomgit_ev_cfg == null) {
+    if (cfg.ci_cd_ev_cfg == undefined || cfg.ci_cd_ev_cfg == null) {
         cfg.ci_cd_ev_cfg = {
             create_pipe_line: false,
             remove_pipe_line: false,
+        }
+    }
+    if (cfg.entry_ev_cfg == undefined || cfg.entry_ev_cfg == null) {
+        cfg.entry_ev_cfg = {
+            create: false,
+            open: false,
+            close: false,
+            remove: false,
+            watch: false,
+            unwatch: false,
         }
     }
     return cfg;

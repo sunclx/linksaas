@@ -47,25 +47,20 @@ mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
 mod user_kb_api_plugin;
-
+mod project_entry_api_plugin;
 mod min_app_fs_plugin;
 mod min_app_plugin;
 mod min_app_shell_plugin;
 mod min_app_store_plugin;
-
 mod api_collection_api_plugin;
 mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
 mod http_custom_api_plugin;
-
 mod rss_admin_api_plugin;
 mod rss_api_plugin;
 mod user_rss_api_plugin;
-
 mod my_updater;
-
 mod local_repo_plugin;
-
 mod pub_search_admin_api_plugin;
 mod pub_search_api_plugin;
 
@@ -454,6 +449,7 @@ fn main() {
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())
         .plugin(project_cicd_api_plugin::ProjectCiCdApiPlugin::new())
         .plugin(cicd_runner_api_plugin::CiCdRunnerApiPlugin::new())
+        .plugin(project_entry_api_plugin::ProjectEntryApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

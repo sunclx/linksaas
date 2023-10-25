@@ -10,7 +10,6 @@ export { SwotWidget } from './SwotWidget';
 export { TechCompareWidget } from './TechCompareWidget';
 export { TimeRangeWidget } from './TimeRangeWidget';
 export { MermaidWidget } from './MermaidWidget';
-export { MarkmapWidget } from './MarkmapWidget';
 export { SurveyChoiceWidget } from './SurveyChoiceWidget';
 export { SurveyTrueOrFalseWidget } from './SurveyTrueOrFalseWidget';
 export { RequirementRefWidget } from "./RequirementRefWidget";
@@ -27,7 +26,6 @@ import { swotWidgetInitData } from './SwotWidget';
 import { techCompareWidgetInitData } from './TechCompareWidget';
 import { timeRangeWidgetInitData } from './TimeRangeWidget';
 import { mermaidWidgetInitData } from './MermaidWidget';
-import { markmapWidgetInitData } from './MarkmapWidget';
 import { surveyChoiceWidgetInitData } from './SurveyChoiceWidget';
 import { surveyTrueOrFlaseWidgetInitData } from './SurveyTrueOrFalseWidget';
 import { requirementRefWidgetInitData } from './RequirementRefWidget';
@@ -47,7 +45,6 @@ export const WIDGET_TYPE_SWOT: WIDGET_TYPE = "swot"; //SWOT分析法
 export const WIDGET_TYPE_TECH_COMPARE: WIDGET_TYPE = "techCompare"; //技术对比 
 export const WIDGET_TYPE_TIME_RANGE: WIDGET_TYPE = "timeRange"; // 时间区间
 export const WIDGET_TYPE_MERMAID: WIDGET_TYPE = "mermaid";
-export const WIDGET_TYPE_MARK_MAP: WIDGET_TYPE = "markMap";
 export const WIDGET_TYPE_SURVEY_CHOICE: WIDGET_TYPE = "surveyChoice"; //问卷选择题
 export const WIDGET_TYPE_SURVEY_TRUE_OR_FALSE: WIDGET_TYPE = "surveyTrueOrFalse"; //问卷对错题
 export const WIDGET_TYPE_API_COLL_REF: WIDGET_TYPE = "apiCollRef"; //引用接口集合
@@ -66,7 +63,6 @@ export const WidgetTypeList: WIDGET_TYPE[] = [
     WIDGET_TYPE_TECH_COMPARE,
     WIDGET_TYPE_TIME_RANGE,
     WIDGET_TYPE_MERMAID,
-    WIDGET_TYPE_MARK_MAP,
     WIDGET_TYPE_SURVEY_CHOICE,
     WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
     WIDGET_TYPE_API_COLL_REF,
@@ -88,7 +84,6 @@ WidgetInitDataMap.set(WIDGET_TYPE_SWOT, swotWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TECH_COMPARE, techCompareWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_TIME_RANGE, timeRangeWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_MERMAID, mermaidWidgetInitData);
-WidgetInitDataMap.set(WIDGET_TYPE_MARK_MAP, markmapWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_CHOICE, surveyChoiceWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_SURVEY_TRUE_OR_FALSE, surveyTrueOrFlaseWidgetInitData);
 WidgetInitDataMap.set(WIDGET_TYPE_API_COLL_REF, apiCollRefWidgetInitData);

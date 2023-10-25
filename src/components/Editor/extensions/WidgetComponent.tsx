@@ -61,9 +61,6 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_MERMAID: {
       return <widgets.MermaidWidget {...widgetProps} />;
     }
-    case widgets.WIDGET_TYPE_MARK_MAP: {
-      return <widgets.MarkmapWidget {...widgetProps} />;
-    }
     case widgets.WIDGET_TYPE_SURVEY_CHOICE: {
       return <widgets.SurveyChoiceWidget {...widgetProps} />;
     }

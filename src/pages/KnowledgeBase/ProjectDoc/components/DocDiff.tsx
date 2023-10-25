@@ -17,7 +17,9 @@ interface DocDiffProps {
 const DocDiff: React.FC<DocDiffProps> = (props) => {
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const docSpaceStore = useStores('docSpaceStore');
+  const docStore = useStores('docStore');
+  const entryStore = useStores('entryStore');
+
 
   const [oldData, setOldData] = useState('');
   const [newData, setNewData] = useState('');
@@ -28,8 +30,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.get_doc({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
-        doc_id: docSpaceStore.curDocId,
+        doc_id: entryStore.curEntry?.entry_id ?? "",
       }),
     );
     if (docRes) {
@@ -40,15 +41,14 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.get_doc_in_history({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
-        doc_id: docSpaceStore.curDocId,
+        doc_id: entryStore.curEntry?.entry_id ?? "",
         history_id: props.historyId,
       }),
     );
     if (historyRes) {
       const obj = JSON.parse(historyRes.doc.base_info.content);
       setOldData(JSON.stringify(obj, null, 2));
-      setOldUpdateTime(historyRes.doc.update_time);
+      setOldUpdateTime(entryStore.curEntry?.update_time ?? 0);
     }
   };
 
@@ -57,21 +57,20 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
       docApi.recover_doc_in_history({
         session_id: userStore.sessionId,
         project_id: projectStore.curProjectId,
-        doc_space_id: docSpaceStore.curDoc?.doc_space_id ?? docSpaceStore.curDocSpaceId,
-        doc_id: docSpaceStore.curDocId,
+        doc_id: entryStore.curEntry?.entry_id ?? "",
         history_id: props.historyId,
       }),
     );
     if (!res) {
       return;
     }
-    docSpaceStore.loadDoc(docSpaceStore.curDocId);
+    docStore.loadDoc();
     props.onRecover();
   };
 
   useEffect(() => {
     loadData();
-  }, [docSpaceStore.curDocId, props.historyId]);
+  }, [entryStore.curEntry, props.historyId]);
 
   return (
     <Modal
@@ -87,7 +86,7 @@ const DocDiff: React.FC<DocDiffProps> = (props) => {
         <div>
           历史版本
           <div className={s.title}>{oldUpdateTime != null && moment(oldUpdateTime).format("YYYY-MM-DD HH:mm:ss")}</div>
-          {projectStore.isClosed == false && (
+          {projectStore.isClosed == false && (entryStore.curEntry?.can_update ?? false) == true && (
             <div
               className={s.btn}
               onClick={(e) => {

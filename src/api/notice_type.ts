@@ -103,47 +103,6 @@ export namespace project {
 }
 
 export namespace project_doc {
-  export type NewDocSpaceNotice = {
-    project_id: string;
-    doc_space_id: string;
-  };
-  export type UpdateDocSpaceNotice = {
-    project_id: string;
-    doc_space_id: string;
-  };
-  export type RemoveDocSpaceNotice = {
-    project_id: string;
-    doc_space_id: string;
-  };
-  export type NewDocNotice = {
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-  };
-  export type UpdateDocNotice = {
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-  };
-
-  export type RemoveDocNotice = {
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-  }
-
-  export type RecoverDocInRecycleNotice = {
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-  };
-
-  export type RemoveDocInRecycleNotice = {
-    project_id: string;
-    doc_space_id: string;
-    doc_id: string;
-  };
-
   export type LinkSpritNotice = {
     project_id: string;
     doc_id: string;
@@ -155,19 +114,6 @@ export namespace project_doc {
     doc_id: string;
     sprit_id: string;
   };
-
-  export type AllNotice = {
-    NewDocSpaceNotice?: NewDocSpaceNotice;
-    UpdateDocSpaceNotice?: UpdateDocSpaceNotice;
-    RemoveDocSpaceNotice?: RemoveDocSpaceNotice;
-    NewDocNotice?: NewDocNotice;
-    UpdateDocNotice?: UpdateDocNotice;
-    RemoveDocNotice?: RemoveDocNotice;
-    RecoverDocInRecycleNotice?: RecoverDocInRecycleNotice;
-    RemoveDocInRecycleNotice?: RemoveDocInRecycleNotice;
-    LinkSpritNotice?: LinkSpritNotice;
-    CancelLinkSpritNotice?: CancelLinkSpritNotice;
-  }
 }
 
 export namespace issue {
@@ -291,7 +237,6 @@ export namespace idea {
 
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
-  ProjectDocNotice?: project_doc.AllNotice;
   IssueNotice?: issue.AllNotice;
   AppraiseNotice?: appraise.AllNotice;
   ClientNotice?: client.AllNotice;

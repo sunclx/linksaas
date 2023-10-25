@@ -12,12 +12,12 @@ import s from './SubscribeList.module.less';
 import moment from 'moment';
 import { Card, Checkbox, Form, Modal, message } from "antd";
 import {
-    codeEvOptionList, docEvOptionList, extEvOptionList,
-    genCodeEvCfgValues, genDocEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
+    codeEvOptionList, extEvOptionList,
+    genCodeEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues,
-    genSpritEvCfgValues, giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList, spritEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
-    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genCiCdEvCfgValues, ciCdEvOptionList
+     giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
+    requirementEvOptionList,  ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
+    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genCiCdEvCfgValues, ciCdEvOptionList, genEntryEvCfgValues, entryEvOptionList
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
@@ -137,8 +137,8 @@ const SubscribeList = () => {
                                         <Form.Item label="项目事件">
                                             <Checkbox.Group options={projectEvOptionList} value={genProjectEvCfgValues(item.event_cfg.project_ev_cfg)} disabled={true} />
                                         </Form.Item>
-                                        <Form.Item label="文档事件">
-                                            <Checkbox.Group options={docEvOptionList} value={genDocEvCfgValues(item.event_cfg.doc_ev_cfg)} disabled={true} />
+                                        <Form.Item label="内容事件">
+                                            <Checkbox.Group options={entryEvOptionList} value={genEntryEvCfgValues(item.event_cfg.entry_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="第三方接入事件">
                                             <Checkbox.Group options={extEvOptionList} value={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />
@@ -160,9 +160,6 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="工单事件">
                                             <Checkbox.Group options={issueEvOptionList} value={genIssueEvCfgValues(item.event_cfg.issue_ev_cfg)} disabled={true} />
-                                        </Form.Item>
-                                        <Form.Item label="工作计划事件">
-                                            <Checkbox.Group options={spritEvOptionList} value={genSpritEvCfgValues(item.event_cfg.sprit_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="代码事件">
                                             <Checkbox.Group options={codeEvOptionList} value={genCodeEvCfgValues(item.event_cfg.code_ev_cfg)} disabled={true} />

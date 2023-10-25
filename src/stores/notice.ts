@@ -13,7 +13,7 @@ import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get as get_issue } from '@/api/project_issue';
-import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_OVERVIEW_PATH, USER_LOGIN_PATH } from '@/utils/constant';
+import { APP_PROJECT_HOME_PATH, USER_LOGIN_PATH } from '@/utils/constant';
 import { message } from 'antd';
 
 
@@ -48,8 +48,6 @@ class NoticeStore {
         console.log("notice", notice);
         if (notice.ProjectNotice !== undefined) {
           this.processProjectNotice(notice.ProjectNotice);
-        } else if (notice.ProjectDocNotice !== undefined) {
-          this.processProjectDocNotice(notice.ProjectDocNotice);
         } else if (notice.IssueNotice !== undefined) {
           this.processIssueNotice(notice.IssueNotice);
         } else if (notice.AppraiseNotice !== undefined) {
@@ -90,48 +88,6 @@ class NoticeStore {
       this.unlistenShortNoteFn = unlistenShortNoteFn;
     });
 
-  }
-
-  private async processProjectDocNotice(notice: NoticeType.project_doc.AllNotice) {
-    if (notice.NewDocSpaceNotice !== undefined) {
-      if (notice.NewDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.docSpaceStore.updateDocSpace(notice.NewDocSpaceNotice.doc_space_id);
-      }
-    } else if (notice.UpdateDocSpaceNotice !== undefined) {
-      if (notice.UpdateDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.docSpaceStore.updateDocSpace(notice.UpdateDocSpaceNotice.doc_space_id);
-      }
-    } else if (notice.RemoveDocSpaceNotice !== undefined) {
-      if (notice.RemoveDocSpaceNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.docSpaceStore.removeDocSpace(notice.RemoveDocSpaceNotice.doc_space_id);
-      }
-    } else if (notice.NewDocNotice !== undefined) {
-      //skip
-    } else if (notice.UpdateDocNotice !== undefined) {
-      if (notice.UpdateDocNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if (notice.UpdateDocNotice.doc_id == this.rootStore.docSpaceStore.curDocId) {
-          this.rootStore.docSpaceStore.updateCurDoc();
-        }
-      }
-    } else if (notice.RemoveDocNotice !== undefined) {
-      //skip
-    } else if (notice.RecoverDocInRecycleNotice !== undefined) {
-      //skip
-    } else if (notice.RemoveDocInRecycleNotice !== undefined) {
-      //skip
-    } else if (notice.LinkSpritNotice !== undefined) {
-      if (notice.LinkSpritNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.spritStore.curSpritId == notice.LinkSpritNotice.sprit_id) {
-          await this.rootStore.spritStore.onLinkDoc(notice.LinkSpritNotice.doc_id);
-        }
-      }
-    } else if (notice.CancelLinkSpritNotice !== undefined) {
-      if (notice.CancelLinkSpritNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.spritStore.curSpritId == notice.CancelLinkSpritNotice.sprit_id) {
-          this.rootStore.spritStore.onCancelLinkDoc(notice.CancelLinkSpritNotice.doc_id);
-        }
-      }
-    }
   }
 
   private processAppraiseNotice(notice: NoticeType.appraise.AllNotice) {
@@ -199,27 +155,17 @@ class NoticeStore {
       }, 200);
       const projectId = notice.GitPostHookNotice.project_id;
       if (projectId != this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.docSpaceStore.inEdit) {
-          this.rootStore.docSpaceStore.showCheckLeave(() => {
+        if (this.rootStore.docStore.inEdit) {
+          this.rootStore.docStore.showCheckLeave(() => {
             this.rootStore.projectStore.setCurProjectId(projectId).then(() => {
               this.rootStore.projectStore.showPostHookModal = true;
-              //TODO work plan
-              if (this.rootStore.projectStore.curProject?.setting.disable_kb == false) {
-                this.history.push(APP_PROJECT_KB_DOC_PATH);
-              } else {
-                this.history.push(APP_PROJECT_OVERVIEW_PATH);
-              }
+              this.history.push(APP_PROJECT_HOME_PATH);
             });
           });
         } else {
           await this.rootStore.projectStore.setCurProjectId(projectId);
           this.rootStore.projectStore.showPostHookModal = true;
-          //TODO work plan
-          if (this.rootStore.projectStore.curProject?.setting.disable_kb == false) {
-            this.history.push(APP_PROJECT_KB_DOC_PATH);
-          } else {
-            this.history.push(APP_PROJECT_OVERVIEW_PATH);
-          }
+          this.history.push(APP_PROJECT_HOME_PATH);
         }
       } else {
         this.rootStore.projectStore.showPostHookModal = true;
@@ -286,13 +232,13 @@ class NoticeStore {
     } else if (notice.RemoveBulletinNotice !== undefined) {
       this.rootStore.projectStore.incBulletinVersion(notice.RemoveBulletinNotice.project_id);
     } else if (notice.AddTagNotice !== undefined) {
-      this.rootStore.projectStore.incTagVersion(notice.AddTagNotice.project_id);
+      this.rootStore.projectStore.updateTagList(notice.AddTagNotice.project_id);
     } else if (notice.UpdateTagNotice !== undefined) {
-      this.rootStore.projectStore.incTagVersion(notice.UpdateTagNotice.project_id);
+      this.rootStore.projectStore.updateTagList(notice.UpdateTagNotice.project_id);
     } else if (notice.RemoveTagNotice !== undefined) {
-      this.rootStore.projectStore.incTagVersion(notice.RemoveTagNotice.project_id);
+      this.rootStore.projectStore.updateTagList(notice.RemoveTagNotice.project_id);
     } else if (notice.UpdateSpritNotice !== undefined) {
-      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == this.rootStore.spritStore.curSpritId) {
+      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == (this.rootStore.entryStore.curEntry?.entry_id??"")) {
         this.rootStore.spritStore.incCurSpritVersion();
       }
     }
@@ -385,10 +331,10 @@ class NoticeStore {
         }
       }
     } else if (notice.SetSpritNotice !== undefined) {
-      if (this.rootStore.spritStore.curSpritId == notice.SetSpritNotice.old_sprit_id) {
+      if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.old_sprit_id) {
         await this.rootStore.spritStore.removeIssue(notice.SetSpritNotice.issue_id);
       }
-      if (this.rootStore.spritStore.curSpritId != "" && this.rootStore.spritStore.curSpritId == notice.SetSpritNotice.new_sprit_id) {
+      if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.new_sprit_id) {
         await this.rootStore.spritStore.onNewIssue(notice.SetSpritNotice.issue_id);
       }
     }
@@ -425,11 +371,9 @@ class NoticeStore {
       }
     } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
-        this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.extraTargetValue, ev.targetId), this.history);
-      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
-        await this.rootStore.linkAuxStore.goToCreateDoc("", ev.projectId, ev.targetId, this.history);
+        this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.targetId), this.history);
       }
-    } 
+    }
     await appWindow.show();
     await appWindow.unminimize();
     await appWindow.setAlwaysOnTop(true);

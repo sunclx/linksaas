@@ -6,8 +6,6 @@ import type { IssueInfo } from '@/api/project_issue';
 import { ISSUE_STATE_CHECK, ISSUE_STATE_CLOSE, ISSUE_STATE_PLAN, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK } from '@/api/project_issue';
 import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC } from '@/api/project_issue';
 import { list as list_issue } from '@/api/project_issue';
-import type { SpritInfo } from '@/api/project_sprit';
-import { list as list_sprit, get as get_sprit } from '@/api/project_sprit';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
 import { Card, Select, Table, Tag, message } from 'antd';
@@ -19,6 +17,8 @@ import Button from '@/components/Button';
 import { LinkOutlined, SyncOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { LinkBugInfo, LinkSpritInfo, LinkTaskInfo } from '@/stores/linkAux';
+import type { EntryInfo } from "@/api/project_entry"
+import { list as list_entry, get as get_entry, ENTRY_TYPE_SPRIT } from "@/api/project_entry"
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
 
@@ -123,11 +123,28 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
 
     const [curSpritId, setCurSpritId] = useState(data.spritId);
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
-    const [spritList, setSpritList] = useState<SpritInfo[]>([]);
+    const [entryList, setEntryList] = useState<EntryInfo[]>([]);
 
     const loadSpritInfo = async () => {
-        const res = await request(list_sprit(userStore.sessionId, projectStore.curProjectId, 0, 999));
-        setSpritList(res.info_list);
+        const res = await request(list_entry({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            list_param: {
+                filter_by_watch: false,
+                watch: false,
+                filter_by_tag_id: false,
+                tag_id_list: [],
+                filter_by_keyword: false,
+                keyword: "",
+                filter_by_mark_remove: true,
+                mark_remove: false,
+                filter_by_entry_type: true,
+                entry_type_list: [ENTRY_TYPE_SPRIT],
+            },
+            offset: 0,
+            limit: 99,
+        }));
+        setEntryList(res.entry_list);
     };
 
     const loadIssue = async () => {
@@ -240,7 +257,7 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
                             };
                             props.writeData(saveData);
                         }}>
-                        {spritList.map(sprit => (<Select.Option key={sprit.sprit_id} value={sprit.sprit_id}>{sprit.basic_info.title}</Select.Option>))}
+                        {entryList.map(entry => (<Select.Option key={entry.entry_id} value={entry.entry_id}>{entry.entry_title}</Select.Option>))}
                     </Select>
                 }>
                     <Table
@@ -265,12 +282,16 @@ const ViewSpritRef: React.FC<WidgetProps> = (props) => {
     const history = useHistory();
 
     const [issueList, setIssueList] = useState<IssueInfo[]>([]);
-    const [spritInfo, setSprintInfo] = useState<SpritInfo | null>(null);
+    const [entryInfo, setEntryInfo] = useState<EntryInfo | null>(null);
     const [loading, setLoading] = useState(false);
 
     const loadSpritInfo = async () => {
-        const res = await request(get_sprit(userStore.sessionId, projectStore.curProjectId, data.spritId));
-        setSprintInfo(res.info);
+        const res = await request(get_entry({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            entry_id: data.spritId,
+        }));
+        setEntryInfo(res.entry);
     };
 
     const loadIssue = async () => {
@@ -387,6 +408,7 @@ const ViewSpritRef: React.FC<WidgetProps> = (props) => {
     useEffect(() => {
         loadData();
     }, []);
+
     return (
         <ErrorBoundary>
             <EditorWrap>
@@ -402,24 +424,24 @@ const ViewSpritRef: React.FC<WidgetProps> = (props) => {
                         &nbsp;&nbsp;刷新
                     </Button>
                 </div>
-                {spritInfo != null && (
+                {entryInfo != null && (
                     <div className={s.sprit_info_wrap}>
                         <div className={s.sprit_info}>
                             <div className={s.label}>工作计划名称:</div>
                             <div><a onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                linkAuxStore.goToLink(new LinkSpritInfo("", spritInfo.project_id, spritInfo.sprit_id), history);
-                            }}><LinkOutlined />{spritInfo.basic_info.title}</a></div>
+                                linkAuxStore.goToLink(new LinkSpritInfo("", projectStore.curProjectId, entryInfo.entry_id), history);
+                            }}><LinkOutlined />{entryInfo.entry_title}</a></div>
                         </div>
                         <div className={s.sprit_info}>
                             <div className={s.label}>时间区间:</div>
-                            <div>{moment(spritInfo.basic_info.start_time).format("YYYY-MM-DD")}&nbsp;至&nbsp;{moment(spritInfo.basic_info.end_time).format("YYYY-MM-DD")}</div>
+                            <div>{moment(entryInfo.extra_info.ExtraSpritInfo?.start_time ?? 0).format("YYYY-MM-DD")}&nbsp;至&nbsp;{moment(entryInfo.extra_info.ExtraSpritInfo?.end_time ?? 0).format("YYYY-MM-DD")}</div>
                         </div>
-                        {spritInfo.basic_info.non_work_day_list.length > 0 && (
+                        {(entryInfo.extra_info.ExtraSpritInfo?.non_work_day_list ?? []).length > 0 && (
                             <div className={s.sprit_info}>
                                 <div className={s.label}>非工作日:</div>
-                                <div>{spritInfo.basic_info.non_work_day_list.map(item => (
+                                <div>{(entryInfo.extra_info.ExtraSpritInfo?.non_work_day_list ?? []).map(item => (
                                     <Tag key={item} style={{ marginRight: "10px" }}>{moment(item).format("YYYY-MM-DD")}</Tag>
                                 ))}</div>
                             </div>

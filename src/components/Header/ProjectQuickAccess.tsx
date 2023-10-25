@@ -6,24 +6,21 @@ import type { MenuProps } from 'antd';
 import { useStores } from "@/hooks";
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { LinkIdeaPageInfo } from "@/stores/linkAux";
 import { get_port } from "@/api/local_api";
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
 import { request } from "@/utils/request";
 import { update_setting } from '@/api/project';
+import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
+import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT } from "@/api/project_entry";
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
 const MENU_KEY_MEMBER_PREFIX = "member:";
-const MENU_KEY_WORK_PLAN = "workPlan";
-const MENU_KEY_KB_DOC_SPACE = "kb.docSpace";
-const MENU_KEY_KB_DOC_RECYCLE = "kb.docRecycle";
-const MENU_KEY_CREATE_DOC = "create.doc";
 const MENU_KEY_SHOW_TOOL_BAR_IDEA = "toolbar.idea.show"
 const MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT = "toolbar.requirement.show";
-const MENU_KEY_CREATE_REQUIRE_MENT = "crate.requirement";
+const MENU_KEY_CREATE_REQUIRE_MENT = "create.requirement";
 const MENU_KEY_SHOW_TOOL_BAR_TASK_MY = "toolbar.task.my.show";
 const MENU_KEY_SHOW_TOOL_BAR_TASK_ALL = "toolbar.task.all.show";
 const MENU_KEY_CREATE_TASK = "create.task";
@@ -37,10 +34,7 @@ const MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT = "toolbar.codeComment.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
 const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
-
 const MENU_KEY_LAYOUT_PREFIX = "layout.";
-const MENU_KEY_LAYOUT_MAIN_WORK_PLAN = "layout.main.workplan";
-const MENU_KEY_LAYOUT_MAIN_KB = "layout.main.kb";
 const MENU_KEY_LAYOUT_TOOLBAR_APPRAISE = "layout.toolbar.appraise";
 const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
 const MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO = "layout.toolbar.dataanno";
@@ -52,15 +46,20 @@ const MENU_KEY_LAYOUT_MYWORK_WATCH_TASK = "layout.mywork.watchtask";
 const MENU_KEY_LAYOUT_MYWORK_WATCH_BUG = "layout.mywork.watchbug";
 const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 
+const MENU_KEY_SHOW_PROJECT_OVERVIEW = "project.overview.show";
+const MENU_KEY_SHOW_MY_WORK = "project.mywork.show";
+const MENU_KEY_SHOW_HOME = "project.home.show";
+const MENU_KEY_ENTRY_CREATE_SPRIT = "project.entry.sprit.create";
+const MENU_KEY_ENTRY_CREATE_DOC = "project.entry.doc.create";
+
 
 const ProjectQuickAccess = () => {
     const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
     const linkAuxStore = useStores('linkAuxStore');
     const projectStore = useStores('projectStore');
-    const docSpaceStore = useStores('docSpaceStore');
     const appStore = useStores('appStore');
-    const spritStore = useStores('spritStore');
+    const entryStore = useStores('entryStore');
 
     const history = useHistory();
 
@@ -71,20 +70,6 @@ const ProjectQuickAccess = () => {
             key: "layout",
             label: "布局设置",
             children: [
-                {
-                    key: "layout.main",
-                    label: "主面板",
-                    children: [
-                        {
-                            key: MENU_KEY_LAYOUT_MAIN_WORK_PLAN,
-                            label: `${projectStore.curProject?.setting.disable_work_plan == true ? "打开" : "关闭"}工作计划`
-                        },
-                        {
-                            key: MENU_KEY_LAYOUT_MAIN_KB,
-                            label: `${projectStore.curProject?.setting.disable_kb == true ? "打开" : "关闭"}知识库`
-                        },
-                    ],
-                },
                 {
                     key: "layout.toolbar",
                     label: "右侧工具栏",
@@ -153,7 +138,7 @@ const ProjectQuickAccess = () => {
         if (projectStore.isAdmin) {
             tmpItems.push(calcLayoutItems());
         }
-        const memberItem = {
+        const memberItem: ItemType = {
             key: "member",
             label: "成员",
             children: [
@@ -176,48 +161,49 @@ const ProjectQuickAccess = () => {
             memberItem.children.push({
                 key: MENU_KEY_SHOW_TOOL_BAR_APPRAISE,
                 label: "查看成员互评",
-                children: [],
             });
         }
         tmpItems.push(memberItem);
-        if (!projectStore.curProject?.setting.disable_work_plan) {
-            tmpItems.push({
-                key: MENU_KEY_WORK_PLAN,
-                label: "工作计划",
-            });
-        }
-        if (!projectStore.curProject?.setting.disable_kb) {
-            tmpItems.push({
-                key: "kb",
-                label: "知识库",
-                children: [
-                    {
-                        key: "doc",
-                        label: "文档",
-                        children: [
-                            {
-                                key: MENU_KEY_KB_DOC_SPACE,
-                                label: "列出文档",
-                            },
-                            {
-                                key: MENU_KEY_KB_DOC_RECYCLE,
-                                label: "查看回收站"
-                            },
-                            {
-                                key: MENU_KEY_CREATE_DOC,
-                                label: "创建文档",
-                            },
-                        ],
-                    },
-                ],
-            });
-        }
-        if (projectStore.curProject?.setting.disable_kb != true) {
-            tmpItems.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_IDEA,
-                label: "项目知识点",
-            });
-        }
+
+        tmpItems.push({
+            key: "sysPanel",
+            label: "系统面板",
+            children: [
+                {
+                    key: MENU_KEY_SHOW_HOME,
+                    label: "查看所有面板",
+                },
+                {
+                    key: MENU_KEY_SHOW_MY_WORK,
+                    label: "我的工作",
+                },
+                {
+                    key: MENU_KEY_SHOW_PROJECT_OVERVIEW,
+                    label: "项目概览"
+                }
+            ],
+        });
+
+        tmpItems.push({
+            key: "contentEntry",
+            label: "内容入口",
+            children: [
+                {
+                    key: MENU_KEY_ENTRY_CREATE_SPRIT,
+                    label: "创建工作计划",
+                },
+                {
+                    key: MENU_KEY_ENTRY_CREATE_DOC,
+                    label: "创建文档",
+                }
+            ],
+        });
+
+        tmpItems.push({
+            key: MENU_KEY_SHOW_TOOL_BAR_IDEA,
+            label: "项目知识点",
+        });
+
         tmpItems.push({
             key: "requirement",
             label: "项目需求",
@@ -350,11 +336,7 @@ const ProjectQuickAccess = () => {
             return;
         }
         const newSetting = { ...projectStore.curProject.setting };
-        if (key == MENU_KEY_LAYOUT_MAIN_WORK_PLAN) {
-            newSetting.disable_work_plan = !projectStore.curProject.setting.disable_work_plan;
-        } else if (key == MENU_KEY_LAYOUT_MAIN_KB) {
-            newSetting.disable_kb = !projectStore.curProject.setting.disable_kb;
-        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_APPRAISE) {
+        if (key == MENU_KEY_LAYOUT_TOOLBAR_APPRAISE) {
             newSetting.disable_member_appraise = !projectStore.curProject.setting.disable_member_appraise;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION) {
             newSetting.disable_api_collection = !projectStore.curProject.setting.disable_api_collection;
@@ -391,27 +373,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_APPRAISE:
                 linkAuxStore.goToAppriaseList(history);
-                break;
-            case MENU_KEY_WORK_PLAN:
-                spritStore.setCurSpritId("");
-                history.push(APP_PROJECT_WORK_PLAN_PATH);
-                break;
-            case MENU_KEY_KB_DOC_SPACE:
-                history.push(APP_PROJECT_KB_DOC_PATH);
-                if (appStore.simpleMode) {
-                    appStore.simpleMode = false;
-                }
-                docSpaceStore.showDocList("", false);
-                break;
-            case MENU_KEY_KB_DOC_RECYCLE:
-                history.push(APP_PROJECT_KB_DOC_PATH);
-                if (appStore.simpleMode) {
-                    appStore.simpleMode = false;
-                }
-                docSpaceStore.showDocList("", true);
-                break;
-            case MENU_KEY_CREATE_DOC:
-                linkAuxStore.goToCreateDoc("", projectStore.curProjectId, projectStore.curProject?.default_doc_space_id ?? "", history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_IDEA:
                 linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);
@@ -469,14 +430,31 @@ const ProjectQuickAccess = () => {
             case MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO:
                 linkAuxStore.goToDataAnnoList(history);
                 break;
+            case MENU_KEY_SHOW_PROJECT_OVERVIEW:
+                memberStore.showDetailMemberId = "";
+                history.push(APP_PROJECT_OVERVIEW_PATH);
+                break;
+            case MENU_KEY_SHOW_MY_WORK:
+                history.push(APP_PROJECT_MY_WORK_PATH);
+                break;
+            case MENU_KEY_SHOW_HOME:
+                history.push(APP_PROJECT_HOME_PATH);
+                break;
+            case MENU_KEY_ENTRY_CREATE_SPRIT:
+                entryStore.createEntryType = ENTRY_TYPE_SPRIT;
+                break;
+            case MENU_KEY_ENTRY_CREATE_DOC:
+                entryStore.createEntryType = ENTRY_TYPE_DOC;
+                break;
             default:
                 if (info.key.startsWith(MENU_KEY_LAYOUT_PREFIX)) {
                     adjustLayout(info.key);
                 }
         }
         if (info.key.startsWith(MENU_KEY_MEMBER_PREFIX)) {
-            // const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
-            // memberStore.floatMemberUserId = memberUserId;
+            const memberUserId = info.key.substring(MENU_KEY_MEMBER_PREFIX.length);
+            memberStore.showDetailMemberId = memberUserId;
+            history.push(APP_PROJECT_OVERVIEW_PATH);
         }
     }
 
@@ -486,7 +464,7 @@ const ProjectQuickAccess = () => {
 
     return (
         <Dropdown overlayStyle={{ minWidth: "100px" }} menu={{ items, subMenuCloseDelay: 0.05, onClick: (info: MenuInfo) => onMenuClick(info) }} trigger={["click"]} >
-            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 20px", color: "orange", fontSize: "18px" }} title="项目快捷菜单">
+            <a onClick={(e) => e.preventDefault()} style={{ margin: "0px 10px", color: "orange", fontSize: "18px" }} title="项目快捷菜单">
                 <MenuOutlined />
             </a>
         </Dropdown >

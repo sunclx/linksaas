@@ -3,17 +3,16 @@ import cls from './index.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Badge } from "antd";
-import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH, } from "@/utils/constant";
+import { APP_PROJECT_HOME_PATH } from "@/utils/constant";
 import { FolderFilled } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
-import ProjectWatch from "./ProjectWatch";
 
 const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
 
     const history = useHistory();
     const projectStore = useStores('projectStore');
-    const docSpaceStore = useStores('docSpaceStore');
+    const docStore = useStores('docStore');
 
     return (
         <div className={cls.project_child_wrap}>
@@ -25,35 +24,18 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                 <span className={cls.name} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    if (docSpaceStore.inEdit) {
-                        docSpaceStore.showCheckLeave(() => {
+                    if (docStore.inEdit) {
+                        docStore.showCheckLeave(() => {
                             projectStore.setCurProjectId(item.project_id).then(() => {
-                                if (!item.setting.disable_work_plan) {
-                                    history.push(APP_PROJECT_WORK_PLAN_PATH);
-                                } else if (!item.setting.disable_kb) {
-                                    history.push(APP_PROJECT_KB_DOC_PATH);
-                                } else if (item.setting.disable_kb && item.setting.disable_work_plan) {
-                                    history.push(APP_PROJECT_MY_WORK_PATH);
-                                }
+                                history.push(APP_PROJECT_HOME_PATH);
                             });
                         });
                         return;
                     }
                     projectStore.setCurProjectId(item.project_id).then(() => {
-                        if (!item.setting.disable_work_plan) {
-                            history.push(APP_PROJECT_WORK_PLAN_PATH);
-                        } else if (!item.setting.disable_kb) {
-                            history.push(APP_PROJECT_KB_DOC_PATH);
-                        } else if (item.setting.disable_kb && item.setting.disable_work_plan) {
-                            history.push(APP_PROJECT_MY_WORK_PATH);
-                        }
+                        history.push(APP_PROJECT_HOME_PATH);
                     });
                 }}><FolderFilled style={{ color: item.project_id == projectStore.curProjectId ? "white" : "inherit" }} />&nbsp;{item.basic_info.project_name} </span>
-                {item.project_id == projectStore.curProjectId && (
-                    <div>
-                        <ProjectWatch />
-                    </div>
-                )}
             </div>
         </div>
     );

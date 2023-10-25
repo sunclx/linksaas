@@ -17,6 +17,8 @@ const AddIssueModal = (props: AddIssueModalProps) => {
     const projectStore = useStores('projectStore');
     const memberStore = useStores('memberStore');
     const spritStore = useStores('spritStore');
+    const entryStore = useStores('entryStore');
+
 
     const [issueType, setIssueType] = useState<ISSUE_TYPE>(ISSUE_TYPE_TASK);
     const [title, setTitle] = useState("");
@@ -51,7 +53,7 @@ const AddIssueModal = (props: AddIssueModalProps) => {
         if (checkUserId != "") {
             await request(assign_check_user(userStore.sessionId, projectStore.curProjectId, createRes.issue_id, checkUserId));
         }
-        await request(link_sprit(userStore.sessionId, projectStore.curProjectId, createRes.issue_id, spritStore.curSpritId));
+        await request(link_sprit(userStore.sessionId, projectStore.curProjectId, createRes.issue_id, entryStore.curEntry?.entry_id ?? ""));
         const listRes = await request(list_by_id({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,

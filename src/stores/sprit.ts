@@ -4,8 +4,6 @@ import type { IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import { SORT_KEY_UPDATE_TIME, SORT_TYPE_DSC } from '@/api/project_issue';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, list as list_issue, get as get_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
-import type { SpritDocInfo } from '@/api/project_sprit';
-import { list_link_doc, get_link_doc } from '@/api/project_sprit';
 
 export default class SpritStore {
     constructor(rootStore: RootStore) {
@@ -14,15 +12,9 @@ export default class SpritStore {
     }
     rootStore: RootStore;
 
-    private _curSpritId: string = "";
     private _curSpritVersion: number = 0;
     private _taskList: IssueInfo[] = [];
     private _bugList: IssueInfo[] = [];
-    private _spritDocList: SpritDocInfo[] = [];
-
-    get curSpritId(): string {
-        return this._curSpritId;
-    }
 
     get taskList(): IssueInfo[] {
         return this._taskList;
@@ -30,10 +22,6 @@ export default class SpritStore {
 
     get bugList(): IssueInfo[] {
         return this._bugList;
-    }
-
-    get spritDocList(): SpritDocInfo[] {
-        return this._spritDocList;
     }
 
     get curSpritVersion(): number {
@@ -46,33 +34,20 @@ export default class SpritStore {
         });
     }
 
-    async setCurSpritId(val: string) {
-        if (val == this._curSpritId) {
-            return;
-        }
+    async loadCurSprit() {
         runInAction(() => {
             this._curSpritVersion = 0;
             this._taskList = [];
             this._bugList = [];
         });
-        if (val != "") {
-            await this.loadIssue(val, ISSUE_TYPE_TASK);
-            await this.loadIssue(val, ISSUE_TYPE_BUG);
-            await this.loadSpritDoc(val);
+        await this.loadIssue(ISSUE_TYPE_TASK);
+        await this.loadIssue(ISSUE_TYPE_BUG);
+    }
+
+    private async loadIssue(issueType: ISSUE_TYPE) {
+        if (this.rootStore.entryStore.curEntry == null) {
+            return;
         }
-        runInAction(() => {
-            this._curSpritId = val;
-        });
-    }
-
-    private async loadSpritDoc(spritId: string) {
-        const res = await request(list_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, spritId));
-        runInAction(() => {
-            this._spritDocList = res.info_list;
-        });
-    }
-
-    private async loadIssue(spritId: string, issueType: ISSUE_TYPE) {
         const res = await request(list_issue({
             session_id: this.rootStore.userStore.sessionId,
             project_id: this.rootStore.projectStore.curProjectId,
@@ -87,7 +62,7 @@ export default class SpritStore {
                 assgin_user_id_list: [],
                 assgin_user_type: 0,
                 filter_by_sprit_id: true,
-                sprit_id_list: [spritId],
+                sprit_id_list: [this.rootStore.entryStore.curEntry.entry_id],
                 filter_by_create_time: false,
                 from_create_time: 0,
                 to_create_time: 0,
@@ -203,26 +178,6 @@ export default class SpritStore {
         });
     }
 
-    async onLinkDoc(docId: string) {
-        const res = await request(get_link_doc(this.rootStore.userStore.sessionId, this.rootStore.projectStore.curProjectId, this._curSpritId, docId));
-        const tmpList = this._spritDocList.slice();
-        const index = tmpList.findIndex(item => item.doc_id == docId);
-        if (index != -1) {
-            tmpList[index] = res.info;
-        } else {
-            tmpList.unshift(res.info);
-        }
-        runInAction(() => {
-            this._spritDocList = tmpList;
-        });
-    }
-
-    onCancelLinkDoc(docId: string) {
-        const tmpList = this._spritDocList.filter(item => item.doc_id != docId);
-        runInAction(() => {
-            this._spritDocList = tmpList;
-        });
-    }
 
     get allTimeReady(): boolean {
         if (this._bugList.length == 0 && this._taskList.length == 0) {
@@ -251,17 +206,5 @@ export default class SpritStore {
             }
         }
         return true;
-    }
-
-    //创建工作计划标记
-    private _showCreateSprit = false;
-
-    get showCreateSprit(): boolean {
-        return this._showCreateSprit;
-    }
-    set showCreateSprit(val: boolean) {
-        runInAction(() => {
-            this._showCreateSprit = val;
-        });
     }
 }

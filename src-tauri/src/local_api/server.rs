@@ -2,6 +2,7 @@ use crate::notice_decode::new_git_post_hook_notice;
 use async_trait::async_trait;
 use local_api_rust::server::MakeService;
 use proto_gen_rust::events_api::{EventRefType, EventType};
+use proto_gen_rust::project_entry_api::EntryType;
 use proto_gen_rust::project_issue_api::IssueType;
 use serde_json::json;
 use std::marker::PhantomData;
@@ -69,19 +70,17 @@ pub struct Server<C> {
 }
 
 use local_api_rust::models::{
-    DocSpaceInfo, ErrInfo, IssueInfo, ProjectProjectIdBugAllGet200Response,
+    ErrInfo, IssueInfo, ProjectProjectIdBugAllGet200Response,
     ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
-    ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
-    ProjectProjectIdDocSpaceDocSpaceIdGet200Response, ProjectProjectIdEventGet200Response,
-    ProjectProjectIdTaskAllGet200Response, ProjectProjectIdTaskRecordTaskIdDependGet200Response,
+    ProjectProjectIdCodeCommentCommentThreadIdPutRequest, ProjectProjectIdDocGet200Response,
+    ProjectProjectIdEventGet200Response, ProjectProjectIdTaskAllGet200Response,
+    ProjectProjectIdTaskRecordTaskIdDependGet200Response,
 };
 use local_api_rust::{
     Api, HelloGetResponse, ProjectGetResponse, ProjectProjectIdBugAllGetResponse,
     ProjectProjectIdBugMyGetResponse, ProjectProjectIdBugRecordBugIdEventsGetResponse,
     ProjectProjectIdBugRecordBugIdShortNoteGetResponse,
-    ProjectProjectIdBugRecordBugIdShowGetResponse, ProjectProjectIdChannelMsgChannelIdGetResponse,
-    ProjectProjectIdChannelMyGetResponse, ProjectProjectIdChannelNotJoinGetResponse,
-    ProjectProjectIdChannelOrphanGetResponse,
+    ProjectProjectIdBugRecordBugIdShowGetResponse,
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdDeleteResponse,
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdGetResponse,
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdOptionsResponse,
@@ -89,9 +88,8 @@ use local_api_rust::{
     ProjectProjectIdCodeCommentCommentThreadIdGetResponse,
     ProjectProjectIdCodeCommentCommentThreadIdOptionsResponse,
     ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ProjectProjectIdCreateBugGetResponse,
-    ProjectProjectIdCreateDocDocSpaceIdGetResponse, ProjectProjectIdCreateTaskGetResponse,
-    ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse,
-    ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ProjectProjectIdDocSpaceGetResponse,
+    ProjectProjectIdCreateDocGetResponse, ProjectProjectIdCreateTaskGetResponse,
+    ProjectProjectIdDocDocIdShowGetResponse, ProjectProjectIdDocGetResponse,
     ProjectProjectIdEventGetResponse, ProjectProjectIdEventOptionsResponse,
     ProjectProjectIdEventPostResponse, ProjectProjectIdMemberGetResponse,
     ProjectProjectIdMemberMemberUserIdShowGetResponse, ProjectProjectIdTaskAllGetResponse,
@@ -99,7 +97,7 @@ use local_api_rust::{
     ProjectProjectIdTaskRecordTaskIdEventsGetResponse,
     ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse,
     ProjectProjectIdTaskRecordTaskIdShowGetResponse,
-    ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse,  ProjectProjectIdToolsPostHookGetResponse,
+    ProjectProjectIdTaskRecordTaskIdSubTaskGetResponse, ProjectProjectIdToolsPostHookGetResponse,
     ShowGetResponse,
 };
 use swagger::ApiError;
@@ -260,24 +258,21 @@ where
         });
     }
 
-    /// 文档列表
-    async fn project_project_id_doc_space_doc_space_id_doc_id_show_get(
+    /// 查看文档
+    async fn project_project_id_doc_doc_id_show_get(
         &self,
         project_id: String,
-        _doc_space_id: String,
         doc_id: String,
         _context: &C,
-    ) -> Result<ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse, ApiError> {
+    ) -> Result<ProjectProjectIdDocDocIdShowGetResponse, ApiError> {
         let win = self.app.get_window("main");
         if win.is_none() {
-            return Ok(
-                ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("无法找到主窗口".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
+            return Ok(ProjectProjectIdDocDocIdShowGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("无法找到主窗口".into()),
                 },
-            );
+                access_control_allow_origin: Some("*".into()),
+            });
         }
         let win = win.unwrap();
         if let Err(_) = win.emit(
@@ -290,42 +285,30 @@ where
                 extra_target_value: "".into(),
             },
         ) {
-            return Ok(
-                ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("发送消息失败".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
+            return Ok(ProjectProjectIdDocDocIdShowGetResponse::Status500 {
+                body: ErrInfo {
+                    err_msg: Some("发送消息失败".into()),
                 },
-            );
-        }
-        return Ok(
-            ProjectProjectIdDocSpaceDocSpaceIdDocIdShowGetResponse::Status200 {
-                body: json!({}),
                 access_control_allow_origin: Some("*".into()),
-            },
-        );
+            });
+        }
+        return Ok(ProjectProjectIdDocDocIdShowGetResponse::Status200 {
+            body: json!({}),
+            access_control_allow_origin: Some("*".into()),
+        });
     }
 
     /// 文档列表
-    async fn project_project_id_doc_space_doc_space_id_get(
+    async fn project_project_id_doc_get(
         &self,
         project_id: String,
-        doc_space_id: String,
         offset: i32,
         limit: i32,
         _context: &C,
-    ) -> Result<ProjectProjectIdDocSpaceDocSpaceIdGetResponse, ApiError> {
-        let res = super::doc_space_api::list_doc_key(
-            &self.app,
-            &project_id,
-            &doc_space_id,
-            offset as u32,
-            limit as u32,
-        )
-        .await;
+    ) -> Result<ProjectProjectIdDocGetResponse, ApiError> {
+        let res = super::entry_api::list(&self.app, &project_id, EntryType::Doc,offset,limit).await;
         if res.is_err() {
-            return Ok(ProjectProjectIdDocSpaceDocSpaceIdGetResponse::Status500 {
+            return Ok(ProjectProjectIdDocGetResponse::Status500 {
                 body: ErrInfo {
                     err_msg: Some(res.err().unwrap()),
                 },
@@ -334,7 +317,7 @@ where
         } else {
             let res = res.unwrap();
             if &res.err_msg != "" {
-                return Ok(ProjectProjectIdDocSpaceDocSpaceIdGetResponse::Status500 {
+                return Ok(ProjectProjectIdDocGetResponse::Status500 {
                     body: ErrInfo {
                         err_msg: Some(res.err_msg),
                     },
@@ -342,53 +325,11 @@ where
                 });
             }
 
-            return Ok(ProjectProjectIdDocSpaceDocSpaceIdGetResponse::Status200 {
-                body: ProjectProjectIdDocSpaceDocSpaceIdGet200Response {
+            return Ok(ProjectProjectIdDocGetResponse::Status200 {
+                body: ProjectProjectIdDocGet200Response {
                     total_count: Some(res.total_count as i32),
-                    doc_list: Some(super::doc_space_api::convert_doc_list(res.doc_key_list)),
+                    doc_list: Some(super::entry_api::convert_to_doc_list(res.entry_list)),
                 },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-    }
-
-    /// 文档空间列表
-    async fn project_project_id_doc_space_get(
-        &self,
-        project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdDocSpaceGetResponse, ApiError> {
-        let res = super::doc_space_api::list_doc_space(&self.app, &project_id).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdDocSpaceGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdDocSpaceGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            let mut info_list = Vec::new();
-            res.doc_space_list.iter().for_each(|item| {
-                let mut title = String::from("");
-                if let Some(basic_info) = &item.base_info {
-                    title = basic_info.title.clone();
-                }
-                info_list.push(DocSpaceInfo {
-                    doc_space_id: Some(item.doc_space_id.clone()),
-                    title: Some(title),
-                });
-            });
-            return Ok(ProjectProjectIdDocSpaceGetResponse::Status200 {
-                body: info_list,
                 access_control_allow_origin: Some("*".into()),
             });
         }
@@ -772,15 +713,14 @@ where
     }
 
     /// 创建文档
-    async fn project_project_id_create_doc_doc_space_id_get(
+    async fn project_project_id_create_doc_get(
         &self,
         project_id: String,
-        doc_space_id: String,
         _context: &C,
-    ) -> Result<ProjectProjectIdCreateDocDocSpaceIdGetResponse, ApiError> {
+    ) -> Result<ProjectProjectIdCreateDocGetResponse, ApiError> {
         let win = self.app.get_window("main");
         if win.is_none() {
-            return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
+            return Ok(ProjectProjectIdCreateDocGetResponse::Status500 {
                 body: ErrInfo {
                     err_msg: Some("无法找到主窗口".into()),
                 },
@@ -794,18 +734,18 @@ where
                 project_id: project_id,
                 short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
                 short_note_type: super::notice::ShortNoteType::ShortNoteDoc as u32,
-                target_id: doc_space_id.clone(),
+                target_id: "".into(),
                 extra_target_value: "".into(),
             },
         ) {
-            return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status500 {
+            return Ok(ProjectProjectIdCreateDocGetResponse::Status500 {
                 body: ErrInfo {
                     err_msg: Some("发送消息失败".into()),
                 },
                 access_control_allow_origin: Some("*".into()),
             });
         }
-        return Ok(ProjectProjectIdCreateDocDocSpaceIdGetResponse::Status200 {
+        return Ok(ProjectProjectIdCreateDocGetResponse::Status200 {
             body: json!({}),
             access_control_allow_origin: Some("*".into()),
         });
@@ -1046,66 +986,6 @@ where
                 access_control_allow_origin: Some("*".into()),
             },
         );
-    }
-
-    /// 列出沟通内容
-    async fn project_project_id_channel_msg_channel_id_get(
-        &self,
-        _project_id: String,
-        _channel_id: String,
-        _limit: i32,
-        _ref_msg_id: Option<String>,
-        _context: &C,
-    ) -> Result<ProjectProjectIdChannelMsgChannelIdGetResponse, ApiError> {
-        return Ok(ProjectProjectIdChannelMsgChannelIdGetResponse::Status500 {
-            body: ErrInfo {
-                err_msg: Some("".into()),
-            },
-            access_control_allow_origin: Some("*".into()),
-        });
-
-    }
-
-    /// 我的沟通频道
-    async fn project_project_id_channel_my_get(
-        &self,
-        _project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdChannelMyGetResponse, ApiError> {
-        return Ok(ProjectProjectIdChannelMyGetResponse::Status500 {
-            body: ErrInfo {
-                err_msg: Some("".into()),
-            },
-            access_control_allow_origin: Some("*".into()),
-        });
-    }
-
-    /// 我未加入的频道
-    async fn project_project_id_channel_not_join_get(
-        &self,
-        _project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdChannelNotJoinGetResponse, ApiError> {
-        return Ok(ProjectProjectIdChannelNotJoinGetResponse::Status500 {
-            body: ErrInfo {
-                err_msg: Some("".into()),
-            },
-            access_control_allow_origin: Some("*".into()),
-        });
-    }
-
-    /// 孤儿频道
-    async fn project_project_id_channel_orphan_get(
-        &self,
-        _project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdChannelOrphanGetResponse, ApiError> {
-        return Ok(ProjectProjectIdChannelOrphanGetResponse::Status500 {
-            body: ErrInfo {
-                err_msg: Some("".into()),
-            },
-            access_control_allow_origin: Some("*".into()),
-        });
     }
 
     /// 删除代码评论

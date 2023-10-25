@@ -44,6 +44,7 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
     const memberStore = useStores('memberStore');
     const projectStore = useStores('projectStore');
     const spritStore = useStores('spritStore');
+    const entryStore = useStores('entryStore');
 
     const domRef = useRef<HTMLDivElement>(null);
     const domRefSize = useSize(domRef);
@@ -163,7 +164,7 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
                             {row.memberUserId == "" && <span>{dayInfo.remainMinutes == undefined ? "-" : (dayInfo.remainMinutes / 60).toFixed(2)}</span>}
                             {row.memberUserId != "" && (
                                 <EditNumber
-                                    editable={projectStore.isAdmin || row.memberUserId == userStore.userInfo.userId}
+                                    editable={(entryStore.curEntry?.can_update ?? false) || row.memberUserId == userStore.userInfo.userId}
                                     value={dayInfo.remainMinutes == undefined ? undefined : dayInfo.remainMinutes / 60.0} onChange={async (value) => {
                                         if (value < 0.0) {
                                             return false;
@@ -194,9 +195,11 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
     const calcBurnDownInfoList = async () => {
         const tmpDayList: number[] = [];
         //计算工作日
-        for (const dayTime = moment(props.spritInfo.basic_info.start_time).startOf("day"); dayTime <= moment(props.spritInfo.basic_info.end_time).startOf("day"); dayTime.add(1, "days")) {
+        for (const dayTime = moment(entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0).startOf("day");
+            dayTime <= moment(entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0).startOf("day");
+            dayTime.add(1, "days")) {
             let matchNonWorkDay = false;
-            for (const nonWorkDayTime of props.spritInfo.basic_info.non_work_day_list) {
+            for (const nonWorkDayTime of (entryStore.curEntry?.extra_info.ExtraSpritInfo?.non_work_day_list ?? [])) {
                 if (dayTime.valueOf() == moment(nonWorkDayTime).startOf("day").valueOf()) {
                     matchNonWorkDay = true;
                     break;

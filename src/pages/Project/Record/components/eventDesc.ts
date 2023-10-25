@@ -91,229 +91,6 @@ const codeEventList: EventDesc[] = [
     },
 ];
 
-const docEventList: EventDesc[] = [
-    {
-        id: "CreateSpaceEvent",
-        name: "创建文档空间",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID"
-            },
-            {
-                key: "title",
-                desc: "文档空间标题"
-            },
-        ]
-    },
-    {
-        id: "UpdateSpaceEvent",
-        name: "修改文档空间",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID"
-            },
-            {
-                key: "old_title",
-                desc: "旧文档空间标题",
-            },
-            {
-                key: "new_title",
-                desc: "新文档空间标题",
-            },
-        ]
-    },
-    {
-        id: "RemoveSpaceEvent",
-        name: "删除文档空间",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID"
-            },
-            {
-                key: "title",
-                desc: "文档空间标题"
-            },
-        ]
-    },
-    {
-        id: "CreateDocEvent",
-        name: "创建文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "UpdateDocEvent",
-        name: "更新文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "old_title",
-                desc: "旧文档标题",
-            },
-            {
-                key: "new_title",
-                desc: "新文档标题",
-            },
-        ]
-    },
-    {
-        id: "UpdateTagEvent",
-        name: "更新文档标签",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-            {
-                key: "old_tag_list",
-                desc: "旧标签列表",
-            },
-            {
-                key: "new_tag_list",
-                desc: "新标签列表",
-            },
-        ]
-    },
-    {
-        id: "MoveDocToRecycleEvent",
-        name: "移动文档到回收站",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "RemoveDocEvent",
-        name: "删除文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "RecoverDocEvent",
-        name: "恢复文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "MoveDocEvent",
-        name: "移动文档",
-        attrList: [
-            {
-                key: "src_doc_space_id",
-                desc: "源头文档空间ID",
-            },
-            {
-                key: "src_doc_space_name",
-                desc: "源头文档空间名称",
-            },
-            {
-                key: "dest_doc_space_id",
-                desc: "目标文档空间ID",
-            },
-            {
-                key: "dest_doc_space_name",
-                desc: "目标文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-];
-
 const extEventList: EventDesc[] = [
     {
         id: "CreateEvent",
@@ -2896,6 +2673,52 @@ const giteeEventList: EventDesc[] = [
     },
 ];
 
+const entryEventList: EventDesc[] = [
+    {
+        id: "CreateEvent",
+        name: "创建内容",
+        attrList: [
+            {
+                key: "entry_id",
+                desc: "内容ID",
+            },
+            {
+                key: "entry_type",
+                desc: "内容类型",
+            },
+            {
+                key: "entry_title",
+                desc: "内容标题",
+            }
+        ],
+    },
+    {
+        id: "OpenEvent",
+        name: "打开内容",
+        attrList: [],
+    },
+    {
+        id: "CloseEvent",
+        name: "关闭内容",
+        attrList: [],
+    },
+    {
+        id: "RemoveEvent",
+        name: "删除内容",
+        attrList: [],
+    },
+    {
+        id: "WatchEvent",
+        name: "关注内容",
+        attrList: [],
+    },
+    {
+        id: "UnwatchEvent",
+        name: "取消关注内容",
+        attrList: [],
+    },
+];
+
 export const eventGroupList: EventGroup[] = [
     {
         id: "ProjectEvent",
@@ -2903,9 +2726,9 @@ export const eventGroupList: EventGroup[] = [
         eventDescList: projectEventList,
     },
     {
-        id: "ProjectDocEvent",
-        name: "文档",
-        eventDescList: docEventList,
+        id: "EntryEvent",
+        name: "内容",
+        eventDescList: entryEventList,
     },
     {
         id: "SpritEvent",

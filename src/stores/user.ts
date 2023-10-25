@@ -43,7 +43,8 @@ class UserStore {
   // 重置密码
   isResetPassword = false;
 
-  logout() {
+  async logout() {
+    await this.rootStore.projectStore.setCurProjectId("");
     request(user_logout(this.sessionId));
     runInAction(() => {
       this.sessionId = '';
@@ -58,6 +59,7 @@ class UserStore {
     });
     sessionStorage.removeItem('sessionId');
     sessionStorage.removeItem('userInfo');
+
   }
 
   async callLogin(username: string, password: string) {
