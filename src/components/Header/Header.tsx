@@ -133,21 +133,25 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
         {projectStore.curProjectId != "" && (
           <div>
             <ProjectQuickAccess />
-            <Button type="text"
-              icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", location.pathname.startsWith(APP_PROJECT_HOME_PATH) ? "white" : "orange"]} />}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (docStore.inEdit) {
-                  docStore.showCheckLeave(() => {
+            {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false && (
+              <Button type="text"
+                title='返回项目主页'
+                icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", "white"]} />}
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (docStore.inEdit) {
+                    docStore.showCheckLeave(() => {
+                      entryStore.reset();
+                      history.push(APP_PROJECT_HOME_PATH);
+                    });
+                  } else {
                     entryStore.reset();
                     history.push(APP_PROJECT_HOME_PATH);
-                  });
-                } else {
-                  entryStore.reset();
-                  history.push(APP_PROJECT_HOME_PATH);
-                }
-              }} />
+                  }
+                }} />
+            )}
+
             <Space size="small" style={{ fontSize: "16px", marginLeft: "10px", lineHeight: "26px", cursor: "default" }}>
               {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) && (
                 <>
