@@ -2,7 +2,7 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { watch, unwatch, update_mark_remove, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD } from "@/api/project_entry";
+import { watch, unwatch, update_mark_remove, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import s from "./EntryCard.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -10,6 +10,8 @@ import { EditOutlined, InfoCircleOutlined, MoreOutlined } from "@ant-design/icon
 import EntryPopover from "./EntryPopover";
 import { useHistory } from "react-router-dom";
 import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
+import { getEntryTypeStr } from "./common";
+import RemoveEntryModal from "./RemoveEntryModal";
 
 export interface EntryCardPorps {
     entryInfo: EntryInfo;
@@ -45,19 +47,6 @@ const EntryCard = (props: EntryCardPorps) => {
         }));
         entryStore.updateEntry(props.entryInfo.entry_id);
     }
-
-    const getEntryTypeStr = (): string => {
-        if (props.entryInfo.entry_type == ENTRY_TYPE_SPRIT) {
-            return "工作计划";
-        } else if (props.entryInfo.entry_type == ENTRY_TYPE_DOC) {
-            return "文档";
-        } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
-            return "静态网页";
-        } else if (props.entryInfo.entry_type == ENTRY_TYPE_BOARD) {
-            return "白板";
-        }
-        return "";
-    };
 
     const openEntry = async () => {
         entryStore.reset();
@@ -110,7 +99,7 @@ const EntryCard = (props: EntryCardPorps) => {
                     e.stopPropagation();
                     e.preventDefault();
                     openEntry();
-                }}>{getEntryTypeStr()}</span>
+                }}>{getEntryTypeStr(props.entryInfo.entry_type)}</span>
             </Space>
         }
             className={s.card} style={{ backgroundColor: getBgColor() }} headStyle={{ borderBottom: "none" }} bodyStyle={{ padding: "0px 10px" }} extra={
@@ -196,7 +185,12 @@ const EntryCard = (props: EntryCardPorps) => {
                     <p>关闭后可以在关闭状态列表下找到。</p>
                 </Modal>
             )}
-            {showRemoveModal == true && ("xx")}
+            {showRemoveModal == true && (
+                <RemoveEntryModal entryInfo={props.entryInfo} onRemove={() => {
+                    props.onRemove();
+                    setShowRemoveModal(false);
+                }} onCancel={() => setShowRemoveModal(false)} />
+            )}
         </Card>
 
     );
