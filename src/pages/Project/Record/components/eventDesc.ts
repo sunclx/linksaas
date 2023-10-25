@@ -2673,11 +2673,62 @@ const giteeEventList: EventDesc[] = [
     },
 ];
 
+const entryEventList: EventDesc[] = [
+    {
+        id: "CreateEvent",
+        name: "创建内容",
+        attrList: [
+            {
+                key: "entry_id",
+                desc: "内容ID",
+            },
+            {
+                key: "entry_type",
+                desc: "内容类型",
+            },
+            {
+                key: "entry_title",
+                desc: "内容标题",
+            }
+        ],
+    },
+    {
+        id: "OpenEvent",
+        name: "打开内容",
+        attrList: [],
+    },
+    {
+        id: "CloseEvent",
+        name: "关闭内容",
+        attrList: [],
+    },
+    {
+        id: "RemoveEvent",
+        name: "删除内容",
+        attrList: [],
+    },
+    {
+        id: "WatchEvent",
+        name: "关注内容",
+        attrList: [],
+    },
+    {
+        id: "UnwatchEvent",
+        name: "取消关注内容",
+        attrList: [],
+    },
+];
+
 export const eventGroupList: EventGroup[] = [
     {
         id: "ProjectEvent",
         name: "项目",
         eventDescList: projectEventList,
+    },
+    {
+        id: "EntryEvent",
+        name: "内容",
+        eventDescList: entryEventList,
     },
     {
         id: "SpritEvent",

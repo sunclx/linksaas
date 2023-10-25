@@ -17,7 +17,7 @@ import {
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues,
      giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
     requirementEvOptionList,  ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
-    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genCiCdEvCfgValues, ciCdEvOptionList
+    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genCiCdEvCfgValues, ciCdEvOptionList, genEntryEvCfgValues, entryEvOptionList
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
@@ -136,6 +136,9 @@ const SubscribeList = () => {
                                     <Form labelCol={{ span: 3 }}>
                                         <Form.Item label="项目事件">
                                             <Checkbox.Group options={projectEvOptionList} value={genProjectEvCfgValues(item.event_cfg.project_ev_cfg)} disabled={true} />
+                                        </Form.Item>
+                                        <Form.Item label="内容事件">
+                                            <Checkbox.Group options={entryEvOptionList} value={genEntryEvCfgValues(item.event_cfg.entry_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="第三方接入事件">
                                             <Checkbox.Group options={extEvOptionList} value={genExtEvCfgValues(item.event_cfg.ext_ev_cfg)} disabled={true} />

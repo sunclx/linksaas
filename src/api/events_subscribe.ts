@@ -141,6 +141,15 @@ export type AtomgitEvCfg = {
     issue: boolean;
 }
 
+export type EntryEvCfg = {
+    create: boolean;
+    open: boolean;
+    close: boolean;
+    remove: boolean;
+    watch: boolean;
+    unwatch: boolean;
+};
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     ext_ev_cfg: ExtEvCfg;
@@ -154,6 +163,7 @@ export type EventCfg = {
     api_collection_ev_cfg: ApiCollectionEvCfg;
     atomgit_ev_cfg: AtomgitEvCfg;
     ci_cd_ev_cfg: CiCdEvCfg;
+    entry_ev_cfg: EntryEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -264,10 +274,20 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             issue: false,
         };
     }
-    if (cfg.ci_cd_ev_cfg == undefined || cfg.atomgit_ev_cfg == null) {
+    if (cfg.ci_cd_ev_cfg == undefined || cfg.ci_cd_ev_cfg == null) {
         cfg.ci_cd_ev_cfg = {
             create_pipe_line: false,
             remove_pipe_line: false,
+        }
+    }
+    if (cfg.entry_ev_cfg == undefined || cfg.entry_ev_cfg == null) {
+        cfg.entry_ev_cfg = {
+            create: false,
+            open: false,
+            close: false,
+            remove: false,
+            watch: false,
+            unwatch: false,
         }
     }
     return cfg;

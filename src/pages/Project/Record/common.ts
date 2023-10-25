@@ -40,6 +40,10 @@ export const EVENT_ICON_LIST = {
     title: 'doc',
     icon: docIcon,
   },
+  [API.EVENT_TYPE_ENTRY]: {
+    title: 'doc',
+    icon: docIcon,
+  },
   [API.EVENT_TYPE_CICD]: {
     title: 'cicd',
     icon: cicdIcon,

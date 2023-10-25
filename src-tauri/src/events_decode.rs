@@ -774,6 +774,52 @@ pub mod cicd {
     }
 }
 
+pub mod entry {
+    use prost::Message;
+    use proto_gen_rust::events_entry;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateEvent(events_entry::CreateEvent),
+        OpenEvent(events_entry::OpenEvent),
+        CloseEvent(events_entry::CloseEvent),
+        RemoveEvent(events_entry::RemoveEvent),
+        WatchEvent(events_entry::WatchEvent),
+        UnwatchEvent(events_entry::UnwatchEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_entry::CreateEvent::type_url() {
+            if let Ok(ev) = events_entry::CreateEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateEvent(ev));
+            }
+        } else if data.type_url == events_entry::OpenEvent::type_url() {
+            if let Ok(ev) = events_entry::OpenEvent::decode(data.value.as_slice()) {
+                return Some(Event::OpenEvent(ev));
+            }
+        } else if data.type_url == events_entry::CloseEvent::type_url() {
+            if let Ok(ev) = events_entry::CloseEvent::decode(data.value.as_slice()) {
+                return Some(Event::CloseEvent(ev));
+            }
+        } else if data.type_url == events_entry::RemoveEvent::type_url() {
+            if let Ok(ev) = events_entry::RemoveEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveEvent(ev));
+            }
+        } else if data.type_url == events_entry::WatchEvent::type_url() {
+            if let Ok(ev) = events_entry::WatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::WatchEvent(ev));
+            }
+        } else if data.type_url == events_entry::UnwatchEvent::type_url() {
+            if let Ok(ev) = events_entry::UnwatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnwatchEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -789,6 +835,7 @@ pub enum EventMessage {
     ApiCollectionEvent(api_collection::Event),
     AtomgitEvent(atomgit::Event),
     CiCdEvent(cicd::Event),
+    EntryEvent(entry::Event),
     NoopEvent(),
 }
 
@@ -833,6 +880,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = cicd::decode_event(data) {
         return Some(EventMessage::CiCdEvent(ret));
+    }
+    if let Some(ret) = entry::decode_event(data) {
+        return Some(EventMessage::EntryEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

@@ -26,6 +26,8 @@ import {
     atomgitEvOptionList,
     calcCiCdEvCfg,
     ciCdEvOptionList,
+    calcEntryEvCfg,
+    entryEvOptionList,
 } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
@@ -55,6 +57,7 @@ interface FormValue {
     dataAnnoEvCfg: string[] | undefined;
     apiCollectionEvCfg: string[] | undefined;
     ciCdEvCfg: string[] | undefined;
+    entryEvCfg: string[] | undefined;
 }
 
 
@@ -102,6 +105,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [apiCollectionEvCfgCheckAll, setApiCollectionEvCfgCheckAll] = useState(false);
     const [apiCollectionEvCfgIndeterminate, setApiCollectionEvCfgIndeterminate] = useState(false);
 
+    const [entryEvCfgCheckAll, setEntryEvCfgCheckAll] = useState(false);
+    const [entryEvCfgIndeterminate, setEntryEvCfgIndeterminate] = useState(false);
+
     const createSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
         if (formValue.chatBotName == undefined || formValue.chatBotName == "") {
@@ -136,7 +142,8 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
                 api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
-                ci_cd_ev_cfg: calcCiCdEvCfg(formValue.ciCdEvCfg)
+                ci_cd_ev_cfg: calcCiCdEvCfg(formValue.ciCdEvCfg),
+                entry_ev_cfg: calcEntryEvCfg(formValue.entryEvCfg),
             },
         }));
         props.onOk();
@@ -221,7 +228,34 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
-                    
+
+                    <Form.Item label={<Checkbox indeterminate={entryEvCfgIndeterminate} checked={entryEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setEntryEvCfgIndeterminate(false);
+                        if (entryEvCfgCheckAll) {
+                            setEntryEvCfgCheckAll(false);
+                            form.setFieldValue("entryEvCfg", []);
+                        } else {
+                            setEntryEvCfgCheckAll(true);
+                            form.setFieldValue("entryEvCfg", entryEvOptionList.map(item => item.value));
+                        }
+                    }}>内容事件</Checkbox>} name="entryEvCfg">
+                        <Checkbox.Group options={entryEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setEntryEvCfgCheckAll(false);
+                                setEntryEvCfgIndeterminate(false);
+                            } else if (values.length == entryEvOptionList.length) {
+                                setEntryEvCfgCheckAll(true);
+                                setEntryEvCfgIndeterminate(false);
+                            } else {
+                                setEntryEvCfgCheckAll(false);
+                                setEntryEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+
+
                     <Form.Item label={<Checkbox indeterminate={extEvCfgIndeterminate} checked={extEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();

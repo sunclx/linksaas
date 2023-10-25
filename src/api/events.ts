@@ -25,6 +25,8 @@ export const EVENT_TYPE_IDEA: EVENT_TYPE = 16; //知识点相关
 export const EVENT_TYPE_DATA_ANNO: EVENT_TYPE = 18; //数据标注
 export const EVENT_TYPE_API_COLLECTION: EVENT_TYPE = 19; //API集合
 export const EVENT_TYPE_CICD: EVENT_TYPE = 20; //CICD
+export const EVENT_TYPE_ENTRY: EVENT_TYPE = 21; //内容入口
+
 
 export const EVENT_TYPE_CUSTOM_EVENT = 99;
 

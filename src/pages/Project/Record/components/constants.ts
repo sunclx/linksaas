@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg,  ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg,
-    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg
+    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg, EntryEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -1234,6 +1234,86 @@ export const genCiCdEvCfgValues = (cfg: CiCdEvCfg): string[] => {
     }
     if (cfg.remove_pipe_line) {
         retList.push("remove_pipe_line");
+    }
+    return retList;
+};
+
+export const entryEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建内容",
+        value: "create",
+    },
+    {
+        label: "打开内容",
+        value: "open",
+    },
+    {
+        label: "关闭内容",
+        value: "close",
+    },
+    {
+        label: "删除内容",
+        value: "remove",
+    },
+    {
+        label: "关注内容",
+        value: "watch",
+    },
+    {
+        label: "取消关注内容",
+        value: "unwatch",
+    },
+];
+
+export const calcEntryEvCfg = (values: string[] | undefined): EntryEvCfg => {
+    const ret: EntryEvCfg = {
+        create: false,
+        open: false,
+        close: false,
+        remove: false,
+        watch: false,
+        unwatch: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create") {
+            ret.create = true;
+        } else if (value == "open") {
+            ret.open = true;
+        }else if (value == "close"){
+            ret.close = true;
+        }else if (value == "remove"){
+            ret.remove = true;
+        }else if(value == "watch"){
+            ret.watch = true;
+        }else if(value == "unwatch"){
+            ret.unwatch = true;
+        }
+    });
+    return ret;
+};
+
+export const genEntryEvCfgValues = (cfg: EntryEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create) {
+        retList.push("create");
+    }
+    if (cfg.open) {
+        retList.push("open");
+    }
+    if (cfg.close){
+        retList.push("close");
+    }
+    if(cfg.remove){
+        retList.push("remove");
+    }
+    if(cfg.watch){
+        retList.push("watch");
+    }
+    if(cfg.unwatch){
+        retList.push("unwatch");
     }
     return retList;
 };
