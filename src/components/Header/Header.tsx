@@ -6,7 +6,7 @@ import { Button, Layout, Popover, Progress, Space, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { ArrowsAltOutlined, BugOutlined, EditOutlined, HomeTwoTone, InfoCircleOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { BugOutlined, EditOutlined, HomeTwoTone, InfoCircleOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
@@ -32,7 +32,6 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const appStore = useStores('appStore');
   const entryStore = useStores('entryStore');
   const docStore = useStores('docStore');
 
@@ -131,7 +130,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     <div>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
-        {projectStore.curProjectId != "" && appStore.simpleMode == false && (
+        {projectStore.curProjectId != "" && (
           <div>
             <ProjectQuickAccess />
             <Button type="text"
@@ -197,10 +196,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </Space>
           </div>
         )}
-
-        <div className={style.l}>
-          {projectStore.curProjectId != "" && userStore.sessionId != "" && appStore.simpleMode == true && "精简模式"}
-        </div>
+        <div className={style.l} />
         <div className={style.r}>
           {props.type == "login" && hasNewVersion == true && (
             <a style={{ marginRight: "20px" }} onClick={e => {
@@ -217,37 +213,10 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
               </Space>
             </a>
           )}
-
-          {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == true && projectStore.curProjectId != "" && (
-            <div
-              className={style.btnSimpleMode}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                appStore.simpleMode = false;
-              }} title='退出精简模式'><ArrowsAltOutlined /></div>
-          )}
-          {(userStore.sessionId != "" || userStore.adminSessionId != "") && appStore.simpleMode == false && projectStore.curProjectId != "" && (
-            <div
-              className={style.btnSimpleMode}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                appStore.simpleMode = true;
-              }} title='进入精简模式'><ShrinkOutlined /></div>
-          )}
-
-          {appStore.simpleMode == false && (
-            <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
-          )}
-
-          {appStore.simpleMode == false && (
-            <>
-              {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
-              {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
-              <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
-            </>
-          )}
+          <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+          <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
         </div>
       </Header>
     </div>

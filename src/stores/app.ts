@@ -2,7 +2,6 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { platform } from '@tauri-apps/api/os';
 import * as clientCfgApi from '@/api/client_cfg';
 import type { RootStore } from '.';
-import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 
 class AppStore {
   constructor(rootStore: RootStore) {
@@ -43,22 +42,6 @@ class AppStore {
   set showCreateOrJoinProject(val: boolean) {
     runInAction(() => {
       this._showCreateOrJoinProject = val;
-    });
-  }
-
-  private _simpleMode: boolean = false;
-
-  get simpleMode(): boolean {
-    return this._simpleMode;
-  }
-
-  set simpleMode(val: boolean) {
-    runInAction(() => {
-      this._simpleMode = val;
-      if (val && this.rootStore.projectStore.curProjectId != "") {
-        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-        this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
-      }
     });
   }
 }

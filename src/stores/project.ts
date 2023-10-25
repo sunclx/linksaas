@@ -6,7 +6,7 @@ import { request } from '@/utils/request';
 import type { PROJECT_SETTING_TAB } from '@/utils/constant';
 import { APP_PROJECT_OVERVIEW_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
-import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
+import { get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
 
 
@@ -66,10 +66,6 @@ export default class ProjectStore {
         this.rootStore.ideaStore.loadKeyword(val),
       ]);
 
-      if (this.rootStore.appStore.simpleMode) {
-        this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_TASK);
-        this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_BUG);
-      }
       this.rootStore.appraiseStore.clearData();
       this.setCodeCommentInfo("", "");
       this.showProjectSetting = null;
