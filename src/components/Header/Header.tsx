@@ -135,6 +135,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             <ProjectQuickAccess />
             {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false && (
               <Button type="text"
+                title='返回项目主页'
                 icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", "white"]} />}
                 onClick={e => {
                   e.stopPropagation();
