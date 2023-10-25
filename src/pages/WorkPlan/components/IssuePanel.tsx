@@ -101,6 +101,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
     const spritStore = useStores('spritStore');
     const linkAuxStore = useStores('linkAuxStore');
     const memberStore = useStores('memberStore');
+    const entryStore = useStores('entryStore');
 
     const history = useHistory();
 
@@ -143,7 +144,7 @@ const IssuePanel: React.FC<IssuePanelProps> = (props) => {
                 }
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        {projectStore.isAdmin && <Deliconsvg
+                        {(entryStore.curEntry?.can_update ?? false) && <Deliconsvg
                             style={{ marginRight: '10px', cursor: 'pointer', color: '#0E83FF' }}
                             onClick={(e) => {
                                 e.stopPropagation();

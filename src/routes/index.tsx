@@ -16,7 +16,6 @@ import IssueDetail from '@/pages/Issue/IssueDetail';
 import Login from '@/pages/User/Login';
 import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
-import ChatLayout from '@/layouts/ChatLayout';
 import {
   ADMIN_PATH,
   ADMIN_PATH_CLIENT_AD_SUFFIX,
@@ -28,7 +27,6 @@ import {
   ADMIN_PATH_USER_CREATE_SUFFIX,
   ADMIN_PATH_USER_DETAIL_SUFFIX,
   ADMIN_PATH_USER_LIST_SUFFIX,
-  APP_PROJECT_CHAT_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
   WORKBENCH_KB_DOC_SUFFIX,
@@ -50,6 +48,7 @@ import {
   ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX,
   ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
   APP_PROJECT_MY_WORK_PATH,
+  APP_PROJECT_HOME_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -86,6 +85,7 @@ import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
 import ProjectCiCd from "@/pages/Project/CiCd"
+import HomeLayout from '@/layouts/HomeLayout';
 
 export interface IRouteConfig {
   // 路由路径
@@ -213,7 +213,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
-      path: prefix+"/cicd",
+      path: prefix + "/cicd",
       title: "",
       component: ProjectCiCd,
       exact: true,
@@ -266,16 +266,16 @@ const routesConfig: IRouteConfig[] = [
         component: ProjectLayout,
         routes: [
           {
+            path: APP_PROJECT_HOME_PATH,
+            title: "主面板入口",
+            component: HomeLayout,
+            routes: getToolbarRoute(APP_PROJECT_HOME_PATH),
+          },
+          {
             path: APP_PROJECT_WORK_PLAN_PATH,
             title: "工作计划",
             component: WorkPlanLayout,
             routes: getToolbarRoute(APP_PROJECT_WORK_PLAN_PATH),
-          },
-          {
-            path: APP_PROJECT_CHAT_PATH,
-            title: '沟通',
-            component: ChatLayout,
-            routes: getToolbarRoute(APP_PROJECT_CHAT_PATH),
           },
           {
             path: APP_PROJECT_KB_PATH,

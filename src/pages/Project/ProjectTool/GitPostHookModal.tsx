@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { Button, Modal } from "antd";
 import { useStores } from "@/hooks";
 import { useHistory } from "react-router-dom";
-import { LinkChannelInfo } from "@/stores/linkAux";
 
 const GitPostHookModal = () => {
     const history = useHistory();
@@ -21,15 +20,6 @@ const GitPostHookModal = () => {
             }} width={250}>
             您刚才运行了git commit,您是否要？
             <div style={{ display: "flex", flexWrap: "wrap" }}>
-                {!projectStore.curProject?.setting.disable_chat && (
-                    <Button type="link" onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        projectStore.showPostHookModal = false;
-                        linkAuxStore.goToLink(new LinkChannelInfo("", projectStore.curProjectId, projectStore.curProject?.default_channel_id ?? ""), history);
-                    }}>通知相关人员</Button>
-                )}
-
                 <Button type="link" onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();

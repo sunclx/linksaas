@@ -7,7 +7,6 @@ import { useLocation } from "react-router-dom";
 import { getIssueText, getIsTask } from "@/utils/utils";
 import { ExtraIssueInfo } from "./ExtraIssueInfo";
 import type { IssueInfo } from "@/api/project_issue";
-import { CommentList } from "./CommentList";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_ISSUE } from "@/api/fs";
@@ -37,7 +36,6 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
         clipboardInToolbar: false,
         widgetInToolbar: true,
         showReminder: false,
-        channelMember: false,
     });
 
     const updateContent = async () => {
@@ -102,8 +100,6 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
                         canOptDependence={props.issue?.user_issue_perm.can_opt_dependence ?? false} />
                 </>
             )}
-            <hr />
-            <CommentList issueId={props.issue?.issue_id ?? ""} />
         </div>
     );
 }

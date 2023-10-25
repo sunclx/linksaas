@@ -6,12 +6,6 @@ export type CheckAccessProjectResponse = {
     can_access: boolean;
 };
 
-export type CheckAccessChannelResponse = {
-    code: number;
-    err_msg: string;
-    can_access: boolean;
-};
-
 export type CheckAccessEventResponse = {
     code: number;
     err_msg: string;
@@ -51,20 +45,6 @@ export async function check_access_project(session_id: string, project_id: strin
     };
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<CheckAccessProjectResponse>(cmd, {
-        request,
-    });
-}
-
-// 是否可以访问频道
-export async function check_access_channel(session_id: string, project_id: string, channel_id: string): Promise<CheckAccessChannelResponse> {
-    const cmd = 'plugin:link_aux_api|check_access_channel';
-    const request = {
-        session_id,
-        project_id,
-        channel_id,
-    };
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<CheckAccessChannelResponse>(cmd, {
         request,
     });
 }

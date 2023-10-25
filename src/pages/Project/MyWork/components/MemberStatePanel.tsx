@@ -17,7 +17,6 @@ const EDITOR_PARAM = {
     clipboardInToolbar: false,
     widgetInToolbar: false,
     showReminder: false,
-    channelMember: false,
 };
 
 const MemberStatePanel = () => {

@@ -34,7 +34,6 @@ const RequirementCreate = () => {
         clipboardInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
-        channelMember: false,
     });
 
 

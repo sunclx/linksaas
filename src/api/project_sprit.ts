@@ -10,17 +10,13 @@ export const ISSUE_LIST_LIST: ISSUE_LIST_TYPE = 1;
 export const ISSUE_LIST_KANBAN: ISSUE_LIST_TYPE = 2;
 
 export type BasicSpritInfo = {
-  title: string;
-  start_time: number;
-  end_time: number;
-  non_work_day_list: number[];
   issue_list_type: ISSUE_LIST_TYPE;
-  hide_doc_panel: boolean;
+  // hide_doc_panel: boolean;
   hide_gantt_panel: boolean;
   hide_burndown_panel: boolean;
   hide_stat_panel: boolean;
   hide_summary_panel: boolean;
-  hide_channel: boolean;
+  // hide_channel: boolean;
 };
 
 export type CreateResponse = {
@@ -38,20 +34,9 @@ export type SpritInfo = {
   sprit_id: string;
   basic_info: BasicSpritInfo;
   project_id: string;
-  create_time: number;
-  update_time: number;
   task_count: number;
   bug_count: number;
-  create_user_id: string;
-  create_display_name: string;
-  create_logo_uri: string;
-  update_user_id: string;
-  update_display_name: string;
-  update_logo_uri: string;
-  link_channel_id: string;
-  link_channel_title: string;
   summary_state: SUMMARY_STATE;
-  my_watch: boolean;
 };
 
 export type BurnDownInfo = {
@@ -79,13 +64,6 @@ export type SummaryItemInfo = {
   tag_info: SummaryTag;
 };
 
-export type ListResponse = {
-  code: number;
-  err_msg: string;
-  total_count: number;
-  info_list: SpritInfo[];
-};
-
 export type GetResponse = {
   code: number;
   err_msg: string;
@@ -93,49 +71,6 @@ export type GetResponse = {
 };
 
 export type RemoveResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type LinkDocResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type CancelLinkDocResponse = {
-  code: number;
-  err_msg: string;
-};
-
-//对应grpc生成代码的LinkDocInfo，为了和linuxAuxStore里面定义的类型区分开发
-export type SpritDocInfo = {
-  doc_id: string;
-  project_id: string;
-  title: string;
-  link_user_id: string;
-  link_display_name: string;
-  link_logo_uri: string;
-  link_time: number;
-};
-
-export type ListLinkDocResponse = {
-  code: number;
-  err_msg: string;
-  info_list: SpritDocInfo[]
-};
-
-export type GetLinkDocResponse = {
-  code: number;
-  err_msg: string;
-  info: SpritDocInfo;
-};
-
-export type LinkChannelResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type CancelLinkChannelResponse = {
   code: number;
   err_msg: string;
 };
@@ -166,17 +101,6 @@ export type ListBurnDownResponse = {
   err_msg: string;
   info_list: BurnDownInfo[];
 };
-
-export type WatchResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type UnWatchResponse = {
-  code: number;
-  err_msg: string;
-};
-
 
 export type SetSummaryStateRequest = {
   session_id: string;
@@ -294,31 +218,6 @@ export async function update(
   });
 }
 
-//列出工作计划信息
-export async function list(
-  session_id: string,
-  project_id: string,
-  filter_by_watch: boolean,
-  watch_value: boolean,
-  offset: number,
-  limit: number,
-): Promise<ListResponse> {
-  const cmd = 'plugin:project_sprit_api|list';
-  const request = {
-    session_id,
-    project_id,
-    filter_by_watch,
-    watch: watch_value,
-    offset,
-    limit,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<ListResponse>(cmd, {
-    request,
-  });
-}
-
 //获取单个工作计划信息
 export async function get(
   session_id: string,
@@ -353,166 +252,6 @@ export async function remove(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<RemoveResponse>(cmd, {
-    request,
-  });
-}
-
-//关注工作计划
-export async function watch(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-): Promise<WatchResponse> {
-  const cmd = 'plugin:project_sprit_api|watch';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<WatchResponse>(cmd, {
-    request,
-  });
-}
-
-//取消关注工作计划
-export async function un_watch(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-): Promise<UnWatchResponse> {
-  const cmd = 'plugin:project_sprit_api|un_watch';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<UnWatchResponse>(cmd, {
-    request,
-  });
-}
-
-//关联文档
-export async function link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  doc_id: string,
-): Promise<LinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    doc_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<LinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//取消关联文档
-export async function cancel_link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  doc_id: string,
-): Promise<CancelLinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|cancel_link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    doc_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<CancelLinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//列出相关文档
-export async function list_link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-): Promise<ListLinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|list_link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<ListLinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//获取单个相关文档
-export async function get_link_doc(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  doc_id: string,
-): Promise<GetLinkDocResponse> {
-  const cmd = 'plugin:project_sprit_api|get_link_doc';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    doc_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<GetLinkDocResponse>(cmd, {
-    request,
-  });
-}
-
-//关联频道
-export async function link_channel(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-  channel_id: string,
-): Promise<LinkChannelResponse> {
-  const cmd = 'plugin:project_sprit_api|link_channel';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-    channel_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<LinkChannelResponse>(cmd, {
-    request,
-  });
-}
-
-//取消关联频道
-export async function cancel_link_channel(
-  session_id: string,
-  project_id: string,
-  sprit_id: string,
-): Promise<CancelLinkChannelResponse> {
-  const cmd = 'plugin:project_sprit_api|cancel_link_channel';
-  const request = {
-    session_id,
-    project_id,
-    sprit_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<CancelLinkChannelResponse>(cmd, {
     request,
   });
 }

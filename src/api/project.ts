@@ -2,13 +2,13 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 export type TAG_SCOPRE_TYPE = number;
 export const TAG_SCOPRE_ALL: TAG_SCOPRE_TYPE = 0;
-export const TAG_SCOPRE_DOC: TAG_SCOPRE_TYPE = 1;
+// export const TAG_SCOPRE_DOC: TAG_SCOPRE_TYPE = 1;
 export const TAG_SCOPRE_TASK: TAG_SCOPRE_TYPE = 2;
 export const TAG_SCOPRE_BUG: TAG_SCOPRE_TYPE = 3;
 export const TAG_SCOPRE_REQ: TAG_SCOPRE_TYPE = 4;
 export const TAG_SCOPRE_IDEA: TAG_SCOPRE_TYPE = 5;
 export const TAG_SCOPRE_SPRIT_SUMMARY: TAG_SCOPRE_TYPE = 6;
-
+export const TAG_SCOPRE_ENTRY: TAG_SCOPRE_TYPE = 7;
 
 export type BasicProjectInfo = {
   project_name: string;
@@ -26,12 +26,12 @@ export type Setting = {
   disable_code_comment: boolean;
   disable_ci_cd: boolean;
 
-  disable_chat: boolean;
-  disable_kb: boolean;
-  disable_work_plan: boolean;
+  // disable_chat: boolean;
+  // disable_kb: boolean;
+  // disable_work_plan: boolean;
 
-  min_pure_text_len_in_chat: number;
-  disable_widget_in_chat: boolean;
+  // min_pure_text_len_in_chat: number;
+  // disable_widget_in_chat: boolean;
 
   //事件相关字段
   hide_custom_event: boolean;
@@ -42,11 +42,11 @@ export type Setting = {
   hide_bulletin: boolean;
   hide_extra_info: boolean;
 
-  hide_watch_doc: boolean;
-  hide_watch_walk_plan: boolean;
+  // hide_watch_doc: boolean;
+  // hide_watch_walk_plan: boolean;
   hide_watch_task: boolean;
   hide_watch_bug: boolean;
-  hide_watch_channel: boolean;
+  // hide_watch_channel: boolean;
 };
 
 export type CreateResponse = {
@@ -76,12 +76,12 @@ export type TagInfo = {
   tag_name: string;
   create_time: number;
   bg_color: string;
-  use_in_doc: boolean;
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
   use_in_idea: boolean;
   use_in_sprit_summary: boolean;
+  use_in_entry: boolean;
 };
 
 
@@ -94,9 +94,9 @@ export type ProjectInfo = {
   owner_user_id: string;
   owner_display_name: string;
   owner_logo_uri: string;
-  default_channel_id: string;
+  // default_channel_id: string;
   default_role_id: string;
-  channel_fs_id: string;
+  // channel_fs_id: string;
   issue_fs_id: string;
   project_fs_id: string;
   doc_fs_id: string;
@@ -110,7 +110,7 @@ export type ProjectInfo = {
   data_anno_fs_id: string;
   api_coll_fs_id: string;
   ci_cd_fs_id: string;
-  default_doc_space_id: string;
+  // default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;
   tip_list?: string[];
@@ -148,21 +148,6 @@ export type ChangeOwnerResponse = {
   err_msg: string;
 };
 
-export type LocalApiPerm = {
-  access_channel: boolean;
-}
-
-export type SetLocalApiPermResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type GetLocalApiPermResponse = {
-  code: number;
-  err_msg: string;
-  perm: LocalApiPerm;
-};
-
 export type UpdateSettingRequest = {
   session_id: string;
   project_id: string;
@@ -190,12 +175,12 @@ export type AddTagRequest = {
   project_id: string;
   tag_name: string;
   bg_color: string;
-  use_in_doc: boolean;
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
   use_in_idea: boolean;
   use_in_sprit_summary: boolean;
+  use_in_entry: boolean;
 };
 
 export type AddTagResponse = {
@@ -210,12 +195,12 @@ export type UpdateTagRequest = {
   tag_id: string;
   tag_name: string;
   bg_color: string;
-  use_in_doc: boolean;
   use_in_task: boolean;
   use_in_bug: boolean;
   use_in_req: boolean;
   use_in_idea: boolean;
   use_in_sprit_summary: boolean;
+  use_in_entry: boolean;
 };
 
 export type UpdateTagResponse = {
@@ -366,35 +351,6 @@ export async function change_owner(session_id: string, project_id: string, membe
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<ChangeOwnerResponse>(cmd, {
-    request,
-  });
-}
-
-//设置本地api 权限
-export async function set_local_api_perm(session_id: string, project_id: string, perm: LocalApiPerm): Promise<SetLocalApiPermResponse> {
-  const cmd = 'plugin:project_api|set_local_api_perm';
-  const request = {
-    session_id,
-    project_id,
-    perm,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<SetLocalApiPermResponse>(cmd, {
-    request,
-  });
-}
-
-//获取本地api 权限
-export async function get_local_api_perm(session_id: string, project_id: string): Promise<GetLocalApiPermResponse> {
-  const cmd = 'plugin:project_api|get_local_api_perm';
-  const request = {
-    session_id,
-    project_id,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<GetLocalApiPermResponse>(cmd, {
     request,
   });
 }

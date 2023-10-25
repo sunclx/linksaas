@@ -91,273 +91,6 @@ const codeEventList: EventDesc[] = [
     },
 ];
 
-const docEventList: EventDesc[] = [
-    {
-        id: "CreateSpaceEvent",
-        name: "创建文档空间",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID"
-            },
-            {
-                key: "title",
-                desc: "文档空间标题"
-            },
-        ]
-    },
-    {
-        id: "UpdateSpaceEvent",
-        name: "修改文档空间",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID"
-            },
-            {
-                key: "old_title",
-                desc: "旧文档空间标题",
-            },
-            {
-                key: "new_title",
-                desc: "新文档空间标题",
-            },
-        ]
-    },
-    {
-        id: "RemoveSpaceEvent",
-        name: "删除文档空间",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID"
-            },
-            {
-                key: "title",
-                desc: "文档空间标题"
-            },
-        ]
-    },
-    {
-        id: "CreateDocEvent",
-        name: "创建文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "UpdateDocEvent",
-        name: "更新文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "old_title",
-                desc: "旧文档标题",
-            },
-            {
-                key: "new_title",
-                desc: "新文档标题",
-            },
-        ]
-    },
-    {
-        id: "UpdateTagEvent",
-        name: "更新文档标签",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-            {
-                key: "old_tag_list",
-                desc: "旧标签列表",
-            },
-            {
-                key: "new_tag_list",
-                desc: "新标签列表",
-            },
-        ]
-    },
-    {
-        id: "MoveDocToRecycleEvent",
-        name: "移动文档到回收站",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "RemoveDocEvent",
-        name: "删除文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "RecoverDocEvent",
-        name: "恢复文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "WatchDocEvent",
-        name: "关注文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "UnWatchDocEvent",
-        name: "取消关注文档",
-        attrList: [
-            {
-                key: "doc_space_id",
-                desc: "文档空间ID",
-            },
-            {
-                key: "doc_space_name",
-                desc: "文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-    {
-        id: "MoveDocEvent",
-        name: "移动文档",
-        attrList: [
-            {
-                key: "src_doc_space_id",
-                desc: "源头文档空间ID",
-            },
-            {
-                key: "src_doc_space_name",
-                desc: "源头文档空间名称",
-            },
-            {
-                key: "dest_doc_space_id",
-                desc: "目标文档空间ID",
-            },
-            {
-                key: "dest_doc_space_name",
-                desc: "目标文档空间名称",
-            },
-            {
-                key: "doc_id",
-                desc: "文档ID",
-            },
-            {
-                key: "title",
-                desc: "文档标题",
-            },
-        ]
-    },
-];
-
 const extEventList: EventDesc[] = [
     {
         id: "CreateEvent",
@@ -865,50 +598,6 @@ const spritEventList: EventDesc[] = [
         ],
     },
     {
-        id: "WatchEvent",
-        name: "关注工作计划",
-        attrList: [
-            {
-                key: "sprit_id",
-                desc: "工作计划ID",
-            },
-            {
-                key: "title",
-                desc: "工作计划标题",
-            },
-            {
-                key: "start_time",
-                desc: "开始时间",
-            },
-            {
-                key: "end_time",
-                desc: "结束时间",
-            },
-        ],
-    },
-    {
-        id: "UnWatchEvent",
-        name: "取消关注工作计划",
-        attrList: [
-            {
-                key: "sprit_id",
-                desc: "工作计划ID",
-            },
-            {
-                key: "title",
-                desc: "工作计划标题",
-            },
-            {
-                key: "start_time",
-                desc: "开始时间",
-            },
-            {
-                key: "end_time",
-                desc: "结束时间",
-            },
-        ],
-    },
-    {
         id: "LinkDocEvent",
         name: "关联文档",
         attrList: [
@@ -949,50 +638,6 @@ const spritEventList: EventDesc[] = [
             {
                 key: "doc_title",
                 desc: "文档标题",
-            },
-        ],
-    },
-    {
-        id: "LinkChannelEvent",
-        name: "关联频道",
-        attrList: [
-            {
-                key: "sprit_id",
-                desc: "工作计划ID",
-            },
-            {
-                key: "sprit_title",
-                desc: "工作计划标题",
-            },
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_title",
-                desc: "频道标题",
-            },
-        ],
-    },
-    {
-        id: "CancelLinkChannelEvent",
-        name: "取消关联频道",
-        attrList: [
-            {
-                key: "sprit_id",
-                desc: "工作计划ID",
-            },
-            {
-                key: "sprit_title",
-                desc: "工作计划标题",
-            },
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_title",
-                desc: "频道标题",
             },
         ],
     },
@@ -1312,164 +957,6 @@ const projectEventList: EventDesc[] = [
             {
                 key: "member_display_name",
                 desc: "成员名称",
-            },
-        ]
-    },
-    {
-        id: "CreateChannelEvent",
-        name: "创建频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-            {
-                key: "pub_channel",
-                desc: "公开频道",
-            },
-        ]
-    },
-    {
-        id: "UpdateChannelEvent",
-        name: "更新频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "old_channel_name",
-                desc: "旧频道名称",
-            },
-            {
-                key: "new_channel_name",
-                desc: "新频道名称",
-            },
-            {
-                key: "old_pub_channel",
-                desc: "旧公开频道",
-            },
-            {
-                key: "new_pub_channel",
-                desc: "新公开频道",
-            },
-        ]
-    },
-    {
-        id: "OpenChannelEvent",
-        name: "打开频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-        ]
-    },
-    {
-        id: "CloseChannelEvent",
-        name: "关闭频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-        ]
-    },
-    {
-        id: "RemoveChannelEvent",
-        name: "删除频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-        ]
-    },
-    {
-        id: "AddChannelMemberEvent",
-        name: "增加频道成员",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-            {
-                key: "member_user_id",
-                desc: "成员ID",
-            },
-            {
-                key: "member_display_name",
-                desc: "成员名称",
-            },
-        ]
-    },
-    {
-        id: "RemoveChannelMemberEvent",
-        name: "删除频道成员",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-            {
-                key: "member_user_id",
-                desc: "成员ID",
-            },
-            {
-                key: "member_display_name",
-                desc: "成员名称",
-            },
-        ]
-    },
-    {
-        id: "WatchChannelEvent",
-        name: "关注频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
-            },
-        ]
-    },
-    {
-        id: "UnWatchChannelEvent",
-        name: "取消关注频道",
-        attrList: [
-            {
-                key: "channel_id",
-                desc: "频道ID",
-            },
-            {
-                key: "channel_name",
-                desc: "频道名称",
             },
         ]
     },
@@ -3186,6 +2673,52 @@ const giteeEventList: EventDesc[] = [
     },
 ];
 
+const entryEventList: EventDesc[] = [
+    {
+        id: "CreateEvent",
+        name: "创建内容",
+        attrList: [
+            {
+                key: "entry_id",
+                desc: "内容ID",
+            },
+            {
+                key: "entry_type",
+                desc: "内容类型",
+            },
+            {
+                key: "entry_title",
+                desc: "内容标题",
+            }
+        ],
+    },
+    {
+        id: "OpenEvent",
+        name: "打开内容",
+        attrList: [],
+    },
+    {
+        id: "CloseEvent",
+        name: "关闭内容",
+        attrList: [],
+    },
+    {
+        id: "RemoveEvent",
+        name: "删除内容",
+        attrList: [],
+    },
+    {
+        id: "WatchEvent",
+        name: "关注内容",
+        attrList: [],
+    },
+    {
+        id: "UnwatchEvent",
+        name: "取消关注内容",
+        attrList: [],
+    },
+];
+
 export const eventGroupList: EventGroup[] = [
     {
         id: "ProjectEvent",
@@ -3193,9 +2726,9 @@ export const eventGroupList: EventGroup[] = [
         eventDescList: projectEventList,
     },
     {
-        id: "ProjectDocEvent",
-        name: "文档",
-        eventDescList: docEventList,
+        id: "EntryEvent",
+        name: "内容",
+        eventDescList: entryEventList,
     },
     {
         id: "SpritEvent",

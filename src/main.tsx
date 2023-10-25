@@ -80,7 +80,7 @@ const Connect = observer(() => {
   }, [defaultAddr]);
 
   if (hasConn) {
-    return <BrowserRouter>{renderRoutes(routes)}</BrowserRouter>;
+    return <>{renderRoutes(routes)}</>;
   }
   return (
     <div className={cls.loginBox}>
@@ -183,7 +183,9 @@ const App = () => {
     <Provider stores={stores}>
       <ErrorBoundary>
         <ConfigProvider locale={zhCN}>
-          <Connect />
+          <BrowserRouter>
+            <Connect />
+          </BrowserRouter>
         </ConfigProvider>
       </ErrorBoundary>
     </Provider>

@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Card, Form, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Form } from 'antd';
 import type { ModalProps } from 'antd';
 import { Button } from 'antd';
 import { Modal, Input } from 'antd';
 import type { LinkInfo } from '@/stores/linkAux';
-import { LinkChannelInfo, LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkRequirementInfo } from '@/stores/linkAux';
+import { LinkTaskInfo, LinkBugInfo, LinkDocInfo, LinkExterneInfo, LinkRequirementInfo } from '@/stores/linkAux';
 import { useStores } from '@/hooks';
 import {
   list as list_issue,
@@ -15,8 +15,6 @@ import {
   ASSGIN_USER_ALL,
 } from '@/api/project_issue';
 import type { IssueInfo, ListParam as ListIssueParam } from '@/api/project_issue';
-import type { DocKey, DocSpace } from '@/api/project_doc';
-import { list_doc_key, list_doc_space } from '@/api/project_doc';
 import { request } from '@/utils/request';
 import { observer } from 'mobx-react';
 import s from './LinkSelect.module.less';
@@ -25,29 +23,13 @@ import { SearchOutlined } from '@ant-design/icons';
 import Pagination from '@/components/Pagination';
 import type { RequirementInfo } from '@/api/project_requirement';
 import { list_requirement, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
+import type { EntryInfo } from "@/api/project_entry";
+import { ENTRY_TYPE_DOC, list as list_entry } from "@/api/project_entry";
 
 const PAGE_SIZE = 10;
 
-const ALL_DOC_SPACE: DocSpace = {
-  doc_space_id: "",
-  base_info: {
-    title: "全部文档"
-  },
-  project_id: "",
-  create_time: 0,
-  update_time: 0,
-  create_user_id: "",
-  doc_count: 0,
-  system_doc_space: false,
-  user_perm: {
-    can_update: false,
-    can_remove: false,
-  },
-};
-
 export interface LinkSelectProps {
   title: string;
-  showChannel: boolean;
   showDoc: boolean;
   showRequirement: boolean;
   showTask: boolean;
@@ -58,16 +40,13 @@ export interface LinkSelectProps {
 }
 
 export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
-  const channelStore = useStores('channelStore');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
 
   const modalProps: ModalProps = {};
   modalProps.footer = null;
   let defaultTab = '';
-  if (props.showChannel) {
-    defaultTab = 'channel';
-  } else if (props.showDoc) {
+  if (props.showDoc) {
     defaultTab = 'doc';
   } else if (props.showRequirement) {
     defaultTab = "requirement";
@@ -82,20 +61,12 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [requirementList, setRequirementList] = useState([] as RequirementInfo[]);
   const [taskList, setTaskList] = useState([] as IssueInfo[]);
   const [bugList, setBugList] = useState([] as IssueInfo[]);
-  const [docSpaceList, setDocSpaceList] = useState([ALL_DOC_SPACE] as DocSpace[]);
-  const [curDocSpaceId, setCurDocSpaceId] = useState("");
-  const [docList, setDocList] = useState([] as DocKey[]);
+  const [docList, setDocList] = useState([] as EntryInfo[]);
   const [tab, setTab] = useState(defaultTab);
   const [keyword, setKeyword] = useState('');
   const [externeUrl, setExterneUrl] = useState('');
 
   const tabList = [];
-  if (props.showChannel) {
-    tabList.push({
-      label: '频道',
-      value: 'channel',
-    });
-  }
   if (props.showDoc) {
     tabList.push({
       label: '项目文档',
@@ -130,20 +101,6 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   const [curPage, setCurPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
-
-  useMemo(() => {
-    if (tab == 'doc') {
-      request(list_doc_space({
-        session_id: userStore.sessionId,
-        project_id: projectStore.curProjectId,
-      })).then(res => {
-        const tmpList = res.doc_space_list.slice();
-        tmpList.unshift(ALL_DOC_SPACE);
-        setDocSpaceList(tmpList);
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab]);
 
   useEffect(() => {
     if (!(tab == "task" || tab == "bug")) {
@@ -220,24 +177,28 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
     if (tab != "doc") {
       return;
     }
-    request(list_doc_key({
+    request(list_entry({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      filter_by_doc_space_id: curDocSpaceId != "",
-      doc_space_id: curDocSpaceId,
       list_param: {
         filter_by_watch: false,
         watch: false,
         filter_by_tag_id: false,
         tag_id_list: [],
+        filter_by_keyword: false,
+        keyword: "",
+        filter_by_mark_remove: true,
+        mark_remove: false,
+        filter_by_entry_type: true,
+        entry_type_list: [ENTRY_TYPE_DOC],
       },
       offset: curPage * PAGE_SIZE,
       limit: PAGE_SIZE,
     })).then((res) => {
-      setDocList(res.doc_key_list);
+      setDocList(res.entry_list);
       setTotalCount(res.total_count);
     });
-  }, [tab, curPage, curDocSpaceId])
+  }, [tab, curPage]);
 
   useEffect(() => {
     if (tab != 'requirement') {
@@ -264,51 +225,21 @@ export const LinkSelect: React.FC<LinkSelectProps> = observer((props) => {
   }, [tab, curPage, keyword]);
 
   const renderItemContent = () => {
-    if (props.showChannel && tab === 'channel') {
+    if (props.showDoc && tab === 'doc') {
       return (
-        <div className={s.con_item_wrap}>
-          {channelStore.channelList.map((item) => (
-            <div
-              className={s.con_item}
-              key={item.channelInfo.channel_id}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onOk(
-                  new LinkChannelInfo(
-                    item.channelInfo.basic_info.channel_name,
-                    item.channelInfo.project_id,
-                    item.channelInfo.channel_id,
-                  ),
-                );
-              }}
-            >
-              <div># {item.channelInfo.basic_info.channel_name}</div>
-            </div>
-          ))}
-        </div>
-      );
-    } else if (props.showDoc && tab === 'doc') {
-      return (
-        <Card bordered={false} extra={
-          <Select value={curDocSpaceId} onChange={value => setCurDocSpaceId(value)}>
-            {docSpaceList.map(item => (
-              <Select.Option key={item.doc_space_id} value={item.doc_space_id}>{item.base_info.title}</Select.Option>
-            ))}
-          </Select>
-        }>
+        <Card bordered={false}>
           <div className={s.con_item_wrap}>
             {docList.map((item) => (
               <div
                 className={s.con_item}
-                key={item.doc_id}
+                key={item.entry_id}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  props.onOk(new LinkDocInfo(item.title, item.project_id, "", item.doc_id));
+                  props.onOk(new LinkDocInfo(item.entry_title, projectStore.curProjectId, item.entry_id));
                 }}
               >
-                <div>{item.title}</div>
+                <div>{item.entry_title}</div>
               </div>
             ))}
             <Pagination

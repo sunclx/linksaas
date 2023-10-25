@@ -8,13 +8,10 @@ import { useStores } from '@/hooks';
 import StageFormItem, { STAGE_FORM_TYPE_ENUM } from '@/components/StageFormItem';
 import { formConfig } from '@/config/form';
 import { observer } from 'mobx-react';
-import { useSimpleEditor } from '@/components/Editor';
 import type { ChangeStateRequest, IssueInfo } from '@/api/project_issue';
 import { request } from '@/utils/request';
-import { assign_check_user, assign_exec_user, change_state, add_comment } from '@/api/project_issue';
+import { assign_check_user, assign_exec_user, change_state } from '@/api/project_issue';
 import { ISSUE_STATE_PROCESS, ISSUE_STATE_CHECK } from '@/api/project_issue';
-import type { RemirrorJSON } from '@remirror/core';
-import { is_empty_doc } from '@/components/Editor';
 
 
 type StageModelProps = ModalProps & {
@@ -31,9 +28,7 @@ const StageModel: FC<StageModelProps> = observer((props) => {
   const session_id = userStore.sessionId || '';
   const project_id = projectStore.curProjectId;
 
-  const { editor, editorRef } = useSimpleEditor("请输入备注");
-
-  const updateIssue = async (changeStateReq: ChangeStateRequest, destUserId: string, comment: RemirrorJSON, issueInfo: IssueInfo) => {
+  const updateIssue = async (changeStateReq: ChangeStateRequest, destUserId: string, issueInfo: IssueInfo) => {
     if (issueInfo.state != changeStateReq.state) {
       const changeStatRes = await request(change_state(changeStateReq));
       if (!changeStatRes) {
@@ -61,32 +56,18 @@ const StageModel: FC<StageModelProps> = observer((props) => {
         return;
       }
     }
-    //send comment
-    if (!is_empty_doc(comment)) {
-      await request(add_comment({
-        session_id: changeStateReq.session_id,
-        project_id: changeStateReq.project_id,
-        issue_id: changeStateReq.issue_id,
-        comment: {
-          comment_data: JSON.stringify(comment),
-          ref_comment_id: "",
-        },
-      }));
-    }
   }
 
   const handleOk = async () => {
     form.submit();
     const { stage_item_select_user, stage_item_status } = form.getFieldsValue();
-    const commentJson = editorRef.current?.getContent() || {
-      type: "doc",
-    };
+
     await updateIssue({
       session_id,
       project_id,
       issue_id: issue.issue_id || '',
       state: stage_item_status,
-    }, stage_item_select_user, commentJson, issue);
+    }, stage_item_select_user, issue);
     message.success('阶段更新成功');
     onOk();
   };
@@ -108,7 +89,7 @@ const StageModel: FC<StageModelProps> = observer((props) => {
         {...formConfig.layout}
       // initialValues={{ stage_item_select_user: details?.check_user_id }}
       >
-        <StageFormItem form={form} details={issue} type={STAGE_FORM_TYPE_ENUM.MODEL} editor={editor} />
+        <StageFormItem form={form} details={issue} type={STAGE_FORM_TYPE_ENUM.MODEL} />
         <div className={s.foooter}>
           <Button key="cancel" ghost onClick={() => onCancel(false)}>
             取消

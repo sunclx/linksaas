@@ -20,13 +20,6 @@ pub mod project {
         UpdateProjectMemberEvent(events_project::UpdateProjectMemberEvent),
         RemoveProjectMemberEvent(events_project::RemoveProjectMemberEvent),
         SetProjectMemberRoleEvent(events_project::SetProjectMemberRoleEvent),
-        CreateChannelEvent(events_project::CreateChannelEvent),
-        UpdateChannelEvent(events_project::UpdateChannelEvent),
-        OpenChannelEvent(events_project::OpenChannelEvent),
-        CloseChannelEvent(events_project::CloseChannelEvent),
-        RemoveChannelEvent(events_project::RemoveChannelEvent),
-        AddChannelMemberEvent(events_project::AddChannelMemberEvent),
-        RemoveChannelMemberEvent(events_project::RemoveChannelMemberEvent),
         CreateAppraiseEvent(events_project::CreateAppraiseEvent),
         UpdateAppraiseEvent(events_project::UpdateAppraiseEvent),
         RemoveAppraiseEvent(events_project::RemoveAppraiseEvent),
@@ -34,8 +27,6 @@ pub mod project {
         CreateEventSubscribeEvent(events_project::CreateEventSubscribeEvent),
         UpdateEventSubscribeEvent(events_project::UpdateEventSubscribeEvent),
         RemoveEventSubscribeEvent(events_project::RemoveEventSubscribeEvent),
-        WatchChannelEvent(events_project::WatchChannelEvent),
-        UnWatchChannelEvent(events_project::UnWatchChannelEvent),
         SetAlarmConfigEvent(events_project::SetAlarmConfigEvent),
         CustomEvent(events_project::CustomEvent),
     }
@@ -100,35 +91,6 @@ pub mod project {
             {
                 return Some(Event::SetProjectMemberRoleEvent(ev));
             }
-        } else if data.type_url == events_project::CreateChannelEvent::type_url() {
-            if let Ok(ev) = events_project::CreateChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::UpdateChannelEvent::type_url() {
-            if let Ok(ev) = events_project::UpdateChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::OpenChannelEvent::type_url() {
-            if let Ok(ev) = events_project::OpenChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::OpenChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::CloseChannelEvent::type_url() {
-            if let Ok(ev) = events_project::CloseChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::CloseChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveChannelEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::AddChannelMemberEvent::type_url() {
-            if let Ok(ev) = events_project::AddChannelMemberEvent::decode(data.value.as_slice()) {
-                return Some(Event::AddChannelMemberEvent(ev));
-            }
-        } else if data.type_url == events_project::RemoveChannelMemberEvent::type_url() {
-            if let Ok(ev) = events_project::RemoveChannelMemberEvent::decode(data.value.as_slice())
-            {
-                return Some(Event::RemoveChannelMemberEvent(ev));
-            }
         } else if data.type_url == events_project::CreateAppraiseEvent::type_url() {
             if let Ok(ev) = events_project::CreateAppraiseEvent::decode(data.value.as_slice()) {
                 return Some(Event::CreateAppraiseEvent(ev));
@@ -160,14 +122,6 @@ pub mod project {
             {
                 return Some(Event::RemoveEventSubscribeEvent(ev));
             }
-        } else if data.type_url == events_project::WatchChannelEvent::type_url() {
-            if let Ok(ev) = events_project::WatchChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchChannelEvent(ev));
-            }
-        } else if data.type_url == events_project::UnWatchChannelEvent::type_url() {
-            if let Ok(ev) = events_project::UnWatchChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnWatchChannelEvent(ev));
-            }
         } else if data.type_url == events_project::SetAlarmConfigEvent::type_url() {
             if let Ok(ev) = events_project::SetAlarmConfigEvent::decode(data.value.as_slice()) {
                 return Some(Event::SetAlarmConfigEvent(ev));
@@ -175,142 +129,6 @@ pub mod project {
         } else if data.type_url == events_project::CustomEvent::type_url() {
             if let Ok(ev) = events_project::CustomEvent::decode(data.value.as_slice()) {
                 return Some(Event::CustomEvent(ev));
-            }
-        }
-        None
-    }
-}
-
-pub mod project_doc {
-    use prost::Message;
-    use proto_gen_rust::events_doc;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        CreateSpaceEvent(events_doc::CreateSpaceEvent),
-        UpdateSpaceEvent(events_doc::UpdateSpaceEvent),
-        RemoveSpaceEvent(events_doc::RemoveSpaceEvent),
-        CreateDocEvent(events_doc::CreateDocEvent),
-        UpdateDocEvent(events_doc::UpdateDocEvent),
-        MoveDocToRecycleEvent(events_doc::MoveDocToRecycleEvent),
-        MoveDocEvent(events_doc::MoveDocEvent),
-        RemoveDocEvent(events_doc::RemoveDocEvent),
-        RecoverDocEvent(events_doc::RecoverDocEvent),
-        WatchDocEvent(events_doc::WatchDocEvent),
-        UnWatchDocEvent(events_doc::UnWatchDocEvent),
-        UpdateTagEvent(events_doc::UpdateTagEvent),
-    }
-    pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_doc::CreateSpaceEvent::type_url() {
-            if let Ok(ev) = events_doc::CreateSpaceEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateSpaceEvent(ev));
-            }
-        } else if data.type_url == events_doc::UpdateSpaceEvent::type_url() {
-            if let Ok(ev) = events_doc::UpdateSpaceEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateSpaceEvent(ev));
-            }
-        } else if data.type_url == events_doc::RemoveSpaceEvent::type_url() {
-            if let Ok(ev) = events_doc::RemoveSpaceEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveSpaceEvent(ev));
-            }
-        } else if data.type_url == events_doc::CreateDocEvent::type_url() {
-            if let Ok(ev) = events_doc::CreateDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::UpdateDocEvent::type_url() {
-            if let Ok(ev) = events_doc::UpdateDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::MoveDocToRecycleEvent::type_url() {
-            if let Ok(ev) = events_doc::MoveDocToRecycleEvent::decode(data.value.as_slice()) {
-                return Some(Event::MoveDocToRecycleEvent(ev));
-            }
-        } else if data.type_url == events_doc::MoveDocEvent::type_url() {
-            if let Ok(ev) = events_doc::MoveDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::MoveDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::RemoveDocEvent::type_url() {
-            if let Ok(ev) = events_doc::RemoveDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::RecoverDocEvent::type_url() {
-            if let Ok(ev) = events_doc::RecoverDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::RecoverDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::WatchDocEvent::type_url() {
-            if let Ok(ev) = events_doc::WatchDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::UnWatchDocEvent::type_url() {
-            if let Ok(ev) = events_doc::UnWatchDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnWatchDocEvent(ev));
-            }
-        } else if data.type_url == events_doc::UpdateTagEvent::type_url() {
-            if let Ok(ev) = events_doc::UpdateTagEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateTagEvent(ev));
-            }
-        }
-        None
-    }
-}
-
-pub mod sprit {
-    use prost::Message;
-    use proto_gen_rust::events_sprit;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        CreateEvent(events_sprit::CreateEvent),
-        UpdateEvent(events_sprit::UpdateEvent),
-        RemoveEvent(events_sprit::RemoveEvent),
-        WatchEvent(events_sprit::WatchEvent),
-        UnWatchEvent(events_sprit::UnWatchEvent),
-        LinkDocEvent(events_sprit::LinkDocEvent),
-        CancelLinkDocEvent(events_sprit::CancelLinkDocEvent),
-        LinkChannelEvent(events_sprit::LinkChannelEvent),
-        CancelLinkChannelEvent(events_sprit::CancelLinkChannelEvent),
-    }
-
-    pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_sprit::CreateEvent::type_url() {
-            if let Ok(ev) = events_sprit::CreateEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreateEvent(ev));
-            }
-        } else if data.type_url == events_sprit::UpdateEvent::type_url() {
-            if let Ok(ev) = events_sprit::UpdateEvent::decode(data.value.as_slice()) {
-                return Some(Event::UpdateEvent(ev));
-            }
-        } else if data.type_url == events_sprit::RemoveEvent::type_url() {
-            if let Ok(ev) = events_sprit::RemoveEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemoveEvent(ev));
-            }
-        } else if data.type_url == events_sprit::WatchEvent::type_url() {
-            if let Ok(ev) = events_sprit::WatchEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchEvent(ev));
-            }
-        } else if data.type_url == events_sprit::UnWatchEvent::type_url() {
-            if let Ok(ev) = events_sprit::UnWatchEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnWatchEvent(ev));
-            }
-        } else if data.type_url == events_sprit::LinkDocEvent::type_url() {
-            if let Ok(ev) = events_sprit::LinkDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::LinkDocEvent(ev));
-            }
-        } else if data.type_url == events_sprit::CancelLinkDocEvent::type_url() {
-            if let Ok(ev) = events_sprit::CancelLinkDocEvent::decode(data.value.as_slice()) {
-                return Some(Event::CancelLinkDocEvent(ev));
-            }
-        } else if data.type_url == events_sprit::LinkChannelEvent::type_url() {
-            if let Ok(ev) = events_sprit::LinkChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::LinkChannelEvent(ev));
-            }
-        } else if data.type_url == events_sprit::CancelLinkChannelEvent::type_url() {
-            if let Ok(ev) = events_sprit::CancelLinkChannelEvent::decode(data.value.as_slice()) {
-                return Some(Event::CancelLinkChannelEvent(ev));
             }
         }
         None
@@ -956,11 +774,55 @@ pub mod cicd {
     }
 }
 
+pub mod entry {
+    use prost::Message;
+    use proto_gen_rust::events_entry;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        CreateEvent(events_entry::CreateEvent),
+        OpenEvent(events_entry::OpenEvent),
+        CloseEvent(events_entry::CloseEvent),
+        RemoveEvent(events_entry::RemoveEvent),
+        WatchEvent(events_entry::WatchEvent),
+        UnwatchEvent(events_entry::UnwatchEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_entry::CreateEvent::type_url() {
+            if let Ok(ev) = events_entry::CreateEvent::decode(data.value.as_slice()) {
+                return Some(Event::CreateEvent(ev));
+            }
+        } else if data.type_url == events_entry::OpenEvent::type_url() {
+            if let Ok(ev) = events_entry::OpenEvent::decode(data.value.as_slice()) {
+                return Some(Event::OpenEvent(ev));
+            }
+        } else if data.type_url == events_entry::CloseEvent::type_url() {
+            if let Ok(ev) = events_entry::CloseEvent::decode(data.value.as_slice()) {
+                return Some(Event::CloseEvent(ev));
+            }
+        } else if data.type_url == events_entry::RemoveEvent::type_url() {
+            if let Ok(ev) = events_entry::RemoveEvent::decode(data.value.as_slice()) {
+                return Some(Event::RemoveEvent(ev));
+            }
+        } else if data.type_url == events_entry::WatchEvent::type_url() {
+            if let Ok(ev) = events_entry::WatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::WatchEvent(ev));
+            }
+        } else if data.type_url == events_entry::UnwatchEvent::type_url() {
+            if let Ok(ev) = events_entry::UnwatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnwatchEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
-    ProjectDocEvent(project_doc::Event),
-    SpritEvent(sprit::Event),
     IssueEvent(issue::Event),
     ExtEvEvent(ext_event::Event),
     GitlabEvent(gitlab::Event),
@@ -973,6 +835,7 @@ pub enum EventMessage {
     ApiCollectionEvent(api_collection::Event),
     AtomgitEvent(atomgit::Event),
     CiCdEvent(cicd::Event),
+    EntryEvent(entry::Event),
     NoopEvent(),
 }
 
@@ -981,12 +844,6 @@ use proto_gen_rust::google::protobuf::Any;
 pub fn decode_event(data: &Any) -> Option<EventMessage> {
     if let Some(ret) = project::decode_event(data) {
         return Some(EventMessage::ProjectEvent(ret));
-    }
-    if let Some(ret) = project_doc::decode_event(data) {
-        return Some(EventMessage::ProjectDocEvent(ret));
-    }
-    if let Some(ret) = sprit::decode_event(data) {
-        return Some(EventMessage::SpritEvent(ret));
     }
     if let Some(ret) = issue::decode_event(data) {
         return Some(EventMessage::IssueEvent(ret));
@@ -1023,6 +880,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = cicd::decode_event(data) {
         return Some(EventMessage::CiCdEvent(ret));
+    }
+    if let Some(ret) = entry::decode_event(data) {
+        return Some(EventMessage::EntryEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }

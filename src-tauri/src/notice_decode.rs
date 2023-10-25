@@ -11,18 +11,10 @@ pub mod project {
         AddMemberNotice(notices_project::AddMemberNotice),
         UpdateMemberNotice(notices_project::UpdateMemberNotice),
         RemoveMemberNotice(notices_project::RemoveMemberNotice),
-        AddChannelNotice(notices_project::AddChannelNotice),
-        UpdateChannelNotice(notices_project::UpdateChannelNotice),
-        RemoveChannelNotice(notices_project::RemoveChannelNotice),
-        AddChannelMemberNotice(notices_project::AddChannelMemberNotice),
-        RemoveChannelMemberNotice(notices_project::RemoveChannelMemberNotice),
-        NewMsgNotice(notices_project::NewMsgNotice),
-        UpdateMsgNotice(notices_project::UpdateMsgNotice),
         UserOnlineNotice(notices_project::UserOnlineNotice),
         UserOfflineNotice(notices_project::UserOfflineNotice),
         NewEventNotice(notices_project::NewEventNotice),
         SetMemberRoleNotice(notices_project::SetMemberRoleNotice),
-        ReminderNotice(notices_project::ReminderNotice),
         UpdateShortNoteNotice(notices_project::UpdateShortNoteNotice),
         UpdateAlarmStatNotice(notices_project::UpdateAlarmStatNotice),
         CreateBulletinNotice(notices_project::CreateBulletinNotice),
@@ -57,40 +49,6 @@ pub mod project {
             if let Ok(notice) = notices_project::RemoveMemberNotice::decode(data.value.as_slice()) {
                 return Some(Notice::RemoveMemberNotice(notice));
             }
-        } else if data.type_url == notices_project::AddChannelNotice::type_url() {
-            if let Ok(notice) = notices_project::AddChannelNotice::decode(data.value.as_slice()) {
-                return Some(Notice::AddChannelNotice(notice));
-            }
-        } else if data.type_url == notices_project::UpdateChannelNotice::type_url() {
-            if let Ok(notice) = notices_project::UpdateChannelNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::UpdateChannelNotice(notice));
-            }
-        } else if data.type_url == notices_project::RemoveChannelNotice::type_url() {
-            if let Ok(notice) = notices_project::RemoveChannelNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveChannelNotice(notice));
-            }
-        } else if data.type_url == notices_project::AddChannelMemberNotice::type_url() {
-            if let Ok(notice) =
-                notices_project::AddChannelMemberNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::AddChannelMemberNotice(notice));
-            }
-        } else if data.type_url == notices_project::RemoveChannelMemberNotice::type_url() {
-            if let Ok(notice) =
-                notices_project::RemoveChannelMemberNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveChannelMemberNotice(notice));
-            }
-        } else if data.type_url == notices_project::NewMsgNotice::type_url() {
-            if let Ok(notice) = notices_project::NewMsgNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewMsgNotice(notice));
-            }
-        } else if data.type_url == notices_project::UpdateMsgNotice::type_url() {
-            if let Ok(notice) = notices_project::UpdateMsgNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateMsgNotice(notice));
-            }
         } else if data.type_url == notices_project::UserOnlineNotice::type_url() {
             if let Ok(notice) = notices_project::UserOnlineNotice::decode(data.value.as_slice()) {
                 return Some(Notice::UserOnlineNotice(notice));
@@ -107,10 +65,6 @@ pub mod project {
             if let Ok(notice) = notices_project::SetMemberRoleNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::SetMemberRoleNotice(notice));
-            }
-        } else if data.type_url == notices_project::ReminderNotice::type_url() {
-            if let Ok(notice) = notices_project::ReminderNotice::decode(data.value.as_slice()) {
-                return Some(Notice::ReminderNotice(notice));
             }
         } else if data.type_url == notices_project::UpdateShortNoteNotice::type_url() {
             if let Ok(notice) =
@@ -154,75 +108,6 @@ pub mod project {
         } else if data.type_url == notices_project::UpdateSpritNotice::type_url() {
             if let Ok(notice) = notices_project::UpdateSpritNotice::decode(data.value.as_slice()) {
                 return Some(Notice::UpdateSpritNotice(notice));
-            }
-        }
-        None
-    }
-}
-
-pub mod project_doc {
-    use prost::Message;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::notices_doc;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    pub enum Notice {
-        NewDocSpaceNotice(notices_doc::NewDocSpaceNotice),
-        UpdateDocSpaceNotice(notices_doc::UpdateDocSpaceNotice),
-        RemoveDocSpaceNotice(notices_doc::RemoveDocSpaceNotice),
-        NewDocNotice(notices_doc::NewDocNotice),
-        UpdateDocNotice(notices_doc::UpdateDocNotice),
-        RemoveDocNotice(notices_doc::RemoveDocNotice),
-        RecoverDocInRecycleNotice(notices_doc::RecoverDocInRecycleNotice),
-        RemoveDocInRecycleNotice(notices_doc::RemoveDocInRecycleNotice),
-        LinkSpritNotice(notices_doc::LinkSpritNotice),
-        CancelLinkSpritNotice(notices_doc::CancelLinkSpritNotice),
-    }
-
-    pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_doc::NewDocSpaceNotice::type_url() {
-            if let Ok(notice) = notices_doc::NewDocSpaceNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewDocSpaceNotice(notice));
-            }
-        } else if data.type_url == notices_doc::UpdateDocSpaceNotice::type_url() {
-            if let Ok(notice) = notices_doc::UpdateDocSpaceNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateDocSpaceNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RemoveDocSpaceNotice::type_url() {
-            if let Ok(notice) = notices_doc::RemoveDocSpaceNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RemoveDocSpaceNotice(notice));
-            }
-        } else if data.type_url == notices_doc::NewDocNotice::type_url() {
-            if let Ok(notice) = notices_doc::NewDocNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewDocNotice(notice));
-            }
-        } else if data.type_url == notices_doc::UpdateDocNotice::type_url() {
-            if let Ok(notice) = notices_doc::UpdateDocNotice::decode(data.value.as_slice()) {
-                return Some(Notice::UpdateDocNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RemoveDocNotice::type_url() {
-            if let Ok(notice) = notices_doc::RemoveDocNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RemoveDocNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RecoverDocInRecycleNotice::type_url() {
-            if let Ok(notice) =
-                notices_doc::RecoverDocInRecycleNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RecoverDocInRecycleNotice(notice));
-            }
-        } else if data.type_url == notices_doc::RemoveDocInRecycleNotice::type_url() {
-            if let Ok(notice) = notices_doc::RemoveDocInRecycleNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveDocInRecycleNotice(notice));
-            }
-        } else if data.type_url == notices_doc::LinkSpritNotice::type_url() {
-            if let Ok(notice) = notices_doc::LinkSpritNotice::decode(data.value.as_slice()) {
-                return Some(Notice::LinkSpritNotice(notice));
-            }
-        } else if data.type_url == notices_doc::CancelLinkSpritNotice::type_url() {
-            if let Ok(notice) = notices_doc::CancelLinkSpritNotice::decode(data.value.as_slice()) {
-                return Some(Notice::CancelLinkSpritNotice(notice));
             }
         }
         None
@@ -374,7 +259,6 @@ pub mod client {
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
 pub enum NoticeMessage {
     ProjectNotice(project::Notice),
-    ProjectDocNotice(project_doc::Notice),
     IssueNotice(issue::Notice),
     AppraiseNotice(appraise::Notice),
     IdeaNotice(idea::Notice),
@@ -386,9 +270,6 @@ use proto_gen_rust::google::protobuf::Any;
 pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     if let Some(ret) = project::decode_notice(data) {
         return Some(NoticeMessage::ProjectNotice(ret));
-    }
-    if let Some(ret) = project_doc::decode_notice(data) {
-        return Some(NoticeMessage::ProjectDocNotice(ret));
     }
     if let Some(ret) = issue::decode_notice(data) {
         return Some(NoticeMessage::IssueNotice(ret));

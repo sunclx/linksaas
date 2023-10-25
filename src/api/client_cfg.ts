@@ -16,9 +16,7 @@ export type AdItem = {
 
 export type ServerCap = {
   project_doc: boolean;
-  expert_qa: boolean;
   sprit: boolean;
-  search: boolean;
   appraise: boolean;
   issue: boolean;
   project_setting: boolean;
@@ -32,7 +30,6 @@ export type GetCfgResponse = {
   can_invite: boolean;
   can_register: boolean;
   enable_admin: boolean;
-  enable_search: boolean;
   enable_pub_app_store: boolean;
   enable_pub_docker_template: boolean;
   enable_rss: boolean;

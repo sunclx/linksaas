@@ -8,15 +8,13 @@ use tauri::{
 
 use crate::project_tool_api_plugin::ProjectLinksaasYml;
 
-mod access_check;
-mod channel_api;
-mod doc_space_api;
 mod event_api;
 mod issue_api;
 mod member_api;
 mod notice;
 mod project_api;
 mod project_code_api;
+mod entry_api;
 mod server;
 
 #[derive(Default)]

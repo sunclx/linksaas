@@ -31,7 +31,7 @@ const MemberInfoPanel = () => {
     const [roleList, setRoleList] = useState<RoleInfo[]>([]);
     const [removeMemberUserId, setRemoveMemberUserId] = useState("");
     const [ownerMemberUserId, setOwnerMemberUserId] = useState("");
-    const [activeKey, setActiveKey] = useState(userStore.userInfo.userId);
+    const [activeKey, setActiveKey] = useState(memberStore.showDetailMemberId == "" ? userStore.userInfo.userId : memberStore.showDetailMemberId);
     const [showInviteListModal, setShowInviteListModal] = useState(false);
 
     const loadRoleList = async () => {
@@ -107,7 +107,7 @@ const MemberInfoPanel = () => {
                         {memberStore.memberList.map(member => (
                             <Tabs.TabPane key={member.member.member_user_id} tab={
                                 <Space>
-                                    <UserPhoto logoUri={member.member.logo_uri} style={{ width: "24px", height: "24px", borderRadius: "24px" }} />
+                                    <UserPhoto logoUri={member.member.logo_uri} style={{ width: "24px", height: "24px", borderRadius: "24px", filter: member.member.online ? "" : "grayscale(100%)" }} />
                                     <div style={{ width: "80px", overflowX: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", textAlign: "left" }}>{member.member.display_name}</div>
                                 </Space>
                             }>

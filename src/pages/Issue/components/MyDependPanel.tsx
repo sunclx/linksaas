@@ -158,7 +158,6 @@ export const MyDependPanel: React.FC<MyDependPanelProps> = (props) => {
             {showSelectLink == true && (
                 <LinkSelect
                     title="选择依赖任务/缺陷"
-                    showChannel={false}
                     showDoc={false}
                     showRequirement={false}
                     showTask={true}

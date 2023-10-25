@@ -29,11 +29,10 @@ type StageFormItemProps = FormProps & {
   form: FormInstance<any>;
   type: STAGE_FORM_TYPE_ENUM;
   details: IssueInfo;
-  editor: JSX.Element;
 };
 
 const StageFormItem: FC<StageFormItemProps> = observer((props) => {
-  const { form, type, details, editor } = props;
+  const { form, type, details } = props;
 
   let defaultNextStatus = ISSUE_STATE_PROCESS;
   if (details.user_issue_perm.next_state_list.length > 0) {
@@ -144,11 +143,6 @@ const StageFormItem: FC<StageFormItemProps> = observer((props) => {
         </Form.Item>
         {nextStatus !== ISSUE_STATE_CLOSE && execUserIdRender()}
       </div>
-      <Form.Item labelCol={{ span: 2 }} label="">
-        <div style={{ marginLeft: type === STAGE_FORM_TYPE_ENUM.DETAILS ? "0px" : "30px", width: type === STAGE_FORM_TYPE_ENUM.DETAILS ? "auto" : "480px" }}>
-          {editor}
-        </div>
-      </Form.Item>
     </>
   );
 });

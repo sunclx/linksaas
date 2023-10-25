@@ -1,20 +1,19 @@
 import type { RootStore } from './index';
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { ProjectInfo } from '@/api/project';
-import { list as listProject, get_project as getProject } from '@/api/project';
+import type { ProjectInfo, TagInfo } from '@/api/project';
+import { list as listProject, get_project as getProject, list_tag, TAG_SCOPRE_ALL } from '@/api/project';
 import { request } from '@/utils/request';
 import type { PROJECT_SETTING_TAB } from '@/utils/constant';
-import { APP_PROJECT_CHAT_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
-import { list_read_msg_stat } from '@/api/project_channel';
+import { APP_PROJECT_OVERVIEW_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
+
 
 export class WebProjectStatus {
   constructor() {
     makeAutoObservable(this);
   }
-  unread_msg_count: number = 0;
   undone_task_count: number = 0;
   undone_bug_count: number = 0;
   undone_appraise_count: number = 0;
@@ -23,7 +22,6 @@ export class WebProjectStatus {
 
   get total_count(): number {
     return (
-      this.unread_msg_count +
       this.undone_task_count +
       this.undone_bug_count +
       this.undone_appraise_count +
@@ -35,7 +33,7 @@ export class WebProjectStatus {
 export type WebProjectInfo = ProjectInfo & {
   project_status: WebProjectStatus;
   bulletin_version: number;
-  tag_version: number;
+  tag_list: TagInfo[];
 };
 
 export default class ProjectStore {
@@ -61,14 +59,12 @@ export default class ProjectStore {
       this._curProjectId = val;
     });
     if (val !== '' && val != oldProjectId) {
+      this.rootStore.entryStore.reset();
+      this.rootStore.memberStore.showDetailMemberId = "";
       await Promise.all([
         this.rootStore.memberStore.loadMemberList(val),
         this.rootStore.ideaStore.loadKeyword(val),
-        this.rootStore.docSpaceStore.loadCurWatchDocList(val),
-        this.rootStore.spritStore.loadCurWatchList(val),
       ]);
-
-      await this.rootStore.channelStore.loadChannelList(val);
 
       if (this.rootStore.appStore.simpleMode) {
         this.rootStore.issueStore.loadPrjTodoIssue(this.curProjectId, ISSUE_TYPE_TASK);
@@ -114,7 +110,7 @@ export default class ProjectStore {
         ...info,
         project_status: new WebProjectStatus(),
         bulletin_version: 0,
-        tag_version: 0,
+        tag_list: [],
       };
     });
     const prjMap: Map<string, WebProjectInfo> = new Map();
@@ -128,18 +124,18 @@ export default class ProjectStore {
     //更新项目状态
     const projectIdList = this._projectList.map((item) => item.project_id);
     projectIdList.forEach(async (projectId: string) => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 100);
-      });
       const status = await this.clacProjectStatus(projectId);
+      const tagList = await this.listTag(projectId);
       runInAction(() => {
         const index = this._projectList.findIndex((item) => item.project_id == projectId);
         if (index != -1) {
           this._projectList[index].project_status = status;
+          this._projectList[index].tag_list = tagList;
         }
         const value = this._projectMap.get(projectId);
         if (value !== undefined) {
           value.project_status = status;
+          value.tag_list = tagList;
           this._projectMap.set(projectId, value);
         }
       });
@@ -148,14 +144,6 @@ export default class ProjectStore {
 
   private async clacProjectStatus(projectId: string): Promise<WebProjectStatus> {
     const status = new WebProjectStatus();
-    const msgStatRes = await request(
-      list_read_msg_stat(this.rootStore.userStore.sessionId, projectId),
-    );
-    if (msgStatRes) {
-      msgStatRes.stat_list.forEach((item) => {
-        status.unread_msg_count += item.unread_msg_count;
-      });
-    }
     const issueStateRes = await request(
       get_my_issue_state(this.rootStore.userStore.sessionId, projectId),
     );
@@ -175,6 +163,30 @@ export default class ProjectStore {
     }
     return new Promise((resolve) => {
       resolve(status);
+    });
+  }
+
+  private async listTag(projectId: string): Promise<TagInfo[]> {
+    const res = await request(list_tag({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+      tag_scope_type: TAG_SCOPRE_ALL,
+    }));
+    return res.tag_info_list;
+  }
+
+  async updateTagList(projectId: string) {
+    const tagList = await this.listTag(projectId);
+    runInAction(() => {
+      const index = this._projectList.findIndex((item) => item.project_id == projectId);
+      if (index != -1) {
+        this._projectList[index].tag_list = tagList;
+      }
+      const prj = this._projectMap.get(projectId);
+      if (prj !== undefined) {
+        prj.tag_list = tagList;
+        this._projectMap.set(projectId, prj);
+      }
     });
   }
 
@@ -199,29 +211,6 @@ export default class ProjectStore {
         if (prj !== undefined) {
           prj.project_status.undone_bug_count = undoneBugCount;
           prj.project_status.undone_task_count = undoneTaskCount;
-          this._projectMap.set(projectId, prj);
-        }
-      });
-    }
-  }
-
-  async updateProjectUnreadMsgCount(projectId: string) {
-    const msgStatRes = await request(
-      list_read_msg_stat(this.rootStore.userStore.sessionId, projectId),
-    );
-    let totalUnread = 0;
-    if (msgStatRes) {
-      msgStatRes.stat_list.forEach((item) => {
-        totalUnread += item.unread_msg_count;
-      });
-      runInAction(() => {
-        const index = this._projectList.findIndex((item) => item.project_id == projectId);
-        if (index != -1) {
-          this._projectList[index].project_status.unread_msg_count = totalUnread;
-        }
-        const prj = this._projectMap.get(projectId);
-        if (prj !== undefined) {
-          prj.project_status.unread_msg_count = totalUnread;
           this._projectMap.set(projectId, prj);
         }
       });
@@ -283,7 +272,8 @@ export default class ProjectStore {
     const res = await request(getProject(this.rootStore.userStore.sessionId, projectId));
     if (res) {
       const status = await this.clacProjectStatus(projectId);
-      const prj = { ...res.info, project_status: status, bulletin_version: 0, tag_version: 0 };
+      const tagList = await this.listTag(projectId);
+      const prj = { ...res.info, project_status: status, bulletin_version: 0, tag_list: tagList };
       runInAction(() => {
         this._projectMap.set(prj.project_id, prj);
         const tmpList = this._projectList.slice()
@@ -310,18 +300,6 @@ export default class ProjectStore {
     });
   }
 
-  incTagVersion(projectId: string) {
-    const tmpList = this._projectList.slice();
-    runInAction(() => {
-      const index = tmpList.findIndex(prj => prj.project_id == projectId);
-      if (index != -1) {
-        tmpList[index].tag_version += 1;
-        this._projectMap.set(tmpList[index].project_id, tmpList[index]);
-        this._projectList = tmpList;
-      }
-    });
-  }
-
   removeProject(projecId: string, history: History) {
     const tmpList = this._projectList.filter((item) => item.project_id != projecId);
     let newProjectId = "";
@@ -338,7 +316,7 @@ export default class ProjectStore {
       history.push('/app/workbench');
     } else {
       this.setCurProjectId(newProjectId);
-      history.push(APP_PROJECT_CHAT_PATH);
+      history.push(APP_PROJECT_OVERVIEW_PATH);
     }
   }
 

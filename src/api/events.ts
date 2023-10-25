@@ -25,6 +25,8 @@ export const EVENT_TYPE_IDEA: EVENT_TYPE = 16; //知识点相关
 export const EVENT_TYPE_DATA_ANNO: EVENT_TYPE = 18; //数据标注
 export const EVENT_TYPE_API_COLLECTION: EVENT_TYPE = 19; //API集合
 export const EVENT_TYPE_CICD: EVENT_TYPE = 20; //CICD
+export const EVENT_TYPE_ENTRY: EVENT_TYPE = 21; //内容入口
+
 
 export const EVENT_TYPE_CUSTOM_EVENT = 99;
 
@@ -43,7 +45,7 @@ type EVENT_REF_TYPE = number;
 export const EVENT_REF_TYPE_NONE: EVENT_REF_TYPE = 0; //没有相关事件引用
 export const EVENT_REF_TYPE_USER: EVENT_REF_TYPE = 1; //用户事件引用
 export const EVENT_REF_TYPE_PROJECT: EVENT_REF_TYPE = 2; //项目事件引用
-export const EVENT_REF_TYPE_CHANNEL: EVENT_REF_TYPE = 3; //频道事件引用
+// export const EVENT_REF_TYPE_CHANNEL: EVENT_REF_TYPE = 3; //频道事件引用
 export const EVENT_REF_TYPE_SPRIT: EVENT_REF_TYPE = 4; //工作计划事件引用
 export const EVENT_REF_TYPE_TASK: EVENT_REF_TYPE = 5; //任务事件引用
 export const EVENT_REF_TYPE_BUG: EVENT_REF_TYPE = 6; //缺陷事件引用

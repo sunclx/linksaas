@@ -14,6 +14,7 @@ import { useStores } from "@/hooks";
 
 const ProjectOverview = () => {
     const projectStore = useStores('projectStore');
+    const memberStore = useStores('memberStore');
 
     const [port, setPort] = useState(0);
 
@@ -26,6 +27,12 @@ const ProjectOverview = () => {
         loadPort();
     }, []);
 
+    useEffect(() => {
+        return () => {
+            memberStore.showDetailMemberId = "";
+        };
+    }, []);
+
     const openApiConsole = async () => {
         const label = "localapi"
         const view = WebviewWindow.getByLabel(label);
@@ -36,10 +43,10 @@ const ProjectOverview = () => {
 
         new WebviewWindow(label, {
             url: `local_api.html?port=${port}`,
-            width: 800 ,
-            minWidth: 800 ,
-            height: 600 ,
-            minHeight: 600 ,
+            width: 800,
+            minWidth: 800,
+            height: 600,
+            minHeight: 600,
             center: true,
             title: "本地接口调试",
             resizable: true,
@@ -50,11 +57,11 @@ const ProjectOverview = () => {
 
     return (
         <div className={s.overview_wrap}>
-            {(projectStore.curProject?.setting.hide_project_info ?? false) == false && <ProjectInfoPanel />}
-            {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && <BulletinListPanel />}
+            {(projectStore.curProject?.setting.hide_project_info ?? false) == false && memberStore.showDetailMemberId == "" && <ProjectInfoPanel />}
+            {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && memberStore.showDetailMemberId == "" && <BulletinListPanel />}
             <MemberInfoPanel />
-            
-            {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && (
+
+            {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && memberStore.showDetailMemberId == "" &&(
                 <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
                     <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>
                         <Collapse.Panel key="localApi" header="本地接口" extra={

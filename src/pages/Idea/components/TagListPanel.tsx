@@ -6,14 +6,11 @@ import { useHistory, useLocation } from "react-router-dom";
 import { observer } from 'mobx-react';
 import type { LinkIdeaPageState } from "@/stores/linkAux";
 import { LinkIdeaPageInfo } from "@/stores/linkAux";
-import type { TagInfo } from "@/api/project";
 
 
-interface TagListPanelProps {
-    tagDefList: TagInfo[];
-}
 
-const TagListPanel: React.FC<TagListPanelProps> = (props) => {
+
+const TagListPanel= () => {
     const history = useHistory();
     const location = useLocation();
 
@@ -43,7 +40,7 @@ const TagListPanel: React.FC<TagListPanelProps> = (props) => {
                         }}
                     >全部知识点</div>
                 </List.Item>
-                {props.tagDefList.map(item => (
+                {(projectStore.curProject?.tag_list??[]).filter(item=>item.use_in_idea).map(item => (
                     <List.Item key={item.tag_id} className={item.tag_id == state?.tagId ? s.cur_tag : ""} style={{ padding: "0px 0px" }}>
                         <div className={s.tag} style={{ backgroundColor: item.bg_color }}
                             onClick={e => {

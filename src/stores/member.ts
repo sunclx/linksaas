@@ -239,18 +239,6 @@ class MemberStore {
     });
   }
 
-  //浮动显示项目成员信息
-  private _floatMemberUserId = "";
-
-  set floatMemberUserId(val: string) {
-    runInAction(() => {
-      this._floatMemberUserId = val;
-    });
-  }
-
-  get floatMemberUserId(): string {
-    return this._floatMemberUserId;
-  }
 
   //显示邀请成员modal
   private _showInviteMember = false;
@@ -264,6 +252,21 @@ class MemberStore {
       this._showInviteMember = val;
     });
   }
+
+  //显示用户详情
+
+  private _showDetailMemberId = "";
+
+  get showDetailMemberId() {
+    return this._showDetailMemberId;
+  }
+
+  set showDetailMemberId(val: string) {
+    runInAction(() => {
+      this._showDetailMemberId = val;
+    });
+  }
+
   //我未完成的issue数量
   get myUnDoneIssueCount(): number {
     const member = this.getMember(this.rootStore.userStore.userInfo.userId);

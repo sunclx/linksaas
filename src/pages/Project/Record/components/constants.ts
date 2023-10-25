@@ -1,8 +1,8 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
-    ProjectEvCfg, DocEvCfg, ExtEvCfg,
-    GiteeEvCfg, GitlabEvCfg, IssueEvCfg, SpritEvCfg,
-    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg
+    ProjectEvCfg,  ExtEvCfg,
+    GiteeEvCfg, GitlabEvCfg, IssueEvCfg,
+    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg, EntryEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -63,34 +63,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "setProjectMemberRole",
     },
     {
-        label: "创建频道",
-        value: "createChannel",
-    },
-    {
-        label: "更新频道",
-        value: "updateChannel",
-    },
-    {
-        label: "激活频道",
-        value: "openChannel",
-    },
-    {
-        label: "关闭频道",
-        value: "closeChannel",
-    },
-    {
-        label: "删除频道",
-        value: "removeChannel",
-    },
-    {
-        label: "添加频道成员",
-        value: "addChannelMember",
-    },
-    {
-        label: "删除频道成员",
-        value: "removeChannelMember",
-    },
-    {
         label: "创建评估",
         value: "createAppraise",
     },
@@ -119,14 +91,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "removeSubscribe",
     },
     {
-        label: "关注频道",
-        value: "watchChannel",
-    },
-    {
-        label: "取消关注频道",
-        value: "unWatchChannel",
-    },
-    {
         label: "更新预警配置",
         value: "setAlarmConfig",
     },
@@ -152,13 +116,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         update_project_member: false,
         remove_project_member: false,
         set_project_member_role: false,
-        create_channel: false,
-        update_channel: false,
-        open_channel: false,
-        close_channel: false,
-        remove_channel: false,
-        add_channel_member: false,
-        remove_channel_member: false,
         create_appraise: false,
         update_appraise: false,
         remove_appraise: false,
@@ -166,8 +123,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         create_subscribe: false,
         update_subscribe: false,
         remove_subscribe: false,
-        watch_channel: false,
-        un_watch_channel: false,
         set_alarm_config: false,
         custom_event: false,
     };
@@ -203,20 +158,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.remove_project_member = true;
         } else if (value == "setProjectMemberRole") {
             ret.set_project_member_role = true;
-        } else if (value == "createChannel") {
-            ret.create_channel = true;
-        } else if (value == "updateChannel") {
-            ret.update_channel = true;
-        } else if (value == "openChannel") {
-            ret.open_channel = true;
-        } else if (value == "closeChannel") {
-            ret.close_channel = true;
-        } else if (value == "removeChannel") {
-            ret.remove_channel = true;
-        } else if (value == "addChannelMember") {
-            ret.add_channel_member = true;
-        } else if (value == "removeChannelMember") {
-            ret.remove_channel_member = true;
         } else if (value == "createAppraise") {
             ret.create_appraise = true;
         } else if (value == "updateAppraise") {
@@ -231,10 +172,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.update_subscribe = true;
         } else if (value == "removeSubscribe") {
             ret.remove_subscribe = true;
-        } else if (value == "watchChannel") {
-            ret.watch_channel = true;
-        } else if (value == "unWatchChannel") {
-            ret.un_watch_channel = true;
         } else if (value == "setAlarmConfig") {
             ret.set_alarm_config = true;
         } else if (value == "customEvent") {
@@ -288,27 +225,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     if (cfg.set_project_member_role) {
         retList.push("setProjectMemberRole");
     }
-    if (cfg.create_channel) {
-        retList.push("createChannel");
-    }
-    if (cfg.update_channel) {
-        retList.push("updateChannel");
-    }
-    if (cfg.open_channel) {
-        retList.push("openChannel");
-    }
-    if (cfg.close_channel) {
-        retList.push("closeChannel");
-    }
-    if (cfg.remove_channel) {
-        retList.push("removeChannel");
-    }
-    if (cfg.add_channel_member) {
-        retList.push("addChannelMember");
-    }
-    if (cfg.remove_channel_member) {
-        retList.push("removeChannelMember");
-    }
     if (cfg.create_appraise) {
         retList.push("createAppraise");
     }
@@ -330,157 +246,11 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     if (cfg.remove_subscribe) {
         retList.push("removeSubscribe");
     }
-    if (cfg.watch_channel) {
-        retList.push("watchChannel");
-    }
-    if (cfg.un_watch_channel) {
-        retList.push("unWatchChannel");
-    }
     if (cfg.set_alarm_config) {
         retList.push("setAlarmConfig");
     }
     if (cfg.custom_event) {
         retList.push("customEvent");
-    }
-    return retList;
-}
-
-export const docEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "创建文档空间",
-        value: "createSpace",
-    },
-    {
-        label: "更新文档空间",
-        value: "updateSpace",
-    },
-    {
-        label: "删除文档空间",
-        value: "removeSpace",
-    },
-    {
-        label: "创建文档",
-        value: "createDoc",
-    },
-    {
-        label: "更新文档",
-        value: "updateDoc",
-    },
-    {
-        label: "更新标签",
-        value: "updateTag"
-    },
-    {
-        label: "移动到回收站",
-        value: "moveDocToRecycle",
-    },
-    {
-        label: "删除文档",
-        value: "removeDoc",
-    },
-    {
-        label: "恢复文档",
-        value: "recoverDoc",
-    },
-    {
-        label: "关注文档",
-        value: "watchDoc",
-    },
-    {
-        label: "取消关注文档",
-        value: "unWatchDoc",
-    },
-    {
-        label: "移动文档",
-        value: "moveDoc",
-    },
-];
-
-export const calcDocEvCfg = (values: string[] | undefined): DocEvCfg => {
-    const ret: DocEvCfg = {
-        create_space: false,
-        update_space: false,
-        remove_space: false,
-        create_doc: false,
-        update_doc: false,
-        move_doc_to_recycle: false,
-        remove_doc: false,
-        recover_doc: false,
-        watch_doc: false,
-        un_watch_doc: false,
-        move_doc: false,
-        update_tag: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "createSpace") {
-            ret.create_space = true;
-        } else if (value == "updateSpace") {
-            ret.update_space = true;
-        } else if (value == "removeSpace") {
-            ret.remove_space = true;
-        } else if (value == "createDoc") {
-            ret.create_doc = true;
-        } else if (value == "updateDoc") {
-            ret.update_doc = true;
-        } else if (value == "moveDocToRecycle") {
-            ret.move_doc_to_recycle = true;
-        } else if (value == "removeDoc") {
-            ret.remove_doc = true;
-        } else if (value == "recoverDoc") {
-            ret.recover_doc = true;
-        } else if (value == "watchDoc") {
-            ret.watch_doc = true;
-        } else if (value == "unWatchDoc") {
-            ret.un_watch_doc = true;
-        } else if (value == "moveDoc") {
-            ret.move_doc = true;
-        } else if (value == "updateTag") {
-            ret.update_tag = true;
-        }
-    });
-    return ret;
-};
-
-export const genDocEvCfgValues = (cfg: DocEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.create_space) {
-        retList.push("createSpace");
-    }
-    if (cfg.update_space) {
-        retList.push("updateSpace");
-    }
-    if (cfg.remove_space) {
-        retList.push("removeSpace");
-    }
-    if (cfg.create_doc) {
-        retList.push("createDoc");
-    }
-    if (cfg.update_doc) {
-        retList.push("updateDoc");
-    }
-    if (cfg.move_doc_to_recycle) {
-        retList.push("moveDocToRecycle");
-    }
-    if (cfg.remove_doc) {
-        retList.push("removeDoc");
-    }
-    if (cfg.recover_doc) {
-        retList.push("recoverDoc");
-    }
-    if (cfg.watch_doc) {
-        retList.push("watchDoc");
-    }
-    if (cfg.un_watch_doc) {
-        retList.push("unWatchDoc");
-    }
-    if (cfg.move_doc) {
-        retList.push("moveDoc");
-    }
-    if (cfg.update_tag) {
-        retList.push("updateTag");
     }
     return retList;
 }
@@ -1125,116 +895,6 @@ export const genRequirementEvCfgValues = (cfg: RequirementEvCfg): string[] => {
     return retList;
 }
 
-export const spritEvOptionList: CheckboxOptionType[] = [
-    {
-        label: "创建工作计划",
-        value: "create",
-    },
-    {
-        label: "更新工作计划",
-        value: "update",
-    },
-    {
-        label: "删除工作计划",
-        value: "remove",
-    },
-    {
-        label: "关注工作计划",
-        value: "watch",
-    },
-    {
-        label: "取消关注工作计划",
-        value: "unWatch",
-    },
-    {
-        label: "关联文档",
-        value: "linkDoc",
-    },
-    {
-        label: "取消关联文档",
-        value: "cancelLinkDoc",
-    },
-    {
-        label: "关联频道",
-        value: "linkChannel",
-    },
-    {
-        label: "取消关联文档",
-        value: "cancelLinkChannel",
-    },
-];
-
-export const calcSpritEvCfg = (values: string[] | undefined): SpritEvCfg => {
-    const ret: SpritEvCfg = {
-        create: false,
-        update: false,
-        remove: false,
-        link_doc: false,
-        cancel_link_doc: false,
-        link_channel: false,
-        cancel_link_channel: false,
-        watch: false,
-        un_watch: false,
-    };
-    if (values == undefined) {
-        return ret;
-    }
-    values.forEach(value => {
-        if (value == "create") {
-            ret.create = true;
-        } else if (value == "update") {
-            ret.update = true;
-        } else if (value == "remove") {
-            ret.remove = true;
-        } else if (value == "linkDoc") {
-            ret.link_doc = true;
-        } else if (value == "cancelLinkDoc") {
-            ret.cancel_link_doc = true;
-        } else if (value == "linkChannel") {
-            ret.link_channel = true;
-        } else if (value == "cancelLinkChannel") {
-            ret.cancel_link_channel = true;
-        } else if (value == "watch") {
-            ret.watch = true;
-        } else if (value == "unWatch") {
-            ret.un_watch = true;
-        }
-    });
-    return ret;
-};
-
-export const genSpritEvCfgValues = (cfg: SpritEvCfg): string[] => {
-    const retList: string[] = [];
-    if (cfg.create) {
-        retList.push("create");
-    }
-    if (cfg.update) {
-        retList.push("update");
-    }
-    if (cfg.remove) {
-        retList.push("remove");
-    }
-    if (cfg.link_doc) {
-        retList.push("linkDoc");
-    }
-    if (cfg.cancel_link_doc) {
-        retList.push("cancelLinkDoc");
-    }
-    if (cfg.link_channel) {
-        retList.push("linkChannel");
-    }
-    if (cfg.cancel_link_channel) {
-        retList.push("cancelLinkChannel");
-    }
-    if (cfg.watch) {
-        retList.push("watch");
-    }
-    if (cfg.un_watch) {
-        retList.push("unWatch");
-    }
-    return retList;
-};
-
 export const codeEvOptionList: CheckboxOptionType[] = [
     {
         label: "增加评论",
@@ -1574,6 +1234,86 @@ export const genCiCdEvCfgValues = (cfg: CiCdEvCfg): string[] => {
     }
     if (cfg.remove_pipe_line) {
         retList.push("remove_pipe_line");
+    }
+    return retList;
+};
+
+export const entryEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "创建内容",
+        value: "create",
+    },
+    {
+        label: "打开内容",
+        value: "open",
+    },
+    {
+        label: "关闭内容",
+        value: "close",
+    },
+    {
+        label: "删除内容",
+        value: "remove",
+    },
+    {
+        label: "关注内容",
+        value: "watch",
+    },
+    {
+        label: "取消关注内容",
+        value: "unwatch",
+    },
+];
+
+export const calcEntryEvCfg = (values: string[] | undefined): EntryEvCfg => {
+    const ret: EntryEvCfg = {
+        create: false,
+        open: false,
+        close: false,
+        remove: false,
+        watch: false,
+        unwatch: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "create") {
+            ret.create = true;
+        } else if (value == "open") {
+            ret.open = true;
+        }else if (value == "close"){
+            ret.close = true;
+        }else if (value == "remove"){
+            ret.remove = true;
+        }else if(value == "watch"){
+            ret.watch = true;
+        }else if(value == "unwatch"){
+            ret.unwatch = true;
+        }
+    });
+    return ret;
+};
+
+export const genEntryEvCfgValues = (cfg: EntryEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.create) {
+        retList.push("create");
+    }
+    if (cfg.open) {
+        retList.push("open");
+    }
+    if (cfg.close){
+        retList.push("close");
+    }
+    if(cfg.remove){
+        retList.push("remove");
+    }
+    if(cfg.watch){
+        retList.push("watch");
+    }
+    if(cfg.unwatch){
+        retList.push("unwatch");
     }
     return retList;
 };

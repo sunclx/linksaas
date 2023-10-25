@@ -311,87 +311,6 @@ async fn list_multi_issue_link<R: Runtime>(
 }
 
 #[tauri::command]
-async fn add_comment<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AddCommentRequest,
-) -> Result<AddCommentResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.add_comment(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == add_comment_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("add_comment".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn list_comment<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListCommentRequest,
-) -> Result<ListCommentResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.list_comment(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_comment_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_comment".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn remove_comment<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: RemoveCommentRequest,
-) -> Result<RemoveCommentResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectRequirementApiClient::new(chan.unwrap());
-    match client.remove_comment(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == remove_comment_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("remove_comment".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn close_requirement<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -574,9 +493,6 @@ impl<R: Runtime> ProjectRequirementApiPlugin<R> {
                 unlink_issue,
                 list_issue_link,
                 list_multi_issue_link,
-                add_comment,
-                list_comment,
-                remove_comment,
                 close_requirement,
                 open_requirement,
                 set_kano_info,

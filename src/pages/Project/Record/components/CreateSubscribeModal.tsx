@@ -5,7 +5,6 @@ import {
     apiCollectionEvOptionList,
     calcCodeEvCfg,
     calcDataAnnoEvCfg,
-    calcDocEvCfg,
     calcExtEvCfg,
     calcGiteeEvCfg,
     calcGitlabEvCfg,
@@ -13,10 +12,8 @@ import {
     calcIssueEvCfg,
     calcProjectEvCfg,
     calcRequirementEvCfg,
-    calcSpritEvCfg,
     codeEvOptionList,
     dataAnnoEvOptionList,
-    docEvOptionList,
     extEvOptionList,
     giteeEvOptionList,
     gitlabEvOptionList,
@@ -24,12 +21,13 @@ import {
     issueEvOptionList,
     projectEvOptionList,
     requirementEvOptionList,
-    spritEvOptionList,
     calcApiCollectionEvCfg,
     calcAtomgitEvCfg,
     atomgitEvOptionList,
     calcCiCdEvCfg,
     ciCdEvOptionList,
+    calcEntryEvCfg,
+    entryEvOptionList,
 } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
@@ -46,7 +44,6 @@ interface FormValue {
     chatBotName: string | undefined;
     chatBotAddr: string | undefined;
     chatBotSignCode: string | undefined;
-    docEvCfg: string[] | undefined;
     extEvCfg: string[] | undefined;
     atomgitEvCfg: string[] | undefined;
     giteeEvCfg: string[] | undefined;
@@ -60,6 +57,7 @@ interface FormValue {
     dataAnnoEvCfg: string[] | undefined;
     apiCollectionEvCfg: string[] | undefined;
     ciCdEvCfg: string[] | undefined;
+    entryEvCfg: string[] | undefined;
 }
 
 
@@ -73,9 +71,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [projectEvCfgCheckAll, setProjectEvCfgCheckAll] = useState(false);
     const [projectEvCfgIndeterminate, setProjectEvCfgIndeterminate] = useState(false);
-
-    const [docEvCfgCheckAll, setDocEvCfgCheckAll] = useState(false);
-    const [docEvCfgIndeterminate, setDocEvCfgIndeterminate] = useState(false);
 
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(false);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(false);
@@ -95,9 +90,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
     const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(false);
     const [issueEvCfgIndeterminate, setIssueEvCfgIndeterminate] = useState(false);
 
-    const [spritEvCfgCheckAll, setSpritEvCfgCheckAll] = useState(false);
-    const [spritEvCfgIndeterminate, setSpritEvCfgIndeterminate] = useState(false);
-
     const [requirementEvCfgCheckAll, setRequirementEvCfgCheckAll] = useState(false);
     const [requirementEvCfgIndeterminate, setRequirementEvCfgIndeterminate] = useState(false);
 
@@ -112,6 +104,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [apiCollectionEvCfgCheckAll, setApiCollectionEvCfgCheckAll] = useState(false);
     const [apiCollectionEvCfgIndeterminate, setApiCollectionEvCfgIndeterminate] = useState(false);
+
+    const [entryEvCfgCheckAll, setEntryEvCfgCheckAll] = useState(false);
+    const [entryEvCfgIndeterminate, setEntryEvCfgIndeterminate] = useState(false);
 
     const createSubscribe = async () => {
         const formValue: FormValue = form.getFieldsValue() as FormValue;
@@ -137,19 +132,18 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
             chat_bot_sign_code: formValue.chatBotSignCode ?? "",
             event_cfg: {
                 project_ev_cfg: calcProjectEvCfg(formValue.projectEvCfg),
-                doc_ev_cfg: calcDocEvCfg(formValue.docEvCfg),
                 ext_ev_cfg: calcExtEvCfg(formValue.extEvCfg),
                 atomgit_ev_cfg: calcAtomgitEvCfg(formValue.atomgitEvCfg),
                 gitee_ev_cfg: calcGiteeEvCfg(formValue.giteeEvCfg),
                 gitlab_ev_cfg: calcGitlabEvCfg(formValue.gitlabEvCfg),
                 issue_ev_cfg: calcIssueEvCfg(formValue.issueEvCfg),
-                sprit_ev_cfg: calcSpritEvCfg(formValue.spritEvCfg),
                 requirement_ev_cfg: calcRequirementEvCfg(formValue.requirementEvCfg),
                 code_ev_cfg: calcCodeEvCfg(formValue.codeEvCfg),
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
                 api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
-                ci_cd_ev_cfg: calcCiCdEvCfg(formValue.ciCdEvCfg)
+                ci_cd_ev_cfg: calcCiCdEvCfg(formValue.ciCdEvCfg),
+                entry_ev_cfg: calcEntryEvCfg(formValue.entryEvCfg),
             },
         }));
         props.onOk();
@@ -234,31 +228,34 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={docEvCfgIndeterminate} checked={docEvCfgCheckAll} onChange={e => {
+
+                    <Form.Item label={<Checkbox indeterminate={entryEvCfgIndeterminate} checked={entryEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        setDocEvCfgIndeterminate(false);
-                        if (docEvCfgCheckAll) {
-                            setDocEvCfgCheckAll(false);
-                            form.setFieldValue("docEvCfg", []);
+                        setEntryEvCfgIndeterminate(false);
+                        if (entryEvCfgCheckAll) {
+                            setEntryEvCfgCheckAll(false);
+                            form.setFieldValue("entryEvCfg", []);
                         } else {
-                            setDocEvCfgCheckAll(true);
-                            form.setFieldValue("docEvCfg", docEvOptionList.map(item => item.value));
+                            setEntryEvCfgCheckAll(true);
+                            form.setFieldValue("entryEvCfg", entryEvOptionList.map(item => item.value));
                         }
-                    }}>文档事件</Checkbox>} name="docEvCfg">
-                        <Checkbox.Group options={docEvOptionList} onChange={values => {
+                    }}>内容事件</Checkbox>} name="entryEvCfg">
+                        <Checkbox.Group options={entryEvOptionList} onChange={values => {
                             if (values.length == 0) {
-                                setDocEvCfgCheckAll(false);
-                                setDocEvCfgIndeterminate(false);
-                            } else if (values.length == docEvOptionList.length) {
-                                setDocEvCfgCheckAll(true);
-                                setDocEvCfgIndeterminate(false);
+                                setEntryEvCfgCheckAll(false);
+                                setEntryEvCfgIndeterminate(false);
+                            } else if (values.length == entryEvOptionList.length) {
+                                setEntryEvCfgCheckAll(true);
+                                setEntryEvCfgIndeterminate(false);
                             } else {
-                                setDocEvCfgCheckAll(false);
-                                setDocEvCfgIndeterminate(true);
+                                setEntryEvCfgCheckAll(false);
+                                setEntryEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>
+
+
                     <Form.Item label={<Checkbox indeterminate={extEvCfgIndeterminate} checked={extEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -431,31 +428,6 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             } else {
                                 setIssueEvCfgCheckAll(false);
                                 setIssueEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={spritEvCfgIndeterminate} checked={spritEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSpritEvCfgIndeterminate(false);
-                        if (spritEvCfgCheckAll) {
-                            setSpritEvCfgCheckAll(false);
-                            form.setFieldValue("spritEvCfg", []);
-                        } else {
-                            setSpritEvCfgCheckAll(true);
-                            form.setFieldValue("spritEvCfg", spritEvOptionList.map(item => item.value));
-                        }
-                    }}>工作计划事件</Checkbox>} name="spritEvCfg">
-                        <Checkbox.Group options={spritEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setSpritEvCfgCheckAll(false);
-                                setSpritEvCfgIndeterminate(false);
-                            } else if (values.length == spritEvOptionList.length) {
-                                setSpritEvCfgCheckAll(true);
-                                setSpritEvCfgIndeterminate(false);
-                            } else {
-                                setSpritEvCfgCheckAll(false);
-                                setSpritEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>
