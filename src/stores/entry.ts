@@ -14,6 +14,7 @@ export default class EntryStore {
     private _curEntry: EntryInfo | null = null;
     private _editEntryId = "";
     private _entryList: EntryInfo[] = [];
+    private _sysEntryList: EntryInfo[] = [];
     private _createEntryType: ENTRY_TYPE | null = null;
 
     reset() {
@@ -21,6 +22,7 @@ export default class EntryStore {
             this._curEntry = null;
             this._editEntryId = "";
             this._entryList = [];
+            this._sysEntryList = [];
             this._createEntryType = null;
         });
     }
@@ -52,6 +54,16 @@ export default class EntryStore {
     set entryList(val: EntryInfo[]) {
         runInAction(() => {
             this._entryList = val;
+        });
+    }
+
+    get sysEntryList(): EntryInfo[] {
+        return this._sysEntryList;
+    }
+
+    set sysEntryList(val: EntryInfo[]) {
+        runInAction(() => {
+            this._sysEntryList = val;
         });
     }
 
@@ -92,6 +104,13 @@ export default class EntryStore {
             if (index != -1) {
                 tmpList[index] = res.entry;
                 this._entryList = tmpList;
+            }
+            
+            const tmpList2 = this._sysEntryList.slice();
+            const index2 = tmpList2.findIndex(item => item.entry_id == entryId);
+            if (index2 != -1) {
+                tmpList2[index] = res.entry;
+                this._sysEntryList = tmpList2;
             }
         });
     }
