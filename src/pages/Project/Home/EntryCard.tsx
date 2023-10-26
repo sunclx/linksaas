@@ -1,5 +1,5 @@
 import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
 import { watch, unwatch, update_mark_remove, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
@@ -16,7 +16,6 @@ import RemoveEntryModal from "./RemoveEntryModal";
 export interface EntryCardPorps {
     entryInfo: EntryInfo;
     onRemove: () => void;
-    onPreClose: (value: boolean) => void;
 }
 
 const EntryCard = (props: EntryCardPorps) => {
@@ -78,9 +77,6 @@ const EntryCard = (props: EntryCardPorps) => {
         props.onRemove();
     };
 
-    useEffect(() => {
-        props.onPreClose(showCloseModal);
-    }, [showCloseModal]);
     return (
         <Card title={
             <Space>
