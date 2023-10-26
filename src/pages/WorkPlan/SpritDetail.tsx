@@ -78,18 +78,12 @@ const SpritDetail = () => {
         setRefIssueType(null);
     }
 
-
     useEffect(() => {
         if (entryStore.curEntry != null) {
             loadSpritInfo();
+            spritStore.loadCurSprit();
         }
-    }, [entryStore.curEntry]);
-
-    useEffect(() => {
-        if (entryStore.curEntry != null) {
-            loadSpritInfo();
-        }
-    }, [spritStore.curSpritVersion]);
+    }, [spritStore.curSpritVersion, entryStore.curEntry]);
 
     useEffect(() => {
         if (entryStore.curEntry != null) {
