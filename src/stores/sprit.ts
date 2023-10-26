@@ -36,7 +36,6 @@ export default class SpritStore {
 
     async loadCurSprit() {
         runInAction(() => {
-            this._curSpritVersion = 0;
             this._taskList = [];
             this._bugList = [];
         });
