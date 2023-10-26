@@ -334,9 +334,6 @@ class LinkAuxStore {
   rootStore: RootStore;
 
   async goToLink(link: LinkInfo, history: History, remoteCheck: boolean = true) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     const pathname = history.location.pathname;
     if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EVENT) {
       const eventLink = link as LinkEventlInfo;
@@ -495,9 +492,6 @@ class LinkAuxStore {
 
   //跳转到创建任务
   async goToCreateTask(content: string, projectId: string, history: History, spritId: string | undefined = undefined) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
@@ -511,9 +505,6 @@ class LinkAuxStore {
 
   //跳转到创建缺陷
   async goToCreateBug(content: string, projectId: string, history: History, spritId: string | undefined = undefined) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
@@ -527,9 +518,6 @@ class LinkAuxStore {
 
   //跳转到创建需求
   async goToCreateRequirement(content: string, projectId: string, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     if (projectId != this.rootStore.projectStore.curProjectId) {
       await this.rootStore.projectStore.setCurProjectId(projectId);
     }
@@ -542,9 +530,6 @@ class LinkAuxStore {
 
   //跳转到任务列表
   goToTaskList(state: LinkIssueListState | undefined, history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     if (state != undefined && state?.tabType == undefined) {
       state.tabType = ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME;
     }
@@ -559,10 +544,6 @@ class LinkAuxStore {
 
   //跳转到缺陷列表
   goToBugList(state: LinkIssueListState | undefined, history: History) {
-    console.log("22222222222222222", state);
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     if (state != undefined && state?.tabType == undefined) {
       state.tabType = ISSUE_TAB_LIST_TYPE.ISSUE_TAB_LIST_ASSGIN_ME;
     }
@@ -583,17 +564,11 @@ class LinkAuxStore {
 
   //跳转到研发行为列表页
   goToEventList(history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record"));
   }
 
   //跳转到研发行为订阅页面
   goToEventSubscribeList(history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record/subscribe"));
   }
 
@@ -601,9 +576,6 @@ class LinkAuxStore {
   goToAppriaseList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_member_appraise == true) {
       return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appraise"));
   }
@@ -613,9 +585,6 @@ class LinkAuxStore {
     if (this.rootStore.projectStore.curProject?.setting.disable_ext_event == true) {
       return;
     }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/access"));
   }
 
@@ -623,9 +592,6 @@ class LinkAuxStore {
   goToCodeThreadList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_code_comment == true) {
       return;
-    }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/code"));
   }
@@ -635,9 +601,6 @@ class LinkAuxStore {
     if (this.rootStore.projectStore.curProject?.setting.disable_data_anno == true) {
       return;
     }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/dataanno"));
   }
 
@@ -646,17 +609,11 @@ class LinkAuxStore {
     if (this.rootStore.projectStore.curProject?.setting.disable_api_collection == true) {
       return;
     }
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/apicoll"));
   }
 
   //跳转到知识点列表
   goToIdeaList(history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/idea"));
   }
 
@@ -690,9 +647,6 @@ class LinkAuxStore {
 
   //跳转到项目需求列表页面
   goToRequirementList(history: History) {
-    if (this.rootStore.appStore.simpleMode) {
-      this.rootStore.appStore.simpleMode = false;
-    }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/req"));
   }
 

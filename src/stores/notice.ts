@@ -12,7 +12,7 @@ import type { History } from 'history';
 import { createBrowserHistory } from 'history';
 import { appWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
-import { ISSUE_TYPE_BUG, ISSUE_TYPE_TASK, get as get_issue } from '@/api/project_issue';
+import { get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_HOME_PATH, USER_LOGIN_PATH } from '@/utils/constant';
 import { message } from 'antd';
 
@@ -249,10 +249,6 @@ class NoticeStore {
       await this.rootStore.projectStore.updateProjectIssueCount(notice.NewIssueNotice.project_id);
       if (notice.NewIssueNotice.project_id == this.rootStore.projectStore.curProjectId) {
         await this.rootStore.memberStore.updateIssueState(notice.NewIssueNotice.project_id, notice.NewIssueNotice.create_user_id);
-        if (this.rootStore.appStore.simpleMode) {
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
-        }
       }
     } else if (notice.SetExecUserNotice !== undefined) {
       await this.rootStore.projectStore.updateProjectIssueCount(notice.SetExecUserNotice.project_id);
@@ -264,10 +260,6 @@ class NoticeStore {
           }
           if (notice.SetExecUserNotice.old_exec_user_id != "") {
             await this.rootStore.memberStore.updateIssueState(notice.SetExecUserNotice.project_id, notice.SetExecUserNotice.old_exec_user_id);
-          }
-          if (this.rootStore.appStore.simpleMode) {
-            await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-            await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
           }
         }
       }
@@ -282,19 +274,11 @@ class NoticeStore {
           if (notice.SetCheckUserNotice.old_check_user_id != "") {
             await this.rootStore.memberStore.updateIssueState(notice.SetCheckUserNotice.project_id, notice.SetCheckUserNotice.old_check_user_id);
           }
-          if (this.rootStore.appStore.simpleMode) {
-            await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-            await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
-          }
         }
       }
     } else if (notice.UpdateIssueNotice !== undefined) {
       await this.rootStore.spritStore.updateIssue(notice.UpdateIssueNotice.issue_id);
       if (notice.UpdateIssueNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.appStore.simpleMode) {
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
-        }
       }
     }
     else if (notice.UpdateIssueStateNotice !== undefined) {
@@ -306,10 +290,6 @@ class NoticeStore {
         }
         if (notice.UpdateIssueStateNotice.check_user_id != "") {
           await this.rootStore.memberStore.updateIssueState(notice.UpdateIssueStateNotice.project_id, notice.UpdateIssueStateNotice.check_user_id);
-        }
-        if (this.rootStore.appStore.simpleMode) {
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
         }
       }
     } else if (notice.RemoveIssueNotice !== undefined) {
@@ -325,10 +305,6 @@ class NoticeStore {
         await this.rootStore.memberStore.updateIssueState(notice.RemoveIssueNotice.project_id, notice.RemoveIssueNotice.check_user_id);
       }
       if (notice.RemoveIssueNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.appStore.simpleMode) {
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_TASK);
-          await this.rootStore.issueStore.loadPrjTodoIssue(this.rootStore.projectStore.curProjectId, ISSUE_TYPE_BUG);
-        }
       }
     } else if (notice.SetSpritNotice !== undefined) {
       if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.old_sprit_id) {
@@ -380,11 +356,6 @@ class NoticeStore {
     setTimeout(() => {
       appWindow.setAlwaysOnTop(false);
     }, 200);
-    if (ev.shortNoteModeType != SHORT_NOTE_MODE_SHOW) {
-      if (this.rootStore.appStore.simpleMode) {
-        this.rootStore.appStore.simpleMode = false;
-      }
-    }
   }
 
 }

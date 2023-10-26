@@ -6,6 +6,11 @@ export const ENTRY_TYPE_DOC: ENTRY_TYPE = 1;
 export const ENTRY_TYPE_PAGES: ENTRY_TYPE = 2;
 export const ENTRY_TYPE_BOARD: ENTRY_TYPE = 3;
 
+export type ISSUE_LIST_TYPE = number;
+export const ISSUE_LIST_ALL: ISSUE_LIST_TYPE = 0;
+export const ISSUE_LIST_LIST: ISSUE_LIST_TYPE = 1;
+export const ISSUE_LIST_KANBAN: ISSUE_LIST_TYPE = 2;
+
 export type EntryTag = {
     tag_id: string;
     tag_name: string;
@@ -21,6 +26,11 @@ export type ExtraSpritInfo = {
     start_time: number;
     end_time: number;
     non_work_day_list: number[];
+    issue_list_type: ISSUE_LIST_TYPE;
+    hide_gantt_panel: boolean;
+    hide_burndown_panel: boolean;
+    hide_stat_panel: boolean;
+    hide_summary_panel: boolean;
 };
 
 export type ExtraInfo = {

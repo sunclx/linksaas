@@ -6,7 +6,7 @@ import type { ColumnsType } from 'antd/lib/table';
 import type { WebProjectInfo } from "@/stores/project";
 import { LinkOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
+import { APP_PROJECT_HOME_PATH } from "@/utils/constant";
 import moment from 'moment';
 
 const MyProjectList = () => {
@@ -23,7 +23,7 @@ const MyProjectList = () => {
                     e.stopPropagation();
                     e.preventDefault();
                     projectStore.setCurProjectId(row.project_id).then(()=>{
-                        history.push(APP_PROJECT_OVERVIEW_PATH);
+                        history.push(APP_PROJECT_HOME_PATH);
                     });
                 }}><LinkOutlined />&nbsp;{row.basic_info.project_name}</a>
             )

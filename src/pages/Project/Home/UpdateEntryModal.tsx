@@ -1,9 +1,9 @@
-import { Checkbox, DatePicker, Form, Input, Modal, Tag, message } from "antd";
+import { Checkbox, DatePicker, Form, Input, Modal, Radio, Tag, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import type { EntryInfo } from "@/api/project_entry";
-import { get as get_entry, update_title, update_perm, update_tag, update_extra_info, ENTRY_TYPE_SPRIT } from "@/api/project_entry";
+import { get as get_entry, update_title, update_perm, update_tag, update_extra_info, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_LIST, ISSUE_LIST_KANBAN } from "@/api/project_entry";
 import { request } from "@/utils/request";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import s from "./UpdateEntryModal.module.less";
@@ -172,9 +172,9 @@ const UpdateEntryModal = () => {
                                         setEntryInfo({
                                             ...entryInfo, extra_info: {
                                                 ExtraSpritInfo: {
+                                                    ...entryInfo.extra_info.ExtraSpritInfo!,
                                                     start_time: value[0]?.startOf("day").valueOf() ?? 0,
                                                     end_time: value[1]?.endOf("day").valueOf() ?? 0,
-                                                    non_work_day_list: entryInfo.extra_info.ExtraSpritInfo?.non_work_day_list ?? [],
                                                 }
                                             }
                                         });
@@ -191,8 +191,7 @@ const UpdateEntryModal = () => {
                                             setEntryInfo({
                                                 ...entryInfo, extra_info: {
                                                     ExtraSpritInfo: {
-                                                        start_time: entryInfo.extra_info.ExtraSpritInfo?.start_time ?? 0,
-                                                        end_time: entryInfo.extra_info.ExtraSpritInfo?.end_time ?? 0,
+                                                        ...entryInfo.extra_info.ExtraSpritInfo!,
                                                         non_work_day_list: tmpList,
                                                     }
                                                 }
@@ -203,7 +202,6 @@ const UpdateEntryModal = () => {
                                     </Tag>
                                 ))}
                                 <DatePicker popupClassName={s.date_picker} value={null}
-
                                     disabled={(entryInfo.extra_info.ExtraSpritInfo?.start_time ?? 0) == 0 || (entryInfo.extra_info.ExtraSpritInfo?.end_time ?? 0) == 0}
                                     disabledDate={(day) => checkDayValid(day) == false}
                                     onChange={value => {
@@ -219,8 +217,7 @@ const UpdateEntryModal = () => {
                                                 setEntryInfo({
                                                     ...entryInfo, extra_info: {
                                                         ExtraSpritInfo: {
-                                                            start_time: entryInfo.extra_info.ExtraSpritInfo?.start_time ?? 0,
-                                                            end_time: entryInfo.extra_info.ExtraSpritInfo?.end_time ?? 0,
+                                                            ...entryInfo.extra_info.ExtraSpritInfo!,
                                                             non_work_day_list: tmpList,
                                                         }
                                                     }
@@ -230,6 +227,86 @@ const UpdateEntryModal = () => {
                                         }
                                     }} />
                             </Form.Item>
+                            <Form.Item label="列表样式">
+                                <Radio.Group value={entryInfo.extra_info.ExtraSpritInfo?.issue_list_type ?? ISSUE_LIST_ALL} onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setEntryInfo({
+                                        ...entryInfo, extra_info: {
+                                            ExtraSpritInfo: {
+                                                ...entryInfo.extra_info.ExtraSpritInfo!,
+                                                issue_list_type: e.target.value,
+                                            }
+                                        }
+                                    });
+                                    setExtraChanged(true);
+                                }}>
+                                    <Radio value={ISSUE_LIST_ALL}>列表和看板</Radio>
+                                    <Radio value={ISSUE_LIST_LIST}>列表</Radio>
+                                    <Radio value={ISSUE_LIST_KANBAN}>看板</Radio>
+                                </Radio.Group>
+                            </Form.Item>
+                            <Form.Item label="隐藏甘特图">
+                                <Checkbox checked={entryInfo.extra_info.ExtraSpritInfo?.hide_gantt_panel ?? false} onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setEntryInfo({
+                                        ...entryInfo, extra_info: {
+                                            ExtraSpritInfo: {
+                                                ...entryInfo.extra_info.ExtraSpritInfo!,
+                                                hide_gantt_panel: e.target.checked,
+                                            }
+                                        }
+                                    });
+                                    setExtraChanged(true);
+                                }} />
+                            </Form.Item>
+                            <Form.Item label="隐藏燃尽图" >
+                                <Checkbox checked={entryInfo.extra_info.ExtraSpritInfo?.hide_burndown_panel ?? false} onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setEntryInfo({
+                                        ...entryInfo, extra_info: {
+                                            ExtraSpritInfo: {
+                                                ...entryInfo.extra_info.ExtraSpritInfo!,
+                                                hide_burndown_panel: e.target.checked,
+                                            }
+                                        }
+                                    });
+                                    setExtraChanged(true);
+                                }} />
+                            </Form.Item>
+                            <Form.Item label="隐藏统计信息" >
+                                <Checkbox checked={entryInfo.extra_info.ExtraSpritInfo?.hide_stat_panel ?? false} onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setEntryInfo({
+                                        ...entryInfo, extra_info: {
+                                            ExtraSpritInfo: {
+                                                ...entryInfo.extra_info.ExtraSpritInfo!,
+                                                hide_stat_panel: e.target.checked,
+                                            }
+                                        }
+                                    });
+                                    setExtraChanged(true);
+                                }} />
+                            </Form.Item>
+                            <Form.Item label="隐藏工作总结" >
+                                <Checkbox checked={entryInfo.extra_info.ExtraSpritInfo?.hide_summary_panel ?? false} onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setEntryInfo({
+                                        ...entryInfo, extra_info: {
+                                            ExtraSpritInfo: {
+                                                ...entryInfo.extra_info.ExtraSpritInfo!,
+                                                hide_summary_panel: e.target.checked,
+                                            }
+                                        }
+                                    });
+                                    setExtraChanged(true);
+                                }} />
+                            </Form.Item>
+
                         </>
                     )}
                 </Form>
