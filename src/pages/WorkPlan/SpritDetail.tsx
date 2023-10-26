@@ -92,20 +92,36 @@ const SpritDetail = () => {
     }, [spritStore.curSpritVersion]);
 
     useEffect(() => {
-        if (tabStr != "") {
-            setActiveKey(tabStr);
-        }
-    }, [tabStr]);
-
-    useEffect(() => {
-        if (entryStore.curEntry != null && activeKey == "" && tabStr == "") {
-            if (entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
-                setActiveKey("kanban");
+        if (entryStore.curEntry != null) {
+            let needChange = false;
+            if (activeKey == "issue" && entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
+                needChange = true;
+            } else if (activeKey == "kanban" && entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_LIST) {
+                needChange = true;
+            } else if (activeKey == "gantt" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_gantt_panel == true) {
+                needChange = true;
+            } else if (activeKey == "burnDown" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_burndown_panel == true) {
+                needChange = true;
+            } else if (activeKey == "statistics" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_stat_panel == true) {
+                needChange = true;
+            } else if (activeKey == "summary" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_summary_panel) {
+                needChange = true;
+            } else if (tabStr == "") {
+                needChange = true;
+            }
+            if (needChange) {
+                if (entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
+                    setActiveKey("kanban");
+                } else {
+                    setActiveKey("issue");
+                }
             } else {
-                setActiveKey("issue");
+                if (tabStr != "") {
+                    setActiveKey(tabStr);
+                }
             }
         }
-    }, [spritInfo]);
+    }, [entryStore.curEntry, tabStr]);
 
     return (
         <Card bordered={false}
