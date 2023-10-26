@@ -2,7 +2,7 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { watch, unwatch, update_mark_remove, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import { watch, unwatch, update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import s from "./EntryCard.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -12,10 +12,13 @@ import { useHistory } from "react-router-dom";
 import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { getEntryTypeStr } from "./common";
 import RemoveEntryModal from "./RemoveEntryModal";
+import spritIcon from '@/assets/allIcon/icon-sprit.png';
+import docIcon from '@/assets/channel/doc@2x.png';
 
 export interface EntryCardPorps {
     entryInfo: EntryInfo;
     onRemove: () => void;
+    onMarkSys: () => void;
 }
 
 const EntryCard = (props: EntryCardPorps) => {
@@ -77,9 +80,29 @@ const EntryCard = (props: EntryCardPorps) => {
         props.onRemove();
     };
 
+    const setSysMark = async (value: boolean) => {
+        await request(update_mark_sys({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            entry_id: props.entryInfo.entry_id,
+            mark_sys: value,
+        }));
+        message.info("修改成功");
+        props.onMarkSys();
+    };
+
+    const getBgImage = () => {
+        if (props.entryInfo.entry_type == ENTRY_TYPE_DOC) {
+            return docIcon;
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_SPRIT) {
+            return spritIcon;
+        }
+        return "";
+    };
+
     return (
         <Card title={
-            <Space>
+            <Space size="small">
                 <a onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -91,14 +114,15 @@ const EntryCard = (props: EntryCardPorps) => {
                 }}>
                     <span className={props.entryInfo.my_watch ? s.isCollect : s.noCollect} />
                 </a>
-                <span style={{ cursor: "pointer" }} onClick={e => {
+                <span style={{ cursor: "pointer", fontWeight: 600 }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
                     openEntry();
                 }}>{getEntryTypeStr(props.entryInfo.entry_type)}</span>
             </Space>
         }
-            className={s.card} style={{ backgroundColor: getBgColor() }} headStyle={{ borderBottom: "none" }} bodyStyle={{ padding: "0px 10px" }} extra={
+            className={s.card} style={{ backgroundColor: getBgColor(), backgroundImage: `url(${getBgImage()})`, backgroundRepeat: "no-repeat", backgroundPosition: "95% 95%" }}
+            headStyle={{ borderBottom: "none" }} bodyStyle={{ padding: "0px 10px" }} extra={
                 <Space>
                     <Popover placement="top" trigger="hover" content={<EntryPopover entryInfo={props.entryInfo} />}>
                         <InfoCircleOutlined />
@@ -114,13 +138,33 @@ const EntryCard = (props: EntryCardPorps) => {
                     <Popover trigger="click" placement="bottom" content={
                         <Space direction="vertical" style={{ padding: "10px 10px" }}>
                             {props.entryInfo.mark_remove == false && (
-                                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
-                                    disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setShowCloseModal(true);
-                                    }}>关闭</Button>
+                                <>
+                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                                        disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowCloseModal(true);
+                                        }}>关闭</Button>
+                                    {props.entryInfo.mark_sys == false && (
+                                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                                            disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setSysMark(true);
+                                            }}>标记为系统面板</Button>
+                                    )}
+                                    {props.entryInfo.mark_sys == true && (
+                                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
+                                            disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setSysMark(false);
+                                            }}>取消系统面板标记</Button>
+                                    )}
+                                </>
                             )}
                             {props.entryInfo.mark_remove == true && (
                                 <>
@@ -152,13 +196,16 @@ const EntryCard = (props: EntryCardPorps) => {
                 e.stopPropagation();
                 e.preventDefault();
                 openEntry();
-            }} style={{ width: "180px", display: "block", height: "70px" }}>
+            }} style={{ width: "180px", display: "block", height: "90px" }}>
                 <h1 className={s.title}>{props.entryInfo.entry_title}</h1>
-                <Space className={s.tagList}>
+                <div className={s.tagList}>
+                    {props.entryInfo.mark_sys && (
+                        <Tag key="sys" style={{ backgroundColor: "yellow" }}>系统面板</Tag>
+                    )}
                     {props.entryInfo.tag_list.map(tag => (
                         <Tag key={tag.tag_id} style={{ backgroundColor: tag.bg_color }}>{tag.tag_name}</Tag>
                     ))}
-                </Space>
+                </div>
             </a>
             {showCloseModal == true && (
                 <Modal open title={`关闭内容入口`}

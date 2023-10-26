@@ -45,6 +45,7 @@ export type EntryInfo = {
     tag_list: EntryTag[];
     entry_perm: EntryPerm;
     mark_remove: boolean;
+    mark_sys: boolean;
     create_user_id: string;
     create_display_name: string;
     create_logo_uri: string;
@@ -200,6 +201,30 @@ export type UpdateExtraInfoResponse = {
     err_msg: string;
 };
 
+export type ListSysRequest = {
+    session_id: string;
+    project_id: string;
+};
+
+export type ListSysResponse = {
+    code: number;
+    err_msg: string;
+    entry_list: EntryInfo[];
+};
+
+export type UpdateMarkSysRequest = {
+    session_id: string;
+    project_id: string;
+    entry_id: string;
+    mark_sys: boolean;
+};
+
+export type UpdateMarkSysResponse ={
+    code: number;
+    err_msg: string;
+};
+
+
 //创建入口
 export async function create(request: CreateRequest): Promise<CreateResponse> {
     const cmd = 'plugin:project_entry_api|create';
@@ -214,6 +239,15 @@ export async function list(request: ListRequest): Promise<ListResponse> {
     const cmd = 'plugin:project_entry_api|list';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListResponse>(cmd, {
+        request,
+    });
+}
+
+//列出系统入口
+export async function list_sys(request: ListSysRequest): Promise<ListSysResponse> {
+    const cmd = 'plugin:project_entry_api|list_sys';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListSysResponse>(cmd, {
         request,
     });
 }
@@ -277,6 +311,15 @@ export async function update_mark_remove(request: UpdateMarkRemoveRequest): Prom
     const cmd = 'plugin:project_entry_api|update_mark_remove';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateMarkRemoveResponse>(cmd, {
+        request,
+    });
+}
+
+//更新系统面板标记
+export async function update_mark_sys(request: UpdateMarkSysRequest): Promise<UpdateMarkSysResponse> {
+    const cmd = 'plugin:project_entry_api|update_mark_sys';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateMarkSysResponse>(cmd, {
         request,
     });
 }
