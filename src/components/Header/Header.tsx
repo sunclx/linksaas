@@ -15,7 +15,8 @@ import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_P
 import { useHistory, useLocation } from 'react-router-dom';
 import ProjectQuickAccess from './ProjectQuickAccess';
 import EntryPopover from '@/pages/Project/Home/EntryPopover';
-import { ENTRY_TYPE_SPRIT, watch, unwatch } from '@/api/project_entry';
+import { ENTRY_TYPE_SPRIT } from '@/api/project_entry';
+import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
 import moment from 'moment';
 import { request } from '@/utils/request';
 
@@ -83,7 +84,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     await request(watch({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      entry_id: entryStore.curEntry?.entry_id ?? "",
+      target_type: WATCH_TARGET_ENTRY,
+      target_id: entryStore.curEntry?.entry_id ?? "",
     }));
     entryStore.updateEntry(entryStore.curEntry?.entry_id ?? "");
   };
@@ -92,7 +94,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     await request(unwatch({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      entry_id: entryStore.curEntry?.entry_id ?? "",
+      target_type: WATCH_TARGET_ENTRY,
+      target_id: entryStore.curEntry?.entry_id ?? "",
     }));
     entryStore.updateEntry(entryStore.curEntry?.entry_id ?? "");
   }

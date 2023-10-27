@@ -37,11 +37,18 @@ export type ExtraInfo = {
     ExtraSpritInfo?: ExtraSpritInfo;
 };
 
+export type WatchUser = {
+    member_user_id: string;
+    display_name: string;
+    logo_uri: string;
+};
+
 export type EntryInfo = {
     entry_id: string;
     entry_type: ENTRY_TYPE;
     entry_title: string;
     my_watch: boolean;
+    watch_user_list: WatchUser[];
     tag_list: EntryTag[];
     entry_perm: EntryPerm;
     mark_remove: boolean;
@@ -60,7 +67,6 @@ export type EntryInfo = {
 
 export type ListParam = {
     filter_by_watch: boolean;
-    watch: boolean;
     filter_by_tag_id: boolean;
     tag_id_list: string[];
     filter_by_keyword: boolean;
@@ -114,31 +120,6 @@ export type GetResponse = {
     err_msg: string;
     entry: EntryInfo;
 };
-
-
-export type WatchRequest = {
-    session_id: string;
-    project_id: string;
-    entry_id: string;
-};
-
-export type WatchResponse = {
-    code: number;
-    err_msg: string;
-};
-
-
-export type UnwatchRequest = {
-    session_id: string;
-    project_id: string;
-    entry_id: string;
-};
-
-export type UnwatchResponse = {
-    code: number;
-    err_msg: string;
-};
-
 
 export type UpdateTagRequest = {
     session_id: string;
@@ -257,24 +238,6 @@ export async function get(request: GetRequest): Promise<GetResponse> {
     const cmd = 'plugin:project_entry_api|get';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetResponse>(cmd, {
-        request,
-    });
-}
-
-//关注入口
-export async function watch(request: WatchRequest): Promise<WatchResponse> {
-    const cmd = 'plugin:project_entry_api|watch';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<WatchResponse>(cmd, {
-        request,
-    });
-}
-
-//取消关注入口
-export async function unwatch(request: UnwatchRequest): Promise<UnwatchResponse> {
-    const cmd = 'plugin:project_entry_api|unwatch';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<UnwatchResponse>(cmd, {
         request,
     });
 }

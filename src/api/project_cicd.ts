@@ -134,6 +134,12 @@ export type PipeLinePerm = {
     extra_exec_user_id_list: string[];
 };
 
+export type WatchUser = {
+    member_user_id: string;
+    display_name: string;
+    logo_uri: string;
+};
+
 export type PipeLine = {
     pipe_line_id: string;
     pipe_line_name: string;
@@ -150,6 +156,8 @@ export type PipeLine = {
     update_time: number;
     pipe_line_perm: PipeLinePerm;
     exec_count: number;
+    my_watch: boolean;
+    watch_user_list: WatchUser[];
 };
 
 export type ExecParam = {
@@ -315,6 +323,7 @@ export type UpdatePipeLinePermResponse = {
 export type ListPipeLineRequest = {
     session_id: string;
     project_id: string;
+    filter_by_watch: boolean;
     offset: number;
     limit: number;
 };

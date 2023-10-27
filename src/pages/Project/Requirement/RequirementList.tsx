@@ -58,6 +58,7 @@ const RequirementList = () => {
             filter_by_tag_id_list: (filterTagId ?? "") != "",
             tag_id_list: (filterTagId ?? "") == "" ? [] : [filterTagId!],
             sort_type: sortType,
+            filter_by_watch: false,
         }));
         setTotalCount(res.total_count);
         setReqInfoList(res.requirement_list);

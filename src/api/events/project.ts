@@ -5,6 +5,7 @@ import {
     LinkNoneInfo, LinkProjectInfo,
     LinkAppraiseInfo
 } from '@/stores/linkAux';
+import type { WATCH_TARGET_TYPE } from '../project_watch';
 
 function get_chat_bot_type_str(chat_bot_type: number): string {
     if (chat_bot_type == es.CHAT_BOT_QYWX) {
@@ -364,6 +365,39 @@ function get_custom_simple_content(
 }
 
 
+export type WatchEvent = {
+    target_type: WATCH_TARGET_TYPE;
+    target_id: string;
+    target_title: string;
+};
+
+function get_watch_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: WatchEvent,
+): LinkInfo[] {
+    return [
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} TODO`),
+    ];
+}
+
+export type UnwatchEvent = {
+    target_type: WATCH_TARGET_TYPE;
+    target_id: string;
+    target_title: string;
+};
+
+function get_unwatch_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnwatchEvent,
+): LinkInfo[] {
+    return [
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} TODO`),
+    ];
+}
+
+
 export type AllProjectEvent = {
     CreateProjectEvent?: CreateProjectEvent;
     UpdateProjectEvent?: UpdateProjectEvent;
@@ -389,6 +423,9 @@ export type AllProjectEvent = {
     RemoveEventSubscribeEvent?: RemoveEventSubscribeEvent;
     SetAlarmConfigEvent?: SetAlarmConfigEvent;
     CustomEvent?: CustomEvent;
+
+    WatchEvent?: WatchEvent;
+    UnwatchEvent?: UnwatchEvent;
 };
 
 export function get_project_simple_content(
@@ -450,6 +487,10 @@ export function get_project_simple_content(
         return get_set_alarm_config_simple_content(ev, skip_prj_name);
     } else if (inner.CustomEvent !== undefined) {
         return get_custom_simple_content(ev, skip_prj_name, inner.CustomEvent);
+    }else if(inner.WatchEvent !== undefined){
+        return get_watch_simple_content(ev,skip_prj_name,inner.WatchEvent);
+    }else if(inner.UnwatchEvent !== undefined){
+        return get_unwatch_simple_content(ev,skip_prj_name,inner.UnwatchEvent);
     } else {
         return [new LinkNoneInfo('未知事件')];
     }

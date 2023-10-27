@@ -47,6 +47,7 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
         const res = await request(list_api_coll({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
+            filter_by_watch: false,
             offset: PAGE_SIZE * curPage,
             limit: PAGE_SIZE,
         }));

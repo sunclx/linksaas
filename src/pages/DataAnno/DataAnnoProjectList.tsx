@@ -33,6 +33,7 @@ const DataAnnoProjectList = () => {
         const res = await request(dataAnnoPrjApi.list({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
+            filter_by_watch: false,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
         }));

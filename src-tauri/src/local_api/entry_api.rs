@@ -24,7 +24,6 @@ pub async fn list(
             project_id: project_id.clone(),
             list_param: Some(ListParam {
                 filter_by_watch: false,
-                watch: false,
                 filter_by_tag_id: false,
                 tag_id_list: Vec::new(),
                 filter_by_keyword: false,

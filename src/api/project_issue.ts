@@ -179,7 +179,6 @@ export type ListParam = {
   filter_by_tag_id_list: boolean;
   tag_id_list: string[];
   filter_by_watch: boolean;
-  watch: boolean;
 
   ///任务相关
   filter_by_task_priority: boolean;
@@ -595,29 +594,6 @@ export type UpdateTagIdListRequest = {
   project_id: string;
   issue_id: string;
   tag_id_list: string[];
-}
-
-
-export type WatchRequest = {
-  session_id: string;
-  project_id: string;
-  issue_id: string;
-};
-
-export type WatchResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type UnwatchRequest = {
-  session_id: string;
-  project_id: string;
-  issue_id: string;
-};
-
-export type UnwatchResponse = {
-  code: number;
-  err_msg: string;
 }
 
 export type UpdateProcessStageRequest = {
@@ -1162,24 +1138,6 @@ export async function cancel_dead_line_time(request: CancelDeadLineTimeRequest):
   const cmd = 'plugin:project_issue_api|cancel_dead_line_time';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<CancelDeadLineTimeResponse>(cmd, {
-    request,
-  });
-}
-
-//关注工单
-export async function watch(request: WatchRequest): Promise<WatchResponse> {
-  const cmd = 'plugin:project_issue_api|watch';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<WatchResponse>(cmd, {
-    request,
-  });
-}
-
-//取消关注工单
-export async function unwatch(request: UnwatchRequest): Promise<UnwatchResponse> {
-  const cmd = 'plugin:project_issue_api|unwatch';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<UnwatchResponse>(cmd, {
     request,
   });
 }

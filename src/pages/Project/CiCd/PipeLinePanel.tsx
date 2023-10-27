@@ -121,6 +121,7 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
         const res = await request(list_pipe_line({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
+            filter_by_watch: false,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
         }));

@@ -42,6 +42,7 @@ const ApiCollectionList = () => {
         const res = await request(list_info({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
+            filter_by_watch: false,
             offset: PAGE_SIZE * curPage,
             limit: PAGE_SIZE,
         }));
