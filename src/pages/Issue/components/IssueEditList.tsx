@@ -5,7 +5,7 @@ import {
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask } from '@/utils/utils';
 import { EditOutlined, ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
-import { Space, Table, Tooltip } from 'antd';
+import { Popover, Space, Table, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { ColumnType } from 'antd/lib/table';
@@ -406,14 +406,19 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       width: 140,
       align: 'left',
       render: (_, row: IssueInfo) => (
-        <Space>
+        <Popover trigger="hover" placement='top' content={
+          <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+            {(row.watch_user_list ?? []).map(item => (
+              <Space key={item.member_user_id} style={{margin:"4px 10px"}}>
+                <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                {item.display_name}
+              </Space>
+            ))}
+          </div>
+        }>
           {(row.watch_user_list ?? []).length == 0 && "-"}
-          {(row.watch_user_list ?? []).map(item => (
-            <div key={item.member_user_id} title={item.display_name}>
-              <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
-            </div>
-          ))}
-        </Space>
+          {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+        </Popover>
       ),
     },
     {

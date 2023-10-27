@@ -1,5 +1,5 @@
 import { useStores } from "@/hooks";
-import { Button, Checkbox, Form, Modal, Select, Space, Table, Tag, message } from "antd";
+import { Button, Checkbox, Form, Modal, Popover, Select, Space, Table, Tag, message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { PipeLine, PipeLinePerm, SimpleCredential } from "@/api/project_cicd";
 import {
@@ -14,7 +14,8 @@ import { EditOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { EditSelect, type EditSelectItem } from "@/components/EditCell/EditSelect";
 import { OpenPipeLineWindow } from "./utils";
-
+import s from "./PipeLinePanel.module.less";
+import { watch, unwatch, WATCH_TARGET_CI_CD } from "@/api/project_watch";
 
 interface UpdatePermModalProps {
     type: "update" | "exec";
@@ -95,6 +96,7 @@ const UpdatePermModal = (props: UpdatePermModalProps) => {
 };
 
 export interface PipeLinePanelProps {
+    filterByWatch: boolean;
     version: number;
 }
 
@@ -121,7 +123,7 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
         const res = await request(list_pipe_line({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            filter_by_watch: false,
+            filter_by_watch: props.filterByWatch,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
         }));
@@ -143,6 +145,26 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
             tmpList[index] = res.pipe_line;
             setPipeLineList(tmpList);
         }
+    };
+
+    const unwatchPipeLine = async (pipeLineId: string) => {
+        await request(unwatch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_CI_CD,
+            target_id: pipeLineId,
+        }));
+        await loadPipeLine(pipeLineId);
+    };
+
+    const watchPipeLine = async (pipeLineId: string) => {
+        await request(watch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_CI_CD,
+            target_id: pipeLineId,
+        }));
+        await loadPipeLine(pipeLineId);
     };
 
     const loadCredList = async () => {
@@ -168,6 +190,25 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
     };
 
     const columns: ColumnsType<PipeLine> = [
+        {
+            title: "",
+            dataIndex: "my_watch",
+            width: 40,
+            render: (_, row: PipeLine) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (row.my_watch) {
+                        unwatchPipeLine(row.pipe_line_id);
+                    } else {
+                        watchPipeLine(row.pipe_line_id);
+                    }
+                }}>
+                    <span className={row.my_watch ? s.isCollect : s.noCollect} />
+                </a>
+            ),
+            fixed: true,
+        },
         {
             title: "名称",
             width: 200,
@@ -368,6 +409,27 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
             ),
         },
         {
+            title: "关注人",
+            dataIndex: "",
+            width: 140,
+            align: 'left',
+            render: (_, row: PipeLine) => (
+              <Popover trigger="hover" placement='top' content={
+                <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+                  {(row.watch_user_list ?? []).map(item => (
+                    <Space key={item.member_user_id} style={{margin:"4px 10px"}}>
+                      <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                      {item.display_name}
+                    </Space>
+                  ))}
+                </div>
+              }>
+                {(row.watch_user_list ?? []).length == 0 && "-"}
+                {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+              </Popover>
+            ),
+          },
+        {
             title: "操作",
             width: 100,
             render: (_, row: PipeLine) => (
@@ -408,7 +470,7 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
         } else {
             setCurPage(0);
         }
-    }, [props.version]);
+    }, [props.version, props.filterByWatch]);
 
     useEffect(() => {
         if (!(curPage == 0 && props.version == 0)) {

@@ -5,7 +5,7 @@ import {
     LinkNoneInfo, LinkProjectInfo,
     LinkAppraiseInfo
 } from '@/stores/linkAux';
-import type { WATCH_TARGET_TYPE } from '../project_watch';
+import { WATCH_TARGET_API_COLL, WATCH_TARGET_BUG, WATCH_TARGET_CI_CD, WATCH_TARGET_DATA_ANNO, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, type WATCH_TARGET_TYPE } from '../project_watch';
 
 function get_chat_bot_type_str(chat_bot_type: number): string {
     if (chat_bot_type == es.CHAT_BOT_QYWX) {
@@ -14,6 +14,31 @@ function get_chat_bot_type_str(chat_bot_type: number): string {
         return "钉钉";
     } else if (chat_bot_type == es.CHAT_BOT_FS) {
         return "飞书";
+    }
+    return "";
+}
+
+function getTargetTypeStr(targetType: WATCH_TARGET_TYPE): string {
+    if (targetType == WATCH_TARGET_ENTRY) {
+        return "内容";
+    }
+    if (targetType == WATCH_TARGET_REQUIRE_MENT) {
+        return "项目需求";
+    }
+    if (targetType == WATCH_TARGET_TASK) {
+        return "任务";
+    }
+    if (targetType == WATCH_TARGET_BUG) {
+        return "缺陷";
+    }
+    if (targetType == WATCH_TARGET_CI_CD) {
+        return "CI/CD";
+    }
+    if (targetType == WATCH_TARGET_API_COLL) {
+        return "接口集合";
+    }
+    if (targetType == WATCH_TARGET_DATA_ANNO) {
+        return "数据标注";
     }
     return "";
 }
@@ -377,7 +402,7 @@ function get_watch_simple_content(
     inner: WatchEvent,
 ): LinkInfo[] {
     return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} TODO`),
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注 ${getTargetTypeStr(inner.target_type)} ${inner.target_title}`),
     ];
 }
 
@@ -393,7 +418,7 @@ function get_unwatch_simple_content(
     inner: UnwatchEvent,
 ): LinkInfo[] {
     return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} TODO`),
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${getTargetTypeStr(inner.target_type)} ${inner.target_title}`),
     ];
 }
 
@@ -487,10 +512,10 @@ export function get_project_simple_content(
         return get_set_alarm_config_simple_content(ev, skip_prj_name);
     } else if (inner.CustomEvent !== undefined) {
         return get_custom_simple_content(ev, skip_prj_name, inner.CustomEvent);
-    }else if(inner.WatchEvent !== undefined){
-        return get_watch_simple_content(ev,skip_prj_name,inner.WatchEvent);
-    }else if(inner.UnwatchEvent !== undefined){
-        return get_unwatch_simple_content(ev,skip_prj_name,inner.UnwatchEvent);
+    } else if (inner.WatchEvent !== undefined) {
+        return get_watch_simple_content(ev, skip_prj_name, inner.WatchEvent);
+    } else if (inner.UnwatchEvent !== undefined) {
+        return get_unwatch_simple_content(ev, skip_prj_name, inner.UnwatchEvent);
     } else {
         return [new LinkNoneInfo('未知事件')];
     }

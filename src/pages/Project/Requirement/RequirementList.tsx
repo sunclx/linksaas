@@ -3,10 +3,10 @@ import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
 import s from './RequirementList.module.less';
 import Button from "@/components/Button";
-import { Card, Form, Input, Popover, Select, Space, Table, message } from "antd";
+import { Card, Form, Input, Popover, Select, Space, Switch, Table, message } from "antd";
 import type { RequirementInfo, REQ_SORT_TYPE } from '@/api/project_requirement';
 import {
-    list_requirement, update_requirement, open_requirement, close_requirement,
+    list_requirement, update_requirement, open_requirement, close_requirement, get_requirement,
     REQ_SORT_UPDATE_TIME, REQ_SORT_CREATE_TIME, REQ_SORT_KANO, REQ_SORT_URGENT, REQ_SORT_IMPORTANT,
     update_tag_id_list
 } from '@/api/project_requirement';
@@ -22,6 +22,8 @@ import { EditSelect } from "@/components/EditCell/EditSelect";
 import { LinkRequirementInfo } from "@/stores/linkAux";
 import { EditTag } from "@/components/EditCell/EditTag";
 import { PROJECT_SETTING_TAB } from "@/utils/constant";
+import { watch, unwatch, WATCH_TARGET_REQUIRE_MENT } from "@/api/project_watch";
+import UserPhoto from "@/components/Portrait/UserPhoto";
 
 const PAGE_SIZE = 10;
 
@@ -42,6 +44,7 @@ const RequirementList = () => {
     const [reqInfoList, setReqInfoList] = useState<RequirementInfo[]>([]);
 
     const [filterTagId, setFilterTagId] = useState<string | null>(null);
+    const [filterByWatch, setFilterByWatch] = useState(false);
 
     const loadReqInfoList = async () => {
         const res = await request(list_requirement({
@@ -58,13 +61,66 @@ const RequirementList = () => {
             filter_by_tag_id_list: (filterTagId ?? "") != "",
             tag_id_list: (filterTagId ?? "") == "" ? [] : [filterTagId!],
             sort_type: sortType,
-            filter_by_watch: false,
+            filter_by_watch: filterByWatch,
         }));
         setTotalCount(res.total_count);
         setReqInfoList(res.requirement_list);
     }
 
+    const updateRequirement = async (requirementId: string) => {
+        const res = await request(get_requirement({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            requirement_id: requirementId,
+        }));
+        const tmpList = reqInfoList.slice();
+        const index = tmpList.findIndex(item => item.requirement_id == requirementId);
+        if (index != -1) {
+            tmpList[index] = res.requirement;
+            setReqInfoList(tmpList);
+        }
+    };
+
+    const unwatchRequirement = async (requirementId: string) => {
+        await request(unwatch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_REQUIRE_MENT,
+            target_id: requirementId,
+        }));
+        await updateRequirement(requirementId);
+    };
+
+    const watchRequirement = async (requirementId: string) => {
+        await request(watch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_REQUIRE_MENT,
+            target_id: requirementId,
+        }));
+        await updateRequirement(requirementId);
+    };
+
     const columns: ColumnsType<RequirementInfo> = [
+        {
+            title: "",
+            dataIndex: "my_watch",
+            width: 40,
+            render: (_, record: RequirementInfo) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (record.my_watch) {
+                        unwatchRequirement(record.requirement_id);
+                    } else {
+                        watchRequirement(record.requirement_id);
+                    }
+                }}>
+                    <span className={record.my_watch ? s.isCollect : s.noCollect} />
+                </a>
+            ),
+            fixed: true,
+        },
         {
             title: "需求标题",
             width: 250,
@@ -176,6 +232,27 @@ const RequirementList = () => {
             ),
         },
         {
+            title: "关注人",
+            dataIndex: "",
+            width: 140,
+            align: 'left',
+            render: (_, row: RequirementInfo) => (
+                <Popover trigger="hover" placement='top' content={
+                    <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+                        {(row.watch_user_list ?? []).map(item => (
+                            <Space key={item.member_user_id} style={{ margin: "4px 10px" }}>
+                                <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                                {item.display_name}
+                            </Space>
+                        ))}
+                    </div>
+                }>
+                    {(row.watch_user_list ?? []).length == 0 && "-"}
+                    {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+                </Popover>
+            ),
+        },
+        {
             title: "KANO系数",
             width: 600,
             render: (_, row: RequirementInfo) => (
@@ -227,7 +304,7 @@ const RequirementList = () => {
 
     useEffect(() => {
         loadReqInfoList();
-    }, [curPage, keyword, hasLinkIssue, filterClosed, sortType, filterTagId]);
+    }, [curPage, keyword, hasLinkIssue, filterClosed, sortType, filterTagId, filterByWatch]);
 
 
 
@@ -256,6 +333,11 @@ const RequirementList = () => {
                 <Card bordered={false}
                     extra={<Space>
                         <Form layout="inline">
+                            <Form.Item label="只看我的关注">
+                                <Switch checked={filterByWatch} onChange={value => {
+                                    setFilterByWatch(value);
+                                }} />
+                            </Form.Item>
                             <Form.Item>
                                 <Input value={keyword} style={{ width: 150 }} onChange={e => {
                                     e.stopPropagation();

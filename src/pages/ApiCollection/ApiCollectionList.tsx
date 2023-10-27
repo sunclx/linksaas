@@ -2,7 +2,7 @@ import { useStores } from "@/hooks";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
-import { Modal, Space, Table, Tag, message } from "antd";
+import { Form, Modal, Popover, Space, Switch, Table, Tag, message } from "antd";
 import Button from "@/components/Button";
 import addIcon from '@/assets/image/addIcon.png';
 import CreateApiCollModal from "./components/CreateApiCollModal";
@@ -17,6 +17,8 @@ import UpdateCustomModal from "./components/UpdateCustomModal";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import { EditOutlined } from "@ant-design/icons";
 import UpdateMemberModal from "./components/UpdateMemberModal";
+import s from "./ApiCollectionList.module.less";
+import { watch, unwatch, WATCH_TARGET_API_COLL } from "@/api/project_watch";
 
 const PAGE_SIZE = 10;
 
@@ -38,11 +40,13 @@ const ApiCollectionList = () => {
     const [updateCustomApiId, setUpdateCustomApiId] = useState("");
     const [updateMemberApiCollInfo, setUpdateMemberApiCollInfo] = useState<ApiCollInfo | null>(null);
 
+    const [filterByWatch, setFilterByWatch] = useState(false);
+
     const loadApiCollInfoList = async () => {
         const res = await request(list_info({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            filter_by_watch: false,
+            filter_by_watch: filterByWatch,
             offset: PAGE_SIZE * curPage,
             limit: PAGE_SIZE,
         }));
@@ -77,8 +81,46 @@ const ApiCollectionList = () => {
             setApiCollInfoList(tmpList);
         }
     }
+    const unwatchApiColl = async (apiCollId: string) => {
+        await request(unwatch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_API_COLL,
+            target_id: apiCollId,
+        }));
+        await updateApiCollInfo(apiCollId);
+    };
+
+    const watchApiColl = async (apiCollId: string) => {
+        await request(watch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_API_COLL,
+            target_id: apiCollId,
+        }));
+        await updateApiCollInfo(apiCollId);
+    };
 
     const columns: ColumnsType<ApiCollInfo> = [
+        {
+            title: "",
+            dataIndex: "my_watch",
+            width: 40,
+            render: (_, row: ApiCollInfo) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (row.my_watch) {
+                        unwatchApiColl(row.api_coll_id);
+                    } else {
+                        watchApiColl(row.api_coll_id);
+                    }
+                }}>
+                    <span className={row.my_watch ? s.isCollect : s.noCollect} />
+                </a>
+            ),
+            fixed: true,
+        },
         {
             title: "名称",
             width: 200,
@@ -185,6 +227,27 @@ const ApiCollectionList = () => {
             ),
         },
         {
+            title: "关注人",
+            dataIndex: "",
+            width: 140,
+            align: 'left',
+            render: (_, row: ApiCollInfo) => (
+                <Popover trigger="hover" placement='top' content={
+                    <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+                        {(row.watch_user_list ?? []).map(item => (
+                            <Space key={item.member_user_id} style={{ margin: "4px 10px" }}>
+                                <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                                {item.display_name}
+                            </Space>
+                        ))}
+                    </div>
+                }>
+                    {(row.watch_user_list ?? []).length == 0 && "-"}
+                    {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+                </Popover>
+            ),
+        },
+        {
             title: "操作",
             render: (_, row) => (
                 <Space size="large">
@@ -235,20 +298,27 @@ const ApiCollectionList = () => {
 
     useEffect(() => {
         loadApiCollInfoList();
-    }, [curPage]);
+    }, [curPage, filterByWatch]);
 
     return (
         <CardWrap title="接口集合列表" extra={
-            <Space size="middle">
-                <Button
-                    disabled={projectStore.isClosed}
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowCreateModal(true);
-                    }}>
-                    <img src={addIcon} alt="" />创建接口集合
-                </Button>
+            <Space>
+                <Form layout="inline">
+                    <Form.Item label="只看我的关注">
+                        <Switch checked={filterByWatch} onChange={value => setFilterByWatch(value)} />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button
+                            disabled={projectStore.isClosed}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setShowCreateModal(true);
+                            }}>
+                            <img src={addIcon} alt="" />&nbsp;创建接口集合
+                        </Button>
+                    </Form.Item>
+                </Form>
             </Space>
         }>
             <Table rowKey="api_coll_id" dataSource={apiCollInfoList} columns={columns} style={{ margin: "0px 20px 0px 20px" }}

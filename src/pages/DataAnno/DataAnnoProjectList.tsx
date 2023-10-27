@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
 import Button from "@/components/Button";
-import { Modal, Space, Table, message } from "antd";
+import { Form, Modal, Popover, Space, Switch, Table, message } from "antd";
 import addIcon from '@/assets/image/addIcon.png';
 import { useStores } from "@/hooks";
 import CreateAnnoProjectModal from "./components/CreateAnnoProjectModal";
@@ -14,7 +14,9 @@ import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { EditText } from "@/components/EditCell/EditText";
 import { WarningOutlined } from "@ant-design/icons";
 import ExportModal from "./components/ExportModal";
-
+import s from "./DataAnnoProjectList.module.less";
+import { watch, unwatch, WATCH_TARGET_DATA_ANNO } from "@/api/project_watch";
+import UserPhoto from "@/components/Portrait/UserPhoto";
 
 const PAGE_SIZE = 10;
 
@@ -29,11 +31,13 @@ const DataAnnoProjectList = () => {
     const [removeAnnoProjectInfo, setRemoveAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
     const [exportAnnoProjectInfo, setExportAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
 
+    const [filterByWatch, setFilterByWatch] = useState(false);
+
     const loadAnnoProjectList = async () => {
         const res = await request(dataAnnoPrjApi.list({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            filter_by_watch: false,
+            filter_by_watch: filterByWatch,
             offset: curPage * PAGE_SIZE,
             limit: PAGE_SIZE,
         }));
@@ -95,7 +99,60 @@ const DataAnnoProjectList = () => {
         message.info("删除成功");
     };
 
+    const loadAnnoProjectInfo = async (annoProjectId: string) => {
+        const res = await request(dataAnnoPrjApi.get({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            anno_project_id: annoProjectId,
+        }));
+        const tmpList = annoProjectList.slice();
+        const index = tmpList.findIndex(item => item.anno_project_id == annoProjectId);
+        if (index != -1) {
+            tmpList[index] = res.info;
+            setAnnoProjectList(tmpList);
+        }
+    };
+
+    const unwatchDataAnno = async (annoProjectId: string) => {
+        await request(unwatch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_DATA_ANNO,
+            target_id: annoProjectId,
+        }));
+        await loadAnnoProjectInfo(annoProjectId);
+    };
+
+    const watchDataAnno = async (annoProjectId: string) => {
+        await request(watch({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            target_type: WATCH_TARGET_DATA_ANNO,
+            target_id: annoProjectId,
+        }));
+        await loadAnnoProjectInfo(annoProjectId);
+    };
+
     const columns: ColumnsType<dataAnnoPrjApi.AnnoProjectInfo> = [
+        {
+            title: "",
+            dataIndex: "my_watch",
+            width: 40,
+            render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
+                <a onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (row.my_watch) {
+                        unwatchDataAnno(row.anno_project_id);
+                    } else {
+                        watchDataAnno(row.anno_project_id);
+                    }
+                }}>
+                    <span className={row.my_watch ? s.isCollect : s.noCollect} />
+                </a>
+            ),
+            fixed: true,
+        },
         {
             title: "任务名称",
             width: 150,
@@ -161,6 +218,27 @@ const DataAnnoProjectList = () => {
             ),
         },
         {
+            title: "关注人",
+            dataIndex: "",
+            width: 140,
+            align: 'left',
+            render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
+                <Popover trigger="hover" placement='top' content={
+                    <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+                        {(row.watch_user_list ?? []).map(item => (
+                            <Space key={item.member_user_id} style={{ margin: "4px 10px" }}>
+                                <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                                {item.display_name}
+                            </Space>
+                        ))}
+                    </div>
+                }>
+                    {(row.watch_user_list ?? []).length == 0 && "-"}
+                    {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+                </Popover>
+            ),
+        },
+        {
             title: "创建时间",
             width: 150,
             render: (_, row: dataAnnoPrjApi.AnnoProjectInfo) => (
@@ -192,18 +270,25 @@ const DataAnnoProjectList = () => {
 
     useEffect(() => {
         loadAnnoProjectList();
-    }, [curPage, projectStore.curProjectId]);
+    }, [curPage, projectStore.curProjectId, filterByWatch]);
 
     return (
         <CardWrap title="标注项目列表" extra={
             <Space size="middle">
-                <Button disabled={!projectStore.isAdmin} onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowCreateModal(true);
-                }}>
-                    <img src={addIcon} alt="" />创建标注项目
-                </Button>
+                <Form layout="inline">
+                    <Form.Item label="只看我的关注">
+                        <Switch checked={filterByWatch} onChange={value => setFilterByWatch(value)} />
+                    </Form.Item>
+                    <Form.Item>
+                        <Button disabled={!projectStore.isAdmin} onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowCreateModal(true);
+                        }}>
+                            <img src={addIcon} alt="" />创建标注项目
+                        </Button>
+                    </Form.Item>
+                </Form>
             </Space>
         }>
             <Table rowKey="anno_project_id" dataSource={annoProjectList} columns={columns}
