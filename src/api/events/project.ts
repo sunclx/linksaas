@@ -3,7 +3,14 @@ import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
     LinkNoneInfo, LinkProjectInfo,
-    LinkAppraiseInfo
+    LinkAppraiseInfo,
+    LinkEntryInfo,
+    LinkRequirementInfo,
+    LinkTaskInfo,
+    LinkBugInfo,
+    LinkPipeLineInfo,
+    LinkApiCollInfo,
+    LinkDataAnnoInfo
 } from '@/stores/linkAux';
 import { WATCH_TARGET_API_COLL, WATCH_TARGET_BUG, WATCH_TARGET_CI_CD, WATCH_TARGET_DATA_ANNO, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, type WATCH_TARGET_TYPE } from '../project_watch';
 
@@ -41,6 +48,31 @@ function getTargetTypeStr(targetType: WATCH_TARGET_TYPE): string {
         return "数据标注";
     }
     return "";
+}
+
+function getTargetLinkInfo(projectId: string, targetType: WATCH_TARGET_TYPE, targetId: string, targetTitle: string): LinkInfo {
+    if (targetType == WATCH_TARGET_ENTRY) {
+        return new LinkEntryInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_REQUIRE_MENT) {
+        return new LinkRequirementInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_TASK) {
+        return new LinkTaskInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_BUG) {
+        return new LinkBugInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_CI_CD) {
+        return new LinkPipeLineInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_API_COLL) {
+        return new LinkApiCollInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_DATA_ANNO) {
+        return new LinkDataAnnoInfo(targetTitle, projectId, targetId);
+    }
+    return new LinkNoneInfo("");
 }
 
 /*
@@ -367,7 +399,7 @@ export type SetAlarmConfigEvent = {};
 function get_set_alarm_config_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
-    // inner: UnWatchChannelEvent
+    // inner: SetAlarmConfigEvent
 ): LinkInfo[] {
     return [
         new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目预警设置`),
@@ -389,7 +421,6 @@ function get_custom_simple_content(
     ];
 }
 
-
 export type WatchEvent = {
     target_type: WATCH_TARGET_TYPE;
     target_id: string;
@@ -402,7 +433,8 @@ function get_watch_simple_content(
     inner: WatchEvent,
 ): LinkInfo[] {
     return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注 ${getTargetTypeStr(inner.target_type)} ${inner.target_title}`),
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注 ${getTargetTypeStr(inner.target_type)}`),
+        getTargetLinkInfo(ev.project_id, inner.target_type, inner.target_id, inner.target_title),
     ];
 }
 
@@ -418,7 +450,8 @@ function get_unwatch_simple_content(
     inner: UnwatchEvent,
 ): LinkInfo[] {
     return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${getTargetTypeStr(inner.target_type)} ${inner.target_title}`),
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${getTargetTypeStr(inner.target_type)}`),
+        getTargetLinkInfo(ev.project_id, inner.target_type, inner.target_id, inner.target_title),
     ];
 }
 

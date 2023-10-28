@@ -25,7 +25,8 @@ import type { API_COLL_TYPE } from '@/api/api_collection';
 import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { OpenPipeLineWindow } from '@/pages/Project/CiCd/utils';
-
+import { get as get_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import { get as get_api_coll } from "@/api/api_collection";
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
  */
@@ -53,6 +54,9 @@ export enum LINK_TARGET_TYPE {
   // LINK_TARGET_BOOK_MARK_CATE = 19,
   LINK_TARGET_IDEA_PAGE = 20,
   LINK_TARGET_PIPE_LINE = 21,
+  LINK_TARGET_ENTRY = 22,
+  LINK_TARGET_API_COLL = 23,
+  LINK_TARGET_DATA_ANNO = 24,
 
   LINK_TARGET_NONE = 100,
   LINK_TARGET_IMAGE = 101,
@@ -253,6 +257,48 @@ export class LinkPipeLineInfo {
   pipeLineId: string;
 }
 
+export class LinkEntryInfo {
+  constructor(content: string, projectId: string, entryId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_ENTRY;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.entryId = entryId;
+  }
+
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  entryId: string;
+}
+
+export class LinkApiCollInfo {
+  constructor(content: string, projectId: string, apiCollId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_API_COLL;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.apiCollId = apiCollId;
+  }
+
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  apiCollId: string;
+}
+
+export class LinkDataAnnoInfo {
+  constructor(content: string, projectId: string, annoProjectId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_DATA_ANNO;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.annoProjectId = annoProjectId;
+  }
+
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  annoProjectId: string;
+}
+
 export class LinkImageInfo {
   constructor(content: string, imgUrl: string, thumbImgUrl: string) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_IMAGE;
@@ -411,7 +457,6 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
-
       if (remoteCheck) {
         const res = await request(
           linkAuxApi.check_access_doc(
@@ -480,6 +525,39 @@ class LinkAuxStore {
       }
       await OpenPipeLineWindow(`${pipeLineLink}(只读模式)`, pipeLineLink.projectId,
         this.rootStore.projectStore.curProject?.ci_cd_fs_id ?? "", pipeLineLink.pipeLineId, false, false);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ENTRY) {
+      const entryLink = link as LinkEntryInfo;
+      if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(entryLink.projectId);
+      }
+      const res = await request(get_entry({
+        session_id: this.rootStore.userStore.sessionId,
+        project_id: entryLink.projectId,
+        entry_id: entryLink.entryId,
+      }));
+      if (res.entry.entry_type == ENTRY_TYPE_SPRIT) {
+        await this.goToLink(new LinkSpritInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
+      } else if (res.entry.entry_type == ENTRY_TYPE_DOC) {
+        await this.goToLink(new LinkDocInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
+      }
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_API_COLL) {
+      const apiCollLink = link as LinkApiCollInfo;
+      if (this.rootStore.projectStore.curProjectId != apiCollLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(apiCollLink.projectId);
+      }
+      const res = await request(get_api_coll({
+        session_id: this.rootStore.userStore.sessionId,
+        project_id: apiCollLink.projectId,
+        api_coll_id: apiCollLink.apiCollId,
+      }));
+      await this.openApiCollPage(res.info.api_coll_id, res.info.name + "(只读模式)", res.info.api_coll_type, res.info.default_addr, false);
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DATA_ANNO) {
+      const dataAnnoLink = link as LinkDataAnnoInfo;
+      if (this.rootStore.projectStore.curProjectId != dataAnnoLink.projectId) {
+        await this.rootStore.projectStore.setCurProjectId(dataAnnoLink.projectId);
+      }
+      //TODO 检查访问权限
+      await this.openAnnoProjectPage(dataAnnoLink.annoProjectId, dataAnnoLink.linkContent);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       let destUrl = externLink.destUrl;
@@ -644,6 +722,36 @@ class LinkAuxStore {
       });
     }
   }
+
+  async openAnnoProjectPage(annoProjectId: string, annoName: string) {
+    const label = `dataAnno:${annoProjectId}`
+    const view = WebviewWindow.getByLabel(label);
+    if (view != null) {
+      await view.setAlwaysOnTop(true);
+      await view.show();
+      await view.unminimize();
+      setTimeout(() => {
+        view.setAlwaysOnTop(false);
+      }, 200);
+      return;
+    }
+    const pos = await appWindow.innerPosition();
+
+    const projectStore = this.rootStore.projectStore;
+
+    new WebviewWindow(label, {
+      title: `标注项目(${annoName})`,
+      url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
+      width: 1000,
+      minWidth: 800,
+      height: 800,
+      minHeight: 600,
+      resizable: true,
+      center: true,
+      x: pos.x + Math.floor(Math.random() * 200),
+      y: pos.y + Math.floor(Math.random() * 200),
+    });
+  };
 
   //跳转到项目需求列表页面
   goToRequirementList(history: History) {

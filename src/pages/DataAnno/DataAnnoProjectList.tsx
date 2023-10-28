@@ -10,7 +10,6 @@ import * as dataAnnoPrjApi from "@/api/data_anno_project";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import moment from "moment";
-import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { EditText } from "@/components/EditCell/EditText";
 import { WarningOutlined } from "@ant-design/icons";
 import ExportModal from "./components/ExportModal";
@@ -23,6 +22,7 @@ const PAGE_SIZE = 10;
 const DataAnnoProjectList = () => {
     const userStore = useStores("userStore")
     const projectStore = useStores("projectStore");
+    const linkAuxStore = useStores("linkAuxStore");
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [curPage, setCurPage] = useState(0);
@@ -43,34 +43,6 @@ const DataAnnoProjectList = () => {
         }));
         setTotalCount(res.total_count);
         setAnnoProjectList(res.info_list);
-    };
-
-    const showAnnoProject = async (annoProjectId: string, annoName: string) => {
-        const label = `dataAnno:${annoProjectId}`
-        const view = WebviewWindow.getByLabel(label);
-        if (view != null) {
-            await view.setAlwaysOnTop(true);
-            await view.show();
-            await view.unminimize();
-            setTimeout(() => {
-                view.setAlwaysOnTop(false);
-            }, 200);
-            return;
-        }
-        const pos = await appWindow.innerPosition();
-
-        new WebviewWindow(label, {
-            title: `标注项目(${annoName})`,
-            url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
-            width: 1000,
-            minWidth: 800,
-            height: 800,
-            minHeight: 600,
-            resizable: true,
-            center: true,
-            x: pos.x + Math.floor(Math.random() * 200),
-            y: pos.y + Math.floor(Math.random() * 200),
-        });
     };
 
     const updateAnnoProjectName = async (info: dataAnnoPrjApi.AnnoProjectInfo, newName: string) => {
@@ -169,7 +141,7 @@ const DataAnnoProjectList = () => {
                             return false;
                         }
                         return true;
-                    }} onClick={() => showAnnoProject(row.anno_project_id, row.base_info.name)} />
+                    }} onClick={() => linkAuxStore.openAnnoProjectPage(row.anno_project_id, row.base_info.name)} />
             ),
         },
         {
