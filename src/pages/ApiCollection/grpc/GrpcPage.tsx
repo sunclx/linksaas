@@ -1,8 +1,8 @@
-import { Empty, Layout, message } from "antd";
+import { Layout, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { get_rpc } from "@/api/api_collection";
-import { get_session } from "@/api/user";
+import { get_session, get_user_id } from "@/api/user";
 import { request } from "@/utils/request";
 import { download_file } from "@/api/fs";
 import ServiceList from "./ServiceList";
@@ -16,10 +16,12 @@ const GrpcPage = () => {
     const apiCollId = urlParams.get("apiCollId") ?? "";
     const fsId = urlParams.get("fsId") ?? "";
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
+    const canAdminStr = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
 
     const [protoPath, setProtoPath] = useState("");
     const [secure, setSecure] = useState(false);
     const [curMethodList, setCurMethodList] = useState<MethodWithServiceInfo[]>([]);
+    const [userId, setUserId] = useState("");
 
     const loadGrpcInfo = async () => {
         const sessionId = await get_session();
@@ -39,6 +41,7 @@ const GrpcPage = () => {
 
     useEffect(() => {
         loadGrpcInfo();
+        get_user_id().then(value => setUserId(value));
     }, []);
 
     return (
@@ -58,16 +61,13 @@ const GrpcPage = () => {
             <Layout.Content>
                 {protoPath !== "" && (
                     <>
-                        {curMethodList.length == 0 && (
-                            <div style={{ height: "100vh", backgroundColor: "white" }} >
-                                <Empty image={Empty.PRESENTED_IMAGE_DEFAULT} description="从左侧列表选择方法打开调试界面"/>
-                            </div>
-                        )}
-                        {curMethodList.length !== 0 && (
+                        {userId != "" && (
                             <MethodCallList remoteAddr={remoteAddr} secure={secure} protoPath={protoPath} curMethodList={curMethodList} onClose={method => {
                                 const tmpList = curMethodList.filter(item => !(item.serviceName == method.serviceName && item.method.methodName == method.method.methodName));
                                 setCurMethodList(tmpList);
-                            }} />
+                            }}
+                                projectId={projectId} canAdmin={canAdminStr == "true"} apiCollId={apiCollId} userId={userId}
+                            />
                         )}
 
 

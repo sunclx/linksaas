@@ -1132,7 +1132,43 @@ const projectEventList: EventDesc[] = [
                 desc: "自定义事件内容"
             }
         ],
-    }
+    },
+    {
+        id: "WatchEvent",
+        name: "关注",
+        attrList: [
+            {
+                key: "target_type",
+                desc: "目标类型"
+            },
+            {
+                key: "target_id",
+                desc: "目标ID"
+            },
+            {
+                key: "target_title",
+                desc: "目标标题"
+            }
+        ],
+    },
+    {
+        id: "UnwatchEvent",
+        name: "取消关注内容",
+        attrList: [
+            {
+                key: "target_type",
+                desc: "目标类型"
+            },
+            {
+                key: "target_id",
+                desc: "目标ID"
+            },
+            {
+                key: "target_title",
+                desc: "目标标题"
+            }
+        ],
+    },
 ];
 
 const issueEventList: EventDesc[] = [
@@ -2695,27 +2731,56 @@ const entryEventList: EventDesc[] = [
     {
         id: "OpenEvent",
         name: "打开内容",
-        attrList: [],
+        attrList: [
+            {
+                key: "entry_id",
+                desc: "内容ID",
+            },
+            {
+                key: "entry_type",
+                desc: "内容类型",
+            },
+            {
+                key: "entry_title",
+                desc: "内容标题",
+            }
+        ],
     },
     {
         id: "CloseEvent",
         name: "关闭内容",
-        attrList: [],
+        attrList: [
+            {
+                key: "entry_id",
+                desc: "内容ID",
+            },
+            {
+                key: "entry_type",
+                desc: "内容类型",
+            },
+            {
+                key: "entry_title",
+                desc: "内容标题",
+            }
+        ],
     },
     {
         id: "RemoveEvent",
         name: "删除内容",
-        attrList: [],
-    },
-    {
-        id: "WatchEvent",
-        name: "关注内容",
-        attrList: [],
-    },
-    {
-        id: "UnwatchEvent",
-        name: "取消关注内容",
-        attrList: [],
+        attrList: [
+            {
+                key: "entry_id",
+                desc: "内容ID",
+            },
+            {
+                key: "entry_type",
+                desc: "内容类型",
+            },
+            {
+                key: "entry_title",
+                desc: "内容标题",
+            }
+        ],
     },
 ];
 

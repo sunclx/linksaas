@@ -57,6 +57,31 @@ async fn list<R: Runtime>(
 }
 
 #[tauri::command]
+async fn list_sys<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListSysRequest,
+) -> Result<ListSysResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.list_sys(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_sys_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_sys".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn get<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -72,57 +97,6 @@ async fn get<R: Runtime>(
             let inner_resp = response.into_inner();
             if inner_resp.code == get_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("get".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn watch<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: WatchRequest,
-) -> Result<WatchResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectEntryApiClient::new(chan.unwrap());
-    match client.watch(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == watch_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("watch".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn unwatch<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: UnwatchRequest,
-) -> Result<UnwatchResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ProjectEntryApiClient::new(chan.unwrap());
-    match client.unwatch(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == unwatch_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("unwatch".into()))
-                {
                     println!("{:?}", err);
                 }
             }
@@ -242,6 +216,34 @@ async fn update_mark_remove<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_mark_sys<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateMarkSysRequest,
+) -> Result<UpdateMarkSysResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.update_mark_sys(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_mark_sys_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_mark_sys".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn update_extra_info<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -279,14 +281,14 @@ impl<R: Runtime> ProjectEntryApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 create,
                 list,
+                list_sys,
                 get,
-                watch,
-                unwatch,
                 update_tag,
                 update_title,
                 update_perm,
                 update_mark_remove,
                 update_extra_info,
+                update_mark_sys,
             ]),
         }
     }

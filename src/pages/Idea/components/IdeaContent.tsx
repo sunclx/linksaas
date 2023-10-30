@@ -47,6 +47,7 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
         ownerId: props.idea.idea_id,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: false,
         showReminder: false,
     });
@@ -269,7 +270,7 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
                                     }
                                 }}
                                 placement="topLeft">
-                                {(projectStore.curProject?.tag_list ?? []).filter(tag=>tag.use_in_idea).map(tag => (
+                                {(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_idea).map(tag => (
                                     <Select.Option key={tag.tag_id} value={tag.tag_id}>
                                         <span style={{ backgroundColor: tag.bg_color, padding: "0px 4px" }}>{tag.tag_name}</span>
                                     </Select.Option>

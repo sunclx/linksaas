@@ -5,8 +5,8 @@ import { Button, Card, Divider, Form, Input, List, Select, Space, Tabs } from "a
 import { useHistory } from "react-router-dom";
 import { APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
-import type { ENTRY_TYPE, ListParam } from "@/api/project_entry";
-import { list as list_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import type { ENTRY_TYPE, ListParam, EntryInfo } from "@/api/project_entry";
+import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import { request } from "@/utils/request";
 import { CreditCardFilled, FilterTwoTone, PlusOutlined } from "@ant-design/icons";
 import EntryCard from "./EntryCard";
@@ -32,12 +32,13 @@ const ProjectHome = () => {
 
     const [activeKey, setActiveKey] = useState("open");
 
+    const [sysEntryList, setSysEntryList] = useState<{ id: string; content: string | EntryInfo; }[]>([]);
+
     const loadEntryList = async () => {
         let listParam: ListParam | null = null;
         if (activeKey == "open") {
             listParam = {
                 filter_by_watch: false,
-                watch: false,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
@@ -50,7 +51,6 @@ const ProjectHome = () => {
         } else if (activeKey == "close") {
             listParam = {
                 filter_by_watch: false,
-                watch: false,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
@@ -63,7 +63,6 @@ const ProjectHome = () => {
         } else if (activeKey == "myWatch") {
             listParam = {
                 filter_by_watch: true,
-                watch: true,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
@@ -89,11 +88,23 @@ const ProjectHome = () => {
         entryStore.entryList = res.entry_list;
     };
 
+    const loadSysEntryList = async () => {
+        const res = await request(list_sys_entry({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+        }));
+        entryStore.sysEntryList = res.entry_list;
+    };
+
     const entryList = (
         <List rowKey="entry_id" dataSource={entryStore.entryList} grid={{ gutter: 16 }}
             renderItem={item => (
                 <List.Item>
-                    <EntryCard entryInfo={item} onRemove={() => loadEntryList()} />
+                    <EntryCard entryInfo={item} onRemove={() => loadEntryList()}
+                        onMarkSys={() => {
+                            loadSysEntryList();
+                            loadEntryList();
+                        }} />
                 </List.Item>
             )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
     );
@@ -121,15 +132,38 @@ const ProjectHome = () => {
         loadEntryList();
     }, [curPage, dataVersion, keyword, tagIdList, entryTypeList, activeKey]);
 
+    useEffect(() => {
+        loadSysEntryList();
+    }, [projectStore.curProjectId]);
+
+    useEffect(() => {
+        setSysEntryList([
+            {
+                id: "mywork",
+                content: "",
+            },
+            {
+                id: "summary",
+                content: "",
+            },
+            ...(entryStore.sysEntryList.map(sysEntry => (
+                {
+                    id: sysEntry.entry_id,
+                    content: sysEntry,
+                }
+            )))
+        ]);
+    }, [entryStore.sysEntryList]);
+
     return (
         <div className={s.home_wrap}>
             <h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;系统面板</h1>
             <List rowKey="id"
                 grid={{ gutter: 16 }}
-                dataSource={[
-                    {
-                        id: "mywork",
-                        content: (
+                dataSource={sysEntryList}
+                renderItem={item => (
+                    <List.Item>
+                        {item.id == "mywork" && (
                             <div className={s.card} style={{ backgroundColor: "#A8E0A3" }} onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -137,11 +171,8 @@ const ProjectHome = () => {
                             }}>
                                 <h1>我的工作</h1>
                             </div>
-                        ),
-                    },
-                    {
-                        id: "summary",
-                        content: (
+                        )}
+                        {item.id == "summary" && (
                             <div className={s.card} style={{ backgroundColor: "#E8EDC9" }}
                                 onClick={e => {
                                     e.stopPropagation();
@@ -150,11 +181,14 @@ const ProjectHome = () => {
                                 }}>
                                 <h1>项目概览</h1>
                             </div>
-                        ),
-                    },
-                ]} renderItem={item => (
-                    <List.Item>
-                        {item.content}
+                        )}
+                        {["mywork", "summary"].includes(item.id) == false && (
+                            <EntryCard entryInfo={item.content as EntryInfo} onRemove={() => loadEntryList()}
+                                onMarkSys={() => {
+                                    loadSysEntryList();
+                                    loadEntryList();
+                                }} />
+                        )}
                     </List.Item>
                 )} />
             <Divider style={{ margin: "4px 0px" }} />

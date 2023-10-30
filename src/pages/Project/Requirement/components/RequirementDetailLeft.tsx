@@ -34,6 +34,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
         ownerId: props.requirement.requirement_id,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: true,
         showReminder: false,
     });

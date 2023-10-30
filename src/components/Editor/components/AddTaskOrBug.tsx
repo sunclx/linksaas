@@ -162,7 +162,6 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       filter_by_tag_id_list: false,
       tag_id_list: [],
       filter_by_watch: false,
-      watch: false,
     };
 
     const res = await request(
@@ -198,6 +197,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
       sort_type: REQ_SORT_UPDATE_TIME,//FIXME
       filter_by_tag_id_list: false,
       tag_id_list: [],
+      filter_by_watch: false,
     }));
     if (reqRes.total_count == 0) {
       setDataSource([]);

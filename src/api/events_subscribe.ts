@@ -30,6 +30,8 @@ export type ProjectEvCfg = {
     remove_subscribe: boolean;
     set_alarm_config: boolean;
     custom_event: boolean;
+    watch: boolean;
+    unwatch: boolean;
 };
 
 export type ExtEvCfg = {
@@ -146,8 +148,6 @@ export type EntryEvCfg = {
     open: boolean;
     close: boolean;
     remove: boolean;
-    watch: boolean;
-    unwatch: boolean;
 };
 
 export type EventCfg = {
@@ -286,8 +286,6 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             open: false,
             close: false,
             remove: false,
-            watch: false,
-            unwatch: false,
         }
     }
     return cfg;

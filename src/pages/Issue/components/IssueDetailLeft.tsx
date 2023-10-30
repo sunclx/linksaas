@@ -34,6 +34,7 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
         ownerId: props.issue.issue_id,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: true,
         showReminder: false,
     });

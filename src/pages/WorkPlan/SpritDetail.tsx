@@ -20,6 +20,8 @@ import AddTaskOrBug from "@/components/Editor/components/AddTaskOrBug";
 import AddIssueModal from "./components/AddIssueModal";
 import { PlusOutlined } from "@ant-design/icons";
 import { ISSUE_LIST_KANBAN, ISSUE_LIST_LIST } from "@/api/project_entry";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_ENTRY } from "@/api/project_comment";
 
 
 const SpritDetail = () => {
@@ -129,7 +131,9 @@ const SpritDetail = () => {
                         onChange={value => {
                             history.push(`${location.pathname}?tab=${value}`);
                         }} tabBarExtraContent={
-                            <>
+                            <Space>
+                                <CommentEntry projectId={projectStore.curProjectId} targetType={COMMENT_TARGET_ENTRY}
+                                    targetId={entryStore.curEntry?.entry_id ?? ""} myUserId={userStore.userInfo.userId} myAdmin={projectStore.isAdmin} />
                                 {(activeKey == "issue" || activeKey == "kanban") && (
                                     <Form layout="inline">
                                         <Form.Item label="过滤成员">
@@ -177,7 +181,7 @@ const SpritDetail = () => {
                                         </Form.Item>
                                     </Form>
                                 )}
-                            </>
+                            </Space>
                         }>
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.issue_list_type != ISSUE_LIST_KANBAN && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">

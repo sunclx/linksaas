@@ -8,7 +8,7 @@ import type { IssueInfo } from "@/api/project_issue";
 import { request } from '@/utils/request';
 import { useStores } from "@/hooks";
 import DetailsNav from "@/components/DetailsNav";
-import { Button, Modal, message } from 'antd';
+import { Button, Modal, Space, message } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, DeleteOutlined } from "@ant-design/icons";
 import s from './IssueDetail.module.less';
 import IssueDetailLeft from "./components/IssueDetailLeft";
@@ -17,6 +17,8 @@ import StageModel from "./components/StageModel";
 import { EditText } from "@/components/EditCell/EditText";
 import { updateTitle } from "./components/utils";
 import { getIssueText, getIsTask } from "@/utils/utils";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_BUG, COMMENT_TARGET_TASK } from "@/api/project_comment";
 
 const IssueDetail = () => {
     const location = useLocation();
@@ -75,52 +77,56 @@ const IssueDetail = () => {
                 return await updateTitle(userStore.sessionId, issue.project_id, issue.issue_id, value);
             }} showEditIcon={true} />
         }>
-            {(!projectStore.isClosed) && ((issue?.user_issue_perm.can_remove ?? false) == true) &&
-                (
-                    (<Button danger onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setShowRemoveModal(true);
-                    }}>
-                        <DeleteOutlined />删除
-                    </Button>)
-                )
-            }
-            {(state.contextIssueIdList ?? []).length > 0 &&
-                <span style={{ display: "inline-block", width: "80px" }} />
-            }
-            {(state.contextIssueIdList ?? []).length > 0 && (
-                <Button
-                    type="link"
-                    title="上一个"
-                    style={{ fontSize: "18px" }}
-                    disabled={preIssueId == ""}
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        const tmpIssueId = preIssueId;
-                        setIssue(null);
-                        setPreIssueId("");
-                        setNextIssueId("");
-                        setIssueId(tmpIssueId);
-                    }}><ArrowLeftOutlined /></Button>
-            )}
-            {(state.contextIssueIdList ?? []).length > 0 && (
-                <Button
-                    type="link"
-                    title="下一个"
-                    style={{ fontSize: "18px" }}
-                    disabled={nextIssueId == ""}
-                    onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        const tmpIssueId = nextIssueId;
-                        setIssue(null);
-                        setPreIssueId("");
-                        setNextIssueId("");
-                        setIssueId(tmpIssueId);
-                    }}><ArrowRightOutlined /></Button>
-            )}
+            <Space>
+                {(!projectStore.isClosed) && ((issue?.user_issue_perm.can_remove ?? false) == true) &&
+                    (
+                        (<Button danger onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowRemoveModal(true);
+                        }}>
+                            <DeleteOutlined />删除
+                        </Button>)
+                    )
+                }
+                {(state.contextIssueIdList ?? []).length > 0 &&
+                    <span style={{ display: "inline-block", width: "80px" }} />
+                }
+                {(state.contextIssueIdList ?? []).length > 0 && (
+                    <Button
+                        type="link"
+                        title="上一个"
+                        style={{ fontSize: "18px" }}
+                        disabled={preIssueId == ""}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const tmpIssueId = preIssueId;
+                            setIssue(null);
+                            setPreIssueId("");
+                            setNextIssueId("");
+                            setIssueId(tmpIssueId);
+                        }}><ArrowLeftOutlined /></Button>
+                )}
+                {(state.contextIssueIdList ?? []).length > 0 && (
+                    <Button
+                        type="link"
+                        title="下一个"
+                        style={{ fontSize: "18px" }}
+                        disabled={nextIssueId == ""}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            const tmpIssueId = nextIssueId;
+                            setIssue(null);
+                            setPreIssueId("");
+                            setNextIssueId("");
+                            setIssueId(tmpIssueId);
+                        }}><ArrowRightOutlined /></Button>
+                )}
+                <CommentEntry projectId={projectStore.curProjectId} targetType={getIsTask(location.pathname) ? COMMENT_TARGET_TASK : COMMENT_TARGET_BUG}
+                    targetId={state.issueId} myUserId={userStore.userInfo.userId} myAdmin={projectStore.isAdmin} />
+            </Space>
         </DetailsNav>)
         }
         <div className={s.content_wrap}>

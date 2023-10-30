@@ -6,7 +6,7 @@ import Button from '@/components/Button';
 import { LinkOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { Card, Form, Input, Modal, Space, Table } from 'antd';
 import type { RequirementInfo } from '@/api/project_requirement';
-import { list_requirement, get_requirement, list_requirement_by_id,REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
+import { list_requirement, get_requirement, list_requirement_by_id, REQ_SORT_UPDATE_TIME } from '@/api/project_requirement';
 import type { ColumnsType } from 'antd/lib/table';
 import { useStores } from '@/hooks';
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
@@ -61,6 +61,7 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
             sort_type: REQ_SORT_UPDATE_TIME,//FIXME
             filter_by_tag_id_list: false,
             tag_id_list: [],
+            filter_by_watch: false,
         }));
         setTotalCount(res.total_count);
         setRequirementList(res.requirement_list);

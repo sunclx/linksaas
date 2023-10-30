@@ -57,7 +57,6 @@ const listIssueBySprit = async (sessionId: string, projectId: string, spritId: s
             filter_by_tag_id_list: false,
             tag_id_list: [],
             filter_by_watch: false,
-            watch: false,
             ///任务相关
             filter_by_task_priority: false,
             task_priority_list: [],
@@ -131,7 +130,6 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
             project_id: projectStore.curProjectId,
             list_param: {
                 filter_by_watch: false,
-                watch: false,
                 filter_by_tag_id: false,
                 tag_id_list: [],
                 filter_by_keyword: false,

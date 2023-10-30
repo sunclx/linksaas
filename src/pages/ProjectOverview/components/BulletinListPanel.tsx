@@ -34,6 +34,7 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
         ownerId: props.bulletinId,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: false,
         showReminder: false,
     });
@@ -149,6 +150,7 @@ const CreateModal: React.FC<CreateModalProps> = observer((props) => {
         ownerId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: false,
         showReminder: false,
     });
@@ -315,7 +317,7 @@ const BulletinListPanel = () => {
         if (curPage == 0) {
             loadBulletinList();
         }
-    }, [projectStore.curProject?.bulletin_version])
+    }, [projectStore.curProject?.project_status.bulletin_count])
 
     return (
         <>

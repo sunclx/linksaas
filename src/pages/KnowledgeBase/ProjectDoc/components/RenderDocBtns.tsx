@@ -8,6 +8,8 @@ import Button from '@/components/Button';
 import { LinkIdeaPageInfo } from '@/stores/linkAux';
 import { useHistory } from 'react-router-dom';
 import { BulbFilled } from '@ant-design/icons';
+import CommentEntry from '@/components/CommentEntry';
+import { COMMENT_TARGET_ENTRY } from '@/api/project_comment';
 
 export interface RenderDocBtnsProps {
   keyWordList?: string[];
@@ -16,6 +18,7 @@ export interface RenderDocBtnsProps {
 const RenderDocBtns = (props: RenderDocBtnsProps) => {
   const history = useHistory();
 
+  const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
   const linkAuxStore = useStores('linkAuxStore');
@@ -23,6 +26,8 @@ const RenderDocBtns = (props: RenderDocBtnsProps) => {
 
   return (
     <Space>
+      <CommentEntry projectId={projectStore.curProjectId} targetType={COMMENT_TARGET_ENTRY}
+        targetId={entryStore.curEntry?.entry_id ?? ""} myUserId={userStore.userInfo.userId} myAdmin={projectStore.isAdmin} />
       {(props.keyWordList ?? []).length > 0 && (
         <Popover placement='bottom'
           title="相关知识点"
@@ -53,13 +58,13 @@ const RenderDocBtns = (props: RenderDocBtnsProps) => {
         trigger="click"
       >
         <Button type="text" style={{ padding: "0px 0px", minWidth: 0 }}>
-          <Historysvg style={{ fontSize: "28px" }} />
+          <Historysvg style={{ fontSize: "24px" }} />
         </Button>
       </Popover>
 
       <Button
         type="primary"
-        style={{marginLeft:"40px", padding: "0px 0px" }}
+        style={{ marginLeft: "40px", padding: "0px 0px" }}
         disabled={projectStore.isClosed || !(entryStore.curEntry?.can_update ?? false)}
         onClick={(e) => {
           e.stopPropagation();

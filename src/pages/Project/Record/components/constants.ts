@@ -1,6 +1,6 @@
 import type { CheckboxOptionType } from 'antd';
 import type {
-    ProjectEvCfg,  ExtEvCfg,
+    ProjectEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg,
     RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, CiCdEvCfg, EntryEvCfg
 } from '@/api/events_subscribe';
@@ -97,6 +97,14 @@ export const projectEvOptionList: CheckboxOptionType[] = [
     {
         label: "自定义事件",
         value: "customEvent"
+    },
+    {
+        label: "关注",
+        value: "watch"
+    },
+    {
+        label: "取消关注",
+        value: "unwatch"
     }
 ];
 
@@ -125,6 +133,8 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         remove_subscribe: false,
         set_alarm_config: false,
         custom_event: false,
+        watch: false,
+        unwatch: false,
     };
     if (values == undefined) {
         return ret;
@@ -176,6 +186,10 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.set_alarm_config = true;
         } else if (value == "customEvent") {
             ret.custom_event = true;
+        } else if (value == "watch") {
+            ret.watch = true
+        } else if (value == "unwatch") {
+            ret.unwatch = true
         }
     });
     return ret;
@@ -251,6 +265,12 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.custom_event) {
         retList.push("customEvent");
+    }
+    if (cfg.watch) {
+        retList.push("watch");
+    }
+    if (cfg.unwatch) {
+        retList.push("unwatch");
     }
     return retList;
 }
@@ -1255,14 +1275,6 @@ export const entryEvOptionList: CheckboxOptionType[] = [
         label: "删除内容",
         value: "remove",
     },
-    {
-        label: "关注内容",
-        value: "watch",
-    },
-    {
-        label: "取消关注内容",
-        value: "unwatch",
-    },
 ];
 
 export const calcEntryEvCfg = (values: string[] | undefined): EntryEvCfg => {
@@ -1271,8 +1283,6 @@ export const calcEntryEvCfg = (values: string[] | undefined): EntryEvCfg => {
         open: false,
         close: false,
         remove: false,
-        watch: false,
-        unwatch: false,
     };
     if (values == undefined) {
         return ret;
@@ -1282,15 +1292,11 @@ export const calcEntryEvCfg = (values: string[] | undefined): EntryEvCfg => {
             ret.create = true;
         } else if (value == "open") {
             ret.open = true;
-        }else if (value == "close"){
+        } else if (value == "close") {
             ret.close = true;
-        }else if (value == "remove"){
+        } else if (value == "remove") {
             ret.remove = true;
-        }else if(value == "watch"){
-            ret.watch = true;
-        }else if(value == "unwatch"){
-            ret.unwatch = true;
-        }
+        } 
     });
     return ret;
 };
@@ -1303,17 +1309,11 @@ export const genEntryEvCfgValues = (cfg: EntryEvCfg): string[] => {
     if (cfg.open) {
         retList.push("open");
     }
-    if (cfg.close){
+    if (cfg.close) {
         retList.push("close");
     }
-    if(cfg.remove){
+    if (cfg.remove) {
         retList.push("remove");
-    }
-    if(cfg.watch){
-        retList.push("watch");
-    }
-    if(cfg.unwatch){
-        retList.push("unwatch");
     }
     return retList;
 };

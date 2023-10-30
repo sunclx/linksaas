@@ -17,6 +17,8 @@ class ApiStore {
     private _apiCollId = "";
     private _remoteAddr = "";
     private _canEdit = false;
+    private _canAdmin = false;
+    private _userId = "";
 
     get projectId(): string {
         return this._projectId;
@@ -54,6 +56,26 @@ class ApiStore {
     set canEdit(val: boolean) {
         runInAction(() => {
             this._canEdit = val;
+        });
+    }
+
+    get canAdmin(): boolean {
+        return this._canAdmin;
+    }
+
+    set canAdmin(val: boolean) {
+        runInAction(() => {
+            this._canAdmin = val;
+        });
+    }
+
+    get userId(): string {
+        return this._userId;
+    }
+
+    set userId(val: string) {
+        runInAction(() => {
+            this._userId = val;
         });
     }
 

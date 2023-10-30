@@ -1,11 +1,11 @@
-import type { IssueInfo, PROCESS_STAGE } from '@/api/project_issue';
+import type { ISSUE_TYPE, IssueInfo, PROCESS_STAGE } from '@/api/project_issue';
 import {
   ISSUE_STATE_CHECK, ISSUE_STATE_PROCESS, ISSUE_TYPE_TASK, ISSUE_TYPE_BUG, PROCESS_STAGE_TODO, PROCESS_STAGE_DOING, PROCESS_STAGE_DONE,
 } from '@/api/project_issue';
 import { useStores } from '@/hooks';
 import { getIssueText, getIsTask } from '@/utils/utils';
 import { EditOutlined, ExportOutlined, LinkOutlined } from '@ant-design/icons/lib/icons';
-import { Space, Table, Tooltip } from 'antd';
+import { Popover, Space, Table, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { ColumnType } from 'antd/lib/table';
@@ -26,7 +26,8 @@ import {
 import { EditDate } from '@/components/EditCell/EditDate';
 import type { TagInfo } from "@/api/project";
 import { EditTag } from '@/components/EditCell/EditTag';
-import { update_tag_id_list, watch, unwatch } from "@/api/project_issue";
+import { update_tag_id_list } from "@/api/project_issue";
+import { watch, unwatch, WATCH_TARGET_TASK, WATCH_TARGET_BUG } from "@/api/project_watch";
 import { request } from '@/utils/request';
 import s from "./IssueEditList.module.less";
 import UserPhoto from '@/components/Portrait/UserPhoto';
@@ -64,20 +65,22 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
 
   const memberSelectItems = getMemberSelectItems(memberStore.memberList.map(item => item.member));
 
-  const unwatchIssue = async (issueId: string) => {
+  const unwatchIssue = async (issueId: string, issueType: ISSUE_TYPE) => {
     await request(unwatch({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      issue_id: issueId,
+      target_type: issueType == ISSUE_TYPE_TASK ? WATCH_TARGET_TASK : WATCH_TARGET_BUG,
+      target_id: issueId,
     }));
     onChange(issueId);
   };
 
-  const watchIssue = async (issueId: string) => {
+  const watchIssue = async (issueId: string, issueType: ISSUE_TYPE) => {
     await request(watch({
       session_id: userStore.sessionId,
       project_id: projectStore.curProjectId,
-      issue_id: issueId,
+      target_type: issueType == ISSUE_TYPE_TASK ? WATCH_TARGET_TASK : WATCH_TARGET_BUG,
+      target_id: issueId,
     }));
     onChange(issueId);
   };
@@ -92,9 +95,9 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
           e.stopPropagation();
           e.preventDefault();
           if (record.my_watch) {
-            unwatchIssue(record.issue_id);
+            unwatchIssue(record.issue_id, record.issue_type);
           } else {
-            watchIssue(record.issue_id);
+            watchIssue(record.issue_id, record.issue_type);
           }
         }}>
           <span className={record.my_watch ? s.isCollect : s.noCollect} />
@@ -403,14 +406,19 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       width: 140,
       align: 'left',
       render: (_, row: IssueInfo) => (
-        <Space>
+        <Popover trigger="hover" placement='top' content={
+          <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+            {(row.watch_user_list ?? []).map(item => (
+              <Space key={item.member_user_id} style={{margin:"4px 10px"}}>
+                <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                {item.display_name}
+              </Space>
+            ))}
+          </div>
+        }>
           {(row.watch_user_list ?? []).length == 0 && "-"}
-          {(row.watch_user_list ?? []).map(item => (
-            <div key={item.member_user_id} title={item.display_name}>
-              <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
-            </div>
-          ))}
-        </Space>
+          {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+        </Popover>
       ),
     },
     {

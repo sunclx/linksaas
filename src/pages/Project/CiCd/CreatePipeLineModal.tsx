@@ -86,7 +86,7 @@ const CreatePipeLineModal = (props: CreatePipeLineModalProps) => {
         if (projectStore.isAdmin || perm.exec_for_all || perm.extra_exec_user_id_list.includes(userStore.userInfo.userId)) {
             canExec = true;
         }
-        OpenPipeLineWindow(pipeLineName, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", res.pipe_line_id, canUpdate, canExec);
+        OpenPipeLineWindow(pipeLineName, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", res.pipe_line_id, canUpdate, canExec, projectStore.isAdmin);
     };
 
     useEffect(() => {
