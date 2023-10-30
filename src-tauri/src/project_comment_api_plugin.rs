@@ -59,6 +59,31 @@ async fn list_comment<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_comment<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetCommentRequest,
+) -> Result<GetCommentResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectCommentApiClient::new(chan.unwrap());
+    match client.get_comment(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_comment_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_comment".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn update_comment<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -220,6 +245,7 @@ impl<R: Runtime> ProjectCommentApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 add_comment,
                 list_comment,
+                get_comment,
                 update_comment,
                 remove_comment,
                 get_un_read_state,

@@ -54,6 +54,20 @@ export type ListCommentResponse = {
     comment_list: Comment[];
 };
 
+export type GetCommentRequest = {
+    session_id: string;
+    project_id: string;
+    target_type: COMMENT_TARGET_TYPE;
+    target_id: string;
+    comment_id: string;
+};
+
+export type GetCommentResponse = {
+    code: number;
+    err_msg: string;
+    comment: Comment;
+};
+
 export type UpdateCommentRequest = {
     session_id: string;
     project_id: string;
@@ -147,6 +161,15 @@ export async function list_comment(request: ListCommentRequest): Promise<ListCom
     const cmd = 'plugin:project_comment_api|list_comment';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单条评论
+export async function get_comment(request: GetCommentRequest): Promise<GetCommentResponse> {
+    const cmd = 'plugin:project_comment_api|get_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetCommentResponse>(cmd, {
         request,
     });
 }

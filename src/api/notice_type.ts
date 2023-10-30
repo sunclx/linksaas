@@ -1,3 +1,5 @@
+import type { COMMENT_TARGET_TYPE } from "./project_comment";
+
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace project {
   export type UpdateProjectNotice = {
@@ -239,16 +241,23 @@ export namespace comment {
   export type AddCommentNotice = {
     project_id: string;
     comment_id: string;
+    target_type: COMMENT_TARGET_TYPE;
+    target_id: string;
+
   };
 
   export type UpdateCommentNotice = {
     project_id: string;
     comment_id: string;
+    target_type: COMMENT_TARGET_TYPE;
+    target_id: string;
   };
 
   export type RemoveCommentNotice = {
     project_id: string;
     comment_id: string;
+    target_type: COMMENT_TARGET_TYPE;
+    target_id: string;
   };
 
   export type AllNotice = {

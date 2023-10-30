@@ -12,7 +12,9 @@ import { EditText } from "@/components/EditCell/EditText";
 import s from "./RequirementDetail.module.less";
 import RequirementDetailRight from "./components/RequirementDetailRight";
 import RequirementDetailLeft from "./components/RequirementDetailLeft";
-import { Dropdown, Modal, message } from "antd";
+import { Dropdown, Modal, Space, message } from "antd";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_REQUIRE_MENT } from "@/api/project_comment";
 
 
 const RequirementDetail = () => {
@@ -100,33 +102,37 @@ const RequirementDetail = () => {
                         return false;
                     }} showEditIcon={true} />
                 }>
-                    <Dropdown.Button type="primary"
-                        disabled={projectStore.isClosed || (!(requirementInfo.user_requirement_perm.can_open || requirementInfo.user_requirement_perm.can_close))}
-                        onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            if (requirementInfo.closed == false) {
-                                closeRequirement();
-                            } else {
-                                openRequirement();
-                            }
-                        }}
-                        menu={{
-                            items: [
-                                {
-                                    label: "删除",
-                                    key: "remove",
-                                    danger: true,
-                                    disabled: !(requirementInfo.issue_link_count == 0 && requirementInfo.user_requirement_perm.can_remove && (!projectStore.isClosed)),
-                                },
-                            ],
-                            onClick: (e) => {
-                                if (e.key == "remove") {
-                                    setShowRemoveModal(true);
+                    <Space size="middle">
+                        <CommentEntry projectId={projectStore.curProjectId} targetType={COMMENT_TARGET_REQUIRE_MENT} targetId={state.requirementId}
+                            myUserId={userStore.userInfo.userId} myAdmin={projectStore.isAdmin} />
+                        <Dropdown.Button type="primary"
+                            disabled={projectStore.isClosed || (!(requirementInfo.user_requirement_perm.can_open || requirementInfo.user_requirement_perm.can_close))}
+                            onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                if (requirementInfo.closed == false) {
+                                    closeRequirement();
+                                } else {
+                                    openRequirement();
                                 }
-                            },
-                        }}
-                    >{requirementInfo.closed == false ? "关闭需求" : "打开需求"}</Dropdown.Button>
+                            }}
+                            menu={{
+                                items: [
+                                    {
+                                        label: "删除",
+                                        key: "remove",
+                                        danger: true,
+                                        disabled: !(requirementInfo.issue_link_count == 0 && requirementInfo.user_requirement_perm.can_remove && (!projectStore.isClosed)),
+                                    },
+                                ],
+                                onClick: (e) => {
+                                    if (e.key == "remove") {
+                                        setShowRemoveModal(true);
+                                    }
+                                },
+                            }}
+                        >{requirementInfo.closed == false ? "关闭需求" : "打开需求"}</Dropdown.Button>
+                    </Space>
                 </DetailsNav>)}
             <div className={s.content_wrap}>
                 <div className={s.content_left}>
