@@ -94,6 +94,7 @@ const CreateEntryModal = () => {
             history.push(APP_PROJECT_WORK_PLAN_PATH);
         } else if (entryStore.createEntryType == ENTRY_TYPE_DOC) {
             await docStore.loadDoc();
+            docStore.inEdit = true;
             history.push(APP_PROJECT_KB_DOC_PATH);
         }
         entryStore.createEntryType = null;
