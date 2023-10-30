@@ -134,6 +134,31 @@ async fn get_un_read_state<R: Runtime>(
 }
 
 #[tauri::command]
+async fn check_un_read<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CheckUnReadRequest,
+) -> Result<CheckUnReadResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectCommentApiClient::new(chan.unwrap());
+    match client.check_un_read(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == check_un_read_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("check_un_read".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_un_read<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -198,6 +223,7 @@ impl<R: Runtime> ProjectCommentApiPlugin<R> {
                 update_comment,
                 remove_comment,
                 get_un_read_state,
+                check_un_read,
                 list_un_read,
                 remove_un_read,
             ]),

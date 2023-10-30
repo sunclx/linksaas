@@ -93,6 +93,19 @@ export type GetUnReadStateResponse = {
     un_read_count: number;
 };
 
+export type CheckUnReadRequest = {
+    session_id: string;
+    project_id: string;
+    target_type: COMMENT_TARGET_TYPE;
+    target_id: string;
+};
+
+export type CheckUnReadResponse = {
+    code: number;
+    err_msg: string;
+    has_un_read: boolean;
+};
+
 export type ListUnReadRequest = {
     session_id: string;
     project_id: string;
@@ -161,6 +174,15 @@ export async function get_un_read_state(request: GetUnReadStateRequest): Promise
     const cmd = 'plugin:project_comment_api|get_un_read_state';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetUnReadStateResponse>(cmd, {
+        request,
+    });
+}
+
+//检查是否存在未读信息
+export async function check_un_read(request: CheckUnReadRequest): Promise<CheckUnReadResponse> {
+    const cmd = 'plugin:project_comment_api|check_un_read';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<CheckUnReadResponse>(cmd, {
         request,
     });
 }
