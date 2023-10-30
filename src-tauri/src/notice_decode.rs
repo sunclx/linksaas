@@ -231,6 +231,39 @@ pub mod idea {
     }
 }
 
+pub mod comment {
+    use prost::Message;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::notices_comment;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    pub enum Notice {
+        AddCommentNotice(notices_comment::AddCommentNotice),
+        UpdateCommentNotice(notices_comment::UpdateCommentNotice),
+        RemoveCommentNotice(notices_comment::RemoveCommentNotice),
+    }
+
+    pub fn decode_notice(data: &Any) -> Option<Notice> {
+        if data.type_url == notices_comment::AddCommentNotice::type_url() {
+            if let Ok(notice) = notices_comment::AddCommentNotice::decode(data.value.as_slice()) {
+                return Some(Notice::AddCommentNotice(notice));
+            }
+        } else if data.type_url == notices_comment::UpdateCommentNotice::type_url() {
+            if let Ok(notice) = notices_comment::UpdateCommentNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::UpdateCommentNotice(notice));
+            }
+        } else if data.type_url == notices_comment::RemoveCommentNotice::type_url() {
+            if let Ok(notice) = notices_comment::RemoveCommentNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::RemoveCommentNotice(notice));
+            }
+        }
+        None
+    }
+}
+
 pub mod client {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
@@ -262,6 +295,7 @@ pub enum NoticeMessage {
     IssueNotice(issue::Notice),
     AppraiseNotice(appraise::Notice),
     IdeaNotice(idea::Notice),
+    CommentNotice(comment::Notice),
     ClientNotice(client::Notice),
 }
 
@@ -279,6 +313,9 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = idea::decode_notice(data) {
         return Some(NoticeMessage::IdeaNotice(ret));
+    }
+    if let Some(ret) = comment::decode_notice(data) {
+        return Some(NoticeMessage::CommentNotice(ret));
     }
     None
 }

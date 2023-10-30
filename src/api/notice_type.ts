@@ -235,10 +235,34 @@ export namespace idea {
   };
 }
 
+export namespace comment {
+  export type AddCommentNotice = {
+    project_id: string;
+    comment_id: string;
+  };
+
+  export type UpdateCommentNotice = {
+    project_id: string;
+    comment_id: string;
+  };
+
+  export type RemoveCommentNotice = {
+    project_id: string;
+    comment_id: string;
+  };
+
+  export type AllNotice = {
+    AddCommentNotice?: AddCommentNotice;
+    UpdateCommentNotice?: UpdateCommentNotice;
+    RemoveCommentNotice?: RemoveCommentNotice;
+  };
+}
+
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   IssueNotice?: issue.AllNotice;
   AppraiseNotice?: appraise.AllNotice;
   ClientNotice?: client.AllNotice;
   IdeaNotice?: idea.AllNotice;
+  CommentNotice?: comment.AllNotice;
 };
