@@ -56,9 +56,6 @@ mod api_collection_api_plugin;
 mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
 mod http_custom_api_plugin;
-mod rss_admin_api_plugin;
-mod rss_api_plugin;
-mod user_rss_api_plugin;
 mod my_updater;
 mod local_repo_plugin;
 mod pub_search_admin_api_plugin;
@@ -443,9 +440,6 @@ fn main() {
         .plugin(docker_template_api_plugin::DockerTemplateApiPlugin::new())
         .plugin(docker_template_admin_api_plugin::DockerTemplateAdminApiPlugin::new())
         .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
-        .plugin(user_rss_api_plugin::UserRssApiPlugin::new())
-        .plugin(rss_api_plugin::RssApiPlugin::new())
-        .plugin(rss_admin_api_plugin::RssAdminApiPlugin::new())
         .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
         .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())

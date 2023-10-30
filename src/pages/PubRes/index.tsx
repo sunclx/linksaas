@@ -1,14 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
-import { AppstoreOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
 import { useStores } from '@/hooks';
 import { ReactComponent as DockerSvg } from '@/assets/svg/docker.svg';
 import DockerTemplatePanel from './components/DockerTemplatePanel';
-import RssPanel from './components/RssPanel';
 import PubSearchPanel from './components/PubSearchPanel';
 import { observer } from 'mobx-react';
 import AppStoreDetail from './components/AppStoreDetail';
@@ -28,8 +27,6 @@ const PubRes = () => {
     if (tab == "") {
         if (appStore.clientCfg?.enable_pub_search == true) {
             tab = "pubSearch"
-        } else if (appStore.clientCfg?.enable_rss == true) {
-            tab = "rss"
         } else if (appStore.clientCfg?.enable_pub_app_store == true) {
             tab = "appStore"
         } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
@@ -56,15 +53,6 @@ const PubRes = () => {
                         {activeKey == "pubSearch" && (
                             <div className={s.content_wrap}>
                                 <PubSearchPanel />
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
-                {appStore.clientCfg?.enable_rss == true && (
-                    <Tabs.TabPane tab={<h2><InfoCircleOutlined />&nbsp;资讯订阅</h2>} key="rss">
-                        {activeKey == "rss" && (
-                            <div className={s.content_wrap}>
-                                <RssPanel />
                             </div>
                         )}
                     </Tabs.TabPane>

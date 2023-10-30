@@ -47,8 +47,6 @@ export const ADMIN_PATH_CLIENT_AD_SUFFIX = '/admin/client/ad';
 export const ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX = '/admin/dockertemplate/cate';
 export const ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX = '/admin/dockertemplate/app';
 
-export const ADMIN_PATH_RSS_CRAWLER_SUFFIX = '/admin/rss/crawler';
-
 export const ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX = '/admin/pubSearch/cate';
 export const ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX = '/admin/pubSearch/site';
 
