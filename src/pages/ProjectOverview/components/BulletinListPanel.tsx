@@ -315,7 +315,7 @@ const BulletinListPanel = () => {
         if (curPage == 0) {
             loadBulletinList();
         }
-    }, [projectStore.curProject?.bulletin_version])
+    }, [projectStore.curProject?.project_status.bulletin_count])
 
     return (
         <>

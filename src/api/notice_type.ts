@@ -260,10 +260,15 @@ export namespace comment {
     target_id: string;
   };
 
+  export type RemoveUnReadNotice = {
+    project_id: string;
+  };
+
   export type AllNotice = {
     AddCommentNotice?: AddCommentNotice;
     UpdateCommentNotice?: UpdateCommentNotice;
     RemoveCommentNotice?: RemoveCommentNotice;
+    RemoveUnReadNotice?: RemoveUnReadNotice;
   };
 }
 

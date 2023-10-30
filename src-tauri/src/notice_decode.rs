@@ -242,6 +242,7 @@ pub mod comment {
         AddCommentNotice(notices_comment::AddCommentNotice),
         UpdateCommentNotice(notices_comment::UpdateCommentNotice),
         RemoveCommentNotice(notices_comment::RemoveCommentNotice),
+        RemoveUnReadNotice(notices_comment::RemoveUnReadNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -258,6 +259,10 @@ pub mod comment {
             if let Ok(notice) = notices_comment::RemoveCommentNotice::decode(data.value.as_slice())
             {
                 return Some(Notice::RemoveCommentNotice(notice));
+            }
+        } else if data.type_url == notices_comment::RemoveUnReadNotice::type_url() {
+            if let Ok(notice) = notices_comment::RemoveUnReadNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RemoveUnReadNotice(notice));
             }
         }
         None
