@@ -8,6 +8,7 @@ export class ParamStore {
 
     private _projectId = "";
     private _fsId = "";
+    private _userId = "";
 
     get projectId(): string {
         return this._projectId;
@@ -29,9 +30,20 @@ export class ParamStore {
         });
     }
 
+    get userId(): string {
+        return this._userId;
+    }
+
+    set userId(val: string) {
+        runInAction(() => {
+            this._userId = val;
+        });
+    }
+
     //==================================权限==========================
     private _canUpdate = false;
     private _canExec = false;
+    private _canAdmin = false;
 
     get canUpdate() {
         return this._canUpdate;
@@ -50,6 +62,16 @@ export class ParamStore {
     set canExec(val: boolean) {
         runInAction(() => {
             this._canExec = val;
+        });
+    }
+
+    get canAdmin() {
+        return this._canAdmin;
+    }
+
+    set canAdmin(val: boolean) {
+        runInAction(() => {
+            this._canAdmin = val;
         });
     }
 

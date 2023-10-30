@@ -1,11 +1,11 @@
 import React, { type CSSProperties, useState, useEffect } from "react";
 import { Image } from 'antd';
 import { download_file, get_cache_file } from '@/api/fs';
-import { useStores } from "@/hooks";
 import { readBinaryFile } from '@tauri-apps/api/fs';
 import type { ImagePreviewType } from 'rc-image';
 import { useLocation } from "react-router-dom";
 import { get_admin_session } from "@/api/admin_auth";
+import { get_session } from "@/api/user";
 
 
 export interface AsyncImageProps {
@@ -25,7 +25,6 @@ export interface AsyncImageProps {
 const AsyncImage: React.FC<AsyncImageProps> = (props) => {
     const location = useLocation();
 
-    const userStore = useStores('userStore');
 
     const [imgSrc, setImgSrc] = useState("");
 
@@ -41,7 +40,7 @@ const AsyncImage: React.FC<AsyncImageProps> = (props) => {
             if (location.pathname.startsWith("/admin/")) {
                 sessionId = await get_admin_session();
             } else {
-                sessionId = userStore.sessionId;
+                sessionId = await get_session();
             }
             
             try {

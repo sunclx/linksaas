@@ -1,6 +1,6 @@
 import React from "react";
 import { ENTRY_TYPE_SPRIT, type EntryInfo } from "@/api/project_entry";
-import { Descriptions } from "antd";
+import { Descriptions, Space } from "antd";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import UserPhoto from "@/components/Portrait/UserPhoto";
@@ -43,6 +43,19 @@ const EntryPopover = (props: EntryPopoverProps) => {
                         ))
                     )}
                 </Descriptions.Item>
+                {props.entryInfo.watch_user_list.length > 0 && (
+                    <Descriptions.Item label="关注用户">
+                        <Space direction="vertical">
+                            {props.entryInfo.watch_user_list.map(watchUser => (
+                                <div key={watchUser.member_user_id}>
+                                    <UserPhoto logoUri={watchUser.logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
+                                    &nbsp;
+                                    {watchUser.display_name}
+                                </div>
+                            ))}
+                        </Space>
+                    </Descriptions.Item>
+                )}
                 <Descriptions.Item label="创建用户">
                     <UserPhoto logoUri={props.entryInfo.create_logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
                     &nbsp;

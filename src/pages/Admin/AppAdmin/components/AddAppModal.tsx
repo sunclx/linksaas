@@ -70,6 +70,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         ownerId: "",
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: false,
         showReminder: false,
     });

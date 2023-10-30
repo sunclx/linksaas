@@ -48,7 +48,6 @@ export default class IssueStore {
                 filter_by_tag_id_list: false,
                 tag_id_list: [],
                 filter_by_watch: false,
-                watch: false,
                 ///任务相关
                 filter_by_task_priority: false,
                 task_priority_list: [],

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { ALARM_TYPE_ISSUE_DELAY_ALERT, ALARM_TYPE_ISSUE_DELAY_HIT, ALARM_TYPE_ISSUE_DEPEND_ALERT, ALARM_TYPE_ISSUE_DEPEND_HIT, ALARM_TYPE_ISSUE_REOPEN_ALERT, ALARM_TYPE_ISSUE_REOPEN_HIT } from "@/api/project_alarm";
-import { get_alarm_state, list_alarm, remove_alarm } from "@/api/project_alarm";
+import { list_alarm, remove_alarm } from "@/api/project_alarm";
 import type { Alarm } from "@/api/project_alarm";
 import { Badge, Button, Form, Input, Modal, Popover, Space, Table, message } from "antd";
 import type { ColumnsType } from 'antd/lib/table';
@@ -84,7 +84,7 @@ const BulletinList = () => {
     return (
         <div style={{ padding: "10px 10px", maxHeight: "calc(100vh - 300px)", overflowY: "scroll" }}>
             <Table rowKey="bulletin_id" dataSource={bulletinList} columns={columns}
-                pagination={{ current: curPage + 1, total: totalCount, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1) }} />
+                pagination={{ current: curPage + 1, total: totalCount, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             {showBulletinInfo != null && (
                 <Modal title="公告内容" open footer={null}
                     width="calc(100vw - 600px)"
@@ -97,7 +97,7 @@ const BulletinList = () => {
                             project_id: projectStore.curProjectId,
                             bulletin_id: showBulletinInfo.key_info.bulletin_id,
                         })).then(() => {
-                            projectStore.incBulletinVersion(projectStore.curProjectId);
+                            projectStore.updateBulletinStatus(projectStore.curProjectId);
                         });
                     }}>
                     <Form labelCol={{ span: 2 }}>
@@ -243,68 +243,36 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
                 current: curPage + 1,
                 pageSize: PAGE_SIZE,
                 onChange: (page => setCurPage(page - 1)),
+                hideOnSinglePage: true,
             }} />
         </div>
     );
 }
 
 const AlarmHeader = () => {
-    const userStore = useStores("userStore");
     const projectStore = useStores("projectStore");
-
-    const [hitCount, setHitCount] = useState(0);
-    const [alertCount, setAlertCount] = useState(0);
-    const [bulletinCount, setBulletinCount] = useState(0);
-
-    const loadAlarmStat = async () => {
-        const res = await request(get_alarm_state({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-        }));
-        setHitCount(res.hit_count);
-        setAlertCount(res.alert_count);
-    };
-
-    const loadBulletinCount = async () => {
-        const res = await request(list_bulletin_key({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            list_un_read: true,
-            offset: 0,
-            limit: 1,
-        }));
-        setBulletinCount(res.total_count);
-    };
-
-    useEffect(() => {
-        loadAlarmStat();
-    }, [projectStore.alarmVersion, projectStore.curProjectId]);
-
-    useEffect(() => {
-        loadBulletinCount();
-    }, [projectStore.curProject?.bulletin_version]);
 
     return (
         <div style={{ marginRight: "80px" }}>
             <Space size="middle">
                 {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && (
-                    <Popover open={bulletinCount == 0 ? false : undefined} trigger={["hover", "click"]} content={<BulletinList />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
-                        <Badge count={bulletinCount} size="small">
-                            <BellTwoTone style={{ fontSize: "20px", cursor: bulletinCount == 0 ? "default" : "pointer" }} twoToneColor={bulletinCount == 0 ? "#ccc" : ["#aaa", "cyan"]} title="项目公告" />
+                    <Popover open={projectStore.curProject?.project_status.bulletin_count == 0 ? false : undefined} trigger={["hover", "click"]} content={<BulletinList />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
+                        <Badge count={projectStore.curProject?.project_status.bulletin_count} size="small">
+                            <BellTwoTone style={{ fontSize: "20px", cursor: projectStore.curProject?.project_status.bulletin_count == 0 ? "default" : "pointer" }} twoToneColor={projectStore.curProject?.project_status.bulletin_count == 0 ? "#ccc" : ["#aaa", "cyan"]} title="项目公告" />
                         </Badge>
                     </Popover>
                 )}
 
-                <Popover open={hitCount == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={true} includeAlert={false} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
-                    <Badge count={hitCount} size="small">
-                        <AlertTwoTone style={{ fontSize: "20px", cursor: hitCount == 0 ? "default" : "pointer" }} twoToneColor={hitCount == 0 ? "#ccc" : ["#aaa", "yellow"]} title="风险提示" />
+                <Popover open={projectStore.curProject?.project_status.alarm_hit_count == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={true} includeAlert={false} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
+                    <Badge count={projectStore.curProject?.project_status.alarm_hit_count} size="small">
+                        <AlertTwoTone style={{ fontSize: "20px", cursor: projectStore.curProject?.project_status.alarm_hit_count == 0 ? "default" : "pointer" }} twoToneColor={projectStore.curProject?.project_status.alarm_hit_count == 0 ? "#ccc" : ["#aaa", "yellow"]} title="风险提示" />
                     </Badge>
                 </Popover>
 
 
-                <Popover open={alertCount == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={false} includeAlert={true} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
-                    <Badge count={alertCount} size="small">
-                        <AlertTwoTone style={{ fontSize: "20px", cursor: alertCount == 0 ? "default" : "pointer" }} twoToneColor={alertCount == 0 ? "#ccc" : ["#aaa", "red"]} title="风险警告" />
+                <Popover open={projectStore.curProject?.project_status.alarm_alert_count == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={false} includeAlert={true} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
+                    <Badge count={projectStore.curProject?.project_status.alarm_alert_count} size="small">
+                        <AlertTwoTone style={{ fontSize: "20px", cursor: projectStore.curProject?.project_status.alarm_alert_count == 0 ? "default" : "pointer" }} twoToneColor={projectStore.curProject?.project_status.alarm_alert_count == 0 ? "#ccc" : ["#aaa", "red"]} title="风险警告" />
                     </Badge>
                 </Popover>
 

@@ -26,6 +26,12 @@ export type BaseAnnoProjectInfo = {
     predict_url: string;
 };
 
+export type WatchUser = {
+    member_user_id: string;
+    display_name: string;
+    logo_uri: string;
+};
+
 export type AnnoProjectInfo = {
     anno_project_id: string;
     base_info: BaseAnnoProjectInfo;
@@ -43,6 +49,9 @@ export type AnnoProjectInfo = {
     update_user_id: string;
     update_display_name: string;
     update_logo_uri: string;
+
+    my_watch: boolean;
+    watch_user_list: WatchUser[];
 };
 
 export type ResourceInfo = {
@@ -92,6 +101,7 @@ export type RemoveResponse = {
 export type ListRequest = {
     session_id: string;
     project_id: string;
+    filter_by_watch: boolean;
     offset: number;
     limit: number;
 };

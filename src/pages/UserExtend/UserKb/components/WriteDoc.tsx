@@ -33,6 +33,7 @@ const WriteDoc: React.FC<WriteDocProps> = (props) => {
         ownerId: userStore.userInfo.userId,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: true,
         showReminder: false,
     });

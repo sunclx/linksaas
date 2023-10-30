@@ -5,6 +5,7 @@ import { useCustomStores } from "./stores";
 import { observer } from 'mobx-react';
 import CustomGroupList from "./CustomGroupList";
 import ApiList from "./ApiList";
+import { get_user_id } from "@/api/user";
 
 const CustomPage = () => {
     const location = useLocation();
@@ -13,6 +14,7 @@ const CustomPage = () => {
     const apiCollId = urlParams.get("apiCollId") ?? "";
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
     const editStr = urlParams.get("edit") ?? "";
+    const canAdmin = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
 
     const store = useCustomStores();
 
@@ -22,6 +24,8 @@ const CustomPage = () => {
         store.api.apiCollId = apiCollId;
         store.api.projectId = projectId;
         store.api.remoteAddr = remoteAddr;
+        store.api.canAdmin = canAdmin == "true";
+        get_user_id().then(userId => store.api.userId = userId);
         store.api.initUser().then(() => {
             store.api.loadApiCollInfo();
             store.api.loadGroupList();

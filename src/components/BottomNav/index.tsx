@@ -1,4 +1,4 @@
-import { Button, Popover, Tooltip } from 'antd';
+import { Badge, Button, Popover, Tooltip } from 'antd';
 import React from 'react';
 import s from './index.module.less';
 import {
@@ -6,12 +6,13 @@ import {
   PROJECT_SETTING_TAB
 } from '@/utils/constant';
 import { useStores } from '@/hooks';
-import { SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { MessageTwoTone, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { observer } from 'mobx-react';
 import AlarmHeader from './AlarmHeader';
 import ProjectTipList from '../Header/ProjectTipList';
 import MemberList from './MemberList';
 import { useLocation } from 'react-router-dom';
+import CommentAndWatchPanel from './CommentAndWatchPanel';
 
 const RightFloat = observer(() => {
   const location = useLocation();
@@ -20,6 +21,14 @@ const RightFloat = observer(() => {
   return (
     <div className={s.right_float}>
       <AlarmHeader />
+      <div style={{ marginRight: "18px" }}>
+        <Popover trigger={["hover", "click"]} placement="topLeft" destroyTooltipOnHide
+          content={<CommentAndWatchPanel />}>
+          <Badge count={projectStore.curProject?.project_status.unread_comment_count} size='small'>
+            <MessageTwoTone style={{ fontSize: "20px", cursor: "pointer" }} twoToneColor={["orange", "white"]} />
+          </Badge>
+        </Popover>
+      </div>
       <div className={s.member_wrap}>
         {location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) && (
           <UserOutlined />

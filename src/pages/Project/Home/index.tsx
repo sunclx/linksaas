@@ -39,7 +39,6 @@ const ProjectHome = () => {
         if (activeKey == "open") {
             listParam = {
                 filter_by_watch: false,
-                watch: false,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
@@ -52,7 +51,6 @@ const ProjectHome = () => {
         } else if (activeKey == "close") {
             listParam = {
                 filter_by_watch: false,
-                watch: false,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
@@ -65,7 +63,6 @@ const ProjectHome = () => {
         } else if (activeKey == "myWatch") {
             listParam = {
                 filter_by_watch: true,
-                watch: true,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,

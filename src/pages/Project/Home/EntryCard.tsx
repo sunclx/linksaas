@@ -2,7 +2,7 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { watch, unwatch, update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import s from "./EntryCard.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -12,6 +12,7 @@ import { useHistory } from "react-router-dom";
 import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { getEntryTypeStr } from "./common";
 import RemoveEntryModal from "./RemoveEntryModal";
+import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
 import spritIcon from '@/assets/allIcon/icon-sprit.png';
 import docIcon from '@/assets/channel/doc@2x.png';
 
@@ -36,7 +37,8 @@ const EntryCard = (props: EntryCardPorps) => {
         await request(watch({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            entry_id: props.entryInfo.entry_id,
+            target_type: WATCH_TARGET_ENTRY,
+            target_id: props.entryInfo.entry_id,
         }));
         entryStore.updateEntry(props.entryInfo.entry_id);
     };
@@ -45,7 +47,8 @@ const EntryCard = (props: EntryCardPorps) => {
         await request(unwatch({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            entry_id: props.entryInfo.entry_id,
+            target_type: WATCH_TARGET_ENTRY,
+            target_id: props.entryInfo.entry_id,
         }));
         entryStore.updateEntry(props.entryInfo.entry_id);
     }

@@ -8,7 +8,9 @@ import { APP_PROJECT_OVERVIEW_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
-
+import { get_alarm_state } from "@/api/project_alarm";
+import { list_key as list_bulletin_key } from "@/api/project_bulletin";
+import { get_un_read_state } from "@/api/project_comment";
 
 export class WebProjectStatus {
   constructor() {
@@ -18,21 +20,27 @@ export class WebProjectStatus {
   undone_bug_count: number = 0;
   undone_appraise_count: number = 0;
   new_event_count: number = 0; //启动软件以来的新事件数
-
+  alarm_hit_count: number = 0;
+  alarm_alert_count: number = 0;
+  bulletin_count: number = 0;
+  unread_comment_count: number = 0;
 
   get total_count(): number {
     return (
       this.undone_task_count +
       this.undone_bug_count +
       this.undone_appraise_count +
-      this.new_event_count
+      this.new_event_count +
+      this.alarm_hit_count +
+      this.alarm_alert_count +
+      this.bulletin_count +
+      this.unread_comment_count
     );
   }
 }
 
 export type WebProjectInfo = ProjectInfo & {
   project_status: WebProjectStatus;
-  bulletin_version: number;
   tag_list: TagInfo[];
 };
 
@@ -105,7 +113,6 @@ export default class ProjectStore {
       return {
         ...info,
         project_status: new WebProjectStatus(),
-        bulletin_version: 0,
         tag_list: [],
       };
     });
@@ -151,15 +158,37 @@ export default class ProjectStore {
         issueStateRes.member_state.task_un_check_count +
         issueStateRes.member_state.task_un_exec_count;
     }
+
     const appraiseStateRes = await request(
       get_my_appraise_state(this.rootStore.userStore.sessionId, projectId),
     );
     if (appraiseStateRes) {
       status.undone_appraise_count = appraiseStateRes.un_done_count;
     }
-    return new Promise((resolve) => {
-      resolve(status);
-    });
+
+    const alarmRes = await request(get_alarm_state({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+    }));
+    status.alarm_hit_count = alarmRes.hit_count;
+    status.alarm_alert_count = alarmRes.alert_count;
+
+    const bulletinRes = await request(list_bulletin_key({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+      list_un_read: true,
+      offset: 0,
+      limit: 1,
+    }));
+    status.bulletin_count = bulletinRes.total_count;
+
+    const unReadRes = await request(get_un_read_state({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+    }));
+    status.unread_comment_count = unReadRes.un_read_count;
+
+    return status;
   }
 
   private async listTag(projectId: string): Promise<TagInfo[]> {
@@ -181,6 +210,65 @@ export default class ProjectStore {
       const prj = this._projectMap.get(projectId);
       if (prj !== undefined) {
         prj.tag_list = tagList;
+        this._projectMap.set(projectId, prj);
+      }
+    });
+  }
+
+  async updateAlarmStatus(projectId: string) {
+    const res = await request(get_alarm_state({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+    }));
+    runInAction(() => {
+      const index = this._projectList.findIndex((item) => item.project_id == projectId);
+      if (index != -1) {
+        this._projectList[index].project_status.alarm_hit_count = res.hit_count;
+        this._projectList[index].project_status.alarm_alert_count = res.alert_count;
+      }
+      const prj = this._projectMap.get(projectId);
+      if (prj !== undefined) {
+        prj.project_status.alarm_hit_count = res.hit_count;
+        prj.project_status.alarm_alert_count = res.alert_count;
+        this._projectMap.set(projectId, prj);
+      }
+    });
+  }
+
+  async updateBulletinStatus(projectId: string) {
+    const res = await request(list_bulletin_key({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+      list_un_read: true,
+      offset: 0,
+      limit: 1,
+    }));
+    runInAction(() => {
+      const index = this._projectList.findIndex((item) => item.project_id == projectId);
+      if (index != -1) {
+        this._projectList[index].project_status.bulletin_count = res.total_count;
+      }
+      const prj = this._projectMap.get(projectId);
+      if (prj !== undefined) {
+        prj.project_status.bulletin_count = res.total_count;
+        this._projectMap.set(projectId, prj);
+      }
+    });
+  }
+
+  async updateUnReadCommentStatus(projectId: string) {
+    const res = await request(get_un_read_state({
+      session_id: this.rootStore.userStore.sessionId,
+      project_id: projectId,
+    }));
+    runInAction(() => {
+      const index = this._projectList.findIndex((item) => item.project_id == projectId);
+      if (index != -1) {
+        this._projectList[index].project_status.unread_comment_count = res.un_read_count;
+      }
+      const prj = this._projectMap.get(projectId);
+      if (prj !== undefined) {
+        prj.project_status.unread_comment_count = res.un_read_count;
         this._projectMap.set(projectId, prj);
       }
     });
@@ -269,7 +357,7 @@ export default class ProjectStore {
     if (res) {
       const status = await this.clacProjectStatus(projectId);
       const tagList = await this.listTag(projectId);
-      const prj = { ...res.info, project_status: status, bulletin_version: 0, tag_list: tagList };
+      const prj = { ...res.info, project_status: status, tag_list: tagList };
       runInAction(() => {
         this._projectMap.set(prj.project_id, prj);
         const tmpList = this._projectList.slice()
@@ -284,17 +372,6 @@ export default class ProjectStore {
     }
   }
 
-  incBulletinVersion(projectId: string) {
-    const tmpList = this._projectList.slice();
-    runInAction(() => {
-      const index = tmpList.findIndex(prj => prj.project_id == projectId);
-      if (index != -1) {
-        tmpList[index].bulletin_version += 1;
-        this._projectMap.set(tmpList[index].project_id, tmpList[index]);
-        this._projectList = tmpList;
-      }
-    });
-  }
 
   removeProject(projecId: string, history: History) {
     const tmpList = this._projectList.filter((item) => item.project_id != projecId);
@@ -380,17 +457,6 @@ export default class ProjectStore {
   set showPostHookModal(val: boolean) {
     runInAction(() => {
       this._showPostHookModal = val;
-    });
-  }
-  //告警状态
-  private _alarmVersion: number = 0;
-  get alarmVersion(): number {
-    return this._alarmVersion;
-  }
-
-  addAlarmVersion() {
-    runInAction(() => {
-      this._alarmVersion = this._alarmVersion + 1;
     });
   }
 }

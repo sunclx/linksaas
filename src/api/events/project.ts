@@ -3,8 +3,16 @@ import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
     LinkNoneInfo, LinkProjectInfo,
-    LinkAppraiseInfo
+    LinkAppraiseInfo,
+    LinkEntryInfo,
+    LinkRequirementInfo,
+    LinkTaskInfo,
+    LinkBugInfo,
+    LinkPipeLineInfo,
+    LinkApiCollInfo,
+    LinkDataAnnoInfo
 } from '@/stores/linkAux';
+import { WATCH_TARGET_API_COLL, WATCH_TARGET_BUG, WATCH_TARGET_CI_CD, WATCH_TARGET_DATA_ANNO, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, type WATCH_TARGET_TYPE } from '../project_watch';
 
 function get_chat_bot_type_str(chat_bot_type: number): string {
     if (chat_bot_type == es.CHAT_BOT_QYWX) {
@@ -15,6 +23,56 @@ function get_chat_bot_type_str(chat_bot_type: number): string {
         return "飞书";
     }
     return "";
+}
+
+function getTargetTypeStr(targetType: WATCH_TARGET_TYPE): string {
+    if (targetType == WATCH_TARGET_ENTRY) {
+        return "内容";
+    }
+    if (targetType == WATCH_TARGET_REQUIRE_MENT) {
+        return "项目需求";
+    }
+    if (targetType == WATCH_TARGET_TASK) {
+        return "任务";
+    }
+    if (targetType == WATCH_TARGET_BUG) {
+        return "缺陷";
+    }
+    if (targetType == WATCH_TARGET_CI_CD) {
+        return "CI/CD";
+    }
+    if (targetType == WATCH_TARGET_API_COLL) {
+        return "接口集合";
+    }
+    if (targetType == WATCH_TARGET_DATA_ANNO) {
+        return "数据标注";
+    }
+    return "";
+}
+
+function getTargetLinkInfo(projectId: string, targetType: WATCH_TARGET_TYPE, targetId: string, targetTitle: string): LinkInfo {
+    if (targetType == WATCH_TARGET_ENTRY) {
+        return new LinkEntryInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_REQUIRE_MENT) {
+        return new LinkRequirementInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_TASK) {
+        return new LinkTaskInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_BUG) {
+        return new LinkBugInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_CI_CD) {
+        return new LinkPipeLineInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_API_COLL) {
+        return new LinkApiCollInfo(targetTitle, projectId, targetId);
+    }
+    if (targetType == WATCH_TARGET_DATA_ANNO) {
+        return new LinkDataAnnoInfo(targetTitle, projectId, targetId);
+    }
+    return new LinkNoneInfo("");
 }
 
 /*
@@ -341,7 +399,7 @@ export type SetAlarmConfigEvent = {};
 function get_set_alarm_config_simple_content(
     ev: PluginEvent,
     skip_prj_name: boolean,
-    // inner: UnWatchChannelEvent
+    // inner: SetAlarmConfigEvent
 ): LinkInfo[] {
     return [
         new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新项目预警设置`),
@@ -360,6 +418,40 @@ function get_custom_simple_content(
 ): LinkInfo[] {
     return [
         new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${inner.event_type}:${inner.event_content}`),
+    ];
+}
+
+export type WatchEvent = {
+    target_type: WATCH_TARGET_TYPE;
+    target_id: string;
+    target_title: string;
+};
+
+function get_watch_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: WatchEvent,
+): LinkInfo[] {
+    return [
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 关注 ${getTargetTypeStr(inner.target_type)}`),
+        getTargetLinkInfo(ev.project_id, inner.target_type, inner.target_id, inner.target_title),
+    ];
+}
+
+export type UnwatchEvent = {
+    target_type: WATCH_TARGET_TYPE;
+    target_id: string;
+    target_title: string;
+};
+
+function get_unwatch_simple_content(
+    ev: PluginEvent,
+    skip_prj_name: boolean,
+    inner: UnwatchEvent,
+): LinkInfo[] {
+    return [
+        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${getTargetTypeStr(inner.target_type)}`),
+        getTargetLinkInfo(ev.project_id, inner.target_type, inner.target_id, inner.target_title),
     ];
 }
 
@@ -389,6 +481,9 @@ export type AllProjectEvent = {
     RemoveEventSubscribeEvent?: RemoveEventSubscribeEvent;
     SetAlarmConfigEvent?: SetAlarmConfigEvent;
     CustomEvent?: CustomEvent;
+
+    WatchEvent?: WatchEvent;
+    UnwatchEvent?: UnwatchEvent;
 };
 
 export function get_project_simple_content(
@@ -450,6 +545,10 @@ export function get_project_simple_content(
         return get_set_alarm_config_simple_content(ev, skip_prj_name);
     } else if (inner.CustomEvent !== undefined) {
         return get_custom_simple_content(ev, skip_prj_name, inner.CustomEvent);
+    } else if (inner.WatchEvent !== undefined) {
+        return get_watch_simple_content(ev, skip_prj_name, inner.WatchEvent);
+    } else if (inner.UnwatchEvent !== undefined) {
+        return get_unwatch_simple_content(ev, skip_prj_name, inner.UnwatchEvent);
     } else {
         return [new LinkNoneInfo('未知事件')];
     }

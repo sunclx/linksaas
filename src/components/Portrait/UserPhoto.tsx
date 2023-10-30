@@ -1,4 +1,3 @@
-import { useStores } from '@/hooks';
 import React from 'react';
 import AsyncImage from '../AsyncImage';
 
@@ -11,7 +10,6 @@ export interface UserPhotoProps {
 }
 
 const UserPhoto: React.FC<UserPhotoProps> = (props) => {
-  const appStore = useStores('appStore');
 
   let logoUri = props.logoUri || '/default_av.jpg';
   const width = props.width || '';
@@ -19,7 +17,7 @@ const UserPhoto: React.FC<UserPhotoProps> = (props) => {
   const className = props.className || '';
   const style = props.style || {};
 
-  if (appStore.isOsWindows) {
+  if (navigator.userAgent.indexOf('Win') != -1) {
     logoUri = logoUri.replace('fs://localhost/', 'https://fs.localhost/');
   }
   return <AsyncImage src={logoUri} width={width} height={height} className={className} style={style} useRawImg/>;

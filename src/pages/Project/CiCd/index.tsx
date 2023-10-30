@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import CardWrap from "@/components/CardWrap";
 import { useHistory, useLocation } from "react-router-dom";
-import { Button, Tabs } from "antd";
+import { Button, Form, Switch, Tabs } from "antd";
 import { useStores } from "@/hooks";
 import CreatePipeLineModal from "./CreatePipeLineModal";
 import CreateCredModal from "./CreateCredModal";
@@ -25,6 +25,7 @@ const ProjectCiCd = () => {
     const [showPipeLineModal, setShowPipeLineModal] = useState(false);
     const [showCredModal, setShowCredModal] = useState(false);
     const [showHowInstallRunner, setShowHowInstallRunner] = useState(false);
+    const [filterByWatch, setFilterByWatch] = useState(false);
 
     return (
         <CardWrap title="CI/CD">
@@ -35,13 +36,21 @@ const ProjectCiCd = () => {
                 tabBarExtraContent={
                     <>
                         {tabStr == "pipeline" && (
-                            <Button type="primary"
-                                disabled={projectStore.isClosed || (!projectStore.isAdmin)}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setShowPipeLineModal(true);
-                                }}>创建</Button>
+                            <Form layout="inline">
+                                <Form.Item label="只看我的关注">
+                                    <Switch checked={filterByWatch} onChange={value => setFilterByWatch(value)} />
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button type="primary"
+                                        disabled={projectStore.isClosed || (!projectStore.isAdmin)}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowPipeLineModal(true);
+                                        }}>创建</Button>
+                                </Form.Item>
+                            </Form>
+
                         )}
                         {tabStr == "cred" && (
                             <Button type="primary"
@@ -68,7 +77,7 @@ const ProjectCiCd = () => {
                         children: (
                             <div style={{ height: "calc(100vh - 220px)", overflowY: "scroll" }}>
                                 {tabStr == "pipeline" && (
-                                    <PipeLinePanel version={pipeLineVersion} />
+                                    <PipeLinePanel version={pipeLineVersion} filterByWatch={filterByWatch} />
                                 )}
                             </div>
                         ),

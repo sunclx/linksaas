@@ -10,12 +10,12 @@ import { LinkBugInfo, LinkDocInfo, LinkTaskInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
-import { appWindow } from '@tauri-apps/api/window';
+import { appWindow, getAll as getAllWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_HOME_PATH, USER_LOGIN_PATH } from '@/utils/constant';
 import { message } from 'antd';
-
+import { COMMENT_TARGET_API_COLL, COMMENT_TARGET_CI_CD, COMMENT_TARGET_DATA_ANNO, type COMMENT_TARGET_TYPE } from '@/api/project_comment';
 
 class NoticeStore {
   constructor(rootStore: RootStore) {
@@ -56,6 +56,8 @@ class NoticeStore {
           this.processClientNotice(notice.ClientNotice);
         } else if (notice.IdeaNotice !== undefined) {
           this.processIdeaNotice(notice.IdeaNotice);
+        } else if (notice.CommentNotice !== undefined) {
+          this.processCommentNotice(notice.CommentNotice);
         }
       } catch (e) {
         console.log(e);
@@ -88,6 +90,39 @@ class NoticeStore {
       this.unlistenShortNoteFn = unlistenShortNoteFn;
     });
 
+  }
+
+  private async forwardCommentNotice(targetType: COMMENT_TARGET_TYPE, targetId: string, notice: NoticeType.comment.AllNotice) {
+    let forward = false;
+    if (targetType == COMMENT_TARGET_CI_CD) {
+      forward = true;
+    } else if (targetType == COMMENT_TARGET_API_COLL) {
+      forward = true;
+    } else if (targetType == COMMENT_TARGET_DATA_ANNO) {
+      forward = true;
+    }
+    if (forward == false) {
+      return;
+    }
+    const winList = await getAllWindow();
+    for (const win of winList) {
+      if (win.label.includes(targetId)) {
+        win.emit("notice", { CommentNotice: notice });
+      }
+    }
+  }
+
+  private processCommentNotice(notice: NoticeType.comment.AllNotice) {
+    if (notice.AddCommentNotice !== undefined) {
+      this.forwardCommentNotice(notice.AddCommentNotice.target_type, notice.AddCommentNotice.target_id, notice);
+      this.rootStore.projectStore.updateUnReadCommentStatus(notice.AddCommentNotice.project_id);
+    } else if (notice.UpdateCommentNotice !== undefined) {
+      this.forwardCommentNotice(notice.UpdateCommentNotice.target_type, notice.UpdateCommentNotice.target_id, notice);
+    } else if (notice.RemoveCommentNotice !== undefined) {
+      this.forwardCommentNotice(notice.RemoveCommentNotice.target_type, notice.RemoveCommentNotice.target_id, notice);
+    } else if (notice.RemoveUnReadNotice !== undefined) {
+      this.rootStore.projectStore.updateUnReadCommentStatus(notice.RemoveUnReadNotice.project_id);
+    }
   }
 
   private processAppraiseNotice(notice: NoticeType.appraise.AllNotice) {
@@ -222,15 +257,13 @@ class NoticeStore {
         this.rootStore.memberStore.updateShortNote(notice.UpdateShortNoteNotice.project_id, notice.UpdateShortNoteNotice.member_user_id);
       }
     } else if (notice.UpdateAlarmStatNotice !== undefined) {
-      if (notice.UpdateAlarmStatNotice.project_id == this.rootStore.projectStore.curProjectId) {
-        this.rootStore.projectStore.addAlarmVersion();
-      }
+      this.rootStore.projectStore.updateAlarmStatus(notice.UpdateAlarmStatNotice.project_id);
     } else if (notice.CreateBulletinNotice !== undefined) {
-      this.rootStore.projectStore.incBulletinVersion(notice.CreateBulletinNotice.project_id);
+      this.rootStore.projectStore.updateBulletinStatus(notice.CreateBulletinNotice.project_id);
     } else if (notice.UpdateBulletinNotice !== undefined) {
-      this.rootStore.projectStore.incBulletinVersion(notice.UpdateBulletinNotice.project_id);
+      this.rootStore.projectStore.updateBulletinStatus(notice.UpdateBulletinNotice.project_id);
     } else if (notice.RemoveBulletinNotice !== undefined) {
-      this.rootStore.projectStore.incBulletinVersion(notice.RemoveBulletinNotice.project_id);
+      this.rootStore.projectStore.updateBulletinStatus(notice.RemoveBulletinNotice.project_id);
     } else if (notice.AddTagNotice !== undefined) {
       this.rootStore.projectStore.updateTagList(notice.AddTagNotice.project_id);
     } else if (notice.UpdateTagNotice !== undefined) {
@@ -238,7 +271,7 @@ class NoticeStore {
     } else if (notice.RemoveTagNotice !== undefined) {
       this.rootStore.projectStore.updateTagList(notice.RemoveTagNotice.project_id);
     } else if (notice.UpdateSpritNotice !== undefined) {
-      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == (this.rootStore.entryStore.curEntry?.entry_id??"")) {
+      if (notice.UpdateSpritNotice.project_id == this.rootStore.projectStore.curProjectId && notice.UpdateSpritNotice.sprit_id == (this.rootStore.entryStore.curEntry?.entry_id ?? "")) {
         this.rootStore.spritStore.incCurSpritVersion();
       }
     }
@@ -307,10 +340,10 @@ class NoticeStore {
       if (notice.RemoveIssueNotice.project_id == this.rootStore.projectStore.curProjectId) {
       }
     } else if (notice.SetSpritNotice !== undefined) {
-      if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.old_sprit_id) {
+      if ((this.rootStore.entryStore.curEntry?.entry_id ?? "") == notice.SetSpritNotice.old_sprit_id) {
         await this.rootStore.spritStore.removeIssue(notice.SetSpritNotice.issue_id);
       }
-      if ((this.rootStore.entryStore.curEntry?.entry_id??"") == notice.SetSpritNotice.new_sprit_id) {
+      if ((this.rootStore.entryStore.curEntry?.entry_id ?? "") == notice.SetSpritNotice.new_sprit_id) {
         await this.rootStore.spritStore.onNewIssue(notice.SetSpritNotice.issue_id);
       }
     }

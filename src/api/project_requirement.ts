@@ -26,6 +26,11 @@ export type UserRequirementPerm = {
     can_close: boolean;
 }
 
+export type WatchUser = {
+    member_user_id: string;
+    display_name: string;
+    logo_uri: string;
+};
 
 export type RequirementInfo = {
     requirement_id: string;
@@ -53,6 +58,9 @@ export type RequirementInfo = {
     four_q_important_value: number;//重要层度
 
     user_requirement_perm: UserRequirementPerm;
+
+    my_watch: boolean;
+    watch_user_list: WatchUser[];
 };
 
 export type KanoRow = {
@@ -92,7 +100,6 @@ export type CreateRequirementResponse = {
     requirement_id: string;
 };
 
-
 export type ListRequirementRequest = {
     session_id: string;
     project_id: string;
@@ -104,6 +111,7 @@ export type ListRequirementRequest = {
     closed: boolean;
     filter_by_tag_id_list: boolean;
     tag_id_list: string[];
+    filter_by_watch: boolean;
 
     offset: number;
     limit: number;

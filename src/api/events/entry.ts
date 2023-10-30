@@ -95,43 +95,11 @@ function get_remove_simple_content(
 
 }
 
-export type WatchEvent = {
-    entry_id: string;
-    entry_type: number;
-    entry_title: string;
-};
-
-function get_watch_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateEvent,
-): LinkInfo[] {
-    return gen_simple_content(ev, skip_prj_name, "关注",
-        inner.entry_id, inner.entry_type, inner.entry_title);
-}
-
-export type UnwatchEvent = {
-    entry_id: string;
-    entry_type: number;
-    entry_title: string;
-};
-
-function get_unwatch_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateEvent,
-): LinkInfo[] {
-    return gen_simple_content(ev, skip_prj_name, "取消关注",
-        inner.entry_id, inner.entry_type, inner.entry_title);
-}
-
 export class AllEntryEvent {
     CreateEvent?: CreateEvent;
     OpenEvent?: OpenEvent;
     CloseEvent?: CloseEvent;
     RemoveEvent?: RemoveEvent;
-    WatchEvent?: WatchEvent;
-    UnwatchEvent?: UnwatchEvent;
 }
 
 export function get_entry_simple_content(
@@ -147,10 +115,6 @@ export function get_entry_simple_content(
         return get_close_simple_content(ev, skip_prj_name, inner.CloseEvent);
     } else if (inner.RemoveEvent !== undefined) {
         return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
-    } else if (inner.WatchEvent !== undefined) {
-        return get_watch_simple_content(ev, skip_prj_name, inner.WatchEvent);
-    } else if (inner.UnwatchEvent !== undefined) {
-        return get_unwatch_simple_content(ev, skip_prj_name, inner.UnwatchEvent);
-    }
+    } 
     return [new LinkNoneInfo('未知事件')];
 }

@@ -6,6 +6,11 @@ export const API_COLL_GRPC: API_COLL_TYPE = 0;
 export const API_COLL_OPENAPI: API_COLL_TYPE = 1;
 export const API_COLL_CUSTOM: API_COLL_TYPE = 2;
 
+export type WatchUser = {
+    member_user_id: string;
+    display_name: string;
+    logo_uri: string;
+};
 
 export type ApiCollInfo = {
     api_coll_id: string;
@@ -23,6 +28,8 @@ export type ApiCollInfo = {
     update_logo_uri: string;
     can_update: boolean,
     can_remove: boolean,
+    my_watch: boolean;
+    watch_user_list: WatchUser[];
 };
 
 export type GrpcExtraInfo = {
@@ -77,6 +84,7 @@ export type UpdateEditMemberResponse = {
 export type ListRequest = {
     session_id: string;
     project_id: string;
+    filter_by_watch: boolean;
     offset: number;
     limit: number;
 };

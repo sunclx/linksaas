@@ -5,11 +5,13 @@ import SwaggerUI from 'swagger-ui-react';
 import { Button, Card, Form, Input, Modal, Space, message } from "antd";
 import { get_open_api } from "@/api/api_collection";
 import { request } from "@/utils/request";
-import { get_session } from "@/api/user";
+import { get_session, get_user_id } from "@/api/user";
 import { download_file } from "@/api/fs";
 import { readTextFile } from '@tauri-apps/api/fs';
 import YAML from 'yaml'
 import { EditOutlined } from "@ant-design/icons";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_API_COLL } from "@/api/project_comment";
 
 const SwaggerPage = () => {
     const location = useLocation();
@@ -19,11 +21,14 @@ const SwaggerPage = () => {
     const fsId = urlParams.get("fsId") ?? "";
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
     const editStr = urlParams.get("edit") ?? "";
+    const canAdminStr = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
 
     const [spec, setSpec] = useState<object | null>(null);
     const [addr, setAddr] = useState("");
     const [tmpAddr, setTmpAddr] = useState("");
     const [inEdit, setInEdit] = useState(false);
+
+    const [userId, setUserId] = useState("");
 
     const loadSpec = async () => {
         const sessionId = await get_session();
@@ -69,22 +74,27 @@ const SwaggerPage = () => {
 
     useEffect(() => {
         loadSpec();
+        get_user_id().then(value => setUserId(value));
     }, []);
 
     return (
         <Card bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "auto" }} extra={
             <div style={{ height: "30px", display: "flex", justifyContent: "flex-end" }}>
-                {spec !== null && (
-                    <Space>
-                        <span>{addr}</span>
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setTmpAddr(addr);
-                            setInEdit(true);
-                        }} disabled={editStr.toLowerCase().includes("false")}><EditOutlined /></Button>
-                    </Space>
-                )}
+                <Space>
+                    <CommentEntry projectId={projectId} targetType={COMMENT_TARGET_API_COLL}
+                        targetId={apiCollId} myUserId={userId} myAdmin={canAdminStr == "true"} />
+                    {spec !== null && (
+                        <>
+                            <span>{addr}</span>
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setTmpAddr(addr);
+                                setInEdit(true);
+                            }} disabled={editStr.toLowerCase().includes("false")}><EditOutlined /></Button>
+                        </>
+                    )}
+                </Space>
             </div>
         }>
             {spec !== null && (

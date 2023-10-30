@@ -29,6 +29,8 @@ pub mod project {
         RemoveEventSubscribeEvent(events_project::RemoveEventSubscribeEvent),
         SetAlarmConfigEvent(events_project::SetAlarmConfigEvent),
         CustomEvent(events_project::CustomEvent),
+        WatchEvent(events_project::WatchEvent),
+        UnwatchEvent(events_project::UnwatchEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -129,6 +131,14 @@ pub mod project {
         } else if data.type_url == events_project::CustomEvent::type_url() {
             if let Ok(ev) = events_project::CustomEvent::decode(data.value.as_slice()) {
                 return Some(Event::CustomEvent(ev));
+            }
+        } else if data.type_url == events_project::WatchEvent::type_url() {
+            if let Ok(ev) = events_project::WatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::WatchEvent(ev));
+            }
+        } else if data.type_url == events_project::UnwatchEvent::type_url() {
+            if let Ok(ev) = events_project::UnwatchEvent::decode(data.value.as_slice()) {
+                return Some(Event::UnwatchEvent(ev));
             }
         }
         None
@@ -786,8 +796,6 @@ pub mod entry {
         OpenEvent(events_entry::OpenEvent),
         CloseEvent(events_entry::CloseEvent),
         RemoveEvent(events_entry::RemoveEvent),
-        WatchEvent(events_entry::WatchEvent),
-        UnwatchEvent(events_entry::UnwatchEvent),
     }
 
     pub fn decode_event(data: &Any) -> Option<Event> {
@@ -806,14 +814,6 @@ pub mod entry {
         } else if data.type_url == events_entry::RemoveEvent::type_url() {
             if let Ok(ev) = events_entry::RemoveEvent::decode(data.value.as_slice()) {
                 return Some(Event::RemoveEvent(ev));
-            }
-        } else if data.type_url == events_entry::WatchEvent::type_url() {
-            if let Ok(ev) = events_entry::WatchEvent::decode(data.value.as_slice()) {
-                return Some(Event::WatchEvent(ev));
-            }
-        } else if data.type_url == events_entry::UnwatchEvent::type_url() {
-            if let Ok(ev) = events_entry::UnwatchEvent::decode(data.value.as_slice()) {
-                return Some(Event::UnwatchEvent(ev));
             }
         }
         None

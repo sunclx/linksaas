@@ -1,6 +1,6 @@
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 
-export async function OpenPipeLineWindow(pipeLineName: string, projectId: string, fsId: string, pipeLineId: string, canUpdate: boolean, canExec: boolean, execId: string = "") {
+export async function OpenPipeLineWindow(pipeLineName: string, projectId: string, fsId: string, pipeLineId: string, canUpdate: boolean, canExec: boolean, canAdmin: boolean, execId: string = "") {
     const label = `pipeLine:${pipeLineId}`;
     const view = WebviewWindow.getByLabel(label);
     if (view != null) {
@@ -10,7 +10,7 @@ export async function OpenPipeLineWindow(pipeLineName: string, projectId: string
     const pos = await appWindow.innerPosition();
 
     new WebviewWindow(label, {
-        url: `/cicd.html?projectId=${projectId}&fsId=${fsId}&pipeLineId=${pipeLineId}&execId=${execId}&canUpdate=${canUpdate}&canExec=${canExec}`,
+        url: `/cicd.html?projectId=${projectId}&fsId=${fsId}&pipeLineId=${pipeLineId}&execId=${execId}&canUpdate=${canUpdate}&canExec=${canExec}&admin=${canAdmin}`,
         width: 800,
         minWidth: 800,
         height: 600,
