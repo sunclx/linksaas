@@ -35,6 +35,7 @@ const CommentModal = (props: CommentModalProps) => {
         ownerId: props.projectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
     });

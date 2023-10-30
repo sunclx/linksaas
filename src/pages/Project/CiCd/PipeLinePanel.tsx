@@ -241,7 +241,7 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
                         if (projectStore.isAdmin || row.pipe_line_perm.exec_for_all || row.pipe_line_perm.extra_exec_user_id_list.includes(userStore.userInfo.userId)) {
                             canExec = true;
                         }
-                        OpenPipeLineWindow(row.pipe_line_name, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", row.pipe_line_id, canUpdate, canExec);
+                        OpenPipeLineWindow(row.pipe_line_name, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", row.pipe_line_id, canUpdate, canExec, projectStore.isAdmin);
                     }}
                 />
             ),
@@ -414,21 +414,21 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
             width: 140,
             align: 'left',
             render: (_, row: PipeLine) => (
-              <Popover trigger="hover" placement='top' content={
-                <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
-                  {(row.watch_user_list ?? []).map(item => (
-                    <Space key={item.member_user_id} style={{margin:"4px 10px"}}>
-                      <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
-                      {item.display_name}
-                    </Space>
-                  ))}
-                </div>
-              }>
-                {(row.watch_user_list ?? []).length == 0 && "-"}
-                {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
-              </Popover>
+                <Popover trigger="hover" placement='top' content={
+                    <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
+                        {(row.watch_user_list ?? []).map(item => (
+                            <Space key={item.member_user_id} style={{ margin: "4px 10px" }}>
+                                <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
+                                {item.display_name}
+                            </Space>
+                        ))}
+                    </div>
+                }>
+                    {(row.watch_user_list ?? []).length == 0 && "-"}
+                    {(row.watch_user_list ?? []).length > 0 && `${(row.watch_user_list ?? []).length}人`}
+                </Popover>
             ),
-          },
+        },
         {
             title: "操作",
             width: 100,

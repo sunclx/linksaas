@@ -31,6 +31,7 @@ const CommentItem = (props: CommentItemProps) => {
         ownerId: props.projectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: false,
         widgetInToolbar: false,
         showReminder: false,
     });

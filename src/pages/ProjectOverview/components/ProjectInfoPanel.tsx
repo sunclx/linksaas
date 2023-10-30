@@ -24,6 +24,7 @@ const ProjectInfoPanel = () => {
     ownerId: projectStore.curProjectId,
     historyInToolbar: false,
     clipboardInToolbar: false,
+    commonInToolbar: true,
     widgetInToolbar: false,
     showReminder: false,
   });

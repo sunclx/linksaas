@@ -5,7 +5,7 @@ import DetailsNav from '@/components/DetailsNav';
 import { getIssueText, getIsTask } from "@/utils/utils";
 import { useHistory, useLocation } from "react-router-dom";
 import s from './IssueCreate.module.less';
-import { DatePicker, Input, Select, Space,  message } from "antd";
+import { DatePicker, Input, Select, Space, message } from "antd";
 import { change_file_fs, change_file_owner, useCommonEditor } from "@/components/Editor";
 import { LinkSpritInfo, type LinkIssueState, ISSUE_TAB_LIST_TYPE } from "@/stores/linkAux";
 import { useStores } from "@/hooks";
@@ -67,6 +67,7 @@ const IssueCreate = () => {
         ownerId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: false,
         showReminder: false,
     });

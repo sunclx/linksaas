@@ -38,7 +38,7 @@ const ExecResultPanel = () => {
                 <a onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    OpenPipeLineWindow(row.pipe_line_name, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", row.pipe_line_id, false, false, row.exec_id);
+                    OpenPipeLineWindow(row.pipe_line_name, projectStore.curProjectId, projectStore.curProject?.ci_cd_fs_id ?? "", row.pipe_line_id, false, false, projectStore.isAdmin, row.exec_id);
                 }}>{row.pipe_line_name}</a>
             ),
         },

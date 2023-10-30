@@ -35,6 +35,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
         ownerId: "",
         historyInToolbar: false,
         clipboardInToolbar: false,
+        commonInToolbar: true,
         widgetInToolbar: false,
         showReminder: false,
     });

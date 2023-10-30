@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import { Button, Tabs, message } from 'antd';
+import { Button, Space, Tabs, message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { useStores } from './stores';
 import PipeLineEditor from './PipeLineEditor';
-import { get_session } from '@/api/user';
+import { get_session, get_user_id } from '@/api/user';
 import { request } from '@/utils/request';
 import { update_pipe_line_job } from '@/api/project_cicd';
 import RunParamModal from './RunParamModal';
 import ResultReport from './ResultReport';
+import CommentEntry from '@/components/CommentEntry';
+import { COMMENT_TARGET_CI_CD } from '@/api/project_comment';
 
 
 const CiCdApp = () => {
@@ -21,6 +23,7 @@ const CiCdApp = () => {
     const execId = urlParams.get("execId") ?? "";
     const canUpdateStr = (urlParams.get("canUpdate") ?? "false").toLowerCase();
     const canExecStr = (urlParams.get("canExec") ?? "false").toLowerCase();
+    const canAdminStr = (urlParams.get("admin") ?? "false").toLowerCase();
 
     const store = useStores();
 
@@ -50,6 +53,8 @@ const CiCdApp = () => {
         store.paramStore.fsId = fsId;
         store.paramStore.canUpdate = (canUpdateStr == "true");
         store.paramStore.canExec = (canExecStr == "true");
+        store.paramStore.canAdmin = (canAdminStr == "true");
+        get_user_id().then(userId=>store.paramStore.userId = userId);
         store.pipeLineStore.loadCredList(projectId);
         if (execId == "") {
             store.pipeLineStore.loadPipeLine(projectId, pipeLineId, false, 0).then(() => store.pipeLineStore.incInitVersion());
@@ -83,7 +88,12 @@ const CiCdApp = () => {
                 tabBarExtraContent={
                     <div style={{ padding: "6px 0px", marginRight: "20px" }}>
                         {activeKey == "pipeline" && (
-                            <>
+                            <Space size="middle">
+                                {store.pipeLineStore.pipeLine != null && (
+                                    <CommentEntry projectId={store.paramStore.projectId} targetType={COMMENT_TARGET_CI_CD}
+                                        targetId={store.pipeLineStore.pipeLine.pipe_line_id} myUserId={store.paramStore.userId} myAdmin={store.paramStore.canAdmin} />
+                                )}
+
                                 {store.pipeLineStore.hasChange && store.paramStore.canUpdate && (
                                     <Button type="primary" onClick={e => {
                                         e.stopPropagation();
@@ -98,7 +108,7 @@ const CiCdApp = () => {
                                         setShowRunModal(true);
                                     }}>运行</Button>
                                 )}
-                            </>
+                            </Space>
                         )}
                     </div>
                 } />

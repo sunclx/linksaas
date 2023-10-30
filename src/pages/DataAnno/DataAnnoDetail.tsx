@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { get_session } from "@/api/user";
+import { get_session, get_user_id } from "@/api/user";
 import * as dataAnnoPrjApi from "@/api/data_anno_project";
 import * as dataAnnoTaskApi from "@/api/data_anno_task";
 import { request } from "@/utils/request";
-import { Form, Select, Tabs } from "antd";
+import { Form, Select, Space, Tabs } from "antd";
 import s from "./DataAnnoDetail.module.less";
 import ResourcePanel from "./components/ResourcePanel";
 import Button from "@/components/Button";
 import MemberPanel from "./components/MemberPanel";
 import AnnoPanel from "./components/AnnoPanel";
 import SettingPanel from "./components/SettingPanel";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_DATA_ANNO } from "@/api/project_comment";
 
 const DataAnnoDetail = () => {
     const location = useLocation();
@@ -18,7 +20,7 @@ const DataAnnoDetail = () => {
     const urlParams = new URLSearchParams(location.search);
     const projectId = urlParams.get("projectId") ?? "";
     const annoProjectId = urlParams.get("annoProjectId") ?? "";
-    const adminStr = urlParams.get("admin") ?? "false";
+    const adminStr = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
     const fsId = urlParams.get("fsId") ?? "";
 
     const [annoProjectInfo, setAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
@@ -29,6 +31,8 @@ const DataAnnoDetail = () => {
 
     const [auditMemberUserId, setAuditMemberUserId] = useState("");
     const [memberInfoList, setMemberInfoList] = useState<dataAnnoTaskApi.MemberInfo[]>([]);
+
+    const [userId, setUserId] = useState("");
 
     const loadAnnoProjectInfo = async () => {
         const sessionId = await get_session();
@@ -80,6 +84,7 @@ const DataAnnoDetail = () => {
 
     useEffect(() => {
         loadAnnoProjectInfo();
+        get_user_id().then(value => setUserId(value));
     }, []);
 
     useEffect(() => {
@@ -99,31 +104,36 @@ const DataAnnoDetail = () => {
                 }}
                     tabBarStyle={{ height: "50px" }} tabBarExtraContent={
                         <div style={{ marginRight: "20px" }}>
-                            {activeKey == "adminMember" && (
-                                <Button onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setShowAddMemberModal(true);
-                                }}>增加标注成员</Button>
-                            )}
-                            {activeKey == "adminResource" && (
-                                <Button onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    setShowAddResourceModal(true);
-                                }}>增加标注资源</Button>
-                            )}
-                            {activeKey == "audit" && (
-                                <Form style={{ paddingTop: "10px" }}>
-                                    <Form.Item label="标注成员">
-                                        <Select style={{ width: "150px" }} value={auditMemberUserId} onChange={value => setAuditMemberUserId(value)}>
-                                            {memberInfoList.map(item => (
-                                                <Select.Option key={item.member_user_id} value={item.member_user_id}>{item.display_name}</Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                </Form>
-                            )}
+                            <Space>
+                                <CommentEntry projectId={projectId} targetType={COMMENT_TARGET_DATA_ANNO}
+                                    targetId={annoProjectId} myUserId={userId} myAdmin={adminStr == "true"} />
+
+                                {activeKey == "adminMember" && (
+                                    <Button onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowAddMemberModal(true);
+                                    }}>增加标注成员</Button>
+                                )}
+                                {activeKey == "adminResource" && (
+                                    <Button onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowAddResourceModal(true);
+                                    }}>增加标注资源</Button>
+                                )}
+                                {activeKey == "audit" && (
+                                    <Form style={{ paddingTop: "10px" }}>
+                                        <Form.Item label="标注成员">
+                                            <Select style={{ width: "150px" }} value={auditMemberUserId} onChange={value => setAuditMemberUserId(value)}>
+                                                {memberInfoList.map(item => (
+                                                    <Select.Option key={item.member_user_id} value={item.member_user_id}>{item.display_name}</Select.Option>
+                                                ))}
+                                            </Select>
+                                        </Form.Item>
+                                    </Form>
+                                )}
+                            </Space>
                         </div>
                     }>
                     {(annoProjectInfo.my_task_count - annoProjectInfo.my_done_count > 0) && (

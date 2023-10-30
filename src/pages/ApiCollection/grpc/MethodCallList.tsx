@@ -4,9 +4,15 @@ import type { Tab } from "rc-tabs/lib/interface";
 import { Tabs } from "antd";
 import { ApiOutlined } from "@ant-design/icons";
 import MethodCall from "./MethodCall";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_API_COLL } from "@/api/project_comment";
 
 
 export interface MethodCallListProps {
+    projectId: string;
+    userId: string;
+    apiCollId: string;
+    canAdmin: boolean;
     remoteAddr: string;
     secure: boolean;
     protoPath: string;
@@ -58,7 +64,12 @@ const MethodCallList = (props: MethodCallListProps) => {
                         props.onClose(method);
                     }
                 }
-            }} />
+            }} tabBarExtraContent={
+                <div style={{ marginRight: "20px" }}>
+                    <CommentEntry projectId={props.projectId} targetType={COMMENT_TARGET_API_COLL}
+                        targetId={props.apiCollId} myUserId={props.userId} myAdmin={props.canAdmin} />
+                </div>
+            } />
     );
 };
 

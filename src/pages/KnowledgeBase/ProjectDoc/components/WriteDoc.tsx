@@ -28,6 +28,7 @@ const WriteDoc: React.FC = () => {
     ownerId: entryStore.curEntry?.entry_id ?? "",
     historyInToolbar: true,
     clipboardInToolbar: true,
+    commonInToolbar: true,
     widgetInToolbar: true,
     showReminder: false,
     tocCallback: (result) => setTocList(result),

@@ -34,6 +34,7 @@ export interface UseCommonEditorAttrs {
   ownerId: string;
   historyInToolbar: boolean;
   clipboardInToolbar: boolean;
+  commonInToolbar: boolean;
   widgetInToolbar: boolean;
   showReminder: boolean;
   tocCallback?: (tocList: TocInfo[]) => void;
@@ -87,15 +88,17 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
     ...[
       headItem,
       listItem,
-      newCommItem({
-        fsId: attrs.fsId,
-        thumbWidth: 200,
-        thumbHeight: 150,
-        ownerType: attrs.ownerType,
-        ownerId: attrs.ownerId,
-      }),
     ],
   );
+  if (attrs.commonInToolbar) {
+    toolbarItems.push(newCommItem({
+      fsId: attrs.fsId,
+      thumbWidth: 200,
+      thumbHeight: 150,
+      ownerType: attrs.ownerType,
+      ownerId: attrs.ownerId,
+    }));
+  }
   if (attrs.widgetInToolbar) {
     toolbarItems.push(contentWidgetItem);
   }
@@ -104,9 +107,9 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
       <AllStyledComponent>
         <Remirror manager={manager} initialContent={state} placeholder={attrs?.placeholder ?? "请输入......"}>
           <Toolbar items={toolbarItems} />
-          <FloatToolBar />
+          <FloatToolBar enableLink={attrs.commonInToolbar}/> 
           {attrs.showReminder && (
-            <Reminder enabled={showReminder}/>
+            <Reminder enabled={showReminder} />
           )}
           <ImperativeHandle ref={editorRef} />
           <EditorComponent />

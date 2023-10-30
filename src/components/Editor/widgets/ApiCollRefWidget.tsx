@@ -84,7 +84,7 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
                     <a style={{ flex: 1 }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        linkAuxStore.openApiCollPage(apiCollId, name, apiCollType, defaultAddr, false);
+                        linkAuxStore.openApiCollPage(apiCollId, name, apiCollType, defaultAddr, false, false);
                     }}>{name}</a>
                     <div style={{ flex: 1 }}>
                         {apiCollId != "" && apiCollType == API_COLL_GRPC && "GRPC"}
@@ -154,7 +154,7 @@ const ViewApiCollRef: React.FC<WidgetProps> = (props) => {
                         <a onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            linkAuxStore.openApiCollPage(widgetData.apiCollId, widgetData.name, widgetData.apiCollType, widgetData.defaultAddr, false);
+                            linkAuxStore.openApiCollPage(widgetData.apiCollId, widgetData.name, widgetData.apiCollType, widgetData.defaultAddr, false, false);
                         }}>{widgetData.name}</a>
                     </div>
                     <div style={{ flex: 1 }}>
@@ -166,7 +166,7 @@ const ViewApiCollRef: React.FC<WidgetProps> = (props) => {
                         <Button type="primary" onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            linkAuxStore.openApiCollPage(widgetData.apiCollId, widgetData.name, widgetData.apiCollType, widgetData.defaultAddr, false);
+                            linkAuxStore.openApiCollPage(widgetData.apiCollId, widgetData.name, widgetData.apiCollType, widgetData.defaultAddr, false, false);
                         }}>打开接口集合</Button>
                     )}
                 </div>

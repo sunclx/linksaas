@@ -357,11 +357,21 @@ const formatItem = (
   />);
 
 
+export interface FloatToolBarProps {
+  enableLink: boolean;
+}
 
-const FloatToolBar = () => {
+const FloatToolBar = (props: FloatToolBarProps) => {
+  const itemList = [];
+  if (props.enableLink) {
+    itemList.push(headAndLinkItem);
+  }
+  itemList.push(fontItem);
+  itemList.push(formatItem);
+
   return (
     <FloatingWrapper displayArrow={true} positioner="selection" placement="auto" enabled>
-      <Toolbar items={[headAndLinkItem, fontItem, formatItem]} />
+      <Toolbar items={itemList} />
     </FloatingWrapper>
   );
 };

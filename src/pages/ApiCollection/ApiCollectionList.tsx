@@ -149,7 +149,7 @@ const ApiCollectionList = () => {
                         }
                         return true;
                     }} onClick={() => {
-                        linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr, row.can_update);
+                        linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr, row.can_update, projectStore.isAdmin);
                     }} />
             ),
         },
@@ -255,7 +255,7 @@ const ApiCollectionList = () => {
                         onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr, row.can_update);
+                            linkAuxStore.openApiCollPage(row.api_coll_id, row.name, row.api_coll_type, row.default_addr, row.can_update, projectStore.isAdmin);
                         }}>打开</Button>
                     {row.api_coll_type == API_COLL_GRPC && (
                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}

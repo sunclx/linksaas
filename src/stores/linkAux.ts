@@ -524,7 +524,7 @@ class LinkAuxStore {
         await this.rootStore.projectStore.setCurProjectId(pipeLineLink.projectId);
       }
       await OpenPipeLineWindow(`${pipeLineLink}(只读模式)`, pipeLineLink.projectId,
-        this.rootStore.projectStore.curProject?.ci_cd_fs_id ?? "", pipeLineLink.pipeLineId, false, false);
+        this.rootStore.projectStore.curProject?.ci_cd_fs_id ?? "", pipeLineLink.pipeLineId, false, false, this.rootStore.projectStore.isAdmin);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ENTRY) {
       const entryLink = link as LinkEntryInfo;
       if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {
@@ -550,7 +550,7 @@ class LinkAuxStore {
         project_id: apiCollLink.projectId,
         api_coll_id: apiCollLink.apiCollId,
       }));
-      await this.openApiCollPage(res.info.api_coll_id, res.info.name + "(只读模式)", res.info.api_coll_type, res.info.default_addr, false);
+      await this.openApiCollPage(res.info.api_coll_id, res.info.name + "(只读模式)", res.info.api_coll_type, res.info.default_addr, false, this.rootStore.projectStore.isAdmin);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DATA_ANNO) {
       const dataAnnoLink = link as LinkDataAnnoInfo;
       if (this.rootStore.projectStore.curProjectId != dataAnnoLink.projectId) {
@@ -696,27 +696,27 @@ class LinkAuxStore {
   }
 
   //打开接口集合页面
-  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string, canEdit: boolean) {
+  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string, canEdit: boolean, canAdmin: boolean) {
     const label = `apiColl:${apiCollId}`;
     const pos = await appWindow.innerPosition();
     if (apiCollType == API_COLL_GRPC) {
       new WebviewWindow(label, {
         title: `${name}(GRPC)`,
-        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}`,
+        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
     } else if (apiCollType == API_COLL_OPENAPI) {
       new WebviewWindow(label, {
         title: `${name}(OPENAPI/SWAGGER)`,
-        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}`,
+        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
     } else if (apiCollType == API_COLL_CUSTOM) {
       new WebviewWindow(label, {
         title: `${name}(自定义接口)`,
-        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&edit=${canEdit}`,
+        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
