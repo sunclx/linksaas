@@ -98,24 +98,22 @@
 
         i {
           display: inline-block;
-          width: 14px;
+          width: 20px;
           height: 14px;
           vertical-align: text-top;
           background-repeat: no-repeat;
           background-size: contain;
+          svg {
+            color: orange;
+            font-size: 20px;
+          }
         }
 
-        .add {
-          background-image: url('@/assets/allIcon/icon-add-channel.png');
-          background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
-              url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
-        }
-
-        .more {
-          background-image: url('@/assets/allIcon/icon-more-channel.png');
-          background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
-              url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
-        }
+        // .add {
+        //   background-image: url('@/assets/allIcon/icon-add-channel.png');
+        //   background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
+        //       url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
+        // }
       }
     }
   }
@@ -164,22 +162,6 @@
           width: 100px;
           cursor: pointer;
         }
-
-        .more {
-          display: inline-block;
-          width: 14px;
-          height: 14px;
-          vertical-align: text-top;
-          background-repeat: no-repeat;
-          background-size: contain;
-          position: absolute;
-          right: 10px;
-          top: 7px;
-          cursor: pointer;
-          background-image: url('@/assets/allIcon/icon-more-channel.png');
-          background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
-              url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
-        }
       }
     }
   }
@@ -213,37 +195,6 @@
   }
 }
 
-// 项目： + 三点
-.moremenu {
-  composes: contextmenu;
-  position: static;
-  margin-top: -15px;
-
-  .divider {
-    margin: 6px 0;
-    border-bottom: 1px solid #f0f0f5;
-    cursor: inherit;
-  }
-
-  .item {
-    position: relative;
-    padding-left: 20px;
-    color: #000;
-
-    &.selected::before {
-      position: absolute;
-      top: 50%;
-      left: 3px;
-      width: 13px;
-      height: 12px;
-      margin-top: -6px;
-      background-image: url('@/assets/allIcon/icon-list-channel-select.png');
-      background-image: -webkit-image-set(url('@/assets/allIcon/icon-list-channel-select.png') 1x,
-          url('@/assets/allIcon/icon-list-channel-select@2x.png') 2x);
-      content: '';
-    }
-  }
-}
 
 // renderPjItemChange
 .pj_change_model {
@@ -363,6 +314,9 @@
     background-image: url('@/assets/allIcon/icon-add-channel.png');
     background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
         url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
+  }
+  svg {
+    color: orange;
   }
 }
 
