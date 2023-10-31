@@ -21,11 +21,14 @@ const EventSettingPanel: React.FC<PanelProps> = (props) => {
     };
 
     const updateConfig = async () => {
+        if(projectStore.curProject == undefined){
+            return;
+        }
         await request(update_setting({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             setting: {
-                ...projectStore.curProject!.setting,
+                ...projectStore.curProject.setting,
                 hide_custom_event: hideCustomEvent,
                 hide_custom_event_for_admin: hideCustomEventForAdmin,
             },
