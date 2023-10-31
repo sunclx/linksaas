@@ -18,7 +18,7 @@ const MyWorkLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   if (!projectStore.curProjectId) {
     return (
       <>
-        {!projectStore.filterProjectList.length ? (
+        {!projectStore.projectList.length ? (
           <Empty style={{ marginTop: '10%' }} />
         ) : (
           <div>

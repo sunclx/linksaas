@@ -7,6 +7,7 @@ export const PUB_RES_PATH = '/app/pubres';
 export const EXTRA_MENU_PATH = '/app/extra_menu';
 export const RESET_TEXT = 'resetPassword';
 
+export const APP_PROJECT_MANAGER_PATH = '/app/project_mgr';
 export const APP_PROJECT_PATH = '/app/project';
 export const APP_PROJECT_HOME_PATH = '/app/project/home';
 export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
@@ -155,27 +156,6 @@ export const bugPriority = {
   },
 };
 
-export enum FILTER_PROJECT_ENUM {
-  ALL = 'all',
-  UNDERWAY = 'underway',
-  CLOSE = 'close',
-}
-
-export const filterProjectItemList = [
-  {
-    label: '全部项目',
-    value: FILTER_PROJECT_ENUM.ALL,
-  },
-  {
-    label: '进行中项目',
-    value: FILTER_PROJECT_ENUM.UNDERWAY,
-  },
-  {
-    label: '已结束项目',
-    value: FILTER_PROJECT_ENUM.CLOSE,
-  },
-];
-
 export enum FILTER_DOC_ENUM {
   ALL = 'all',
   CONCERN = 'concern',
@@ -203,5 +183,4 @@ export enum PROJECT_SETTING_TAB {
   PROJECT_SETTING_TIPLIST,
   PROJECT_SETTING_TAGLIST,
   PROJECT_SETTING_EVENT,
-  PROJECT_SETTING_DANGER,
 }

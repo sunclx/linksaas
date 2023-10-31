@@ -47,6 +47,7 @@ import {
   ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
   APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_HOME_PATH,
+  APP_PROJECT_MANAGER_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -82,6 +83,7 @@ import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
 import ProjectCiCd from "@/pages/Project/CiCd"
 import HomeLayout from '@/layouts/HomeLayout';
+import ProjectManager from '@/pages/ProjectManger';
 
 export interface IRouteConfig {
   // 路由路径
@@ -237,6 +239,12 @@ const routesConfig: IRouteConfig[] = [
         path: WORKBENCH_PATH,
         title: '工作台',
         component: Workbench,
+        exact: true,
+      },
+      {
+        path: APP_PROJECT_MANAGER_PATH,
+        title: "项目管理",
+        component: ProjectManager,
         exact: true,
       },
       {

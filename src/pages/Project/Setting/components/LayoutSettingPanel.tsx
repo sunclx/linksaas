@@ -46,11 +46,14 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     };
 
     const updateConfig = async () => {
+        if(projectStore.curProject == undefined){
+            return;
+        }
         await request(update_setting({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
             setting: {
-                ...projectStore.curProject!.setting,
+                ...projectStore.curProject.setting,
                 disable_member_appraise: disableMemberAppraise,
                 disable_ext_event: disableExtEvent,
                 disable_data_anno: disableDataAnno,

@@ -35,10 +35,10 @@ const EntryPopover = (props: EntryPopoverProps) => {
                     {props.entryInfo.entry_perm.update_for_all && "全体成员可更新"}
                     {props.entryInfo.entry_perm.update_for_all == false && (
                         props.entryInfo.entry_perm.extra_update_user_id_list.map(userId => memberStore.getMember(userId)).filter(member => member != undefined).map(member => (
-                            <div key={member!.member.member_user_id} style={{ marginTop: "4px", marginRight: "4px" }}>
-                                <UserPhoto logoUri={member!.member.logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
+                            <div key={member?.member.member_user_id ?? ""} style={{ marginTop: "4px", marginRight: "4px" }}>
+                                <UserPhoto logoUri={member?.member.logo_uri ?? ""} style={{ width: "16px", borderRadius: "10px" }} />
                                 &nbsp;
-                                {member!.member.display_name}
+                                {member?.member.display_name ?? ""}
                             </div>
                         ))
                     )}

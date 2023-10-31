@@ -81,8 +81,17 @@
     align-items: center;
     justify-content: space-between;
     color: white;
-    padding-left: 22px;
-    padding-top: 5px;
+    margin-left: 10px;
+    padding: 5px 0px;
+    padding-left: 12px;
+    margin-right: 10px;
+
+    &:hover {
+      color: white;
+      font-weight: 600;
+      background-color: #555;
+      border-radius: 6px;
+    }
 
     .menu_icon_wrap {
       margin-right: 10px;
@@ -98,24 +107,17 @@
 
         i {
           display: inline-block;
-          width: 14px;
+          width: 20px;
           height: 14px;
           vertical-align: text-top;
           background-repeat: no-repeat;
           background-size: contain;
+          svg {
+            color: orange;
+            font-size: 20px;
+          }
         }
 
-        .add {
-          background-image: url('@/assets/allIcon/icon-add-channel.png');
-          background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
-              url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
-        }
-
-        .more {
-          background-image: url('@/assets/allIcon/icon-more-channel.png');
-          background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
-              url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
-        }
       }
     }
   }
@@ -164,86 +166,11 @@
           width: 100px;
           cursor: pointer;
         }
-
-        .more {
-          display: inline-block;
-          width: 14px;
-          height: 14px;
-          vertical-align: text-top;
-          background-repeat: no-repeat;
-          background-size: contain;
-          position: absolute;
-          right: 10px;
-          top: 7px;
-          cursor: pointer;
-          background-image: url('@/assets/allIcon/icon-more-channel.png');
-          background-image: -webkit-image-set(url('@/assets/allIcon/icon-more-channel.png') 1x,
-              url('@/assets/allIcon/icon-more-channel@2x.png') 2x);
-        }
       }
     }
   }
 }
 
-// 右键菜单
-
-.contextmenu {
-  box-sizing: border-box;
-  width: 116px;
-  padding: 7px 6px;
-  background: #fff;
-  border: 1px solid #eaeaef;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.12);
-
-  .item {
-    padding: 5px 7px;
-    color: red;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 27px;
-    white-space: nowrap;
-    text-align: inherit;
-    cursor: pointer;
-
-    &:hover {
-      background: #f1f1f5;
-      border-radius: 4px;
-    }
-  }
-}
-
-// 项目： + 三点
-.moremenu {
-  composes: contextmenu;
-  position: static;
-  margin-top: -15px;
-
-  .divider {
-    margin: 6px 0;
-    border-bottom: 1px solid #f0f0f5;
-    cursor: inherit;
-  }
-
-  .item {
-    position: relative;
-    padding-left: 20px;
-    color: #000;
-
-    &.selected::before {
-      position: absolute;
-      top: 50%;
-      left: 3px;
-      width: 13px;
-      height: 12px;
-      margin-top: -6px;
-      background-image: url('@/assets/allIcon/icon-list-channel-select.png');
-      background-image: -webkit-image-set(url('@/assets/allIcon/icon-list-channel-select.png') 1x,
-          url('@/assets/allIcon/icon-list-channel-select@2x.png') 2x);
-      content: '';
-    }
-  }
-}
 
 // renderPjItemChange
 .pj_change_model {
@@ -363,6 +290,9 @@
     background-image: url('@/assets/allIcon/icon-add-channel.png');
     background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
         url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
+  }
+  svg {
+    color: orange;
   }
 }
 

@@ -4,7 +4,7 @@ import type { ProjectInfo, TagInfo } from '@/api/project';
 import { list as listProject, get_project as getProject, list_tag, TAG_SCOPRE_ALL } from '@/api/project';
 import { request } from '@/utils/request';
 import type { PROJECT_SETTING_TAB } from '@/utils/constant';
-import { APP_PROJECT_OVERVIEW_PATH, FILTER_PROJECT_ENUM } from '@/utils/constant';
+import { APP_PROJECT_OVERVIEW_PATH } from '@/utils/constant';
 import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
@@ -56,8 +56,6 @@ export default class ProjectStore {
   private _projectList: WebProjectInfo[] = [];
   private _projectMap: Map<string, WebProjectInfo> = new Map();
 
-  filterProjectType: FILTER_PROJECT_ENUM = FILTER_PROJECT_ENUM.ALL;
-
   async setCurProjectId(val: string) {
     const oldProjectId = this._curProjectId;
     if (val == oldProjectId) {
@@ -86,17 +84,6 @@ export default class ProjectStore {
 
   get projectList(): WebProjectInfo[] {
     return this._projectList;
-  }
-
-  get filterProjectList(): WebProjectInfo[] {
-    switch (this.filterProjectType) {
-      case FILTER_PROJECT_ENUM.UNDERWAY:
-        return this._projectList.filter((item) => !item.closed);
-      case FILTER_PROJECT_ENUM.CLOSE:
-        return this._projectList.filter((item) => item.closed);
-      default:
-        return this._projectList;
-    }
   }
 
   get curProject(): WebProjectInfo | undefined {
@@ -373,7 +360,7 @@ export default class ProjectStore {
   }
 
 
-  removeProject(projecId: string, history: History) {
+  removeProject(projecId: string, history?: History) {
     const tmpList = this._projectList.filter((item) => item.project_id != projecId);
     let newProjectId = "";
     runInAction(() => {
@@ -385,6 +372,9 @@ export default class ProjectStore {
         }
       }
     });
+    if (history == undefined) {
+      return;
+    }
     if (newProjectId == "") {
       history.push('/app/workbench');
     } else {
