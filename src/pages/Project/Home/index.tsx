@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import s from "./index.module.less";
 import { observer } from 'mobx-react';
-import { Button, Card, Divider, Form, Input, List, Select, Space, Switch, Tabs } from "antd";
+import { Card, Divider, Dropdown, Form, Input, List, Select, Space, Switch, Tabs } from "antd";
 import { useHistory } from "react-router-dom";
 import { APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type { ENTRY_TYPE, ListParam, EntryInfo } from "@/api/project_entry";
 import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import { request } from "@/utils/request";
-import { CreditCardFilled, FilterTwoTone, PlusOutlined } from "@ant-design/icons";
+import { CreditCardFilled, FilterTwoTone } from "@ant-design/icons";
 import EntryCard from "./EntryCard";
 
 const PAGE_SIZE = 24;
@@ -19,6 +19,8 @@ const ProjectHome = () => {
     const userStore = useStores("userStore");
     const projectStore = useStores("projectStore");
     const entryStore = useStores("entryStore");
+    const linkAuxStore = useStores("linkAuxStore");
+    const ideaStore = useStores("ideaStore");
 
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
@@ -213,11 +215,42 @@ const ProjectHome = () => {
                                 </Select>
                             </Form.Item>
                         </Form>
-                        <Button type="primary" onClick={e => {
+                        <Dropdown.Button type="primary" onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             entryStore.createEntryType = ENTRY_TYPE_SPRIT;
-                        }} icon={<PlusOutlined />}>创建内容</Button>
+                        }} menu={{
+                            items: [
+                                {
+                                    key: "requirement",
+                                    label: "创建需求",
+                                    onClick: () => {
+                                        linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, history);
+                                    },
+                                },
+                                {
+                                    key: "task",
+                                    label: "创建任务",
+                                    onClick: () => {
+                                        linkAuxStore.goToCreateTask("", projectStore.curProjectId, history);
+                                    },
+                                },
+                                {
+                                    key: "bug",
+                                    label: "创建缺陷",
+                                    onClick: () => {
+                                        linkAuxStore.goToCreateBug("", projectStore.curProjectId, history);
+                                    },
+                                },
+                                {
+                                    key: "idea",
+                                    label: "创建知识点",
+                                    onClick: () => {
+                                        ideaStore.setShowCreateIdea("", "");
+                                    },
+                                }
+                            ],
+                        }}>创建内容</Dropdown.Button>
                     </Space>
                 }>
                 <Tabs accessKey={activeKey} onChange={value => setActiveKey(value)}
