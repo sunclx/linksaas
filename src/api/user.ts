@@ -42,7 +42,6 @@ export type UserInfo = {
   create_time: number;
   update_time: number;
   user_fs_id: string;
-  default_kb_space_id: string;
   user_state: USER_STATE;
 };
 

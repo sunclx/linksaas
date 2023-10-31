@@ -12,7 +12,6 @@ type UserInfo = {
   displayName: string;
   logoUri: string;
   userFsId: string;
-  defaultKbSpaceId: string;
 };
 
 class UserStore {
@@ -34,7 +33,6 @@ class UserStore {
     displayName: '',
     logoUri: '',
     userFsId: '',
-    defaultKbSpaceId: '',
   };
 
   // 帐号管理弹窗
@@ -54,7 +52,6 @@ class UserStore {
         displayName: '',
         logoUri: '',
         userFsId: '',
-        defaultKbSpaceId: '',
       };
     });
     sessionStorage.removeItem('sessionId');
@@ -75,7 +72,6 @@ class UserStore {
           displayName: res.user_info.basic_info.display_name,
           logoUri: res.user_info.basic_info.logo_uri,
           userFsId: res.user_info.user_fs_id,
-          defaultKbSpaceId: res.user_info.default_kb_space_id,
         };
         sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo));
         this.rootStore.projectStore.initLoadProjectList();

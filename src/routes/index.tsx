@@ -29,7 +29,6 @@ import {
   ADMIN_PATH_USER_LIST_SUFFIX,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_KB_PATH,
-  WORKBENCH_KB_DOC_SUFFIX,
   BUG_CREATE_SUFFIX,
   BUG_DETAIL_SUFFIX,
   REQUIRE_MENT_CREATE_SUFFIX,
@@ -67,7 +66,6 @@ import AdAdmin from '@/pages/Admin/ClientAdmin/AdAdmin';
 import RequirementList from '@/pages/Project/Requirement/RequirementList';
 import RequirementCreate from '@/pages/Project/Requirement/RequirementCreate';
 import RequirementDetail from '@/pages/Project/Requirement/RequirementDetail';
-import UserDoc from '@/pages/UserExtend/UserKb/UserDoc';
 import AppCateList from '@/pages/Admin/AppAdmin/AppCateList';
 import AppList from '@/pages/Admin/AppAdmin/AppList';
 import OverviewLayout from '@/layouts/OverviewLayout';
@@ -245,12 +243,6 @@ const routesConfig: IRouteConfig[] = [
         path: PUB_RES_PATH,
         title: "公共资源",
         component: PubRes,
-        exact: true,
-      },
-      {
-        path: WORKBENCH_KB_DOC_SUFFIX,
-        title: "知识库文档",
-        component: UserDoc,
         exact: true,
       },
       {

@@ -46,7 +46,6 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
-mod user_kb_api_plugin;
 mod project_entry_api_plugin;
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -409,7 +408,6 @@ fn main() {
         .plugin(project_issue_api_plugin::ProjectIssueApiPlugin::new())
         .plugin(fs_api_plugin::FsApiPlugin::new())
         .plugin(project_appraise_api_plugin::ProjectAppraiseApiPlugin::new())
-        .plugin(user_kb_api_plugin::UserKbApiPlugin::new())
         .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())

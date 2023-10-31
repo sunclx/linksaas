@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import { PUB_RES_PATH, USER_LOGIN_PATH, WORKBENCH_KB_DOC_SUFFIX, WORKBENCH_PATH, filterProjectItemList } from '@/utils/constant';
+import { PUB_RES_PATH, USER_LOGIN_PATH, WORKBENCH_PATH, filterProjectItemList } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import Card from './components/Card';
 import InfoCount from './components/InfoCount';
@@ -12,11 +12,8 @@ import Backlog from './components/Backlog';
 import { Select, Space, Tabs } from 'antd';
 import { observer } from 'mobx-react';
 import Record from './components/Record';
-import { AppstoreOutlined, BookOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
-import UserDocSpaceList from '../UserExtend/UserKb/UserDocSpaceList';
+import { AppstoreOutlined, DoubleRightOutlined, FieldTimeOutlined, FolderOutlined, IssuesCloseOutlined, ProjectOutlined } from '@ant-design/icons';
 import Button from '@/components/Button';
-import type { KbSpaceInfo } from '@/api/user_kb';
-import type { UserDocState } from '../UserExtend/UserKb/UserDoc';
 import { runInAction } from 'mobx';
 import MyProjectList from './components/MyProjectList';
 import UserAppList from './components/UserAppList';
@@ -39,11 +36,9 @@ const Workbench: React.FC = () => {
     tab = "myProject";
   }
   const userAction = urlParams.get("userAction");
-  const spaceId = urlParams.get("spaceId");
 
   const [totalMyIssueCount, setTotalMyIssueCount] = useState(0);
   const [activeKey, setActiveKey] = useState(tab);
-  const [curKbSpace, setCurKbSpace] = useState<KbSpaceInfo | null>(null);
   const [showAddRepoModal, setShowAddRepoModal] = useState(false);
   const [repoDataVersion, setRepoDataVersion] = useState(0);
 
@@ -72,7 +67,6 @@ const Workbench: React.FC = () => {
       </Card>
       <Tabs activeKey={activeKey} className={s.my_wrap} type="card"
         onChange={key => {
-          setCurKbSpace(null);
           history.push(`${WORKBENCH_PATH}?tab=${key}&userAction=true`);
         }}
         tabBarExtraContent={
@@ -95,24 +89,6 @@ const Workbench: React.FC = () => {
                   ))}
                 </Select>
               </Space>
-            )}
-            {activeKey == "userDoc" && (
-              <Button style={{ marginRight: "20px" }}
-                disabled={curKbSpace == null}
-                onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  if (curKbSpace == null) {
-                    return;
-                  }
-                  const state: UserDocState = {
-                    spaceId: curKbSpace.space_id,
-                    sshPubKey: curKbSpace.ssh_pub_key,
-                    docId: "",
-                    readMode: false,
-                  };
-                  history.push(WORKBENCH_KB_DOC_SUFFIX, state);
-                }}>创建文档</Button>
             )}
             {activeKey == "userApp" && (
               <Button
@@ -168,13 +144,6 @@ const Workbench: React.FC = () => {
             )}
           </Tabs.TabPane>
         )}
-        <Tabs.TabPane tab={<h2><BookOutlined />我的文档</h2>} key="userDoc">
-          {activeKey == "userDoc" && (
-            <div className={s.content_wrap}>
-              <UserDocSpaceList onChange={kbSpace => setCurKbSpace(kbSpace)} spaceId={spaceId ?? userStore.userInfo.defaultKbSpaceId} />
-            </div>
-          )}
-        </Tabs.TabPane>
         <Tabs.TabPane tab={<h2><ProjectOutlined />我的项目</h2>} key="myProject">
           {activeKey == "myProject" && (
             <div className={s.content_wrap}>

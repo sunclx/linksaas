@@ -30,11 +30,6 @@ export type CheckAccessAppraiseResponse = {
     can_access: boolean;
 };
 
-export type CheckAccessUserKbResponse = {
-    code: number;
-    err_msg: string;
-    can_access: boolean;
-};
 
 // 是否可以访问项目
 export async function check_access_project(session_id: string, project_id: string): Promise<CheckAccessProjectResponse> {
@@ -101,21 +96,6 @@ export async function check_access_appraise(session_id: string, project_id: stri
     };
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<CheckAccessAppraiseResponse>(cmd, {
-        request,
-    });
-}
-
-//是否可以访问用户知识库
-export async function check_access_user_kb(session_id: string, user_id: string, space_id: string, doc_id: string): Promise<CheckAccessUserKbResponse> {
-    const cmd = 'plugin:link_aux_api|check_access_user_kb';
-    const request = {
-        session_id,
-        user_id,
-        space_id,
-        doc_id,
-    };
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<CheckAccessUserKbResponse>(cmd, {
         request,
     });
 }
