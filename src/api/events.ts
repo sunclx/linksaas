@@ -67,12 +67,6 @@ export type DayEventStatusItem = {
   count: number;
 };
 
-export type ListUserDayStatusResponse = {
-  code: number;
-  err_msg: string;
-  status_item_list: DayEventStatusItem[];
-};
-
 export type PluginEvent = {
   event_id: string;
   user_id: string;
@@ -97,12 +91,7 @@ export type DayAddonInfo = {
   user_logo_uri: string;
 };
 
-export type PluginListUserEventResponse = {
-  code: number;
-  err_msg: string;
-  total_count: number;
-  event_list: PluginEvent[];
-};
+
 
 export type ListProjectDayStatusRequest = {
   session_id: string;
@@ -187,48 +176,6 @@ export type GetDayAddonInfoResponse = {
   err_msg: string;
   info: DayAddonInfo;
 };
-
-//列出用户维度的每天事件数量
-export async function list_user_day_status(
-  session_id: string,
-  from_day: number,
-  to_day: number,
-): Promise<ListUserDayStatusResponse> {
-  const cmd = 'plugin:events_api|list_user_day_status';
-  const request = {
-    session_id,
-    from_day,
-    to_day,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<ListUserDayStatusResponse>(cmd, {
-    request,
-  });
-}
-
-//列出用户维度的事件
-export async function list_user_event(
-  session_id: string,
-  from_time: number,
-  to_time: number,
-  offset: number,
-  limit: number,
-): Promise<PluginListUserEventResponse> {
-  const cmd = 'plugin:events_api|list_user_event';
-  const request = {
-    session_id,
-    from_time,
-    to_time,
-    offset,
-    limit,
-  };
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-  return invoke<PluginListUserEventResponse>(cmd, {
-    request,
-  });
-}
 
 //列出项目维度的每天事件数量
 export async function list_project_day_status(

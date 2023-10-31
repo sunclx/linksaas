@@ -63,72 +63,6 @@ pub struct PluginListEventByIdResponse {
     pub event_list: vec::Vec<PluginEvent>,
 }
 
-#[tauri::command]
-async fn list_user_day_status<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListUserDayStatusRequest,
-) -> Result<ListUserDayStatusResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = EventsApiClient::new(chan.unwrap());
-    match client.list_user_day_status(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_user_day_status_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("list_user_day_status".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn list_user_event<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListUserEventRequest,
-) -> Result<PluginListUserEventResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = EventsApiClient::new(chan.unwrap());
-    match client.list_user_event(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_user_event_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_user_event".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(convert_list_user_event_response(inner_resp));
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-fn convert_list_user_event_response(
-    src_resp: ListUserEventResponse,
-) -> PluginListUserEventResponse {
-    return PluginListUserEventResponse {
-        code: src_resp.code,
-        err_msg: src_resp.err_msg,
-        total_count: src_resp.total_count,
-        event_list: convert_event(src_resp.event_list),
-    };
-}
-
 pub fn convert_event(ev_list: vec::Vec<Event>) -> vec::Vec<PluginEvent> {
     let mut ret_list = vec::Vec::new();
     for ev in &ev_list {
@@ -440,8 +374,6 @@ impl<R: Runtime> EventsApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                list_user_day_status,
-                list_user_event,
                 list_project_day_status,
                 list_project_event,
                 list_event_by_ref,

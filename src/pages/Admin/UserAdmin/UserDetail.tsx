@@ -19,7 +19,6 @@ import { remove as remove_member, add as add_member } from '@/api/project_member
 import type { ProjectDetailState } from '../ProjectAdmin/ProjectDetail';
 import { ADMIN_PATH_PROJECT_DETAIL_SUFFIX } from '@/utils/constant';
 import SelectProjectModal from '../components/SelectProjectModal';
-import UserEvList from './components/UesrEvList';
 
 export interface UserDetailState {
     userId: string;
@@ -240,11 +239,6 @@ const UserDetail = () => {
                         <Table rowKey="project_id" columns={prjColumns} dataSource={projectList} pagination={false} />
                     </Card>
                 </Descriptions.Item>
-                {permInfo?.project_perm.access_event == true && (
-                    <Descriptions.Item label="研发事件" span={3}>
-                        <UserEvList userId={state.userId} />
-                    </Descriptions.Item>
-                )}
 
             </Descriptions>
             {showResetModal == true && (
