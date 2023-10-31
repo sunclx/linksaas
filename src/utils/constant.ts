@@ -7,6 +7,7 @@ export const PUB_RES_PATH = '/app/pubres';
 export const EXTRA_MENU_PATH = '/app/extra_menu';
 export const RESET_TEXT = 'resetPassword';
 
+export const APP_PROJECT_MANAGER_PATH = '/app/project_mgr';
 export const APP_PROJECT_PATH = '/app/project';
 export const APP_PROJECT_HOME_PATH = '/app/project/home';
 export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
@@ -182,5 +183,4 @@ export enum PROJECT_SETTING_TAB {
   PROJECT_SETTING_TIPLIST,
   PROJECT_SETTING_TAGLIST,
   PROJECT_SETTING_EVENT,
-  PROJECT_SETTING_DANGER,
 }

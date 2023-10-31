@@ -360,7 +360,7 @@ export default class ProjectStore {
   }
 
 
-  removeProject(projecId: string, history: History) {
+  removeProject(projecId: string, history?: History) {
     const tmpList = this._projectList.filter((item) => item.project_id != projecId);
     let newProjectId = "";
     runInAction(() => {
@@ -372,6 +372,9 @@ export default class ProjectStore {
         }
       }
     });
+    if (history == undefined) {
+      return;
+    }
     if (newProjectId == "") {
       history.push('/app/workbench');
     } else {
