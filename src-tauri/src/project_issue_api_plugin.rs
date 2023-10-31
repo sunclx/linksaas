@@ -404,6 +404,33 @@ async fn list_by_id<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_my_todo_status<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetMyTodoStatusRequest,
+) -> Result<GetMyTodoStatusResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectIssueApiClient::new(chan.unwrap());
+    match client.get_my_todo_status(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_my_todo_status_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_my_todo_status".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_my_todo<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -1115,6 +1142,7 @@ impl<R: Runtime> ProjectIssueApiPlugin<R> {
                 list,
                 list_id,
                 list_by_id,
+                get_my_todo_status,
                 list_my_todo,
                 list_attr_value,
                 link_sprit,
