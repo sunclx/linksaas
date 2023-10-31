@@ -19,6 +19,7 @@ const ProjectList = () => {
     const appStore = useStores('appStore');
     const projectStore = useStores('projectStore');
     const memberStore = useStores('memberStore');
+    const docStore = useStores('docStore');
 
     return (
         <div className={cls.project_menu}>
@@ -26,7 +27,13 @@ const ProjectList = () => {
                 <div style={{ width: "120px", cursor: "pointer" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    history.push(APP_PROJECT_MANAGER_PATH);
+                    if (docStore.inEdit) {
+                        docStore.showCheckLeave(() => {
+                            history.push(APP_PROJECT_MANAGER_PATH);
+                        });
+                    } else {
+                        history.push(APP_PROJECT_MANAGER_PATH);
+                    }
                 }}>
                     <ProjectOutlined style={{ width: "20px" }} />项目
                 </div>

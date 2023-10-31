@@ -148,7 +148,7 @@ const EntryCard = (props: EntryCardPorps) => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             setShowCloseModal(true);
-                                        }}>关闭</Button>
+                                        }}>进入只读状态</Button>
                                     {props.entryInfo.mark_sys == false && (
                                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
                                             disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
@@ -177,9 +177,9 @@ const EntryCard = (props: EntryCardPorps) => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             setRemoveMark(false).then(() => {
-                                                message.info("打开成功");
+                                                message.info("退出只读状态成功");
                                             });
-                                        }}>打开</Button>
+                                        }}>退出只读状态</Button>
                                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
                                         disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
                                         onClick={e => {
@@ -211,9 +211,9 @@ const EntryCard = (props: EntryCardPorps) => {
                 </div>
             </a>
             {showCloseModal == true && (
-                <Modal open title={`关闭内容入口`}
+                <Modal open title={`进入只读状态`}
                     mask={false}
-                    okText="关闭"
+                    okText="修改"
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -224,11 +224,11 @@ const EntryCard = (props: EntryCardPorps) => {
                         e.preventDefault();
                         setRemoveMark(true).then(() => {
                             setShowCloseModal(false);
-                            message.info("关闭成功");
+                            message.info("进入只读状态成功");
                         });
                     }}>
-                    <p>关闭内容入口&nbsp;{props.entryInfo.entry_title}</p>
-                    <p>关闭后可以在关闭状态列表下找到。</p>
+                    <p>设置内容入口&nbsp;{props.entryInfo.entry_title}&nbsp;为只读状态。</p>
+                    <p>进入只读状态后可以在只读状态列表下找到。</p>
                 </Modal>
             )}
             {showRemoveModal == true && (

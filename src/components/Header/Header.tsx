@@ -38,6 +38,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
+  const [hover, setHover] = useState(false);
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
@@ -130,7 +131,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
 
   return (
-    <div>
+    <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props} data-tauri-drag-region>
         {projectStore.curProjectId != "" && (
@@ -203,7 +204,9 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </Space>
           </div>
         )}
-        <div className={style.l} />
+        <div className={style.l} >
+            {hover && <span data-tauri-drag-region style={{color:"#aaa"}}>可用鼠标拖动窗口</span>}
+        </div>
         <div className={style.r}>
           {props.type == "login" && hasNewVersion == true && (
             <a style={{ marginRight: "20px" }} onClick={e => {
