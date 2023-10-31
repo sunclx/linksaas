@@ -8,10 +8,14 @@ import { Button } from 'antd';
 import { request } from '@/utils/request';
 import { get_my_todo_status } from "@/api/project_issue";
 import MyTodoListModal from './MyTodoListModal';
+import { useHistory } from 'react-router-dom';
+import { APP_PROJECT_MANAGER_PATH } from '@/utils/constant';
 
 
 
 const InfoCount = () => {
+  const history = useHistory();
+
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
 
@@ -67,7 +71,7 @@ const InfoCount = () => {
               onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                //TODO
+                history.push(APP_PROJECT_MANAGER_PATH);
               }}>
               {projectStore.projectList.filter((item) => !item.closed).length}
             </Button>
