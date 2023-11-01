@@ -24,7 +24,7 @@ const ProjectDoc = () => {
           const onLeave = docStore.onLeave;
           docStore.clearCheckLeave();
           docStore.reset();
-          if (onLeave != undefined) {
+          if (onLeave != null) {
             onLeave();
           }
         }}
