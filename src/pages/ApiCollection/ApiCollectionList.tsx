@@ -123,6 +123,7 @@ const ApiCollectionList = () => {
         },
         {
             title: "名称",
+            fixed: true,
             width: 200,
             render: (_, row) => (
                 <EditText editable={(!projectStore.isClosed) && row.can_update}

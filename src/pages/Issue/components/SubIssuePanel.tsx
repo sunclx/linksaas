@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Input, message, Form } from 'antd';
+import { Table, Modal, Input, message, Form, Space } from 'antd';
 import type { SubIssueInfo } from '@/api/project_issue';
 import type { ColumnsType } from 'antd/lib/table';
 import { create_sub_issue, list_sub_issue, update_sub_issue, update_sub_issue_state, remove_sub_issue } from '@/api/project_issue';
 import { request } from '@/utils/request';
 import { useStores } from "@/hooks";
 import Button from "@/components/Button";
+import { EditText } from "@/components/EditCell/EditText";
+import { CheckOutlined } from "@ant-design/icons";
 
 interface SybIssuePanelProps {
     issueId: string;
@@ -19,9 +21,7 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
 
     const [subIssueList, setSubIssueList] = useState<SubIssueInfo[]>([]);
     const [showAddSubIssue, setShowAddSubIssue] = useState(false);
-    const [showUpdateSubIssue, setShowUpdateSubIssue] = useState(false);
     const [subIssueTitle, setSubIssueTitle] = useState("");
-    const [curSubIssueId, setCurSubIssueId] = useState("");
 
     const loadSubIssue = async () => {
         const res = await request(list_sub_issue({
@@ -52,34 +52,6 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
             message.info("添加子任务成功");
             setShowAddSubIssue(false);
             await loadSubIssue();
-        }
-    };
-
-    const updateSubIssue = async () => {
-        if (subIssueTitle == "") {
-            message.error("子任务标题不能为空");
-            return;
-        }
-        const res = await request(update_sub_issue({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            issue_id: props.issueId,
-            sub_issue_id: curSubIssueId,
-            basic_info: {
-                title: subIssueTitle,
-            },
-        }));
-        if (res) {
-            const itemList = subIssueList.slice();
-            const index = itemList.findIndex(item => item.sub_issue_id == curSubIssueId);
-            if (index != -1) {
-                itemList[index].basic_info.title = subIssueTitle;
-                setSubIssueList(itemList);
-            }
-            setSubIssueTitle("");
-            setCurSubIssueId("");
-            setShowUpdateSubIssue(false);
-            message.info("修改子任务标题成功");
         }
     };
 
@@ -119,9 +91,36 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
     const subIssueColums: ColumnsType<SubIssueInfo> = [
         {
             title: "标题",
-            render: (_, record: SubIssueInfo) => {
-                return <span style={{ textDecorationLine: record.done ? "line-through" : "none" }}>{record.basic_info.title}</span>
-            },
+            render: (_, record: SubIssueInfo) => (
+                <Space>
+                    <div style={{ width: "16px" }}>
+                        {record.done && <CheckOutlined style={{ color: "green" }} />}
+                    </div>
+                    <EditText editable={(!projectStore.isClosed) && props.canOptSubIssue} content={record.basic_info.title}
+                        onChange={async value => {
+                            if (value.trim() == "") {
+                                return false;
+                            }
+                            try {
+                                await request(update_sub_issue({
+                                    session_id: userStore.sessionId,
+                                    project_id: projectStore.curProjectId,
+                                    issue_id: props.issueId,
+                                    sub_issue_id: record.sub_issue_id,
+                                    basic_info: {
+                                        title: value.trim(),
+                                    },
+                                }));
+                                await loadSubIssue();
+                                return true;
+                            } catch (e) {
+                                console.log(e);
+                                return false;
+                            }
+                        }} showEditIcon={true} />
+                </Space>
+
+            ),
         },
         {
             title: "创建者",
@@ -143,17 +142,6 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                                 e.preventDefault();
                                 updateSubIssueState(record.sub_issue_id, !record.done);
                             }}>{record.done ? "标记成未完成" : "标记成已完成"}</Button>
-                        <Button
-                            type="link"
-                            disabled={projectStore.isClosed || !props.canOptSubIssue}
-                            style={{ minWidth: "10px" }}
-                            onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setSubIssueTitle(record.basic_info.title);
-                                setCurSubIssueId(record.sub_issue_id);
-                                setShowUpdateSubIssue(true);
-                            }}>修改</Button>
                         <Button
                             type="link"
                             style={{ minWidth: "10px" }}
@@ -213,30 +201,6 @@ export const SubIssuePanel: React.FC<SybIssuePanelProps> = (props) => {
                     </Form>
 
                 </Modal>)}
-            {showUpdateSubIssue == true && (
-                <Modal
-                    open={showUpdateSubIssue}
-                    title="修改子任务标题"
-                    onCancel={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSubIssueTitle("");
-                        setCurSubIssueId("");
-                        setShowUpdateSubIssue(false);
-                    }}
-                    onOk={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        updateSubIssue();
-                    }}
-                >
-                    <Input addonBefore="子任务标题" defaultValue={subIssueTitle} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setSubIssueTitle(e.target.value);
-                    }} />
-                </Modal>
-            )}
         </>
     );
 };

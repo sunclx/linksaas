@@ -6,7 +6,7 @@ import { Button, Layout, Popover, Progress, Space, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { BugOutlined, EditOutlined, HomeTwoTone, InfoCircleOutlined } from '@ant-design/icons';
+import { BugOutlined, EditOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
@@ -131,16 +131,32 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
 
   return (
-    <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}>
-      <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
-      <Header className={style.layout_header} {...props} data-tauri-drag-region>
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} >
+      <div style={{ height: "4px", backgroundColor: location.pathname.startsWith("/app") ? "#f6f6f8" : "white", borderTop: "1px solid #e8e9ee" }} />
+      <Header className={style.layout_header} {...props}
+        style={{ backgroundColor: location.pathname.startsWith("/app") ? "#f6f6f8" : "white", boxShadow: "none" }}
+        onMouseDown={e => {
+          if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }
+        }} onTouchStart={e => {
+          if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }
+        }} data-drag>
         {projectStore.curProjectId != "" && (
           <div>
             <ProjectQuickAccess />
+            {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == true && (
+              <span style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</span>
+            )}
             {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false && (
-              <Button type="text"
-                title='返回项目主页'
-                icon={<HomeTwoTone style={{ fontSize: "22px" }} twoToneColor={["orange", "white"]} />}
+              <Button type="link"
+                style={{ minWidth: 0, padding: "0px 0px" }}
                 onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -153,7 +169,9 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
                     entryStore.reset();
                     history.push(APP_PROJECT_HOME_PATH);
                   }
-                }} />
+                }} >
+                <span style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</span>
+              </Button>
             )}
 
             <Space size="small" style={{ fontSize: "16px", marginLeft: "10px", lineHeight: "26px", cursor: "default" }}>
@@ -205,7 +223,15 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           </div>
         )}
         <div className={style.l} >
-            {hover && <span data-tauri-drag-region style={{color:"#aaa"}}>可用鼠标拖动窗口</span>}
+          {hover && <span style={{ color: "#aaa" }} onMouseDown={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }} onTouchStart={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }}>可拖动窗口</span>}
         </div>
         <div className={style.r}>
           {props.type == "login" && hasNewVersion == true && (
