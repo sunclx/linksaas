@@ -2,7 +2,7 @@ import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
 import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
-import { Button, Layout, Popover, Progress, Space, message } from 'antd';
+import { Button, Layout, Popover, Progress, Space, Switch, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
@@ -35,6 +35,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const projectStore = useStores('projectStore');
   const entryStore = useStores('entryStore');
   const docStore = useStores('docStore');
+  const appStore = useStores('appStore');
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
@@ -248,6 +249,10 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
                 )}
               </Space>
             </a>
+          )}
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && projectStore.curProjectId != "" && (
+            <Switch checked={appStore.focusMode} onChange={value => appStore.focusMode = value} style={{ marginRight: "20px" }} 
+            checkedChildren="专注模式" unCheckedChildren="普通模式"/>
           )}
           <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}

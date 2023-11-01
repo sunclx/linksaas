@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import s from './index.module.less';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
@@ -8,6 +8,10 @@ import ActionModal from '@/components/ActionModal';
 
 const ProjectDoc = () => {
   const docStore = useStores('docStore');
+
+  useEffect(() => {
+    return () => docStore.clearCheckLeave();
+  }, []);
 
   return (
     <div className={s.doc_wrap} style={{ width: "100%" }}>

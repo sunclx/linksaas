@@ -25,7 +25,6 @@ const LeftMenu: React.FC = () => {
 
   return (
     <Sider className={cls.sider}>
-
       <Portrait>
         <div className={cls.user}>
           <div className={cls.avatar}>

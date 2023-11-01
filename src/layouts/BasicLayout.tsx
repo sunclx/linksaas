@@ -26,6 +26,8 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   const userStore = useStores('userStore');
   const { curProjectId } = useStores('projectStore');
   const noticeStore = useStores('noticeStore');
+  const appStore = useStores('appStore');
+
   noticeStore.setHistory(history);
 
   const location = useLocation();
@@ -52,7 +54,7 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
 
   return (
     <Layout className={style.basicLayout}>
-      <LeftMenu />
+      {appStore.focusMode == false && <LeftMenu />}
       <Layout>
         <Header />
         <Content
