@@ -46,7 +46,6 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
-mod user_kb_api_plugin;
 mod project_entry_api_plugin;
 mod min_app_fs_plugin;
 mod min_app_plugin;
@@ -56,9 +55,6 @@ mod api_collection_api_plugin;
 mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
 mod http_custom_api_plugin;
-mod rss_admin_api_plugin;
-mod rss_api_plugin;
-mod user_rss_api_plugin;
 mod my_updater;
 mod local_repo_plugin;
 mod pub_search_admin_api_plugin;
@@ -412,7 +408,6 @@ fn main() {
         .plugin(project_issue_api_plugin::ProjectIssueApiPlugin::new())
         .plugin(fs_api_plugin::FsApiPlugin::new())
         .plugin(project_appraise_api_plugin::ProjectAppraiseApiPlugin::new())
-        .plugin(user_kb_api_plugin::UserKbApiPlugin::new())
         .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
@@ -443,9 +438,6 @@ fn main() {
         .plugin(docker_template_api_plugin::DockerTemplateApiPlugin::new())
         .plugin(docker_template_admin_api_plugin::DockerTemplateAdminApiPlugin::new())
         .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
-        .plugin(user_rss_api_plugin::UserRssApiPlugin::new())
-        .plugin(rss_api_plugin::RssApiPlugin::new())
-        .plugin(rss_admin_api_plugin::RssAdminApiPlugin::new())
         .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
         .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())

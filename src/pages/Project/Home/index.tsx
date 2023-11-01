@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import s from "./index.module.less";
 import { observer } from 'mobx-react';
-import { Button, Card, Divider, Form, Input, List, Select, Space, Tabs } from "antd";
+import { Card, Divider, Dropdown, Form, Input, List, Select, Space, Switch, Tabs } from "antd";
 import { useHistory } from "react-router-dom";
 import { APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type { ENTRY_TYPE, ListParam, EntryInfo } from "@/api/project_entry";
 import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
 import { request } from "@/utils/request";
-import { CreditCardFilled, FilterTwoTone, PlusOutlined } from "@ant-design/icons";
+import { CreditCardFilled, FilterTwoTone } from "@ant-design/icons";
 import EntryCard from "./EntryCard";
 
 const PAGE_SIZE = 24;
@@ -19,6 +19,8 @@ const ProjectHome = () => {
     const userStore = useStores("userStore");
     const projectStore = useStores("projectStore");
     const entryStore = useStores("entryStore");
+    const linkAuxStore = useStores("linkAuxStore");
+    const ideaStore = useStores("ideaStore");
 
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
@@ -31,6 +33,7 @@ const ProjectHome = () => {
     const [entryTypeList, setEntryTypeList] = useState<ENTRY_TYPE[]>([]);
 
     const [activeKey, setActiveKey] = useState("open");
+    const [filterByWatch, setFilterByWatch] = useState(false);
 
     const [sysEntryList, setSysEntryList] = useState<{ id: string; content: string | EntryInfo; }[]>([]);
 
@@ -38,7 +41,7 @@ const ProjectHome = () => {
         let listParam: ListParam | null = null;
         if (activeKey == "open") {
             listParam = {
-                filter_by_watch: false,
+                filter_by_watch: filterByWatch,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
@@ -50,25 +53,13 @@ const ProjectHome = () => {
             };
         } else if (activeKey == "close") {
             listParam = {
-                filter_by_watch: false,
+                filter_by_watch: filterByWatch,
                 filter_by_tag_id: tagIdList.length > 0,
                 tag_id_list: tagIdList,
                 filter_by_keyword: keyword.length > 0,
                 keyword: keyword,
                 filter_by_mark_remove: true,
                 mark_remove: true,
-                filter_by_entry_type: entryTypeList.length > 0,
-                entry_type_list: entryTypeList,
-            };
-        } else if (activeKey == "myWatch") {
-            listParam = {
-                filter_by_watch: true,
-                filter_by_tag_id: tagIdList.length > 0,
-                tag_id_list: tagIdList,
-                filter_by_keyword: keyword.length > 0,
-                keyword: keyword,
-                filter_by_mark_remove: false,
-                mark_remove: false,
                 filter_by_entry_type: entryTypeList.length > 0,
                 entry_type_list: entryTypeList,
             };
@@ -130,7 +121,7 @@ const ProjectHome = () => {
 
     useEffect(() => {
         loadEntryList();
-    }, [curPage, dataVersion, keyword, tagIdList, entryTypeList, activeKey]);
+    }, [curPage, dataVersion, keyword, tagIdList, entryTypeList, activeKey, filterByWatch]);
 
     useEffect(() => {
         loadSysEntryList();
@@ -224,11 +215,42 @@ const ProjectHome = () => {
                                 </Select>
                             </Form.Item>
                         </Form>
-                        <Button type="primary" onClick={e => {
+                        <Dropdown.Button type="primary" onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             entryStore.createEntryType = ENTRY_TYPE_SPRIT;
-                        }} icon={<PlusOutlined />}>创建内容</Button>
+                        }} menu={{
+                            items: [
+                                {
+                                    key: "requirement",
+                                    label: "创建需求",
+                                    onClick: () => {
+                                        linkAuxStore.goToCreateRequirement("", projectStore.curProjectId, history);
+                                    },
+                                },
+                                {
+                                    key: "task",
+                                    label: "创建任务",
+                                    onClick: () => {
+                                        linkAuxStore.goToCreateTask("", projectStore.curProjectId, history);
+                                    },
+                                },
+                                {
+                                    key: "bug",
+                                    label: "创建缺陷",
+                                    onClick: () => {
+                                        linkAuxStore.goToCreateBug("", projectStore.curProjectId, history);
+                                    },
+                                },
+                                {
+                                    key: "idea",
+                                    label: "创建知识点",
+                                    onClick: () => {
+                                        ideaStore.setShowCreateIdea("", "");
+                                    },
+                                }
+                            ],
+                        }}>创建内容</Dropdown.Button>
                     </Space>
                 }>
                 <Tabs accessKey={activeKey} onChange={value => setActiveKey(value)}
@@ -236,7 +258,7 @@ const ProjectHome = () => {
                     items={[
                         {
                             key: "open",
-                            label: <span style={{ fontSize: "16px" }}>打开状态</span>,
+                            label: <span style={{ fontSize: "16px" }}>正常状态</span>,
                             children: (
                                 <>
                                     {activeKey == "open" && (<>{entryList}</>)}
@@ -246,7 +268,7 @@ const ProjectHome = () => {
                         },
                         {
                             key: "close",
-                            label: <span style={{ fontSize: "16px" }}>关闭状态</span>,
+                            label: <span style={{ fontSize: "16px" }}>只读状态</span>,
                             children: (
                                 <>
                                     {activeKey == "close" && (<>{entryList}</>)}
@@ -254,17 +276,13 @@ const ProjectHome = () => {
                                 </>
                             ),
                         },
-                        {
-                            key: "myWatch",
-                            label: <span style={{ fontSize: "16px" }}>我的关注</span>,
-                            children: (
-                                <>
-                                    {activeKey == "myWatch" && (<>{entryList}</>)}
-
-                                </>
-                            ),
-                        },
-                    ]} type="card" />
+                    ]} type="card" tabBarExtraContent={
+                        <Form layout="inline">
+                            <Form.Item label="只看我的关注">
+                                <Switch checked={filterByWatch} onChange={value => setFilterByWatch(value)} />
+                            </Form.Item>
+                        </Form>
+                    } />
             </Card>
 
         </div>

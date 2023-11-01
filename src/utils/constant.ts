@@ -3,11 +3,11 @@ import * as issueApi from '@/api/project_issue';
 export const USER_LOGIN_PATH = '/user/login';
 export const WORKBENCH_PATH = '/app/workbench';
 export const PUB_RES_PATH = '/app/pubres';
-export const WORKBENCH_KB_DOC_SUFFIX = "/app/workbench/kb/doc";
 
 export const EXTRA_MENU_PATH = '/app/extra_menu';
 export const RESET_TEXT = 'resetPassword';
 
+export const APP_PROJECT_MANAGER_PATH = '/app/project_mgr';
 export const APP_PROJECT_PATH = '/app/project';
 export const APP_PROJECT_HOME_PATH = '/app/project/home';
 export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
@@ -46,8 +46,6 @@ export const ADMIN_PATH_CLIENT_AD_SUFFIX = '/admin/client/ad';
 
 export const ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX = '/admin/dockertemplate/cate';
 export const ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX = '/admin/dockertemplate/app';
-
-export const ADMIN_PATH_RSS_CRAWLER_SUFFIX = '/admin/rss/crawler';
 
 export const ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX = '/admin/pubSearch/cate';
 export const ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX = '/admin/pubSearch/site';
@@ -158,27 +156,6 @@ export const bugPriority = {
   },
 };
 
-export enum FILTER_PROJECT_ENUM {
-  ALL = 'all',
-  UNDERWAY = 'underway',
-  CLOSE = 'close',
-}
-
-export const filterProjectItemList = [
-  {
-    label: '全部项目',
-    value: FILTER_PROJECT_ENUM.ALL,
-  },
-  {
-    label: '进行中项目',
-    value: FILTER_PROJECT_ENUM.UNDERWAY,
-  },
-  {
-    label: '已结束项目',
-    value: FILTER_PROJECT_ENUM.CLOSE,
-  },
-];
-
 export enum FILTER_DOC_ENUM {
   ALL = 'all',
   CONCERN = 'concern',
@@ -206,5 +183,4 @@ export enum PROJECT_SETTING_TAB {
   PROJECT_SETTING_TIPLIST,
   PROJECT_SETTING_TAGLIST,
   PROJECT_SETTING_EVENT,
-  PROJECT_SETTING_DANGER,
 }

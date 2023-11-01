@@ -76,13 +76,6 @@ export type DockerTemplatePerm = {
     remove_comment: boolean;
 };
 
-export type RssPerm = {
-    read: boolean;
-    add_crawler: boolean;
-    upate_crawler: boolean;
-    remove_crawler: boolean;
-};
-
 export type PubSearchPerm = {
     read: boolean;
     add_cate: boolean;
@@ -102,7 +95,6 @@ export type AdminPermInfo = {
     ad_perm: AdPerm;
     app_store_perm: AppStorePerm;
     docker_template_perm: DockerTemplatePerm;
-    rss_perm: RssPerm;
     pub_search_perm: PubSearchPerm;
 };
 
@@ -155,14 +147,6 @@ export async function get_admin_session(): Promise<string> {
 export async function get_admin_perm(): Promise<AdminPermInfo> {
     const cmd = 'plugin:admin_auth_api|get_admin_perm';
     const perm = await invoke<AdminPermInfo>(cmd, {});
-    if (perm.rss_perm == undefined) {
-        perm.rss_perm = {
-            read: false,
-            add_crawler: false,
-            upate_crawler: false,
-            remove_crawler: false,
-        };
-    }
     if (perm.pub_search_perm == undefined) {
         perm.pub_search_perm = {
             read: true,

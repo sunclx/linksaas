@@ -128,32 +128,6 @@ async fn check_access_appraise<R: Runtime>(
     }
 }
 
-#[tauri::command]
-async fn check_access_user_kb<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: CheckAccessUserKbRequest,
-) -> Result<CheckAccessUserKbResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = LinkAuxApiClient::new(chan.unwrap());
-    match client.check_access_user_kb(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == check_access_user_kb_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("check_access_user_kb".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-
 pub struct LinkAuxApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -167,7 +141,6 @@ impl<R: Runtime> LinkAuxApiPlugin<R> {
                 check_access_doc,
                 check_access_issue,
                 check_access_appraise,
-                check_access_user_kb,
             ]),
         }
     }

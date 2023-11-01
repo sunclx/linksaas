@@ -33,7 +33,9 @@ const ProjectInfoPanel = () => {
   useEffect(() => {
     if (inEdit == true) {
       setTimeout(() => {
-        editorRef.current!.setContent(projectStore.curProject?.basic_info.project_desc ?? "");
+        if (editorRef.current !== null) {
+          editorRef.current.setContent(projectStore.curProject?.basic_info.project_desc ?? "");
+        }
       }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

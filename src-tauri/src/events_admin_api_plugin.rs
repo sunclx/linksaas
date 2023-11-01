@@ -17,41 +17,6 @@ pub struct PluginListEvResponse {
 }
 
 #[tauri::command]
-async fn list_user_ev<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminListUserEvRequest,
-) -> Result<PluginListEvResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = EventsAdminApiClient::new(chan.unwrap());
-    match client.list_user_ev(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_list_user_ev_response::Code::WrongSession as i32
-                || inner_resp.code == admin_list_user_ev_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_user_ev".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(PluginListEvResponse {
-                code: inner_resp.code,
-                err_msg: inner_resp.err_msg,
-                total_count: inner_resp.total_count,
-                event_list: convert_event(inner_resp.event_list),
-            });
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
 async fn list_project_ev<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -94,7 +59,6 @@ impl<R: Runtime> EventsAdminApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                list_user_ev,
                 list_project_ev,
             ]),
         }

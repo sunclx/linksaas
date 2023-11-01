@@ -28,13 +28,8 @@ const DepartMentList = () => {
     const history = useHistory();
 
     const location = useLocation();
-    let state = location.state as (DepartMentState | undefined);
-    if (state == undefined) {
-        state = {
-            departMentId: "",
-        };
-    }
-
+    const state = location.state as (DepartMentState | undefined) ?? {departMentId: ""};
+    
     const [addOrgForm] = Form.useForm();
 
     const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
@@ -54,20 +49,20 @@ const DepartMentList = () => {
         const sessionId = await get_admin_session();
         const res = await request(list_depart_ment({
             admin_session_id: sessionId,
-            parent_depart_ment_id: state!.departMentId,
+            parent_depart_ment_id: state.departMentId,
         }));
         setDepartMentList(res.depart_ment_list);
         setPathElementList(res.path_element_list);
     };
 
     const loadMemberList = async () => {
-        if (state!.departMentId == "") {
+        if (state.departMentId == "") {
             return;
         }
         const sessionId = await get_admin_session();
         const res = await request(list_depart_ment_user({
             admin_session_id: sessionId,
-            depart_ment_id: state!.departMentId,
+            depart_ment_id: state.departMentId,
             offset: 0,
             limit: 999,
         }));
@@ -88,7 +83,7 @@ const DepartMentList = () => {
         const sessionId = await get_admin_session();
         await request(create_depart_ment({
             admin_session_id: sessionId,
-            parent_depart_ment_id: state!.departMentId,
+            parent_depart_ment_id: state.departMentId,
             name: name,
         }));
         await loadDepartMentList();
@@ -124,7 +119,7 @@ const DepartMentList = () => {
             try {
                 await request(add_depart_ment_user({
                     admin_session_id: sessionId,
-                    depart_ment_id: state!.departMentId,
+                    depart_ment_id: state.departMentId,
                     user_id: userId,
                 }));
             } catch (e) {
@@ -148,7 +143,7 @@ const DepartMentList = () => {
         const sessionId = await get_admin_session();
         await request(remove_depart_ment_user({
             admin_session_id: sessionId,
-            depart_ment_id: state!.departMentId,
+            depart_ment_id: state.departMentId,
             user_id: removeMemberUserId,
         }));
         setRemoveMemberUserId("");
@@ -311,7 +306,7 @@ const DepartMentList = () => {
                 }>
                     <Table rowKey="depart_ment_id" columns={departMentColumns} dataSource={departMentList} pagination={false} />
                 </Card>
-                {state!.departMentId != "" && (
+                {state.departMentId != "" && (
                     <Card title="成员列表" bordered={false} extra={
                         <Button disabled={!(permInfo?.org_perm.add_user ?? false)}
                             onClick={e => {

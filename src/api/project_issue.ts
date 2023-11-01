@@ -329,10 +329,21 @@ export type ListByIdResponse = {
   info_list: IssueInfo[];
 };
 
-type ListAttrValueResponse = {
+export type ListAttrValueResponse = {
   code: number;
   err_msg: string;
   value_list: string[];
+};
+
+export type GetMyTodoStatusRequest = {
+  session_id: string;
+};
+
+
+export type GetMyTodoStatusResponse = {
+  code: number;
+  err_msg: string;
+  total_count: number;
 };
 
 export type ListMyTodoRequest = {
@@ -776,7 +787,6 @@ export async function list(request: ListRequest): Promise<ListResponse> {
 export async function list_id(request: ListIdRequest): Promise<ListIdResponse> {
   const cmd = 'plugin:project_issue_api|list_id';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
-
   return invoke<ListIdResponse>(cmd, {
     request,
   });
@@ -786,8 +796,16 @@ export async function list_id(request: ListIdRequest): Promise<ListIdResponse> {
 export async function list_by_id(request: ListByIdRequest): Promise<ListByIdResponse> {
   const cmd = 'plugin:project_issue_api|list_by_id';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
-
   return invoke<ListByIdResponse>(cmd, {
+    request,
+  });
+}
+
+//获取我的TODO状态
+export async function get_my_todo_status(request: GetMyTodoStatusRequest): Promise<GetMyTodoStatusResponse> {
+  const cmd = 'plugin:project_issue_api|get_my_todo_status';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<GetMyTodoStatusResponse>(cmd, {
     request,
   });
 }
@@ -796,7 +814,6 @@ export async function list_by_id(request: ListByIdRequest): Promise<ListByIdResp
 export async function list_my_todo(request: ListMyTodoRequest): Promise<ListMyTodoResponse> {
   const cmd = 'plugin:project_issue_api|list_my_todo';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
-
   return invoke<ListResponse>(cmd, {
     request,
   });
