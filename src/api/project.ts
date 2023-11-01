@@ -110,6 +110,7 @@ export type ProjectInfo = {
   data_anno_fs_id: string;
   api_coll_fs_id: string;
   ci_cd_fs_id: string;
+  pages_fs_id: string;
   // default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;
