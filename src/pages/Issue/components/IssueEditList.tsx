@@ -31,6 +31,8 @@ import { watch, unwatch, WATCH_TARGET_TASK, WATCH_TARGET_BUG } from "@/api/proje
 import { request } from '@/utils/request';
 import s from "./IssueEditList.module.less";
 import UserPhoto from '@/components/Portrait/UserPhoto';
+import { observer } from 'mobx-react';
+import SubTaskList from './SubTaskList';
 
 type ColumnsTypes = ColumnType<IssueInfo> & {
   dataIndex: string | string[];
@@ -409,7 +411,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         <Popover trigger="hover" placement='top' content={
           <div style={{ display: "flex", padding: "10px 10px", maxWidth: "300px", flexWrap: "wrap" }}>
             {(row.watch_user_list ?? []).map(item => (
-              <Space key={item.member_user_id} style={{margin:"4px 10px"}}>
+              <Space key={item.member_user_id} style={{ margin: "4px 10px" }}>
                 <UserPhoto logoUri={item.logo_uri} style={{ width: "20px", borderRadius: "10px" }} />
                 {item.display_name}
               </Space>
@@ -535,8 +537,13 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       scroll={{ x: 1650, y: `${isFilter ? 'calc(100vh - 400px)' : 'calc(100vh - 340px)'}` }}
       dataSource={dataSource}
       pagination={false}
+      expandable={{
+        expandedRowRender: (row: IssueInfo) => (<SubTaskList issueId={row.issue_id}/>),
+        rowExpandable: (row: IssueInfo) => row.sub_issue_status.total_count > 0,
+        showExpandColumn: getIsTask(location.pathname),
+      }}
     />
   );
 };
 
-export default IssueEditList;
+export default observer(IssueEditList);

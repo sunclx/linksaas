@@ -124,6 +124,7 @@ const RequirementList = () => {
         {
             title: "需求标题",
             width: 250,
+            fixed: true,
             render: (_, row: RequirementInfo) => (
                 <Space size="middle" style={{ lineHeight: "28px" }}>
                     <EditText editable={(!projectStore.isClosed) && row.user_requirement_perm.can_update} content={row.base_info.title}
@@ -152,7 +153,6 @@ const RequirementList = () => {
                         }} showEditIcon={true} onClick={() => {
                             linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, row.requirement_id), history);
                         }} />
-
                 </Space>
             ),
         },

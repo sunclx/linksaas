@@ -8,6 +8,7 @@ export interface EditTextProps {
     content: string;
     onChange: (content: string) => Promise<boolean>;
     showEditIcon: boolean;
+    textDecoration?: string;
     onClick?: () => void;
 }
 
@@ -24,7 +25,7 @@ export const EditText: React.FC<EditTextProps> = (props) => {
             }
         }}>
             {!inEdit && (
-                <span title={content} style={{ cursor: props.editable ? "pointer" : "default" }}>
+                <span title={content} style={{ cursor: props.editable ? "pointer" : "default", textDecorationLine: props.textDecoration ?? "none" }}>
                     {content == "" ? "-" : <>
                         {props.onClick === undefined && content}
                         {props.onClick !== undefined && (
