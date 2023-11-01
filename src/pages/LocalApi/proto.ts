@@ -1,6 +1,6 @@
 export const PROTO = `openapi: 3.0.0
 info:
-  version: 0.1.14
+  version: 0.1.17
   title: local-api
   description: local api for linksaas desktop
   contact:
@@ -12,20 +12,12 @@ servers:
 tags:
   - name: global
     description: 不属于项目范围的接口
-  - name: projectCreate
-    description: 项目中创建任务/缺陷和文档
   - name: projectTask
     description: 项目中任务相关接口
   - name: projectBug
     description: 项目中缺陷相关接口
   - name: projectEvent
     description: 项目中事件相关接口
-  - name: projectMember
-    description: 项目中成员相关接口
-  - name: projectDoc
-    description: 项目中文档相关接口
-  - name: projectChannel
-    description: 项目中的沟通频道
   - name: projectCodeComment
     description: 项目中的代码评论
   - name: projectTool
@@ -271,149 +263,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/channel/msg/{channelId}:
-    get:
-      tags:
-        - projectChannel
-      summary: 列出沟通内容
-      description: 列出沟通内容(从后往前)
-      operationId: projectProjectIdChannelMsgChannelIdGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/ChannelId'
-        - $ref: '#/components/parameters/Limit'
-        - name: refMsgId
-          in: query
-          schema:
-            type: string
-            description: 相关消息ID，空表示最后一条消息
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MsgInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/channel/my:
-    get:
-      tags:
-        - projectChannel
-      summary: 我的沟通频道
-      description: 列出我的沟通频道
-      operationId: projectProjectIdChannelMyGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ChannelInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/channel/notJoin:
-    get:
-      tags:
-        - projectChannel
-      summary: 我未加入的频道
-      description: 列出我未加入的频道(需要管理员权限)
-      operationId: projectProjectIdChannelNotJoinGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ChannelInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/channel/orphan:
-    get:
-      tags:
-        - projectChannel
-      summary: 孤儿频道
-      description: 列出孤儿频道
-      operationId: projectProjectIdChannelOrphanGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ChannelInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/codeComment/{commentThreadId}:
     get:
       tags:
@@ -615,214 +464,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/create/bug:
-    get:
-      tags:
-        - projectCreate
-      summary: 创建缺陷
-      description: 创建缺陷
-      operationId: projectProjectIdCreateBugGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyRes'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/create/doc/{docSpaceId}:
-    get:
-      tags:
-        - projectCreate
-      summary: 创建文档
-      description: 创建文档
-      operationId: projectProjectIdCreateDocDocSpaceIdGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/DocSpaceId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyRes'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/create/task:
-    get:
-      tags:
-        - projectCreate
-      summary: 创建任务
-      description: 创建任务
-      operationId: projectProjectIdCreateTaskGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyRes'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/docSpace:
-    get:
-      tags:
-        - projectDoc
-      summary: 文档空间列表
-      description: 列出文档空间列表
-      operationId: projectProjectIdDocSpaceGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DocSpaceInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/docSpace/{docSpaceId}:
-    get:
-      tags:
-        - projectDoc
-      summary: 文档列表
-      description: 列出文档列表
-      operationId: projectProjectIdDocSpaceDocSpaceIdGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/DocSpaceId'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  totalCount:
-                    type: integer
-                    description: 文档总数量
-                  docList:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/DocInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/docSpace/{docSpaceId}/{docId}/show:
-    get:
-      tags:
-        - projectDoc
-      summary: 查看文档
-      description: 查看文档
-      operationId: projectProjectIdDocSpaceDocSpaceIdDocIdShowGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/DocSpaceId'
-        - $ref: '#/components/parameters/DocId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyRes'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
   /project/{projectId}/event:
     get:
       tags:
@@ -904,73 +545,6 @@ paths:
                 evContent:
                   type: string
                   description: 自定义事件内容
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmptyRes'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/member:
-    get:
-      tags:
-        - projectMember
-      summary: 项目成员列表
-      description: 列出项目成员列表
-      operationId: projectProjectIdMemberGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-      responses:
-        '200':
-          description: 成功
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SimpleMemberInfo'
-        '500':
-          description: 失败
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-                default: '*'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrInfo'
-  /project/{projectId}/member/{memberUserId}/show:
-    get:
-      tags:
-        - projectMember
-      summary: 显示成员信息
-      description: 显示成员信息
-      operationId: projectProjectIdMemberMemberUserIdShowGet
-      parameters:
-        - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/MemberUserId'
       responses:
         '200':
           description: 成功
@@ -1330,13 +904,6 @@ components:
         type: string
       required: true
       description: 缺陷ID
-    ChannelId:
-      in: path
-      name: channelId
-      schema:
-        type: string
-      required: true
-      description: 频道ID
     CommentId:
       in: path
       name: commentId
@@ -1351,41 +918,6 @@ components:
         type: string
       required: true
       description: 代码评论会话ID
-    DocId:
-      in: path
-      name: docId
-      schema:
-        type: string
-      required: true
-      description: 文档ID
-    DocSpaceId:
-      in: path
-      name: docSpaceId
-      schema:
-        type: string
-      required: true
-      description: 文档空间ID
-    EntryId:
-      in: path
-      name: entryId
-      schema:
-        type: string
-      required: true
-      description: 测试用例节点Id
-    Framework:
-      in: path
-      name: framework
-      schema:
-        type: string
-      required: true
-      description: 代码框架
-    Lang:
-      in: path
-      name: lang
-      schema:
-        type: string
-      required: true
-      description: 编程语言
     Limit:
       in: query
       name: limit
@@ -1394,13 +926,6 @@ components:
         minimum: 1
       required: true
       description: 列表大小
-    MemberUserId:
-      in: path
-      name: memberUserId
-      schema:
-        type: string
-      required: true
-      description: 项目成员ID
     Offset:
       in: query
       name: offset
@@ -1565,47 +1090,6 @@ components:
         canRemove:
           type: boolean
           description: 是否可以删除
-    DocInfo:
-      type: object
-      properties:
-        docId:
-          type: string
-          description: 文档标题
-        docSpaceId:
-          type: string
-          description: 文档空间ID
-        title:
-          type: string
-          description: 文档标题
-        createUserId:
-          type: string
-          description: 创建人ID
-        createDisplayName:
-          type: string
-          description: 创建人名称
-        createTime:
-          type: integer
-          description: 创建时间
-          format: int64
-        updateUserId:
-          type: string
-          description: 更新人ID
-        updateDisplayName:
-          type: string
-          description: 更新人名称
-        updateTime:
-          type: integer
-          description: 更新时间
-          format: int64
-    DocSpaceInfo:
-      type: object
-      properties:
-        docSpaceId:
-          type: string
-          description: 文档空间ID
-        title:
-          type: string
-          description: 文档空间标题
     EmptyRes:
       type: object
     ErrInfo:
@@ -1635,9 +1119,9 @@ components:
             - task
             - bug
             - sprit
-            - doc
             - disk
             - app
+            - bookShelf
             - robot
             - earthly
             - gitlab
@@ -1645,6 +1129,7 @@ components:
             - gitea
             - gitee
             - gogs
+            - atomgit
             - jira
             - confluence
             - jenkins
@@ -1659,7 +1144,7 @@ components:
             - sprit
             - task
             - bug
-            - doc
+            - book
             - robot
             - repo
         refId:
@@ -1729,41 +1214,6 @@ components:
           type: integer
           description: 更新时间
           format: int64
-    MsgInfo:
-      type: object
-      properties:
-        msgId:
-          type: string
-          description: 消息ID
-        channelId:
-          type: string
-          description: 频道ID
-        content:
-          type: string
-          description: 消息内容(ProseMirror格式)
-        senderUserId:
-          type: string
-          description: 发送用户ID
-        senderDisplayName:
-          type: string
-          description: 发送者名称
-        senderType:
-          type: string
-          description: 发送者类型
-          enum:
-            - member
-            - robot
-        sendTime:
-          type: integer
-          description: 发送时间
-          format: int64
-        hasUpdateTime:
-          type: boolean
-          description: 是否有修改
-        updateTime:
-          type: integer
-          description: 修改时间
-          format: int64
     ProjectInfo:
       type: object
       properties:
@@ -1773,15 +1223,6 @@ components:
         projectName:
           type: string
           description: 项目名称
-    SimpleMemberInfo:
-      type: object
-      properties:
-        memberUserId:
-          type: string
-          description: 项目成员ID
-        displayName:
-          type: string
-          description: 项目成员名称
     SubTaskInfo:
       type: object
       properties:
@@ -1869,6 +1310,4 @@ components:
             - low
             - middle
             - high
-
-
 `;

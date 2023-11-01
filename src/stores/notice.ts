@@ -5,8 +5,8 @@ import type { UnlistenFn } from '@tauri-apps/api/event';
 import type { RootStore } from '.';
 import type { ShortNoteEvent } from '@/utils/short_note';
 import { showShortNote } from '@/utils/short_note';
-import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_DOC, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW, SHORT_NOTE_MODE_CREATE } from '@/api/short_note';
-import { LinkBugInfo, LinkDocInfo, LinkTaskInfo } from './linkAux';
+import { SHORT_NOTE_TASK, SHORT_NOTE_BUG, SHORT_NOTE_MODE_DETAIL, SHORT_NOTE_MODE_SHOW } from '@/api/short_note';
+import { LinkBugInfo, LinkTaskInfo } from './linkAux';
 import { isString } from 'lodash';
 import type { History } from 'history';
 import { createBrowserHistory } from 'history';
@@ -361,9 +361,7 @@ class NoticeStore {
             data: res.info,
           }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
         }
-      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
-        await this.rootStore.linkAuxStore.goToCreateTask("", ev.projectId, this.history);
-      }
+      } 
     } else if (ev.shortNoteType == SHORT_NOTE_BUG) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
         this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
@@ -375,14 +373,9 @@ class NoticeStore {
             data: res.info,
           }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
         }
-      } else if (ev.shortNoteModeType == SHORT_NOTE_MODE_CREATE) {
-        await this.rootStore.linkAuxStore.goToCreateBug("", ev.projectId, this.history);
-      }
-    } else if (ev.shortNoteType == SHORT_NOTE_DOC) {
-      if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
-        this.rootStore.linkAuxStore.goToLink(new LinkDocInfo("", ev.projectId, ev.targetId), this.history);
-      }
+      } 
     }
+
     await appWindow.show();
     await appWindow.unminimize();
     await appWindow.setAlwaysOnTop(true);

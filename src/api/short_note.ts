@@ -5,14 +5,11 @@ export type SHORT_NOTE_TYPE = number;
 
 export const SHORT_NOTE_TASK: SHORT_NOTE_TYPE = 0;
 export const SHORT_NOTE_BUG: SHORT_NOTE_TYPE = 1;
-export const SHORT_NOTE_DOC: SHORT_NOTE_TYPE = 2;
-// export const SHORT_NOTE_TEST_CASE: SHORT_NOTE_TYPE = 3;
 
 export type SHORT_NOTE_MODE_TYPE = number;
 
 export const SHORT_NOTE_MODE_DETAIL: SHORT_NOTE_MODE_TYPE = 0; //显示详情
 export const SHORT_NOTE_MODE_SHOW: SHORT_NOTE_MODE_TYPE = 1; //显示便签
-export const SHORT_NOTE_MODE_CREATE: SHORT_NOTE_MODE_TYPE = 2; //创建任务/缺陷/文档等 
 
 
 export type ShortNote = {
