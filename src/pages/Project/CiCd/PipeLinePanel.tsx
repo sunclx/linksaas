@@ -211,6 +211,7 @@ const PipeLinePanel = (props: PipeLinePanelProps) => {
         },
         {
             title: "名称",
+            fixed: true,
             width: 200,
             render: (_, row: PipeLine) => (
                 <EditText editable={projectStore.isAdmin || row.pipe_line_perm.extra_update_user_id_list.includes(userStore.userInfo.userId)}

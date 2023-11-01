@@ -2,7 +2,6 @@ use crate::notice_decode::new_git_post_hook_notice;
 use async_trait::async_trait;
 use local_api_rust::server::MakeService;
 use proto_gen_rust::events_api::{EventRefType, EventType};
-use proto_gen_rust::project_entry_api::EntryType;
 use proto_gen_rust::project_issue_api::IssueType;
 use serde_json::json;
 use std::marker::PhantomData;
@@ -72,7 +71,7 @@ pub struct Server<C> {
 use local_api_rust::models::{
     ErrInfo, IssueInfo, ProjectProjectIdBugAllGet200Response,
     ProjectProjectIdCodeCommentCommentThreadIdPut200Response,
-    ProjectProjectIdCodeCommentCommentThreadIdPutRequest, ProjectProjectIdDocGet200Response,
+    ProjectProjectIdCodeCommentCommentThreadIdPutRequest,
     ProjectProjectIdEventGet200Response, ProjectProjectIdTaskAllGet200Response,
     ProjectProjectIdTaskRecordTaskIdDependGet200Response,
 };
@@ -87,13 +86,10 @@ use local_api_rust::{
     ProjectProjectIdCodeCommentCommentThreadIdCommentIdPostResponse,
     ProjectProjectIdCodeCommentCommentThreadIdGetResponse,
     ProjectProjectIdCodeCommentCommentThreadIdOptionsResponse,
-    ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ProjectProjectIdCreateBugGetResponse,
-    ProjectProjectIdCreateDocGetResponse, ProjectProjectIdCreateTaskGetResponse,
-    ProjectProjectIdDocDocIdShowGetResponse, ProjectProjectIdDocGetResponse,
-    ProjectProjectIdEventGetResponse, ProjectProjectIdEventOptionsResponse,
-    ProjectProjectIdEventPostResponse, ProjectProjectIdMemberGetResponse,
-    ProjectProjectIdMemberMemberUserIdShowGetResponse, ProjectProjectIdTaskAllGetResponse,
-    ProjectProjectIdTaskMyGetResponse, ProjectProjectIdTaskRecordTaskIdDependGetResponse,
+    ProjectProjectIdCodeCommentCommentThreadIdPutResponse, ProjectProjectIdEventGetResponse,
+    ProjectProjectIdEventOptionsResponse, ProjectProjectIdEventPostResponse,
+    ProjectProjectIdTaskAllGetResponse, ProjectProjectIdTaskMyGetResponse,
+    ProjectProjectIdTaskRecordTaskIdDependGetResponse,
     ProjectProjectIdTaskRecordTaskIdEventsGetResponse,
     ProjectProjectIdTaskRecordTaskIdShortNoteGetResponse,
     ProjectProjectIdTaskRecordTaskIdShowGetResponse,
@@ -256,83 +252,6 @@ where
             body: json!({}),
             access_control_allow_origin: Some("*".into()),
         });
-    }
-
-    /// 查看文档
-    async fn project_project_id_doc_doc_id_show_get(
-        &self,
-        project_id: String,
-        doc_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdDocDocIdShowGetResponse, ApiError> {
-        let win = self.app.get_window("main");
-        if win.is_none() {
-            return Ok(ProjectProjectIdDocDocIdShowGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("无法找到主窗口".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let win = win.unwrap();
-        if let Err(_) = win.emit(
-            "shortNote",
-            super::notice::ShortNotetNotice {
-                project_id: project_id,
-                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
-                short_note_type: super::notice::ShortNoteType::ShortNoteDoc as u32,
-                target_id: doc_id,
-                extra_target_value: "".into(),
-            },
-        ) {
-            return Ok(ProjectProjectIdDocDocIdShowGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("发送消息失败".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        return Ok(ProjectProjectIdDocDocIdShowGetResponse::Status200 {
-            body: json!({}),
-            access_control_allow_origin: Some("*".into()),
-        });
-    }
-
-    /// 文档列表
-    async fn project_project_id_doc_get(
-        &self,
-        project_id: String,
-        offset: i32,
-        limit: i32,
-        _context: &C,
-    ) -> Result<ProjectProjectIdDocGetResponse, ApiError> {
-        let res = super::entry_api::list(&self.app, &project_id, EntryType::Doc,offset,limit).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdDocGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdDocGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-
-            return Ok(ProjectProjectIdDocGetResponse::Status200 {
-                body: ProjectProjectIdDocGet200Response {
-                    total_count: Some(res.total_count as i32),
-                    doc_list: Some(super::entry_api::convert_to_doc_list(res.entry_list)),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
     }
 
     /// 事件列表
@@ -594,200 +513,6 @@ where
                 access_control_allow_origin: Some("*".into()),
             },
         );
-    }
-
-    /// 项目成员列表
-    async fn project_project_id_member_get(
-        &self,
-        project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdMemberGetResponse, ApiError> {
-        let res = super::member_api::list_member(&self.app, &project_id).await;
-        if res.is_err() {
-            return Ok(ProjectProjectIdMemberGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some(res.err().unwrap()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        } else {
-            let res = res.unwrap();
-            if &res.err_msg != "" {
-                return Ok(ProjectProjectIdMemberGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some(res.err_msg),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                });
-            }
-            return Ok(ProjectProjectIdMemberGetResponse::Status200 {
-                body: super::member_api::convert_member_list(res.member_list),
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-    }
-
-    /// 显示成员信息
-    async fn project_project_id_member_member_user_id_show_get(
-        &self,
-        project_id: String,
-        member_user_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdMemberMemberUserIdShowGetResponse, ApiError> {
-        let win = self.app.get_window("main");
-        if win.is_none() {
-            return Ok(
-                ProjectProjectIdMemberMemberUserIdShowGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("无法找到主窗口".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-        let win = win.unwrap();
-        if let Err(_) = win.emit(
-            "shortNote",
-            super::notice::ShortNotetNotice {
-                project_id: project_id,
-                short_note_mode_type: super::notice::ShortNoteMode::Detail as u32,
-                short_note_type: super::notice::ShortNoteType::ShortNoteMember as u32,
-                target_id: member_user_id,
-                extra_target_value: "".into(),
-            },
-        ) {
-            return Ok(
-                ProjectProjectIdMemberMemberUserIdShowGetResponse::Status500 {
-                    body: ErrInfo {
-                        err_msg: Some("发送消息失败".into()),
-                    },
-                    access_control_allow_origin: Some("*".into()),
-                },
-            );
-        }
-        return Ok(
-            ProjectProjectIdMemberMemberUserIdShowGetResponse::Status200 {
-                body: json!({}),
-                access_control_allow_origin: Some("*".into()),
-            },
-        );
-    }
-
-    /// 创建缺陷
-    async fn project_project_id_create_bug_get(
-        &self,
-        project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdCreateBugGetResponse, ApiError> {
-        let win = self.app.get_window("main");
-        if win.is_none() {
-            return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("无法找到主窗口".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let win = win.unwrap();
-        if let Err(_) = win.emit(
-            "shortNote",
-            super::notice::ShortNotetNotice {
-                project_id: project_id,
-                short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
-                short_note_type: super::notice::ShortNoteType::ShortNoteBug as u32,
-                target_id: "".into(),
-                extra_target_value: "".into(),
-            },
-        ) {
-            return Ok(ProjectProjectIdCreateBugGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("发送消息失败".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        return Ok(ProjectProjectIdCreateBugGetResponse::Status200 {
-            body: json!({}),
-            access_control_allow_origin: Some("*".into()),
-        });
-    }
-
-    /// 创建文档
-    async fn project_project_id_create_doc_get(
-        &self,
-        project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdCreateDocGetResponse, ApiError> {
-        let win = self.app.get_window("main");
-        if win.is_none() {
-            return Ok(ProjectProjectIdCreateDocGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("无法找到主窗口".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let win = win.unwrap();
-        if let Err(_) = win.emit(
-            "shortNote",
-            super::notice::ShortNotetNotice {
-                project_id: project_id,
-                short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
-                short_note_type: super::notice::ShortNoteType::ShortNoteDoc as u32,
-                target_id: "".into(),
-                extra_target_value: "".into(),
-            },
-        ) {
-            return Ok(ProjectProjectIdCreateDocGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("发送消息失败".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        return Ok(ProjectProjectIdCreateDocGetResponse::Status200 {
-            body: json!({}),
-            access_control_allow_origin: Some("*".into()),
-        });
-    }
-
-    /// 创建任务
-    async fn project_project_id_create_task_get(
-        &self,
-        project_id: String,
-        _context: &C,
-    ) -> Result<ProjectProjectIdCreateTaskGetResponse, ApiError> {
-        let win = self.app.get_window("main");
-        if win.is_none() {
-            return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("无法找到主窗口".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        let win = win.unwrap();
-        if let Err(_) = win.emit(
-            "shortNote",
-            super::notice::ShortNotetNotice {
-                project_id: project_id,
-                short_note_mode_type: super::notice::ShortNoteMode::Create as u32,
-                short_note_type: super::notice::ShortNoteType::ShortNoteTask as u32,
-                target_id: "".into(),
-                extra_target_value: "".into(),
-            },
-        ) {
-            return Ok(ProjectProjectIdCreateTaskGetResponse::Status500 {
-                body: ErrInfo {
-                    err_msg: Some("发送消息失败".into()),
-                },
-                access_control_allow_origin: Some("*".into()),
-            });
-        }
-        return Ok(ProjectProjectIdCreateTaskGetResponse::Status200 {
-            body: json!({}),
-            access_control_allow_origin: Some("*".into()),
-        });
     }
 
     /// 任务相关事件

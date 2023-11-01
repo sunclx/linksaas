@@ -20,8 +20,7 @@ export class ErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      // 你可以自定义降级后的 UI 并渲染
-      return <h1>Something went wrong.</h1>;
+      return <h1>页面出现了错误，请刷新页面。</h1>;
     }
 
     return this.props.children;

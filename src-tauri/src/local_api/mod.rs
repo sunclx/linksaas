@@ -10,11 +10,9 @@ use crate::project_tool_api_plugin::ProjectLinksaasYml;
 
 mod event_api;
 mod issue_api;
-mod member_api;
 mod notice;
 mod project_api;
 mod project_code_api;
-mod entry_api;
 mod server;
 
 #[derive(Default)]

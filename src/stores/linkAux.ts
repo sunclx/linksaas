@@ -472,22 +472,22 @@ class LinkAuxStore {
           return;
         }
       }
-      if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
+      if (this.rootStore.docStore.inEdit) {
+        this.rootStore.docStore.showCheckLeave(() => {
+          this.goToDoc(docLink, history);
+        });
+      } else {
+        await this.goToDoc(docLink, history);
       }
-
-      this.rootStore.docStore.fromLink = true;
-      await this.rootStore.entryStore.loadEntry(docLink.docId);
-      await this.rootStore.docStore.loadDoc();
-      history.push(APP_PROJECT_KB_DOC_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
-      if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
+      if (this.rootStore.docStore.inEdit) {
+        this.rootStore.docStore.showCheckLeave(() => {
+          this.goToSprit(spritLink, history);
+        });
+      } else {
+        await this.goToSprit(spritLink, history);
       }
-      await this.rootStore.entryStore.loadEntry(spritLink.spritId);
-      await this.rootStore.spritStore.loadCurSprit();
-      history.push(APP_PROJECT_WORK_PLAN_PATH);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as LinkRequirementInfo;
       if (this.rootStore.projectStore.curProjectId != reqLink.projectId) {
@@ -566,6 +566,26 @@ class LinkAuxStore {
       }
       await open(destUrl);
     }
+  }
+
+  private async goToDoc(docLink: LinkDocInfo, history: History) {
+    if (this.rootStore.projectStore.curProjectId != docLink.projectId) {
+      await this.rootStore.projectStore.setCurProjectId(docLink.projectId);
+    }
+
+    this.rootStore.docStore.fromLink = true;
+    await this.rootStore.entryStore.loadEntry(docLink.docId);
+    await this.rootStore.docStore.loadDoc();
+    history.push(APP_PROJECT_KB_DOC_PATH);
+  }
+
+  private async goToSprit(spritLink: LinkSpritInfo, history: History) {
+    if (this.rootStore.projectStore.curProjectId != spritLink.projectId) {
+      await this.rootStore.projectStore.setCurProjectId(spritLink.projectId);
+    }
+    await this.rootStore.entryStore.loadEntry(spritLink.spritId);
+    await this.rootStore.spritStore.loadCurSprit();
+    history.push(APP_PROJECT_WORK_PLAN_PATH);
   }
 
   //跳转到创建任务

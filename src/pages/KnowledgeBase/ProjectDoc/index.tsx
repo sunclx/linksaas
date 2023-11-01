@@ -18,12 +18,13 @@ const ProjectDoc = () => {
         title="离开页面"
         width={330}
         okText="离开"
+        okButtonProps={{ danger: true }}
         onCancel={() => docStore.clearCheckLeave()}
         onOK={() => {
           const onLeave = docStore.onLeave;
           docStore.clearCheckLeave();
           docStore.reset();
-          if (onLeave != undefined) {
+          if (onLeave != null) {
             onLeave();
           }
         }}
