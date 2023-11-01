@@ -131,9 +131,10 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
 
   return (
-    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} >
+      <div style={{ height: "4px", backgroundColor: location.pathname.startsWith("/app") ? "#f6f6f8" : "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props}
+        style={{ backgroundColor: location.pathname.startsWith("/app") ? "#f6f6f8" : "white", boxShadow: "none" }}
         onMouseDown={e => {
           if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
             e.preventDefault();
@@ -230,7 +231,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             e.preventDefault();
             e.stopPropagation();
             appWindow.startDragging();
-          }}>可用鼠标拖动窗口</span>}
+          }}>可拖动窗口</span>}
         </div>
         <div className={style.r}>
           {props.type == "login" && hasNewVersion == true && (
