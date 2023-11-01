@@ -13,7 +13,6 @@ import { GlobalOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { EXTRA_MENU_PATH, PUB_RES_PATH, WORKBENCH_PATH } from '@/utils/constant';
 
-
 const LeftMenu: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
@@ -25,7 +24,7 @@ const LeftMenu: React.FC = () => {
   const [curExtraMenuId, setCurExtraMenuId] = useState("");
 
   return (
-    <Sider className={cls.sider} data-tauri-drag-region={true}>
+    <Sider className={cls.sider}>
 
       <Portrait>
         <div className={cls.user}>
@@ -39,17 +38,19 @@ const LeftMenu: React.FC = () => {
       <div>
         <div className={`${cls.workbench_menu} ${location.pathname.startsWith(WORKBENCH_PATH) ? cls.active_menu : ""}`}
           onClick={e => {
+            console.log("aaaaaaaaaaaaa");
             e.stopPropagation();
             e.preventDefault();
+            console.log("11111111111", docStore.inEdit);
             if (docStore.inEdit) {
               docStore.showCheckLeave(() => {
                 history.push(WORKBENCH_PATH);
                 projectStore.setCurProjectId("");
               });
-              return;
+            } else {
+              history.push(WORKBENCH_PATH);
+              projectStore.setCurProjectId("");
             }
-            history.push(WORKBENCH_PATH);
-            projectStore.setCurProjectId("");
           }}>
           <img src={workbench_icon} alt="" className={cls.workbench_icon} />
           工作台

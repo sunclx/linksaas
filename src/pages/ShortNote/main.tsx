@@ -42,7 +42,7 @@ const Content = () => {
             return "任务";
         } else if (shortNoteType == SHORT_NOTE_BUG) {
             return "缺陷";
-        } 
+        }
         return "";
     };
 
@@ -81,8 +81,33 @@ const Content = () => {
             width: "100wh",
             height: "100vh",
             overflowY: "scroll",
-        }} data-tauri-drag-region={true}>
-            <div style={{ position: "relative", height: "30px", paddingTop: "10px" }} data-tauri-drag-region={true}>
+        }} onMouseDown={e => {
+            if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                e.preventDefault();
+                e.stopPropagation();
+                appWindow.startDragging();
+            }
+        }} onTouchStart={e => {
+            if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                e.preventDefault();
+                e.stopPropagation();
+                appWindow.startDragging();
+            }
+        }} data-drag>
+            <div style={{ position: "relative", height: "30px", paddingTop: "10px" }}
+                onMouseDown={e => {
+                    if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appWindow.startDragging();
+                    }
+                }} onTouchStart={e => {
+                    if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appWindow.startDragging();
+                    }
+                }} data-drag>
                 <div style={{ position: "absolute", right: "0px" }}>
                     <a onClick={e => {
                         e.stopPropagation();
@@ -96,9 +121,45 @@ const Content = () => {
                     }}><CloseSquareOutlined style={{ fontSize: "24px", color: "black" }} /></a>
                 </div>
             </div>
-            <div style={{ paddingLeft: "20px" }} data-tauri-drag-region={true}>
-                <div data-tauri-drag-region={true}>项目:{projectName}</div>
-                <div data-tauri-drag-region={true}>
+            <div style={{ paddingLeft: "20px" }} onMouseDown={e => {
+                if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    appWindow.startDragging();
+                }
+            }} onTouchStart={e => {
+                if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    appWindow.startDragging();
+                }
+            }} data-drag>
+                <div onMouseDown={e => {
+                    if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appWindow.startDragging();
+                    }
+                }} onTouchStart={e => {
+                    if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appWindow.startDragging();
+                    }
+                }} data-drag>项目:{projectName}</div>
+                <div onMouseDown={e => {
+                    if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appWindow.startDragging();
+                    }
+                }} onTouchStart={e => {
+                    if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appWindow.startDragging();
+                    }
+                }} data-drag>
                     {getShortNoteType()}:{title}&nbsp;&nbsp;
                     <a onClick={e => {
                         e.stopPropagation();

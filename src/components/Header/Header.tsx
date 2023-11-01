@@ -131,9 +131,22 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
 
   return (
-    <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}>
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <div style={{ height: "4px", backgroundColor: "white", borderTop: "1px solid #e8e9ee" }} />
-      <Header className={style.layout_header} {...props} data-tauri-drag-region>
+      <Header className={style.layout_header} {...props}
+        onMouseDown={e => {
+          if((e.target as HTMLDivElement).hasAttribute("data-drag")){
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }
+        }} onTouchStart={e => {
+          if((e.target as HTMLDivElement).hasAttribute("data-drag")){
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }
+        }} data-drag>
         {projectStore.curProjectId != "" && (
           <div>
             <ProjectQuickAccess />
@@ -205,7 +218,15 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           </div>
         )}
         <div className={style.l} >
-            {hover && <span data-tauri-drag-region style={{color:"#aaa"}}>可用鼠标拖动窗口</span>}
+          {hover && <span style={{ color: "#aaa" }} onMouseDown={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }} onTouchStart={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            appWindow.startDragging();
+          }}>可用鼠标拖动窗口</span>}
         </div>
         <div className={style.r}>
           {props.type == "login" && hasNewVersion == true && (
