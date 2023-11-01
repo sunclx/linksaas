@@ -13,6 +13,7 @@ const MemberList = () => {
 
     const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
+    const docStore = useStores('docStore');
 
     const [memberList, setMemberList] = useState<WebMemberInfo[]>([]);
 
@@ -42,8 +43,15 @@ const MemberList = () => {
                     <Button type="text" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        memberStore.showDetailMemberId = item.member.member_user_id;
-                        history.push(APP_PROJECT_OVERVIEW_PATH);
+                        if (docStore.inEdit) {
+                            docStore.showCheckLeave(() => {
+                                memberStore.showDetailMemberId = item.member.member_user_id;
+                                history.push(APP_PROJECT_OVERVIEW_PATH);
+                            });
+                        } else {
+                            memberStore.showDetailMemberId = item.member.member_user_id;
+                            history.push(APP_PROJECT_OVERVIEW_PATH);
+                        }
                     }}>
                         <Space>
                             <UserPhoto logoUri={item.member.logo_uri} style={{ width: "16px", borderRadius: "10px", filter: item.member.online ? "" : "grayscale(100%)" }} />

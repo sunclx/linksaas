@@ -51,7 +51,7 @@ const ActionModal: FC<ActionModalProps> = ({
           >
             {cancelText}
           </Button>
-          <Button
+          <Button danger={props.okButtonProps?.danger ?? false}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
