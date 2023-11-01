@@ -81,6 +81,7 @@ const Content = () => {
             width: "100wh",
             height: "100vh",
             overflowY: "scroll",
+            cursor: "move"
         }} onMouseDown={e => {
             if ((e.target as HTMLDivElement).hasAttribute("data-drag")) {
                 e.preventDefault();
