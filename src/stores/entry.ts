@@ -16,13 +16,12 @@ export default class EntryStore {
     private _entryList: EntryInfo[] = [];
     private _sysEntryList: EntryInfo[] = [];
     private _createEntryType: ENTRY_TYPE | null = null;
+    private _dataVersion = 0;
 
     reset() {
         runInAction(() => {
             this._curEntry = null;
             this._editEntryId = "";
-            this._entryList = [];
-            this._sysEntryList = [];
             this._createEntryType = null;
         });
     }
@@ -77,6 +76,15 @@ export default class EntryStore {
         });
     }
 
+    get dataVersion(): number {
+        return this._dataVersion;
+    }
+    incDataVersion() {
+        runInAction(() => {
+            this._dataVersion += 1;
+        });
+    }
+
     async loadEntry(entryId: string) {
         const res = await request(get_entry({
             session_id: this.rootStore.userStore.sessionId,
@@ -105,7 +113,7 @@ export default class EntryStore {
                 tmpList[index] = res.entry;
                 this._entryList = tmpList;
             }
-            
+
             const tmpList2 = this._sysEntryList.slice();
             const index2 = tmpList2.findIndex(item => item.entry_id == entryId);
             if (index2 != -1) {

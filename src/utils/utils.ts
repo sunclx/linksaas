@@ -3,7 +3,7 @@ import { ISSUE_TYPE_TASK, ISSUE_TYPE_BUG } from '@/api/project_issue';
 import { createBrowserHistory } from 'history';
 import moment from 'moment';
 import { BUG_DETAIL_SUFFIX, APP_PROJECT_KB_DOC_PATH, TASK_DETAIL_SUFFIX, TASK_CREATE_SUFFIX, BUG_CREATE_SUFFIX, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_WORK_PLAN_PATH, APP_PROJECT_HOME_PATH } from './constant';
-import { nanoid } from 'nanoid'
+import { nanoid } from 'nanoid';
 
 export const goBack = (/*history: { goBack: () => void }*/) => {
   createBrowserHistory().goBack();
