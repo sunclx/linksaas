@@ -117,7 +117,7 @@ const ProjectHome = () => {
             setShowFilterBar(false);
         }
         setDataVersion(oldValue => oldValue + 1);
-    }, [projectStore.curProjectId]);
+    }, [projectStore.curProjectId, entryStore.dataVersion]);
 
     useEffect(() => {
         loadEntryList();
@@ -126,6 +126,7 @@ const ProjectHome = () => {
     useEffect(() => {
         loadSysEntryList();
     }, [projectStore.curProjectId]);
+
 
     useEffect(() => {
         setSysEntryList([
