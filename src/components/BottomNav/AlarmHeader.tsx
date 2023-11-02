@@ -250,6 +250,7 @@ const AlarmList: React.FC<AlarmListProps> = (props) => {
 }
 
 const AlarmHeader = () => {
+    const appStore = useStores("appStore");
     const projectStore = useStores("projectStore");
 
     return (
@@ -257,21 +258,21 @@ const AlarmHeader = () => {
             <Space size="middle">
                 {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && (
                     <Popover open={projectStore.curProject?.project_status.bulletin_count == 0 ? false : undefined} trigger={["hover", "click"]} content={<BulletinList />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
-                        <Badge count={projectStore.curProject?.project_status.bulletin_count} size="small">
+                        <Badge count={projectStore.curProject?.project_status.bulletin_count} size="small" dot={appStore.focusMode}>
                             <BellTwoTone style={{ fontSize: "20px", cursor: projectStore.curProject?.project_status.bulletin_count == 0 ? "default" : "pointer" }} twoToneColor={projectStore.curProject?.project_status.bulletin_count == 0 ? "#ccc" : ["#aaa", "cyan"]} title="项目公告" />
                         </Badge>
                     </Popover>
                 )}
 
                 <Popover open={projectStore.curProject?.project_status.alarm_hit_count == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={true} includeAlert={false} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
-                    <Badge count={projectStore.curProject?.project_status.alarm_hit_count} size="small">
+                    <Badge count={projectStore.curProject?.project_status.alarm_hit_count} size="small" dot={appStore.focusMode}>
                         <AlertTwoTone style={{ fontSize: "20px", cursor: projectStore.curProject?.project_status.alarm_hit_count == 0 ? "default" : "pointer" }} twoToneColor={projectStore.curProject?.project_status.alarm_hit_count == 0 ? "#ccc" : ["#aaa", "yellow"]} title="风险提示" />
                     </Badge>
                 </Popover>
 
 
                 <Popover open={projectStore.curProject?.project_status.alarm_alert_count == 0 ? false : undefined} trigger={["hover", "click"]} content={<AlarmList includeHit={false} includeAlert={true} />} placement="topLeft" destroyTooltipOnHide autoAdjustOverflow>
-                    <Badge count={projectStore.curProject?.project_status.alarm_alert_count} size="small">
+                    <Badge count={projectStore.curProject?.project_status.alarm_alert_count} size="small" dot={appStore.focusMode}>
                         <AlertTwoTone style={{ fontSize: "20px", cursor: projectStore.curProject?.project_status.alarm_alert_count == 0 ? "default" : "pointer" }} twoToneColor={projectStore.curProject?.project_status.alarm_alert_count == 0 ? "#ccc" : ["#aaa", "red"]} title="风险警告" />
                     </Badge>
                 </Popover>
