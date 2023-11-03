@@ -62,6 +62,7 @@ mod pub_search_admin_api_plugin;
 mod pub_search_api_plugin;
 mod project_watch_api_plugin;
 mod project_comment_api_plugin;
+mod project_board_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -449,6 +450,7 @@ fn main() {
         .plugin(project_watch_api_plugin::ProjectWatchApiPlugin::new())
         .plugin(project_comment_api_plugin::ProjectCommentApiPlugin::new())
         .plugin(pages_plugin::PagesPlugin::new())
+        .plugin(project_board_api_plugin::ProjectBoardApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

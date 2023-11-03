@@ -8,7 +8,7 @@ export const getEntryTypeStr = (entryType: ENTRY_TYPE): string => {
     } else if (entryType == ENTRY_TYPE_PAGES) {
         return "静态网页";
     } else if (entryType == ENTRY_TYPE_BOARD) {
-        return "白板";
+        return "信息面板";
     }
     return "";
 };

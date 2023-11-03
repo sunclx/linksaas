@@ -20,7 +20,7 @@ function gen_simple_content(
     } else if (entry_type == ENTRY_TYPE_PAGES) {
         typeName = "静态网页";
     } else if (entry_type == ENTRY_TYPE_BOARD) {
-        typeName = "白板";
+        typeName = "信息面板";
     }
     const retList = [
         new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} ${action_name} ${typeName}`),

@@ -269,6 +269,52 @@ pub mod comment {
     }
 }
 
+pub mod board {
+    use prost::Message;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::notices_board;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    pub enum Notice {
+        CreateNodeNotice(notices_board::CreateNodeNotice),
+        UpdateNodeNotice(notices_board::UpdateNodeNotice),
+        RemoveNodeNotice(notices_board::RemoveNodeNotice),
+        CreateEdgeNotice(notices_board::CreateEdgeNotice),
+        UpdateEdgeNotice(notices_board::UpdateEdgeNotice),
+        RemoveEdgeNotice(notices_board::RemoveEdgeNotice),
+    }
+
+    pub fn decode_notice(data: &Any) -> Option<Notice> {
+        if data.type_url == notices_board::CreateNodeNotice::type_url() {
+            if let Ok(notice) = notices_board::CreateNodeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::CreateNodeNotice(notice));
+            }
+        } else if data.type_url == notices_board::UpdateNodeNotice::type_url() {
+            if let Ok(notice) = notices_board::UpdateNodeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateNodeNotice(notice));
+            }
+        } else if data.type_url == notices_board::RemoveNodeNotice::type_url() {
+            if let Ok(notice) = notices_board::RemoveNodeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RemoveNodeNotice(notice));
+            }
+        } else if data.type_url == notices_board::CreateEdgeNotice::type_url() {
+            if let Ok(notice) = notices_board::CreateEdgeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::CreateEdgeNotice(notice));
+            }
+        } else if data.type_url == notices_board::UpdateEdgeNotice::type_url() {
+            if let Ok(notice) = notices_board::UpdateEdgeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateEdgeNotice(notice));
+            }
+        } else if data.type_url == notices_board::RemoveEdgeNotice::type_url() {
+            if let Ok(notice) = notices_board::RemoveEdgeNotice::decode(data.value.as_slice()) {
+                return Some(Notice::RemoveEdgeNotice(notice));
+            }
+        }
+        None
+    }
+}
+
 pub mod client {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
@@ -301,6 +347,7 @@ pub enum NoticeMessage {
     AppraiseNotice(appraise::Notice),
     IdeaNotice(idea::Notice),
     CommentNotice(comment::Notice),
+    BoardNotice(board::Notice),
     ClientNotice(client::Notice),
 }
 
@@ -321,6 +368,9 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = comment::decode_notice(data) {
         return Some(NoticeMessage::CommentNotice(ret));
+    }
+    if let Some(ret) = board::decode_notice(data) {
+        return Some(NoticeMessage::BoardNotice(ret));
     }
     None
 }
