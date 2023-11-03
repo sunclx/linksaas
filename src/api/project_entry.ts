@@ -33,8 +33,14 @@ export type ExtraSpritInfo = {
     hide_summary_panel: boolean;
 };
 
+export type ExtraPagesInfo = {
+     file_id: string;
+};
+
+
 export type ExtraInfo = {
     ExtraSpritInfo?: ExtraSpritInfo;
+    ExtraPagesInfo?: ExtraPagesInfo;
 };
 
 export type WatchUser = {

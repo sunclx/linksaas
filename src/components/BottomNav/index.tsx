@@ -57,10 +57,12 @@ const RightFloat = observer(() => {
 });
 
 const BottomNav = () => {
+  const appStore = useStores('appStore');
+
   return (
     <div className={s.topnav}>
       <div className={s.left}>
-        <ProjectTipList />
+        {appStore.focusMode == false && <ProjectTipList />}
       </div>
       <div className={s.right}>
         <RightFloat />
@@ -69,4 +71,4 @@ const BottomNav = () => {
   );
 };
 
-export default BottomNav;
+export default observer(BottomNav);

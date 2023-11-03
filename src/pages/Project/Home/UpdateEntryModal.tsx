@@ -1,13 +1,20 @@
-import { Checkbox, DatePicker, Form, Input, Modal, Radio, Tag, message } from "antd";
+import { Button, Checkbox, DatePicker, Form, Input, Modal, Progress, Radio, Tag, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import type { EntryInfo } from "@/api/project_entry";
-import { get as get_entry, update_title, update_perm, update_tag, update_extra_info, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_LIST, ISSUE_LIST_KANBAN } from "@/api/project_entry";
+import { get as get_entry, update_title, update_perm, update_tag, update_extra_info, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_LIST, ISSUE_LIST_KANBAN, ENTRY_TYPE_PAGES } from "@/api/project_entry";
 import { request } from "@/utils/request";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import s from "./UpdateEntryModal.module.less";
 import moment, { type Moment } from "moment";
+import { open as open_dialog } from '@tauri-apps/api/dialog';
+import { uniqId } from "@/utils/utils";
+import { pack_min_app } from "@/api/min_app";
+import { FILE_OWNER_TYPE_PAGES, set_file_owner, write_file } from "@/api/fs";
+import type { FsProgressEvent } from '@/api/fs';
+import { listen } from '@tauri-apps/api/event';
+import { FolderOpenOutlined } from "@ant-design/icons";
 
 const UpdateEntryModal = () => {
     const userStore = useStores('userStore');
@@ -21,6 +28,11 @@ const UpdateEntryModal = () => {
     const [permChanged, setPermChanged] = useState(false);
     const [tagChanged, setTagChanged] = useState(false);
     const [extraChanged, setExtraChanged] = useState(false);
+
+    const [localPath, setLocalPath] = useState("");
+    const [uploadTraceId, setUploadTraceId] = useState("");
+    const [packFileName, setPackFileName] = useState("");
+    const [uploadRatio, setUploadRatio] = useState(0);
 
     const loadEntryInfo = async () => {
         const res = await request(get_entry({
@@ -40,6 +52,32 @@ const UpdateEntryModal = () => {
         const endTime = entryInfo.extra_info.ExtraSpritInfo?.end_time ?? 0;
         const dayTime = day.valueOf();
         return dayTime >= startTime && dayTime <= endTime;
+    };
+
+    const choicePath = async () => {
+        const selected = await open_dialog({
+            title: "打开本地应用目录",
+            directory: true,
+        });
+        if (selected == null || Array.isArray(selected)) {
+            return;
+        }
+        setLocalPath(selected);
+        setExtraChanged(true);
+    };
+
+    const uploadPages = async () => {
+        const traceId = uniqId();
+        setUploadTraceId(traceId);
+        try {
+            const path = await pack_min_app(localPath, traceId);
+            const res = await request(write_file(userStore.sessionId, projectStore.curProject?.pages_fs_id ?? "", path, traceId));
+            return res.file_id;
+        } finally {
+            setUploadRatio(0);
+            setUploadTraceId("");
+            setPackFileName("");
+        }
     };
 
     const updateEntry = async () => {
@@ -83,12 +121,33 @@ const UpdateEntryModal = () => {
             return;
         }
         if (extraChanged) {
-            await request(update_extra_info({
-                session_id: userStore.sessionId,
-                project_id: projectStore.curProjectId,
-                entry_id: entryInfo.entry_id,
-                extra_info: entryInfo.extra_info,
-            }))
+            if(entryInfo.entry_type == ENTRY_TYPE_PAGES){
+                const pagesFileId = await uploadPages();
+                await request(set_file_owner({
+                    session_id: userStore.sessionId,
+                    fs_id: projectStore.curProject?.pages_fs_id ?? "",
+                    file_id: pagesFileId,
+                    owner_type: FILE_OWNER_TYPE_PAGES,
+                    owner_id: entryInfo.entry_id,
+                }));
+                await request(update_extra_info({
+                    session_id: userStore.sessionId,
+                    project_id: projectStore.curProjectId,
+                    entry_id: entryInfo.entry_id,
+                    extra_info: {
+                        ExtraPagesInfo:{
+                            file_id: pagesFileId,
+                        },
+                    },
+                }));
+            }else{
+                await request(update_extra_info({
+                    session_id: userStore.sessionId,
+                    project_id: projectStore.curProjectId,
+                    entry_id: entryInfo.entry_id,
+                    extra_info: entryInfo.extra_info,
+                }));
+            }
         }
         message.info("修改成功");
         await entryStore.updateEntry(entryInfo.entry_id);
@@ -99,10 +158,31 @@ const UpdateEntryModal = () => {
         loadEntryInfo();
     }, [entryStore.editEntryId, projectStore.curProjectId]);
 
+    useEffect(() => {
+        if (uploadTraceId == "") {
+            return;
+        }
+        const unListenFn = listen<FsProgressEvent>("uploadFile_" + uploadTraceId, ev => {
+            if (ev.payload.total_step == 0) {
+                setUploadRatio(100);
+            } else {
+                setUploadRatio(Math.round(ev.payload.cur_step * 100 / ev.payload.total_step));
+            }
+        });
+
+        const unListenFn2 = listen<string>(uploadTraceId, ev => {
+            setPackFileName(ev.payload);
+        });
+        return () => {
+            unListenFn.then((unListen) => unListen());
+            unListenFn2.then((unListen) => unListen());
+        };
+    }, [uploadTraceId]);
+
     return (
         <Modal open title="修改内容信息"
             okText="修改"
-            okButtonProps={{ disabled: entryInfo == null || entryInfo.can_update == false || entryInfo.entry_title == "" || (!titleChanged && !permChanged && !tagChanged && !extraChanged) }}
+            okButtonProps={{ disabled: entryInfo == null || entryInfo.can_update == false || entryInfo.entry_title == "" || (!titleChanged && !permChanged && !tagChanged && !extraChanged) || packFileName != "" || uploadRatio > 0 }}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -306,7 +386,33 @@ const UpdateEntryModal = () => {
                                     setExtraChanged(true);
                                 }} />
                             </Form.Item>
-
+                        </>
+                    )}
+                    {entryInfo.entry_type == ENTRY_TYPE_PAGES && (
+                        <>
+                            <Form.Item label="网页目录" help="目录中需包含index.html">
+                                <Input value={localPath} onChange={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setLocalPath(e.target.value);
+                                    setExtraChanged(true);
+                                }}
+                                    addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        choicePath();
+                                    }} />} />
+                            </Form.Item>
+                            {uploadRatio == 0 && packFileName != "" && (
+                                <Form.Item label="打包进度">
+                                    {packFileName}
+                                </Form.Item>
+                            )}
+                            {uploadRatio > 0 && (
+                                <Form.Item label="上传进度">
+                                    <Progress percent={uploadRatio} />
+                                </Form.Item>
+                            )}
                         </>
                     )}
                 </Form>

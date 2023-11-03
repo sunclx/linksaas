@@ -44,6 +44,19 @@ class AppStore {
       this._showCreateOrJoinProject = val;
     });
   }
+
+  //专注模式
+  private _focusMode = false;
+
+  get focusMode(): boolean {
+    return this._focusMode;
+  }
+
+  set focusMode(val: boolean) {
+    runInAction(() => {
+      this._focusMode = val;
+    });
+  }
 }
 
 export default AppStore;

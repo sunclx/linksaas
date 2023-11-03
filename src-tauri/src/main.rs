@@ -3,7 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-use min_app_plugin::clear_by_close;
 use tauri::api::ipc::{format_callback, format_callback_result, CallbackFn};
 use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
@@ -25,6 +24,8 @@ mod fs_api_plugin;
 mod image_utils;
 mod link_aux_api_plugin;
 mod local_api;
+mod pages_plugin;
+mod helper;
 mod notice_decode;
 mod org_admin_api_plugin;
 mod project_admin_api_plugin;
@@ -330,7 +331,8 @@ fn main() {
                 let app_handle = win.app_handle();
                 let label = String::from(win.label());
                 tauri::async_runtime::spawn(async move {
-                    clear_by_close(app_handle, label).await;
+                    min_app_plugin::clear_by_close(app_handle.clone(), label.clone()).await;
+                    pages_plugin::clear_by_close(app_handle, label).await;
                 });
             }
             _ => {}
@@ -446,6 +448,7 @@ fn main() {
         .plugin(project_entry_api_plugin::ProjectEntryApiPlugin::new())
         .plugin(project_watch_api_plugin::ProjectWatchApiPlugin::new())
         .plugin(project_comment_api_plugin::ProjectCommentApiPlugin::new())
+        .plugin(pages_plugin::PagesPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

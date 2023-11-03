@@ -2,7 +2,7 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES } from "@/api/project_entry";
 import s from "./EntryCard.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -14,7 +14,9 @@ import { getEntryTypeStr } from "./common";
 import RemoveEntryModal from "./RemoveEntryModal";
 import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
 import spritIcon from '@/assets/allIcon/icon-sprit.png';
+import htmlIcon from '@/assets/allIcon/icon-html.png';
 import docIcon from '@/assets/channel/doc@2x.png';
+import PagesModal from "./PagesModal";
 
 export interface EntryCardPorps {
     entryInfo: EntryInfo;
@@ -32,6 +34,7 @@ const EntryCard = (props: EntryCardPorps) => {
 
     const [showCloseModal, setShowCloseModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showPagesModal, setShowPagesModal] = useState(false);
 
     const watchEntry = async () => {
         await request(watch({
@@ -55,12 +58,15 @@ const EntryCard = (props: EntryCardPorps) => {
 
     const openEntry = async () => {
         entryStore.reset();
-        entryStore.curEntry = props.entryInfo;
         if (props.entryInfo.entry_type == ENTRY_TYPE_DOC) {
+            entryStore.curEntry = props.entryInfo;
             await docStore.loadDoc();
             history.push(APP_PROJECT_KB_DOC_PATH);
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_SPRIT) {
+            entryStore.curEntry = props.entryInfo;
             history.push(APP_PROJECT_WORK_PLAN_PATH);
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
+            setShowPagesModal(true);
         }
     };
 
@@ -69,6 +75,8 @@ const EntryCard = (props: EntryCardPorps) => {
             return "lightyellow";
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_SPRIT) {
             return "seashell";
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
+            return "bisque";
         }
         return "white";
     };
@@ -99,6 +107,8 @@ const EntryCard = (props: EntryCardPorps) => {
             return docIcon;
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_SPRIT) {
             return spritIcon;
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
+            return htmlIcon;
         }
         return "";
     };
@@ -236,6 +246,11 @@ const EntryCard = (props: EntryCardPorps) => {
                     props.onRemove();
                     setShowRemoveModal(false);
                 }} onCancel={() => setShowRemoveModal(false)} />
+            )}
+            {showPagesModal == true && (
+                <PagesModal fileId={props.entryInfo.extra_info.ExtraPagesInfo?.file_id ?? ""}
+                    entryId={props.entryInfo.entry_id} entryTitle={props.entryInfo.entry_title}
+                    onClose={() => setShowPagesModal(false)} />
             )}
         </Card>
 

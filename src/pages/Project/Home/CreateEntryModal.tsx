@@ -1,9 +1,9 @@
-import { Checkbox, DatePicker, Form, Input, Modal, Radio, Tag } from "antd";
-import React, { useState } from "react";
+import { Button, Checkbox, DatePicker, Form, Input, Modal, Progress, Radio, Tag, message } from "antd";
+import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { create_doc } from "@/api/project_doc";
 import { create as create_sprit } from "@/api/project_sprit";
-import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
+import { ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
 import { useStores } from "@/hooks";
 import type { EntryPerm, ExtraSpritInfo, CreateRequest } from "@/api/project_entry";
 import UserPhoto from "@/components/Portrait/UserPhoto";
@@ -12,8 +12,14 @@ import s from "./UpdateEntryModal.module.less";
 import { request } from "@/utils/request";
 import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { useHistory } from "react-router-dom";
-
-
+import { FolderOpenOutlined } from "@ant-design/icons";
+import { open as open_dialog } from '@tauri-apps/api/dialog';
+import { pack_min_app } from "@/api/min_app";
+import { uniqId } from "@/utils/utils";
+import { FILE_OWNER_TYPE_PAGES, set_file_owner, write_file } from "@/api/fs";
+import { listen } from '@tauri-apps/api/event';
+import type { FsProgressEvent } from '@/api/fs';
+import { nanoid } from 'nanoid';
 
 const CreateEntryModal = () => {
     const history = useHistory();
@@ -41,6 +47,11 @@ const CreateEntryModal = () => {
         hide_summary_panel: false,
     });
 
+    const [localPath, setLocalPath] = useState("");
+    const [uploadTraceId, setUploadTraceId] = useState("");
+    const [packFileName, setPackFileName] = useState("");
+    const [uploadRatio, setUploadRatio] = useState(0);
+
     const checkDayValid = (day: Moment): boolean => {
         const startTime = spritExtraInfo.start_time;
         const endTime = spritExtraInfo.end_time;
@@ -48,12 +59,41 @@ const CreateEntryModal = () => {
         return dayTime >= startTime && dayTime <= endTime;
     };
 
+    const choicePath = async () => {
+        const selected = await open_dialog({
+            title: "打开本地应用目录",
+            directory: true,
+        });
+        if (selected == null || Array.isArray(selected)) {
+            return;
+        }
+        setLocalPath(selected);
+    };
+
+    const uploadPages = async () => {
+        const traceId = uniqId();
+        setUploadTraceId(traceId);
+        try {
+            const path = await pack_min_app(localPath, traceId);
+            const res = await request(write_file(userStore.sessionId, projectStore.curProject?.pages_fs_id ?? "", path, traceId));
+            return res.file_id;
+        } finally {
+            setUploadRatio(0);
+            setUploadTraceId("");
+            setPackFileName("");
+        }
+    };
+
     const createEntry = async () => {
         if (title == "" || entryStore.createEntryType == null) {
             return;
         }
         let entryId = "";
-        if (entryStore.createEntryType == ENTRY_TYPE_SPRIT) {
+        let pagesFileId = "";
+        if (entryStore.createEntryType == ENTRY_TYPE_PAGES) {
+            pagesFileId = await uploadPages();
+            entryId = nanoid(32);
+        } else if (entryStore.createEntryType == ENTRY_TYPE_SPRIT) {
             const res = await request(create_sprit(userStore.sessionId, projectStore.curProjectId));
             entryId = res.sprit_id;
         } else if (entryStore.createEntryType == ENTRY_TYPE_DOC) {
@@ -85,8 +125,13 @@ const CreateEntryModal = () => {
             createReq.extra_info = {
                 ExtraSpritInfo: spritExtraInfo,
             };
+        } else if (entryStore.createEntryType == ENTRY_TYPE_PAGES) {
+            createReq.extra_info = {
+                ExtraPagesInfo: {
+                    file_id: pagesFileId,
+                },
+            }
         }
-        console.log(createReq);
         await request(create_entry(createReq));
 
         await entryStore.loadEntry(entryId);
@@ -96,13 +141,44 @@ const CreateEntryModal = () => {
             await docStore.loadDoc();
             docStore.inEdit = true;
             history.push(APP_PROJECT_KB_DOC_PATH);
+        } else if (entryStore.createEntryType == ENTRY_TYPE_PAGES) {
+            await request(set_file_owner({
+                session_id: userStore.sessionId,
+                fs_id: projectStore.curProject?.pages_fs_id ?? "",
+                file_id: pagesFileId,
+                owner_type: FILE_OWNER_TYPE_PAGES,
+                owner_id: entryId,
+            }));
         }
+        message.info("创建成功");
         entryStore.createEntryType = null;
+        entryStore.incDataVersion();
     };
+
+    useEffect(() => {
+        if (uploadTraceId == "") {
+            return;
+        }
+        const unListenFn = listen<FsProgressEvent>("uploadFile_" + uploadTraceId, ev => {
+            if (ev.payload.total_step == 0) {
+                setUploadRatio(100);
+            } else {
+                setUploadRatio(Math.round(ev.payload.cur_step * 100 / ev.payload.total_step));
+            }
+        });
+
+        const unListenFn2 = listen<string>(uploadTraceId, ev => {
+            setPackFileName(ev.payload);
+        });
+        return () => {
+            unListenFn.then((unListen) => unListen());
+            unListenFn2.then((unListen) => unListen());
+        };
+    }, [uploadTraceId]);
 
     return (
         <Modal open title="创建内容"
-            okText="创建" okButtonProps={{ disabled: title == "" }}
+            okText="创建" okButtonProps={{ disabled: title == "" || packFileName != "" || uploadRatio > 0}}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -128,6 +204,7 @@ const CreateEntryModal = () => {
                     }}>
                         <Radio value={ENTRY_TYPE_SPRIT}>工作计划</Radio>
                         <Radio value={ENTRY_TYPE_DOC}>文档</Radio>
+                        <Radio value={ENTRY_TYPE_PAGES}>静态网页</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item label="所有成员可修改">
@@ -271,6 +348,32 @@ const CreateEntryModal = () => {
                                 });
                             }} />
                         </Form.Item>
+                    </>
+                )}
+                {entryStore.createEntryType == ENTRY_TYPE_PAGES && (
+                    <>
+                        <Form.Item label="网页目录" help="目录中需包含index.html">
+                            <Input value={localPath} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setLocalPath(e.target.value);
+                            }}
+                                addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    choicePath();
+                                }} />} />
+                        </Form.Item>
+                        {uploadRatio == 0 && packFileName != "" && (
+                            <Form.Item label="打包进度">
+                                {packFileName}
+                            </Form.Item>
+                        )}
+                        {uploadRatio > 0 && (
+                            <Form.Item label="上传进度">
+                                <Progress percent={uploadRatio} />
+                            </Form.Item>
+                        )}
                     </>
                 )}
             </Form>
