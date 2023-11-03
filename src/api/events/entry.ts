@@ -29,6 +29,8 @@ function gen_simple_content(
         retList.push(new LinkSpritInfo(entry_title, ev.project_id, entry_id));
     } else if (entry_type == ENTRY_TYPE_DOC) {
         retList.push(new LinkDocInfo(entry_title, ev.project_id, entry_id));
+    } else {
+        retList.push(new LinkNoneInfo(entry_title));
     }
     return retList;
 }
