@@ -1,6 +1,6 @@
 import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
-import { LinkNoneInfo, LinkSpritInfo, LinkDocInfo } from '@/stores/linkAux';
+import { LinkNoneInfo, LinkSpritInfo, LinkDocInfo, LinkBoardInfo } from '@/stores/linkAux';
 import { ENTRY_TYPE_BOARD, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT } from '../project_entry';
 
 
@@ -29,6 +29,8 @@ function gen_simple_content(
         retList.push(new LinkSpritInfo(entry_title, ev.project_id, entry_id));
     } else if (entry_type == ENTRY_TYPE_DOC) {
         retList.push(new LinkDocInfo(entry_title, ev.project_id, entry_id));
+    } else if (entry_type == ENTRY_TYPE_BOARD) {
+        retList.push(new LinkBoardInfo(entry_title, ev.project_id, entry_id));
     } else {
         retList.push(new LinkNoneInfo(entry_title));
     }
@@ -117,6 +119,6 @@ export function get_entry_simple_content(
         return get_close_simple_content(ev, skip_prj_name, inner.CloseEvent);
     } else if (inner.RemoveEvent !== undefined) {
         return get_remove_simple_content(ev, skip_prj_name, inner.RemoveEvent);
-    } 
+    }
     return [new LinkNoneInfo('未知事件')];
 }

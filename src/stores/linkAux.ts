@@ -26,7 +26,7 @@ import type { API_COLL_TYPE } from '@/api/api_collection';
 import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { OpenPipeLineWindow } from '@/pages/Project/CiCd/utils';
-import { get as get_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import { get as get_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_BOARD } from "@/api/project_entry";
 import { get as get_api_coll } from "@/api/api_collection";
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
@@ -58,6 +58,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_ENTRY = 22,
   LINK_TARGET_API_COLL = 23,
   LINK_TARGET_DATA_ANNO = 24,
+  LINK_TARGET_BOARD = 25,
 
   LINK_TARGET_NONE = 100,
   LINK_TARGET_IMAGE = 101,
@@ -129,6 +130,19 @@ export class LinkSpritInfo {
   linkContent: string;
   projectId: string;
   spritId: string;
+}
+
+export class LinkBoardInfo {
+  constructor(content: string, projectId: string, boardId: string) {
+    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_BOARD;
+    this.linkContent = content;
+    this.projectId = projectId;
+    this.boardId = boardId;
+  }
+  linkTargeType: LINK_TARGET_TYPE;
+  linkContent: string;
+  projectId: string;
+  boardId: string;
 }
 
 export class LinkTaskInfo {
@@ -489,6 +503,15 @@ class LinkAuxStore {
       } else {
         await this.goToSprit(spritLink, history);
       }
+    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOARD) {
+      const boardLink = link as LinkBoardInfo;
+      if (this.rootStore.docStore.inEdit) {
+        this.rootStore.docStore.showCheckLeave(() => {
+          this.goToBoard(boardLink, history);
+        });
+      } else {
+        await this.goToBoard(boardLink, history);
+      }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_REQUIRE_MENT) {
       const reqLink = link as LinkRequirementInfo;
       if (this.rootStore.projectStore.curProjectId != reqLink.projectId) {
@@ -540,6 +563,8 @@ class LinkAuxStore {
         await this.goToLink(new LinkSpritInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
       } else if (res.entry.entry_type == ENTRY_TYPE_DOC) {
         await this.goToLink(new LinkDocInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
+      } else if (res.entry.entry_type == ENTRY_TYPE_BOARD) {
+        await this.goToLink(new LinkBoardInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_API_COLL) {
       const apiCollLink = link as LinkApiCollInfo;
@@ -587,6 +612,14 @@ class LinkAuxStore {
     await this.rootStore.entryStore.loadEntry(spritLink.spritId);
     await this.rootStore.spritStore.loadCurSprit();
     history.push(APP_PROJECT_WORK_PLAN_PATH);
+  }
+
+  private async goToBoard(boardLink: LinkBoardInfo, history: History) {
+    if (this.rootStore.projectStore.curProjectId != boardLink.projectId) {
+      await this.rootStore.projectStore.setCurProjectId(boardLink.projectId);
+    }
+    await this.rootStore.entryStore.loadEntry(boardLink.boardId);
+    history.push(APP_PROJECT_KB_BOARD_PATH);
   }
 
   //跳转到创建任务
@@ -788,7 +821,7 @@ class LinkAuxStore {
       return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
-    } else if(pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)){
+    } else if (pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)) {
       return APP_PROJECT_KB_BOARD_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
       return APP_PROJECT_MY_WORK_PATH + newSuffix;
