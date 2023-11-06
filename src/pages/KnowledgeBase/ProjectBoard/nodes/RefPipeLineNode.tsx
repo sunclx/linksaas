@@ -6,9 +6,11 @@ import NodeWrap from "./NodeWrap";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { get_pipe_line, list_pipe_line, PLATFORM_TYPE_LINUX, type PipeLine, PLATFORM_TYPE_DARWIN, PLATFORM_TYPE_WINDOWS } from "@/api/project_cicd";
-import { Modal, Table } from "antd";
+import { Descriptions, Empty, Modal, Table } from "antd";
 import Pagination from "@/components/Pagination";
 import type { ColumnsType } from "antd/lib/table";
+import { useHistory } from "react-router-dom";
+import { LinkPipeLineInfo } from "@/stores/linkAux";
 
 const PAGE_SIZE = 10;
 
@@ -145,9 +147,12 @@ const SelectPipeLineModal = (props: SelectPipeLineModalProps) => {
 
 
 const RefPipeLineNode = (props: NodeProps<BoardNode>) => {
+    const history = useHistory();
+
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const entryStore = useStores('entryStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [showModal, setShowModal] = useState(false);
     const [pipeLineInfo, setPipeLineInfo] = useState<PipeLine | null>(null);
@@ -172,7 +177,26 @@ const RefPipeLineNode = (props: NodeProps<BoardNode>) => {
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
             nodeId={props.data.node_id} title="引用流水线" onEdit={() => setShowModal(true)}>
-            {pipeLineInfo?.pipe_line_name ?? ""}
+            {pipeLineInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
+            {pipeLineInfo != null && (
+                <div>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkPipeLineInfo("", projectStore.curProjectId, pipeLineInfo.pipe_line_id), history);
+                    }}>{pipeLineInfo.pipe_line_name}</a>
+                    <Descriptions column={1} labelStyle={{ width: "90px" }}>
+                        <Descriptions.Item label="运行平台">
+                            {pipeLineInfo.plat_form == PLATFORM_TYPE_LINUX && "LINUX"}
+                            {pipeLineInfo.plat_form == PLATFORM_TYPE_DARWIN && "MAC"}
+                            {pipeLineInfo.plat_form == PLATFORM_TYPE_WINDOWS && "WINDOWS"}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="GIT地址">
+                            {pipeLineInfo.gitsource_job.git_url}
+                        </Descriptions.Item>
+                    </Descriptions>
+                </div>
+            )}
             {showModal == true && (
                 <SelectPipeLineModal nodeId={props.data.node_id} onClose={() => setShowModal(false)} />
             )}

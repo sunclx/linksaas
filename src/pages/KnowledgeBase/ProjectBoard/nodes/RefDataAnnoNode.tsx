@@ -6,9 +6,11 @@ import NodeWrap from "./NodeWrap";
 import { useStores } from "@/hooks";
 import { get as get_anno_project, list as list_anno_project, type AnnoProjectInfo, ANNO_TYPE_AUDIO_CLASSIFI, ANNO_TYPE_AUDIO_SEG, ANNO_TYPE_AUDIO_TRANS, ANNO_TYPE_AUDIO_SEG_TRANS, ANNO_TYPE_IMAGE_CLASSIFI, ANNO_TYPE_IMAGE_BBOX_OBJ_DETECT, ANNO_TYPE_IMAGE_BRUSH_SEG, ANNO_TYPE_IMAGE_CIRCULAR_OBJ_DETECT, ANNO_TYPE_IMAGE_KEYPOINT, ANNO_TYPE_IMAGE_POLYGON_SEG, ANNO_TYPE_TEXT_CLASSIFI, ANNO_TYPE_TEXT_NER, ANNO_TYPE_TEXT_SUMMARY } from "@/api/data_anno_project";
 import { request } from "@/utils/request";
-import { Modal, Table } from "antd";
+import { Descriptions, Empty, Modal, Table } from "antd";
 import Pagination from "@/components/Pagination";
 import type { ColumnsType } from "antd/lib/table";
+import { useHistory } from "react-router-dom";
+import { LinkDataAnnoInfo } from "@/stores/linkAux";
 
 const PAGE_SIZE = 10;
 
@@ -152,9 +154,12 @@ const SelectAnnoProjectModal = (props: SelectAnnoProjectModalProps) => {
 };
 
 const RefDataAnnoNode = (props: NodeProps<BoardNode>) => {
+    const history = useHistory();
+
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const entryStore = useStores('entryStore');
+    const linkAuxStore = useStores('linkAuxStore')
 
     const [showModal, setShowModal] = useState(false);
     const [annoProjectInfo, setAnnoProjectInfo] = useState<AnnoProjectInfo | null>(null);
@@ -178,7 +183,36 @@ const RefDataAnnoNode = (props: NodeProps<BoardNode>) => {
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
             nodeId={props.data.node_id} title="引用数据标注" onEdit={() => setShowModal(true)}>
-            {annoProjectInfo?.base_info.name ?? ""}
+            {annoProjectInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
+            {annoProjectInfo != null && (
+                <div>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkDataAnnoInfo("", projectStore.curProjectId, annoProjectInfo.anno_project_id), history);
+                    }}>{annoProjectInfo.base_info.name}</a>
+                    <Descriptions column={1} labelStyle={{ width: "90px" }}>
+                        <Descriptions.Item label="标注类型">
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_AUDIO_CLASSIFI && "音频分类"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_AUDIO_SEG && "音频分割"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_AUDIO_TRANS && "音频翻译"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_AUDIO_SEG_TRANS && "音频分段翻译"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_IMAGE_CLASSIFI && "图像分类"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_IMAGE_BBOX_OBJ_DETECT && "矩形对象检测"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_IMAGE_BRUSH_SEG && "画笔分割"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_IMAGE_CIRCULAR_OBJ_DETECT && "圆形对象检测"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_IMAGE_KEYPOINT && "图像关键点"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_IMAGE_POLYGON_SEG && "多边形分割"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_TEXT_CLASSIFI && "文本分类"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_TEXT_NER && "文本命名实体识别"}
+                            {annoProjectInfo.base_info.anno_type == ANNO_TYPE_TEXT_SUMMARY && "文本摘要"}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="任务数">
+                            {`${annoProjectInfo.done_task_count}/${annoProjectInfo.all_task_count}`}
+                        </Descriptions.Item>
+                    </Descriptions>
+                </div>
+            )}
             {showModal == true && (
                 <SelectAnnoProjectModal nodeId={props.data.node_id} onClose={() => setShowModal(false)} />
             )}

@@ -7,6 +7,30 @@ import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { remove_node } from "@/api/project_board";
 
+
+function ResizeIcon() {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            stroke="#ff0071"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ position: 'absolute', right: 5, bottom: 5 }}
+        >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="16 20 20 20 20 16" />
+            <line x1="14" y1="14" x2="20" y2="20" />
+            <polyline points="8 4 4 4 4 8" />
+            <line x1="4" y1="4" x2="10" y2="10" />
+        </svg>
+    );
+}
+
 export interface NodeWrapProps {
     nodeId: string;
     title: string;
@@ -41,7 +65,7 @@ const NodeWrap = (props: NodeWrapProps) => {
     };
 
     return (
-        <Card title={props.title} style={{ width: props.width, height: props.height}}
+        <Card title={props.title} style={{ width: props.width, height: props.height }}
             bodyStyle={{ overflow: "scroll", height: props.height - 40 }}
             extra={
                 <>
@@ -68,7 +92,9 @@ const NodeWrap = (props: NodeWrapProps) => {
                 </>
             }>
             <NodeResizeControl minWidth={props.minWidth} minHeight={props.minHeight}
-                shouldResize={() => props.canEdit} />
+                shouldResize={() => props.canEdit} >
+                <ResizeIcon />
+            </NodeResizeControl>
             <Handle type="source" position={Position.Left} id="1" style={{ top: "40%", width: "6px", height: "6px" }} />
             <Handle type="source" position={Position.Top} id="2" style={{ left: "40%", width: "6px", height: "6px" }} />
             <Handle type="source" position={Position.Right} id="3" style={{ top: "40%", width: "6px", height: "6px" }} />
@@ -96,6 +122,6 @@ const NodeWrap = (props: NodeWrapProps) => {
             )}
         </Card>
     );
-}
+};
 
 export default observer(NodeWrap);

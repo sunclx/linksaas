@@ -7,6 +7,8 @@ import { useStores } from "@/hooks";
 import { get as get_issue, ISSUE_TYPE_BUG, type IssueInfo } from "@/api/project_issue";
 import { request } from "@/utils/request";
 import SelectIssueModal from "../components/SelectIssueModal";
+import { Empty } from "antd";
+import IssueCard from "../components/IssueCard";
 
 const RefBugNode = (props: NodeProps<BoardNode>) => {
     const userStore = useStores('userStore');
@@ -30,7 +32,8 @@ const RefBugNode = (props: NodeProps<BoardNode>) => {
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
             nodeId={props.data.node_id} title="引用缺陷" onEdit={() => setShowModal(true)}>
-            {issueInfo?.basic_info.title ?? ""}
+            {issueInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
+            {issueInfo != null && <IssueCard issueInfo={issueInfo}/>}
             {showModal == true && (
                 <SelectIssueModal nodeId={props.data.node_id} disableLinkReq={false} type={ISSUE_TYPE_BUG} onClose={() => setShowModal(false)} />
             )}

@@ -6,9 +6,11 @@ import NodeWrap from "./NodeWrap";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { get as get_apicoll, list as list_apicoll, type ApiCollInfo, API_COLL_GRPC, API_COLL_OPENAPI, API_COLL_CUSTOM } from "@/api/api_collection";
-import { Modal, Table } from "antd";
+import { Descriptions, Empty, Modal, Table } from "antd";
 import Pagination from "@/components/Pagination";
 import type { ColumnsType } from "antd/lib/table";
+import { useHistory } from "react-router-dom";
+import { LinkApiCollInfo } from "@/stores/linkAux";
 
 const PAGE_SIZE = 10;
 
@@ -138,9 +140,12 @@ const SelectApiCollModal = (props: SelectApiCollModalProps) => {
 };
 
 const RefApiCollNode = (props: NodeProps<BoardNode>) => {
+    const history = useHistory();
+
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const entryStore = useStores('entryStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [showModal, setShowModal] = useState(false);
     const [apiCollInfo, setApiCollInfo] = useState<ApiCollInfo | null>(null);
@@ -163,7 +168,23 @@ const RefApiCollNode = (props: NodeProps<BoardNode>) => {
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
             nodeId={props.data.node_id} title="引用接口" onEdit={() => setShowModal(true)}>
-            {apiCollInfo?.name ?? ""}
+            {apiCollInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
+            {apiCollInfo != null && (
+                <div>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkApiCollInfo("", projectStore.curProjectId, apiCollInfo.api_coll_id), history);
+                    }}>{apiCollInfo.name}</a>
+                    <Descriptions column={1} labelStyle={{ width: "90px" }}>
+                        <Descriptions.Item label="接口类型">
+                            {apiCollInfo.api_coll_type == API_COLL_GRPC && "GRPC"}
+                            {apiCollInfo.api_coll_type == API_COLL_OPENAPI && "OPENAPI/SWAGGER"}
+                            {apiCollInfo.api_coll_type == API_COLL_CUSTOM && "自定义接口"}
+                        </Descriptions.Item>
+                    </Descriptions>
+                </div>
+            )}
             {showModal == true && (
                 <SelectApiCollModal nodeId={props.data.node_id} onClose={() => setShowModal(false)} />
             )}

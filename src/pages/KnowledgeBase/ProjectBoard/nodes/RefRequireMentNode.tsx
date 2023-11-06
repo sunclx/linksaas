@@ -6,9 +6,11 @@ import NodeWrap from "./NodeWrap";
 import { useStores } from "@/hooks";
 import { type RequirementInfo, get_requirement, list_requirement, REQ_SORT_UPDATE_TIME } from "@/api/project_requirement";
 import { request } from "@/utils/request";
-import { Modal, Table } from "antd";
+import { Descriptions, Empty, Modal, Table } from "antd";
 import type { ColumnsType } from "antd/lib/table";
 import Pagination from '@/components/Pagination';
+import { useHistory } from "react-router-dom";
+import { LinkRequirementInfo } from "@/stores/linkAux";
 
 const PAGE_SIZE = 10;
 
@@ -78,7 +80,7 @@ const SelectRequireMentModal = (props: SelectRequireMentModalProps) => {
             ),
         },
         {
-            title: "关联任务梳理",
+            title: "关联任务数量",
             width: 100,
             dataIndex: "issue_link_count",
         },
@@ -121,11 +123,11 @@ const SelectRequireMentModal = (props: SelectRequireMentModalProps) => {
 
     return (
         <Modal open title="选择需求" footer={null}
-        onCancel={e=>{
-            e.stopPropagation();
-            e.preventDefault();
-            props.onClose();
-        }}>
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onClose();
+            }}>
             <Table
                 style={{ marginTop: '8px', maxHeight: "calc(100vh - 300px)", overflowY: "scroll" }}
                 rowKey={'requirement_id'}
@@ -144,9 +146,12 @@ const SelectRequireMentModal = (props: SelectRequireMentModalProps) => {
 };
 
 const RefRequireMentNode = (props: NodeProps<BoardNode>) => {
+    const history = useHistory();
+
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const entryStore = useStores('entryStore');
+    const linkAuxStore = useStores('linkAuxStore');
 
     const [showModal, setShowModal] = useState(false);
     const [requireMentInfo, setRequireMentInfo] = useState<RequirementInfo | null>(null);
@@ -169,7 +174,21 @@ const RefRequireMentNode = (props: NodeProps<BoardNode>) => {
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
             nodeId={props.data.node_id} title="引用需求" onEdit={() => setShowModal(true)}>
-            {requireMentInfo?.base_info.title ?? ""}
+            {requireMentInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
+            {requireMentInfo != null && (
+                <div>
+                    <a onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, requireMentInfo.requirement_id), history);
+                    }}>{requireMentInfo.base_info.title}</a>
+                    <Descriptions column={1} labelStyle={{ width: "90px" }}>
+                        <Descriptions.Item label="关联任务">
+                            {requireMentInfo.issue_link_count}
+                        </Descriptions.Item>
+                    </Descriptions>
+                </div>
+            )}
             {showModal == true && (
                 <SelectRequireMentModal nodeId={props.data.node_id} onClose={() => setShowModal(false)} />
             )}
