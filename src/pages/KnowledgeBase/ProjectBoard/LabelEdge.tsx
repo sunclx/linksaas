@@ -74,7 +74,7 @@ const LabelEdge = (props: EdgeProps<BoardEdge>) => {
 
     return (
         <>
-            <BaseEdge path={edgePath} markerEnd={props.markerEnd}/>
+            <BaseEdge path={edgePath} markerEnd={props.markerEnd} style={{strokeWidth:2,stroke:"orange"}}/>
             <EdgeLabelRenderer>
                 <div
                     style={{

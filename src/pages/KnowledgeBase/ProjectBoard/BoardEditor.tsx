@@ -21,6 +21,8 @@ import RefDataAnnoNode from "./nodes/RefDataAnnoNode";
 import ImageNode from "./nodes/ImageNode";
 import TextNode from "./nodes/TextNode";
 import LabelEdge from "./LabelEdge";
+import CommentEntry from "@/components/CommentEntry";
+import { COMMENT_TARGET_ENTRY } from "@/api/project_comment";
 
 const BoardEditor = () => {
     const userStore = useStores('userStore');
@@ -269,9 +271,9 @@ const BoardEditor = () => {
                 type: "LabelEdge",
                 markerEnd: {
                     type: MarkerType.Arrow,
-                    color: 'black',
+                    color: 'orange',
                     strokeWidth: 3,
-                }
+                },
             }
         });
         setEdges(tmpEdgeList);
@@ -318,6 +320,10 @@ const BoardEditor = () => {
                     <MiniMap nodeStrokeWidth={3} zoomable pannable />
                     <Panel position="top-left">
                         <NodePanel />
+                    </Panel>
+                    <Panel position="top-right">
+                        <CommentEntry projectId={projectStore.curProjectId} targetType={COMMENT_TARGET_ENTRY}
+                            targetId={entryStore.curEntry?.entry_id ?? ""} myUserId={userStore.userInfo.userId} myAdmin={projectStore.isAdmin} />
                     </Panel>
                 </ReactFlow>
             </div>
