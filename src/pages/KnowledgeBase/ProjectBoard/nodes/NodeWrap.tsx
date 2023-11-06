@@ -69,14 +69,14 @@ const NodeWrap = (props: NodeWrapProps) => {
             }>
             <NodeResizeControl minWidth={props.minWidth} minHeight={props.minHeight}
                 shouldResize={() => props.canEdit} />
-            <Handle type="source" position={Position.Left} id="1" style={{ top: "40%", width: "10px", height: "10px" }} />
-            <Handle type="source" position={Position.Top} id="2" style={{ left: "40%", width: "10px", height: "10px" }} />
-            <Handle type="source" position={Position.Right} id="3" style={{ top: "40%", width: "10px", height: "10px" }} />
-            <Handle type="source" position={Position.Bottom} id="4" style={{ left: "40%", width: "10px", height: "10px" }} />
-            <Handle type="target" position={Position.Left} id="5" style={{ top: "60%", backgroundColor: "white", border: "1px solid black", width: "10px", height: "10px" }} />
-            <Handle type="target" position={Position.Top} id="6" style={{ left: "60%", backgroundColor: "white", border: "1px solid black", width: "10px", height: "10px" }} />
-            <Handle type="target" position={Position.Right} id="7" style={{ top: "60%", backgroundColor: "white", border: "1px solid black", width: "10px", height: "10px" }} />
-            <Handle type="target" position={Position.Bottom} id="8" style={{ left: "60%", backgroundColor: "white", border: "1px solid black", width: "10px", height: "10px" }} />
+            <Handle type="source" position={Position.Left} id="1" style={{ top: "40%", width: "6px", height: "6px" }} />
+            <Handle type="source" position={Position.Top} id="2" style={{ left: "40%", width: "6px", height: "6px" }} />
+            <Handle type="source" position={Position.Right} id="3" style={{ top: "40%", width: "6px", height: "6px" }} />
+            <Handle type="source" position={Position.Bottom} id="4" style={{ left: "40%", width: "6px", height: "6px" }} />
+            <Handle type="target" position={Position.Left} id="5" style={{ top: "60%", backgroundColor: "white", border: "1px solid black", width: "6px", height: "6px" }} />
+            <Handle type="target" position={Position.Top} id="6" style={{ left: "60%", backgroundColor: "white", border: "1px solid black", width: "6px", height: "6px" }} />
+            <Handle type="target" position={Position.Right} id="7" style={{ top: "60%", backgroundColor: "white", border: "1px solid black", width: "6px", height: "6px" }} />
+            <Handle type="target" position={Position.Bottom} id="8" style={{ left: "60%", backgroundColor: "white", border: "1px solid black", width: "6px", height: "6px" }} />
             {props.children}
             {showRemoveModal == true && (
                 <Modal open title={`删除节点 ${props.title}`}

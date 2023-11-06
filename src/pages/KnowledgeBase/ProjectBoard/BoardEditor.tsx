@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { observer } from 'mobx-react';
-import type { Node as FlowNode, Edge as FlowEdge, XYPosition, OnNodesDelete, OnNodesChange, NodePositionChange, NodeDimensionChange } from 'reactflow';
-import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, Panel, ReactFlowProvider } from 'reactflow';
+import type { Node as FlowNode, Edge as FlowEdge, XYPosition, OnNodesDelete, OnNodesChange, NodePositionChange, NodeDimensionChange, OnConnect, OnEdgesDelete } from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, MarkerType, MiniMap, Panel, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import "./flow.css";
 import { useStores } from "@/hooks";
@@ -11,9 +11,8 @@ import RefTaskNode from "./nodes/RefTaskNode";
 import { BOARD_NODE_TYPE_IMAGE, type BOARD_NODE_TYPE, BOARD_NODE_TYPE_TEXT, BOARD_NODE_TYPE_REF_BUG, BOARD_NODE_TYPE_REF_REQUIRE_MENT, BOARD_NODE_TYPE_REF_PIPE_LINE, BOARD_NODE_TYPE_REF_API_COLL, BOARD_NODE_TYPE_REF_DATA_ANNO, BOARD_NODE_TYPE_REF_TASK } from "./nodes/types";
 import { request } from "@/utils/request";
 import { NODE_REF_TYPE_API_COLL, NODE_REF_TYPE_BUG, NODE_REF_TYPE_DATA_ANNO, NODE_REF_TYPE_PIPE_LINE, NODE_REF_TYPE_REQUIRE_MENT, NODE_REF_TYPE_TASK, NODE_TYPE_IMAGE, NODE_TYPE_REF, NODE_TYPE_TEXT } from "@/api/project_board";
-import { create_node, remove_node, update_node_position, update_node_size } from "@/api/project_board";
-
-import type { NodeData } from "@/api/project_board";
+import { create_node, remove_node, update_node_position, update_node_size, remove_edge, create_edge } from "@/api/project_board";
+import type { NodeData, EdgeKey } from "@/api/project_board";
 import RefBugNode from "./nodes/RefBugNode";
 import RefRequireMentNode from "./nodes/RefRequireMentNode";
 import RefPipeLineNode from "./nodes/RefPipeLineNode";
@@ -21,6 +20,7 @@ import RefApiCollNode from "./nodes/RefApiCollNode";
 import RefDataAnnoNode from "./nodes/RefDataAnnoNode";
 import ImageNode from "./nodes/ImageNode";
 import TextNode from "./nodes/TextNode";
+import LabelEdge from "./LabelEdge";
 
 const BoardEditor = () => {
     const userStore = useStores('userStore');
@@ -150,6 +150,27 @@ const BoardEditor = () => {
         }
     }, [setNodes, setEdges]);
 
+    const removeEdge = async (edgeKey: EdgeKey) => {
+        await request(remove_edge({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            board_id: entryStore.curEntry?.entry_id ?? "",
+            edge_key: edgeKey,
+        }));
+        boardStore.removeEdge(edgeKey);
+    };
+
+    const onEdgesDelete: OnEdgesDelete = useCallback((edgeList) => {
+        for (const edge of edgeList) {
+            removeEdge({
+                from_node_id: edge.source,
+                from_handle_id: edge.sourceHandle ?? "",
+                to_node_id: edge.target,
+                to_handle_id: edge.targetHandle ?? ""
+            });
+        }
+    }, [setEdges]);
+
     const updateNodePosition = async (nodeId: string) => {
         const index = boardStore.nodeList.findIndex(item => item.node_id == nodeId);
         if (index == -1) {
@@ -203,6 +224,34 @@ const BoardEditor = () => {
         [setNodes]
     );
 
+    const createEdge = async (edgeKey: EdgeKey) => {
+        await request(create_edge({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            board_id: entryStore.curEntry?.entry_id ?? "",
+            edge: {
+                edge_key: edgeKey,
+                label: "",
+            },
+        }));
+        boardStore.updateEdge(edgeKey);
+    };
+
+    const onConnect: OnConnect = useCallback(
+        (conn) => {
+            if (conn.source == conn.target || conn.source == null || conn.target == null || conn.sourceHandle == null || conn.targetHandle == null) {
+                return;
+            }
+            createEdge({
+                from_node_id: conn.source,
+                from_handle_id: conn.sourceHandle,
+                to_node_id: conn.target,
+                to_handle_id: conn.targetHandle,
+            });
+        },
+        [setEdges]
+    );
+
     useEffect(() => {
         const canUpdate = entryStore.curEntry?.can_update ?? false;
         const tmpEdgeList: FlowEdge[] = boardStore.edgeList.map(item => {
@@ -216,6 +265,13 @@ const BoardEditor = () => {
                 focusable: canUpdate,
                 updatable: canUpdate,
                 data: item,
+                animated: true,
+                type: "LabelEdge",
+                markerEnd: {
+                    type: MarkerType.Arrow,
+                    color: 'black',
+                    strokeWidth: 3,
+                }
             }
         });
         setEdges(tmpEdgeList);
@@ -237,6 +293,10 @@ const BoardEditor = () => {
         TextNode: TextNode,
     }), []);
 
+    const edgeTypes = useMemo(() => ({
+        LabelEdge: LabelEdge,
+    }), []);
+
     return (
         <ReactFlowProvider>
             <div className="reactflow-wrapper" style={{ height: "100%", width: "100%" }} ref={reactFlowWrapper}>
@@ -245,12 +305,15 @@ const BoardEditor = () => {
                     nodes={nodes}
                     edges={edges}
                     onInit={(instance) => boardStore.flowInstance = instance}
-                    deleteKeyCode={[]}
+                    deleteKeyCode={["Backspace", "Delete"]}
                     onNodesDelete={onNodesDelete}
+                    onEdgesDelete={onEdgesDelete}
                     onNodesChange={onNodesChange}
                     nodeTypes={nodeTypes}
+                    edgeTypes={edgeTypes}
+                    onConnect={onConnect}
                     fitView>
-                    <Background color="#aaa" variant={BackgroundVariant.Cross} style={{ backgroundColor: "#eee" }} />
+                    <Background color="#aaa" variant={BackgroundVariant.Cross} style={{ backgroundColor: "#f0f0f0" }} />
                     <Controls showInteractive={false} />
                     <MiniMap nodeStrokeWidth={3} zoomable pannable />
                     <Panel position="top-left">

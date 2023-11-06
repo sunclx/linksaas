@@ -13,12 +13,6 @@ export const NODE_REF_TYPE_PIPE_LINE: NODE_REF_TYPE = 3;  // CI/CD
 export const NODE_REF_TYPE_API_COLL: NODE_REF_TYPE = 4;
 export const NODE_REF_TYPE_DATA_ANNO: NODE_REF_TYPE = 5;
 
-export type EDGE_TYPE = number;
-export const EDGE_TYPE_BEZIER: EDGE_TYPE = 0;
-export const EDGE_TYPE_STRAIGHT: EDGE_TYPE = 1;
-export const EDGE_TYPE_STEP: EDGE_TYPE = 2;
-export const EDGE_TYPE_SMOOTH_STEP: EDGE_TYPE = 3;
-
 export type NodeRefData = {
     ref_type: NODE_REF_TYPE;
     ref_target_id: string;
@@ -58,7 +52,6 @@ export type EdgeKey = {
 
 export type Edge = {
     edge_key: EdgeKey;
-    edge_type: EDGE_TYPE;
     label: string;
 };
 
