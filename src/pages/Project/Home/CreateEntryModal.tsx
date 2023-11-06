@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { create_doc } from "@/api/project_doc";
 import { create as create_sprit } from "@/api/project_sprit";
-import { ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
+import { ENTRY_TYPE_BOARD, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
 import { useStores } from "@/hooks";
 import type { EntryPerm, ExtraSpritInfo, CreateRequest } from "@/api/project_entry";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment, { type Moment } from "moment";
 import s from "./UpdateEntryModal.module.less";
 import { request } from "@/utils/request";
-import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
+import { APP_PROJECT_KB_BOARD_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { useHistory } from "react-router-dom";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
@@ -29,6 +29,7 @@ const CreateEntryModal = () => {
     const entryStore = useStores('entryStore');
     const memberStore = useStores('memberStore');
     const docStore = useStores('docStore');
+    const boardStore = useStores('boardStore');
 
     const [title, setTitle] = useState("");
     const [entryPerm, setEntryPerm] = useState<EntryPerm>({
@@ -105,6 +106,8 @@ const CreateEntryModal = () => {
                 },
             }));
             entryId = res.doc_id;
+        }else if(entryStore.createEntryType == ENTRY_TYPE_BOARD){
+            entryId = nanoid(32);
         }
         if (entryId == "" || entryStore.createEntryType == null) {
             return;
@@ -149,6 +152,9 @@ const CreateEntryModal = () => {
                 owner_type: FILE_OWNER_TYPE_PAGES,
                 owner_id: entryId,
             }));
+        } else if (entryStore.createEntryType == ENTRY_TYPE_BOARD) {
+            boardStore.reset();
+            history.push(APP_PROJECT_KB_BOARD_PATH);
         }
         message.info("创建成功");
         entryStore.createEntryType = null;
@@ -178,7 +184,7 @@ const CreateEntryModal = () => {
 
     return (
         <Modal open title="创建内容"
-            okText="创建" okButtonProps={{ disabled: title == "" || packFileName != "" || uploadRatio > 0}}
+            okText="创建" okButtonProps={{ disabled: title == "" || packFileName != "" || uploadRatio > 0 }}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -205,6 +211,7 @@ const CreateEntryModal = () => {
                         <Radio value={ENTRY_TYPE_SPRIT}>工作计划</Radio>
                         <Radio value={ENTRY_TYPE_DOC}>文档</Radio>
                         <Radio value={ENTRY_TYPE_PAGES}>静态网页</Radio>
+                        <Radio value={ENTRY_TYPE_BOARD}>信息面板</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item label="所有成员可修改">

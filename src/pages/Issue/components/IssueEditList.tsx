@@ -13,7 +13,6 @@ import { LinkBugInfo, LinkRequirementInfo, LinkTaskInfo } from '@/stores/linkAux
 import { showShortNote } from '@/utils/short_note';
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from '@/api/short_note';
 import { issueState } from '@/utils/constant';
-import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { EditSelect } from '../../../components/EditCell/EditSelect';
 import { bugLvSelectItems, bugPrioritySelectItems, hourSelectItems, taskPrioritySelectItems } from './constant';
 import { EditText } from '@/components/EditCell/EditText';
@@ -132,29 +131,6 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
                 linkAuxStore.goToLink(new LinkBugInfo("", record.project_id, record.issue_id, issueIdList), history);
               }
             }} />
-            <a
-              style={{
-                padding: '0px 7px',
-                display: 'inline-block',
-                height: ' 20px',
-                background: '#F4F4F7',
-                borderRadius: '9px',
-                marginLeft: '4px',
-                color: '#A7A9B6',
-              }}
-              onClick={async (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (record.issue_type == ISSUE_TYPE_TASK) {
-                  linkAuxStore.goToLink(new LinkTaskInfo("", record.project_id, record.issue_id, issueIdList), history);
-                } else if (record.issue_type == ISSUE_TYPE_BUG) {
-                  linkAuxStore.goToLink(new LinkBugInfo("", record.project_id, record.issue_id, issueIdList), history);
-                }
-              }}
-            >
-              <img src={msgIcon} alt="" />
-              {record.msg_count > 999 ? `999+` : record.msg_count}
-            </a>
           </div>
         );
       },

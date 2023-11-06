@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { Link, useLocation } from 'react-router-dom';
 import style from '../index.module.less';
 import { LinkOutlined, QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
-import { APP_PROJECT_HOME_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from '@/utils/constant';
+import { APP_PROJECT_HOME_PATH, APP_PROJECT_KB_BOARD_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH } from '@/utils/constant';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 
@@ -35,6 +35,8 @@ const AccessTable: React.FC<{
           destPath = APP_PROJECT_HOME_PATH + "/access/view";
         }else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
           destPath = APP_PROJECT_KB_DOC_PATH + '/access/view';
+        }else if(pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)){
+          destPath = APP_PROJECT_KB_BOARD_PATH + '/access/view';
         } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
           destPath = APP_PROJECT_OVERVIEW_PATH + '/access/view';
         } else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {

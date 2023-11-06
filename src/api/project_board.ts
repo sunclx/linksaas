@@ -383,10 +383,10 @@ export async function list_edge(request: ListEdgeRequest): Promise<ListEdgeRespo
 }
 
 //获取单个连接
-export async function get_edge(request: GetEdgeRequest): Promise<GetEdgeRequest> {
+export async function get_edge(request: GetEdgeRequest): Promise<GetEdgeResponse> {
     const cmd = 'plugin:project_board_api|get_edge';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetEdgeRequest>(cmd, {
+    return invoke<GetEdgeResponse>(cmd, {
         request,
     });
 }

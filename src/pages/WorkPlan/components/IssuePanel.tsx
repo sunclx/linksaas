@@ -14,7 +14,6 @@ import { cancel_link_sprit } from '@/api/project_issue';
 import { request } from "@/utils/request";
 import { issueState, ISSUE_STATE_COLOR_ENUM } from "@/utils/constant";
 import type { History } from 'history';
-import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { useHistory } from "react-router-dom";
 import { EditDate } from "@/components/EditCell/EditDate";
 import { cancelEndTime, cancelEstimateMinutes, cancelRemainMinutes, cancelStartTime, getMemberSelectItems, updateCheckUser, updateEndTime, updateEstimateMinutes, updateExecUser, updateRemainMinutes, updateStartTime } from "@/pages/Issue/components/utils";
@@ -67,22 +66,6 @@ const renderTitle = (
             >
                 <span title={row.basic_info?.title}><LinkOutlined />{row.basic_info?.title}</span>
             </Button>
-            {row.msg_count > 0 && (
-                <span
-                    style={{
-                        padding: '0px 5px',
-                        display: 'inline-block',
-                        height: ' 20px',
-                        background: '#F4F4F7',
-                        borderRadius: '9px',
-                        marginLeft: '4px',
-                        color: '#A7A9B6',
-                    }}
-                >
-                    <img src={msgIcon} alt="" style={{ verticalAlign: 'sub' }} />
-                    {row.msg_count > 999 ? `999+` : row.msg_count}
-                </span>
-            )}
         </div>
     );
 };

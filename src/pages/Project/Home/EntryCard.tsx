@@ -2,14 +2,14 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES } from "@/api/project_entry";
+import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD } from "@/api/project_entry";
 import s from "./EntryCard.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import { EditOutlined, InfoCircleOutlined, MoreOutlined } from "@ant-design/icons";
 import EntryPopover from "./EntryPopover";
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
+import { APP_PROJECT_KB_BOARD_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_WORK_PLAN_PATH } from "@/utils/constant";
 import { getEntryTypeStr } from "./common";
 import RemoveEntryModal from "./RemoveEntryModal";
 import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
@@ -31,6 +31,7 @@ const EntryCard = (props: EntryCardPorps) => {
     const projectStore = useStores('projectStore');
     const entryStore = useStores('entryStore');
     const docStore = useStores('docStore');
+    const boardStore = useStores('boardStore');
 
     const [showCloseModal, setShowCloseModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -67,6 +68,10 @@ const EntryCard = (props: EntryCardPorps) => {
             history.push(APP_PROJECT_WORK_PLAN_PATH);
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
             setShowPagesModal(true);
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_BOARD) {
+            entryStore.curEntry = props.entryInfo;
+            boardStore.reset();
+            history.push(APP_PROJECT_KB_BOARD_PATH);
         }
     };
 

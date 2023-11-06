@@ -7,6 +7,7 @@ import type { History } from 'history';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
   APP_PROJECT_HOME_PATH,
+  APP_PROJECT_KB_BOARD_PATH,
   APP_PROJECT_KB_DOC_PATH,
   APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_OVERVIEW_PATH,
@@ -787,6 +788,8 @@ class LinkAuxStore {
       return APP_PROJECT_WORK_PLAN_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       return APP_PROJECT_KB_DOC_PATH + newSuffix;
+    } else if(pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)){
+      return APP_PROJECT_KB_BOARD_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
       return APP_PROJECT_MY_WORK_PATH + newSuffix;
     } else if (pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {

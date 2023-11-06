@@ -23,7 +23,6 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import React from 'react';
 import RenderSelectOpt from '@/components/RenderSelectOpt';
-import msgIcon from '@/assets/allIcon/msg-icon.png';
 import { request } from '@/utils/request';
 import type {
   ListParam as ListIssueParam,
@@ -62,23 +61,6 @@ const renderTitle = (
   return (
     <div>
       {row.basic_info?.title}
-
-      {row.msg_count && (
-        <span
-          style={{
-            padding: '0px 5px',
-            display: 'inline-block',
-            height: ' 20px',
-            background: '#F4F4F7',
-            borderRadius: '9px',
-            marginLeft: '4px',
-            color: '#A7A9B6',
-          }}
-        >
-          <img src={msgIcon} alt="" style={{ verticalAlign: 'sub' }} />
-          {row.msg_count > 999 ? `999+` : row.msg_count}
-        </span>
-      )}
     </div>
   );
 };
