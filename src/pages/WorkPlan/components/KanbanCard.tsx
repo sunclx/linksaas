@@ -389,11 +389,6 @@ const KanbanCard: React.FC<KanbanCardProps> = (props) => {
                 )}
                 {hover && (
                     <div>
-                        {props.issue.msg_count > 0 && (
-                            <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
-                                <span>&nbsp;评论数&nbsp;{props.issue.msg_count}</span>
-                            </Tag>
-                        )}
                         {props.issue.issue_type == ISSUE_TYPE_TASK && (
                             <Tag style={{ border: "none", backgroundColor: "#fffaea", marginTop: "10px" }}>
                                 <span style={{ color: taskPriority[props.issue.extra_info.ExtraTaskInfo?.priority ?? 0].color }}>

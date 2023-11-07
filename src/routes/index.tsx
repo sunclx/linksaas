@@ -48,6 +48,7 @@ import {
   APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_HOME_PATH,
   APP_PROJECT_MANAGER_PATH,
+  APP_PROJECT_KB_BOARD_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -84,6 +85,7 @@ import MyWorkLayout from '@/layouts/MyWorkLayout';
 import ProjectCiCd from "@/pages/Project/CiCd"
 import HomeLayout from '@/layouts/HomeLayout';
 import ProjectManager from '@/pages/ProjectManger';
+import ProjectBoard from '@/pages/KnowledgeBase/ProjectBoard';
 
 export interface IRouteConfig {
   // 路由路径
@@ -282,10 +284,16 @@ const routesConfig: IRouteConfig[] = [
             routes: [
               {
                 path: APP_PROJECT_KB_DOC_PATH,
-                title: "文档空间",
+                title: "项目文档",
                 component: ProjectDoc,
                 routes: getToolbarRoute(APP_PROJECT_KB_DOC_PATH),
               },
+              {
+                path: APP_PROJECT_KB_BOARD_PATH,
+                title: "信息面板",
+                component: ProjectBoard,
+                routes: getToolbarRoute(APP_PROJECT_KB_BOARD_PATH),
+              }
             ],
           },
           {

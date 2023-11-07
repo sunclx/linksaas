@@ -272,6 +272,60 @@ export namespace comment {
   };
 }
 
+export namespace board {
+  export type CreateNodeNotice = {
+    project_id: string;
+    board_id: string;
+    node_id: string;
+  };
+
+  export type UpdateNodeNotice = {
+    project_id: string;
+    board_id: string;
+    node_id: string;
+  };
+
+  export type RemoveNodeNotice = {
+    project_id: string;
+    board_id: string;
+    node_id: string;
+  };
+
+  export type CreateEdgeNotice = {
+    project_id: string;
+    board_id: string;
+    from_node_id: string;
+    from_handle_id: string;
+    to_node_id: string;
+    to_handle_id: string;
+  };
+  export type UpdateEdgeNotice = {
+    project_id: string;
+    board_id: string;
+    from_node_id: string;
+    from_handle_id: string;
+    to_node_id: string;
+    to_handle_id: string;
+  };
+  export type RemoveEdgeNotice = {
+    project_id: string;
+    board_id: string;
+    from_node_id: string;
+    from_handle_id: string;
+    to_node_id: string;
+    to_handle_id: string;
+  };
+
+  export type AllNotice = {
+    CreateNodeNotice?: CreateNodeNotice;
+    UpdateNodeNotice?: UpdateNodeNotice;
+    RemoveNodeNotice?: RemoveNodeNotice;
+    CreateEdgeNotice?: CreateEdgeNotice;
+    UpdateEdgeNotice?: UpdateEdgeNotice;
+    RemoveEdgeNotice?: RemoveEdgeNotice;
+  };
+}
+
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   IssueNotice?: issue.AllNotice;
@@ -279,4 +333,5 @@ export type AllNotice = {
   ClientNotice?: client.AllNotice;
   IdeaNotice?: idea.AllNotice;
   CommentNotice?: comment.AllNotice;
+  BoardNotice?: board.AllNotice;
 };
