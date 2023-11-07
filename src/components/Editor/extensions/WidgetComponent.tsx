@@ -25,9 +25,6 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     },
   };
   switch (props.widgetType) {
-    case widgets.WIDGET_TYPE_FUNNEL: {
-      return <widgets.FunnelWidget {...widgetProps} />;
-    }
     case widgets.WIDGET_TYPE_TASK_REF: {
       return <widgets.IssueRefWidget {...widgetProps} />;
     }
@@ -37,35 +34,8 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_SPRIT_REF: {
       return <widgets.SpritRefWidget {...widgetProps} />;
     }
-    case widgets.WIDGET_TYPE_5W2H: {
-      return <widgets.L5w2hWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_MEMBER_DUTY: {
-      return <widgets.MemberDutyWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_OTSW: {
-      return <widgets.OtswWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_SOAR: {
-      return <widgets.SoarWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_SWOT: {
-      return <widgets.SwotWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_TECH_COMPARE: {
-      return <widgets.TechCompareWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_TIME_RANGE: {
-      return <widgets.TimeRangeWidget {...widgetProps} />;
-    }
     case widgets.WIDGET_TYPE_MERMAID: {
       return <widgets.MermaidWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_SURVEY_CHOICE: {
-      return <widgets.SurveyChoiceWidget {...widgetProps} />;
-    }
-    case widgets.WIDGET_TYPE_SURVEY_TRUE_OR_FALSE: {
-      return <widgets.SurveyTrueOrFalseWidget {...widgetProps} />;
     }
     case widgets.WIDGET_TYPE_REQUIRE_MENT_REF: {
       return <widgets.RequirementRefWidget {...widgetProps} />;

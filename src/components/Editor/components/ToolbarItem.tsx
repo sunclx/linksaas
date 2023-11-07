@@ -17,20 +17,10 @@ import * as fsApi from '@/api/fs';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
 import {
-  WIDGET_TYPE_FUNNEL,
   WIDGET_TYPE_REQUIRE_MENT_REF,
   WIDGET_TYPE_TASK_REF,
   WIDGET_TYPE_BUG_REF,
-  WIDGET_TYPE_5W2H,
-  WIDGET_TYPE_MEMBER_DUTY,
-  WIDGET_TYPE_OTSW,
-  WIDGET_TYPE_SOAR,
-  WIDGET_TYPE_SWOT,
-  WIDGET_TYPE_TECH_COMPARE,
-  WIDGET_TYPE_TIME_RANGE,
   WIDGET_TYPE_MERMAID,
-  WIDGET_TYPE_SURVEY_CHOICE,
-  WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
   WidgetTypeList,
   WIDGET_TYPE_SPRIT_REF,
   WIDGET_TYPE_API_COLL_REF,
@@ -323,14 +313,6 @@ const ContentWidget = observer(() => {
       label: '项目管理',
       children: [
         {
-          key: WIDGET_TYPE_TIME_RANGE,
-          label: '时间区间',
-        },
-        {
-          key: WIDGET_TYPE_MEMBER_DUTY,
-          label: '人员职责',
-        },
-        {
           key: WIDGET_TYPE_REQUIRE_MENT_REF,
           label: "引用需求",
         },
@@ -349,36 +331,6 @@ const ContentWidget = observer(() => {
       ],
     });
   }
-  items.push({
-    key: 'analyse',
-    label: '项目分析',
-    children: [
-      {
-        key: WIDGET_TYPE_TECH_COMPARE,
-        label: '技术对比',
-      },
-      {
-        key: WIDGET_TYPE_SWOT,
-        label: 'SWOT分析',
-      },
-      {
-        key: WIDGET_TYPE_OTSW,
-        label: 'OTSW分析',
-      },
-      {
-        key: WIDGET_TYPE_SOAR,
-        label: 'SOAR分析',
-      },
-      {
-        key: WIDGET_TYPE_5W2H,
-        label: '七问分析',
-      },
-      {
-        key: WIDGET_TYPE_FUNNEL,
-        label: '漏斗模型',
-      },
-    ],
-  });
   const designItems = {
     key: 'design',
     label: '软件设计',
@@ -396,20 +348,6 @@ const ContentWidget = observer(() => {
     });
   }
   items.push(designItems);
-  items.push({
-    key: 'survey',
-    label: '知识巩固',
-    children: [
-      {
-        key: WIDGET_TYPE_SURVEY_CHOICE,
-        label: '选择题',
-      },
-      {
-        key: WIDGET_TYPE_SURVEY_TRUE_OR_FALSE,
-        label: '对错题',
-      },
-    ],
-  });
   const menu = (
     <Menu
       subMenuCloseDelay={0.05}

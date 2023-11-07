@@ -382,7 +382,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         )}
         {props.type == "bug" && (
           <Form layout="inline" style={{ paddingLeft: "10px" }}>
-            <Form.Item label="任务标题">
+            <Form.Item label="缺陷标题">
               <Input
                 placeholder="输入关键词"
                 prefix={<SearchOutlined style={{ color: '#B7B7B7' }} />}
