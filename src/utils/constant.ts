@@ -43,7 +43,6 @@ export const ADMIN_PATH_APPSTORE_APP_SUFFIX = '/admin/appstore/app';
 export const ADMIN_PATH_ORG_LIST_SUFFIX = '/admin/org/list';
 
 export const ADMIN_PATH_CLIENT_MENU_SUFFIX = '/admin/client/menu';
-export const ADMIN_PATH_CLIENT_AD_SUFFIX = '/admin/client/ad';
 
 export const ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX = '/admin/dockertemplate/cate';
 export const ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX = '/admin/dockertemplate/app';
