@@ -7,12 +7,6 @@ export type ExtraMenuItem = {
   weight: number;
 };
 
-export type AdItem = {
-  url: string;
-  img_url: string;
-  ad_id: string;
-  weight: number;
-};
 
 export type ServerCap = {
   project_doc: boolean;
@@ -24,7 +18,6 @@ export type ServerCap = {
 
 export type GetCfgResponse = {
   item_list: ExtraMenuItem[];
-  ad_list: AdItem[];
   server_cap: ServerCap;
   pay_center_url: string;
   can_invite: boolean;

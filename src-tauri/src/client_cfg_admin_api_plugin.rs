@@ -119,118 +119,6 @@ async fn remove_extra_menu<R: Runtime>(
     }
 }
 
-#[tauri::command]
-async fn list_ad<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminListAdRequest,
-) -> Result<AdminListAdResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ClientCfgAdminApiClient::new(chan.unwrap());
-    match client.list_ad(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_list_ad_response::Code::WrongSession as i32
-                || inner_resp.code == admin_list_ad_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_ad".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn set_ad_weight<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminSetAdWeightRequest,
-) -> Result<AdminSetAdWeightResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ClientCfgAdminApiClient::new(chan.unwrap());
-    match client.set_ad_weight(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_set_ad_weight_response::Code::WrongSession as i32
-                || inner_resp.code == admin_set_ad_weight_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("set_ad_weight".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn add_ad<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminAddAdRequest,
-) -> Result<AdminAddAdResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ClientCfgAdminApiClient::new(chan.unwrap());
-    match client.add_ad(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_add_ad_response::Code::WrongSession as i32
-                || inner_resp.code == admin_add_ad_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_ad".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn remove_ad<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AdminRemoveAdRequest,
-) -> Result<AdminRemoveAdResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = ClientCfgAdminApiClient::new(chan.unwrap());
-    match client.remove_ad(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == admin_remove_ad_response::Code::WrongSession as i32
-                || inner_resp.code == admin_remove_ad_response::Code::NotAuth as i32
-            {
-                crate::admin_auth_api_plugin::logout(app_handle).await;
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_ad".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
 pub struct ClientCfgAdminApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -243,10 +131,6 @@ impl<R: Runtime> ClientCfgAdminApiPlugin<R> {
                 set_extra_menu_weight,
                 add_extra_menu,
                 remove_extra_menu,
-                list_ad,
-                set_ad_weight,
-                add_ad,
-                remove_ad,
             ]),
         }
     }

@@ -8,7 +8,6 @@ import { useHistory, useLocation } from "react-router-dom";
 import {
     ADMIN_PATH_APPSTORE_APP_SUFFIX,
     ADMIN_PATH_APPSTORE_CATE_SUFFIX,
-    ADMIN_PATH_CLIENT_AD_SUFFIX,
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
@@ -63,8 +62,6 @@ const AdminNav = () => {
         setClientCfgSelectedKeys([]);
         if (location.pathname == ADMIN_PATH_CLIENT_MENU_SUFFIX) {
             setClientCfgSelectedKeys(["menu_admin"]);
-        } else if (location.pathname == ADMIN_PATH_CLIENT_AD_SUFFIX) {
-            setClientCfgSelectedKeys(["ad_admin"]);
         }
     }, [location.pathname]);
 
@@ -263,20 +260,13 @@ const AdminNav = () => {
                             key: "menu_admin",
                             disabled: !(permInfo?.menu_perm.read ?? false),
                         },
-                        {
-                            label: "广告",
-                            key: "ad_admin",
-                            disabled: !(permInfo?.ad_perm.read ?? false),
-                        },
                     ]}
                         style={{ borderRightWidth: "0px" }}
                         onSelect={e => {
                             if (e.selectedKeys.length == 1) {
                                 if (e.selectedKeys[0] == "menu_admin") {
                                     history.push(ADMIN_PATH_CLIENT_MENU_SUFFIX);
-                                } else if (e.selectedKeys[0] == "ad_admin") {
-                                    history.push(ADMIN_PATH_CLIENT_AD_SUFFIX);
-                                }
+                                } 
                             }
                         }} />
                 </Collapse.Panel>
