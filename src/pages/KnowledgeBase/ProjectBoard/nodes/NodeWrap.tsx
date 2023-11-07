@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Handle, Position, NodeResizeControl } from 'reactflow';
 import { observer } from 'mobx-react';
 import { Button, Card, Modal, Popover, Space } from "antd";
-import { EditOutlined, MoreOutlined } from "@ant-design/icons";
+import { EditOutlined, FormatPainterFilled, MoreOutlined } from "@ant-design/icons";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import { remove_node } from "@/api/project_board";
-
+import { remove_node, update_node_bg_color } from "@/api/project_board";
+import { CirclePicker } from 'react-color';
 
 function ResizeIcon() {
     return (
@@ -40,6 +40,7 @@ export interface NodeWrapProps {
     children: React.ReactNode;
     width: number;
     height: number;
+    bgColor: string;
     onEdit: () => void;
 }
 
@@ -64,9 +65,21 @@ const NodeWrap = (props: NodeWrapProps) => {
         setShowRemoveModal(false);
     };
 
+    const updateBgColor = async (color: string) => {
+        await request(update_node_bg_color({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            board_id: entryStore.curEntry?.entry_id ?? "",
+            node_id: props.nodeId,
+            bg_color: color,
+        }));
+        boardStore.updateNode(props.nodeId);
+    };
+
     return (
-        <Card title={props.title} style={{ width: props.width, height: props.height }}
+        <Card title={props.title} style={{ width: props.width, height: props.height, backgroundColor: props.bgColor }}
             bodyStyle={{ overflow: "scroll", height: props.height - 40 }}
+            headStyle={{borderBottom:"none"}}
             extra={
                 <>
                     {props.canEdit && (
@@ -76,6 +89,11 @@ const NodeWrap = (props: NodeWrapProps) => {
                                 e.preventDefault();
                                 props.onEdit();
                             }}><EditOutlined /></Button>
+                            <Popover trigger="hover" placement="top" content={
+                                <CirclePicker onChange={color => updateBgColor(color.hex)} />
+                            }>
+                                <FormatPainterFilled />
+                            </Popover>
                             <Popover trigger="click" placement="bottom" content={
                                 <div style={{ padding: "10px 10px" }}>
                                     <Button type="link" danger onClick={e => {

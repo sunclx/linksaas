@@ -176,7 +176,7 @@ const RefPipeLineNode = (props: NodeProps<BoardNode>) => {
 
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
-            nodeId={props.data.node_id} title="引用流水线" onEdit={() => setShowModal(true)}>
+            nodeId={props.data.node_id} title="引用流水线" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             {pipeLineInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
             {pipeLineInfo != null && (
                 <div>
@@ -184,7 +184,7 @@ const RefPipeLineNode = (props: NodeProps<BoardNode>) => {
                         e.stopPropagation();
                         e.preventDefault();
                         linkAuxStore.goToLink(new LinkPipeLineInfo("", projectStore.curProjectId, pipeLineInfo.pipe_line_id), history);
-                    }}>{pipeLineInfo.pipe_line_name}</a>
+                    }} style={{ fontSize: "16px", fontWeight: 600 }}>{pipeLineInfo.pipe_line_name}</a>
                     <Descriptions column={1} labelStyle={{ width: "90px" }}>
                         <Descriptions.Item label="运行平台">
                             {pipeLineInfo.plat_form == PLATFORM_TYPE_LINUX && "LINUX"}

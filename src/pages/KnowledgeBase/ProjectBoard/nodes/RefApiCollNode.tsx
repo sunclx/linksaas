@@ -167,7 +167,7 @@ const RefApiCollNode = (props: NodeProps<BoardNode>) => {
 
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
-            nodeId={props.data.node_id} title="引用接口" onEdit={() => setShowModal(true)}>
+            nodeId={props.data.node_id} title="引用接口" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             {apiCollInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
             {apiCollInfo != null && (
                 <div>
@@ -175,7 +175,7 @@ const RefApiCollNode = (props: NodeProps<BoardNode>) => {
                         e.stopPropagation();
                         e.preventDefault();
                         linkAuxStore.goToLink(new LinkApiCollInfo("", projectStore.curProjectId, apiCollInfo.api_coll_id), history);
-                    }}>{apiCollInfo.name}</a>
+                    }} style={{ fontSize: "16px", fontWeight: 600 }}>{apiCollInfo.name}</a>
                     <Descriptions column={1} labelStyle={{ width: "90px" }}>
                         <Descriptions.Item label="接口类型">
                             {apiCollInfo.api_coll_type == API_COLL_GRPC && "GRPC"}

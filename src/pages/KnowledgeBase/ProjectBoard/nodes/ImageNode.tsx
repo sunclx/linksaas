@@ -171,7 +171,7 @@ const ImageNode = (props: NodeProps<BoardNode>) => {
 
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
-            nodeId={props.data.node_id} title="图片" onEdit={() => setShowModal(true)}>
+            nodeId={props.data.node_id} title="图片" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             {imageUrl == "" && (
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />
             )}

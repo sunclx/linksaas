@@ -33,7 +33,7 @@ const NodeIcon = (props: NodeIconProps) => {
     }));
 
     return (
-        <div ref={drag}>
+        <div ref={drag} style={{ cursor: "move" }}>
             <img src={props.imgSrc} title={props.title} />
         </div>
     );
@@ -44,7 +44,7 @@ const NodePanel = () => {
         <Card>
             <Space direction="vertical">
                 <Popover trigger="hover" placement="rightBottom" content={
-                    <Space direction="vertical" style={{padding:"6px 6px"}}>
+                    <Space direction="vertical" style={{ padding: "6px 6px" }}>
                         <NodeIcon nodeType={BOARD_NODE_TYPE_REF_TASK} imgSrc={taskIcon} title="引用任务(拖动到画板)" />
                         <NodeIcon nodeType={BOARD_NODE_TYPE_REF_BUG} imgSrc={bugIcon} title="引用缺陷(拖动到画板)" />
                         <NodeIcon nodeType={BOARD_NODE_TYPE_REF_REQUIRE_MENT} imgSrc={reqIcon} title="引用需求(拖动到画板)" />

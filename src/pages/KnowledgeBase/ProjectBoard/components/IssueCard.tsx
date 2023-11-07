@@ -58,7 +58,7 @@ const IssueCard = (props: IssueCardProps) => {
                 } else {
                     linkAuxStore.goToLink(new LinkBugInfo("", projectStore.curProjectId, props.issueInfo.issue_id), history);
                 }
-            }}>{props.issueInfo.basic_info.title}</a></p>
+            }} style={{ fontSize: "16px", fontWeight: 600 }}>{props.issueInfo.basic_info.title}</a></p>
             <Descriptions column={1} labelStyle={{ width: "90px" }}>
                 <Descriptions.Item label="状态">
                     <div

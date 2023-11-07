@@ -173,7 +173,7 @@ const RefRequireMentNode = (props: NodeProps<BoardNode>) => {
 
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
-            nodeId={props.data.node_id} title="引用需求" onEdit={() => setShowModal(true)}>
+            nodeId={props.data.node_id} title="引用需求" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             {requireMentInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
             {requireMentInfo != null && (
                 <div>
@@ -181,7 +181,7 @@ const RefRequireMentNode = (props: NodeProps<BoardNode>) => {
                         e.stopPropagation();
                         e.preventDefault();
                         linkAuxStore.goToLink(new LinkRequirementInfo("", projectStore.curProjectId, requireMentInfo.requirement_id), history);
-                    }}>{requireMentInfo.base_info.title}</a>
+                    }} style={{ fontSize: "16px", fontWeight: 600 }}>{requireMentInfo.base_info.title}</a>
                     <Descriptions column={1} labelStyle={{ width: "90px" }}>
                         <Descriptions.Item label="关联任务">
                             {requireMentInfo.issue_link_count}

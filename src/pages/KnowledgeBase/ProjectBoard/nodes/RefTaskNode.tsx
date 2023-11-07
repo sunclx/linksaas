@@ -9,6 +9,8 @@ import { ISSUE_TYPE_TASK, get as get_issue, type IssueInfo } from "@/api/project
 import { request } from "@/utils/request";
 import { Empty } from "antd";
 import IssueCard from "../components/IssueCard";
+import { listen } from '@tauri-apps/api/event';
+import type * as NoticeType from '@/api/notice_type';
 
 const RefTaskNode = (props: NodeProps<BoardNode>) => {
     const userStore = useStores('userStore');
@@ -29,9 +31,25 @@ const RefTaskNode = (props: NodeProps<BoardNode>) => {
         }
     }, [props.data.node_data.NodeRefData?.ref_target_id]);
 
+    useEffect(() => {
+        const unListenFn = listen<NoticeType.AllNotice>("notice", ev => {
+            const notice = ev.payload;
+            if(notice.IssueNotice?.UpdateIssueNotice?.issue_id == props.data.node_data.NodeRefData?.ref_target_id){
+                loadIssueInfo(props.data.node_data.NodeRefData?.ref_target_id ?? "");
+            }else if(notice.IssueNotice?.UpdateIssueStateNotice?.issue_id == props.data.node_data.NodeRefData?.ref_target_id){
+                loadIssueInfo(props.data.node_data.NodeRefData?.ref_target_id ?? "");
+            }else if(notice.IssueNotice?.RemoveIssueNotice?.issue_id == props.data.node_data.NodeRefData?.ref_target_id){
+                setIssueInfo(null);
+            }
+        });
+        return () => {
+            unListenFn.then((unListen) => unListen());
+        };
+    }, []);
+
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
-            nodeId={props.data.node_id} title="引用任务" onEdit={() => setShowModal(true)}>
+            nodeId={props.data.node_id} title="引用任务" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             {issueInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
             {issueInfo != null && <IssueCard issueInfo={issueInfo}/>}
             {showModal == true && (

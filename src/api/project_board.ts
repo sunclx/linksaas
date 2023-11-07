@@ -39,6 +39,7 @@ export type Node = {
     y: number;
     w: number;
     h: number;
+    bg_color: string;
     in_edit: boolean;
     node_data: NodeData;
 };
@@ -98,6 +99,19 @@ export type UpdateNodeSizeRequest = {
 };
 
 export type UpdateNodeSizeResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type UpdateNodeBgColorRequest = {
+    session_id: string;
+    project_id: string;
+    board_id: string;
+    node_id: string;
+    bg_color: string;
+};
+
+export type UpdateNodeBgColorResponse = {
     code: number;
     err_msg: string;
 };
@@ -272,6 +286,15 @@ export async function update_node_size(request: UpdateNodeSizeRequest): Promise<
     const cmd = 'plugin:project_board_api|update_node_size';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateNodeSizeResponse>(cmd, {
+        request,
+    });
+}
+
+//更新节点背景色
+export async function update_node_bg_color(request: UpdateNodeBgColorRequest): Promise<UpdateNodeBgColorResponse> {
+    const cmd = 'plugin:project_board_api|update_node_bg_color';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateNodeBgColorResponse>(cmd, {
         request,
     });
 }

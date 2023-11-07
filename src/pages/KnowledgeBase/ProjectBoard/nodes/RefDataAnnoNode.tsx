@@ -182,7 +182,7 @@ const RefDataAnnoNode = (props: NodeProps<BoardNode>) => {
 
     return (
         <NodeWrap minWidth={150} minHeight={150} canEdit={entryStore.curEntry?.can_update ?? false} width={props.data.w} height={props.data.h}
-            nodeId={props.data.node_id} title="引用数据标注" onEdit={() => setShowModal(true)}>
+            nodeId={props.data.node_id} title="引用数据标注" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             {annoProjectInfo == null && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: "0px 0px" }} />}
             {annoProjectInfo != null && (
                 <div>
@@ -190,7 +190,7 @@ const RefDataAnnoNode = (props: NodeProps<BoardNode>) => {
                         e.stopPropagation();
                         e.preventDefault();
                         linkAuxStore.goToLink(new LinkDataAnnoInfo("", projectStore.curProjectId, annoProjectInfo.anno_project_id), history);
-                    }}>{annoProjectInfo.base_info.name}</a>
+                    }} style={{ fontSize: "16px", fontWeight: 600 }}>{annoProjectInfo.base_info.name}</a>
                     <Descriptions column={1} labelStyle={{ width: "90px" }}>
                         <Descriptions.Item label="标注类型">
                             {annoProjectInfo.base_info.anno_type == ANNO_TYPE_AUDIO_CLASSIFI && "音频分类"}

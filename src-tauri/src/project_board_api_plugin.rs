@@ -82,6 +82,31 @@ async fn update_node_size<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_node_bg_color<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateNodeBgColorRequest,
+) -> Result<UpdateNodeBgColorResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectBoardApiClient::new(chan.unwrap());
+    match client.update_node_bg_color(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_node_bg_color_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_node_bg_color".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn start_update_content<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -394,6 +419,7 @@ impl<R: Runtime> ProjectBoardApiPlugin<R> {
                 create_node,
                 update_node_position,
                 update_node_size,
+                update_node_bg_color,
                 start_update_content,
                 keep_update_content,
                 end_update_content,

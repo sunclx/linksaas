@@ -15,6 +15,7 @@ import RemoveEntryModal from "./RemoveEntryModal";
 import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
 import spritIcon from '@/assets/allIcon/icon-sprit.png';
 import htmlIcon from '@/assets/allIcon/icon-html.png';
+import boardIcon from '@/assets/allIcon/icon-board.png';
 import docIcon from '@/assets/channel/doc@2x.png';
 import PagesModal from "./PagesModal";
 
@@ -82,6 +83,8 @@ const EntryCard = (props: EntryCardPorps) => {
             return "seashell";
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
             return "bisque";
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_BOARD) {
+            return "gainsboro";
         }
         return "white";
     };
@@ -114,6 +117,8 @@ const EntryCard = (props: EntryCardPorps) => {
             return spritIcon;
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_PAGES) {
             return htmlIcon;
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_BOARD) {
+            return boardIcon;
         }
         return "";
     };

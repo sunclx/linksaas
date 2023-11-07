@@ -214,10 +214,11 @@ const BoardEditor = () => {
                         updateNodePosition(change.id);
                     }
                 } else if (change.type == "dimensions") {
+                    console.log(change);
                     const realChange = change as NodeDimensionChange;
                     if (realChange.resizing) {
                         boardStore.updateNodeSize(change.id, Math.round(realChange.dimensions?.width ?? 0), Math.round(realChange.dimensions?.height ?? 0));
-                    } else {
+                    } else if (realChange.resizing == false) {
                         updateNodeSize(change.id);
                     }
                 }
