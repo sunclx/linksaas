@@ -6,7 +6,6 @@ import ProjectLayout from '@/layouts/ProjectLayout';
 import UserLayout from '@/layouts/UserLayout';
 import NoFond from '@/pages/NoFond';
 
-import ProjectAppraise from '@/pages/Project/Appraise';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
@@ -108,11 +107,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/idea",
       title: "项目知识点",
       component: IdeaPage,
-    },
-    {
-      path: prefix + '/appraise',
-      title: '项目成员互评',
-      component: ProjectAppraise,
     },
     {
       path: prefix + "/req",

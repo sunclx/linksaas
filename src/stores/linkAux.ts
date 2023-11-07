@@ -1,8 +1,6 @@
 import type { RootStore } from '.';
 import { makeAutoObservable } from 'mobx';
-import * as linkAuxApi from '@/api/link_aux';
 import { request } from '@/utils/request';
-import { message } from 'antd';
 import type { History } from 'history';
 import type { ISSUE_STATE } from '@/api/project_issue';
 import {
@@ -41,7 +39,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_SPRIT = 5,
   LINK_TARGET_TASK = 6,
   LINK_TARGET_BUG = 7,
-  LINK_TARGET_APPRAISE = 8,
+  // LINK_TARGET_APPRAISE = 8,
   // LINK_TARGET_USER_KB = 9,
   // LINK_TARGET_ROBOT_METRIC = 10,
   // LINK_TARGET_EARTHLY_ACTION = 11,
@@ -174,35 +172,6 @@ export class LinkBugInfo {
   issueId: string;
   contextIssueIdList: string[];
 }
-
-export class LinkAppraiseInfo {
-  constructor(content: string, projectId: string, appraiseId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_APPRAISE;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.appraiseId = appraiseId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  appraiseId: string;
-}
-
-export class LinkUserKbInfo {
-  constructor(content: string, userId: string, spaceId: string, docId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_APPRAISE;
-    this.linkContent = content;
-    this.userId = userId;
-    this.spaceId = spaceId;
-    this.docId = docId;
-  }
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  userId: string;
-  spaceId: string;
-  docId: string;
-}
-
 
 export class LinkNoneInfo {
   constructor(content: string) {
@@ -394,48 +363,16 @@ class LinkAuxStore {
   }
   rootStore: RootStore;
 
-  async goToLink(link: LinkInfo, history: History, remoteCheck: boolean = true) {
+  async goToLink(link: LinkInfo, history: History) {
     const pathname = history.location.pathname;
     if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EVENT) {
       const eventLink = link as LinkEventlInfo;
-      if (remoteCheck) {
-        const res = await request(
-          linkAuxApi.check_access_event(
-            this.rootStore.userStore.sessionId,
-            eventLink.projectId,
-            eventLink.eventId,
-          ),
-        );
-        if (!res) {
-          return;
-        }
-        if (res.can_access == false) {
-          message.warn('没有权限查看对应工作记录');
-          return;
-        }
-      }
       history.push(this.genUrl(eventLink.projectId, pathname, "/record"), {
         eventTime: eventLink.eventTime,
         memberUserId: eventLink.userId,
       } as LinkEventState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_TASK) {
       const taskLink = link as LinkTaskInfo;
-      if (remoteCheck) {
-        const res = await request(
-          linkAuxApi.check_access_issue(
-            this.rootStore.userStore.sessionId,
-            taskLink.projectId,
-            taskLink.issueId,
-          ),
-        );
-        if (!res) {
-          return;
-        }
-        if (res.can_access == false) {
-          message.warn('没有权限查看对应任务');
-          return;
-        }
-      }
       if (this.rootStore.projectStore.curProjectId != taskLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(taskLink.projectId);
       }
@@ -446,22 +383,6 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BUG) {
       const bugLink = link as LinkBugInfo;
-      if (remoteCheck) {
-        const res = await request(
-          linkAuxApi.check_access_issue(
-            this.rootStore.userStore.sessionId,
-            bugLink.projectId,
-            bugLink.issueId,
-          ),
-        );
-        if (!res) {
-          return;
-        }
-        if (res.can_access == false) {
-          message.warn('没有权限查看对应缺陷');
-          return;
-        }
-      }
       if (this.rootStore.projectStore.curProjectId != bugLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(bugLink.projectId);
       }
@@ -472,21 +393,6 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
-      if (remoteCheck) {
-        const res = await request(
-          linkAuxApi.check_access_doc(
-            this.rootStore.userStore.sessionId,
-            docLink.projectId,
-            docLink.docId,
-          ));
-        if (!res) {
-          return;
-        }
-        if (res.can_access == false) {
-          message.warn('没有权限查看对应文档');
-          return;
-        }
-      }
       if (this.rootStore.docStore.inEdit) {
         this.rootStore.docStore.showCheckLeave(() => {
           this.goToDoc(docLink, history);
@@ -560,11 +466,11 @@ class LinkAuxStore {
         entry_id: entryLink.entryId,
       }));
       if (res.entry.entry_type == ENTRY_TYPE_SPRIT) {
-        await this.goToLink(new LinkSpritInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
+        await this.goToLink(new LinkSpritInfo("", entryLink.projectId, entryLink.entryId), history);
       } else if (res.entry.entry_type == ENTRY_TYPE_DOC) {
-        await this.goToLink(new LinkDocInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
+        await this.goToLink(new LinkDocInfo("", entryLink.projectId, entryLink.entryId), history);
       } else if (res.entry.entry_type == ENTRY_TYPE_BOARD) {
-        await this.goToLink(new LinkBoardInfo("", entryLink.projectId, entryLink.entryId), history, remoteCheck);
+        await this.goToLink(new LinkBoardInfo("", entryLink.projectId, entryLink.entryId), history);
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_API_COLL) {
       const apiCollLink = link as LinkApiCollInfo;
@@ -702,14 +608,6 @@ class LinkAuxStore {
   //跳转到研发行为订阅页面
   goToEventSubscribeList(history: History) {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/record/subscribe"));
-  }
-
-  //跳转到成员互评页面
-  goToAppriaseList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_member_appraise == true) {
-      return;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/appraise"));
   }
 
   //跳转到第三方接入列表

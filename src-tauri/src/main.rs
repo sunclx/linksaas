@@ -22,7 +22,6 @@ mod events_subscribe_api_plugin;
 mod external_events_api_plugin;
 mod fs_api_plugin;
 mod image_utils;
-mod link_aux_api_plugin;
 mod local_api;
 mod pages_plugin;
 mod helper;
@@ -31,7 +30,6 @@ mod org_admin_api_plugin;
 mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
-mod project_appraise_api_plugin;
 mod project_bulletin_api_plugin;
 mod project_cicd_api_plugin;
 mod project_code_api_plugin;
@@ -410,8 +408,6 @@ fn main() {
         .plugin(project_doc_api_plugin::ProjectDocApiPlugin::new())
         .plugin(project_issue_api_plugin::ProjectIssueApiPlugin::new())
         .plugin(fs_api_plugin::FsApiPlugin::new())
-        .plugin(project_appraise_api_plugin::ProjectAppraiseApiPlugin::new())
-        .plugin(link_aux_api_plugin::LinkAuxApiPlugin::new())
         .plugin(short_note_api_plugin::ShortNoteApiPlugin::new())
         .plugin(local_api::LocalApiPlugin::new())
         .plugin(events_subscribe_api_plugin::EventsSubscribeApiPlugin::new())

@@ -172,41 +172,6 @@ export namespace issue {
   };
 }
 
-export namespace appraise {
-  export type NewAppraiseNotice = {
-    project_id: string;
-    appraise_id: string;
-  };
-
-  export type UpdateAppraiseNotice = {
-    project_id: string;
-    appraise_id: string;
-  };
-
-  export type RemoveAppraiseNotice = {
-    project_id: string;
-    appraise_id: string;
-  };
-
-  export type NewVoteNotice = {
-    project_id: string;
-    appraise_id: string;
-  };
-
-  export type RevokeVoteNotice = {
-    project_id: string;
-    appraise_id: string;
-  };
-
-  export type AllNotice = {
-    NewAppraiseNotice?: NewAppraiseNotice;
-    UpdateAppraiseNotice?: UpdateAppraiseNotice;
-    RemoveAppraiseNotice?: RemoveAppraiseNotice;
-    NewVoteNotice?: NewVoteNotice;
-    RevokeVoteNotice?: RevokeVoteNotice;
-  };
-}
-
 export namespace client {
   export type WrongSessionNotice = {
     name: string;
@@ -329,7 +294,6 @@ export namespace board {
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   IssueNotice?: issue.AllNotice;
-  AppraiseNotice?: appraise.AllNotice;
   ClientNotice?: client.AllNotice;
   IdeaNotice?: idea.AllNotice;
   CommentNotice?: comment.AllNotice;

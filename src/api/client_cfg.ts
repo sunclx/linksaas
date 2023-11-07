@@ -11,7 +11,6 @@ export type ExtraMenuItem = {
 export type ServerCap = {
   project_doc: boolean;
   sprit: boolean;
-  appraise: boolean;
   issue: boolean;
   project_setting: boolean;
 };
