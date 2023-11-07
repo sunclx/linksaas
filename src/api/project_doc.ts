@@ -52,6 +52,16 @@ export type KeepUpdateDocResponse = {
     keep_update: boolean;
 };
 
+export type EndUpdateDocRequest = {
+    session_id: string;
+    doc_id: string;
+};
+
+export type EndUpdateDocResponse = {
+    code: number;
+    err_msg: string;
+};
+
 export type UpdateDocContentRequest = {
     session_id: string;
     project_id: string;
@@ -151,6 +161,15 @@ export async function keep_update_doc(request: KeepUpdateDocRequest): Promise<Ke
     const cmd = 'plugin:project_doc_api|keep_update_doc';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<KeepUpdateDocResponse>(cmd, {
+        request,
+    });
+}
+
+//结束更新文档
+export async function end_update_doc(request: EndUpdateDocRequest): Promise<EndUpdateDocResponse> {
+    const cmd = 'plugin:project_doc_api|end_update_doc';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<EndUpdateDocResponse>(cmd, {
         request,
     });
 }

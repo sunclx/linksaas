@@ -70,8 +70,11 @@ const WriteDoc: React.FC = () => {
     });
     return () => {
       clearInterval(timer);
+      request(docApi.end_update_doc({
+        session_id: userStore.sessionId,
+        doc_id: entryStore.curEntry?.entry_id ?? "",
+      }));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entryStore.curEntry]);
 
   //更新文档
