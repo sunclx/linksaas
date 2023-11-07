@@ -961,52 +961,6 @@ const projectEventList: EventDesc[] = [
         ]
     },
     {
-        id: "CreateAppraiseEvent",
-        name: "创建成员互估",
-        attrList: [
-            {
-                key: "appraise_id",
-                desc: "成员互估ID"
-            },
-            {
-                key: "title",
-                desc: "成员互估标题"
-            },
-        ]
-    },
-    {
-        id: "UpdateAppraiseEvent",
-        name: "修改成员互估",
-        attrList: [
-            {
-                key: "appraise_id",
-                desc: "成员互估ID"
-            },
-            {
-                key: "old_title",
-                desc: "旧成员互估标题"
-            },
-            {
-                key: "new_title",
-                desc: "新成员互估标题"
-            },
-        ]
-    },
-    {
-        id: "RemoveAppraiseEvent",
-        name: "删除成员互估",
-        attrList: [
-            {
-                key: "appraise_id",
-                desc: "成员互估ID"
-            },
-            {
-                key: "title",
-                desc: "成员互估标题"
-            },
-        ]
-    },
-    {
         id: "AddProjectAppEvent",
         name: "增加项目应用",
         attrList: [
