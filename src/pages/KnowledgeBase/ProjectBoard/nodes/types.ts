@@ -8,4 +8,6 @@ export const BOARD_NODE_TYPE_REF_API_COLL: BOARD_NODE_TYPE = "RefApiCollNode";
 export const BOARD_NODE_TYPE_REF_DATA_ANNO: BOARD_NODE_TYPE = "RefDataAnnoNode";
 export const BOARD_NODE_TYPE_IMAGE: BOARD_NODE_TYPE = "ImageNode";
 export const BOARD_NODE_TYPE_TEXT: BOARD_NODE_TYPE = "TextNode";
+export const BOARD_NODE_TYPE_MERMAID: BOARD_NODE_TYPE = "MermaidNode";
+
 
