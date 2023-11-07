@@ -371,7 +371,7 @@ const FloatToolBar = (props: FloatToolBarProps) => {
 
   return (
     <FloatingWrapper displayArrow={true} positioner="selection" placement="auto" enabled>
-      <Toolbar items={itemList} />
+      <Toolbar items={itemList}/>
     </FloatingWrapper>
   );
 };

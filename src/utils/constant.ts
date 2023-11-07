@@ -13,6 +13,7 @@ export const APP_PROJECT_HOME_PATH = '/app/project/home';
 export const APP_PROJECT_WORK_PLAN_PATH = '/app/project/work_plan';
 export const APP_PROJECT_KB_PATH = '/app/project/kb';
 export const APP_PROJECT_KB_DOC_PATH = '/app/project/kb/doc';
+export const APP_PROJECT_KB_BOARD_PATH = '/app/project/kb/board';
 export const APP_PROJECT_MY_WORK_PATH = '/app/project/my_work';
 export const APP_PROJECT_OVERVIEW_PATH = '/app/project/overview';
 

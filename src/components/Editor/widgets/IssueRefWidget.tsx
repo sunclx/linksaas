@@ -15,7 +15,6 @@ import { bugPriority, issueState, ISSUE_STATE_COLOR_ENUM, taskPriority } from '@
 import type { ColumnsType } from 'antd/lib/table';
 import { Table, message } from 'antd';
 import { useStores } from '@/hooks';
-import msgIcon from '@/assets/allIcon/msg-icon.png';
 import s from './IssueRefWidget.module.less';
 import type { LinkInfo } from '@/stores/linkAux';
 import { LinkTaskInfo, LinkBugInfo } from '@/stores/linkAux';
@@ -89,22 +88,6 @@ const renderTitle = (
       >
         <span title={row.basic_info?.title}><LinkOutlined />&nbsp;{row.basic_info?.title}</span>
       </Button>
-      {row.msg_count > 0 && (
-        <span
-          style={{
-            padding: '0px 5px',
-            display: 'inline-block',
-            height: ' 20px',
-            background: '#F4F4F7',
-            borderRadius: '9px',
-            marginLeft: '4px',
-            color: '#A7A9B6',
-          }}
-        >
-          <img src={msgIcon} alt="" style={{ verticalAlign: 'sub' }} />
-          {row.msg_count > 999 ? `999+` : row.msg_count}
-        </span>
-      )}
     </div>
   );
 };

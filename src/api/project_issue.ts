@@ -256,7 +256,6 @@ export type IssueInfo = {
   create_display_name: string; //创建人名称
   exec_display_name: string; //执行人名称
   check_display_name: string; //检查人名称
-  msg_count: number;
   depend_me_count: number;
   re_open_count: number;
   tag_info_list: IssueTag[];

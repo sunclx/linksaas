@@ -5,7 +5,7 @@ import { Badge, Divider, Tooltip } from 'antd';
 import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
-import { APP_PROJECT_HOME_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
+import { APP_PROJECT_HOME_PATH, APP_PROJECT_KB_BOARD_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
@@ -24,6 +24,8 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
       history.push(APP_PROJECT_WORK_PLAN_PATH + '/' + id);
     } else if (props.pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
       history.push(APP_PROJECT_KB_DOC_PATH + '/' + id);
+    } else if (props.pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)) {
+      history.push(APP_PROJECT_KB_BOARD_PATH + '/' + id);
     } else if (props.pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
       history.push(APP_PROJECT_MY_WORK_PATH + "/" + id);
     } else if (props.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH)) {
@@ -55,7 +57,7 @@ const Item: React.FC<{ id: string; pathname: string; title: string; badge?: numb
       >
         <Badge
           count={props.badge ?? 0}
-          offset={appStore.focusMode ? [18,-12] : [15, -18]}
+          offset={appStore.focusMode ? [18, -12] : [15, -18]}
           style={appStore.focusMode ? undefined : { padding: ' 0   3px', height: '16px', lineHeight: '16px' }}
           dot={appStore.focusMode}
         />
