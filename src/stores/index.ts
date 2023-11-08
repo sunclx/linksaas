@@ -3,7 +3,6 @@ import AppStore from './app';
 import ProjectStore from './project';
 import UserStore from './user';
 import NoticeStore from './notice';
-import AppraiseStore from './appraise';
 import LinkAuxStore from './linkAux';
 import DocStore from './doc';
 import SpritStore from './sprit';
@@ -19,7 +18,6 @@ export class RootStore {
   appStore: AppStore;
   memberStore: MemberStore;
   noticeStore: NoticeStore;
-  appraiseStore: AppraiseStore;
   linkAuxStore: LinkAuxStore;
   docStore: DocStore;
   spritStore: SpritStore;
@@ -35,7 +33,6 @@ export class RootStore {
     this.appStore = new AppStore(this);
     this.memberStore = new MemberStore(this);
     this.noticeStore = new NoticeStore(this);
-    this.appraiseStore = new AppraiseStore(this);
     this.linkAuxStore = new LinkAuxStore(this);
     this.docStore = new DocStore(this);
     this.spritStore = new SpritStore(this);
@@ -54,7 +51,6 @@ const _store = {
   appStore: rootStore.appStore,
   memberStore: rootStore.memberStore,
   noticeStore: rootStore.noticeStore,
-  appraiseStore: rootStore.appraiseStore,
   linkAuxStore: rootStore.linkAuxStore,
   docStore: rootStore.docStore,
   spritStore: rootStore.spritStore,

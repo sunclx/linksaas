@@ -81,18 +81,6 @@ const Toolbar: React.FC = observer(() => {
       />
       <Divider />
 
-      {projectStore.curProject?.setting.disable_member_appraise != true && (
-        <>
-          <Item
-            id="appraise"
-            pathname={pathname}
-            title="项目成员互评"
-            badge={projectStore.curProject?.project_status.undone_appraise_count || 0}
-          />
-          <Divider />
-        </>
-      )}
-
       <Item
         id="req"
         pathname={pathname}

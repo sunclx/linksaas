@@ -6,7 +6,6 @@ import ProjectLayout from '@/layouts/ProjectLayout';
 import UserLayout from '@/layouts/UserLayout';
 import NoFond from '@/pages/NoFond';
 
-import ProjectAppraise from '@/pages/Project/Appraise';
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
@@ -18,7 +17,6 @@ import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
 import {
   ADMIN_PATH,
-  ADMIN_PATH_CLIENT_AD_SUFFIX,
   ADMIN_PATH_CLIENT_MENU_SUFFIX,
   ADMIN_PATH_ORG_LIST_SUFFIX,
   ADMIN_PATH_PROJECT_CREATE_SUFFIX,
@@ -64,7 +62,6 @@ import ProjectDetail from '@/pages/Admin/ProjectAdmin/ProjectDetail';
 import DepartMentList from '@/pages/Admin/OrgAdmin/DepartMentList';
 import CreateProject from '@/pages/Admin/ProjectAdmin/CrateProject';
 import MenuAdmin from '@/pages/Admin/ClientAdmin/MenuAdmin';
-import AdAdmin from '@/pages/Admin/ClientAdmin/AdAdmin';
 import RequirementList from '@/pages/Project/Requirement/RequirementList';
 import RequirementCreate from '@/pages/Project/Requirement/RequirementCreate';
 import RequirementDetail from '@/pages/Project/Requirement/RequirementDetail';
@@ -110,11 +107,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/idea",
       title: "项目知识点",
       component: IdeaPage,
-    },
-    {
-      path: prefix + '/appraise',
-      title: '项目成员互评',
-      component: ProjectAppraise,
     },
     {
       path: prefix + "/req",
@@ -381,12 +373,6 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_CLIENT_MENU_SUFFIX,
         title: "额外菜单管理",
         component: MenuAdmin,
-        exact: true,
-      },
-      {
-        path: ADMIN_PATH_CLIENT_AD_SUFFIX,
-        title: "广告管理",
-        component: AdAdmin,
         exact: true,
       },
       {

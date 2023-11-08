@@ -10,6 +10,7 @@ import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
 import { request } from "@/utils/request";
 
 interface EditTextModalProps {
+    content: string,
     nodeId: string;
     onClose: () => void;
 }
@@ -21,7 +22,7 @@ const EditTextModal = (props: EditTextModalProps) => {
     const boardStore = useStores('boardStore');
 
     const { editor, editorRef } = useCommonEditor({
-        content: "",
+        content: props.content,
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: projectStore.curProjectId,
@@ -104,7 +105,7 @@ const TextNode = (props: NodeProps<BoardNode>) => {
             nodeId={props.data.node_id} title="文档" onEdit={() => setShowModal(true)} bgColor={props.data.bg_color == "" ? "white" : props.data.bg_color}>
             <ReadOnlyEditor content={props.data.node_data.NodeTextData?.data ?? ""} />
             {showModal == true && (
-                <EditTextModal nodeId={props.data.node_id} onClose={() => setShowModal(false)} />
+                <EditTextModal nodeId={props.data.node_id} content={props.data.node_data.NodeTextData?.data ?? ""} onClose={() => setShowModal(false)} />
             )}
         </NodeWrap>
     );

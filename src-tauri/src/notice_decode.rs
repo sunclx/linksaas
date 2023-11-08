@@ -166,50 +166,6 @@ pub mod issue {
     }
 }
 
-pub mod appraise {
-    use prost::Message;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::notices_appraise;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-    pub enum Notice {
-        NewAppraiseNotice(notices_appraise::NewAppraiseNotice),
-        UpdateAppraiseNotice(notices_appraise::UpdateAppraiseNotice),
-        RemoveAppraiseNotice(notices_appraise::RemoveAppraiseNotice),
-        NewVoteNotice(notices_appraise::NewVoteNotice),
-        RevokeVoteNotice(notices_appraise::RevokeVoteNotice),
-    }
-    pub fn decode_notice(data: &Any) -> Option<Notice> {
-        if data.type_url == notices_appraise::NewAppraiseNotice::type_url() {
-            if let Ok(notice) = notices_appraise::NewAppraiseNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewAppraiseNotice(notice));
-            }
-        } else if data.type_url == notices_appraise::UpdateAppraiseNotice::type_url() {
-            if let Ok(notice) =
-                notices_appraise::UpdateAppraiseNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::UpdateAppraiseNotice(notice));
-            }
-        } else if data.type_url == notices_appraise::RemoveAppraiseNotice::type_url() {
-            if let Ok(notice) =
-                notices_appraise::RemoveAppraiseNotice::decode(data.value.as_slice())
-            {
-                return Some(Notice::RemoveAppraiseNotice(notice));
-            }
-        } else if data.type_url == notices_appraise::NewVoteNotice::type_url() {
-            if let Ok(notice) = notices_appraise::NewVoteNotice::decode(data.value.as_slice()) {
-                return Some(Notice::NewVoteNotice(notice));
-            }
-        } else if data.type_url == notices_appraise::RevokeVoteNotice::type_url() {
-            if let Ok(notice) = notices_appraise::RevokeVoteNotice::decode(data.value.as_slice()) {
-                return Some(Notice::RevokeVoteNotice(notice));
-            }
-        }
-        None
-    }
-}
-
 pub mod idea {
     use prost::Message;
     use proto_gen_rust::google::protobuf::Any;
@@ -344,7 +300,6 @@ pub mod client {
 pub enum NoticeMessage {
     ProjectNotice(project::Notice),
     IssueNotice(issue::Notice),
-    AppraiseNotice(appraise::Notice),
     IdeaNotice(idea::Notice),
     CommentNotice(comment::Notice),
     BoardNotice(board::Notice),
@@ -359,9 +314,6 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = issue::decode_notice(data) {
         return Some(NoticeMessage::IssueNotice(ret));
-    }
-    if let Some(ret) = appraise::decode_notice(data) {
-        return Some(NoticeMessage::AppraiseNotice(ret));
     }
     if let Some(ret) = idea::decode_notice(data) {
         return Some(NoticeMessage::IdeaNotice(ret));

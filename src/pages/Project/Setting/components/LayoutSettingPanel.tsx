@@ -15,7 +15,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const projectStore = useStores('projectStore');
 
 
-    const [disableMemberAppraise, setDisableMemberAppraise] = useState(projectStore.curProject?.setting.disable_member_appraise ?? false);
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
     const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
@@ -32,7 +31,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [hasChange, setHasChange] = useState(false);
 
     const resetConfig = () => {
-        setDisableMemberAppraise(projectStore.curProject?.setting.disable_member_appraise ?? false);
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
         setDisableApiCollection(projectStore.curProject?.setting.disable_api_collection ?? false);
@@ -54,7 +52,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
             project_id: projectStore.curProjectId,
             setting: {
                 ...projectStore.curProject.setting,
-                disable_member_appraise: disableMemberAppraise,
                 disable_ext_event: disableExtEvent,
                 disable_data_anno: disableDataAnno,
                 disable_ci_cd: disableCiCd,
@@ -100,11 +97,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
             <Form labelCol={{ span: 5 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="右侧工具栏">
                     <Space direction="vertical">
-                        <Checkbox checked={disableMemberAppraise} onChange={e => {
-                            e.stopPropagation();
-                            setDisableMemberAppraise(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭成员互评入口</Checkbox>
                         <Checkbox checked={disableCiCd} onChange={e => {
                             e.stopPropagation();
                             setDisableCiCd(e.target.checked);

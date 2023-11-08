@@ -5,7 +5,6 @@ import { list as listProject, get_project as getProject, list_tag, TAG_SCOPRE_AL
 import { request } from '@/utils/request';
 import type { PROJECT_SETTING_TAB } from '@/utils/constant';
 import { APP_PROJECT_OVERVIEW_PATH } from '@/utils/constant';
-import { get_member_state as get_my_appraise_state } from '@/api/project_appraise';
 import { get_member_state as get_my_issue_state } from '@/api/project_issue';
 import type { History } from 'history';
 import { get_alarm_state } from "@/api/project_alarm";
@@ -18,7 +17,6 @@ export class WebProjectStatus {
   }
   undone_task_count: number = 0;
   undone_bug_count: number = 0;
-  undone_appraise_count: number = 0;
   new_event_count: number = 0; //启动软件以来的新事件数
   alarm_hit_count: number = 0;
   alarm_alert_count: number = 0;
@@ -29,7 +27,6 @@ export class WebProjectStatus {
     return (
       this.undone_task_count +
       this.undone_bug_count +
-      this.undone_appraise_count +
       this.new_event_count +
       this.alarm_hit_count +
       this.alarm_alert_count +
@@ -72,7 +69,6 @@ export default class ProjectStore {
         this.rootStore.ideaStore.loadKeyword(val),
       ]);
 
-      this.rootStore.appraiseStore.clearData();
       this.setCodeCommentInfo("", "");
       this.showProjectSetting = null;
     }
@@ -144,13 +140,6 @@ export default class ProjectStore {
       status.undone_task_count =
         issueStateRes.member_state.task_un_check_count +
         issueStateRes.member_state.task_un_exec_count;
-    }
-
-    const appraiseStateRes = await request(
-      get_my_appraise_state(this.rootStore.userStore.sessionId, projectId),
-    );
-    if (appraiseStateRes) {
-      status.undone_appraise_count = appraiseStateRes.un_done_count;
     }
 
     const alarmRes = await request(get_alarm_state({
@@ -286,23 +275,6 @@ export default class ProjectStore {
         }
       });
     }
-  }
-
-  async updateProjectAppraiseCount(projectId: string) {
-    const res = await request(
-      get_my_appraise_state(this.rootStore.userStore.sessionId, projectId),
-    );
-    runInAction(() => {
-      const index = this._projectList.findIndex((item) => item.project_id == projectId);
-      if (index != -1) {
-        this._projectList[index].project_status.undone_appraise_count = res.un_done_count;
-      }
-      const prj = this._projectMap.get(projectId);
-      if (prj !== undefined) {
-        prj.project_status.undone_appraise_count = res.un_done_count;
-        this._projectMap.set(projectId, prj);
-      }
-    });
   }
 
   addNewEventCount(projectId: string) {

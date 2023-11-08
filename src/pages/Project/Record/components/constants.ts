@@ -63,18 +63,6 @@ export const projectEvOptionList: CheckboxOptionType[] = [
         value: "setProjectMemberRole",
     },
     {
-        label: "创建评估",
-        value: "createAppraise",
-    },
-    {
-        label: "更新评估",
-        value: "updateAppraise",
-    },
-    {
-        label: "删除评估",
-        value: "removeAppraise",
-    },
-    {
         label: "转移超级管理员",
         value: "changeOwner",
     },
@@ -124,9 +112,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
         update_project_member: false,
         remove_project_member: false,
         set_project_member_role: false,
-        create_appraise: false,
-        update_appraise: false,
-        remove_appraise: false,
         change_owner: false,
         create_subscribe: false,
         update_subscribe: false,
@@ -168,12 +153,6 @@ export const calcProjectEvCfg = (values: string[] | undefined): ProjectEvCfg => 
             ret.remove_project_member = true;
         } else if (value == "setProjectMemberRole") {
             ret.set_project_member_role = true;
-        } else if (value == "createAppraise") {
-            ret.create_appraise = true;
-        } else if (value == "updateAppraise") {
-            ret.update_appraise = true;
-        } else if (value == "removeAppraise") {
-            ret.remove_appraise = true;
         } else if (value == "changeOwner") {
             ret.change_owner = true;
         } else if (value == "createSubscribe") {
@@ -238,15 +217,6 @@ export const genProjectEvCfgValues = (cfg: ProjectEvCfg): string[] => {
     }
     if (cfg.set_project_member_role) {
         retList.push("setProjectMemberRole");
-    }
-    if (cfg.create_appraise) {
-        retList.push("createAppraise");
-    }
-    if (cfg.update_appraise) {
-        retList.push("updateAppraise");
-    }
-    if (cfg.remove_appraise) {
-        retList.push("removeAppraise");
     }
     if (cfg.change_owner) {
         retList.push("changeOwner");

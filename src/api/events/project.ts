@@ -3,7 +3,6 @@ import type { PluginEvent } from '../events';
 import type { LinkInfo } from '@/stores/linkAux';
 import {
     LinkNoneInfo, LinkProjectInfo,
-    LinkAppraiseInfo,
     LinkEntryInfo,
     LinkRequirementInfo,
     LinkTaskInfo,
@@ -286,58 +285,6 @@ function get_set_role_simple_content(
     ];
 }
 
-export type CreateAppraiseEvent = {
-    appraise_id: string;
-    title: string;
-};
-
-function get_create_appraise_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: CreateAppraiseEvent
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 创建评估`),
-        new LinkAppraiseInfo(inner.title, ev.project_id, inner.appraise_id),
-    ];
-}
-
-export type UpdateAppraiseEvent = {
-    appraise_id: string;
-    old_title: string;
-    new_title: string;
-};
-
-function get_update_appraise_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: UpdateAppraiseEvent
-): LinkInfo[] {
-    const ret_list = [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 更新评估`),
-        new LinkAppraiseInfo(inner.new_title, ev.project_id, inner.appraise_id),
-    ];
-    if (inner.old_title != inner.new_title) {
-        ret_list.push(new LinkNoneInfo(`旧标题 ${inner.old_title}`));
-    }
-    return ret_list;
-}
-
-export type RemoveAppraiseEvent = {
-    appraise_id: string;
-    title: string;
-};
-
-function get_remove_appraise_simple_content(
-    ev: PluginEvent,
-    skip_prj_name: boolean,
-    inner: RemoveAppraiseEvent
-): LinkInfo[] {
-    return [
-        new LinkNoneInfo(`${skip_prj_name ? '' : ev.project_name} 删除评估 ${inner.title}`),
-    ];
-}
-
 export type ChangeOwnerEvent = {
     member_user_id: string;
     member_display_name: string;
@@ -471,10 +418,6 @@ export type AllProjectEvent = {
     UpdateProjectMemberEvent?: UpdateProjectMemberEvent;
     RemoveProjectMemberEvent?: RemoveProjectMemberEvent;
     SetProjectMemberRoleEvent?: SetProjectMemberRoleEvent;
-
-    CreateAppraiseEvent?: CreateAppraiseEvent;
-    UpdateAppraiseEvent?: UpdateAppraiseEvent;
-    RemoveAppraiseEvent?: RemoveAppraiseEvent;
     ChangeOwnerEvent?: ChangeOwnerEvent;
     CreateEventSubscribeEvent?: CreateEventSubscribeEvent;
     UpdateEventSubscribeEvent?: UpdateEventSubscribeEvent;
@@ -527,12 +470,6 @@ export function get_project_simple_content(
         );
     } else if (inner.SetProjectMemberRoleEvent !== undefined) {
         return get_set_role_simple_content(ev, skip_prj_name, inner.SetProjectMemberRoleEvent);
-    } else if (inner.CreateAppraiseEvent !== undefined) {
-        return get_create_appraise_simple_content(ev, skip_prj_name, inner.CreateAppraiseEvent);
-    } else if (inner.UpdateAppraiseEvent !== undefined) {
-        return get_update_appraise_simple_content(ev, skip_prj_name, inner.UpdateAppraiseEvent);
-    } else if (inner.RemoveAppraiseEvent !== undefined) {
-        return get_remove_appraise_simple_content(ev, skip_prj_name, inner.RemoveAppraiseEvent);
     } else if (inner.ChangeOwnerEvent !== undefined) {
         return get_change_owner_simple_content(ev, skip_prj_name, inner.ChangeOwnerEvent);
     } else if (inner.CreateEventSubscribeEvent !== undefined) {

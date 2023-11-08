@@ -4,6 +4,8 @@ export type NODE_TYPE = number;
 export const NODE_TYPE_REF: NODE_TYPE = 0;
 export const NODE_TYPE_IMAGE: NODE_TYPE = 1;
 export const NODE_TYPE_TEXT: NODE_TYPE = 2;
+export const NODE_TYPE_MERMAID: NODE_TYPE = 3;
+
 
 export type NODE_REF_TYPE = number;
 export const NODE_REF_TYPE_TASK: NODE_REF_TYPE = 0;
@@ -26,10 +28,15 @@ export type NodeImageData = {
     file_id: string;
 };
 
+export type NodeMermaidData = {
+    data: string;
+}
+
 export type NodeData = {
     NodeRefData?: NodeRefData;
     NodeTextData?: NodeTextData;
     NodeImageData?: NodeImageData;
+    NodeMermaidData?: NodeMermaidData;
 };
 
 export type Node = {

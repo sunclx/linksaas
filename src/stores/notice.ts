@@ -50,8 +50,6 @@ class NoticeStore {
           this.processProjectNotice(notice.ProjectNotice);
         } else if (notice.IssueNotice !== undefined) {
           this.processIssueNotice(notice.IssueNotice);
-        } else if (notice.AppraiseNotice !== undefined) {
-          this.processAppraiseNotice(notice.AppraiseNotice)
         } else if (notice.ClientNotice !== undefined) {
           this.processClientNotice(notice.ClientNotice);
         } else if (notice.IdeaNotice !== undefined) {
@@ -122,41 +120,6 @@ class NoticeStore {
       this.forwardCommentNotice(notice.RemoveCommentNotice.target_type, notice.RemoveCommentNotice.target_id, notice);
     } else if (notice.RemoveUnReadNotice !== undefined) {
       this.rootStore.projectStore.updateUnReadCommentStatus(notice.RemoveUnReadNotice.project_id);
-    }
-  }
-
-  private processAppraiseNotice(notice: NoticeType.appraise.AllNotice) {
-    if (notice.NewAppraiseNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.NewAppraiseNotice.project_id) {
-        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
-        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
-        this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewAppraiseNotice.project_id);
-      }
-    } else if (notice.UpdateAppraiseNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.UpdateAppraiseNotice.project_id) {
-        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
-        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
-      }
-    } else if (notice.RemoveAppraiseNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.RemoveAppraiseNotice.project_id) {
-        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
-        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
-        this.rootStore.appraiseStore.loadUserScore();
-        this.rootStore.projectStore.updateProjectAppraiseCount(notice.RemoveAppraiseNotice.project_id);
-      }
-    } else if (notice.NewVoteNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.NewVoteNotice.project_id) {
-        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
-        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
-        this.rootStore.appraiseStore.loadUserScore();
-        this.rootStore.projectStore.updateProjectAppraiseCount(notice.NewVoteNotice.project_id);
-      }
-    } else if (notice.RevokeVoteNotice !== undefined) {
-      if (this.rootStore.projectStore.curProjectId === notice.RevokeVoteNotice.project_id) {
-        this.rootStore.appraiseStore.loadAllRecord(this.rootStore.appraiseStore.allCurPage);
-        this.rootStore.appraiseStore.loadMyRecord(this.rootStore.appraiseStore.myCurPage);
-        this.rootStore.appraiseStore.loadUserScore();
-      }
     }
   }
 

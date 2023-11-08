@@ -16,7 +16,6 @@ import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_P
 import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT } from "@/api/project_entry";
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
-const MENU_KEY_SHOW_TOOL_BAR_APPRAISE = "toolbar.appraise.show"; //查看右侧工具栏成员互评
 const MENU_KEY_MEMBER_PREFIX = "member:";
 const MENU_KEY_SHOW_TOOL_BAR_IDEA = "toolbar.idea.show"
 const MENU_KEY_SHOW_TOOL_BAR_REQUIRE_MENT = "toolbar.requirement.show";
@@ -35,7 +34,6 @@ const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
 const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
 const MENU_KEY_LAYOUT_PREFIX = "layout.";
-const MENU_KEY_LAYOUT_TOOLBAR_APPRAISE = "layout.toolbar.appraise";
 const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
 const MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO = "layout.toolbar.dataanno";
 const MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT = "layout.toolbar.extev";
@@ -74,10 +72,6 @@ const ProjectQuickAccess = () => {
                     key: "layout.toolbar",
                     label: "右侧工具栏",
                     children: [
-                        {
-                            key: MENU_KEY_LAYOUT_TOOLBAR_APPRAISE,
-                            label: `${projectStore.curProject?.setting.disable_member_appraise == true ? "打开" : "关闭"}成员互评`
-                        },
                         {
                             key: MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION,
                             label: `${projectStore.curProject?.setting.disable_api_collection == true ? "打开" : "关闭"}接口集合`
@@ -157,12 +151,6 @@ const ProjectQuickAccess = () => {
                 }
             ]
         };
-        if (projectStore.curProject?.setting.disable_member_appraise != true) {
-            memberItem.children.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_APPRAISE,
-                label: "查看成员互评",
-            });
-        }
         tmpItems.push(memberItem);
 
         tmpItems.push({
@@ -336,9 +324,7 @@ const ProjectQuickAccess = () => {
             return;
         }
         const newSetting = { ...projectStore.curProject.setting };
-        if (key == MENU_KEY_LAYOUT_TOOLBAR_APPRAISE) {
-            newSetting.disable_member_appraise = !projectStore.curProject.setting.disable_member_appraise;
-        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION) {
+        if (key == MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION) {
             newSetting.disable_api_collection = !projectStore.curProject.setting.disable_api_collection;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO) {
             newSetting.disable_data_anno = !projectStore.curProject.setting.disable_data_anno;
@@ -370,9 +356,6 @@ const ProjectQuickAccess = () => {
         switch (info.key) {
             case MENU_KEY_SHOW_INVITE_MEMBER:
                 memberStore.showInviteMember = true;
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_APPRAISE:
-                linkAuxStore.goToAppriaseList(history);
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_IDEA:
                 linkAuxStore.goToLink(new LinkIdeaPageInfo("", projectStore.curProjectId, "", []), history);

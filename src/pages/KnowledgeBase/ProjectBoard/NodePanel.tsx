@@ -2,6 +2,7 @@ import { Card, Popover, Space } from "antd";
 import React from "react";
 import refIcon from '@/assets/board/ref.png';
 import imageIcon from '@/assets/board/image.png';
+import mermaidIcon from '@/assets/board/mermaid.png';
 import textIcon from '@/assets/board/text.png';
 import taskIcon from '@/assets/allIcon/icon-task.png';
 import bugIcon from '@/assets/allIcon/icon-bug.png';
@@ -10,7 +11,7 @@ import cicdIcon from '@/assets/allIcon/icon-cicd.png';
 import apiCollIcon from '@/assets/allIcon/icon-apicoll.png';
 import dataAnnoIcon from '@/assets/allIcon/icon-dataanno.png';
 import { useDrag } from 'react-dnd';
-import { BOARD_NODE_TYPE_IMAGE, type BOARD_NODE_TYPE, BOARD_NODE_TYPE_TEXT, BOARD_NODE_TYPE_REF_TASK, BOARD_NODE_TYPE_REF_BUG, BOARD_NODE_TYPE_REF_REQUIRE_MENT, BOARD_NODE_TYPE_REF_PIPE_LINE, BOARD_NODE_TYPE_REF_API_COLL, BOARD_NODE_TYPE_REF_DATA_ANNO } from "./nodes/types";
+import { BOARD_NODE_TYPE_IMAGE, type BOARD_NODE_TYPE, BOARD_NODE_TYPE_TEXT, BOARD_NODE_TYPE_REF_TASK, BOARD_NODE_TYPE_REF_BUG, BOARD_NODE_TYPE_REF_REQUIRE_MENT, BOARD_NODE_TYPE_REF_PIPE_LINE, BOARD_NODE_TYPE_REF_API_COLL, BOARD_NODE_TYPE_REF_DATA_ANNO, BOARD_NODE_TYPE_MERMAID } from "./nodes/types";
 
 
 export const DND_ITEM_TYPE = "node";
@@ -57,6 +58,7 @@ const NodePanel = () => {
                 </Popover>
                 <NodeIcon nodeType={BOARD_NODE_TYPE_IMAGE} imgSrc={imageIcon} title="图像(拖动到画板)" />
                 <NodeIcon nodeType={BOARD_NODE_TYPE_TEXT} imgSrc={textIcon} title="文本(拖动到画板)" />
+                <NodeIcon nodeType={BOARD_NODE_TYPE_MERMAID} imgSrc={mermaidIcon} title="Mermaid(拖动到画板)" />
             </Space>
         </Card>
     )

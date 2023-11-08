@@ -16,7 +16,7 @@ export type BasicProjectInfo = {
 };
 
 export type Setting = {
-  disable_member_appraise: boolean;
+  // disable_member_appraise: boolean;
   // disable_test_case: boolean;
   // disable_server_agent: boolean;
   disable_ext_event: boolean;
