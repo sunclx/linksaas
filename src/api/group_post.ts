@@ -1,5 +1,18 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type UserPostPerm = {
+    can_update_post: boolean;
+    can_remove_post: boolean;
+    can_mark_essence: boolean;
+    can_add_comment: boolean;
+};
+
+export type UserCommentPerm = {
+    can_remove_comment: boolean;
+    can_update_comment: boolean;
+};
+
+
 export type PostKeyInfo = {
     post_id: string;
     title: string;
@@ -14,6 +27,7 @@ export type PostKeyInfo = {
     update_display_name: string;
     update_logo_uri: string;
     update_time: number;
+    user_perm: UserPostPerm;
 };
 
 export type CommentInfo = {
@@ -27,6 +41,7 @@ export type CommentInfo = {
     update_display_name: string;
     update_logo_uri: string;
     update_time: number;
+    user_perm: UserCommentPerm;
 };
 
 export type AddPostRequest = {
@@ -82,7 +97,6 @@ export type UpdatePostEssenceResponse = {
     err_msg: string;
 };
 
-
 export type RemovePostRequest = {
     session_id: string;
     group_id: string;
@@ -94,12 +108,19 @@ export type RemovePostResponse = {
     err_msg: string;
 };
 
-export type ListPostKeyRequest = {
-    session_id: string;
-    group_id: string;
+export type ListPostParam = {
     filter_essence: boolean;
     filter_by_tag: boolean;
     tag: string;
+    filter_by_keyword: boolean;
+    keyword: string;
+};
+
+
+export type ListPostKeyRequest = {
+    session_id: string;
+    group_id: string;
+    list_param: ListPostParam;
     offset: number;
     limit: number;
 };

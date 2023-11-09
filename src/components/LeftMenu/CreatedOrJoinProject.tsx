@@ -5,12 +5,13 @@ import type { BasicProjectInfo } from '@/api/project';
 import { add_tag, create, update_tip_list } from '@/api/project';
 import { useStores } from '@/hooks';
 import { request } from '@/utils/request';
-import { useSimpleEditor } from '@/components/Editor';
+import { useCommonEditor } from '@/components/Editor';
 import { useHistory } from 'react-router-dom';
 import { APP_PROJECT_OVERVIEW_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
 import { join } from '@/api/project_member';
 import { unixTipList } from '@/pages/Project/Setting/components/TipListSettingPanel';
 import randomColor from 'randomcolor';
+import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 
 type CreatedProjectProps = {
   visible: boolean;
@@ -29,7 +30,18 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
   const [activeKey, setActiveKey] = useState("create");
   const [linkText, setLinkText] = useState('');
 
-  const { editor, editorRef } = useSimpleEditor("请输入项目描述");
+  const { editor, editorRef } = useCommonEditor({
+    placeholder: "请输入项目介绍",
+    content: "",
+    fsId: "",
+    ownerType: FILE_OWNER_TYPE_NONE,
+    ownerId: "",
+    historyInToolbar: false,
+    clipboardInToolbar: false,
+    commonInToolbar: false,
+    widgetInToolbar: false,
+    showReminder: false,
+  });
 
   const createProject = async () => {
     const content = editorRef.current?.getContent() ?? { type: "doc" };
@@ -116,7 +128,7 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
             key: "create",
             label: "创建项目",
             children: (
-              <Form labelCol={{ span: 3 }} style={{ height: "280px", overflowY: "scroll", paddingRight: "20px" }}>
+              <Form labelCol={{ span: 3 }} style={{ paddingRight: "20px" }}>
                 <Form.Item label="项目名称">
                   <Input allowClear placeholder={`请输入项目名称`} style={{ borderRadius: '6px' }} value={prjName} onChange={e => {
                     e.stopPropagation();

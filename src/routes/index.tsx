@@ -47,6 +47,12 @@ import {
   APP_PROJECT_HOME_PATH,
   APP_PROJECT_MANAGER_PATH,
   APP_PROJECT_KB_BOARD_PATH,
+  APP_PROJECT_PATH,
+  APP_GROUP_PATH,
+  APP_GROUP_HOME_PATH,
+  APP_GROUP_POST_DETAIL_PATH,
+  APP_GROUP_POST_LIST_PATH,
+  APP_GROUP_POST_EDIT_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -83,6 +89,11 @@ import ProjectCiCd from "@/pages/Project/CiCd"
 import HomeLayout from '@/layouts/HomeLayout';
 import ProjectManager from '@/pages/ProjectManger';
 import ProjectBoard from '@/pages/KnowledgeBase/ProjectBoard';
+import GroupLayout from '@/layouts/GroupLayout';
+import GroupHome from '@/pages/Group/GroupHome';
+import PostDetail from '@/pages/Group/PostDetail';
+import PostList from '@/pages/Group/PostList';
+import PostEdit from '@/pages/Group/PostEdit';
 
 export interface IRouteConfig {
   // 路由路径
@@ -253,7 +264,7 @@ const routesConfig: IRouteConfig[] = [
         component: ExtraMenuPage,
       },
       {
-        path: '/app/project',
+        path: APP_PROJECT_PATH,
         title: '项目',
         component: ProjectLayout,
         routes: [
@@ -300,6 +311,37 @@ const routesConfig: IRouteConfig[] = [
             component: OverviewLayout,
             routes: getToolbarRoute(APP_PROJECT_OVERVIEW_PATH),
           }
+        ],
+      },
+      {
+        path: APP_GROUP_PATH,
+        title: "兴趣组",
+        component: GroupLayout,
+        routes: [
+          {
+            path: APP_GROUP_HOME_PATH,
+            title: "兴趣组主界面",
+            component: GroupHome,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_POST_LIST_PATH,
+            title: "帖子列表页",
+            component: PostList,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_POST_DETAIL_PATH,
+            title: "帖子详情页",
+            component: PostDetail,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_POST_EDIT_PATH,
+            title: "帖子编辑页",
+            component: PostEdit,
+            exact: true,
+          },
         ],
       },
     ],
@@ -413,7 +455,6 @@ const routesConfig: IRouteConfig[] = [
       }
     ]
   },
-
   {
     path: '*',
     title: '错误页面',

@@ -9,11 +9,12 @@ import { useStores } from '@/hooks';
 type ProfileType = {
   defaultSrc?: string;
   visible: boolean;
+  borderRadius?: string;
   onOK?: (imgData: string | null) => void;
   onCancel?: () => void;
 };
 
-export const Profile: React.FC<ProfileType> = ({ visible, onCancel, onOK, defaultSrc }) => {
+export const Profile: React.FC<ProfileType> = ({ visible, borderRadius, onCancel, onOK, defaultSrc }) => {
   const appStore = useStores('appStore');
 
   let imageSrc = defaultSrc ?? '';
@@ -93,7 +94,7 @@ export const Profile: React.FC<ProfileType> = ({ visible, onCancel, onOK, defaul
           />
           <div>
             <h1>图片预览：</h1>
-            <div className={classNames('img-preview', s.img_preview)} />
+            <div className={classNames('img-preview', s.img_preview)} style={{ borderRadius: borderRadius ?? "50%" }} />
           </div>
         </div>
       </div>

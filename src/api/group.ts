@@ -1,5 +1,15 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type UserPerm = {
+    can_invite: boolean;
+    can_list_member: boolean;
+    can_remove_member: boolean;
+    can_update_member: boolean;
+    can_add_post: boolean;
+    can_update_group: boolean;
+    can_remove_group: boolean;
+};
+
 export type GroupInfo = {
     group_id: string;
     group_name: string;
@@ -17,6 +27,7 @@ export type GroupInfo = {
     update_time: number;
     last_post_time: number;
     my_last_view_time: number;
+    user_perm: UserPerm;
 };
 
 export type CreateRequest = {
@@ -31,7 +42,6 @@ export type CreateResponse = {
     err_msg: string;
     group_id: string;
 };
-
 
 export type ListMyRequest = {
     session_id: string;
@@ -57,6 +67,16 @@ export type ListPubResponse = {
     group_list: GroupInfo[];
 };
 
+export type  GetRequest = {
+    session_id: string;
+    group_id: string;
+};
+
+export type  GetResponse = {
+    code: number;
+    err_msg: string;
+    group: GroupInfo;
+};
 
 export type UpdateRequest = {
     session_id: string;
@@ -116,6 +136,15 @@ export async function list_pub(request: ListPubRequest): Promise<ListPubResponse
     const cmd = 'plugin:group_api|list_pub';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListPubResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个兴趣组
+export async function get(request: GetRequest): Promise<GetResponse> {
+    const cmd = 'plugin:group_api|get';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetResponse>(cmd, {
         request,
     });
 }

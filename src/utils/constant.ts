@@ -17,6 +17,12 @@ export const APP_PROJECT_KB_BOARD_PATH = '/app/project/kb/board';
 export const APP_PROJECT_MY_WORK_PATH = '/app/project/my_work';
 export const APP_PROJECT_OVERVIEW_PATH = '/app/project/overview';
 
+export const APP_GROUP_PATH = '/app/group';
+export const APP_GROUP_HOME_PATH = '/app/group/home';
+export const APP_GROUP_POST_DETAIL_PATH = '/app/group/post_detail';
+export const APP_GROUP_POST_LIST_PATH = '/app/group/post_list';
+export const APP_GROUP_POST_EDIT_PATH = '/app/group/post_edit';
+
 export const TASK_DETAIL_SUFFIX = '/task/detail';
 export const BUG_DETAIL_SUFFIX = '/bug/detail';
 
