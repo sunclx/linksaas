@@ -7,7 +7,7 @@ import { list_my, list_pub, get as get_group } from "@/api/group";
 import { request } from "@/utils/request";
 import Button from "@/components/Button";
 import { PlusOutlined } from "@ant-design/icons";
-import CreateGroupModal from "./components/CreateGroupModal";
+import CreateOrJoinGroupModal from "./components/CreateOrJoinGroupModal";
 import GroupCard from "./components/GroupCard";
 
 
@@ -16,13 +16,14 @@ const PAGE_SIZE = 12;
 const GroupHome = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
+    const groupStore = useStores('groupStore');
 
     const [activeKey, setActiveKey] = useState("pub");
     const [groupInfoList, setGroupInfoList] = useState<GroupInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
 
-    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showCreateOrJoinModal, setShowCreateOrJoinModal] = useState(false);
 
     const loadPubGroupList = async () => {
         setGroupInfoList([]);
@@ -58,6 +59,8 @@ const GroupHome = () => {
 
     useMemo(() => {
         projectStore.setCurProjectId('');
+        groupStore.curGroup = null;
+        groupStore.curPostKey = null;
     }, []);
 
     useEffect(() => {
@@ -82,8 +85,8 @@ const GroupHome = () => {
                                 onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    setShowCreateModal(true);
-                                }}>创建兴趣组</Button>
+                                    setShowCreateOrJoinModal(true);
+                                }}>创建/加入兴趣组</Button>
                         )}
                     </>
                 }
@@ -121,14 +124,14 @@ const GroupHome = () => {
                         ),
                     },
                 ]} />
-            {showCreateModal == true && (
-                <CreateGroupModal onCancel={() => setShowCreateModal(false)} onOk={() => {
+            {showCreateOrJoinModal == true && (
+                <CreateOrJoinGroupModal onCancel={() => setShowCreateOrJoinModal(false)} onOk={() => {
                     if (activeKey == "pub") {
                         loadPubGroupList();
                     } else if (activeKey == "my") {
                         loadMyGroupList();
                     }
-                    setShowCreateModal(false);
+                    setShowCreateOrJoinModal(false);
                 }} />
             )}
         </div>

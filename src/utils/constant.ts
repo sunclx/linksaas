@@ -22,6 +22,7 @@ export const APP_GROUP_HOME_PATH = '/app/group/home';
 export const APP_GROUP_POST_DETAIL_PATH = '/app/group/post_detail';
 export const APP_GROUP_POST_LIST_PATH = '/app/group/post_list';
 export const APP_GROUP_POST_EDIT_PATH = '/app/group/post_edit';
+export const APP_GROUP_MEMBER_LIST_PATH = '/app/group/member_list';
 
 export const TASK_DETAIL_SUFFIX = '/task/detail';
 export const BUG_DETAIL_SUFFIX = '/bug/detail';

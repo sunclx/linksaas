@@ -12,7 +12,7 @@ import { useStores } from "@/hooks";
 import AsyncImage from "@/components/AsyncImage";
 import { useHistory } from "react-router-dom";
 import { APP_GROUP_POST_LIST_PATH } from "@/utils/constant";
-import type { PostListState } from "../PostList";
+import { observer } from 'mobx-react';
 
 export interface GroupCardProps {
     groupInfo: GroupInfo;
@@ -24,6 +24,7 @@ const GroupCard = (props: GroupCardProps) => {
     const history = useHistory();
 
     const userStore = useStores('userStore');
+    const groupStore = useStores('groupStore');
 
     const [showImageModal, setShowImageModal] = useState(false);
 
@@ -42,7 +43,8 @@ const GroupCard = (props: GroupCardProps) => {
             group_name: props.groupInfo.group_name,
             icon_file_id: res.file_id,
             group_desc: props.groupInfo.group_desc,
-            read_only_for_new_member: props.groupInfo.read_only_for_new_member,
+            can_add_post_for_new: props.groupInfo.can_add_post_for_new,
+            can_add_comment_for_new: props.groupInfo.can_add_post_for_new,
         }));
         setShowImageModal(false);
         props.onChange();
@@ -52,10 +54,8 @@ const GroupCard = (props: GroupCardProps) => {
         <Card title={<a style={{ fontSize: "16px", fontWeight: 600 }} onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            const state: PostListState = {
-                groupInfo: props.groupInfo,
-            };
-            history.push(APP_GROUP_POST_LIST_PATH, state);
+            groupStore.curGroup = props.groupInfo;
+            history.push(APP_GROUP_POST_LIST_PATH);
         }}>{props.groupInfo.group_name}</a>}
             style={{ width: "300px" }}
             bodyStyle={{ display: "flex", height: "160px" }}
@@ -101,10 +101,8 @@ const GroupCard = (props: GroupCardProps) => {
             <div style={{ width: "100px", cursor: "pointer" }} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                const state: PostListState = {
-                    groupInfo: props.groupInfo,
-                };
-                history.push(APP_GROUP_POST_LIST_PATH, state);
+                groupStore.curGroup = props.groupInfo;
+                history.push(APP_GROUP_POST_LIST_PATH);
             }}>
                 {props.groupInfo.icon_file_id == "" && (
                     <img src={logoImg} style={{ width: "90px" }} />
@@ -128,4 +126,4 @@ const GroupCard = (props: GroupCardProps) => {
     );
 };
 
-export default GroupCard;
+export default observer(GroupCard);

@@ -208,6 +208,31 @@ async fn list_member<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_member<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetMemberRequest,
+) -> Result<GetMemberResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = GroupMemberApiClient::new(chan.unwrap());
+    match client.get_member(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_member_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_member".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn update_member<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -249,6 +274,7 @@ impl<R: Runtime> GroupMemberApiPlugin<R> {
                 leave,
                 remove_member,
                 list_member,
+                get_member,
                 update_member,
             ]),
         }

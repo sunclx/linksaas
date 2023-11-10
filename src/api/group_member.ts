@@ -128,6 +128,18 @@ export type ListMemberResponse = {
     member_list: GroupMemberInfo[];
 };
 
+export type GetMemberRequest = {
+    session_id: string;
+    group_id: string;
+    member_user_id: string;
+};
+
+export type GetMemberResponse = {
+    code: number;
+    err_msg: string;
+    member: GroupMemberInfo;
+};
+
 export type UpdateMemberRequest = {
     session_id: string;
     group_id: string;
@@ -208,6 +220,15 @@ export async function list_member(request: ListMemberRequest): Promise<ListMembe
     const cmd = 'plugin:group_member_api|list_member';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListMemberResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个成员信息
+export async function get_member(request: GetMemberRequest): Promise<GetMemberResponse> {
+    const cmd = 'plugin:group_member_api|gt_member';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetMemberResponse>(cmd, {
         request,
     });
 }

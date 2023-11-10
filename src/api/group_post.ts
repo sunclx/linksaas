@@ -12,7 +12,6 @@ export type UserCommentPerm = {
     can_update_comment: boolean;
 };
 
-
 export type PostKeyInfo = {
     post_id: string;
     title: string;
@@ -132,16 +131,27 @@ export type ListPostKeyResponse = {
     post_key_list: PostKeyInfo[];
 };
 
-export type GetPostRequest = {
+export type GetPostKeyRequest = {
     session_id: string;
     group_id: string;
     post_id: string;
 };
 
-export type GetPostResponse = {
+export type GetPostKeyResponse = {
     code: number;
     err_msg: string;
     post_key: PostKeyInfo;
+};
+
+export type GetPostContentRequest = {
+    session_id: string;
+    group_id: string;
+    post_id: string;
+};
+
+export type GetPostContentResponse = {
+    code: number;
+    err_msg: string;
     content: string;
 };
 
@@ -172,6 +182,19 @@ export type ListCommentResponse = {
     total_count: number;
     comment_list: CommentInfo[];
 };
+
+export type GetCommentRequest = {
+    session_id: string;
+    group_id: string;
+    post_id: string;
+    comment_id: string;
+};
+
+export type GetCommentResponse = {
+    code: number;
+    err_msg: string;
+    comment: CommentInfo;
+}
 
 export type UpdateCommentRequest = {
     session_id: string;
@@ -253,11 +276,20 @@ export async function list_post_key(request: ListPostKeyRequest): Promise<ListPo
     });
 }
 
-//获取帖子详情
-export async function get_post(request: GetPostRequest): Promise<GetPostResponse> {
-    const cmd = 'plugin:group_post_api|get_post';
+//获取单个帖子信息
+export async function get_post_key(request: GetPostKeyRequest): Promise<GetPostKeyResponse> {
+    const cmd = 'plugin:group_post_api|get_post_key';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
-    return invoke<GetPostResponse>(cmd, {
+    return invoke<GetPostKeyResponse>(cmd, {
+        request,
+    });
+}
+
+//获取帖子详情
+export async function get_post_content(request: GetPostContentRequest): Promise<GetPostContentResponse> {
+    const cmd = 'plugin:group_post_api|get_post_content';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetPostContentResponse>(cmd, {
         request,
     });
 }
@@ -276,6 +308,15 @@ export async function list_comment(request: ListCommentRequest): Promise<ListCom
     const cmd = 'plugin:group_post_api|list_comment';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<ListCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//获取单个评论
+export async function get_comment(request: GetCommentRequest): Promise<GetCommentResponse> {
+    const cmd = 'plugin:group_post_api|get_comment';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetCommentResponse>(cmd, {
         request,
     });
 }

@@ -157,21 +157,47 @@ async fn list_post_key<R: Runtime>(
 }
 
 #[tauri::command]
-async fn get_post<R: Runtime>(
+async fn get_post_key<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
-    request: GetPostRequest,
-) -> Result<GetPostResponse, String> {
+    request: GetPostKeyRequest,
+) -> Result<GetPostKeyResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }
     let mut client = GroupPostApiClient::new(chan.unwrap());
-    match client.get_post(request).await {
+    match client.get_post_key(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == get_post_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_post".into())) {
+            if inner_resp.code == get_post_key_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_post_key".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+
+#[tauri::command]
+async fn get_post_content<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetPostContentRequest,
+) -> Result<GetPostContentResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = GroupPostApiClient::new(chan.unwrap());
+    match client.get_post_content(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_post_content_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_post_content".into())) {
                     println!("{:?}", err);
                 }
             }
@@ -222,6 +248,31 @@ async fn list_comment<R: Runtime>(
             let inner_resp = response.into_inner();
             if inner_resp.code == list_comment_response::Code::WrongSession as i32 {
                 if let Err(err) = window.emit("notice", new_wrong_session_notice("list_comment".into())) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_comment<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetCommentRequest,
+) -> Result<GetCommentResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = GroupPostApiClient::new(chan.unwrap());
+    match client.get_comment(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_comment_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_comment".into())) {
                     println!("{:?}", err);
                 }
             }
@@ -296,9 +347,11 @@ impl<R: Runtime> GroupPostApiPlugin<R> {
                 update_post_essence,
                 remove_post,
                 list_post_key,
-                get_post,
+                get_post_key,
+                get_post_content,
                 add_comment,
                 list_comment,
+                get_comment,
                 update_comment,
                 remove_comment,
             ]),

@@ -53,6 +53,7 @@ import {
   APP_GROUP_POST_DETAIL_PATH,
   APP_GROUP_POST_LIST_PATH,
   APP_GROUP_POST_EDIT_PATH,
+  APP_GROUP_MEMBER_LIST_PATH,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -94,6 +95,7 @@ import GroupHome from '@/pages/Group/GroupHome';
 import PostDetail from '@/pages/Group/PostDetail';
 import PostList from '@/pages/Group/PostList';
 import PostEdit from '@/pages/Group/PostEdit';
+import GroupMemberList from '@/pages/Group/MemberList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -342,6 +344,12 @@ const routesConfig: IRouteConfig[] = [
             component: PostEdit,
             exact: true,
           },
+          {
+            path: APP_GROUP_MEMBER_LIST_PATH,
+            title: "兴趣组成员列表",
+            component: GroupMemberList,
+            exact: true,
+          }
         ],
       },
     ],

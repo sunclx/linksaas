@@ -19,7 +19,8 @@ export type GroupInfo = {
     member_count: number;
     post_count: number;
     fs_id: string;
-    read_only_for_new_member: boolean;
+    can_add_post_for_new: boolean;
+    can_add_comment_for_new: boolean;
     owner_user_id: string;
     owner_display_name: string;
     owner_logo_uri: string;
@@ -34,7 +35,8 @@ export type CreateRequest = {
     session_id: string;
     group_name: string;
     group_desc: string;
-    read_only_for_new_member: boolean;
+    can_add_post_for_new: boolean;
+    can_add_comment_for_new: boolean;
 };
 
 export type CreateResponse = {
@@ -67,12 +69,12 @@ export type ListPubResponse = {
     group_list: GroupInfo[];
 };
 
-export type  GetRequest = {
+export type GetRequest = {
     session_id: string;
     group_id: string;
 };
 
-export type  GetResponse = {
+export type GetResponse = {
     code: number;
     err_msg: string;
     group: GroupInfo;
@@ -84,7 +86,8 @@ export type UpdateRequest = {
     group_name: string;
     icon_file_id: string;
     group_desc: string;
-    read_only_for_new_member: boolean;
+    can_add_post_for_new: boolean;
+    can_add_comment_for_new: boolean;
 };
 
 export type UpdateResponse = {

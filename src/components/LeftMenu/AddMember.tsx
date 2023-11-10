@@ -97,7 +97,7 @@ const AddMember: FC<AddMemberProps> = (props) => {
               color: ' #2C2D2E',
             }}
           >
-            请发送邀请链接给需要邀请的成员，邀请链接有效期24小时
+            请发送邀请链接给需要邀请的成员
           </div>
 
           <div style={{ margin: '10px 0' }}>
