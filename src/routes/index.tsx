@@ -54,6 +54,7 @@ import {
   APP_GROUP_POST_LIST_PATH,
   APP_GROUP_POST_EDIT_PATH,
   APP_GROUP_MEMBER_LIST_PATH,
+  ADMIN_PATH_GROUP_LIST_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -96,6 +97,7 @@ import PostDetail from '@/pages/Group/PostDetail';
 import PostList from '@/pages/Group/PostList';
 import PostEdit from '@/pages/Group/PostEdit';
 import GroupMemberList from '@/pages/Group/MemberList';
+import GroupList from '@/pages/Admin/GroupAdmin/GroupList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -417,6 +419,12 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_ORG_LIST_SUFFIX,
         title: "部门列表",
         component: DepartMentList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_GROUP_LIST_SUFFIX,
+        title: "兴趣组列表",
+        component: GroupList,
         exact: true,
       },
       {
