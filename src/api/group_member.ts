@@ -226,7 +226,7 @@ export async function list_member(request: ListMemberRequest): Promise<ListMembe
 
 //获取单个成员信息
 export async function get_member(request: GetMemberRequest): Promise<GetMemberResponse> {
-    const cmd = 'plugin:group_member_api|gt_member';
+    const cmd = 'plugin:group_member_api|get_member';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetMemberResponse>(cmd, {
         request,

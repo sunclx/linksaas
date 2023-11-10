@@ -13,6 +13,9 @@ import AsyncImage from "@/components/AsyncImage";
 import { useHistory } from "react-router-dom";
 import { APP_GROUP_POST_LIST_PATH } from "@/utils/constant";
 import { observer } from 'mobx-react';
+import EditGroupModal from "./EditGroupModal";
+import LeaveGroupModal from "./LeaveGroupModal";
+import RemoveGroupModal from "./RemoveGroupModal";
 
 export interface GroupCardProps {
     groupInfo: GroupInfo;
@@ -27,6 +30,9 @@ const GroupCard = (props: GroupCardProps) => {
     const groupStore = useStores('groupStore');
 
     const [showImageModal, setShowImageModal] = useState(false);
+    const [showEditGroupModal, setShowEditGroupModal] = useState(false);
+    const [showLeaveModal, setShowLeaveModal] = useState(false);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
 
     const updateIcon = async (imgData: string) => {
         const res = await request(write_file_base64(userStore.sessionId, props.groupInfo.fs_id, "logo.png", imgData, ""));
@@ -80,14 +86,21 @@ const GroupCard = (props: GroupCardProps) => {
                                     <Button type="link" onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        setShowEditGroupModal(true);
                                     }}>修改简介</Button>
+                                )}
+                                {props.groupInfo.owner_user_id != userStore.userInfo.userId && (
+                                    <Button type="link" danger onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowLeaveModal(true);
+                                    }}>退出兴趣组</Button>
                                 )}
                                 {props.groupInfo.user_perm.can_remove_group && (
                                     <Button type="link" danger onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        setShowRemoveModal(true);
                                     }}>删除兴趣组</Button>
                                 )}
                             </Space>
@@ -120,6 +133,26 @@ const GroupCard = (props: GroupCardProps) => {
                         if (imgData != null) {
                             updateIcon(imgData);
                         }
+                    }} />
+            )}
+            {showEditGroupModal == true && (
+                <EditGroupModal groupInfo={props.groupInfo} onCancel={() => setShowEditGroupModal(false)} onOk={() => {
+                    props.onChange();
+                    setShowEditGroupModal(false);
+                }} />
+            )}
+            {showLeaveModal == true && (
+                <LeaveGroupModal groupInfo={props.groupInfo} onCancel={() => setShowLeaveModal(false)}
+                    onOk={() => {
+                        props.onRemove();
+                        setShowLeaveModal(false);
+                    }} />
+            )}
+            {showRemoveModal == true && (
+                <RemoveGroupModal groupInfo={props.groupInfo} onCancel={() => setShowRemoveModal(false)}
+                    onOk={() => {
+                        props.onRemove();
+                        setShowRemoveModal(false);
                     }} />
             )}
         </Card>

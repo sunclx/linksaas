@@ -10,13 +10,19 @@ import { ReadOnlyEditor } from "@/components/Editor";
 import logoImg from "@/assets/allIcon/logo.png";
 import { CloseOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
-import { APP_GROUP_MEMBER_LIST_PATH, APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_EDIT_PATH } from "@/utils/constant";
+import { APP_GROUP_HOME_PATH, APP_GROUP_MEMBER_LIST_PATH, APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_EDIT_PATH } from "@/utils/constant";
 import type { ColumnsType } from 'antd/lib/table';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
 import { observer } from 'mobx-react';
 import InviteModal from "./components/InviteModal";
 import InviteHistoryModal from "./components/InviteHistoryModal";
+import Profile from "@/components/Profile";
+import { FILE_OWNER_TYPE_GROUP, set_file_owner, write_file_base64 } from "@/api/fs";
+import { update as update_group, get as get_group } from "@/api/group";
+import EditGroupModal from "./components/EditGroupModal";
+import LeaveGroupModal from "./components/LeaveGroupModal";
+import RemoveGroupModal from "./components/RemoveGroupModal";
 
 const PAGE_SIZE = 20;
 
@@ -37,6 +43,10 @@ const PostList = () => {
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [showInviteHistoryModal, setShowInviteHistoryModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
+
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [showEditGroupModal, setShowEditGroupModal] = useState(false);
 
     const loadPostKeyInfoList = async () => {
         const res = await request(list_post_key({
@@ -69,6 +79,36 @@ const PostList = () => {
             tmpList[index].essence = essence;
             setPostKeyInfoList(tmpList);
         }
+    };
+
+    const loadGroup = async () => {
+        const res = await request(get_group({
+            session_id: userStore.sessionId,
+            group_id: groupStore.curGroup?.group_id ?? "",
+        }));
+        groupStore.curGroup = res.group;
+    }
+
+    const updateIcon = async (imgData: string) => {
+        const res = await request(write_file_base64(userStore.sessionId, groupStore.curGroup?.fs_id ?? "", "logo.png", imgData, ""));
+        await request(set_file_owner({
+            session_id: userStore.sessionId,
+            fs_id: groupStore.curGroup?.fs_id ?? "",
+            file_id: res.file_id,
+            owner_type: FILE_OWNER_TYPE_GROUP,
+            owner_id: groupStore.curGroup?.group_id ?? "",
+        }));
+        await request(update_group({
+            session_id: userStore.sessionId,
+            group_id: groupStore.curGroup?.group_id ?? "",
+            group_name: groupStore.curGroup?.group_name ?? "",
+            icon_file_id: res.file_id,
+            group_desc: groupStore.curGroup?.group_desc ?? "",
+            can_add_post_for_new: groupStore.curGroup?.can_add_post_for_new ?? false,
+            can_add_comment_for_new: groupStore.curGroup?.can_add_post_for_new ?? false,
+        }));
+        setShowImageModal(false);
+        await loadGroup();
     };
 
     const columns: ColumnsType<PostKeyInfo> = [
@@ -176,6 +216,20 @@ const PostList = () => {
                 <Form.Item>
                     <Popover trigger="click" placement="bottom" content={
                         <Space direction="vertical" style={{ padding: "10px 10px" }}>
+                            {groupStore.curGroup?.user_perm.can_update_group && (
+                                <>
+                                    <Button type="link" onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowImageModal(true);
+                                    }} >修改图标</Button>
+                                    <Button type="link" onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setShowEditGroupModal(true);
+                                    }}>修改简介</Button>
+                                </>
+                            )}
                             <Button type="link" onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -198,6 +252,13 @@ const PostList = () => {
                                     e.preventDefault();
                                     setShowLeaveModal(true);
                                 }} danger>退出兴趣组</Button>
+                            )}
+                            {groupStore.curGroup?.owner_user_id == userStore.userInfo.userId && (
+                                <Button type="link" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowRemoveModal(true);
+                                }} danger>删除兴趣组</Button>
                             )}
                         </Space>
                     }>
@@ -230,7 +291,38 @@ const PostList = () => {
             {showInviteHistoryModal == true && (
                 <InviteHistoryModal onClose={() => setShowInviteHistoryModal(false)} />
             )}
-            {showLeaveModal == true && "xx"}
+            {showLeaveModal == true && groupStore.curGroup !== null && (
+                <LeaveGroupModal groupInfo={groupStore.curGroup} onCancel={() => setShowLeaveModal(false)}
+                    onOk={() => {
+                        groupStore.curGroup = null;
+                        groupStore.curPostKey = null;
+                        history.push(APP_GROUP_HOME_PATH);
+                        setShowLeaveModal(false);
+                    }} />
+            )}
+            {showRemoveModal == true && groupStore.curGroup !== null && (
+                <RemoveGroupModal groupInfo={groupStore.curGroup} onCancel={() => setShowRemoveModal(false)}
+                    onOk={() => {
+                        groupStore.curGroup = null;
+                        groupStore.curPostKey = null;
+                        history.push(APP_GROUP_HOME_PATH);
+                        setShowRemoveModal(false);
+                    }} />
+            )}
+            {showImageModal == true && (
+                <Profile visible defaultSrc={groupStore.curGroup?.icon_file_id == "" ? logoImg : `fs://localhost/${groupStore.curGroup?.fs_id ?? ""}/${groupStore.curGroup?.icon_file_id ?? ""}/logo.png`}
+                    borderRadius="0%" onCancel={() => setShowImageModal(false)} onOK={imgData => {
+                        if (imgData != null) {
+                            updateIcon(imgData);
+                        }
+                    }} />
+            )}
+            {showEditGroupModal == true && groupStore.curGroup != null && (
+                <EditGroupModal groupInfo={groupStore.curGroup} onCancel={() => setShowEditGroupModal(false)} onOk={() => {
+                    loadGroup();
+                    setShowEditGroupModal(false);
+                }} />
+            )}
         </Card>
     )
 };

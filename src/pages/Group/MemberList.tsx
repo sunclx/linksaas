@@ -7,12 +7,13 @@ import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import InviteModal from "./components/InviteModal";
 import InviteHistoryModal from "./components/InviteHistoryModal";
 import type { GroupMemberInfo } from "@/api/group_member";
-import { list_member, get_member } from "@/api/group_member";
+import { list_member, get_member, remove_member } from "@/api/group_member";
 import { change_owner, get as get_group } from "@/api/group";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import { MEMBER_PERM_OPTION_LIST, calcMemberPerm } from "./components/perm_util";
+import UpdatePermModal from "./components/UpdatePermModal";
 
 const PAGE_SIZE = 20;
 
@@ -28,6 +29,8 @@ const MemberList = () => {
     const [curPage, setCurPage] = useState(0);
 
     const [targetOwner, setTargetOwner] = useState<GroupMemberInfo | null>(null);
+    const [targetUpdateMember, setTargetUpdateMember] = useState<GroupMemberInfo | null>(null);
+    const [targetRemoveMember, setTargetRemoveMember] = useState<GroupMemberInfo | null>(null);
 
     const loadMemberList = async () => {
         const res = await request(list_member({
@@ -73,6 +76,20 @@ const MemberList = () => {
         message.info("转让管理员成功");
     };
 
+    const removeMember = async () => {
+        if (targetRemoveMember == null) {
+            return;
+        }
+        await request(remove_member({
+            session_id: userStore.sessionId,
+            group_id: groupStore.curGroup?.group_id ?? "",
+            member_user_id: targetRemoveMember.member_user_id,
+        }));
+        setTargetRemoveMember(null);
+        await loadMemberList();
+        message.info("删除成功");
+    };
+
     const columns: ColumnsType<GroupMemberInfo> = [
         {
             title: "用户",
@@ -97,30 +114,35 @@ const MemberList = () => {
         },
         {
             title: "操作",
+            width: 210,
             render: (_, row: GroupMemberInfo) => (
-                <Space>
-                    {groupStore.curGroup?.owner_user_id == userStore.userInfo.userId && row.member_user_id != userStore.userInfo.userId && (
-                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setTargetOwner(row);
-                        }}>转让管理员</Button>
+                <>
+                    {groupStore.curGroup?.owner_user_id != row.member_user_id && row.member_user_id != userStore.userInfo.userId && (
+                        <Space>
+                            {groupStore.curGroup?.owner_user_id == userStore.userInfo.userId && (
+                                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setTargetOwner(row);
+                                }}>转让管理员</Button>
+                            )}
+                            {groupStore.curGroup?.user_perm.can_update_member && (
+                                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setTargetUpdateMember(row);
+                                }}>修改权限</Button>
+                            )}
+                            {groupStore.curGroup?.user_perm.can_update_member && (
+                                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setTargetRemoveMember(row);
+                                }} danger>删除成员</Button>
+                            )}
+                        </Space>
                     )}
-                    {groupStore.curGroup?.user_perm.can_update_member && row.member_user_id != userStore.userInfo.userId && row.member_user_id != groupStore.curGroup?.owner_user_id && (
-                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            //TODO
-                        }}>修改权限</Button>
-                    )}
-                    {groupStore.curGroup?.user_perm.can_update_member && row.member_user_id != userStore.userInfo.userId && row.member_user_id != groupStore.curGroup?.owner_user_id && (
-                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            //TODO
-                        }} danger>删除成员</Button>
-                    )}
-                </Space>
+                </>
             ),
         }
     ];
@@ -176,6 +198,29 @@ const MemberList = () => {
                         changeOwner();
                     }}>
                     是否把兴趣组管理员转让给&nbsp;{targetOwner.member_display_name}&nbsp;?
+                </Modal>
+            )}
+            {targetUpdateMember != null && (
+                <UpdatePermModal memberInfo={targetUpdateMember} onCancel={() => setTargetUpdateMember(null)}
+                    onOk={() => {
+                        loadMember(targetUpdateMember.member_user_id);
+                        setTargetUpdateMember(null);
+                    }} />
+            )}
+            {targetRemoveMember != null && (
+                <Modal open title="删除成员"
+                    okText="删除" okButtonProps={{ danger: true }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setTargetRemoveMember(null);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeMember();
+                    }}>
+                    是否删除成员&nbsp;{targetRemoveMember.member_display_name}&nbsp;?
                 </Modal>
             )}
         </Card>
