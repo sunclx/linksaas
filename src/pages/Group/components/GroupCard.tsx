@@ -2,6 +2,7 @@ import { Button, Card, Popover, Space } from "antd";
 import React, { useState } from "react";
 import type { GroupInfo } from "@/api/group";
 import { update as update_group } from "@/api/group";
+import { join_pub } from "@/api/group_member";
 import { FileDoneOutlined, MoreOutlined } from "@ant-design/icons";
 import logoImg from "@/assets/allIcon/logo.png";
 import { ReadOnlyEditor } from "@/components/Editor";
@@ -56,12 +57,22 @@ const GroupCard = (props: GroupCardProps) => {
         props.onChange();
     };
 
+    const goToGroup = async () => {
+        if (props.groupInfo.pub_group) {
+            await request(join_pub({
+                session_id: userStore.sessionId,
+                group_id: props.groupInfo.group_id,
+            }));
+        }
+        groupStore.curGroup = props.groupInfo;
+        history.push(APP_GROUP_POST_LIST_PATH);
+    };
+
     return (
         <Card title={<a style={{ fontSize: "16px", fontWeight: 600 }} onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            groupStore.curGroup = props.groupInfo;
-            history.push(APP_GROUP_POST_LIST_PATH);
+            goToGroup();
         }}>{props.groupInfo.group_name}</a>}
             style={{ width: "300px", borderRadius: "10px" }}
             headStyle={{ backgroundColor: "#f0f0f0" }}
@@ -113,8 +124,7 @@ const GroupCard = (props: GroupCardProps) => {
             <div style={{ width: "100px", cursor: "pointer" }} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                groupStore.curGroup = props.groupInfo;
-                history.push(APP_GROUP_POST_LIST_PATH);
+                goToGroup();
             }}>
                 {props.groupInfo.icon_file_id == "" && (
                     <img src={logoImg} style={{ width: "90px" }} />

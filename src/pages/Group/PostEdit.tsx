@@ -11,7 +11,7 @@ import s from "./PostEdit.module.less";
 import classNames from 'classnames';
 import PostTocPanel from "./components/PostDocPanel";
 import Button from "@/components/Button";
-import { APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_LIST_PATH } from "@/utils/constant";
+import { APP_GROUP_POST_DETAIL_PATH } from "@/utils/constant";
 import { observer } from 'mobx-react';
 import ActionModal from "@/components/ActionModal";
 
@@ -133,7 +133,7 @@ const PostEdit = () => {
                     <Button type="default" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        history.push(APP_GROUP_POST_LIST_PATH);
+                        history.push(APP_GROUP_POST_DETAIL_PATH);
                     }}>取消</Button>
                     <Button disabled={title == ""} onClick={e => {
                         e.stopPropagation();
@@ -147,7 +147,7 @@ const PostEdit = () => {
                 </Space>
             }>
             <div className={s.post_wrap}>
-                <div className={classNames(s.post, "_postEditContext")}>
+                <div className={classNames(s.post, "_postContext")}>
                     {editor}
                     <Form style={{ marginTop: "10px" }}>
                         <Form.Item label={<span style={{ fontSize: "18px", fontWeight: 600 }}>标签列表</span>}>
