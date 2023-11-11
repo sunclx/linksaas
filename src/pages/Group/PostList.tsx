@@ -5,9 +5,6 @@ import { Card, Form, Input, Popover, Space, Switch, Table, Tag } from "antd";
 import { useHistory } from "react-router-dom";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
-import AsyncImage from "@/components/AsyncImage";
-import { ReadOnlyEditor } from "@/components/Editor";
-import logoImg from "@/assets/allIcon/logo.png";
 import { CloseOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
 import { APP_GROUP_HOME_PATH, APP_GROUP_MEMBER_LIST_PATH, APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_EDIT_PATH } from "@/utils/constant";
@@ -17,10 +14,6 @@ import moment from "moment";
 import { observer } from 'mobx-react';
 import InviteModal from "./components/InviteModal";
 import InviteHistoryModal from "./components/InviteHistoryModal";
-import Profile from "@/components/Profile";
-import { FILE_OWNER_TYPE_GROUP, set_file_owner, write_file_base64 } from "@/api/fs";
-import { update as update_group, get as get_group } from "@/api/group";
-import EditGroupModal from "./components/EditGroupModal";
 import LeaveGroupModal from "./components/LeaveGroupModal";
 import RemoveGroupModal from "./components/RemoveGroupModal";
 
@@ -44,9 +37,6 @@ const PostList = () => {
     const [showInviteHistoryModal, setShowInviteHistoryModal] = useState(false);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
-
-    const [showImageModal, setShowImageModal] = useState(false);
-    const [showEditGroupModal, setShowEditGroupModal] = useState(false);
 
     const loadPostKeyInfoList = async () => {
         const res = await request(list_post_key({
@@ -79,36 +69,6 @@ const PostList = () => {
             tmpList[index].essence = essence;
             setPostKeyInfoList(tmpList);
         }
-    };
-
-    const loadGroup = async () => {
-        const res = await request(get_group({
-            session_id: userStore.sessionId,
-            group_id: groupStore.curGroup?.group_id ?? "",
-        }));
-        groupStore.curGroup = res.group;
-    }
-
-    const updateIcon = async (imgData: string) => {
-        const res = await request(write_file_base64(userStore.sessionId, groupStore.curGroup?.fs_id ?? "", "logo.png", imgData, ""));
-        await request(set_file_owner({
-            session_id: userStore.sessionId,
-            fs_id: groupStore.curGroup?.fs_id ?? "",
-            file_id: res.file_id,
-            owner_type: FILE_OWNER_TYPE_GROUP,
-            owner_id: groupStore.curGroup?.group_id ?? "",
-        }));
-        await request(update_group({
-            session_id: userStore.sessionId,
-            group_id: groupStore.curGroup?.group_id ?? "",
-            group_name: groupStore.curGroup?.group_name ?? "",
-            icon_file_id: res.file_id,
-            group_desc: groupStore.curGroup?.group_desc ?? "",
-            can_add_post_for_new: groupStore.curGroup?.can_add_post_for_new ?? false,
-            can_add_comment_for_new: groupStore.curGroup?.can_add_post_for_new ?? false,
-        }));
-        setShowImageModal(false);
-        await loadGroup();
     };
 
     const columns: ColumnsType<PostKeyInfo> = [
@@ -180,7 +140,7 @@ const PostList = () => {
 
     return (
         <Card bordered={false} title={
-            <span style={{ fontSize: "18px", fontWeight: 600 }}>{groupStore.curGroup?.group_name ?? ""}</span>
+            <span style={{ fontSize: "18px", fontWeight: 600 }}>帖子列表</span>
         } extra={
             <Form layout="inline">
                 <Form.Item label="只看精华">
@@ -216,20 +176,6 @@ const PostList = () => {
                 <Form.Item>
                     <Popover trigger="click" placement="bottom" content={
                         <Space direction="vertical" style={{ padding: "10px 10px" }}>
-                            {groupStore.curGroup?.user_perm.can_update_group && (
-                                <>
-                                    <Button type="link" onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setShowImageModal(true);
-                                    }} >修改图标</Button>
-                                    <Button type="link" onClick={e => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setShowEditGroupModal(true);
-                                    }}>修改简介</Button>
-                                </>
-                            )}
                             <Button type="link" onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -267,21 +213,7 @@ const PostList = () => {
                 </Form.Item>
             </Form>
         }>
-            <div style={{ display: "flex", height: "100px" }}>
-                <div style={{ width: "100px" }} >
-                    {(groupStore.curGroup?.icon_file_id ?? "") == "" && (
-                        <img src={logoImg} style={{ width: "90px" }} />
-                    )}
-                    {(groupStore.curGroup?.icon_file_id ?? "") != "" && (
-                        <AsyncImage src={`fs://localhost/${groupStore.curGroup?.fs_id ?? ""}/${groupStore.curGroup?.icon_file_id ?? ""}/logo.png`} width="90px" useRawImg />
-                    )}
-                </div>
-                <div style={{ flex: 1, overflowY: "scroll" }}>
-                    <ReadOnlyEditor content={groupStore.curGroup?.group_desc ?? ""} />
-                </div>
-            </div>
-            <h1 style={{ fontSize: "20px", fontWeight: 600, borderTop: "1px solid #e4e4e8" }}>帖子列表</h1>
-            <div style={{ height: "calc(100vh - 250px)", overflowY: "scroll" }}>
+            <div style={{ height: "calc(100vh - 110px)", overflowY: "scroll" }}>
                 <Table rowKey="post_id" dataSource={postKeyInfoList} columns={columns}
                     pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             </div>
@@ -308,20 +240,6 @@ const PostList = () => {
                         history.push(APP_GROUP_HOME_PATH);
                         setShowRemoveModal(false);
                     }} />
-            )}
-            {showImageModal == true && (
-                <Profile visible defaultSrc={groupStore.curGroup?.icon_file_id == "" ? logoImg : `fs://localhost/${groupStore.curGroup?.fs_id ?? ""}/${groupStore.curGroup?.icon_file_id ?? ""}/logo.png`}
-                    borderRadius="0%" onCancel={() => setShowImageModal(false)} onOK={imgData => {
-                        if (imgData != null) {
-                            updateIcon(imgData);
-                        }
-                    }} />
-            )}
-            {showEditGroupModal == true && groupStore.curGroup != null && (
-                <EditGroupModal groupInfo={groupStore.curGroup} onCancel={() => setShowEditGroupModal(false)} onOk={() => {
-                    loadGroup();
-                    setShowEditGroupModal(false);
-                }} />
             )}
         </Card>
     )

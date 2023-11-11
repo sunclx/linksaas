@@ -1,8 +1,8 @@
-import { Badge, Button, Card, Popover, Space } from "antd";
+import { Button, Card, Popover, Space } from "antd";
 import React, { useState } from "react";
 import type { GroupInfo } from "@/api/group";
 import { update as update_group } from "@/api/group";
-import { MessageOutlined, MoreOutlined } from "@ant-design/icons";
+import { FileDoneOutlined, MoreOutlined } from "@ant-design/icons";
 import logoImg from "@/assets/allIcon/logo.png";
 import { ReadOnlyEditor } from "@/components/Editor";
 import Profile from "@/components/Profile";
@@ -63,14 +63,13 @@ const GroupCard = (props: GroupCardProps) => {
             groupStore.curGroup = props.groupInfo;
             history.push(APP_GROUP_POST_LIST_PATH);
         }}>{props.groupInfo.group_name}</a>}
-            style={{ width: "300px" }}
+            style={{ width: "300px", borderRadius: "10px" }}
+            headStyle={{ backgroundColor: "#f0f0f0" }}
             bodyStyle={{ display: "flex", height: "160px" }}
             extra={
                 <Space>
                     {props.groupInfo.last_post_time > props.groupInfo.my_last_view_time && (
-                        <Badge count={1} dot={true}>
-                            <MessageOutlined />
-                        </Badge>
+                        <FileDoneOutlined style={{ fontSize: "16px", color: "black" }} />
                     )}
                     {(props.groupInfo.user_perm.can_update_group || props.groupInfo.user_perm.can_remove_group) && (
                         <Popover trigger="click" placement="bottom" content={
