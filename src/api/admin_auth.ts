@@ -45,12 +45,6 @@ export type MenuPerm = {
     set_weight: boolean;
 };
 
-export type AdPerm = {
-    read: boolean;
-    add: boolean;
-    remove: boolean;
-    set_weight: boolean;
-};
 
 export type AppStorePerm = {
     read: boolean;
@@ -86,16 +80,22 @@ export type PubSearchPerm = {
     remove_site: boolean;
 };
 
+export type GroupPerm = {
+    read: boolean;
+    update_group: boolean;
+};
+
+
 export type AdminPermInfo = {
     org_perm: OrgPerm;
     user_perm: UserPerm;
     project_perm: ProjectPerm;
     project_member_perm: ProjectMemberPerm;
     menu_perm: MenuPerm;
-    ad_perm: AdPerm;
     app_store_perm: AppStorePerm;
     docker_template_perm: DockerTemplatePerm;
     pub_search_perm: PubSearchPerm;
+    group_perm: GroupPerm;
 };
 
 export type PreAuthRequest = {

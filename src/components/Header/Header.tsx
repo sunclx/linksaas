@@ -11,7 +11,7 @@ import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
-import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from '@/utils/constant';
+import { APP_GROUP_HOME_PATH, APP_GROUP_PATH, APP_GROUP_POST_LIST_PATH, APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from '@/utils/constant';
 import { useHistory, useLocation } from 'react-router-dom';
 import ProjectQuickAccess from './ProjectQuickAccess';
 import EntryPopover from '@/pages/Project/Home/EntryPopover';
@@ -36,6 +36,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const entryStore = useStores('entryStore');
   const docStore = useStores('docStore');
   const appStore = useStores('appStore');
+  const groupStore = useStores('groupStore');
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
@@ -223,6 +224,29 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </Space>
           </div>
         )}
+        {location.pathname.startsWith(APP_GROUP_PATH) && (
+          <Space style={{ paddingLeft: "10px", fontSize: "16px", fontWeight: 600 }}>
+            {groupStore.curGroup !== null && (
+              <>
+                <a onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  groupStore.curGroup = null;
+                  groupStore.curPostKey = null;
+                  history.push(APP_GROUP_HOME_PATH);
+                }}>兴趣小组</a>
+                /
+                <a onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  groupStore.curPostKey = null;
+                  history.push(APP_GROUP_POST_LIST_PATH);
+                }}>{groupStore.curGroup.group_name}</a>
+              </>
+            )}
+          </Space>
+        )}
+
         <div className={style.l} >
           {hover && <span style={{ color: "#aaa" }} onMouseDown={e => {
             e.preventDefault();
@@ -251,8 +275,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </a>
           )}
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && projectStore.curProjectId != "" && (
-            <Switch checked={appStore.focusMode} onChange={value => appStore.focusMode = value} style={{ marginRight: "20px" }} 
-            checkedChildren="专注模式" unCheckedChildren="普通模式"/>
+            <Switch checked={appStore.focusMode} onChange={value => appStore.focusMode = value} style={{ marginRight: "20px" }}
+              checkedChildren="专注模式" unCheckedChildren="普通模式" />
           )}
           <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}

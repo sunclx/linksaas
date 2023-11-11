@@ -11,6 +11,7 @@ import {
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
+    ADMIN_PATH_GROUP_LIST_SUFFIX,
     ADMIN_PATH_ORG_LIST_SUFFIX, ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
     ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX, ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
     ADMIN_PATH_USER_LIST_SUFFIX, USER_LOGIN_PATH
@@ -28,6 +29,7 @@ const AdminNav = () => {
     const [userSelectedKeys, setUserSelectedKeys] = useState<string[]>([]);
     const [projectSelectedKeys, setProjectSelectedKeys] = useState<string[]>([]);
     const [orgSelectedKeys, setOrgSelectedKeys] = useState<string[]>([]);
+    const [groupSelectedKeys, setGroupSelectedKeys] = useState<string[]>([]);
     const [clientCfgSelectedKeys, setClientCfgSelectedKeys] = useState<string[]>([]);
     const [appstoreSelectedKeys, setAppstoreSelectedKeys] = useState<string[]>([]);
     const [dockerTemplateSelectedKeys, setDockerTemplateSelectedKeys] = useState<string[]>([]);
@@ -55,6 +57,13 @@ const AdminNav = () => {
         setOrgSelectedKeys([]);
         if (location.pathname == ADMIN_PATH_ORG_LIST_SUFFIX) {
             setOrgSelectedKeys(["org_list"]);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
+        setGroupSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_GROUP_LIST_SUFFIX) {
+            setGroupSelectedKeys(["group_list"]);
         }
     }, [location.pathname]);
 
@@ -111,7 +120,7 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "project", "clientCfg", "appstore", "dockerTemplate", "pubSearch"]}
+            <Collapse defaultActiveKey={["user", "org", "group", "project", "clientCfg", "appstore", "dockerTemplate", "pubSearch"]}
                 style={{ height: "calc(100vh - 132px)", overflowY: "scroll", paddingBottom: "10px" }}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
@@ -150,6 +159,24 @@ const AdminNav = () => {
                             if (e.selectedKeys.length == 1) {
                                 if (e.selectedKeys[0] == "org_list") {
                                     history.push(ADMIN_PATH_ORG_LIST_SUFFIX);
+                                }
+                            }
+                        }}
+                    />
+                </Collapse.Panel>
+                <Collapse.Panel header="兴趣组管理" key="group">
+                    <Menu selectedKeys={groupSelectedKeys} items={[
+                        {
+                            label: "查看兴趣组",
+                            key: "group_list",
+                            disabled: !(permInfo?.group_perm.read),
+                        }
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "group_list") {
+                                    history.push(ADMIN_PATH_GROUP_LIST_SUFFIX);
                                 }
                             }
                         }}
@@ -266,7 +293,7 @@ const AdminNav = () => {
                             if (e.selectedKeys.length == 1) {
                                 if (e.selectedKeys[0] == "menu_admin") {
                                     history.push(ADMIN_PATH_CLIENT_MENU_SUFFIX);
-                                } 
+                                }
                             }
                         }} />
                 </Collapse.Panel>

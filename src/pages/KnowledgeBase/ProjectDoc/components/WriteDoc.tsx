@@ -1,7 +1,7 @@
 import { useStores } from '@/hooks';
 import React, { useEffect } from 'react';
 import { Card, message, Space } from 'antd';
-import { useCommonEditor, change_file_fs } from '@/components/Editor';
+import { useCommonEditor } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT_DOC } from '@/api/fs';
 import { request } from '@/utils/request';
 import * as docApi from '@/api/project_doc';
@@ -82,13 +82,6 @@ const WriteDoc: React.FC = () => {
     const content = editorRef.current?.getContent() ?? {
       type: 'doc',
     };
-    await change_file_fs(
-      content,
-      projectStore.curProject?.doc_fs_id ?? '',
-      userStore.sessionId,
-      FILE_OWNER_TYPE_PROJECT_DOC,
-      entryStore.curEntry?.entry_id ?? "",
-    );
     await request(
       docApi.update_doc_content({
         session_id: userStore.sessionId,

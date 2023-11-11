@@ -17,6 +17,13 @@ export const APP_PROJECT_KB_BOARD_PATH = '/app/project/kb/board';
 export const APP_PROJECT_MY_WORK_PATH = '/app/project/my_work';
 export const APP_PROJECT_OVERVIEW_PATH = '/app/project/overview';
 
+export const APP_GROUP_PATH = '/app/group';
+export const APP_GROUP_HOME_PATH = '/app/group/home';
+export const APP_GROUP_POST_DETAIL_PATH = '/app/group/post_detail';
+export const APP_GROUP_POST_LIST_PATH = '/app/group/post_list';
+export const APP_GROUP_POST_EDIT_PATH = '/app/group/post_edit';
+export const APP_GROUP_MEMBER_LIST_PATH = '/app/group/member_list';
+
 export const TASK_DETAIL_SUFFIX = '/task/detail';
 export const BUG_DETAIL_SUFFIX = '/bug/detail';
 
@@ -41,6 +48,7 @@ export const ADMIN_PATH_APPSTORE_CATE_SUFFIX = '/admin/appstore/cate';
 export const ADMIN_PATH_APPSTORE_APP_SUFFIX = '/admin/appstore/app';
 
 export const ADMIN_PATH_ORG_LIST_SUFFIX = '/admin/org/list';
+export const ADMIN_PATH_GROUP_LIST_SUFFIX = '/admin/group/list';
 
 export const ADMIN_PATH_CLIENT_MENU_SUFFIX = '/admin/client/menu';
 
@@ -49,6 +57,8 @@ export const ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX = '/admin/dockertemplate/app'
 
 export const ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX = '/admin/pubSearch/cate';
 export const ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX = '/admin/pubSearch/site';
+
+
 
 export const statusText = {
   [issueApi.ISSUE_STATE_PLAN]: '规划中阶段', //规划中
