@@ -18,7 +18,6 @@ import Workbench from '@/pages/Workbench';
 import {
   ADMIN_PATH,
   ADMIN_PATH_CLIENT_MENU_SUFFIX,
-  ADMIN_PATH_ORG_LIST_SUFFIX,
   ADMIN_PATH_PROJECT_CREATE_SUFFIX,
   ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
   ADMIN_PATH_PROJECT_LIST_SUFFIX,
@@ -47,6 +46,14 @@ import {
   APP_PROJECT_HOME_PATH,
   APP_PROJECT_MANAGER_PATH,
   APP_PROJECT_KB_BOARD_PATH,
+  APP_PROJECT_PATH,
+  APP_GROUP_PATH,
+  APP_GROUP_HOME_PATH,
+  APP_GROUP_POST_DETAIL_PATH,
+  APP_GROUP_POST_LIST_PATH,
+  APP_GROUP_POST_EDIT_PATH,
+  APP_GROUP_MEMBER_LIST_PATH,
+  ADMIN_PATH_GROUP_LIST_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -59,7 +66,6 @@ import UserDetail from '@/pages/Admin/UserAdmin/UserDetail';
 import CreateUser from '@/pages/Admin/UserAdmin/CreateUser';
 import ProjectList from '@/pages/Admin/ProjectAdmin/ProjectList';
 import ProjectDetail from '@/pages/Admin/ProjectAdmin/ProjectDetail';
-import DepartMentList from '@/pages/Admin/OrgAdmin/DepartMentList';
 import CreateProject from '@/pages/Admin/ProjectAdmin/CrateProject';
 import MenuAdmin from '@/pages/Admin/ClientAdmin/MenuAdmin';
 import RequirementList from '@/pages/Project/Requirement/RequirementList';
@@ -83,6 +89,13 @@ import ProjectCiCd from "@/pages/Project/CiCd"
 import HomeLayout from '@/layouts/HomeLayout';
 import ProjectManager from '@/pages/ProjectManger';
 import ProjectBoard from '@/pages/KnowledgeBase/ProjectBoard';
+import GroupLayout from '@/layouts/GroupLayout';
+import GroupHome from '@/pages/Group/GroupHome';
+import PostDetail from '@/pages/Group/PostDetail';
+import PostList from '@/pages/Group/PostList';
+import PostEdit from '@/pages/Group/PostEdit';
+import GroupMemberList from '@/pages/Group/MemberList';
+import GroupList from '@/pages/Admin/GroupAdmin/GroupList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -253,7 +266,7 @@ const routesConfig: IRouteConfig[] = [
         component: ExtraMenuPage,
       },
       {
-        path: '/app/project',
+        path: APP_PROJECT_PATH,
         title: '项目',
         component: ProjectLayout,
         routes: [
@@ -299,6 +312,43 @@ const routesConfig: IRouteConfig[] = [
             title: '项目概览',
             component: OverviewLayout,
             routes: getToolbarRoute(APP_PROJECT_OVERVIEW_PATH),
+          }
+        ],
+      },
+      {
+        path: APP_GROUP_PATH,
+        title: "兴趣组",
+        component: GroupLayout,
+        routes: [
+          {
+            path: APP_GROUP_HOME_PATH,
+            title: "兴趣组主界面",
+            component: GroupHome,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_POST_LIST_PATH,
+            title: "帖子列表页",
+            component: PostList,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_POST_DETAIL_PATH,
+            title: "帖子详情页",
+            component: PostDetail,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_POST_EDIT_PATH,
+            title: "帖子编辑页",
+            component: PostEdit,
+            exact: true,
+          },
+          {
+            path: APP_GROUP_MEMBER_LIST_PATH,
+            title: "兴趣组成员列表",
+            component: GroupMemberList,
+            exact: true,
           }
         ],
       },
@@ -364,9 +414,9 @@ const routesConfig: IRouteConfig[] = [
         exact: true,
       },
       {
-        path: ADMIN_PATH_ORG_LIST_SUFFIX,
-        title: "部门列表",
-        component: DepartMentList,
+        path: ADMIN_PATH_GROUP_LIST_SUFFIX,
+        title: "兴趣组列表",
+        component: GroupList,
         exact: true,
       },
       {
@@ -413,7 +463,6 @@ const routesConfig: IRouteConfig[] = [
       }
     ]
   },
-
   {
     path: '*',
     title: '错误页面',

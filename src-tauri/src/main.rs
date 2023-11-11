@@ -26,7 +26,6 @@ mod local_api;
 mod pages_plugin;
 mod helper;
 mod notice_decode;
-mod org_admin_api_plugin;
 mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
@@ -61,6 +60,10 @@ mod pub_search_api_plugin;
 mod project_watch_api_plugin;
 mod project_comment_api_plugin;
 mod project_board_api_plugin;
+mod group_api_plugin;
+mod group_member_api_plugin;
+mod group_post_api_plugin;
+mod group_admin_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -371,7 +374,7 @@ fn main() {
                     if about_win.is_none() {
                         if let Ok(_) =
                             WindowBuilder::new(app, "about", WindowUrl::App("about.html".into()))
-                                .inner_size(250.0, 180.0)
+                                .inner_size(250.0, 140.0)
                                 .resizable(false)
                                 .skip_taskbar(true)
                                 .title("关于")
@@ -415,7 +418,6 @@ fn main() {
         .plugin(project_admin_api_plugin::ProjectAdminApiPlugin::new())
         .plugin(project_member_admin_api_plugin::ProjectMemberAdminApiPlugin::new())
         .plugin(user_admin_api_plugin::UserAdminApiPlugin::new())
-        .plugin(org_admin_api_plugin::OrgAdminApiPlugin::new())
         .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .plugin(min_app_plugin::MinAppPlugin::new())
@@ -447,6 +449,10 @@ fn main() {
         .plugin(project_comment_api_plugin::ProjectCommentApiPlugin::new())
         .plugin(pages_plugin::PagesPlugin::new())
         .plugin(project_board_api_plugin::ProjectBoardApiPlugin::new())
+        .plugin(group_api_plugin::GroupApiPlugin::new())
+        .plugin(group_member_api_plugin::GroupMemberApiPlugin::new())
+        .plugin(group_post_api_plugin::GroupPostApiPlugin::new())
+        .plugin(group_admin_api_plugin::GroupAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

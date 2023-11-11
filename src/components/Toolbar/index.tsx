@@ -149,15 +149,6 @@ const Toolbar: React.FC = observer(() => {
           )}
         </>
       )}
-
-      {projectStore.curProject?.setting.disable_code_comment != true && (
-        <>
-          {projectStore.curProject?.user_project_perm?.can_admin && <Divider />}
-          {projectStore.curProject?.user_project_perm?.can_admin && (
-            <Item id="code" pathname={pathname} title="代码评论" />
-          )}
-        </>
-      )}
     </div>
   );
 });

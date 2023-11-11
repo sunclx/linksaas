@@ -18,7 +18,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
     const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
-    const [disableCodeComment, setDisableCodeComment] = useState(projectStore.curProject?.setting.disable_code_comment ?? false);
     const [disableCiCd,setDisableCiCd] = useState(projectStore.curProject?.setting.disable_ci_cd ?? false);
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
@@ -34,7 +33,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
         setDisableApiCollection(projectStore.curProject?.setting.disable_api_collection ?? false);
-        setDisableCodeComment(projectStore.curProject?.setting.disable_code_comment ?? false);
         setDisableCiCd(projectStore.curProject?.setting.disable_ci_cd ?? false)
 
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
@@ -56,7 +54,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 disable_data_anno: disableDataAnno,
                 disable_ci_cd: disableCiCd,
                 disable_api_collection: disableApiCollection,
-                disable_code_comment: disableCodeComment,
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
                 hide_extra_info: hideExtraInfo,
@@ -117,11 +114,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableExtEvent(e.target.checked);
                             setHasChange(true);
                         }}>关闭第三方接入入口</Checkbox>
-                        <Checkbox checked={disableCodeComment} onChange={e => {
-                            e.stopPropagation();
-                            setDisableCodeComment(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭代码评论入口</Checkbox>
                     </Space>
                 </Form.Item>
                 <Form.Item label="我的工作">

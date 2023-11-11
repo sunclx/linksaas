@@ -26,6 +26,7 @@ import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { OpenPipeLineWindow } from '@/pages/Project/CiCd/utils';
 import { get as get_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_BOARD } from "@/api/project_entry";
 import { get as get_api_coll } from "@/api/api_collection";
+import { message } from 'antd';
 /*
  * 用于统一管理链接跳转以及链接直接传递数据
  */
@@ -393,8 +394,8 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
-      if (this.rootStore.docStore.inEdit) {
-        this.rootStore.docStore.showCheckLeave(() => {
+      if (this.rootStore.appStore.inEdit) {
+        this.rootStore.appStore.showCheckLeave(() => {
           this.goToDoc(docLink, history);
         });
       } else {
@@ -402,8 +403,8 @@ class LinkAuxStore {
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
-      if (this.rootStore.docStore.inEdit) {
-        this.rootStore.docStore.showCheckLeave(() => {
+      if (this.rootStore.appStore.inEdit) {
+        this.rootStore.appStore.showCheckLeave(() => {
           this.goToSprit(spritLink, history);
         });
       } else {
@@ -411,8 +412,8 @@ class LinkAuxStore {
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOARD) {
       const boardLink = link as LinkBoardInfo;
-      if (this.rootStore.docStore.inEdit) {
-        this.rootStore.docStore.showCheckLeave(() => {
+      if (this.rootStore.appStore.inEdit) {
+        this.rootStore.appStore.showCheckLeave(() => {
           this.goToBoard(boardLink, history);
         });
       } else {
@@ -453,6 +454,10 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != pipeLineLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(pipeLineLink.projectId);
       }
+      if(this.rootStore.projectStore.curProject?.setting.disable_ci_cd == true){
+        message.error("已关闭CI/CD功能");
+        return;
+      }
       await OpenPipeLineWindow(`${pipeLineLink}(只读模式)`, pipeLineLink.projectId,
         this.rootStore.projectStore.curProject?.ci_cd_fs_id ?? "", pipeLineLink.pipeLineId, false, false, this.rootStore.projectStore.isAdmin);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ENTRY) {
@@ -477,6 +482,10 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != apiCollLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(apiCollLink.projectId);
       }
+      if(this.rootStore.projectStore.curProject?.setting.disable_api_collection == true){
+        message.error("已关闭接口集合功能");
+        return;
+      }
       const res = await request(get_api_coll({
         session_id: this.rootStore.userStore.sessionId,
         project_id: apiCollLink.projectId,
@@ -488,7 +497,10 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != dataAnnoLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(dataAnnoLink.projectId);
       }
-      //TODO 检查访问权限
+      if(this.rootStore.projectStore.curProject?.setting.disable_data_anno == true){
+        message.error("已关闭数据标注功能");
+        return;
+      }
       await this.openAnnoProjectPage(dataAnnoLink.annoProjectId, dataAnnoLink.linkContent);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
@@ -616,14 +628,6 @@ class LinkAuxStore {
       return;
     }
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/access"));
-  }
-
-  //调整到代码评论会话列表
-  goToCodeThreadList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_code_comment == true) {
-      return;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/code"));
   }
 
   //跳转到数据标注

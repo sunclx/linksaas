@@ -56,6 +56,8 @@ class NoticeStore {
           this.processIdeaNotice(notice.IdeaNotice);
         } else if (notice.CommentNotice !== undefined) {
           this.processCommentNotice(notice.CommentNotice);
+        } else if (notice.BoardNotice !== undefined) {
+          this.processBoardNotice(notice.BoardNotice);
         }
       } catch (e) {
         console.log(e);
@@ -123,6 +125,49 @@ class NoticeStore {
     }
   }
 
+  private processBoardNotice(notice: NoticeType.board.AllNotice) {
+    if(notice.CreateNodeNotice !== undefined){
+      if(notice.CreateNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+        this.rootStore.boardStore.updateNode(notice.CreateNodeNotice.node_id);
+      }
+    }else if(notice.UpdateNodeNotice !== undefined){
+      if(notice.UpdateNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+        this.rootStore.boardStore.updateNode(notice.UpdateNodeNotice.node_id);
+      }
+    }else if(notice.RemoveNodeNotice !== undefined){
+      if(notice.RemoveNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+        this.rootStore.boardStore.removeNode(notice.RemoveNodeNotice.node_id);
+      }
+    }else if(notice.CreateEdgeNotice !== undefined){
+      if(notice.CreateEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+        this.rootStore.boardStore.updateEdge({
+          from_node_id: notice.CreateEdgeNotice.from_node_id,
+          from_handle_id: notice.CreateEdgeNotice.from_handle_id,
+          to_node_id: notice.CreateEdgeNotice.to_node_id,
+          to_handle_id: notice.CreateEdgeNotice.to_handle_id,
+        });
+      }
+    }else if(notice.UpdateEdgeNotice !== undefined){
+      if(notice.UpdateEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+        this.rootStore.boardStore.updateEdge({
+          from_node_id: notice.UpdateEdgeNotice.from_node_id,
+          from_handle_id: notice.UpdateEdgeNotice.from_handle_id,
+          to_node_id: notice.UpdateEdgeNotice.to_node_id,
+          to_handle_id: notice.UpdateEdgeNotice.to_handle_id,
+        });
+      }
+    }else if(notice.RemoveEdgeNotice !== undefined){
+      if(notice.RemoveEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+        this.rootStore.boardStore.removeEdge({
+          from_node_id: notice.RemoveEdgeNotice.from_node_id,
+          from_handle_id: notice.RemoveEdgeNotice.from_handle_id,
+          to_node_id: notice.RemoveEdgeNotice.to_node_id,
+          to_handle_id: notice.RemoveEdgeNotice.to_handle_id,
+        });
+      }
+    }
+  }
+
   private async processIdeaNotice(notice: NoticeType.idea.AllNotice) {
     if (notice.KeywordChangeNotice !== undefined) {
       if (this.rootStore.projectStore.curProjectId === notice.KeywordChangeNotice.project_id) {
@@ -153,8 +198,8 @@ class NoticeStore {
       }, 200);
       const projectId = notice.GitPostHookNotice.project_id;
       if (projectId != this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.docStore.inEdit) {
-          this.rootStore.docStore.showCheckLeave(() => {
+        if (this.rootStore.appStore.inEdit) {
+          this.rootStore.appStore.showCheckLeave(() => {
             this.rootStore.projectStore.setCurProjectId(projectId).then(() => {
               this.rootStore.projectStore.showPostHookModal = true;
               this.history.push(APP_PROJECT_HOME_PATH);
@@ -315,7 +360,7 @@ class NoticeStore {
   private async processShortNoteEvent(ev: ShortNoteEvent) {
     if (ev.shortNoteType == SHORT_NOTE_TASK) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
-        if(this.rootStore.appStore.focusMode && ev.projectId != this.rootStore.projectStore.curProjectId) {
+        if (this.rootStore.appStore.focusMode && ev.projectId != this.rootStore.projectStore.curProjectId) {
           return;
         }
         this.rootStore.linkAuxStore.goToLink(new LinkTaskInfo("", ev.projectId, ev.targetId), this.history);
@@ -327,10 +372,10 @@ class NoticeStore {
             data: res.info,
           }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
         }
-      } 
+      }
     } else if (ev.shortNoteType == SHORT_NOTE_BUG) {
       if (ev.shortNoteModeType == SHORT_NOTE_MODE_DETAIL) {
-        if(this.rootStore.appStore.focusMode && ev.projectId != this.rootStore.projectStore.curProjectId) {
+        if (this.rootStore.appStore.focusMode && ev.projectId != this.rootStore.projectStore.curProjectId) {
           return;
         }
         this.rootStore.linkAuxStore.goToLink(new LinkBugInfo("", ev.projectId, ev.targetId), this.history);
@@ -342,7 +387,7 @@ class NoticeStore {
             data: res.info,
           }, this.rootStore.projectStore.getProject(ev.projectId)?.basic_info.project_name ?? "");
         }
-      } 
+      }
     }
 
     await appWindow.show();

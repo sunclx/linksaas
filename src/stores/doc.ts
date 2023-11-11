@@ -11,7 +11,7 @@ export default class DocStore {
     }
     rootStore: RootStore;
     private _curDoc: prjDocApi.Doc | null = null;
-    private _inEdit = false;
+
     private _fromLink = false;
 
     get fromLink(): boolean {
@@ -27,21 +27,11 @@ export default class DocStore {
         return this._curDoc;
     }
 
-    get inEdit(): boolean {
-        return this._inEdit;
-    }
-
-    set inEdit(val: boolean) {
-        runInAction(() => {
-            this._inEdit = val;
-        });
-    }
-
     async loadDoc() {
         runInAction(() => {
             this._curDoc = null;
-            this._inEdit = false;
-        })
+        });
+        this.rootStore.appStore.inEdit = false;
 
         const res = await request(
             prjDocApi.get_doc({
@@ -68,35 +58,9 @@ export default class DocStore {
         });
     }
 
-    //离开编辑状态提示
-    private _checkLeave = false;
-    private _onLeave: (() => void) | null = null;
-
-    get checkLeave(): boolean {
-        return this._checkLeave;
-    }
-    get onLeave(): (() => void) | null {
-        return this._onLeave;
-    }
-
-    showCheckLeave(fn: () => void) {
-        runInAction(() => {
-            this._checkLeave = true;
-            this._onLeave = fn;
-        });
-    }
-
-    clearCheckLeave() {
-        runInAction(() => {
-            this._checkLeave = false;
-            this._onLeave = null;
-        });
-    }
-
     reset() {
         runInAction(() => {
             this._curDoc = null;
-            this._inEdit = false;
             this._showDocHistory = false;
         });
     }

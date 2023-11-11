@@ -57,6 +57,42 @@ class AppStore {
       this._focusMode = val;
     });
   }
+
+  //离开编辑状态提示
+  private _inEdit = false;
+  private _checkLeave = false;
+  private _onLeave: (() => void) | null = null;
+
+  get inEdit(): boolean {
+    return this._inEdit;
+  }
+
+  set inEdit(val: boolean) {
+    runInAction(() => {
+      this._inEdit = val;
+    });
+  }
+
+  get checkLeave(): boolean {
+    return this._checkLeave;
+  }
+  get onLeave(): (() => void) | null {
+    return this._onLeave;
+  }
+
+  showCheckLeave(fn: () => void) {
+    runInAction(() => {
+      this._checkLeave = true;
+      this._onLeave = fn;
+    });
+  }
+
+  clearCheckLeave() {
+    runInAction(() => {
+      this._checkLeave = false;
+      this._onLeave = null;
+    });
+  }
 }
 
 export default AppStore;

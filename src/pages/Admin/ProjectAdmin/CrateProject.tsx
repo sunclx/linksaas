@@ -143,7 +143,6 @@ const CreateProject = () => {
             {showSelectUser == true && (
                 <SelectUserModal title="添加项目成员"
                     showUser={permInfo?.user_perm.read ?? false}
-                    showOrg={permInfo?.org_perm.read ?? false}
                     selectUserIdList={memberList.map(item => item.user_id)}
                     onCancel={() => setShowSelectUser(false)}
                     onOk={(userIdList) => loadMemberList(userIdList)} />

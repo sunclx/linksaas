@@ -9,10 +9,10 @@ import { useHistory } from "react-router-dom";
 import type { WebProjectInfo } from "@/stores/project";
 
 const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
-
     const history = useHistory();
+
+    const appStore = useStores('appStore');
     const projectStore = useStores('projectStore');
-    const docStore = useStores('docStore');
 
     return (
         <div className={cls.project_child_wrap}>
@@ -24,8 +24,8 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
                 <span className={cls.name} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    if (docStore.inEdit) {
-                        docStore.showCheckLeave(() => {
+                    if (appStore.inEdit) {
+                        appStore.showCheckLeave(() => {
                             projectStore.setCurProjectId(item.project_id).then(() => {
                                 history.push(APP_PROJECT_HOME_PATH);
                             });
