@@ -34,7 +34,6 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const entryStore = useStores('entryStore');
-  const docStore = useStores('docStore');
   const appStore = useStores('appStore');
   const groupStore = useStores('groupStore');
 
@@ -162,8 +161,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
                 onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (docStore.inEdit) {
-                    docStore.showCheckLeave(() => {
+                  if (appStore.inEdit) {
+                    appStore.showCheckLeave(() => {
                       entryStore.reset();
                       history.push(APP_PROJECT_HOME_PATH);
                     });
@@ -231,16 +230,31 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
                 <a onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
-                  groupStore.curGroup = null;
-                  groupStore.curPostKey = null;
-                  history.push(APP_GROUP_HOME_PATH);
+                  if (appStore.inEdit) {
+                    appStore.showCheckLeave(() => {
+                      groupStore.curGroup = null;
+                      groupStore.curPostKey = null;
+                      history.push(APP_GROUP_HOME_PATH);
+                    });
+                  } else {
+                    groupStore.curGroup = null;
+                    groupStore.curPostKey = null;
+                    history.push(APP_GROUP_HOME_PATH);
+                  }
                 }}>兴趣小组</a>
                 /
                 <a onClick={e => {
                   e.stopPropagation();
                   e.preventDefault();
-                  groupStore.curPostKey = null;
-                  history.push(APP_GROUP_POST_LIST_PATH);
+                  if (appStore.inEdit) {
+                    appStore.showCheckLeave(() => {
+                      groupStore.curPostKey = null;
+                      history.push(APP_GROUP_POST_LIST_PATH);
+                    });
+                  } else {
+                    groupStore.curPostKey = null;
+                    history.push(APP_GROUP_POST_LIST_PATH);
+                  }
                 }}>{groupStore.curGroup.group_name}</a>
               </>
             )}

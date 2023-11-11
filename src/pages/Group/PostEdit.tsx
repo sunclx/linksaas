@@ -13,10 +13,12 @@ import PostTocPanel from "./components/PostDocPanel";
 import Button from "@/components/Button";
 import { APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_LIST_PATH } from "@/utils/constant";
 import { observer } from 'mobx-react';
+import ActionModal from "@/components/ActionModal";
 
 const PostEdit = () => {
     const history = useHistory();
 
+    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const groupStore = useStores('groupStore');
 
@@ -102,6 +104,14 @@ const PostEdit = () => {
         }
     }, [groupStore.curPostKey, editorRef.current]);
 
+    useEffect(() => {
+        appStore.inEdit = true;
+        return () => {
+            appStore.inEdit = false;
+            appStore.clearCheckLeave();
+        };
+    }, []);
+
     return (
         <Card bordered={false}
             title={
@@ -150,6 +160,27 @@ const PostEdit = () => {
                     <PostTocPanel tocList={tocList} />
                 )}
             </div>
+            {appStore.checkLeave && <ActionModal
+                open={appStore.checkLeave}
+                title="离开页面"
+                width={330}
+                okText="离开"
+                okButtonProps={{ danger: true }}
+                onCancel={() => appStore.clearCheckLeave()}
+                onOK={() => {
+                    const onLeave = appStore.onLeave;
+                    appStore.clearCheckLeave();
+                    if (onLeave != null) {
+                        onLeave();
+                    }
+                }}
+            >
+                <h1 style={{ textAlign: 'center', fontWeight: 550, fontSize: '14px' }}>
+                    页面有未保存内容，是否确认离开此页面？
+                    <br /> 系统将不会记住未保存内容
+                </h1>
+            </ActionModal>
+            }
         </Card>
     )
 };

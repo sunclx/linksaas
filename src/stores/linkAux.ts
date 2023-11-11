@@ -394,8 +394,8 @@ class LinkAuxStore {
       } as LinkIssueState);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DOC) {
       const docLink = link as LinkDocInfo;
-      if (this.rootStore.docStore.inEdit) {
-        this.rootStore.docStore.showCheckLeave(() => {
+      if (this.rootStore.appStore.inEdit) {
+        this.rootStore.appStore.showCheckLeave(() => {
           this.goToDoc(docLink, history);
         });
       } else {
@@ -403,8 +403,8 @@ class LinkAuxStore {
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_SPRIT) {
       const spritLink = link as LinkSpritInfo;
-      if (this.rootStore.docStore.inEdit) {
-        this.rootStore.docStore.showCheckLeave(() => {
+      if (this.rootStore.appStore.inEdit) {
+        this.rootStore.appStore.showCheckLeave(() => {
           this.goToSprit(spritLink, history);
         });
       } else {
@@ -412,8 +412,8 @@ class LinkAuxStore {
       }
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_BOARD) {
       const boardLink = link as LinkBoardInfo;
-      if (this.rootStore.docStore.inEdit) {
-        this.rootStore.docStore.showCheckLeave(() => {
+      if (this.rootStore.appStore.inEdit) {
+        this.rootStore.appStore.showCheckLeave(() => {
           this.goToBoard(boardLink, history);
         });
       } else {

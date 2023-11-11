@@ -24,6 +24,7 @@ import { nanoid } from 'nanoid';
 const CreateEntryModal = () => {
     const history = useHistory();
 
+    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const entryStore = useStores('entryStore');
@@ -142,7 +143,7 @@ const CreateEntryModal = () => {
             history.push(APP_PROJECT_WORK_PLAN_PATH);
         } else if (entryStore.createEntryType == ENTRY_TYPE_DOC) {
             await docStore.loadDoc();
-            docStore.inEdit = true;
+            appStore.inEdit = true;
             history.push(APP_PROJECT_KB_DOC_PATH);
         } else if (entryStore.createEntryType == ENTRY_TYPE_PAGES) {
             await request(set_file_owner({

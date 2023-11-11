@@ -18,6 +18,7 @@ export interface RenderDocBtnsProps {
 const RenderDocBtns = (props: RenderDocBtnsProps) => {
   const history = useHistory();
 
+  const appStore = useStores('appStore');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
@@ -69,7 +70,7 @@ const RenderDocBtns = (props: RenderDocBtnsProps) => {
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
-          docStore.inEdit = true;
+          appStore.inEdit = true;
         }}
       >
         编辑
