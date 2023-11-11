@@ -4,7 +4,6 @@ import { Card, Form, List, Popover, Select, Space } from "antd";
 import { useHistory } from "react-router-dom";
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
-import classNames from "classnames";
 import type { TocInfo } from '@/components/Editor/extensions/index';
 import PostTocPanel from "./components/PostDocPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
@@ -95,7 +94,7 @@ const PostDetail = () => {
                 </Space>
             }>
             <div className={s.post_wrap}>
-                <div className={classNames(s.post, "_postContext")}>
+                <div className={s.post}>
                     {content !== null && (
                         <ReadOnlyEditor content={content} tocCallback={result => setTocList(result)} />
                     )}
