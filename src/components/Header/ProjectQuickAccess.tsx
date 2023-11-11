@@ -29,7 +29,6 @@ const MENU_KEY_CREATE_BUG = "create.bug";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS = "toolbar.events.show";
 const MENU_KEY_SHOW_TOOL_BAR_EVENTS_SUBSCRIBE = "toolbar.eventsSubscribe.show";
 const MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS = "toolbar.extEvents.show";
-const MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT = "toolbar.codeComment.show";
 const MENU_KEY_SHOW_LOCAL_API_DEBUG = "localApi.debug.show";
 const MENU_KEY_SHOW_TOOL_BAR_API_COLLECTION = "toolbar.apiColl.show";
 const MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO = "toolbar.dataAnno.show";
@@ -37,7 +36,6 @@ const MENU_KEY_LAYOUT_PREFIX = "layout.";
 const MENU_KEY_LAYOUT_TOOLBAR_API_COLLECTION = "layout.toolbar.apicoll";
 const MENU_KEY_LAYOUT_TOOLBAR_DATA_ANNO = "layout.toolbar.dataanno";
 const MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT = "layout.toolbar.extev";
-const MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT = "layout.toolbar.codecomment";
 const MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO = "layout.overview.prjinfo";
 const MENU_KEY_LAYOUT_OVERVIEW_BULLETIN = "layout.overview.bulletin";
 const MENU_KEY_LAYOUT_MYWORK_WATCH_TASK = "layout.mywork.watchtask";
@@ -84,10 +82,7 @@ const ProjectQuickAccess = () => {
                             key: MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT,
                             label: `${projectStore.curProject?.setting.disable_ext_event == true ? "打开" : "关闭"}外部事件接入`
                         },
-                        {
-                            key: MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT,
-                            label: `${projectStore.curProject?.setting.disable_code_comment == true ? "打开" : "关闭"}代码评论`
-                        },
+
                     ],
                 },
                 {
@@ -275,12 +270,6 @@ const ProjectQuickAccess = () => {
                 label: "查看第三方接入",
             });
         }
-        if (projectStore.curProject?.setting.disable_code_comment != true && projectStore.isAdmin) {
-            tmpItems.push({
-                key: MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT,
-                label: "查看代码评论",
-            });
-        }
         if (projectStore.curProject?.setting.hide_extra_info != true) {
             tmpItems.push({
                 key: "localApi",
@@ -330,8 +319,6 @@ const ProjectQuickAccess = () => {
             newSetting.disable_data_anno = !projectStore.curProject.setting.disable_data_anno;
         } else if (key == MENU_KEY_LAYOUT_TOOLBAR_EXT_EVENT) {
             newSetting.disable_ext_event = !projectStore.curProject.setting.disable_ext_event;
-        } else if (key == MENU_KEY_LAYOUT_TOOLBAR_CODE_COMMENT) {
-            newSetting.disable_code_comment = !projectStore.curProject.setting.disable_code_comment;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_PROJECT_INFO) {
             newSetting.hide_project_info = !projectStore.curProject.setting.hide_project_info;
         } else if (key == MENU_KEY_LAYOUT_OVERVIEW_BULLETIN) {
@@ -400,9 +387,6 @@ const ProjectQuickAccess = () => {
                 break;
             case MENU_KEY_SHOW_TOOL_BAR_EXT_EVENTS:
                 linkAuxStore.goToExtEventList(history);
-                break;
-            case MENU_KEY_SHOW_TOOL_BAR_CODE_COMMENT:
-                linkAuxStore.goToCodeThreadList(history);
                 break;
             case MENU_KEY_SHOW_LOCAL_API_DEBUG:
                 await openApiConsole();

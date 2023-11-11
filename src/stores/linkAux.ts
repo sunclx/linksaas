@@ -618,14 +618,6 @@ class LinkAuxStore {
     history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/access"));
   }
 
-  //调整到代码评论会话列表
-  goToCodeThreadList(history: History) {
-    if (this.rootStore.projectStore.curProject?.setting.disable_code_comment == true) {
-      return;
-    }
-    history.push(this.genUrl(this.rootStore.projectStore.curProjectId, history.location.pathname, "/code"));
-  }
-
   //跳转到数据标注
   goToDataAnnoList(history: History) {
     if (this.rootStore.projectStore.curProject?.setting.disable_data_anno == true) {

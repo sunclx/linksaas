@@ -7,16 +7,6 @@ export type Signature = {
     rest: number[];
 };
 
-export type OrgPerm = {
-    read: boolean;
-    create: boolean;
-    update: boolean;
-    remove: boolean;
-    move: boolean;
-    add_user: boolean;
-    remove_user: boolean;
-};
-
 export type UserPerm = {
     read: boolean;
     create: boolean;
@@ -87,7 +77,6 @@ export type GroupPerm = {
 
 
 export type AdminPermInfo = {
-    org_perm: OrgPerm;
     user_perm: UserPerm;
     project_perm: ProjectPerm;
     project_member_perm: ProjectMemberPerm;

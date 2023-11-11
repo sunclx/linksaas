@@ -26,7 +26,6 @@ mod local_api;
 mod pages_plugin;
 mod helper;
 mod notice_decode;
-mod org_admin_api_plugin;
 mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
@@ -419,7 +418,6 @@ fn main() {
         .plugin(project_admin_api_plugin::ProjectAdminApiPlugin::new())
         .plugin(project_member_admin_api_plugin::ProjectMemberAdminApiPlugin::new())
         .plugin(user_admin_api_plugin::UserAdminApiPlugin::new())
-        .plugin(org_admin_api_plugin::OrgAdminApiPlugin::new())
         .plugin(client_cfg_admin_api_plugin::ClientCfgAdminApiPlugin::new())
         .plugin(events_admin_api_plugin::EventsAdminApiPlugin::new())
         .plugin(min_app_plugin::MinAppPlugin::new())

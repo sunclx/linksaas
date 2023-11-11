@@ -23,7 +23,7 @@ export type Setting = {
   // disable_app_store: boolean;
   disable_data_anno: boolean;
   disable_api_collection: boolean;
-  disable_code_comment: boolean;
+  // disable_code_comment: boolean;
   disable_ci_cd: boolean;
 
   // disable_chat: boolean;

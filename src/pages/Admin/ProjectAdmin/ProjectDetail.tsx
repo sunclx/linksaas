@@ -227,7 +227,7 @@ const ProjectDetail = () => {
                 )}
             </Descriptions>
             {showSelectUserModal == true && (
-                <SelectUserModal title='添加成员' showUser={permInfo?.user_perm.read ?? false} showOrg={permInfo?.org_perm.read ?? false}
+                <SelectUserModal title='添加成员' showUser={permInfo?.user_perm.read ?? false}
                     selectUserIdList={localStore.memberInfoList.map(item => item.member_user_id)}
                     onCancel={() => setShowSelectUserModal(false)}
                     onOk={(userIdList) => {
