@@ -11,9 +11,9 @@ import { APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 const MemberList = () => {
     const history = useHistory();
 
+    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const memberStore = useStores('memberStore');
-    const docStore = useStores('docStore');
 
     const [memberList, setMemberList] = useState<WebMemberInfo[]>([]);
 
@@ -43,8 +43,8 @@ const MemberList = () => {
                     <Button type="text" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        if (docStore.inEdit) {
-                            docStore.showCheckLeave(() => {
+                        if (appStore.inEdit) {
+                            appStore.showCheckLeave(() => {
                                 memberStore.showDetailMemberId = item.member.member_user_id;
                                 history.push(APP_PROJECT_OVERVIEW_PATH);
                             });

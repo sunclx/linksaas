@@ -374,7 +374,7 @@ fn main() {
                     if about_win.is_none() {
                         if let Ok(_) =
                             WindowBuilder::new(app, "about", WindowUrl::App("about.html".into()))
-                                .inner_size(250.0, 180.0)
+                                .inner_size(250.0, 140.0)
                                 .resizable(false)
                                 .skip_taskbar(true)
                                 .title("关于")

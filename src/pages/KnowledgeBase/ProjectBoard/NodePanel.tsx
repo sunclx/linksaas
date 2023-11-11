@@ -12,6 +12,8 @@ import apiCollIcon from '@/assets/allIcon/icon-apicoll.png';
 import dataAnnoIcon from '@/assets/allIcon/icon-dataanno.png';
 import { useDrag } from 'react-dnd';
 import { BOARD_NODE_TYPE_IMAGE, type BOARD_NODE_TYPE, BOARD_NODE_TYPE_TEXT, BOARD_NODE_TYPE_REF_TASK, BOARD_NODE_TYPE_REF_BUG, BOARD_NODE_TYPE_REF_REQUIRE_MENT, BOARD_NODE_TYPE_REF_PIPE_LINE, BOARD_NODE_TYPE_REF_API_COLL, BOARD_NODE_TYPE_REF_DATA_ANNO, BOARD_NODE_TYPE_MERMAID } from "./nodes/types";
+import { observer } from 'mobx-react';
+import { useStores } from "@/hooks";
 
 
 export const DND_ITEM_TYPE = "node";
@@ -41,6 +43,8 @@ const NodeIcon = (props: NodeIconProps) => {
 }
 
 const NodePanel = () => {
+    const projectStore = useStores("projectStore");
+
     return (
         <Card>
             <Space direction="vertical">
@@ -49,9 +53,15 @@ const NodePanel = () => {
                         <NodeIcon nodeType={BOARD_NODE_TYPE_REF_TASK} imgSrc={taskIcon} title="引用任务(拖动到画板)" />
                         <NodeIcon nodeType={BOARD_NODE_TYPE_REF_BUG} imgSrc={bugIcon} title="引用缺陷(拖动到画板)" />
                         <NodeIcon nodeType={BOARD_NODE_TYPE_REF_REQUIRE_MENT} imgSrc={reqIcon} title="引用需求(拖动到画板)" />
-                        <NodeIcon nodeType={BOARD_NODE_TYPE_REF_PIPE_LINE} imgSrc={cicdIcon} title="引用流水线(拖动到画板)" />
-                        <NodeIcon nodeType={BOARD_NODE_TYPE_REF_API_COLL} imgSrc={apiCollIcon} title="引用接口(拖动到画板)" />
-                        <NodeIcon nodeType={BOARD_NODE_TYPE_REF_DATA_ANNO} imgSrc={dataAnnoIcon} title="引用数据标注(拖动到画板)" />
+                        {projectStore.curProject?.setting.disable_ci_cd == false && (
+                            <NodeIcon nodeType={BOARD_NODE_TYPE_REF_PIPE_LINE} imgSrc={cicdIcon} title="引用流水线(拖动到画板)" />
+                        )}
+                        {projectStore.curProject?.setting.disable_api_collection == false && (
+                            <NodeIcon nodeType={BOARD_NODE_TYPE_REF_API_COLL} imgSrc={apiCollIcon} title="引用接口(拖动到画板)" />
+                        )}
+                        {projectStore.curProject?.setting.disable_data_anno == false && (
+                            <NodeIcon nodeType={BOARD_NODE_TYPE_REF_DATA_ANNO} imgSrc={dataAnnoIcon} title="引用数据标注(拖动到画板)" />
+                        )}
                     </Space>
                 }>
                     <img src={refIcon} title="引用(拖动到画板)" />
@@ -64,4 +74,4 @@ const NodePanel = () => {
     )
 };
 
-export default NodePanel;
+export default observer(NodePanel);

@@ -198,8 +198,8 @@ class NoticeStore {
       }, 200);
       const projectId = notice.GitPostHookNotice.project_id;
       if (projectId != this.rootStore.projectStore.curProjectId) {
-        if (this.rootStore.docStore.inEdit) {
-          this.rootStore.docStore.showCheckLeave(() => {
+        if (this.rootStore.appStore.inEdit) {
+          this.rootStore.appStore.showCheckLeave(() => {
             this.rootStore.projectStore.setCurProjectId(projectId).then(() => {
               this.rootStore.projectStore.showPostHookModal = true;
               this.history.push(APP_PROJECT_HOME_PATH);

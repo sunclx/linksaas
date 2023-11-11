@@ -19,7 +19,6 @@ const ProjectList = () => {
     const appStore = useStores('appStore');
     const projectStore = useStores('projectStore');
     const memberStore = useStores('memberStore');
-    const docStore = useStores('docStore');
 
     return (
         <div className={cls.project_menu}>
@@ -27,8 +26,8 @@ const ProjectList = () => {
                 <div style={{ width: "120px", cursor: "pointer" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    if (docStore.inEdit) {
-                        docStore.showCheckLeave(() => {
+                    if (appStore.inEdit) {
+                        appStore.showCheckLeave(() => {
                             history.push(APP_PROJECT_MANAGER_PATH);
                         });
                     } else {

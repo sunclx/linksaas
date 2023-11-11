@@ -19,7 +19,7 @@ const LeftMenu: React.FC = () => {
   const userStore = useStores('userStore');
   const appStore = useStores('appStore');
   const projectStore = useStores('projectStore');
-  const docStore = useStores('docStore');
+
   const [curExtraMenuId, setCurExtraMenuId] = useState("");
 
   return (
@@ -38,8 +38,8 @@ const LeftMenu: React.FC = () => {
           onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            if (docStore.inEdit) {
-              docStore.showCheckLeave(() => {
+            if (appStore.inEdit) {
+              appStore.showCheckLeave(() => {
                 history.push(WORKBENCH_PATH);
                 projectStore.setCurProjectId("");
               });
@@ -58,8 +58,8 @@ const LeftMenu: React.FC = () => {
           onClick={e => {
             e.stopPropagation();
             e.preventDefault();
-            if (docStore.inEdit) {
-              docStore.showCheckLeave(() => {
+            if (appStore.inEdit) {
+              appStore.showCheckLeave(() => {
                 history.push(APP_GROUP_HOME_PATH);
                 projectStore.setCurProjectId("");
               });
@@ -77,8 +77,8 @@ const LeftMenu: React.FC = () => {
               onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                if (docStore.inEdit) {
-                  docStore.showCheckLeave(() => {
+                if (appStore.inEdit) {
+                  appStore.showCheckLeave(() => {
                     history.push(PUB_RES_PATH);
                     projectStore.setCurProjectId("");
                   });
@@ -98,7 +98,13 @@ const LeftMenu: React.FC = () => {
               e.stopPropagation();
               e.preventDefault();
               projectStore.setCurProjectId("").then(() => {
-                history.push(EXTRA_MENU_PATH, { url: extraItem.url });
+                if (appStore.inEdit) {
+                  appStore.showCheckLeave(() => {
+                    history.push(EXTRA_MENU_PATH, { url: extraItem.url });
+                  });
+                } else {
+                  history.push(EXTRA_MENU_PATH, { url: extraItem.url });
+                }
               });
               setCurExtraMenuId(extraItem.menu_id);
             }}>
