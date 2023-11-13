@@ -2,7 +2,7 @@ import { Card, Form, Input, Switch, Table, message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { GroupInfo } from "@/api/group";
 import { list as list_group, update_pub } from "@/api/group_admin";
-import { get_admin_session } from "@/api/admin_auth";
+import { type AdminPermInfo, get_admin_session, get_admin_perm } from "@/api/admin_auth";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/es/table';
 import moment from "moment";
@@ -17,6 +17,8 @@ const GroupList = () => {
     const [groupInfoList, setGroupInfoList] = useState<GroupInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
+
+    const [permInfo, setPermInfo] = useState<AdminPermInfo | null>(null);
 
     const loadGroupInfoList = async () => {
         const sessionId = await get_admin_session();
@@ -57,7 +59,7 @@ const GroupList = () => {
             title: "是否公开",
             width: 80,
             render: (_, row: GroupInfo) => (
-                <Switch size="small" checked={row.pub_group} onChange={checked => updatePub(row.group_id, checked)} />
+                <Switch size="small" checked={row.pub_group} onChange={checked => updatePub(row.group_id, checked)} disabled={permInfo?.group_perm.update_group == false} />
             ),
         },
         {
@@ -77,6 +79,10 @@ const GroupList = () => {
     useEffect(() => {
         setCurPage(0);
     }, [filterPub, keyword]);
+
+    useEffect(() => {
+        get_admin_perm().then(res => setPermInfo(res));
+    }, []);
 
     return (
         <Card bordered={false} title="兴趣组列表"

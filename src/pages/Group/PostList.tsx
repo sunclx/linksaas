@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import type { PostKeyInfo } from "@/api/group_post";
-import { list_post_key, update_post_essence } from "@/api/group_post";
+import type { POST_AUDIT_STATE, PostKeyInfo } from "@/api/group_post";
+import { POST_AUDIT_AGREE, POST_AUDIT_APPLY, POST_AUDIT_NONE, POST_AUDIT_REFUSE, list_post_key, update_post_essence } from "@/api/group_post";
 import { Card, Form, Input, Popover, Space, Switch, Table, Tag } from "antd";
 import { useHistory } from "react-router-dom";
 import { useStores } from "@/hooks";
@@ -71,6 +71,15 @@ const PostList = () => {
         }
     };
 
+    const getStateColor = (state: POST_AUDIT_STATE) => {
+        if (state == POST_AUDIT_AGREE) {
+            return "green";
+        } else if (state == POST_AUDIT_REFUSE) {
+            return "red";
+        }
+        return "black";
+    }
+
     const columns: ColumnsType<PostKeyInfo> = [
         {
             title: "标题",
@@ -91,6 +100,19 @@ const PostList = () => {
                     onChange={checked => {
                         updateEssence(row.post_id, checked);
                     }} />
+            ),
+        },
+        {
+            title: "推荐状态",
+            key: "audit_state",
+            width: 100,
+            render: (_, row: PostKeyInfo) => (
+                <span style={{ color: getStateColor(row.audit_state) }}>
+                    {row.audit_state == POST_AUDIT_NONE && "未申请推荐"}
+                    {row.audit_state == POST_AUDIT_APPLY && "已申请推荐"}
+                    {row.audit_state == POST_AUDIT_REFUSE && "拒绝进入推荐"}
+                    {row.audit_state == POST_AUDIT_AGREE && "同意进入推荐"}
+                </span>
             ),
         },
         {
@@ -214,7 +236,13 @@ const PostList = () => {
             </Form>
         }>
             <div style={{ height: "calc(100vh - 110px)", overflowY: "scroll" }}>
-                <Table rowKey="post_id" dataSource={postKeyInfoList} columns={columns}
+                <Table rowKey="post_id" dataSource={postKeyInfoList} columns={columns.filter(item => {
+                    if (item.key == "audit_state" && (groupStore.curGroup?.owner_user_id != userStore.userInfo.userId || groupStore.curGroup?.pub_group == false)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                })}
                     pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
             </div>
             {showInviteModal == true && (

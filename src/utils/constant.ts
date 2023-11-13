@@ -48,6 +48,8 @@ export const ADMIN_PATH_APPSTORE_CATE_SUFFIX = '/admin/appstore/cate';
 export const ADMIN_PATH_APPSTORE_APP_SUFFIX = '/admin/appstore/app';
 
 export const ADMIN_PATH_GROUP_LIST_SUFFIX = '/admin/group/list';
+export const ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX = '/admin/group/audit_recommend';
+
 
 export const ADMIN_PATH_CLIENT_MENU_SUFFIX = '/admin/client/menu';
 
