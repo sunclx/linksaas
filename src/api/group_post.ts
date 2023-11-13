@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
 export type POST_AUDIT_STATE = number;
+
 export const POST_AUDIT_NONE: POST_AUDIT_STATE = 0;
 export const POST_AUDIT_APPLY: POST_AUDIT_STATE = 1;
 export const POST_AUDIT_REFUSE: POST_AUDIT_STATE = 2;
