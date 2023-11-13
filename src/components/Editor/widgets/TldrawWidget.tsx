@@ -48,7 +48,7 @@ const EditTldraw: React.FC<WidgetProps> = (props) => {
     return (
         <ErrorBoundary>
             <EditorWrap onChange={() => props.removeSelf()}>
-                <div style={{ height: "calc(100vh - 300px)", marginRight: "20px"  }}>
+                <div style={{ height: "calc(100vh - 300px)", marginRight: "20px",marginLeft:"20px"  }}>
                     <Tldraw snapshot={initData}
                         assetUrls={getAssetUrls({ baseUrl: "/tldraw" })}
                         onMount={editor => {
