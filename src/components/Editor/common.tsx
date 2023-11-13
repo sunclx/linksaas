@@ -3,6 +3,9 @@ import React, { forwardRef, useImperativeHandle } from 'react';
 import type { Ref } from 'react';
 import { useRemirrorContext, useHelpers, useCommands } from '@remirror/react';
 import type { CommandsFromExtensions, Extension } from 'remirror';
+import { appWindow } from "@tauri-apps/api/window";
+import { SAVE_WIDGET_NOTICE } from './widgets/common';
+import { sleep } from '@/utils/time';
 
 export interface EditorRef {
   clearContent: () => void;
@@ -39,3 +42,9 @@ export const ImperativeHandle = forwardRef((_: unknown, ref: Ref<EditorRef>) => 
   }));
   return <></>;
 });
+
+
+export const flushEditorContent = async () => {
+  await appWindow.emit(SAVE_WIDGET_NOTICE, null);
+  await sleep(200);
+};

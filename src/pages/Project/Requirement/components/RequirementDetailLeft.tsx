@@ -12,6 +12,7 @@ import { request } from '@/utils/request';
 import LinkIssuePanel from './LinkIssuePanel';
 import KanoPanel from './KanoPanel';
 import FourQPanel from './FourQPanel';
+import { flushEditorContent } from '@/components/Editor/common';
 
 interface RequirementDetailLeftProps {
     requirement: RequirementInfo;
@@ -32,6 +33,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
         fsId: projectStore.curProject?.require_ment_fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_REQUIRE_MENT,
         ownerId: props.requirement.requirement_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -40,6 +42,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
     });
 
     const updateContent = async () => {
+        await flushEditorContent();
         const data = editor.editorRef.current?.getContent() ?? {
             type: 'doc',
         };

@@ -12,6 +12,7 @@ import { FILE_OWNER_TYPE_BULLETIN, FILE_OWNER_TYPE_PROJECT } from "@/api/fs";
 import type { ColumnsType } from 'antd/lib/table';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
+import { flushEditorContent } from "@/components/Editor/common";
 
 interface EditModalProps {
     bulletinId: string;
@@ -32,6 +33,7 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
         fsId: projectStore.curProject?.bulletin_fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_BULLETIN,
         ownerId: props.bulletinId,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -55,6 +57,7 @@ const EditModal: React.FC<EditModalProps> = observer((props) => {
             message.error("标题不能为空");
             return;
         }
+        await flushEditorContent();
         const newContent = editorRef.current?.getContent() ?? {
             type: 'doc',
         };
@@ -148,6 +151,7 @@ const CreateModal: React.FC<CreateModalProps> = observer((props) => {
         fsId: projectStore.curProject?.bulletin_fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_PROJECT,
         ownerId: projectStore.curProjectId,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -160,6 +164,7 @@ const CreateModal: React.FC<CreateModalProps> = observer((props) => {
             message.error("标题不能为空");
             return;
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? {
             type: 'doc',
         };

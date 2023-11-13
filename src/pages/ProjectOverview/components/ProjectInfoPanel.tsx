@@ -9,6 +9,7 @@ import { update } from '@/api/project';
 import { request } from '@/utils/request';
 import { useCommonEditor, ReadOnlyEditor, change_file_fs } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT } from '@/api/fs';
+import { flushEditorContent } from '@/components/Editor/common';
 
 const ProjectInfoPanel = () => {
   const projectStore = useStores('projectStore');
@@ -22,6 +23,7 @@ const ProjectInfoPanel = () => {
     fsId: projectStore.curProject?.project_fs_id ?? '',
     ownerType: FILE_OWNER_TYPE_PROJECT,
     ownerId: projectStore.curProjectId,
+    projectId: projectStore.curProjectId,
     historyInToolbar: false,
     clipboardInToolbar: false,
     commonInToolbar: true,
@@ -42,6 +44,7 @@ const ProjectInfoPanel = () => {
   }, [inEdit]);
 
   const sumbit = async () => {
+    await flushEditorContent();
     const content = editorRef.current?.getContent() ?? {
       type: 'doc',
     };

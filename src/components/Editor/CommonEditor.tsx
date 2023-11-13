@@ -32,6 +32,7 @@ export interface UseCommonEditorAttrs {
   fsId: string;
   ownerType: FILE_OWNER_TYPE;
   ownerId: string;
+  projectId: string;
   historyInToolbar: boolean;
   clipboardInToolbar: boolean;
   commonInToolbar: boolean;
@@ -100,14 +101,14 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
     }));
   }
   if (attrs.widgetInToolbar) {
-    toolbarItems.push(contentWidgetItem);
+    toolbarItems.push(contentWidgetItem(attrs.projectId));
   }
   const editor = (
     <ThemeProvider>
       <AllStyledComponent>
         <Remirror manager={manager} initialContent={state} placeholder={attrs?.placeholder ?? "请输入......"}>
           <Toolbar items={toolbarItems} />
-          <FloatToolBar enableLink={attrs.commonInToolbar}/> 
+          <FloatToolBar enableLink={attrs.commonInToolbar} />
           {attrs.showReminder && (
             <Reminder enabled={showReminder} />
           )}

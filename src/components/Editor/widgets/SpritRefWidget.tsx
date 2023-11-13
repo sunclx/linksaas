@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type { WidgetProps } from './common';
+import { SAVE_WIDGET_NOTICE, type WidgetProps } from './common';
 import EditorWrap from '../components/EditorWrap';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { IssueInfo } from '@/api/project_issue';
@@ -19,6 +19,7 @@ import { useHistory } from 'react-router-dom';
 import { LinkBugInfo, LinkSpritInfo, LinkTaskInfo } from '@/stores/linkAux';
 import type { EntryInfo } from "@/api/project_entry"
 import { list as list_entry, get as get_entry, ENTRY_TYPE_SPRIT } from "@/api/project_entry"
+import { appWindow } from "@tauri-apps/api/window";
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
 
@@ -243,6 +244,21 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
         loadIssue();
     }, [curSpritId]);
 
+    useEffect(() => {
+        const unListenFn = appWindow.listen(SAVE_WIDGET_NOTICE, () => {
+            setCurSpritId(oldValue=>{
+                const saveData: WidgetData = {
+                    spritId: oldValue,
+                };
+                props.writeData(saveData);
+                return oldValue;
+            });
+        });
+        return () => {
+          unListenFn.then(unListen => unListen());
+        };
+      }, []);
+
     return (
         <ErrorBoundary>
             <EditorWrap onChange={() => props.removeSelf()}>
@@ -250,10 +266,6 @@ const EditSpritRef: React.FC<WidgetProps> = (props) => {
                     <Select style={{ width: 200 }}
                         placeholder="请选择工作计划" value={curSpritId} onChange={(spritId: string) => {
                             setCurSpritId(spritId);
-                            const saveData: WidgetData = {
-                                spritId: spritId,
-                            };
-                            props.writeData(saveData);
                         }}>
                         {entryList.map(entry => (<Select.Option key={entry.entry_id} value={entry.entry_id}>{entry.entry_title}</Select.Option>))}
                     </Select>

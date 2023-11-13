@@ -8,7 +8,7 @@ import { request } from "@/utils/request";
 import { get_session, get_user_id } from "@/api/user";
 import { download_file } from "@/api/fs";
 import { readTextFile } from '@tauri-apps/api/fs';
-import YAML from 'yaml'
+import YAML from 'yaml';
 import { EditOutlined } from "@ant-design/icons";
 import CommentEntry from "@/components/CommentEntry";
 import { COMMENT_TARGET_API_COLL } from "@/api/project_comment";

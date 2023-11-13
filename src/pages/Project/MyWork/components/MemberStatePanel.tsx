@@ -7,18 +7,9 @@ import { update_state_desc, update_need_help_desc } from "@/api/project_member";
 import moment from "moment";
 import { ReadOnlyEditor, useCommonEditor } from "@/components/Editor";
 import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
+import { flushEditorContent } from "@/components/Editor/common";
 
-const EDITOR_PARAM = {
-    content: '',
-    fsId: "",
-    ownerType: FILE_OWNER_TYPE_NONE,
-    ownerId: "",
-    historyInToolbar: false,
-    clipboardInToolbar: false,
-    commonInToolbar: true,
-    widgetInToolbar: false,
-    showReminder: false,
-};
+
 
 const MemberStatePanel = () => {
     const userStore = useStores('userStore');
@@ -30,10 +21,24 @@ const MemberStatePanel = () => {
 
     const [editHelp, setEditHelp] = useState(false);
 
+    const EDITOR_PARAM = {
+        content: '',
+        fsId: "",
+        ownerType: FILE_OWNER_TYPE_NONE,
+        ownerId: "",
+        projectId: projectStore.curProjectId,
+        historyInToolbar: false,
+        clipboardInToolbar: false,
+        commonInToolbar: true,
+        widgetInToolbar: false,
+        showReminder: false,
+    };
+
     const descEditor = useCommonEditor(EDITOR_PARAM);
     const helpEditor = useCommonEditor(EDITOR_PARAM);
 
     const updateStateDesc = async () => {
+        await flushEditorContent();
         const content = descEditor.editorRef.current?.getContent() ?? { type: "doc" };
         await request(update_state_desc({
             session_id: userStore.sessionId,
@@ -47,6 +52,7 @@ const MemberStatePanel = () => {
     };
 
     const updateHelpDesc = async () => {
+        await flushEditorContent();
         const content = helpEditor.editorRef.current?.getContent() ?? { type: "doc" };
         await request(update_need_help_desc({
             session_id: userStore.sessionId,

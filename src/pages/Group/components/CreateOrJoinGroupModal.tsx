@@ -7,6 +7,7 @@ import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
 import { useCommonEditor } from "@/components/Editor";
 import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
+import { flushEditorContent } from "@/components/Editor/common";
 
 export interface CreateGroupModalProps {
     onCancel: () => void;
@@ -15,6 +16,7 @@ export interface CreateGroupModalProps {
 
 const CreateOrJoinGroupModal = (props: CreateGroupModalProps) => {
     const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
 
     const [activeKey, setActiveKey] = useState("join");
 
@@ -30,6 +32,7 @@ const CreateOrJoinGroupModal = (props: CreateGroupModalProps) => {
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: "",
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,
@@ -47,6 +50,7 @@ const CreateOrJoinGroupModal = (props: CreateGroupModalProps) => {
     }
 
     const createGroup = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         await request(create_group({
             session_id: userStore.sessionId,

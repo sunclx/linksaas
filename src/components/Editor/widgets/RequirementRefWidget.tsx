@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import type { WidgetProps } from './common';
+import { SAVE_WIDGET_NOTICE, type WidgetProps } from './common';
 import EditorWrap from '../components/EditorWrap';
 import s from './RequirementRefWidget.module.less';
 import Button from '@/components/Button';
@@ -15,6 +15,7 @@ import { request } from '@/utils/request';
 import moment from 'moment';
 import { LinkRequirementInfo } from '@/stores/linkAux';
 import { useHistory } from 'react-router-dom';
+import { appWindow } from "@tauri-apps/api/window";
 
 
 
@@ -154,19 +155,11 @@ const EditRequirementRef: React.FC<WidgetProps> = (props) => {
             requirementList.push(res.requirement);
         }
         setDataSource(requirementList);
-        const saveData: WidgetData = {
-            requirementIdList: requirementList.map(item => item.requirement_id),
-        };
-        props.writeData(saveData);
     };
 
     const removeRequirement = async (requirementId: string) => {
         const tmpList = dataSource.filter(item => item.requirement_id != requirementId);
         setDataSource(tmpList);
-        const saveData: WidgetData = {
-            requirementIdList: tmpList.map(item => item.requirement_id),
-        };
-        props.writeData(saveData);
     };
 
     const columns: ColumnsType<RequirementInfo> = [
@@ -204,6 +197,21 @@ const EditRequirementRef: React.FC<WidgetProps> = (props) => {
             render: (_, row: RequirementInfo) => (moment(row.create_time).format("YYYY-MM-DD HH:mm::ss")),
         }
     ];
+
+    useEffect(() => {
+        const unListenFn = appWindow.listen(SAVE_WIDGET_NOTICE, () => {
+            setDataSource(oldValue => {
+                const saveData: WidgetData = {
+                    requirementIdList: oldValue.map(item => item.requirement_id),
+                };
+                props.writeData(saveData);
+                return oldValue;
+            });
+        });
+        return () => {
+            unListenFn.then(unListen => unListen());
+        };
+    }, []);
 
     return (
         <EditorWrap onChange={() => props.removeSelf()}>

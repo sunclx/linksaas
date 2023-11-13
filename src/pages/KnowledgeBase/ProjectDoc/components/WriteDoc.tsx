@@ -13,6 +13,7 @@ import DocTocPanel from './DocTocPanel';
 import classNames from 'classnames';
 import s from "./EditDoc.module.less";
 import ActionModal from '@/components/ActionModal';
+import { flushEditorContent } from '@/components/Editor/common';
 
 const WriteDoc: React.FC = () => {
   const appStore = useStores('appStore');
@@ -28,6 +29,7 @@ const WriteDoc: React.FC = () => {
     fsId: projectStore.curProject?.doc_fs_id ?? '',
     ownerType: FILE_OWNER_TYPE_PROJECT_DOC,
     ownerId: entryStore.curEntry?.entry_id ?? "",
+    projectId: projectStore.curProjectId,
     historyInToolbar: true,
     clipboardInToolbar: true,
     commonInToolbar: true,
@@ -38,6 +40,7 @@ const WriteDoc: React.FC = () => {
 
   //更新文档
   const updateDoc = async () => {
+    await flushEditorContent();
     const content = editorRef.current?.getContent() ?? {
       type: 'doc',
     };

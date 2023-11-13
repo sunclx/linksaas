@@ -2,33 +2,52 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "sourceMap": true,
     "baseUrl": ".",
     "jsx": "react",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "esModuleInterop": false,
     "isolatedModules": true,
     "noEmit": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "allowJs": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "strict": true,
     "noImplicitAny": true,
-
     "paths": {
-      "@/*": ["src/*"],
-      "@c/*": ["config/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@c/*": [
+        "config/*"
+      ]
     },
-    "typeRoots": ["typings/", "node_modules/@types/"]
+    "typeRoots": [
+      "typings/",
+      "node_modules/@types/"
+    ]
   },
-  "include": ["src", "typings/**/*", "config/**/*", "vite.config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src",
+    "typings/**/*",
+    "config/**/*",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

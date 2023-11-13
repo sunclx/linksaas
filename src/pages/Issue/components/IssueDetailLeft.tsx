@@ -11,6 +11,7 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_ISSUE } from "@/api/fs";
 import { updateContent as updateIssueContent } from './utils';
+import { flushEditorContent } from "@/components/Editor/common";
 
 export interface IssueDetailLeftProps {
     issue: IssueInfo;
@@ -32,6 +33,7 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
         fsId: projectStore.curProject?.issue_fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_ISSUE,
         ownerId: props.issue.issue_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -40,6 +42,7 @@ const IssueDetailLeft: React.FC<IssueDetailLeftProps> = (props) => {
     });
 
     const updateContent = async () => {
+        await flushEditorContent();
         const data = editor.editorRef.current?.getContent() ?? {
             type: 'doc',
         };

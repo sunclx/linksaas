@@ -34,15 +34,15 @@ export const getIssue_type = (pathname: string): ISSUE_TYPE => {
 
 
 export const getIssueDetailUrl = (pathname: string): string => {
-  if (pathname.startsWith(APP_PROJECT_HOME_PATH)){
+  if (pathname.startsWith(APP_PROJECT_HOME_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_HOME_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_HOME_PATH + BUG_DETAIL_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
+  } else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_WORK_PLAN_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_WORK_PLAN_PATH + BUG_DETAIL_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+  } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_DETAIL_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_BOARD_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_KB_BOARD_PATH + BUG_DETAIL_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_MY_WORK_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_MY_WORK_PATH + BUG_DETAIL_SUFFIX;
   }
   return getIsTask(pathname) ? APP_PROJECT_OVERVIEW_PATH + TASK_DETAIL_SUFFIX : APP_PROJECT_OVERVIEW_PATH + BUG_DETAIL_SUFFIX;
@@ -51,13 +51,13 @@ export const getIssueDetailUrl = (pathname: string): string => {
 export const getIssueCreateUrl = (pathname: string): string => {
   if (pathname.startsWith(APP_PROJECT_HOME_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_HOME_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_HOME_PATH + BUG_CREATE_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
+  } else if (pathname.startsWith(APP_PROJECT_WORK_PLAN_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_WORK_PLAN_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_WORK_PLAN_PATH + BUG_CREATE_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
+  } else if (pathname.startsWith(APP_PROJECT_KB_DOC_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_DOC_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_DOC_PATH + BUG_CREATE_SUFFIX;
-  }else if(pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_KB_BOARD_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_KB_BOARD_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_KB_BOARD_PATH + BUG_CREATE_SUFFIX;
-  }else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)){
+  } else if (pathname.startsWith(APP_PROJECT_MY_WORK_PATH)) {
     return getIsTask(pathname) ? APP_PROJECT_MY_WORK_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_MY_WORK_PATH + BUG_CREATE_SUFFIX;
   }
   return getIsTask(pathname) ? APP_PROJECT_OVERVIEW_PATH + TASK_CREATE_SUFFIX : APP_PROJECT_OVERVIEW_PATH + BUG_CREATE_SUFFIX;
@@ -102,22 +102,6 @@ export const validator = (condition: ConditionType, msg: string = '格式错误'
 
 export const regexValidator = (regex: RegExp, msg?: string) => {
   return validator((value) => regex.test(value as string), msg);
-};
-
-export const arrayToObject = (
-  arr: Record<string, unknown>[],
-  options: { key: string; labelKey: string } = {
-    key: 'value',
-    labelKey: 'label',
-  },
-) => {
-  const obj = {};
-  const { key, labelKey } = options;
-  arr.forEach((item) => {
-    const itemKey = item[key] as string;
-    obj[itemKey] = labelKey ? item[labelKey] : item;
-  });
-  return obj;
 };
 
 
