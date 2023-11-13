@@ -43,6 +43,9 @@ export const Widget: React.FC<WidgetProps> = (props) => {
     case widgets.WIDGET_TYPE_API_COLL_REF: {
       return <widgets.ApiCollRefWidget {...widgetProps} />
     }
+    case widgets.WIDGET_TYPE_TLDRAW: {
+      return <widgets.TldrawWidget {...widgetProps} />
+    }
     default: {
       return <div>不支持的插件</div>;
     }

@@ -9,6 +9,7 @@ import { update } from '@/api/project';
 import { request } from '@/utils/request';
 import { useCommonEditor, ReadOnlyEditor, change_file_fs } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT } from '@/api/fs';
+import { flushEditorContent } from '@/components/Editor/common';
 
 const ProjectInfoPanel = () => {
   const projectStore = useStores('projectStore');
@@ -43,6 +44,7 @@ const ProjectInfoPanel = () => {
   }, [inEdit]);
 
   const sumbit = async () => {
+    await flushEditorContent();
     const content = editorRef.current?.getContent() ?? {
       type: 'doc',
     };

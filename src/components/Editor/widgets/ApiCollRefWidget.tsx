@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type { WidgetProps } from './common';
+import { SAVE_WIDGET_NOTICE, type WidgetProps } from './common';
 import type { ApiCollInfo, API_COLL_TYPE } from "@/api/api_collection";
 import { API_COLL_GRPC, API_COLL_OPENAPI, list as list_api_coll } from "@/api/api_collection";
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -8,6 +8,9 @@ import { Button, List, Modal } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { request } from '@/utils/request';
 import { useStores } from '@/hooks';
+import { appWindow } from "@tauri-apps/api/window";
+import { useLocalObservable } from 'mobx-react';
+import { runInAction } from 'mobx';
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
 export interface WidgetData {
@@ -33,10 +36,32 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
     const projectStore = useStores('projectStore');
     const linkAuxStore = useStores('linkAuxStore');
 
-    const [apiCollId, setApiCollId] = useState(widgetData.apiCollId);
-    const [name, setName] = useState(widgetData.name);
-    const [defaultAddr, setDefaultAddr] = useState(widgetData.defaultAddr);
-    const [apiCollType, setApiCollType] = useState(widgetData.apiCollType);
+    const localStore = useLocalObservable(() => ({
+        apiCollId: widgetData.apiCollId,
+        setApiCollId(val: string) {
+            runInAction(() => {
+                this.apiCollId = val;
+            });
+        },
+        name: widgetData.name,
+        setName(val: string) {
+            runInAction(() => {
+                this.name = val;
+            });
+        },
+        defaultAddr: widgetData.defaultAddr,
+        setDefaultAddr(val: string) {
+            runInAction(() => {
+                this.defaultAddr = val;
+            });
+        },
+        apiCollType: widgetData.apiCollType,
+        setApiCollType(val: API_COLL_TYPE) {
+            runInAction(() => {
+                this.apiCollType = val;
+            });
+        },
+    }));
 
     const [showModal, setShowModal] = useState(false);
     const [apiCollInfoList, setApiCollInfoList] = useState<ApiCollInfo[]>([]);
@@ -56,16 +81,6 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
     };
 
     useEffect(() => {
-        const saveData: WidgetData = {
-            apiCollId,
-            name,
-            defaultAddr,
-            apiCollType,
-        };
-        props.writeData(saveData);
-    }, [apiCollId, name, defaultAddr, apiCollType]);
-
-    useEffect(() => {
         if (showModal) {
             loadApiCollInfoList();
         } else {
@@ -77,6 +92,22 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
         }
     }, [showModal, curPage]);
 
+    useEffect(() => {
+        const unListenFn = appWindow.listen(SAVE_WIDGET_NOTICE, () => {
+            const saveData: WidgetData = {
+                apiCollId: localStore.apiCollId,
+                name: localStore.name,
+                defaultAddr: localStore.defaultAddr,
+                apiCollType: localStore.apiCollType,
+            };
+            console.log(saveData);
+            props.writeData(saveData);
+        });
+        return () => {
+            unListenFn.then(unListen => unListen());
+        };
+    }, []);
+
     return (
         <ErrorBoundary>
             <EditorWrap onChange={() => props.removeSelf()}>
@@ -84,13 +115,13 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
                     <a style={{ flex: 1 }} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        linkAuxStore.openApiCollPage(apiCollId, name, apiCollType, defaultAddr, false, false);
-                    }}>{name}</a>
+                        linkAuxStore.openApiCollPage(localStore.apiCollId, localStore.name, localStore.apiCollType, localStore.defaultAddr, false, false);
+                    }}>{localStore.name}</a>
                     <div style={{ flex: 1 }}>
-                        {apiCollId != "" && apiCollType == API_COLL_GRPC && "GRPC"}
-                        {apiCollId != "" && apiCollType == API_COLL_OPENAPI && "OPENAPI/SWAGGER"}
+                        {localStore.apiCollId != "" && localStore.apiCollType == API_COLL_GRPC && "GRPC"}
+                        {localStore.apiCollId != "" && localStore.apiCollType == API_COLL_OPENAPI && "OPENAPI/SWAGGER"}
                     </div>
-                    <div style={{ flex: 1 }}>{defaultAddr}</div>
+                    <div style={{ flex: 1 }}>{localStore.defaultAddr}</div>
                     <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
                         onClick={e => {
                             e.stopPropagation();
@@ -122,10 +153,10 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
                                         <div><a onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
-                                            setApiCollId(item.api_coll_id);
-                                            setName(item.name);
-                                            setDefaultAddr(item.default_addr);
-                                            setApiCollType(item.api_coll_type);
+                                            localStore.setApiCollId(item.api_coll_id);
+                                            localStore.setName(item.name);
+                                            localStore.setDefaultAddr(item.default_addr);
+                                            localStore.setApiCollType(item.api_coll_type);
                                             setShowModal(false);
                                         }}>选择</a></div>
                                     </div>

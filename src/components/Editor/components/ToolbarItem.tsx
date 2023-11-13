@@ -24,6 +24,7 @@ import {
   WidgetTypeList,
   WIDGET_TYPE_SPRIT_REF,
   WIDGET_TYPE_API_COLL_REF,
+  WIDGET_TYPE_TLDRAW,
 } from '../widgets/index';
 import type { HeadingExtensionAttributes } from '@remirror/extension-heading';
 import { redoDepth, undoDepth } from '@remirror/pm/history';
@@ -342,6 +343,10 @@ const ContentWidget = observer((props: ContentWidgetProps) => {
         key: WIDGET_TYPE_MERMAID,
         label: 'mermaid',
       },
+      {
+        key: WIDGET_TYPE_TLDRAW,
+        label: "白板",
+      }
     ],
   };
   if (props.projectId !== "" && projectStore.curProject?.setting.disable_api_collection == false) {

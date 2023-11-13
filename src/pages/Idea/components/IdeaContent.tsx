@@ -15,6 +15,7 @@ import Button from "@/components/Button";
 import { FILE_OWNER_TYPE_IDEA } from "@/api/fs";
 import IdeaAppraiseModal from "./IdeaAppraiseModal";
 import IdeaEventModal from "./IdeaEventModal";
+import { flushEditorContent } from "@/components/Editor/common";
 
 interface IdeaContentProps {
     idea: Idea;
@@ -95,6 +96,7 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
             message.error("标题不能为空");
             return;
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? {
             type: 'doc',
         };

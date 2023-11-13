@@ -7,6 +7,7 @@ import { is_empty_doc, useCommonEditor } from "@/components/Editor";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_GROUP_POST } from "@/api/fs";
 import { request } from "@/utils/request";
+import { flushEditorContent } from "@/components/Editor/common";
 
 export interface EditCommentModalProps {
     commentInfo?: CommentInfo;
@@ -35,6 +36,7 @@ const EditCommentModal = (props: EditCommentModalProps) => {
     });
 
     const addComment = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         if (is_empty_doc(content)) {
             message.error("评论内容不能为空");
@@ -54,6 +56,7 @@ const EditCommentModal = (props: EditCommentModalProps) => {
         if (props.commentInfo == undefined) {
             return;
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         if (is_empty_doc(content)) {
             message.error("评论内容不能为空");

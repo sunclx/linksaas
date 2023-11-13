@@ -13,6 +13,7 @@ import DocTocPanel from './DocTocPanel';
 import classNames from 'classnames';
 import s from "./EditDoc.module.less";
 import ActionModal from '@/components/ActionModal';
+import { flushEditorContent } from '@/components/Editor/common';
 
 const WriteDoc: React.FC = () => {
   const appStore = useStores('appStore');
@@ -39,6 +40,7 @@ const WriteDoc: React.FC = () => {
 
   //更新文档
   const updateDoc = async () => {
+    await flushEditorContent();
     const content = editorRef.current?.getContent() ?? {
       type: 'doc',
     };

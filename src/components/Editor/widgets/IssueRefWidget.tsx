@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import type { WidgetProps } from './common';
+import React, { useEffect, useMemo, useState } from 'react';
+import { SAVE_WIDGET_NOTICE, type WidgetProps } from './common';
 import type { ExtraBugInfo, ExtraTaskInfo, IssueInfo, ISSUE_TYPE } from '@/api/project_issue';
 import {
   ISSUE_STATE_CHECK,
@@ -27,6 +27,7 @@ import { LinkOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
 import AddTaskOrBug from '../components/AddTaskOrBug';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { appWindow } from "@tauri-apps/api/window";
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
 
@@ -156,11 +157,6 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
     if (issueList.length != dataSource.length) {
       setDataSource(issueList);
     }
-    const saveData: WidgetData = {
-      issueType: data.issueType,
-      issueIdList: issueList.map((item) => item.issue_id),
-    };
-    props.writeData(saveData);
   };
 
   const removeIssue = (issueIndex: number) => {
@@ -278,6 +274,22 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
       }
     });
     addIssue(linkList);
+  }, []);
+
+  useEffect(() => {
+    const unListenFn = appWindow.listen(SAVE_WIDGET_NOTICE, () => {
+      setDataSource(oldValue => {
+        const saveData: WidgetData = {
+          issueType: data.issueType,
+          issueIdList: oldValue.map(item => item.issue_id),
+        };
+        props.writeData(saveData);
+        return oldValue;
+      });
+    });
+    return () => {
+      unListenFn.then(unListen => unListen());
+    };
   }, []);
 
   return (

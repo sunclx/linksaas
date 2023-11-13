@@ -1,3 +1,5 @@
+export const SAVE_WIDGET_NOTICE = "saveWidgetData";
+
 export interface WidgetProps {
   editMode: boolean; //true表示编辑模式，false表示阅读模式
   initData: unknown; //初始化数据

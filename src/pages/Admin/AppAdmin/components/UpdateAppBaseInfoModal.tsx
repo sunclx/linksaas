@@ -12,6 +12,7 @@ import { request } from "@/utils/request";
 import { useCommonEditor } from "@/components/Editor";
 import { update_app } from "@/api/appstore_admin";
 import AsyncImage from "@/components/AsyncImage";
+import { flushEditorContent } from "@/components/Editor/common";
 
 interface UpdateAppBaseInfoModalProps {
     appId: string;
@@ -79,6 +80,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
                 owner_id: props.appId,
             }));
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: 'doc' };
         await request(update_app({
             admin_session_id: sessionId,

@@ -9,6 +9,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
 import { request } from "@/utils/request";
 import { get_session } from "@/api/user";
+import { flushEditorContent } from "../Editor/common";
 
 export interface CommentItemProps {
     projectId: string;
@@ -38,6 +39,7 @@ const CommentItem = (props: CommentItemProps) => {
     });
 
     const updateComment = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         if (is_empty_doc(content)) {
             message.warn("评论内容为空");

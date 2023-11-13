@@ -20,6 +20,7 @@ import { bugLvSelectItems, bugPrioritySelectItems, taskPrioritySelectItems } fro
 import { getMemberSelectItems } from "./components/utils";
 import { request } from "@/utils/request";
 import type { Moment } from "moment";
+import { flushEditorContent } from "@/components/Editor/common";
 
 
 interface RenderSelectProps {
@@ -89,6 +90,7 @@ const IssueCreate = () => {
             message.error("标题不能为空");
             return;
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? {
             type: 'doc',
         };
