@@ -7,6 +7,7 @@ import { is_empty_doc, useCommonEditor } from "@/components/Editor";
 import { useStores } from "@/hooks";
 import { FILE_OWNER_TYPE_GROUP_POST } from "@/api/fs";
 import { request } from "@/utils/request";
+import { flushEditorContent } from "@/components/Editor/common";
 
 export interface EditCommentModalProps {
     commentInfo?: CommentInfo;
@@ -16,6 +17,7 @@ export interface EditCommentModalProps {
 
 const EditCommentModal = (props: EditCommentModalProps) => {
     const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
     const groupStore = useStores('groupStore');
 
     const [loaded, setLoaded] = useState(false);
@@ -25,6 +27,7 @@ const EditCommentModal = (props: EditCommentModalProps) => {
         fsId: groupStore.curGroup?.fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_GROUP_POST,
         ownerId: groupStore.curPostKey?.post_id ?? "",
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -33,6 +36,7 @@ const EditCommentModal = (props: EditCommentModalProps) => {
     });
 
     const addComment = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         if (is_empty_doc(content)) {
             message.error("评论内容不能为空");
@@ -52,6 +56,7 @@ const EditCommentModal = (props: EditCommentModalProps) => {
         if (props.commentInfo == undefined) {
             return;
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         if (is_empty_doc(content)) {
             message.error("评论内容不能为空");

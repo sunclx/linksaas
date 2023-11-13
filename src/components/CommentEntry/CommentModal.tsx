@@ -9,6 +9,7 @@ import { get_session } from "@/api/user";
 import CommentItem from "./CommentItem";
 import { listen } from '@tauri-apps/api/event';
 import type * as NoticeType from '@/api/notice_type';
+import { flushEditorContent } from "../Editor/common";
 
 export interface CommentModalProps {
     projectId: string;
@@ -33,6 +34,7 @@ const CommentModal = (props: CommentModalProps) => {
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: props.projectId,
+        projectId: props.projectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,
@@ -55,6 +57,7 @@ const CommentModal = (props: CommentModalProps) => {
     };
 
     const addComment = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         if (is_empty_doc(content)) {
             message.warn("评论内容为空");

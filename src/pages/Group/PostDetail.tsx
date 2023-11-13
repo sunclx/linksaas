@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import s from "./PostEdit.module.less";
-import { Card, Form, List, Popover, Select, Space } from "antd";
+import { Card, Form, List, Modal, Popover, Select, Space } from "antd";
 import { useHistory } from "react-router-dom";
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
@@ -12,8 +12,8 @@ import { MoreOutlined } from "@ant-design/icons";
 import { observer } from 'mobx-react';
 import { APP_GROUP_POST_EDIT_PATH } from "@/utils/constant";
 import EditCommentModal from "./components/EditCommentModal";
-import { get_post_content, list_comment, get_comment } from "@/api/group_post";
-import type { CommentInfo } from "@/api/group_post";
+import { get_post_content, list_comment, get_comment, POST_AUDIT_NONE, POST_AUDIT_APPLY, POST_AUDIT_REFUSE, POST_AUDIT_AGREE, apply_recommend, cancel_apply_recommend, get_post_key } from "@/api/group_post";
+import type { CommentInfo, POST_AUDIT_STATE } from "@/api/group_post";
 import PostComment from "./components/PostComment";
 
 const PAGE_SIZE = 10;
@@ -31,6 +31,8 @@ const PostDetail = () => {
     const [commentList, setCommentList] = useState<CommentInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
+
+    const [showApplyModal, setShowApplyModal] = useState(false);
 
     const loadPostContent = async () => {
         const res = await request(get_post_content({
@@ -68,6 +70,44 @@ const PostDetail = () => {
         }
     };
 
+    const loadPostKey = async () => {
+        const res = await request(get_post_key({
+            session_id: userStore.sessionId,
+            group_id: groupStore.curGroup?.group_id ?? "",
+            post_id: groupStore.curPostKey?.post_id ?? "",
+        }));
+        groupStore.curPostKey = res.post_key;
+    };
+
+    const applyRecommend = async () => {
+        await request(apply_recommend({
+            session_id: userStore.sessionId,
+            group_id: groupStore.curGroup?.group_id ?? "",
+            post_id: groupStore.curPostKey?.post_id ?? "",
+        }));
+        await loadPostKey();
+        setShowApplyModal(false);
+    };
+
+    const cancelApplyRecommend = async () => {
+        await request(cancel_apply_recommend({
+            session_id: userStore.sessionId,
+            group_id: groupStore.curGroup?.group_id ?? "",
+            post_id: groupStore.curPostKey?.post_id ?? "",
+        }));
+        await loadPostKey();
+        setShowApplyModal(false);
+    };
+
+    const getStateColor = (state: POST_AUDIT_STATE) => {
+        if (state == POST_AUDIT_AGREE) {
+            return "green";
+        } else if (state == POST_AUDIT_REFUSE) {
+            return "red";
+        }
+        return "black";
+    }
+
     useEffect(() => {
         loadPostContent();
     }, []);
@@ -81,6 +121,20 @@ const PostDetail = () => {
             title={<span style={{ fontSize: "18px", fontWeight: 600 }}>{groupStore.curPostKey?.title ?? ""}</span>}
             extra={
                 <Space>
+                    {groupStore.curGroup?.pub_group && groupStore.curGroup?.owner_user_id == userStore.userInfo.userId && (
+                        <Button type="text" onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowApplyModal(true);
+                        }}>
+                            <span style={{ color: getStateColor(groupStore.curPostKey?.audit_state ?? POST_AUDIT_NONE) }}>
+                                {groupStore.curPostKey?.audit_state == POST_AUDIT_NONE && "未申请推荐"}
+                                {groupStore.curPostKey?.audit_state == POST_AUDIT_APPLY && "已申请推荐"}
+                                {groupStore.curPostKey?.audit_state == POST_AUDIT_REFUSE && "拒绝进入推荐"}
+                                {groupStore.curPostKey?.audit_state == POST_AUDIT_AGREE && "同意进入推荐"}
+                            </span>
+                        </Button>
+                    )}
                     {groupStore.curPostKey?.user_perm.can_update_post && (
                         <Button type="default" onClick={e => {
                             e.stopPropagation();
@@ -139,6 +193,27 @@ const PostDetail = () => {
                         }
                         setShowAddComment(false);
                     }} />
+            )}
+            {showApplyModal == true && (
+                <Modal open title={groupStore.curPostKey?.audit_state == POST_AUDIT_NONE ? "申请进入推荐" : "撤回申请"}
+                    okText={groupStore.curPostKey?.audit_state == POST_AUDIT_NONE ? "申请" : "撤回"}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowApplyModal(false);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (groupStore.curPostKey?.audit_state == POST_AUDIT_NONE) {
+                            applyRecommend();
+                        } else {
+                            cancelApplyRecommend();
+                        }
+                    }}>
+                    {groupStore.curPostKey?.audit_state == POST_AUDIT_NONE && "是否申请进入推荐列表"}
+                    {groupStore.curPostKey?.audit_state != POST_AUDIT_NONE && "是否撤回推荐申请"}
+                </Modal>
             )}
         </Card>
     )

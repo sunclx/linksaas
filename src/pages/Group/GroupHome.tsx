@@ -9,6 +9,7 @@ import Button from "@/components/Button";
 import { PlusOutlined } from "@ant-design/icons";
 import CreateOrJoinGroupModal from "./components/CreateOrJoinGroupModal";
 import GroupCard from "./components/GroupCard";
+import RecommendPostList from "./components/RecommendPostList";
 
 
 const PAGE_SIZE = 12;
@@ -18,7 +19,7 @@ const GroupHome = () => {
     const projectStore = useStores('projectStore');
     const groupStore = useStores('groupStore');
 
-    const [activeKey, setActiveKey] = useState("pub");
+    const [activeKey, setActiveKey] = useState("recommend");
     const [groupInfoList, setGroupInfoList] = useState<GroupInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
@@ -91,6 +92,17 @@ const GroupHome = () => {
                     </>
                 }
                 items={[
+                    {
+                        key: "recommend",
+                        label: <span style={{ fontSize: "16px", fontWeight: 500 }}>推荐内容</span>,
+                        children: (
+                            <div style={{ height: "calc(100vh - 90px)", overflowY: "scroll", margin: "0px 10px" }}>
+                                {activeKey == "recommend" && (
+                                    <RecommendPostList />
+                                )}
+                            </div>
+                        ),
+                    },
                     {
                         key: "pub",
                         label: <span style={{ fontSize: "16px", fontWeight: 500 }}>公共兴趣组</span>,

@@ -73,6 +73,7 @@ export type PubSearchPerm = {
 export type GroupPerm = {
     read: boolean;
     update_group: boolean;
+    audit_recommend: boolean;
 };
 
 

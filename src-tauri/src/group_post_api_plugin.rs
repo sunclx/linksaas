@@ -21,7 +21,8 @@ async fn add_post<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_post_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_post".into())) {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_post".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -46,7 +47,10 @@ async fn update_post_content<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_post_content_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_post_content".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_post_content".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -71,7 +75,9 @@ async fn update_post_tag<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_post_tag_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_post_tag".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_post_tag".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -96,7 +102,10 @@ async fn update_post_essence<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_post_essence_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_post_essence".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_post_essence".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -121,7 +130,9 @@ async fn remove_post<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_post_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_post".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_post".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -146,7 +157,9 @@ async fn list_post_key<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_post_key_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_post_key".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_post_key".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -171,7 +184,9 @@ async fn get_post_key<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_post_key_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_post_key".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_post_key".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -180,7 +195,6 @@ async fn get_post_key<R: Runtime>(
         Err(status) => Err(status.message().into()),
     }
 }
-
 
 #[tauri::command]
 async fn get_post_content<R: Runtime>(
@@ -197,7 +211,10 @@ async fn get_post_content<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_post_content_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_post_content".into())) {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_post_content".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -222,7 +239,9 @@ async fn add_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == add_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("add_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -247,7 +266,9 @@ async fn list_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -272,7 +293,9 @@ async fn get_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == get_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -297,7 +320,9 @@ async fn update_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("update_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -322,7 +347,9 @@ async fn remove_comment<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == remove_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove_comment".into())) {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("remove_comment".into()))
+                {
                     println!("{:?}", err);
                 }
             }
@@ -332,7 +359,88 @@ async fn remove_comment<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn list_recommend_post_key<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListRecommendPostKeyRequest,
+) -> Result<ListRecommendPostKeyResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = GroupPostApiClient::new(chan.unwrap());
+    match client.list_recommend_post_key(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_recommend_post_key_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_recommend_post_key".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 
+#[tauri::command]
+async fn apply_recommend<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ApplyRecommendRequest,
+) -> Result<ApplyRecommendResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = GroupPostApiClient::new(chan.unwrap());
+    match client.apply_recommend(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == apply_recommend_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("apply_recommend".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn cancel_apply_recommend<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CancelApplyRecommendRequest,
+) -> Result<CancelApplyRecommendResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = GroupPostApiClient::new(chan.unwrap());
+    match client.cancel_apply_recommend(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == cancel_apply_recommend_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("cancel_apply_recommend".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
 pub struct GroupPostApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -354,6 +462,9 @@ impl<R: Runtime> GroupPostApiPlugin<R> {
                 get_comment,
                 update_comment,
                 remove_comment,
+                list_recommend_post_key,
+                apply_recommend,
+                cancel_apply_recommend,
             ]),
         }
     }

@@ -1,5 +1,12 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export type POST_AUDIT_STATE = number;
+
+export const POST_AUDIT_NONE: POST_AUDIT_STATE = 0;
+export const POST_AUDIT_APPLY: POST_AUDIT_STATE = 1;
+export const POST_AUDIT_REFUSE: POST_AUDIT_STATE = 2;
+export const POST_AUDIT_AGREE: POST_AUDIT_STATE = 3;
+
 export type UserPostPerm = {
     can_update_post: boolean;
     can_remove_post: boolean;
@@ -15,6 +22,9 @@ export type UserCommentPerm = {
 export type PostKeyInfo = {
     post_id: string;
     title: string;
+    group_id: string;
+    group_name: string;
+    audit_state: POST_AUDIT_STATE;
     tag_list: string[];
     essence: boolean;///精华帖
     comment_count: number;
@@ -222,6 +232,42 @@ export type RemoveCommentResponse = {
     err_msg: string;
 };
 
+export type ListRecommendPostKeyRequest = {
+    session_id: string;
+    offset: number;
+    limit: number;
+};
+
+export type ListRecommendPostKeyResponse = {
+    code: number;
+    err_msg: string;
+    total_count: number;
+    post_key_list: PostKeyInfo[];
+};
+
+export type ApplyRecommendRequest = {
+    session_id: string;
+    group_id: string;
+    post_id: string;
+};
+
+export type ApplyRecommendResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type CancelApplyRecommendRequest = {
+    session_id: string;
+    group_id: string;
+    post_id: string;
+};
+
+export type CancelApplyRecommendResponse = {
+    code: number;
+    err_msg: string;
+};
+
+
 //发帖
 export async function add_post(request: AddPostRequest): Promise<AddPostResponse> {
     const cmd = 'plugin:group_post_api|add_post';
@@ -335,6 +381,33 @@ export async function remove_comment(request: RemoveCommentRequest): Promise<Rem
     const cmd = 'plugin:group_post_api|remove_comment';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveCommentResponse>(cmd, {
+        request,
+    });
+}
+
+//列出推荐帖子
+export async function list_recommend_post_key(request: ListRecommendPostKeyRequest): Promise<ListRecommendPostKeyResponse> {
+    const cmd = 'plugin:group_post_api|list_recommend_post_key';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListRecommendPostKeyResponse>(cmd, {
+        request,
+    });
+}
+
+//申请进入推荐列表
+export async function apply_recommend(request: ApplyRecommendRequest): Promise<ApplyRecommendResponse> {
+    const cmd = 'plugin:group_post_api|apply_recommend';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ApplyRecommendResponse>(cmd, {
+        request,
+    });
+}
+
+//取消进入推荐列表
+export async function cancel_apply_recommend(request: CancelApplyRecommendRequest): Promise<CancelApplyRecommendResponse> {
+    const cmd = 'plugin:group_post_api|cancel_apply_recommend';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<CancelApplyRecommendResponse>(cmd, {
         request,
     });
 }

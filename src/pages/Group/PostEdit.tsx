@@ -11,14 +11,16 @@ import s from "./PostEdit.module.less";
 import classNames from 'classnames';
 import PostTocPanel from "./components/PostDocPanel";
 import Button from "@/components/Button";
-import { APP_GROUP_POST_DETAIL_PATH } from "@/utils/constant";
+import { APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_LIST_PATH } from "@/utils/constant";
 import { observer } from 'mobx-react';
 import ActionModal from "@/components/ActionModal";
+import { flushEditorContent } from "@/components/Editor/common";
 
 const PostEdit = () => {
     const history = useHistory();
 
     const appStore = useStores('appStore');
+    const projectStore = useStores('projectStore');
     const userStore = useStores('userStore');
     const groupStore = useStores('groupStore');
 
@@ -32,10 +34,11 @@ const PostEdit = () => {
         fsId: groupStore.curGroup?.fs_id ?? "",
         ownerType: groupStore.curPostKey == null ? FILE_OWNER_TYPE_NONE : FILE_OWNER_TYPE_GROUP_POST,
         ownerId: groupStore.curPostKey == null ? "" : groupStore.curPostKey.post_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: true,
         clipboardInToolbar: true,
         commonInToolbar: true,
-        widgetInToolbar: false,
+        widgetInToolbar: true,
         showReminder: false,
         tocCallback: (result) => setTocList(result),
     });
@@ -54,6 +57,7 @@ const PostEdit = () => {
     };
 
     const createPost = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         const addRes = await request(add_post({
             session_id: userStore.sessionId,
@@ -74,6 +78,7 @@ const PostEdit = () => {
     };
 
     const updatePost = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         await request(update_post_content({
             session_id: userStore.sessionId,
@@ -133,7 +138,11 @@ const PostEdit = () => {
                     <Button type="default" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        history.push(APP_GROUP_POST_DETAIL_PATH);
+                        if(groupStore.curPostKey == null){
+                            history.push(APP_GROUP_POST_LIST_PATH);
+                        }else{
+                            history.push(APP_GROUP_POST_DETAIL_PATH);
+                        }
                     }}>取消</Button>
                     <Button disabled={title == ""} onClick={e => {
                         e.stopPropagation();

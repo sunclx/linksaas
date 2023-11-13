@@ -256,14 +256,15 @@ const ProjectRecord: React.FC = () => {
                   <UserPhoto logoUri={item.cur_logo_uri ?? ''} />
                   <span className={style.name}>{item.cur_user_display_name}</span>
                   <span className={style.countList}>
+                    
                     {Object.keys(item.count).map((key) => (
                       <span key={key}>
                         <img
                           className={style.icon}
-                          src={EVENT_ICON_LIST[key]?.icon}
+                          src={EVENT_ICON_LIST[key as unknown as number]?.icon}
                           alt=""
                         />
-                        {item.count[key]}
+                        {item.count[key as unknown as number]}
                       </span>
                     ))}
                   </span>

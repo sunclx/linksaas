@@ -7,6 +7,7 @@ import { useStores } from "@/hooks";
 import { useCommonEditor } from "@/components/Editor";
 import { FILE_OWNER_TYPE_GROUP } from "@/api/fs";
 import { request } from "@/utils/request";
+import { flushEditorContent } from "@/components/Editor/common";
 
 export interface EditGroupModalProps {
     groupInfo: GroupInfo;
@@ -16,6 +17,7 @@ export interface EditGroupModalProps {
 
 const EditGroupModal = (props: EditGroupModalProps) => {
     const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
 
     const [groupName, setGroupName] = useState(props.groupInfo.group_name);
     const [canAddPost, setCanAddPost] = useState(props.groupInfo.can_add_post_for_new);
@@ -27,6 +29,7 @@ const EditGroupModal = (props: EditGroupModalProps) => {
         fsId: props.groupInfo.fs_id,
         ownerType: FILE_OWNER_TYPE_GROUP,
         ownerId: props.groupInfo.group_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,
@@ -35,6 +38,7 @@ const EditGroupModal = (props: EditGroupModalProps) => {
     });
 
     const updateGroup = async () => {
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: "doc" };
         await request(update_group({
             session_id: userStore.sessionId,

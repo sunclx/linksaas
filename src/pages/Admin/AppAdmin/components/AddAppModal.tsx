@@ -18,6 +18,7 @@ import { add_app } from "@/api/appstore_admin";
 import AppPermPanel from "./AppPermPanel";
 import type { AppPerm } from "@/api/appstore";
 import AsyncImage from "@/components/AsyncImage";
+import { flushEditorContent } from "@/components/Editor/common";
 
 interface AddAppModalProps {
     onCancel: () => void;
@@ -68,6 +69,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         fsId: "",
         ownerType: 0,
         ownerId: "",
+        projectId: "",
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -125,6 +127,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         const sessionId = await get_admin_session();
         const uploadRes = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", localPath, uploadId));
         //上传应用信息
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: 'doc' };
         const addRes = await request(add_app({
             admin_session_id: sessionId,

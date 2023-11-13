@@ -64,6 +64,7 @@ mod group_api_plugin;
 mod group_member_api_plugin;
 mod group_post_api_plugin;
 mod group_admin_api_plugin;
+mod group_post_admin_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -453,6 +454,7 @@ fn main() {
         .plugin(group_member_api_plugin::GroupMemberApiPlugin::new())
         .plugin(group_post_api_plugin::GroupPostApiPlugin::new())
         .plugin(group_admin_api_plugin::GroupAdminApiPlugin::new())
+        .plugin(group_post_admin_api_plugin::GroupPostAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {

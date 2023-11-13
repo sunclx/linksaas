@@ -11,6 +11,7 @@ import {
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
+    ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX,
     ADMIN_PATH_GROUP_LIST_SUFFIX,
     ADMIN_PATH_PROJECT_CREATE_SUFFIX, ADMIN_PATH_PROJECT_DETAIL_SUFFIX,
     ADMIN_PATH_PROJECT_LIST_SUFFIX, ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX, ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX, ADMIN_PATH_USER_CREATE_SUFFIX, ADMIN_PATH_USER_DETAIL_SUFFIX,
@@ -57,6 +58,8 @@ const AdminNav = () => {
         setGroupSelectedKeys([]);
         if (location.pathname == ADMIN_PATH_GROUP_LIST_SUFFIX) {
             setGroupSelectedKeys(["group_list"]);
+        }else if(location.pathname == ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX){
+            setGroupSelectedKeys(["group_audit_list"]);
         }
     }, [location.pathname]);
 
@@ -145,6 +148,11 @@ const AdminNav = () => {
                             label: "查看兴趣组",
                             key: "group_list",
                             disabled: !(permInfo?.group_perm.read),
+                        },
+                        {
+                            label: "推荐帖子审核",
+                            key: "group_audit_list",
+                            disabled: !(permInfo?.group_perm.read),
                         }
                     ]}
                         style={{ borderRightWidth: "0px" }}
@@ -152,6 +160,8 @@ const AdminNav = () => {
                             if (e.selectedKeys.length == 1) {
                                 if (e.selectedKeys[0] == "group_list") {
                                     history.push(ADMIN_PATH_GROUP_LIST_SUFFIX);
+                                }else if(e.selectedKeys[0] == "group_audit_list"){
+                                    history.push(ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX);
                                 }
                             }
                         }}

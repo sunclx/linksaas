@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import React, { useState } from "react";
 import { create as create_issue, ISSUE_TYPE_TASK, TASK_PRIORITY_MIDDLE } from '@/api/project_issue';
 import { link_issue } from '@/api/project_requirement';
+import { flushEditorContent } from '@/components/Editor/common';
 
 interface SingleCreateTaskProps {
     requirementId: string;
@@ -25,6 +26,7 @@ const SingleCreateTask: React.FC<SingleCreateTaskProps> = (props) => {
         fsId: projectStore.curProject?.issue_fs_id ?? '',
         ownerType: FILE_OWNER_TYPE_PROJECT,
         ownerId: projectStore.curProjectId,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
@@ -37,6 +39,7 @@ const SingleCreateTask: React.FC<SingleCreateTaskProps> = (props) => {
             message.error("标题不能为空");
             return;
         }
+        await flushEditorContent();
         const content = editorRef.current?.getContent() ?? {
             type: 'doc',
         };
