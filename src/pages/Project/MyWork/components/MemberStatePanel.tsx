@@ -8,17 +8,7 @@ import moment from "moment";
 import { ReadOnlyEditor, useCommonEditor } from "@/components/Editor";
 import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
 
-const EDITOR_PARAM = {
-    content: '',
-    fsId: "",
-    ownerType: FILE_OWNER_TYPE_NONE,
-    ownerId: "",
-    historyInToolbar: false,
-    clipboardInToolbar: false,
-    commonInToolbar: true,
-    widgetInToolbar: false,
-    showReminder: false,
-};
+
 
 const MemberStatePanel = () => {
     const userStore = useStores('userStore');
@@ -29,6 +19,19 @@ const MemberStatePanel = () => {
     const [editState, setEditState] = useState(false);
 
     const [editHelp, setEditHelp] = useState(false);
+
+    const EDITOR_PARAM = {
+        content: '',
+        fsId: "",
+        ownerType: FILE_OWNER_TYPE_NONE,
+        ownerId: "",
+        projectId: projectStore.curProjectId,
+        historyInToolbar: false,
+        clipboardInToolbar: false,
+        commonInToolbar: true,
+        widgetInToolbar: false,
+        showReminder: false,
+    };
 
     const descEditor = useCommonEditor(EDITOR_PARAM);
     const helpEditor = useCommonEditor(EDITOR_PARAM);

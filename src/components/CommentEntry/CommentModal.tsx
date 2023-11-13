@@ -33,6 +33,7 @@ const CommentModal = (props: CommentModalProps) => {
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: props.projectId,
+        projectId: props.projectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,

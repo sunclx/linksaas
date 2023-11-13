@@ -15,6 +15,7 @@ export interface CreateGroupModalProps {
 
 const CreateOrJoinGroupModal = (props: CreateGroupModalProps) => {
     const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
 
     const [activeKey, setActiveKey] = useState("join");
 
@@ -30,6 +31,7 @@ const CreateOrJoinGroupModal = (props: CreateGroupModalProps) => {
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: "",
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,

@@ -16,6 +16,7 @@ export interface EditCommentModalProps {
 
 const EditCommentModal = (props: EditCommentModalProps) => {
     const userStore = useStores('userStore');
+    const projectStore = useStores('projectStore');
     const groupStore = useStores('groupStore');
 
     const [loaded, setLoaded] = useState(false);
@@ -25,6 +26,7 @@ const EditCommentModal = (props: EditCommentModalProps) => {
         fsId: groupStore.curGroup?.fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_GROUP_POST,
         ownerId: groupStore.curPostKey?.post_id ?? "",
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,

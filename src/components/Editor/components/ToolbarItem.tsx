@@ -301,13 +301,16 @@ export const listItem = (
     separator={true} />
 );
 
+interface ContentWidgetProps {
+  projectId: string;
+}
 
-const ContentWidget = observer(() => {
+const ContentWidget = observer((props: ContentWidgetProps) => {
   const projectStore = useStores('projectStore');
   const commands = useCommands();
 
   const items = [];
-  if (projectStore.curProjectId !== "") {
+  if (props.projectId !== "") {
     items.push({
       key: 'manager',
       label: '项目管理',
@@ -341,7 +344,7 @@ const ContentWidget = observer(() => {
       },
     ],
   };
-  if (projectStore.curProject?.setting.disable_api_collection == false) {
+  if (props.projectId !== "" && projectStore.curProject?.setting.disable_api_collection == false) {
     designItems.children.push({
       key: WIDGET_TYPE_API_COLL_REF,
       label: "引用接口集合",
@@ -371,12 +374,15 @@ const ContentWidget = observer(() => {
   );
 });
 
-export const contentWidgetItem = (
-  <ToolbarGroup
-    key="widget"
-    items={[<ContentWidget key="widget" />]}
-    separator={false} />
-);
+export const contentWidgetItem = (projectId: string) => {
+  return (
+    <ToolbarGroup
+      key="widget"
+      items={[<ContentWidget key="widget" projectId={projectId} />]}
+      separator={false} />
+  );
+};
+
 
 interface UploadImageProps {
   fsId: string;

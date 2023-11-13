@@ -68,6 +68,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         fsId: "",
         ownerType: 0,
         ownerId: "",
+        projectId: "",
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,

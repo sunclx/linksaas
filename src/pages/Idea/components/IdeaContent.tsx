@@ -45,6 +45,7 @@ const IdeaContent: React.FC<IdeaContentProps> = (props) => {
         fsId: projectStore.curProject?.idea_fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_IDEA,
         ownerId: props.idea.idea_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,

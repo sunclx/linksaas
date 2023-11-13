@@ -65,6 +65,7 @@ const IssueCreate = () => {
         fsId: projectStore.curProject?.issue_fs_id ?? '',
         ownerType: FILE_OWNER_TYPE_PROJECT,
         ownerId: projectStore.curProjectId,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,

@@ -19,6 +19,7 @@ const PostEdit = () => {
     const history = useHistory();
 
     const appStore = useStores('appStore');
+    const projectStore = useStores('projectStore');
     const userStore = useStores('userStore');
     const groupStore = useStores('groupStore');
 
@@ -32,10 +33,11 @@ const PostEdit = () => {
         fsId: groupStore.curGroup?.fs_id ?? "",
         ownerType: groupStore.curPostKey == null ? FILE_OWNER_TYPE_NONE : FILE_OWNER_TYPE_GROUP_POST,
         ownerId: groupStore.curPostKey == null ? "" : groupStore.curPostKey.post_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: true,
         clipboardInToolbar: true,
         commonInToolbar: true,
-        widgetInToolbar: false,
+        widgetInToolbar: true,
         showReminder: false,
         tocCallback: (result) => setTocList(result),
     });

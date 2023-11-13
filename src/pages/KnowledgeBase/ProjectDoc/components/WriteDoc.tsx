@@ -28,6 +28,7 @@ const WriteDoc: React.FC = () => {
     fsId: projectStore.curProject?.doc_fs_id ?? '',
     ownerType: FILE_OWNER_TYPE_PROJECT_DOC,
     ownerId: entryStore.curEntry?.entry_id ?? "",
+    projectId: projectStore.curProjectId,
     historyInToolbar: true,
     clipboardInToolbar: true,
     commonInToolbar: true,

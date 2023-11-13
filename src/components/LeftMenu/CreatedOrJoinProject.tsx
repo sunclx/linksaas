@@ -36,6 +36,7 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
     fsId: "",
     ownerType: FILE_OWNER_TYPE_NONE,
     ownerId: "",
+    projectId: "",
     historyInToolbar: false,
     clipboardInToolbar: false,
     commonInToolbar: false,

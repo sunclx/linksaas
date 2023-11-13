@@ -26,6 +26,7 @@ const EditTextModal = (props: EditTextModalProps) => {
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: projectStore.curProjectId,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,
@@ -33,15 +34,15 @@ const EditTextModal = (props: EditTextModalProps) => {
         showReminder: false,
     });
 
-    const saveContent = async ()=>{
+    const saveContent = async () => {
         await request(update_content({
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
-            board_id: entryStore.curEntry?.entry_id??"",
+            board_id: entryStore.curEntry?.entry_id ?? "",
             node_id: props.nodeId,
             node_data: {
-                NodeTextData:{
-                    data: JSON.stringify(editorRef.current?.getContent() ?? {"type":"doc"}),
+                NodeTextData: {
+                    data: JSON.stringify(editorRef.current?.getContent() ?? { "type": "doc" }),
                 }
             },
         }));
@@ -82,8 +83,8 @@ const EditTextModal = (props: EditTextModalProps) => {
                 e.stopPropagation();
                 e.preventDefault();
                 props.onClose();
-            }} 
-            onOk={e=>{
+            }}
+            onOk={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 saveContent();

@@ -29,6 +29,7 @@ const CommentItem = (props: CommentItemProps) => {
         fsId: "",
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: props.projectId,
+        projectId: props.projectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: false,

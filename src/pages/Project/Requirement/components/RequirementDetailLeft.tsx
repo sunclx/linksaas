@@ -32,6 +32,7 @@ const RequirementDetailLeft: React.FC<RequirementDetailLeftProps> = (props) => {
         fsId: projectStore.curProject?.require_ment_fs_id ?? "",
         ownerType: FILE_OWNER_TYPE_REQUIRE_MENT,
         ownerId: props.requirement.requirement_id,
+        projectId: projectStore.curProjectId,
         historyInToolbar: false,
         clipboardInToolbar: false,
         commonInToolbar: true,
