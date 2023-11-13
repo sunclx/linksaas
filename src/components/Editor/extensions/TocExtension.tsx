@@ -67,7 +67,7 @@ export class TocExtension extends PlainExtension<TocOptions> {
             });
             return false;
         });
-        if (this.options.tocCb !== undefined && tocList.length > 0) {
+        if (this.options.tocCb !== undefined) {
             this.options.tocCb(tocList);
         }
     }
