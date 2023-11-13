@@ -9,7 +9,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { request } from '@/utils/request';
 import { useStores } from '@/hooks';
 import { appWindow } from "@tauri-apps/api/window";
-import { useLocalObservable } from 'mobx-react';
+import { observer, useLocalObservable } from 'mobx-react';
 import { runInAction } from 'mobx';
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
@@ -29,7 +29,7 @@ export const apiCollRefWidgetInitData: WidgetData = {
 
 const PAGE_SIZE = 10;
 
-const EditApiCollRef: React.FC<WidgetProps> = (props) => {
+const EditApiCollRef: React.FC<WidgetProps> = observer((props) => {
     const widgetData = props.initData as WidgetData;
 
     const userStore = useStores('userStore');
@@ -168,7 +168,7 @@ const EditApiCollRef: React.FC<WidgetProps> = (props) => {
             </EditorWrap>
         </ErrorBoundary>
     );
-};
+});
 
 
 const ViewApiCollRef: React.FC<WidgetProps> = (props) => {

@@ -22,36 +22,19 @@ export class TocExtension extends PlainExtension<TocOptions> {
         return {
             state: {
                 init: (_, state) => {
-                    let count = 0;
-                    const timer = setInterval(() => {
-                        count++;
-                        if (count >= 50) {
-                            clearInterval(timer);
-                        }
-                        if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
-                            this.calcToc(state.doc);
-                            clearInterval(timer);
-                        }
-                    }, 200);
+                    if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
+                        this.calcToc(state.doc);
+                    }
                     return DecorationSet.empty;
                 },
                 apply: (tr, old) => {
                     if (this.options.tocCb == undefined) {
                         return old;
                     }
-                    if (tr.docChanged) {
-                        let count = 0;
-                        const timer = setInterval(() => {
-                            count++;
-                            if (count >= 50) {
-                                clearInterval(timer);
-                            }
-                            if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
-                                this.calcToc(tr.doc);
-                                clearInterval(timer);
-                            }
-                        }, 200);
-                        return old.map(tr.mapping, tr.doc);
+                    if (this.options.tocCb != undefined && tr.docChanged) {
+                        if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
+                            this.calcToc(tr.doc);
+                        }
                     }
                     return old;
                 },

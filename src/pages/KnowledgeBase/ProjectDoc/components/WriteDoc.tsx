@@ -5,43 +5,33 @@ import { useCommonEditor } from '@/components/Editor';
 import { FILE_OWNER_TYPE_PROJECT_DOC } from '@/api/fs';
 import { request } from '@/utils/request';
 import * as docApi from '@/api/project_doc';
-import { useState } from 'react';
 import { observer } from 'mobx-react';
 import Button from '@/components/Button';
-import type { TocInfo } from '@/components/Editor/extensions/index';
 import DocTocPanel from './DocTocPanel';
 import classNames from 'classnames';
 import s from "./EditDoc.module.less";
 import ActionModal from '@/components/ActionModal';
-import { flushEditorContent } from '@/components/Editor/common';
+import { type EditorRef, flushEditorContent } from '@/components/Editor/common';
 
-const WriteDoc: React.FC = () => {
+interface WriteDocInnerProps {
+  editor: React.JSX.Element;
+  editorRef: React.MutableRefObject<EditorRef | null>;
+}
+
+const WriteDocInner = observer((props: WriteDocInnerProps) => {
   const appStore = useStores('appStore');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
   const docStore = useStores('docStore');
   const entryStore = useStores('entryStore');
 
-  const [tocList, setTocList] = useState<TocInfo[]>([]);
 
-  const { editor, editorRef } = useCommonEditor({
-    content: '',
-    fsId: projectStore.curProject?.doc_fs_id ?? '',
-    ownerType: FILE_OWNER_TYPE_PROJECT_DOC,
-    ownerId: entryStore.curEntry?.entry_id ?? "",
-    projectId: projectStore.curProjectId,
-    historyInToolbar: true,
-    clipboardInToolbar: true,
-    commonInToolbar: true,
-    widgetInToolbar: true,
-    showReminder: false,
-    tocCallback: (result) => setTocList(result),
-  });
+
 
   //更新文档
   const updateDoc = async () => {
     await flushEditorContent();
-    const content = editorRef.current?.getContent() ?? {
+    const content = props.editorRef.current?.getContent() ?? {
       type: 'doc',
     };
     await request(
@@ -85,7 +75,7 @@ const WriteDoc: React.FC = () => {
         doc_id: entryStore.curEntry?.entry_id ?? "",
       }),
     ).then((res) => {
-      editorRef.current?.setContent(res.doc.base_info.content);
+      props.editorRef.current?.setContent(res.doc.base_info.content);
     });
     return () => {
       clearInterval(timer);
@@ -125,10 +115,8 @@ const WriteDoc: React.FC = () => {
         </Button>
       </Space>}>
       <div className={s.doc_wrap}>
-        <div className={classNames(s.read_doc, "_docContext")}>{editor}</div>
-        {tocList.length > 0 && (
-          <DocTocPanel tocList={tocList} />
-        )}
+        <div className={classNames(s.read_doc, "_docContext")}>{props.editor}</div>
+        <DocTocPanel />
       </div>
       {appStore.checkLeave && <ActionModal
         open={appStore.checkLeave}
@@ -153,6 +141,30 @@ const WriteDoc: React.FC = () => {
       </ActionModal>
       }
     </Card>
+  );
+});
+
+const WriteDoc = () => {
+  const projectStore = useStores('projectStore');
+  const entryStore = useStores('entryStore');
+  const editorStore = useStores('editorStore');
+
+  const { editor, editorRef } = useCommonEditor({
+    content: '',
+    fsId: projectStore.curProject?.doc_fs_id ?? '',
+    ownerType: FILE_OWNER_TYPE_PROJECT_DOC,
+    ownerId: entryStore.curEntry?.entry_id ?? "",
+    projectId: projectStore.curProjectId,
+    historyInToolbar: true,
+    clipboardInToolbar: true,
+    commonInToolbar: true,
+    widgetInToolbar: true,
+    showReminder: false,
+    tocCallback: (result) => editorStore.tocList = result,
+  });
+
+  return (
+    <WriteDocInner editor={editor} editorRef={editorRef} />
   );
 };
 
