@@ -1,7 +1,7 @@
 [english version readme](./README.md)
 
 [![main](screenshot/1.png)](https://www.linksaas.pro)
-[![minapp](screenshot/11.png)](https://www.linksaas.pro)
+[![minapp](screenshot/10.png)](https://www.linksaas.pro)
 
 
 # 凌鲨简介

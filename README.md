@@ -1,7 +1,7 @@
 [中文版本说明](./README_ZH.md)
 
 [![main](screenshot/1.png)](https://www.linksaas.pro)
-[![minapp](screenshot/11.png)](https://www.linksaas.pro)
+[![minapp](screenshot/10.png)](https://www.linksaas.pro)
 
 # linksaas intro
 As the information hub of the software R&D team, Liiksaas connects the tools and information needed in the R&D process, so as to achieve efficient communication, knowledge precipitation and reasonable evaluation in the R&D process.
