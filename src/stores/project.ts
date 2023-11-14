@@ -130,6 +130,10 @@ export default class ProjectStore {
 
   private async clacProjectStatus(projectId: string): Promise<WebProjectStatus> {
     const status = new WebProjectStatus();
+    const prjInfo = this.getProject(projectId);
+    if (prjInfo !== undefined) {
+      status.new_event_count = prjInfo.project_status.new_event_count;
+    }
     const issueStateRes = await request(
       get_my_issue_state(this.rootStore.userStore.sessionId, projectId),
     );
@@ -286,12 +290,13 @@ export default class ProjectStore {
     oldCount = prj.project_status.new_event_count;
     runInAction(() => {
       const index = this._projectList.findIndex((item) => item.project_id == projectId);
+      const newCount = oldCount + 1;
       if (index != -1) {
-        this._projectList[index].project_status.new_event_count = oldCount + 1;
+        this._projectList[index].project_status.new_event_count = newCount;
       }
       const prjItem = this._projectMap.get(projectId);
       if (prjItem !== undefined) {
-        prjItem.project_status.new_event_count = oldCount + 1;
+        prjItem.project_status.new_event_count = newCount;
         this._projectMap.set(projectId, prjItem);
       }
     });

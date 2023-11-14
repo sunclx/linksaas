@@ -126,20 +126,20 @@ class NoticeStore {
   }
 
   private processBoardNotice(notice: NoticeType.board.AllNotice) {
-    if(notice.CreateNodeNotice !== undefined){
-      if(notice.CreateNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+    if (notice.CreateNodeNotice !== undefined) {
+      if (notice.CreateNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id) {
         this.rootStore.boardStore.updateNode(notice.CreateNodeNotice.node_id);
       }
-    }else if(notice.UpdateNodeNotice !== undefined){
-      if(notice.UpdateNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+    } else if (notice.UpdateNodeNotice !== undefined) {
+      if (notice.UpdateNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id) {
         this.rootStore.boardStore.updateNode(notice.UpdateNodeNotice.node_id);
       }
-    }else if(notice.RemoveNodeNotice !== undefined){
-      if(notice.RemoveNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+    } else if (notice.RemoveNodeNotice !== undefined) {
+      if (notice.RemoveNodeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id) {
         this.rootStore.boardStore.removeNode(notice.RemoveNodeNotice.node_id);
       }
-    }else if(notice.CreateEdgeNotice !== undefined){
-      if(notice.CreateEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+    } else if (notice.CreateEdgeNotice !== undefined) {
+      if (notice.CreateEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id) {
         this.rootStore.boardStore.updateEdge({
           from_node_id: notice.CreateEdgeNotice.from_node_id,
           from_handle_id: notice.CreateEdgeNotice.from_handle_id,
@@ -147,8 +147,8 @@ class NoticeStore {
           to_handle_id: notice.CreateEdgeNotice.to_handle_id,
         });
       }
-    }else if(notice.UpdateEdgeNotice !== undefined){
-      if(notice.UpdateEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+    } else if (notice.UpdateEdgeNotice !== undefined) {
+      if (notice.UpdateEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id) {
         this.rootStore.boardStore.updateEdge({
           from_node_id: notice.UpdateEdgeNotice.from_node_id,
           from_handle_id: notice.UpdateEdgeNotice.from_handle_id,
@@ -156,8 +156,8 @@ class NoticeStore {
           to_handle_id: notice.UpdateEdgeNotice.to_handle_id,
         });
       }
-    }else if(notice.RemoveEdgeNotice !== undefined){
-      if(notice.RemoveEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id){
+    } else if (notice.RemoveEdgeNotice !== undefined) {
+      if (notice.RemoveEdgeNotice.board_id == this.rootStore.entryStore.curEntry?.entry_id) {
         this.rootStore.boardStore.removeEdge({
           from_node_id: notice.RemoveEdgeNotice.from_node_id,
           from_handle_id: notice.RemoveEdgeNotice.from_handle_id,
@@ -255,7 +255,10 @@ class NoticeStore {
       if (notice.NewEventNotice.project_id == this.rootStore.projectStore.curProjectId) {
         await this.rootStore.memberStore.updateLastEvent(notice.NewEventNotice.project_id, notice.NewEventNotice.member_user_id, notice.NewEventNotice.event_id);
       }
-      this.rootStore.projectStore.addNewEventCount(notice.NewEventNotice.project_id);
+      const projectId = notice.NewEventNotice.project_id;
+      setTimeout(() => {
+        this.rootStore.projectStore.addNewEventCount(projectId);
+      }, 500);
     } else if (notice.SetMemberRoleNotice !== undefined) {
       if (notice.SetMemberRoleNotice.project_id == this.rootStore.projectStore.curProjectId) {
         this.rootStore.memberStore.updateMemberRole(notice.SetMemberRoleNotice.member_user_id, notice.SetMemberRoleNotice.role_id);
