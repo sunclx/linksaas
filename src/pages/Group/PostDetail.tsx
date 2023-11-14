@@ -130,7 +130,7 @@ const PostDetail = () => {
                                 {groupStore.curPostKey?.audit_state == POST_AUDIT_NONE && "未申请推荐"}
                                 {groupStore.curPostKey?.audit_state == POST_AUDIT_APPLY && "已申请推荐"}
                                 {groupStore.curPostKey?.audit_state == POST_AUDIT_REFUSE && "拒绝进入推荐"}
-                                {groupStore.curPostKey?.audit_state == POST_AUDIT_AGREE && "同意进入推荐"}
+                                {groupStore.curPostKey?.audit_state == POST_AUDIT_AGREE && "已进入推荐"}
                             </span>
                         </Button>
                     )}

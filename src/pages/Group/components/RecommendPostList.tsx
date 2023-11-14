@@ -31,7 +31,7 @@ const RecommendPostList = () => {
             limit: PAGE_SIZE,
         }));
         setTotalCount(res.total_count);
-        setPostKeyList(res.post_key_list);
+        setPostKeyList(res.post_key_list.sort((a, b) => b.update_time - a.update_time));
     };
 
     const goToPost = async (groupId: string, postId: string) => {

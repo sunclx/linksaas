@@ -85,7 +85,7 @@ const RecommendAuditList = () => {
                 <span style={{ color: getStateColor(row.audit_state) }}>
                     {row.audit_state == POST_AUDIT_NONE && "未申请推荐"}
                     {row.audit_state == POST_AUDIT_APPLY && "已申请推荐"}
-                    {row.audit_state == POST_AUDIT_REFUSE && "拒绝进入推荐"}
+                    {row.audit_state == POST_AUDIT_REFUSE && "已进入推荐"}
                     {row.audit_state == POST_AUDIT_AGREE && "同意进入推荐"}
                 </span>
             ),
