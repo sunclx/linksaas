@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCommands } from '@remirror/react';
 import type { NodeViewComponentProps } from '@remirror/react';
-import { Progress, Switch } from 'antd';
+import { Progress, Space, Switch } from 'antd';
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent, FILE_OWNER_TYPE } from '@/api/fs';
 import { save_tmp_file_base64, write_thumb_image_file, set_file_owner, write_file } from '@/api/fs';
@@ -46,7 +46,7 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
   const [imgUrl, setImgUrl] = useState('');
   const [thumbFileId, setThumbFileId] = useState('');
   const [fileId, setFileId] = useState('');
-  const [showRawImage, setShowRawImage] = useState(props.showRawImage ?? false);
+  const [showRawImage, setShowRawImage] = useState(props.showRawImage ?? true);
 
 
   //处理imageSrc数据
@@ -180,8 +180,11 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
         setHover(false);
       }}>
         {hover && imgUrl != "" && (
-          <Switch checkedChildren="原图" unCheckedChildren="缩略图" className={style.switch} checked={showRawImage}
-            onClick={checked => setShowRawImage(checked)} />
+          <Space className={style.switch}>
+            <span style={{ fontSize: 14, fontWeight: 600 }}>原图:</span>
+            <Switch checked={showRawImage} size='small'
+              onClick={checked => setShowRawImage(checked)} />
+          </Space>
         )}
         {showRawImage == false && (
           <div className={style.img}>
@@ -263,16 +266,7 @@ export const ViewImage: React.FC<ViewImageProps> = (props) => {
         )}
         {props.showRawImage == true && (
           <div style={{ maxWidth: "100%" }}>
-            <AsyncImage src={imageUrl} preview={{
-              src: imageUrl,
-              bodyStyle: {
-                margin: "40px 60px 0px 200px"
-              },
-              maskStyle: {
-                margin: "40px 60px 0px 200px"
-              },
-              zIndex: 9999,
-            }} useRawImg={false} />
+            <AsyncImage src={imageUrl} preview={false} useRawImg={false} />
           </div>
         )}
 
