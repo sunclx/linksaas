@@ -8,6 +8,7 @@ import AlarmSettingPanel from "./components/AlarmSettingPanel";
 import TipListSettingPanel from "./components/TipListSettingPanel";
 import TagListSettingPanel from "./components/TagListSettingPanel";
 import EventSettingPanel from "./components/EventSettingPanel";
+import DescSettingPanel from "./components/DescSettingPanel";
 
 
 const ProjectSettingModal = () => {
@@ -27,7 +28,9 @@ const ProjectSettingModal = () => {
             setActiveKey("tags");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT) {
             setActiveKey("event");
-        } 
+        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_DESC) {
+            setActiveKey("desc");
+        }
     }, [projectStore.showProjectSetting]);
 
 
@@ -58,7 +61,9 @@ const ProjectSettingModal = () => {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_TAGLIST;
                     } else if (key == "event") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT;
-                    } 
+                    } else if (key == "desc") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_DESC;
+                    }
                 }}>
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
                     {activeKey == "layout" && <LayoutSettingPanel onChange={value => setDisableTabs(value)} title="界面布局" />}
@@ -75,6 +80,9 @@ const ProjectSettingModal = () => {
                 </Tabs.TabPane>
                 <Tabs.TabPane key="tags" tab="标签设置" disabled={disableTabs}>
                     {activeKey == "tags" && <TagListSettingPanel onChange={value => setDisableTabs(value)} title="标签设置" />}
+                </Tabs.TabPane>
+                <Tabs.TabPane key="desc" tab="项目简介" disabled={disableTabs}>
+                    {activeKey == "desc" && <DescSettingPanel onChange={value => setDisableTabs(value)} title="项目简介" /> }
                 </Tabs.TabPane>
             </Tabs>
         </Modal>
