@@ -104,7 +104,6 @@ const PostEditInner = observer((props: PostEditInnerProps) => {
     };
 
     useEffect(() => {
-        console.log("xxxxxx");
         if (groupStore.curPostKey !== null && props.editorRef.current !== null) {
             loadPostContent();
         }

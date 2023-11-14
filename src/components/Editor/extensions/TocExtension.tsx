@@ -25,6 +25,11 @@ export class TocExtension extends PlainExtension<TocOptions> {
                     if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
                         this.calcToc(state.doc);
                     }
+                    setTimeout(() => {
+                        if (this.store != undefined && this.store.view != undefined && this.store.view.nodeDOM != undefined) {
+                            this.calcToc(state.doc);
+                        }
+                    }, 1000);
                     return DecorationSet.empty;
                 },
                 apply: (tr, old) => {
