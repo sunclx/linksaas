@@ -4,7 +4,7 @@ import type { StoreSnapshot, TLRecord, TLUiMenuGroup, Editor } from '@tldraw/tld
 import { Tldraw } from '@tldraw/tldraw';
 import '@tldraw/tldraw/tldraw.css';
 import { message } from 'antd';
-import { useLocalObservable } from 'mobx-react';
+import { observer, useLocalObservable } from 'mobx-react';
 import { runInAction } from 'mobx';
 import { appWindow } from "@tauri-apps/api/window";
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -20,7 +20,7 @@ export const tldrawWidgetInitData: WidgetData = {
     data: undefined,
 };
 
-const EditTldraw: React.FC<WidgetProps> = (props) => {
+const EditTldraw: React.FC<WidgetProps> = observer((props) => {
     const [initData] = useState((props.initData as WidgetData).data);
 
     const localStore = useLocalObservable(() => ({
@@ -79,7 +79,7 @@ const EditTldraw: React.FC<WidgetProps> = (props) => {
             </EditorWrap>
         </ErrorBoundary>
     );
-}
+});
 
 const ViewTldraw: React.FC<WidgetProps> = (props) => {
     return (

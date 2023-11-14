@@ -4,7 +4,6 @@ import { Card, Form, List, Modal, Popover, Select, Space } from "antd";
 import { useHistory } from "react-router-dom";
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
-import type { TocInfo } from '@/components/Editor/extensions/index';
 import PostTocPanel from "./components/PostDocPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
 import Button from "@/components/Button";
@@ -23,9 +22,9 @@ const PostDetail = () => {
 
     const userStore = useStores('userStore');
     const groupStore = useStores('groupStore');
+    const editStore = useStores('editorStore');
 
     const [content, setContent] = useState<string | null>(null);
-    const [tocList, setTocList] = useState<TocInfo[]>([]);
     const [showAddComment, setShowAddComment] = useState(false);
 
     const [commentList, setCommentList] = useState<CommentInfo[]>([]);
@@ -150,7 +149,7 @@ const PostDetail = () => {
             <div className={s.post_wrap}>
                 <div className={s.post}>
                     {content !== null && (
-                        <ReadOnlyEditor content={content} tocCallback={result => setTocList(result)} />
+                        <ReadOnlyEditor content={content} tocCallback={result => editStore.tocList = result} />
                     )}
                     <Form style={{ marginTop: "10px" }}>
                         <Form.Item label={<span style={{ fontSize: "18px", fontWeight: 600 }}>标签列表</span>}>
@@ -179,9 +178,7 @@ const PostDetail = () => {
                         )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
                     </Card>
                 </div>
-                {tocList.length > 0 && (
-                    <PostTocPanel tocList={tocList} />
-                )}
+                <PostTocPanel />
             </div>
             {showAddComment == true && (
                 <EditCommentModal onCancel={() => setShowAddComment(false)}

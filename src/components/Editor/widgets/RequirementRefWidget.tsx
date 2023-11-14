@@ -16,6 +16,7 @@ import moment from 'moment';
 import { LinkRequirementInfo } from '@/stores/linkAux';
 import { useHistory } from 'react-router-dom';
 import { appWindow } from "@tauri-apps/api/window";
+import { observer } from 'mobx-react';
 
 
 
@@ -132,7 +133,7 @@ const AddRequirementModal: React.FC<AddRequirementModalProps> = (props) => {
     );
 };
 
-const EditRequirementRef: React.FC<WidgetProps> = (props) => {
+const EditRequirementRef: React.FC<WidgetProps> = observer((props) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
@@ -247,7 +248,7 @@ const EditRequirementRef: React.FC<WidgetProps> = (props) => {
                     }} />)}
         </EditorWrap>
     );
-};
+});
 
 const ViewRequirementRef: React.FC<WidgetProps> = (props) => {
     const data = props.initData as WidgetData;

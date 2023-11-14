@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import type { TocInfo } from '@/components/Editor/extensions/index';
+import React, { useEffect } from 'react';
 import s from './EditDoc.module.less';
+import { observer } from 'mobx-react';
+import { useStores } from '@/hooks';
 
-interface DocTocPanelProps {
-    tocList: TocInfo[];
-}
 
-const DocTocPanel: React.FC<DocTocPanelProps> = (props) => {
-    const [tocList, setTocList] = useState<TocInfo[]>([]);
+const DocTocPanel = () => {
+    const editorStore = useStores('editorStore');
 
-    useEffect(() => {
-        setTocList([]);
-        setTimeout(() => {
-            setTocList(props.tocList);
-        }, 100);
-    }, [props.tocList]);
-
+    useEffect(()=>{
+        return ()=>{
+            editorStore.tocList = [];
+        };
+    },[]);
+    
     return (
         <div className={s.toc}>
-            {tocList.map((toc, index) => (
+            {editorStore.tocList.map((toc, index) => (
                 <div key={index} title={toc.title} style={{ paddingLeft: 20 * toc.level, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     <a onClick={e => {
                         e.stopPropagation();
@@ -31,4 +28,4 @@ const DocTocPanel: React.FC<DocTocPanelProps> = (props) => {
     );
 };
 
-export default DocTocPanel;
+export default observer(DocTocPanel);
