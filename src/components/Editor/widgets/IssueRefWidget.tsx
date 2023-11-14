@@ -28,6 +28,7 @@ import { ReactComponent as Deliconsvg } from '@/assets/svg/delicon.svg';
 import AddTaskOrBug from '../components/AddTaskOrBug';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { appWindow } from "@tauri-apps/api/window";
+import { observer } from 'mobx-react';
 
 // 为了防止编辑器出错，WidgetData结构必须保存稳定
 
@@ -126,7 +127,7 @@ const getExtraInfoType = (row: IssueInfo): ExtraTaskInfo | ExtraBugInfo | undefi
   return isTack ? row.extra_info?.ExtraTaskInfo : row.extra_info?.ExtraBugInfo;
 };
 
-const EditIssueRef: React.FC<WidgetProps> = (props) => {
+const EditIssueRef: React.FC<WidgetProps> = observer((props) => {
   const data = props.initData as WidgetData;
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
@@ -334,7 +335,7 @@ const EditIssueRef: React.FC<WidgetProps> = (props) => {
       </EditorWrap>
     </ErrorBoundary>
   );
-};
+});
 
 const ViewIssueRef: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;

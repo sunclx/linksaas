@@ -10,6 +10,7 @@ import style from './MermaidWidget.module.less';
 import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import { classDemo, erDemo, flowDemo, ganttDemo, gitDemo, journeyDemo, pieDemo, seqDemo, stateDemo } from '@/utils/mermaid';
 import { appWindow } from "@tauri-apps/api/window";
+import { observer } from 'mobx-react';
 
 //为了防止编辑器出错，WidgetData结构必须保存稳定
 
@@ -21,7 +22,7 @@ export const mermaidWidgetInitData: WidgetData = {
   spec: '',
 };
 
-const EditMermaid: React.FC<WidgetProps> = (props) => {
+const EditMermaid: React.FC<WidgetProps> = observer((props) => {
   const data = props.initData as WidgetData;
   const [spec, setSpec] = useState(data.spec);
   const [activateKey, setActivateKey] = useState('1');
@@ -176,7 +177,7 @@ const EditMermaid: React.FC<WidgetProps> = (props) => {
       </EditorWrap>
     </ErrorBoundary>
   );
-};
+});
 
 const ViewMermaid: React.FC<WidgetProps> = (props) => {
   const data = props.initData as WidgetData;

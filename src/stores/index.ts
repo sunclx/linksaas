@@ -12,6 +12,7 @@ import PubResStore from './pubRes';
 import EntryStore from './entry';
 import BoardStore from './board';
 import GroupStore from './group';
+import EditorStore from './editor';
 
 export class RootStore {
   userStore: UserStore;
@@ -28,6 +29,7 @@ export class RootStore {
   entryStore: EntryStore;
   boardStore: BoardStore;
   groupStore: GroupStore;
+  editorStore: EditorStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -44,6 +46,7 @@ export class RootStore {
     this.entryStore = new EntryStore(this);
     this.boardStore = new BoardStore(this);
     this.groupStore = new GroupStore();
+    this.editorStore = new EditorStore();
   }
 }
 
@@ -63,6 +66,7 @@ const _store = {
   entryStore: rootStore.entryStore,
   boardStore: rootStore.boardStore,
   groupStore: rootStore.groupStore,
+  editorStore: rootStore.editorStore,
 };
 
 export type StoreType = typeof _store;

@@ -5,46 +5,46 @@ import { change_file_owner, useCommonEditor } from "@/components/Editor";
 import { FILE_OWNER_TYPE_GROUP_POST, FILE_OWNER_TYPE_NONE } from "@/api/fs";
 import { request } from "@/utils/request";
 import { useStores } from "@/hooks";
-import type { TocInfo } from '@/components/Editor/extensions/index';
 import { Card, Form, Input, Select, Space, message } from "antd";
 import s from "./PostEdit.module.less";
 import classNames from 'classnames';
 import PostTocPanel from "./components/PostDocPanel";
 import Button from "@/components/Button";
 import { APP_GROUP_POST_DETAIL_PATH, APP_GROUP_POST_LIST_PATH } from "@/utils/constant";
-import { observer } from 'mobx-react';
+import { observer, useLocalObservable } from 'mobx-react';
 import ActionModal from "@/components/ActionModal";
-import { flushEditorContent } from "@/components/Editor/common";
+import { type EditorRef, flushEditorContent } from "@/components/Editor/common";
+import { runInAction } from "mobx";
 
-const PostEdit = () => {
+
+interface PostEditInnerProps {
+    editor: React.JSX.Element;
+    editorRef: React.MutableRefObject<EditorRef | null>;
+}
+
+const PostEditInner = observer((props: PostEditInnerProps) => {
     const history = useHistory();
 
     const appStore = useStores('appStore');
-    const projectStore = useStores('projectStore');
     const userStore = useStores('userStore');
     const groupStore = useStores('groupStore');
 
-    const [tocList, setTocList] = useState<TocInfo[]>([]);
     const [title, setTitle] = useState(groupStore.curPostKey?.title ?? "");
     const [tagList, setTagList] = useState<string[]>(groupStore.curPostKey?.tag_list ?? []);
-    const [loaded, setLoaded] = useState(false);
 
-    const { editor, editorRef } = useCommonEditor({
-        content: '',
-        fsId: groupStore.curGroup?.fs_id ?? "",
-        ownerType: groupStore.curPostKey == null ? FILE_OWNER_TYPE_NONE : FILE_OWNER_TYPE_GROUP_POST,
-        ownerId: groupStore.curPostKey == null ? "" : groupStore.curPostKey.post_id,
-        projectId: projectStore.curProjectId,
-        historyInToolbar: true,
-        clipboardInToolbar: true,
-        commonInToolbar: true,
-        widgetInToolbar: true,
-        showReminder: false,
-        tocCallback: (result) => setTocList(result),
-    });
+    const localStore = useLocalObservable(() => ({
+        loaded: false,
+        setLoaded(val: boolean) {
+            runInAction(() => {
+                this.loaded = val;
+            });
+        }
+    }));
+
+
 
     const loadPostContent = async () => {
-        if (groupStore.curPostKey == null || loaded) {
+        if (groupStore.curPostKey == null || localStore.loaded) {
             return;
         }
         const res = await request(get_post_content({
@@ -52,13 +52,13 @@ const PostEdit = () => {
             group_id: groupStore.curGroup?.group_id ?? "",
             post_id: groupStore.curPostKey.post_id,
         }));
-        editorRef.current?.setContent(res.content);
-        setLoaded(true);
+        props.editorRef.current?.setContent(res.content);
+        localStore.setLoaded(true);
     };
 
     const createPost = async () => {
         await flushEditorContent();
-        const content = editorRef.current?.getContent() ?? { type: "doc" };
+        const content = props.editorRef.current?.getContent() ?? { type: "doc" };
         const addRes = await request(add_post({
             session_id: userStore.sessionId,
             group_id: groupStore.curGroup?.group_id ?? "",
@@ -79,7 +79,7 @@ const PostEdit = () => {
 
     const updatePost = async () => {
         await flushEditorContent();
-        const content = editorRef.current?.getContent() ?? { type: "doc" };
+        const content = props.editorRef.current?.getContent() ?? { type: "doc" };
         await request(update_post_content({
             session_id: userStore.sessionId,
             group_id: groupStore.curGroup?.group_id ?? "",
@@ -104,10 +104,10 @@ const PostEdit = () => {
     };
 
     useEffect(() => {
-        if (groupStore.curPostKey !== null && editorRef.current !== null) {
+        if (groupStore.curPostKey !== null && props.editorRef.current !== null) {
             loadPostContent();
         }
-    }, [groupStore.curPostKey, editorRef.current]);
+    }, [groupStore.curPostKey, props.editorRef.current]);
 
     useEffect(() => {
         appStore.inEdit = true;
@@ -138,9 +138,9 @@ const PostEdit = () => {
                     <Button type="default" onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        if(groupStore.curPostKey == null){
+                        if (groupStore.curPostKey == null) {
                             history.push(APP_GROUP_POST_LIST_PATH);
-                        }else{
+                        } else {
                             history.push(APP_GROUP_POST_DETAIL_PATH);
                         }
                     }}>取消</Button>
@@ -157,7 +157,7 @@ const PostEdit = () => {
             }>
             <div className={s.post_wrap}>
                 <div className={classNames(s.post, "_postContext")}>
-                    {editor}
+                    {props.editor}
                     <Form style={{ marginTop: "10px" }}>
                         <Form.Item label={<span style={{ fontSize: "18px", fontWeight: 600 }}>标签列表</span>}>
                             <Select mode="tags" bordered={false} open={false} style={{ borderBottom: "1px solid #e4e4e8", fontSize: "18px", fontWeight: 600, color: "orange" }}
@@ -165,9 +165,7 @@ const PostEdit = () => {
                         </Form.Item>
                     </Form>
                 </div>
-                {tocList.length > 0 && (
-                    <PostTocPanel tocList={tocList} />
-                )}
+                <PostTocPanel />
             </div>
             {appStore.checkLeave && <ActionModal
                 open={appStore.checkLeave}
@@ -192,6 +190,30 @@ const PostEdit = () => {
             }
         </Card>
     )
+});
+
+const PostEdit = () => {
+    const projectStore = useStores('projectStore');
+    const groupStore = useStores('groupStore');
+    const editorStore = useStores('editorStore');
+
+    const { editor, editorRef } = useCommonEditor({
+        content: '',
+        fsId: groupStore.curGroup?.fs_id ?? "",
+        ownerType: groupStore.curPostKey == null ? FILE_OWNER_TYPE_NONE : FILE_OWNER_TYPE_GROUP_POST,
+        ownerId: groupStore.curPostKey == null ? "" : groupStore.curPostKey.post_id,
+        projectId: projectStore.curProjectId,
+        historyInToolbar: true,
+        clipboardInToolbar: true,
+        commonInToolbar: true,
+        widgetInToolbar: true,
+        showReminder: false,
+        tocCallback: (result) => editorStore.tocList = result,
+    });
+
+    return (
+        <PostEditInner editor={editor} editorRef={editorRef} />
+    );
 };
 
 export default observer(PostEdit);
