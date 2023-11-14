@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Modal, Space, Table, message } from "antd";
+import { Button, Card, Modal, Space, Table, message } from "antd";
 import React, { useMemo, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
@@ -8,9 +8,10 @@ import type { ColumnsType } from 'antd/lib/table';
 import type { WebProjectInfo } from "@/stores/project";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import { request } from "@/utils/request";
-import { open as open_project, close as close_project } from "@/api/project";
+import { open as open_project, close as close_project, update as update_project } from "@/api/project";
 import { leave as leave_project } from "@/api/project_member";
 import RemoveProjectModal from "./RemoveProjectModal";
+import { EditText } from "@/components/EditCell/EditText";
 
 const ProjectManager = () => {
     const history = useHistory();
@@ -49,13 +50,25 @@ const ProjectManager = () => {
             title: "项目名称",
             render: (_, row: WebProjectInfo) => (
                 <Space>
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        projectStore.setCurProjectId(row.project_id);
-                        history.push(APP_PROJECT_HOME_PATH);
-                    }}>{row.basic_info.project_name}</a>
-                    <Badge count={row.project_status.total_count} />
+                    <EditText editable={row.user_project_perm.can_update && !row.closed}
+                        content={row.basic_info.project_name} onChange={async value => {
+                            if (value.trim() == "") {
+                                return false;
+                            }
+                            try {
+                                await request(update_project(userStore.sessionId, row.project_id, {
+                                    project_name: value,
+                                    project_desc: row.basic_info.project_desc,
+                                }));
+                                return true;
+                            } catch (e) {
+                                console.log(e);
+                                return false;
+                            }
+                        }} showEditIcon={true} onClick={() => {
+                            projectStore.setCurProjectId(row.project_id);
+                            history.push(APP_PROJECT_HOME_PATH);
+                        }} />
                 </Space>
             ),
         },
@@ -117,7 +130,7 @@ const ProjectManager = () => {
     }, []);
 
     return (
-        <Card title="管理项目" extra={
+        <Card title="项目列表" extra={
             <Button type="primary" onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
