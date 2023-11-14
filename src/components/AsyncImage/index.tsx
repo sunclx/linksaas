@@ -55,12 +55,12 @@ const AsyncImage: React.FC<AsyncImageProps> = (props) => {
                 }
                 const data = await readBinaryFile(localPath);
                 const chunk = 8 * 1024;
-                let dataStr = "";
+                const dataStrList = [] as string[];
                 for (let i = 0; i < data.length / chunk; i++) {
                     const buf = data.slice(i * chunk, (i + 1) * chunk);
-                    dataStr += String.fromCharCode(...buf);
+                    dataStrList.push(String.fromCharCode(...buf));
                 }
-                const dataB64 = btoa(dataStr);
+                const dataB64 = btoa(dataStrList.join(""));
                 setImgSrc(`data:image/*;base64,${dataB64}`);
             } catch (e) {
                 console.log(e);

@@ -51,7 +51,7 @@ export const EditImage: React.FC<EditImageProps> = observer((props) => {
 
   //处理imageSrc数据
   const uploadImageSrc = async () => {
-    if (props.imageSrc == undefined || props.imageSrc == null) {
+    if (props.imageSrc == undefined || props.imageSrc == null || props.fileId != "") {
       return;
     }
     //保持临时文件

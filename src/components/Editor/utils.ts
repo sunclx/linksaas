@@ -95,6 +95,18 @@ export async function change_file_owner(state: RemirrorJSON, sessionId: string, 
     }
 }
 
+export function adjust_image_src(state: RemirrorJSON) {
+    for (const child of state.content ?? []) {
+        if (child.type == "imageUpload") {
+            if (child.attrs !== undefined) {
+                const attrs = child.attrs as unknown as ImageAttributes;
+                delete attrs.imageSrc;
+            }
+        } else if (child.content !== undefined) {
+            adjust_image_src(child);
+        }
+    }
+}
 
 
 function calc_doc_state(textList: string[], extensionList: string[], state: RemirrorJSON) {
