@@ -8,14 +8,13 @@ import { useStores } from "@/hooks";
 import NodePanel, { DND_ITEM_TYPE, type NewNodeInfo } from "./NodePanel";
 import { type DropTargetMonitor, useDrop } from "react-dnd";
 import RefTaskNode from "./nodes/RefTaskNode";
-import { BOARD_NODE_TYPE_IMAGE, type BOARD_NODE_TYPE, BOARD_NODE_TYPE_TEXT, BOARD_NODE_TYPE_REF_BUG, BOARD_NODE_TYPE_REF_REQUIRE_MENT, BOARD_NODE_TYPE_REF_PIPE_LINE, BOARD_NODE_TYPE_REF_API_COLL, BOARD_NODE_TYPE_REF_DATA_ANNO, BOARD_NODE_TYPE_REF_TASK, BOARD_NODE_TYPE_MERMAID } from "./nodes/types";
+import { BOARD_NODE_TYPE_IMAGE, type BOARD_NODE_TYPE, BOARD_NODE_TYPE_TEXT, BOARD_NODE_TYPE_REF_BUG, BOARD_NODE_TYPE_REF_REQUIRE_MENT, BOARD_NODE_TYPE_REF_API_COLL, BOARD_NODE_TYPE_REF_DATA_ANNO, BOARD_NODE_TYPE_REF_TASK, BOARD_NODE_TYPE_MERMAID } from "./nodes/types";
 import { request } from "@/utils/request";
-import { NODE_REF_TYPE_API_COLL, NODE_REF_TYPE_BUG, NODE_REF_TYPE_DATA_ANNO, NODE_REF_TYPE_PIPE_LINE, NODE_REF_TYPE_REQUIRE_MENT, NODE_REF_TYPE_TASK, NODE_TYPE_IMAGE, NODE_TYPE_MERMAID, NODE_TYPE_REF, NODE_TYPE_TEXT } from "@/api/project_board";
+import { NODE_REF_TYPE_API_COLL, NODE_REF_TYPE_BUG, NODE_REF_TYPE_DATA_ANNO, NODE_REF_TYPE_REQUIRE_MENT, NODE_REF_TYPE_TASK, NODE_TYPE_IMAGE, NODE_TYPE_MERMAID, NODE_TYPE_REF, NODE_TYPE_TEXT } from "@/api/project_board";
 import { create_node, remove_node, update_node_position, update_node_size, remove_edge, create_edge } from "@/api/project_board";
 import type { NodeData, EdgeKey } from "@/api/project_board";
 import RefBugNode from "./nodes/RefBugNode";
 import RefRequireMentNode from "./nodes/RefRequireMentNode";
-import RefPipeLineNode from "./nodes/RefPipeLineNode";
 import RefApiCollNode from "./nodes/RefApiCollNode";
 import RefDataAnnoNode from "./nodes/RefDataAnnoNode";
 import ImageNode from "./nodes/ImageNode";
@@ -60,8 +59,6 @@ const BoardEditor = () => {
                 refType = NODE_REF_TYPE_BUG;
             } else if (boardNodeType == BOARD_NODE_TYPE_REF_REQUIRE_MENT) {
                 refType = NODE_REF_TYPE_REQUIRE_MENT;
-            } else if (boardNodeType == BOARD_NODE_TYPE_REF_PIPE_LINE) {
-                refType = NODE_REF_TYPE_PIPE_LINE;
             } else if (boardNodeType == BOARD_NODE_TYPE_REF_API_COLL) {
                 refType = NODE_REF_TYPE_API_COLL;
             } else if (boardNodeType == BOARD_NODE_TYPE_REF_DATA_ANNO) {
@@ -118,8 +115,6 @@ const BoardEditor = () => {
                     boardNodeType = BOARD_NODE_TYPE_REF_BUG;
                 } else if (item.node_data.NodeRefData?.ref_type == NODE_REF_TYPE_REQUIRE_MENT) {
                     boardNodeType = BOARD_NODE_TYPE_REF_REQUIRE_MENT;
-                } else if (item.node_data.NodeRefData?.ref_type == NODE_REF_TYPE_PIPE_LINE) {
-                    boardNodeType = BOARD_NODE_TYPE_REF_PIPE_LINE;
                 } else if (item.node_data.NodeRefData?.ref_type == NODE_REF_TYPE_API_COLL) {
                     boardNodeType = BOARD_NODE_TYPE_REF_API_COLL;
                 } else if (item.node_data.NodeRefData?.ref_type == NODE_REF_TYPE_DATA_ANNO) {
@@ -297,7 +292,6 @@ const BoardEditor = () => {
         RefTaskNode: RefTaskNode,
         RefBugNode: RefBugNode,
         RefRequireMentNode: RefRequireMentNode,
-        RefPipeLineNode: RefPipeLineNode,
         RefApiCollNode: RefApiCollNode,
         RefDataAnnoNode: RefDataAnnoNode,
         ImageNode: ImageNode,

@@ -24,7 +24,7 @@ export type Setting = {
   disable_data_anno: boolean;
   disable_api_collection: boolean;
   // disable_code_comment: boolean;
-  disable_ci_cd: boolean;
+  // disable_ci_cd: boolean;
 
   // disable_chat: boolean;
   // disable_kb: boolean;
@@ -109,7 +109,7 @@ export type ProjectInfo = {
   bulletin_fs_id: string;
   data_anno_fs_id: string;
   api_coll_fs_id: string;
-  ci_cd_fs_id: string;
+  // ci_cd_fs_id: string;
   pages_fs_id: string;
   board_fs_id: string;
   // default_doc_space_id: string;

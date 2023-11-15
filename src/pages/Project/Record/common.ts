@@ -6,7 +6,6 @@ import taskIcon from '@/assets/allIcon/icon-task.png';
 import bugIcon from '@/assets/allIcon/icon-bug.png';
 import spritIcon from '@/assets/allIcon/icon-sprit.png';
 import docIcon from '@/assets/channel/doc@2x.png';
-import cicdIcon from '@/assets/allIcon/icon-cicd.png';
 import reqIcon from '@/assets/allIcon/icon-req.png';
 import ideaIcon from '@/assets/allIcon/icon-idea.png';
 import apiCollIcon from '@/assets/allIcon/icon-apicoll.png';
@@ -43,10 +42,6 @@ export const EVENT_ICON_LIST = {
   [API.EVENT_TYPE_ENTRY]: {
     title: 'doc',
     icon: docIcon,
-  },
-  [API.EVENT_TYPE_CICD]: {
-    title: 'cicd',
-    icon: cicdIcon,
   },
   [API.EVENT_TYPE_DISK]: {
     title: 'disk',

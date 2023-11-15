@@ -15,7 +15,6 @@ import { type AllDataAnnoEvent, get_data_anno_simple_content } from './events/da
 import { type AllIdeaEvent, get_idea_simple_content } from './events/idea';
 import { type AllApiCollectionEvent, get_api_collection_simple_content } from './events/api_collection';
 import { type AllAtomgitEvent, get_atomgit_simple_content } from './events/atomgit';
-import { type AllCiCdEvent, get_cicd_simple_content } from './events/cicd';
 import { type AllEntryEvent, get_entry_simple_content } from './events/entry';
 
 
@@ -42,7 +41,6 @@ export class AllEvent {
   DataAnnoEvent?: AllDataAnnoEvent;
   ApiCollectionEvent?: AllApiCollectionEvent;
   AtomgitEvent?: AllAtomgitEvent;
-  CiCdEvent?: AllCiCdEvent;
   EntryEvent?: AllEntryEvent;
 }
 
@@ -71,8 +69,6 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return get_api_collection_simple_content(ev, skip_prj_name, ev.event_data.ApiCollectionEvent);
   } else if (ev.event_data.AtomgitEvent !== undefined) {
     return get_atomgit_simple_content(ev, skip_prj_name, ev.event_data.AtomgitEvent);
-  } else if (ev.event_data.CiCdEvent !== undefined) {
-    return get_cicd_simple_content(ev, skip_prj_name, ev.event_data.CiCdEvent);
   } else if (ev.event_data.EntryEvent !== undefined) {
     return get_entry_simple_content(ev, skip_prj_name, ev.event_data.EntryEvent);
   }

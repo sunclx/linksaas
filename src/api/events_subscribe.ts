@@ -130,11 +130,6 @@ export type ApiCollectionEvCfg = {
     remove: boolean;
 }
 
-export type CiCdEvCfg = {
-    create_pipe_line: boolean;
-    remove_pipe_line: boolean;
-};
-
 export type AtomgitEvCfg = {
     push: boolean;
     issue: boolean;
@@ -159,7 +154,6 @@ export type EventCfg = {
     data_anno_ev_cfg: DataAnnoEvCfg;
     api_collection_ev_cfg: ApiCollectionEvCfg;
     atomgit_ev_cfg: AtomgitEvCfg;
-    ci_cd_ev_cfg: CiCdEvCfg;
     entry_ev_cfg: EntryEvCfg;
 };
 
@@ -270,12 +264,6 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             push: false,
             issue: false,
         };
-    }
-    if (cfg.ci_cd_ev_cfg == undefined || cfg.ci_cd_ev_cfg == null) {
-        cfg.ci_cd_ev_cfg = {
-            create_pipe_line: false,
-            remove_pipe_line: false,
-        }
     }
     if (cfg.entry_ev_cfg == undefined || cfg.entry_ev_cfg == null) {
         cfg.entry_ev_cfg = {
