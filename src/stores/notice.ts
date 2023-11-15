@@ -15,7 +15,7 @@ import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
 import { APP_PROJECT_HOME_PATH, USER_LOGIN_PATH } from '@/utils/constant';
 import { message } from 'antd';
-import { COMMENT_TARGET_API_COLL, COMMENT_TARGET_CI_CD, COMMENT_TARGET_DATA_ANNO, type COMMENT_TARGET_TYPE } from '@/api/project_comment';
+import { COMMENT_TARGET_API_COLL, COMMENT_TARGET_DATA_ANNO, type COMMENT_TARGET_TYPE } from '@/api/project_comment';
 
 class NoticeStore {
   constructor(rootStore: RootStore) {
@@ -94,9 +94,7 @@ class NoticeStore {
 
   private async forwardCommentNotice(targetType: COMMENT_TARGET_TYPE, targetId: string, notice: NoticeType.comment.AllNotice) {
     let forward = false;
-    if (targetType == COMMENT_TARGET_CI_CD) {
-      forward = true;
-    } else if (targetType == COMMENT_TARGET_API_COLL) {
+    if (targetType == COMMENT_TARGET_API_COLL) {
       forward = true;
     } else if (targetType == COMMENT_TARGET_DATA_ANNO) {
       forward = true;

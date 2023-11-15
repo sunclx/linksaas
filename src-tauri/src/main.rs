@@ -10,7 +10,6 @@ use tonic::transport::{Channel, Endpoint};
 mod admin_auth_api_plugin;
 mod appstore_admin_api_plugin;
 mod appstore_api_plugin;
-mod cicd_runner_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod data_anno_project_api_plugin;
@@ -30,7 +29,6 @@ mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
 mod project_bulletin_api_plugin;
-mod project_cicd_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
 mod project_idea_api_plugin;
@@ -443,8 +441,6 @@ fn main() {
         .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
         .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())
-        .plugin(project_cicd_api_plugin::ProjectCiCdApiPlugin::new())
-        .plugin(cicd_runner_api_plugin::CiCdRunnerApiPlugin::new())
         .plugin(project_entry_api_plugin::ProjectEntryApiPlugin::new())
         .plugin(project_watch_api_plugin::ProjectWatchApiPlugin::new())
         .plugin(project_comment_api_plugin::ProjectCommentApiPlugin::new())

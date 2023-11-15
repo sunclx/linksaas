@@ -5,7 +5,7 @@ export const COMMENT_TARGET_ENTRY: COMMENT_TARGET_TYPE = 0;         //内容入�
 export const COMMENT_TARGET_REQUIRE_MENT: COMMENT_TARGET_TYPE = 1;  //项目需求
 export const COMMENT_TARGET_TASK: COMMENT_TARGET_TYPE = 2;          //任务
 export const COMMENT_TARGET_BUG: COMMENT_TARGET_TYPE = 3;           //缺陷
-export const COMMENT_TARGET_CI_CD: COMMENT_TARGET_TYPE = 4;         // CI/CD
+// export const COMMENT_TARGET_CI_CD: COMMENT_TARGET_TYPE = 4;         // CI/CD
 export const COMMENT_TARGET_API_COLL: COMMENT_TARGET_TYPE = 5;      // API集合
 export const COMMENT_TARGET_DATA_ANNO: COMMENT_TARGET_TYPE = 6;     // 数据标注
 

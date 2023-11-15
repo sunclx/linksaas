@@ -3,16 +3,16 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import {
     type UnReadInfo, list_un_read, remove_un_read,
-    COMMENT_TARGET_ENTRY, COMMENT_TARGET_REQUIRE_MENT, COMMENT_TARGET_TASK, COMMENT_TARGET_BUG, COMMENT_TARGET_CI_CD, COMMENT_TARGET_API_COLL, COMMENT_TARGET_DATA_ANNO
+    COMMENT_TARGET_ENTRY, COMMENT_TARGET_REQUIRE_MENT, COMMENT_TARGET_TASK, COMMENT_TARGET_BUG, COMMENT_TARGET_API_COLL, COMMENT_TARGET_DATA_ANNO
 } from "@/api/project_comment";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
 import CommentModal from "../CommentEntry/CommentModal";
-import { type MyWatchInfo, list_my_watch, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, WATCH_TARGET_BUG, WATCH_TARGET_CI_CD, WATCH_TARGET_API_COLL, WATCH_TARGET_DATA_ANNO } from "@/api/project_watch";
+import { type MyWatchInfo, list_my_watch, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, WATCH_TARGET_BUG, WATCH_TARGET_API_COLL, WATCH_TARGET_DATA_ANNO } from "@/api/project_watch";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
-import { LinkApiCollInfo, LinkBugInfo, LinkDataAnnoInfo, LinkEntryInfo, LinkPipeLineInfo, LinkRequirementInfo, LinkTaskInfo } from "@/stores/linkAux";
+import { LinkApiCollInfo, LinkBugInfo, LinkDataAnnoInfo, LinkEntryInfo, LinkRequirementInfo, LinkTaskInfo } from "@/stores/linkAux";
 
 const PAGE_SIZE = 10;
 
@@ -57,7 +57,6 @@ const CommentList = observer(() => {
                     {row.target_type == COMMENT_TARGET_REQUIRE_MENT && "需求"}
                     {row.target_type == COMMENT_TARGET_TASK && "任务"}
                     {row.target_type == COMMENT_TARGET_BUG && "缺陷"}
-                    {row.target_type == COMMENT_TARGET_CI_CD && "CI/CD"}
                     {row.target_type == COMMENT_TARGET_API_COLL && "接口集合"}
                     {row.target_type == COMMENT_TARGET_DATA_ANNO && "数据标注"}
                 </span>
@@ -141,8 +140,6 @@ const MyWatchList = observer(() => {
             await linkAuxStore.goToLink(new LinkTaskInfo("", projectStore.curProjectId, info.target_id), history);
         } else if (info.target_type == WATCH_TARGET_BUG) {
             await linkAuxStore.goToLink(new LinkBugInfo("", projectStore.curProjectId, info.target_id), history);
-        } else if (info.target_type == WATCH_TARGET_CI_CD) {
-            await linkAuxStore.goToLink(new LinkPipeLineInfo("", projectStore.curProjectId, info.target_id), history);
         } else if (info.target_type == WATCH_TARGET_API_COLL) {
             await linkAuxStore.goToLink(new LinkApiCollInfo("", projectStore.curProjectId, info.target_id), history);
         } else if (info.target_type == WATCH_TARGET_DATA_ANNO) {
@@ -160,7 +157,6 @@ const MyWatchList = observer(() => {
                     {row.target_type == WATCH_TARGET_REQUIRE_MENT && "需求"}
                     {row.target_type == WATCH_TARGET_TASK && "任务"}
                     {row.target_type == WATCH_TARGET_BUG && "缺陷"}
-                    {row.target_type == WATCH_TARGET_CI_CD && "CI/CD"}
                     {row.target_type == WATCH_TARGET_API_COLL && "接口集合"}
                     {row.target_type == WATCH_TARGET_DATA_ANNO && "数据标注"}
                 </span>

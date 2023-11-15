@@ -63,8 +63,7 @@ export default ({ command, mode }: ConfigEnv) => {
           dataAnno: "data_anno.html",
           apiGrpc: "api_grpc.html",
           apiSwagger: "api_swagger.html",
-          apiCustom: "api_custom.html",
-          cicd: "cicd.html"
+          apiCustom: "api_custom.html"
         },
       },
       terserOptions: {

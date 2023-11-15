@@ -18,7 +18,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [disableExtEvent, setDisableExtEvent] = useState(projectStore.curProject?.setting.disable_ext_event ?? false);
     const [disableDataAnno, setDisableDataAnno] = useState(projectStore.curProject?.setting.disable_data_anno ?? false);
     const [disableApiCollection, setDisableApiCollection] = useState(projectStore.curProject?.setting.disable_api_collection ?? false);
-    const [disableCiCd,setDisableCiCd] = useState(projectStore.curProject?.setting.disable_ci_cd ?? false);
 
     const [hideProjectInfo, setHideProjectInfo] = useState(projectStore.curProject?.setting.hide_project_info ?? false);
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
@@ -33,7 +32,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
         setDisableExtEvent(projectStore.curProject?.setting.disable_ext_event ?? false);
         setDisableDataAnno(projectStore.curProject?.setting.disable_data_anno ?? false);
         setDisableApiCollection(projectStore.curProject?.setting.disable_api_collection ?? false);
-        setDisableCiCd(projectStore.curProject?.setting.disable_ci_cd ?? false)
 
         setHideProjectInfo(projectStore.curProject?.setting.hide_project_info ?? false);
         setHideBulletin(projectStore.curProject?.setting.hide_bulletin ?? false);
@@ -52,7 +50,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 ...projectStore.curProject.setting,
                 disable_ext_event: disableExtEvent,
                 disable_data_anno: disableDataAnno,
-                disable_ci_cd: disableCiCd,
                 disable_api_collection: disableApiCollection,
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
@@ -94,11 +91,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
             <Form labelCol={{ span: 5 }} disabled={projectStore.isClosed || !projectStore.isAdmin}>
                 <Form.Item label="右侧工具栏">
                     <Space direction="vertical">
-                        <Checkbox checked={disableCiCd} onChange={e => {
-                            e.stopPropagation();
-                            setDisableCiCd(e.target.checked);
-                            setHasChange(true);
-                        }}>关闭CI/CD</Checkbox>
                         <Checkbox checked={disableApiCollection} onChange={e => {
                             e.stopPropagation();
                             setDisableApiCollection(e.target.checked);
