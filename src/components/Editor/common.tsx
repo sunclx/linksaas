@@ -6,6 +6,7 @@ import type { CommandsFromExtensions, Extension } from 'remirror';
 import { appWindow } from "@tauri-apps/api/window";
 import { SAVE_WIDGET_NOTICE } from './widgets/common';
 import { sleep } from '@/utils/time';
+import { adjust_image_src } from './utils';
 
 export interface EditorRef {
   clearContent: () => void;
@@ -25,13 +26,16 @@ export const ImperativeHandle = forwardRef((_: unknown, ref: Ref<EditorRef>) => 
   useImperativeHandle(ref, () => ({
     clearContent,
     getContent: () => {
-      return getJSON(getState());
+      const ret =  getJSON(getState());
+      adjust_image_src(ret);
+      return ret; 
     },
     setContent: (val: RemirrorContentType) => {
       let content = val;
       if (typeof content == 'string') {
         try {
           content = JSON.parse(content);
+
         } catch (err) { }
       }
       setContent(content);
