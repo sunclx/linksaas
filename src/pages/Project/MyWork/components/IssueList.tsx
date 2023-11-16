@@ -157,7 +157,7 @@ const IssueList = (props: IssueListProps) => {
             },
         },
         {
-            title: "执行阶段",
+            title: "处理子阶段",
             width: 100,
             render: (_, row: IssueInfo) => {
                 if (row.state == ISSUE_STATE_PROCESS) {

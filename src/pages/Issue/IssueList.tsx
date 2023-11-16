@@ -310,7 +310,7 @@ const IssueList = () => {
                         isFilter={isFilter}
                         setIsFilter={setIsFilter}
                     />
-                    <Filtration tagDefList={getTagDefList()} />
+                    {isFilter && <Filtration tagDefList={getTagDefList()} />}
                 </div>
                 <IssueEditList isFilter={isFilter} dataSource={issueList}
                     issueIdList={issueIdList} onChange={issueId => updateIssue(issueId)} showStage={issueId => showStage(issueId)}

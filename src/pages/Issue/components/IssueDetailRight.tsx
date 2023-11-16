@@ -95,7 +95,7 @@ const IssueDetailRight: React.FC<IssueDetailRightProps> = (props) => {
                 </div>
                 {props.issue.state == ISSUE_STATE_PROCESS && (
                     <div className={s.basic_info}>
-                        <span>执行阶段</span>
+                        <span>处理子阶段</span>
                         <div>
                             <EditSelect
                                 allowClear={false}

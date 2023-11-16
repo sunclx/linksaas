@@ -192,7 +192,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
         }} showEditIcon={true} />,
     },
     {
-      title: `${getIsTask(pathname) ? '任务' : '当前'}状态`,
+      title: `${getIsTask(pathname) ? '任务' : '当前'}阶段`,
       dataIndex: 'state',
       width: 100,
       align: 'center',
@@ -240,7 +240,7 @@ const IssueEditList: React.FC<IssueEditListProps> = ({
       },
     },
     {
-      title: "执行阶段",
+      title: "处理子阶段",
       width: 100,
       align: 'left',
       dataIndex: "process_stage",

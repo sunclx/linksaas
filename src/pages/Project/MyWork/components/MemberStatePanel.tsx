@@ -88,7 +88,11 @@ const MemberStatePanel = () => {
                             onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                descEditor.editorRef.current?.setContent(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_desc ?? "");
+                                if(isEmptyDesc()){
+                                    descEditor.editorRef.current?.setContent("");
+                                }else{
+                                    descEditor.editorRef.current?.setContent(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_desc ?? "");
+                                }
                                 setRemainHour(memberStore.getMember(userStore.userInfo.userId)?.member.extra_state_info?.state_remain_hour ?? 0);
                                 setEditState(true);
                             }}>编辑</Button>

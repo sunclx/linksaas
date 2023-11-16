@@ -398,7 +398,7 @@ const AddTaskOrBug: FC<AddTaskOrBugProps> = (props) => {
         )}
       </div>
       <Table
-        style={{ marginTop: '8px', height: "calc(100vh - 400px)", overflowY: "scroll" }}
+        style={{ marginTop: '8px', height: "calc(100vh - 440px)", overflowY: "scroll" }}
         rowKey={'issue_id'}
         columns={columns}
         scroll={{ x: 950 }}
