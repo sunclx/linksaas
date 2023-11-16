@@ -8,7 +8,6 @@ import {
     atomgitEvOptionList,
     calcApiCollectionEvCfg,
     calcAtomgitEvCfg,
-    calcCiCdEvCfg,
     calcCodeEvCfg,
     calcDataAnnoEvCfg,
     calcEntryEvCfg,
@@ -19,14 +18,12 @@ import {
     calcIssueEvCfg,
     calcProjectEvCfg,
     calcRequirementEvCfg,
-    ciCdEvOptionList,
     codeEvOptionList,
     dataAnnoEvOptionList,
     entryEvOptionList,
     extEvOptionList,
     genApiCollectionEvCfgValues,
     genAtomgitEvCfgValues,
-    genCiCdEvCfgValues,
     genCodeEvCfgValues,
     genDataAnnoEvCfgValues,
     genEntryEvCfgValues,
@@ -68,7 +65,6 @@ interface FormValue {
     ideaEvCfg: string[] | undefined;
     dataAnnoEvCfg: string[] | undefined;
     apiCollectionEvCfg: string[] | undefined;
-    ciCdEvCfg: string[] | undefined;
     entryEvCfg: string[] | undefined;
 }
 
@@ -84,10 +80,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const extEvCfgValues = genExtEvCfgValues(props.subscribe.event_cfg.ext_ev_cfg);
     const [extEvCfgCheckAll, setExtEvCfgCheckAll] = useState(extEvCfgValues.length == extEvOptionList.length);
     const [extEvCfgIndeterminate, setExtEvCfgIndeterminate] = useState(extEvCfgValues.length > 0 && extEvCfgValues.length < extEvOptionList.length);
-
-    const ciCdEvCfgValues = genCiCdEvCfgValues(props.subscribe.event_cfg.ci_cd_ev_cfg);
-    const [ciCdEvCfgCheckAll, setCiCdEvCfgCheckAll] = useState(ciCdEvCfgValues.length == ciCdEvOptionList.length);
-    const [ciCdEvCfgIndeterminate, setCiCdEvCfgIndeterminate] = useState(ciCdEvCfgValues.length > 0 && ciCdEvCfgValues.length < ciCdEvOptionList.length);
 
     const atomgitEvCfgValues = genAtomgitEvCfgValues(props.subscribe.event_cfg.atomgit_ev_cfg);
     const [atomgitEvCfgCheckAll, setAtomgitEvCfgCheckAll] = useState(atomgitEvCfgValues.length == atomgitEvOptionList.length);
@@ -152,7 +144,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 idea_ev_cfg: calcIdeaEvCfg(formValue.ideaEvCfg),
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
                 api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
-                ci_cd_ev_cfg: calcCiCdEvCfg(formValue.ciCdEvCfg),
                 entry_ev_cfg: calcEntryEvCfg(formValue.entryEvCfg),
             },
         }));
@@ -182,7 +173,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "ideaEvCfg": ideaEvCfgValues,
                     "dataAnnoEvCfg": dataAnnoEvCfgValues,
                     "apiCollectionEvCfg": apiCollectionEvCfgValues,
-                    "ciCdEvCfg": ciCdEvCfgValues,
                     "entryEvCfg": entryEvCfgValues,
                 }}>
                     <Form.Item label="订阅名称" name="chatBotName" rules={[{ required: true }]}>
@@ -262,31 +252,6 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setExtEvCfgCheckAll(false);
                                 setExtEvCfgIndeterminate(true);
-                            }
-                        }} />
-                    </Form.Item>
-                    <Form.Item label={<Checkbox indeterminate={ciCdEvCfgIndeterminate} checked={ciCdEvCfgCheckAll} onChange={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setCiCdEvCfgIndeterminate(false);
-                        if (ciCdEvCfgCheckAll) {
-                            setCiCdEvCfgCheckAll(false);
-                            form.setFieldValue("ciCdEvCfg", []);
-                        } else {
-                            setCiCdEvCfgCheckAll(true);
-                            form.setFieldValue("ciCdEvCfg", ciCdEvOptionList.map(item => item.value));
-                        }
-                    }}>CI/CD事件</Checkbox>} name="ciCdEvCfg">
-                        <Checkbox.Group options={ciCdEvOptionList} onChange={values => {
-                            if (values.length == 0) {
-                                setCiCdEvCfgCheckAll(false);
-                                setCiCdEvCfgIndeterminate(false);
-                            } else if (values.length == ciCdEvOptionList.length) {
-                                setCiCdEvCfgCheckAll(true);
-                                setCiCdEvCfgIndeterminate(false);
-                            } else {
-                                setCiCdEvCfgCheckAll(false);
-                                setCiCdEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

@@ -743,32 +743,6 @@ pub mod atomgit {
     }
 }
 
-pub mod cicd {
-    use prost::Message;
-    use proto_gen_rust::events_cicd;
-    use proto_gen_rust::google::protobuf::Any;
-    use proto_gen_rust::TypeUrl;
-
-    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-    pub enum Event {
-        CreatePipeLineEvent(events_cicd::CreatePipeLineEvent),
-        RemovePipeLineEvent(events_cicd::RemovePipeLineEvent),
-    }
-
-    pub fn decode_event(data: &Any) -> Option<Event> {
-        if data.type_url == events_cicd::CreatePipeLineEvent::type_url() {
-            if let Ok(ev) = events_cicd::CreatePipeLineEvent::decode(data.value.as_slice()) {
-                return Some(Event::CreatePipeLineEvent(ev));
-            }
-        } else if data.type_url == events_cicd::RemovePipeLineEvent::type_url() {
-            if let Ok(ev) = events_cicd::RemovePipeLineEvent::decode(data.value.as_slice()) {
-                return Some(Event::RemovePipeLineEvent(ev));
-            }
-        }
-        None
-    }
-}
-
 pub mod entry {
     use prost::Message;
     use proto_gen_rust::events_entry;
@@ -819,7 +793,6 @@ pub enum EventMessage {
     DataAnnoEvent(data_anno::Event),
     ApiCollectionEvent(api_collection::Event),
     AtomgitEvent(atomgit::Event),
-    CiCdEvent(cicd::Event),
     EntryEvent(entry::Event),
     NoopEvent(),
 }
@@ -862,9 +835,6 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = atomgit::decode_event(data) {
         return Some(EventMessage::AtomgitEvent(ret));
-    }
-    if let Some(ret) = cicd::decode_event(data) {
-        return Some(EventMessage::CiCdEvent(ret));
     }
     if let Some(ret) = entry::decode_event(data) {
         return Some(EventMessage::EntryEvent(ret));

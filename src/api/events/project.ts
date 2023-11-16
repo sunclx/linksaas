@@ -7,11 +7,10 @@ import {
     LinkRequirementInfo,
     LinkTaskInfo,
     LinkBugInfo,
-    LinkPipeLineInfo,
     LinkApiCollInfo,
     LinkDataAnnoInfo
 } from '@/stores/linkAux';
-import { WATCH_TARGET_API_COLL, WATCH_TARGET_BUG, WATCH_TARGET_CI_CD, WATCH_TARGET_DATA_ANNO, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, type WATCH_TARGET_TYPE } from '../project_watch';
+import { WATCH_TARGET_API_COLL, WATCH_TARGET_BUG, WATCH_TARGET_DATA_ANNO, WATCH_TARGET_ENTRY, WATCH_TARGET_REQUIRE_MENT, WATCH_TARGET_TASK, type WATCH_TARGET_TYPE } from '../project_watch';
 
 function get_chat_bot_type_str(chat_bot_type: number): string {
     if (chat_bot_type == es.CHAT_BOT_QYWX) {
@@ -37,9 +36,6 @@ function getTargetTypeStr(targetType: WATCH_TARGET_TYPE): string {
     if (targetType == WATCH_TARGET_BUG) {
         return "缺陷";
     }
-    if (targetType == WATCH_TARGET_CI_CD) {
-        return "CI/CD";
-    }
     if (targetType == WATCH_TARGET_API_COLL) {
         return "接口集合";
     }
@@ -61,9 +57,6 @@ function getTargetLinkInfo(projectId: string, targetType: WATCH_TARGET_TYPE, tar
     }
     if (targetType == WATCH_TARGET_BUG) {
         return new LinkBugInfo(targetTitle, projectId, targetId);
-    }
-    if (targetType == WATCH_TARGET_CI_CD) {
-        return new LinkPipeLineInfo(targetTitle, projectId, targetId);
     }
     if (targetType == WATCH_TARGET_API_COLL) {
         return new LinkApiCollInfo(targetTitle, projectId, targetId);

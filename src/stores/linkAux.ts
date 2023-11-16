@@ -23,7 +23,6 @@ import { uniqId } from '@/utils/utils';
 import type { API_COLL_TYPE } from '@/api/api_collection';
 import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI } from '@/api/api_collection';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
-import { OpenPipeLineWindow } from '@/pages/Project/CiCd/utils';
 import { get as get_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_BOARD } from "@/api/project_entry";
 import { get as get_api_coll } from "@/api/api_collection";
 import { message } from 'antd';
@@ -53,7 +52,7 @@ export enum LINK_TARGET_TYPE {
   LINK_TARGET_CODE_COMMENT = 18,
   // LINK_TARGET_BOOK_MARK_CATE = 19,
   LINK_TARGET_IDEA_PAGE = 20,
-  LINK_TARGET_PIPE_LINE = 21,
+  // LINK_TARGET_PIPE_LINE = 21,
   LINK_TARGET_ENTRY = 22,
   LINK_TARGET_API_COLL = 23,
   LINK_TARGET_DATA_ANNO = 24,
@@ -228,19 +227,6 @@ export class LinkIdeaPageInfo {
   ideaId: string;
 }
 
-export class LinkPipeLineInfo {
-  constructor(content: string, projectId: string, pipeLineId: string) {
-    this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_PIPE_LINE;
-    this.linkContent = content;
-    this.projectId = projectId;
-    this.pipeLineId = pipeLineId;
-  }
-
-  linkTargeType: LINK_TARGET_TYPE;
-  linkContent: string;
-  projectId: string;
-  pipeLineId: string;
-}
 
 export class LinkEntryInfo {
   constructor(content: string, projectId: string, entryId: string) {
@@ -449,17 +435,6 @@ class LinkAuxStore {
         ideaId: ideaPageLink.ideaId,
       };
       history.push(this.genUrl(ideaPageLink.projectId, pathname, "/idea"), state);
-    } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_PIPE_LINE) {
-      const pipeLineLink = link as LinkPipeLineInfo;
-      if (this.rootStore.projectStore.curProjectId != pipeLineLink.projectId) {
-        await this.rootStore.projectStore.setCurProjectId(pipeLineLink.projectId);
-      }
-      if(this.rootStore.projectStore.curProject?.setting.disable_ci_cd == true){
-        message.error("已关闭CI/CD功能");
-        return;
-      }
-      await OpenPipeLineWindow(`${pipeLineLink}(只读模式)`, pipeLineLink.projectId,
-        this.rootStore.projectStore.curProject?.ci_cd_fs_id ?? "", pipeLineLink.pipeLineId, false, false, this.rootStore.projectStore.isAdmin);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_ENTRY) {
       const entryLink = link as LinkEntryInfo;
       if (this.rootStore.projectStore.curProjectId != entryLink.projectId) {

@@ -100,17 +100,6 @@ const Toolbar: React.FC = observer(() => {
         badge={projectStore.curProject?.project_status.undone_bug_count || 0}
       />
 
-      {projectStore.curProject?.setting.disable_ci_cd != true && (
-        <>
-          <Divider />
-          <Item
-            id="cicd"
-            pathname={pathname}
-            title="CI/CD"
-          />
-        </>
-      )}
-
       {projectStore.curProject?.setting.disable_api_collection != true && (
         <>
           <Divider />

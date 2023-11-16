@@ -86,7 +86,6 @@ import ThreadList from '@/pages/Project/Code/ThreadList';
 import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
-import ProjectCiCd from "@/pages/Project/CiCd"
 import HomeLayout from '@/layouts/HomeLayout';
 import ProjectManager from '@/pages/ProjectManger';
 import ProjectBoard from '@/pages/KnowledgeBase/ProjectBoard';
@@ -217,12 +216,6 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       path: prefix + "/code",
       title: "代码评论",
       component: ThreadList,
-      exact: true,
-    },
-    {
-      path: prefix + "/cicd",
-      title: "",
-      component: ProjectCiCd,
       exact: true,
     }
   ];
