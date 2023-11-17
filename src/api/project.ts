@@ -47,6 +47,7 @@ export type Setting = {
   hide_watch_task: boolean;
   hide_watch_bug: boolean;
   // hide_watch_channel: boolean;
+  k8s_proxy_addr: string;
 };
 
 export type CreateResponse = {
