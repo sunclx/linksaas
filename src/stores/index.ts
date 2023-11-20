@@ -13,6 +13,7 @@ import EntryStore from './entry';
 import BoardStore from './board';
 import GroupStore from './group';
 import EditorStore from './editor';
+import CloudStore from './cloud';
 
 export class RootStore {
   userStore: UserStore;
@@ -30,6 +31,7 @@ export class RootStore {
   boardStore: BoardStore;
   groupStore: GroupStore;
   editorStore: EditorStore;
+  cloudStore: CloudStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -47,6 +49,7 @@ export class RootStore {
     this.boardStore = new BoardStore(this);
     this.groupStore = new GroupStore();
     this.editorStore = new EditorStore();
+    this.cloudStore = new CloudStore(this);
   }
 }
 
@@ -67,6 +70,7 @@ const _store = {
   boardStore: rootStore.boardStore,
   groupStore: rootStore.groupStore,
   editorStore: rootStore.editorStore,
+  cloudStore: rootStore.cloudStore,
 };
 
 export type StoreType = typeof _store;

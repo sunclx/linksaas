@@ -5,14 +5,21 @@ export const RESOURCE_TYPE_NAMESPACE: RESOURCE_TYPE = 0;
 export const RESOURCE_TYPE_POD: RESOURCE_TYPE = 1;
 export const RESOURCE_TYPE_DEPLOYMENT: RESOURCE_TYPE = 2;
 export const RESOURCE_TYPE_STATEFULSET: RESOURCE_TYPE = 3;
-export const RESOURCE_TYPE_SERVICE: RESOURCE_TYPE = 4;
-export const RESOURCE_TYPE_CONFIG_MAP: RESOURCE_TYPE = 5;
-export const RESOURCE_TYPE_STORAGE_CLASS: RESOURCE_TYPE = 6;
+
+export type ResourceUserPerm = {
+    user_id: string;
+    update_scale: boolean;
+    update_image: boolean;
+    logs: boolean;
+    exec: boolean;
+};
 
 export type ResourcePerm = {
+    resource_type: RESOURCE_TYPE;
     name: string;
-    update_user_list: string[];
+    user_perm_list: ResourceUserPerm[];
 };
+
 
 export type GetResourceRequest = {
     token: string;
@@ -32,7 +39,6 @@ export type ListResourceRequest = {
     namespace: string;
     resource_type: RESOURCE_TYPE;
     label_selector: string;
-    field_selector: string;
 };
 
 export type ListResourceResponse = {
@@ -41,60 +47,32 @@ export type ListResourceResponse = {
     payload: string;
 };
 
-
-export type WatchResourceRequest = {
+export type UpdateImageRequest = {
     token: string;
     namespace: string;
     resource_type: RESOURCE_TYPE;
-    label_selector: string;
-    field_selector: string;
-    resource_version: string;
+    resource_name: string;
+    container_name: string;
+    image: string;
 };
 
-export type WatchResourceResponse = {
+export type UpdateImageResponse = {
     code: number;
     err_msg: string;
 };
 
-
-export type CreateResourceRequest = {
+export type UpdateScaleRequest = {
     token: string;
     namespace: string;
     resource_type: RESOURCE_TYPE;
-    payload: string;
+    resource_name: string;
+    scale: number;
 };
 
-export type CreateResourceResponse = {
+export type UpdateScaleResponse = {
     code: number;
     err_msg: string;
 };
-
-
-export type UpdateResourceRequest = {
-    token: string;
-    namespace: string;
-    resource_type: RESOURCE_TYPE;
-    payload: string;
-};
-
-export type UpdateResourceResponse = {
-    code: number;
-    err_msg: string;
-};
-
-
-export type RemoveResourceRequest = {
-    token: string;
-    namespace: string;
-    resource_type: RESOURCE_TYPE;
-    name: string;
-};
-
-export type RemoveResourceResponse = {
-    code: number;
-    err_msg: string;
-};
-
 
 export type ListResourcePermRequest = {
     token: string;
@@ -112,8 +90,6 @@ export type ListResourcePermResponse = {
 export type SetResourcePermRequest = {
     token: string;
     namespace: string;
-    resource_type: RESOURCE_TYPE;
-    name: string;
     perm: ResourcePerm;
 };
 
@@ -143,7 +119,6 @@ export type ReadLogResponse = {
     err_msg: string;
     data: string;
 };
-
 
 export type OpenTermRequest = {
     token: string;
@@ -193,7 +168,7 @@ export type SetTermSizeResponse = {
 };
 
 //获取单个资源
-export async function get_resource(servAddr: string,request: GetResourceRequest): Promise<GetResourceResponse> {
+export async function get_resource(servAddr: string, request: GetResourceRequest): Promise<GetResourceResponse> {
     const cmd = 'plugin:k8s_proxy_api|get_resource';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -204,7 +179,7 @@ export async function get_resource(servAddr: string,request: GetResourceRequest)
 }
 
 //列出资源
-export async function list_resource(servAddr: string,request: ListResourceRequest): Promise<ListResourceResponse> {
+export async function list_resource(servAddr: string, request: ListResourceRequest): Promise<ListResourceResponse> {
     const cmd = 'plugin:k8s_proxy_api|list_resource';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -214,52 +189,30 @@ export async function list_resource(servAddr: string,request: ListResourceReques
     });
 }
 
-//关注资源
-export async function watch_resource(servAddr: string,request: WatchResourceRequest): Promise<WatchResourceResponse> {
-    const cmd = 'plugin:k8s_proxy_api|watch_resource';
+//更新image
+export async function update_image(servAddr: string, request: UpdateImageRequest): Promise<UpdateImageResponse> {
+    const cmd = 'plugin:k8s_proxy_api|update_image';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
-    return invoke<WatchResourceResponse>(cmd, {
+    return invoke<UpdateImageResponse>(cmd, {
         servAddr,
         request,
     });
 }
 
-//创建资源
-export async function create_resource(servAddr: string,request: CreateResourceRequest): Promise<CreateResourceResponse> {
-    const cmd = 'plugin:k8s_proxy_api|create_resource';
+//更新scale
+export async function update_scale(servAddr: string, request: UpdateScaleRequest): Promise<UpdateScaleResponse> {
+    const cmd = 'plugin:k8s_proxy_api|update_scale';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
-    return invoke<CreateResourceResponse>(cmd, {
-        servAddr,
-        request,
-    });
-}
-
-//更新资源
-export async function update_resource(servAddr: string,request: UpdateResourceRequest): Promise<UpdateResourceResponse> {
-    const cmd = 'plugin:k8s_proxy_api|update_resource';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-    return invoke<UpdateResourceResponse>(cmd, {
-        servAddr,
-        request,
-    });
-}
-
-//删除资源
-export async function remove_resource(servAddr: string,request: RemoveResourceRequest): Promise<RemoveResourceResponse> {
-    const cmd = 'plugin:k8s_proxy_api|remove_resource';
-    console.log(`%c${cmd}`, 'color:#0f0;', request);
-
-    return invoke<RemoveResourceResponse>(cmd, {
+    return invoke<UpdateScaleResponse>(cmd, {
         servAddr,
         request,
     });
 }
 
 //列出资源权限
-export async function list_resource_perm(servAddr: string,request: ListResourcePermRequest): Promise<ListResourcePermResponse> {
+export async function list_resource_perm(servAddr: string, request: ListResourcePermRequest): Promise<ListResourcePermResponse> {
     const cmd = 'plugin:k8s_proxy_api|list_resource_perm';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -270,7 +223,7 @@ export async function list_resource_perm(servAddr: string,request: ListResourceP
 }
 
 //设置资源权限
-export async function set_resource_perm(servAddr: string,request: SetResourcePermRequest): Promise<SetResourcePermResponse> {
+export async function set_resource_perm(servAddr: string, request: SetResourcePermRequest): Promise<SetResourcePermResponse> {
     const cmd = 'plugin:k8s_proxy_api|set_resource_perm';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -281,7 +234,7 @@ export async function set_resource_perm(servAddr: string,request: SetResourcePer
 }
 
 //开始查看日志
-export async function open_log(servAddr: string,request: OpenLogRequest): Promise<OpenLogResponse> {
+export async function open_log(servAddr: string, request: OpenLogRequest): Promise<OpenLogResponse> {
     const cmd = 'plugin:k8s_proxy_api|open_log';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -292,7 +245,7 @@ export async function open_log(servAddr: string,request: OpenLogRequest): Promis
 }
 
 //查看日志
-export async function read_log(servAddr: string,request: ReadLogRequest): Promise<ReadLogResponse> {
+export async function read_log(servAddr: string, request: ReadLogRequest): Promise<ReadLogResponse> {
     const cmd = 'plugin:k8s_proxy_api|read_log';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -303,7 +256,7 @@ export async function read_log(servAddr: string,request: ReadLogRequest): Promis
 }
 
 //打开终端
-export async function open_term(servAddr: string,request: OpenTermRequest): Promise<OpenTermResponse> {
+export async function open_term(servAddr: string, request: OpenTermRequest): Promise<OpenTermResponse> {
     const cmd = 'plugin:k8s_proxy_api|open_term';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -314,7 +267,7 @@ export async function open_term(servAddr: string,request: OpenTermRequest): Prom
 }
 
 //写入终端
-export async function write_term(servAddr: string,request: WriteTermRequest): Promise<WriteTermResponse> {
+export async function write_term(servAddr: string, request: WriteTermRequest): Promise<WriteTermResponse> {
     const cmd = 'plugin:k8s_proxy_api|write_term';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -325,7 +278,7 @@ export async function write_term(servAddr: string,request: WriteTermRequest): Pr
 }
 
 //读取终端
-export async function read_term(servAddr: string,request: ReadTermRequest): Promise<ReadTermResponse> {
+export async function read_term(servAddr: string, request: ReadTermRequest): Promise<ReadTermResponse> {
     const cmd = 'plugin:k8s_proxy_api|read_term';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
@@ -336,7 +289,7 @@ export async function read_term(servAddr: string,request: ReadTermRequest): Prom
 }
 
 //调整终端大小
-export async function set_term_size(servAddr: string,request: SetTermSizeRequest): Promise<SetTermSizeResponse> {
+export async function set_term_size(servAddr: string, request: SetTermSizeRequest): Promise<SetTermSizeResponse> {
     const cmd = 'plugin:k8s_proxy_api|set_term_size';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 

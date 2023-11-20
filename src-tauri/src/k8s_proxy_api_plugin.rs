@@ -1,12 +1,11 @@
-use std::time::Duration;
 use proto_gen_rust::k8s_proxy_api::k8s_proxy_api_client::K8sProxyApiClient;
 use proto_gen_rust::k8s_proxy_api::*;
+use std::time::Duration;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
-    AppHandle, Invoke, PageLoadPayload, Runtime, Window,Manager
+    AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 use tonic::transport::{Channel, Endpoint};
-
 
 async fn conn_runner(addr: String) -> Result<Channel, String> {
     let mut u = url::Url::parse(&addr);
@@ -76,16 +75,16 @@ async fn list_resource(
 }
 
 #[tauri::command]
-async fn watch_resource(
+async fn update_image(
     serv_addr: String,
-    request: WatchResourceRequest,
-) -> Result<WatchResourceResponse, String> {
+    request: UpdateImageRequest,
+) -> Result<UpdateImageResponse, String> {
     let chan = conn_runner(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
     let mut client = K8sProxyApiClient::new(chan.unwrap());
-    match client.watch_resource(request).await {
+    match client.update_image(request).await {
         Ok(response) => {
             return Ok(response.into_inner());
         }
@@ -94,52 +93,16 @@ async fn watch_resource(
 }
 
 #[tauri::command]
-async fn create_resource(
+async fn update_scale(
     serv_addr: String,
-    request: CreateResourceRequest,
-) -> Result<CreateResourceResponse, String> {
+    request: UpdateScaleRequest,
+) -> Result<UpdateScaleResponse, String> {
     let chan = conn_runner(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
     let mut client = K8sProxyApiClient::new(chan.unwrap());
-    match client.create_resource(request).await {
-        Ok(response) => {
-            return Ok(response.into_inner());
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn update_resource(
-    serv_addr: String,
-    request: UpdateResourceRequest,
-) -> Result<UpdateResourceResponse, String> {
-    let chan = conn_runner(serv_addr).await;
-    if chan.is_err() {
-        return Err(chan.err().unwrap());
-    }
-    let mut client = K8sProxyApiClient::new(chan.unwrap());
-    match client.update_resource(request).await {
-        Ok(response) => {
-            return Ok(response.into_inner());
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn remove_resource(
-    serv_addr: String,
-    request: RemoveResourceRequest,
-) -> Result<RemoveResourceResponse, String> {
-    let chan = conn_runner(serv_addr).await;
-    if chan.is_err() {
-        return Err(chan.err().unwrap());
-    }
-    let mut client = K8sProxyApiClient::new(chan.unwrap());
-    match client.remove_resource(request).await {
+    match client.update_scale(request).await {
         Ok(response) => {
             return Ok(response.into_inner());
         }
@@ -184,10 +147,7 @@ async fn set_resource_perm(
 }
 
 #[tauri::command]
-async fn open_log(
-    serv_addr: String,
-    request: OpenLogRequest,
-) -> Result<OpenLogResponse, String> {
+async fn open_log(serv_addr: String, request: OpenLogRequest) -> Result<OpenLogResponse, String> {
     let chan = conn_runner(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
@@ -202,10 +162,7 @@ async fn open_log(
 }
 
 #[tauri::command]
-async fn read_log(
-    serv_addr: String,
-    request: ReadLogRequest,
-) -> Result<ReadLogResponse, String> {
+async fn read_log(serv_addr: String, request: ReadLogRequest) -> Result<ReadLogResponse, String> {
     let chan = conn_runner(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
@@ -291,7 +248,6 @@ async fn set_term_size(
     }
 }
 
-
 pub struct K8sProxyApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -302,10 +258,8 @@ impl<R: Runtime> K8sProxyApiPlugin<R> {
             invoke_handler: Box::new(tauri::generate_handler![
                 get_resource,
                 list_resource,
-                watch_resource,
-                create_resource,
-                update_resource,
-                remove_resource,
+                update_image,
+                update_scale,
                 list_resource_perm,
                 set_resource_perm,
                 open_log,

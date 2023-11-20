@@ -41,6 +41,7 @@
     "@uiw/react-textarea-code-editor": "^2.0.3",
     "@tldraw/tldraw": "2.0.0-alpha.17",
     "@tldraw/assets": "2.0.0-alpha.17",
+    "kubernetes-models": "4.3.1",
     "ahooks": "^3.3.10",
     "antd": "^4.24.14",
     "classnames": "^2.3.1",
