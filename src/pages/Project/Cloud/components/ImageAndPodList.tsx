@@ -7,6 +7,7 @@ import { request } from "@/utils/request";
 import { gen_one_time_token } from "@/api/project_member";
 import { Button, Card, Form, Space } from "antd";
 import { EditText } from "@/components/EditCell/EditText";
+import LogModal from "./LogModal";
 
 
 export interface ImageAndPodListProps {
@@ -18,12 +19,18 @@ export interface ImageAndPodListProps {
     myPerm: ResourceUserPerm;
 }
 
+interface ShowLogInfo {
+    podName: string;
+    containerName: string;
+}
+
 const ImageAndPodList = (props: ImageAndPodListProps) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const cloudStore = useStores('cloudStore');
 
     const [podList, setPodList] = useState<IIoK8sApiCoreV1Pod[]>([]);
+    const [showLogInfo, setShowLogInfo] = useState<ShowLogInfo | null>(null);
 
     const loadPodList = async () => {
         const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
@@ -110,12 +117,15 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                             </Form.Item>
                             <Form.Item label="操作">
                                 <Space>
-                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.logs || (pod.status?.phase ?? "") != "Running"} onChange={e => {
+                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.logs || (pod.status?.phase ?? "") != "Running"} onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        setShowLogInfo({
+                                            podName: pod.metadata?.name ?? "",
+                                            containerName: container.name,
+                                        });
                                     }}>查看日志</Button>
-                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.exec || (pod.status?.phase ?? "") != "Running"} onChange={e => {
+                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.exec || (pod.status?.phase ?? "") != "Running"} onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                         //TODO
@@ -126,6 +136,12 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                     ))}
                 </Card>
             ))}
+
+            {showLogInfo !== null && (
+                <LogModal nameSpace={cloudStore.curNameSpace} resourceType={props.resourceType} resourceName={props.resourceName}
+                    podName={showLogInfo.podName} containerName={showLogInfo.containerName}
+                    onCancel={() => setShowLogInfo(null)} />
+            )}
         </div>
     );
 };

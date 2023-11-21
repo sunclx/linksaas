@@ -101,7 +101,10 @@ export type SetResourcePermResponse = {
 export type OpenLogRequest = {
     token: string;
     namespace: string;
+    resource_type: RESOURCE_TYPE;
+    resource_name: string;
     pod_name: string;
+    container_name: string;
 };
 
 export type OpenLogResponse = {
@@ -123,7 +126,10 @@ export type ReadLogResponse = {
 export type OpenTermRequest = {
     token: string;
     namespace: string;
+    resource_type: RESOURCE_TYPE;
+    resource_name: string;
     pod_name: string;
+    container_name: string;
     shell_cmd: string;
     term_width: number;
     term_height: number;
