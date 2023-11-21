@@ -1,25 +1,23 @@
 import { useStores } from "@/hooks";
 import { List } from "antd";
 import React, { useEffect } from "react";
-import DeploymentCard from "./components/DeploymentCard";
 import { observer } from 'mobx-react';
+import StatefulsetCard from "./components/StatefulsetCard";
 
-
-const DeploymentListPanel = () => {
+const StatefulsetListPanel = () => {
     const cloudStore = useStores('cloudStore');
 
     useEffect(() => {
-        cloudStore.loadDeploymentList().then(() => cloudStore.loadDeploymentPermList());
+        cloudStore.loadStatefulsetList().then(() => cloudStore.loadStatefulsetPermList());
     }, [cloudStore.curNameSpace]);
 
     return (
-        <List dataSource={cloudStore.deploymentList} renderItem={item => (
+        <List dataSource={cloudStore.statefulsetList} renderItem={item => (
             <List.Item key={item.metadata?.name ?? ""} style={{ border: "none" }}>
-                <DeploymentCard deployment={item} />
+                <StatefulsetCard statefulset={item} />
             </List.Item>
         )} />
     );
 };
 
-
-export default observer(DeploymentListPanel);
+export default observer(StatefulsetListPanel);

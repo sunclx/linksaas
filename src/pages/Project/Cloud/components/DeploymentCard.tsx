@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import type { IIoK8sApiAppsV1Deployment } from "kubernetes-models/apps/v1";
-import { RESOURCE_TYPE_DEPLOYMENT } from "@/api/k8s_proxy";
+import { RESOURCE_TYPE_DEPLOYMENT, update_scale } from "@/api/k8s_proxy";
 import { Button, Card, Descriptions, Popover, Space, } from "antd";
 import ResourcePermModal from "./ResourcePermModal";
 import { useStores } from "@/hooks";
-import { MoreOutlined } from "@ant-design/icons";
+import { MoreOutlined, ReloadOutlined } from "@ant-design/icons";
 import { observer } from 'mobx-react';
 import ImageAndPodList from "./ImageAndPodList";
 import { type ResourceUserPerm } from "@/api/k8s_proxy";
+import { EditNumber } from "@/components/EditCell/EditNumber";
+import { request } from "@/utils/request";
+import { gen_one_time_token } from "@/api/project_member";
 
 export interface DeploymentCardProps {
     deployment: IIoK8sApiAppsV1Deployment;
@@ -69,21 +72,56 @@ const DeploymentCard = (props: DeploymentCardProps) => {
             style={{ width: "100%", marginBottom: "10px" }}
             bodyStyle={{ padding: "0px 0px" }}
             bordered={false} extra={
-                <Popover trigger="click" placement="bottom" content={
-                    <Space direction="vertical" style={{ padding: "10px 10px" }}>
-                        <Button type="link" onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setShowPermModal(true);
-                        }}>{projectStore.isAdmin ? "修改权限" : "查看权限"}</Button>
-                    </Space>
-                }>
-                    <MoreOutlined />
-                </Popover>
-
+                <Space>
+                    <Button type="text" icon={<ReloadOutlined />} title="刷新" onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        cloudStore.loadResource(RESOURCE_TYPE_DEPLOYMENT, props.deployment.metadata?.name ?? "");
+                    }} />
+                    <Popover trigger="click" placement="bottom" content={
+                        <Space direction="vertical" style={{ padding: "10px 10px" }}>
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setShowPermModal(true);
+                            }}>{projectStore.isAdmin ? "修改权限" : "查看权限"}</Button>
+                        </Space>
+                    }>
+                        <MoreOutlined />
+                    </Popover>
+                </Space>
             }>
             <Descriptions column={1} bordered={true} labelStyle={{ width: "100px" }}>
-                <Descriptions.Item label="Pod数量">{props.deployment.status?.replicas ?? 0}/{props.deployment.spec?.replicas ?? 0}</Descriptions.Item>
+                <Descriptions.Item label="Pod数量" style={{ lineHeight: "28px" }}>
+                    <Space>
+                        {props.deployment.status?.replicas ?? 0}
+                        /
+                        <EditNumber editable={true} value={props.deployment.spec?.replicas ?? 0} showEditIcon fixedLen={0} min={0} max={99}
+                            onChange={async value => {
+                                try {
+                                    const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
+                                    const tokenRes = await request(gen_one_time_token({
+                                        session_id: userStore.sessionId,
+                                        project_id: projectStore.curProjectId,
+                                    }));
+                                    await request(update_scale(servAddr, {
+                                        token: tokenRes.token,
+                                        namespace: cloudStore.curNameSpace,
+                                        resource_type: RESOURCE_TYPE_DEPLOYMENT,
+                                        resource_name: props.deployment.metadata?.name ?? "",
+                                        scale: value,
+                                    }));
+                                    setTimeout(() => {
+                                        cloudStore.loadResource(RESOURCE_TYPE_DEPLOYMENT, props.deployment.metadata?.name ?? "");
+                                    }, 200);
+                                    return true;
+                                } catch (e) {
+                                    console.log(e);
+                                    return false;
+                                }
+                            }} />
+                    </Space>
+                </Descriptions.Item>
                 {(props.deployment.metadata?.creationTimestamp ?? "") != "" && (
                     <Descriptions.Item label="创建时间">{props.deployment.metadata?.creationTimestamp}</Descriptions.Item>
                 )}
@@ -91,7 +129,7 @@ const DeploymentCard = (props: DeploymentCardProps) => {
                     <ImageAndPodList resourceType={RESOURCE_TYPE_DEPLOYMENT} resourceName={props.deployment.metadata?.name ?? ""}
                         containerList={props.deployment.spec?.template.spec?.containers ?? []}
                         labelSelector={props.deployment.spec?.selector.matchLabels ?? {}}
-                        myPerm={myPerm} />
+                        myPerm={myPerm} resourceVersion={props.deployment.metadata?.resourceVersion ?? ""} />
                 </Descriptions.Item>
             </Descriptions>
             {showPermModal == true && (

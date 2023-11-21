@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { type RESOURCE_TYPE, type ResourceUserPerm, list_resource, RESOURCE_TYPE_POD } from "@/api/k8s_proxy";
+import { type RESOURCE_TYPE, type ResourceUserPerm, list_resource, RESOURCE_TYPE_POD, update_image } from "@/api/k8s_proxy";
 import type { IIoK8sApiCoreV1Container, IIoK8sApiCoreV1PodList, IIoK8sApiCoreV1Pod } from "kubernetes-models/v1";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
@@ -14,6 +14,7 @@ export interface ImageAndPodListProps {
     resourceName: string;
     labelSelector: Record<string, string>;
     containerList: IIoK8sApiCoreV1Container[];
+    resourceVersion: string;
     myPerm: ResourceUserPerm;
 }
 
@@ -51,19 +52,46 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
 
     useEffect(() => {
         loadPodList();
-    }, [cloudStore.curNameSpace, props.resourceType, props.resourceName, props.labelSelector]);
+    }, [cloudStore.curNameSpace, props.resourceType, props.resourceName, props.labelSelector, props.resourceVersion]);
 
     return (
         <div>
             {props.containerList.map(container => (
                 <Card key={container.name} title={
-                    <Space style={{ lineHeight: "32px"}}>
+                    <Space style={{ lineHeight: "32px" }}>
                         {container.name}
-                        <EditText editable={props.myPerm.update_image} content={container.image ?? ""} showEditIcon
-                            onChange={async value => {
-                                //TODO
-                                return false;
-                            }} />
+                        <div style={{ width: "360px" }}>
+                            <EditText editable={props.myPerm.update_image} content={container.image ?? ""} showEditIcon
+                                onChange={async value => {
+                                    if (value.trim() == "") {
+                                        return false;
+                                    }
+                                    try {
+                                        const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
+                                        const tokenRes = await request(gen_one_time_token({
+                                            session_id: userStore.sessionId,
+                                            project_id: projectStore.curProjectId,
+                                        }));
+
+                                        await request(update_image(servAddr, {
+                                            token: tokenRes.token,
+                                            namespace: cloudStore.curNameSpace,
+                                            resource_type: props.resourceType,
+                                            resource_name: props.resourceName,
+                                            container_name: container.name,
+                                            image: value,
+                                        }));
+                                        setTimeout(() => {
+                                            cloudStore.loadResource(props.resourceType, props.resourceName);
+                                        }, 500);
+
+                                        return true;
+                                    } catch (e) {
+                                        console.log(e);
+                                        return false;
+                                    }
+                                }} />
+                        </div>
                     </Space>
                 } bordered={false}>
                     {podList.filter(pod => pod.spec?.containers[0].name == container.name).map(pod => (
@@ -82,12 +110,12 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                             </Form.Item>
                             <Form.Item label="操作">
                                 <Space>
-                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.logs} onChange={e => {
+                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.logs || (pod.status?.phase ?? "") != "Running"} onChange={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                         //TODO
                                     }}>查看日志</Button>
-                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.exec} onChange={e => {
+                                    <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.exec || (pod.status?.phase ?? "") != "Running"} onChange={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                         //TODO

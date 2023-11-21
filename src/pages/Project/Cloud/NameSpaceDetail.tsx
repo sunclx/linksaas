@@ -7,6 +7,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { writeText } from '@tauri-apps/api/clipboard';
 import DeploymentListPanel from "./DeploymentListPanel";
+import StatefulsetListPanel from "./StatefulsetListPanel";
 
 const NameSpaceDetail = () => {
     const projectStore = useStores('projectStore');
@@ -47,6 +48,7 @@ const NameSpaceDetail = () => {
             {cloudStore.curNameSpace != "" && (
                 <div style={{ height: "calc(100vh - 166px)", overflowY: "scroll" }}>
                     <DeploymentListPanel/>
+                    <StatefulsetListPanel />
                 </div>
             )}
             {showAddNameSpaceModal == true && (

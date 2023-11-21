@@ -18,8 +18,6 @@ const ResourcePermModal = (props: ResourcePermModalProps) => {
     const memberStore = useStores('memberStore');
     const cloudStore = useStores('cloudStore');
 
-    console.log("111111111",props.perm);
-
     const [userPermList, setUserPermList] = useState(props.perm.user_perm_list);
     const [hasChange, setHasChange] = useState(false);
 
