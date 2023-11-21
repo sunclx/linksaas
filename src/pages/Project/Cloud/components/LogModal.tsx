@@ -7,8 +7,6 @@ import { useStores } from "@/hooks";
 import { gen_one_time_token } from "@/api/project_member";
 
 const readIdSet = new Set();
-console.log("abcdefghijklmnopq");
-
 
 export interface LogModalProps {
     nameSpace: string;
@@ -58,7 +56,7 @@ const LogModal = (props: LogModalProps) => {
     }, []);
 
     return (
-        <Modal open title="日志" width="calc(100vw - 200px)"
+        <Modal open title={`日志(${props.podName}/${props.containerName})`} width="calc(100vw - 200px)"
             bodyStyle={{ height: "calc(100vh - 300px)", overflowY: "scroll" }}
             footer={null} onCancel={e => {
                 e.stopPropagation();

@@ -8,6 +8,7 @@ import { gen_one_time_token } from "@/api/project_member";
 import { Button, Card, Form, Space } from "antd";
 import { EditText } from "@/components/EditCell/EditText";
 import LogModal from "./LogModal";
+import TermModal from "./TermModal";
 
 
 export interface ImageAndPodListProps {
@@ -19,7 +20,7 @@ export interface ImageAndPodListProps {
     myPerm: ResourceUserPerm;
 }
 
-interface ShowLogInfo {
+interface ShowModalInfo {
     podName: string;
     containerName: string;
 }
@@ -30,7 +31,8 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
     const cloudStore = useStores('cloudStore');
 
     const [podList, setPodList] = useState<IIoK8sApiCoreV1Pod[]>([]);
-    const [showLogInfo, setShowLogInfo] = useState<ShowLogInfo | null>(null);
+    const [showLogInfo, setShowLogInfo] = useState<ShowModalInfo | null>(null);
+    const [showTermInfo, setShowTermInfo] = useState<ShowModalInfo | null>(null);
 
     const loadPodList = async () => {
         const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
@@ -128,7 +130,10 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                                     <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.exec || (pod.status?.phase ?? "") != "Running"} onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        //TODO
+                                        setShowTermInfo({
+                                            podName: pod.metadata?.name ?? "",
+                                            containerName: container.name,
+                                        });
                                     }}>打开终端</Button>
                                 </Space>
                             </Form.Item>
@@ -141,6 +146,11 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                 <LogModal nameSpace={cloudStore.curNameSpace} resourceType={props.resourceType} resourceName={props.resourceName}
                     podName={showLogInfo.podName} containerName={showLogInfo.containerName}
                     onCancel={() => setShowLogInfo(null)} />
+            )}
+            {showTermInfo !== null && (
+                <TermModal nameSpace={cloudStore.curNameSpace} resourceType={props.resourceType} resourceName={props.resourceName}
+                    podName={showTermInfo.podName} containerName={showTermInfo.containerName}
+                    onCancel={() => setShowTermInfo(null)} />
             )}
         </div>
     );
