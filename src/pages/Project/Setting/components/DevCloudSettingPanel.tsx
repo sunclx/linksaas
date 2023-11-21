@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Button, Card, Form, Input, Space, message } from "antd";
+import { Button, Card, Form, Input, Popover, Space, message } from "antd";
 import type { PanelProps } from "./common";
 import { useStores } from "@/hooks";
 import { update_setting } from "@/api/project";
 import { request } from "@/utils/request";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import { get_conn_server_addr } from "@/api/main";
+import { writeText } from '@tauri-apps/api/clipboard';
 
 const DevCloudSettingPanel = (props: PanelProps) => {
     const userStore = useStores('userStore');
@@ -12,6 +16,7 @@ const DevCloudSettingPanel = (props: PanelProps) => {
 
     const [k8sProxyAddr, setK8sProxyAddr] = useState(projectStore.curProject?.setting.k8s_proxy_addr ?? "");
     const [hasChange, setHasChange] = useState(false);
+    const [apiAddr, setApiAddr] = useState("");
 
     const resetConfig = () => {
         setK8sProxyAddr(projectStore.curProject?.setting.k8s_proxy_addr ?? "");
@@ -39,6 +44,16 @@ const DevCloudSettingPanel = (props: PanelProps) => {
         props.onChange(hasChange);
     }, [hasChange]);
 
+    useEffect(() => {
+        get_conn_server_addr().then(value => {
+            if (value.includes(":")) {
+                setApiAddr(value);
+            } else {
+                setApiAddr(value + ":5000")
+            }
+        });
+    }, []);
+
     return (
         <Card bordered={false} title={props.title} bodyStyle={{ height: "calc(100vh - 400px)", overflowY: "scroll" }}
             extra={
@@ -55,23 +70,44 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                     }}>保存</Button>
                 </Space>
             }>
-            <Form labelCol={{ span: 4 }}>
+            <Form layout="inline">
                 <Form.Item label="k8s代理地址">
-                    <Input value={k8sProxyAddr} onChange={e=>{
+                    <Input value={k8sProxyAddr} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
                         setHasChange(true);
                         setK8sProxyAddr(e.target.value.trim());
-                    }}/>
+                    }} style={{ width: "400px" }} />
                 </Form.Item>
                 <Form.Item>
-                    <p>需要安装配置k8s代理服务。代理服务程序我们开放了代码,你可以查看<a target="_blank" rel="noreferrer" href="https://jihulab.com/linksaas/k8s_api_proxy">相关代码</a>。</p>
-                    <Card bordered={false} title="下载k8s代理程序" headStyle={{ padding: "0px 0px", fontSize: "16px", fontWeight: 600 }}>
-                        TODO
-                    </Card>
-                    <Card bordered={false} title="配置k8s代理" headStyle={{ padding: "0px 0px", fontSize: "16px", fontWeight: 600 }}>
-                        TODO
-                    </Card>
+                    <Popover trigger="hover" placement="right" content={
+                        <div style={{ width: "300px", padding: "10px 10px" }}>
+                            <p>
+                                你需要运行k8s API代理，你可以从<a rel="noreferrer" target="_blank" href="https://jihulab.com/linksaas/k8s_api_proxy">这里</a>获取源代码。
+                            </p>
+                            <Card title="相关配置" bordered={false} style={{ width: "100%" }} extra={
+                                <Button type="link" onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    writeText(`kubeConfigFile: your_k8s_config.yaml\nlistenAddr: 0.0.0.0:6001\nlinkSaasAddr: ${apiAddr}`);
+                                    message.info("复制成功");
+                                }}>复制</Button>
+                            }>
+                                <CodeEditor
+                                    value={`kubeConfigFile: your_k8s_config.yaml\nlistenAddr: 0.0.0.0:6001\nlinkSaasAddr: ${apiAddr}`}
+                                    language="yaml"
+                                    readOnly
+                                    style={{
+                                        fontSize: 14,
+                                        backgroundColor: '#f5f5f5',
+                                        height: 100,
+                                    }}
+                                />
+                            </Card>
+                        </div>
+                    }>
+                        <QuestionCircleOutlined />
+                    </Popover>
                 </Form.Item>
             </Form>
         </Card>
