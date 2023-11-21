@@ -24,7 +24,7 @@ const ReadDoc: React.FC = () => {
             keywordCallback={(kwList) => setMatchKeywordList(kwList)}
             tocCallback={(result) => editorStore.tocList = result} />}
         </div>
-        <DocTocPanel />
+        {editorStore.tocList.length > 0 && <DocTocPanel />}
       </div>
     </Card>
   );

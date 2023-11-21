@@ -28,6 +28,7 @@ const PostEditInner = observer((props: PostEditInnerProps) => {
     const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const groupStore = useStores('groupStore');
+    const editStore = useStores('editorStore');
 
     const [title, setTitle] = useState(groupStore.curPostKey?.title ?? "");
     const [tagList, setTagList] = useState<string[]>(groupStore.curPostKey?.tag_list ?? []);
@@ -165,7 +166,7 @@ const PostEditInner = observer((props: PostEditInnerProps) => {
                         </Form.Item>
                     </Form>
                 </div>
-                <PostTocPanel />
+                {editStore.tocList.length > 0 && <PostTocPanel />}
             </div>
             {appStore.checkLeave && <ActionModal
                 open={appStore.checkLeave}
