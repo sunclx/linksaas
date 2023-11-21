@@ -9,6 +9,12 @@ export type InviteInfo = {
   expire_time: number;
 }
 
+export type OneTimeTokenInfo = {
+  project_id: string;
+  member_user_id: string;
+  admin: boolean;
+};
+
 
 type GenInviteResponse = {
   code: number;
@@ -159,6 +165,17 @@ export type UpdateNeedHelpDescRequest = {
 export type UpdateNeedHelpDescResponse = {
   code: number;
   err_msg: string;
+};
+
+export type GenOneTimeTokenRequest = {
+  session_id: string;
+  project_id: string;
+};
+
+export type  GenOneTimeTokenResponse = {
+  code: number;
+  err_msg: string;
+  token: string;
 };
 
 
@@ -399,6 +416,15 @@ export async function update_need_help_desc(request: UpdateNeedHelpDescRequest):
   const cmd = 'plugin:project_member_api|update_need_help_desc';
   console.log(`%c${cmd}`, 'color:#0f0;', request);
   return invoke<UpdateNeedHelpDescResponse>(cmd, {
+    request,
+  });
+}
+
+//生成一次性令牌 
+export async function gen_one_time_token(request: GenOneTimeTokenRequest): Promise<GenOneTimeTokenResponse> {
+  const cmd = 'plugin:project_member_api|gen_one_time_token';
+  console.log(`%c${cmd}`, 'color:#0f0;', request);
+  return invoke<GenOneTimeTokenResponse>(cmd, {
     request,
   });
 }

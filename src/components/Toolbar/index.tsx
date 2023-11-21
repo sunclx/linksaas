@@ -130,12 +130,17 @@ const Toolbar: React.FC = observer(() => {
         badge={projectStore.curProject?.project_status.new_event_count || 0}
       />
 
-      {projectStore.curProject?.setting.disable_ext_event != true && (
+      {projectStore.curProject?.setting.disable_ext_event != true && projectStore.curProject?.user_project_perm?.can_admin && (
         <>
-          {projectStore.curProject?.user_project_perm?.can_admin && <Divider />}
-          {projectStore.curProject?.user_project_perm?.can_admin && (
-            <Item id="access" pathname={pathname} title="第三方接入" />
-          )}
+          <Divider />
+          <Item id="access" pathname={pathname} title="第三方接入" />
+        </>
+      )}
+
+      {projectStore.curProject?.setting.k8s_proxy_addr != "" && (
+        <>
+          <Divider />
+          <Item id="cloud" pathname={pathname} title="私有云" />
         </>
       )}
     </div>
