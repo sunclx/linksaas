@@ -63,7 +63,8 @@ export default ({ command, mode }: ConfigEnv) => {
           dataAnno: "data_anno.html",
           apiGrpc: "api_grpc.html",
           apiSwagger: "api_swagger.html",
-          apiCustom: "api_custom.html"
+          apiCustom: "api_custom.html",
+          k8sWin: "k8swin.html"
         },
       },
       terserOptions: {

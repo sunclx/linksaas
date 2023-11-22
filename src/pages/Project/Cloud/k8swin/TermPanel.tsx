@@ -1,30 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { type RESOURCE_TYPE, open_term, read_term, write_term, set_term_size } from "@/api/k8s_proxy";
-import { Modal } from "antd";
-import { uniqId } from "@/utils/utils";
 import { request } from "@/utils/request";
-import { useStores } from "@/hooks";
 import { gen_one_time_token } from "@/api/project_member";
 import { Terminal } from 'xterm';
 import "xterm/css/xterm.css";
 import { useSize } from 'ahooks';
 import { FitAddon } from 'xterm-addon-fit';
+import { get_session } from "@/api/user";
 
-
-const readIdSet = new Set();
-
-export interface TermModalProps {
+export interface TermPanelProps {
+    servAddr: string;
+    projectId: string;
     nameSpace: string;
     resourceType: RESOURCE_TYPE;
     resourceName: string;
     podName: string;
     containerName: string;
-    onCancel: () => void;
 }
 
-const TermModal = (props: TermModalProps) => {
-    const userStore = useStores('userStore');
-    const projectStore = useStores('projectStore');
+const TermPanel = (props: TermPanelProps) => {
 
     const termRef = useRef<HTMLDivElement | null>(null);
     const termSize = useSize(termRef);
@@ -36,16 +30,16 @@ const TermModal = (props: TermModalProps) => {
     const [termId, setTermId] = useState("");
 
 
-    const readTermResponse = async (readId: string) => {
-        const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
+    const readTermResponse = async () => {
+        const sessionId = await get_session();
         const tokenRes = await request(gen_one_time_token({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
+            session_id: sessionId,
+            project_id: props.projectId,
         }));
         if (shellTerm == null) {
             return;
         }
-        const openRes = await request(open_term(servAddr, {
+        const openRes = await request(open_term(props.servAddr, {
             token: tokenRes.token,
             namespace: props.nameSpace,
             resource_type: props.resourceType,
@@ -57,8 +51,8 @@ const TermModal = (props: TermModalProps) => {
             term_height: shellTerm.rows,
         }));
         setTermId(openRes.term_id);
-        while (readIdSet.has(readId)) {
-            const res = await request(read_term(servAddr, {
+        while (true) {
+            const res = await request(read_term(props.servAddr, {
                 term_id: openRes.term_id,
             }));
             shellTerm.write(Uint8Array.from(res.data));
@@ -78,8 +72,7 @@ const TermModal = (props: TermModalProps) => {
         for (let i = 0; i < data.length; i++) {
             rawData.push(data.charCodeAt(i));
         }
-        const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
-        await request(write_term(servAddr, {
+        await request(write_term(props.servAddr, {
             term_id: destTermId,
             data: rawData,
         }));
@@ -107,10 +100,8 @@ const TermModal = (props: TermModalProps) => {
             return;
         }
         fitAddon.fit();
-        console.log("xxxxxx", termId);
         if (termId != "") {
-            const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
-            await request(set_term_size(servAddr, {
+            await request(set_term_size(props.servAddr, {
                 term_id: termId,
                 term_width: shellTerm.cols,
                 term_height: shellTerm.rows,
@@ -139,23 +130,12 @@ const TermModal = (props: TermModalProps) => {
         if (shellTerm == null) {
             return;
         }
-        const readId = uniqId();
-        readIdSet.add(readId);
-        readTermResponse(readId);
-        return () => {
-            readIdSet.delete(readId)
-        };
+        readTermResponse();
     }, [shellTerm]);
 
     return (
-        <Modal open title={`终端(${props.podName}/${props.containerName})`} width="calc(100vw - 200px)"
-            footer={null} onCancel={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onCancel();
-            }}>
-            <div style={{ height: "calc(100vh - 300px)" }} ref={termRef} />
-        </Modal>
+
+        <div style={{ height: "calc(100vh - 2px)" }} ref={termRef} />
     );
 }
-export default TermModal;
+export default TermPanel;
