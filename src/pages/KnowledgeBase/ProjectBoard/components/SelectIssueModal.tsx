@@ -416,7 +416,7 @@ const SelectIssueModal: FC<SelectIssueModalProps> = (props) => {
                 )}
             </div>
             <Table
-                style={{ marginTop: '8px', maxHeight: "calc(100vh - 300px)", overflowY: "scroll" }}
+                style={{ marginTop: '8px', maxHeight: "calc(100vh - 400px)", overflowY: "scroll" }}
                 rowKey={'issue_id'}
                 columns={columns}
                 scroll={{ x: 950 }}

@@ -238,7 +238,7 @@ const BulletinListPanel = () => {
             limit: PAGE_SIZE,
         }));
         setTotalCount(res.total_count);
-        setBulletinList(res.key_list);
+        setBulletinList(res.key_list.sort((a, b) => b.create_time - a.create_time));
     };
 
     const removeBulletin = async () => {

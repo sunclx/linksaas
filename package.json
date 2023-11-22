@@ -1,6 +1,6 @@
 {
   "name": "desktop",
-  "version": "0.5.17",
+  "version": "0.6.1",
   "repository": "https://jihulab.com/linksaas/desktop.git",
   "license": "GPL-3.0",
   "author": "panleiming <panleiming@linksaas.pro>",
@@ -41,6 +41,7 @@
     "@uiw/react-textarea-code-editor": "^2.0.3",
     "@tldraw/tldraw": "2.0.0-alpha.17",
     "@tldraw/assets": "2.0.0-alpha.17",
+    "kubernetes-models": "4.3.1",
     "ahooks": "^3.3.10",
     "antd": "^4.24.14",
     "classnames": "^2.3.1",
@@ -77,7 +78,8 @@
     "swiper": "^8.1.4",
     "vite-plugin-svgr": "^2.2.1",
     "yaml": "^2.3.1",
-    "xterm": "5.3.0"
+    "xterm": "5.3.0",
+    "xterm-addon-fit": "^0.7.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.16.7",

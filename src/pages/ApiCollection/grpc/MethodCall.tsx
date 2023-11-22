@@ -24,7 +24,7 @@ const MethodCall = (props: MethodCallProps) => {
         try {
             const obj = JSON.parse(result.stdout);
             if (obj.error == undefined) {
-                setReqData(result.stdout);
+                setReqData(JSON.stringify(obj, undefined, 2));
             }
         } catch (e) {
             console.log(e);
@@ -43,9 +43,9 @@ const MethodCall = (props: MethodCallProps) => {
                 return oldValue;
             }
             if (oldValue == "") {
-                return line;
+                return line.trim();
             }
-            return oldValue + "\r\n" + line;
+            return oldValue + "\r\n" + line.trim();
         }));
         const child = await cmd.spawn();
         await child.write(reqData + "\n");
@@ -111,10 +111,10 @@ const MethodCall = (props: MethodCallProps) => {
             <Card style={{ flex: 1 }}
                 title={<h1 style={{ fontSize: "16px", fontWeight: 700 }}>响应</h1>}
                 extra={
-                    <Button type="primary" disabled={respData == ""} onClick={e=>{
+                    <Button type="primary" disabled={respData == ""} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        writeText(respData).then(()=>{
+                        writeText(respData).then(() => {
                             message.info("已复制到剪切板");
                         });
                     }}>复制响应</Button>

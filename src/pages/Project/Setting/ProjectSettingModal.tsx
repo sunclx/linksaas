@@ -9,6 +9,7 @@ import TipListSettingPanel from "./components/TipListSettingPanel";
 import TagListSettingPanel from "./components/TagListSettingPanel";
 import EventSettingPanel from "./components/EventSettingPanel";
 import DescSettingPanel from "./components/DescSettingPanel";
+import DevCloudSettingPanel from "./components/DevCloudSettingPanel";
 
 
 const ProjectSettingModal = () => {
@@ -30,6 +31,8 @@ const ProjectSettingModal = () => {
             setActiveKey("event");
         } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_DESC) {
             setActiveKey("desc");
+        } else if (projectStore.showProjectSetting == PROJECT_SETTING_TAB.PROJECT_SETTING_DEV_CLOUD) {
+            setActiveKey("devcloud");
         }
     }, [projectStore.showProjectSetting]);
 
@@ -63,10 +66,15 @@ const ProjectSettingModal = () => {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_EVENT;
                     } else if (key == "desc") {
                         projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_DESC;
+                    } else if (key == "devcloud") {
+                        projectStore.showProjectSetting = PROJECT_SETTING_TAB.PROJECT_SETTING_DEV_CLOUD;
                     }
                 }}>
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
                     {activeKey == "layout" && <LayoutSettingPanel onChange={value => setDisableTabs(value)} title="界面布局" />}
+                </Tabs.TabPane>
+                <Tabs.TabPane key="devcloud" tab="私有云" disabled={disableTabs}>
+                    {activeKey == "devcloud" && <DevCloudSettingPanel onChange={value => setDisableTabs(value)} title="私有云" />}
                 </Tabs.TabPane>
                 <Tabs.TabPane key="alarm" tab="项目预警" disabled={disableTabs}>
                     {activeKey == "alarm" && <AlarmSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
@@ -82,7 +90,7 @@ const ProjectSettingModal = () => {
                     {activeKey == "tags" && <TagListSettingPanel onChange={value => setDisableTabs(value)} title="标签设置" />}
                 </Tabs.TabPane>
                 <Tabs.TabPane key="desc" tab="项目简介" disabled={disableTabs}>
-                    {activeKey == "desc" && <DescSettingPanel onChange={value => setDisableTabs(value)} title="项目简介" /> }
+                    {activeKey == "desc" && <DescSettingPanel onChange={value => setDisableTabs(value)} title="项目简介" />}
                 </Tabs.TabPane>
             </Tabs>
         </Modal>

@@ -82,7 +82,6 @@ import DataAnnoProjectList from '@/pages/DataAnno/DataAnnoProjectList';
 import TemplateCateList from '@/pages/Admin/DockerTemplateAdmin/TemplateCateList';
 import TemplateList from '@/pages/Admin/DockerTemplateAdmin/TemplateList';
 import ApiCollectionList from '@/pages/ApiCollection/ApiCollectionList';
-import ThreadList from '@/pages/Project/Code/ThreadList';
 import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
 import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
@@ -97,6 +96,7 @@ import PostEdit from '@/pages/Group/PostEdit';
 import GroupMemberList from '@/pages/Group/MemberList';
 import GroupList from '@/pages/Admin/GroupAdmin/GroupList';
 import RecommendAuditList from '@/pages/Admin/GroupAdmin/RecommendAuditList';
+import NameSpaceDetail from '@/pages/Project/Cloud/NameSpaceDetail';
 
 export interface IRouteConfig {
   // 路由路径
@@ -213,11 +213,11 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
       exact: true,
     },
     {
-      path: prefix + "/code",
-      title: "代码评论",
-      component: ThreadList,
+      path: prefix + "/cloud",
+      title: "私有云列表",
+      component: NameSpaceDetail,
       exact: true,
-    }
+    },
   ];
   return routeList;
 };
