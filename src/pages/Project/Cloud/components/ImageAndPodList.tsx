@@ -7,8 +7,7 @@ import { request } from "@/utils/request";
 import { gen_one_time_token } from "@/api/project_member";
 import { Button, Card, Form, Space } from "antd";
 import { EditText } from "@/components/EditCell/EditText";
-import LogModal from "./LogModal";
-import TermModal from "./TermModal";
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 
 
 export interface ImageAndPodListProps {
@@ -20,19 +19,12 @@ export interface ImageAndPodListProps {
     myPerm: ResourceUserPerm;
 }
 
-interface ShowModalInfo {
-    podName: string;
-    containerName: string;
-}
-
 const ImageAndPodList = (props: ImageAndPodListProps) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const cloudStore = useStores('cloudStore');
 
     const [podList, setPodList] = useState<IIoK8sApiCoreV1Pod[]>([]);
-    const [showLogInfo, setShowLogInfo] = useState<ShowModalInfo | null>(null);
-    const [showTermInfo, setShowTermInfo] = useState<ShowModalInfo | null>(null);
 
     const loadPodList = async () => {
         const servAddr = projectStore.curProject?.setting.k8s_proxy_addr ?? "";
@@ -55,9 +47,28 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
         }));
         const pods = JSON.parse(res.payload) as IIoK8sApiCoreV1PodList;
         setPodList(pods.items);
-        console.log(pods.items);
     };
 
+    const openK8sWin = async (winType: string, podName: string, containerName: string) => {
+        const label = `k8swin:${winType}-${podName}-${containerName}`;
+        const view = WebviewWindow.getByLabel(label);
+        if (view != null) {
+            await view.close();
+        }
+        const pos = await appWindow.innerPosition();
+        new WebviewWindow(label, {
+            url: `k8swin.html?winType=${winType}&servAddr=${projectStore.curProject?.setting.k8s_proxy_addr ?? ""}&projectId=${projectStore.curProjectId}&nameSpace=${cloudStore.curNameSpace}&resourceType=${props.resourceType}&resourceName=${props.resourceName}&podName=${podName}&containerName=${containerName}`,
+            width: 800,
+            minWidth: 800,
+            height: 600,
+            minHeight: 600,
+            center: true,
+            title: `${winType == "log" ? "日志" : "终端"}(${podName}/${containerName})`,
+            resizable: true,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
+        });
+    }
 
     useEffect(() => {
         loadPodList();
@@ -122,18 +133,12 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                                     <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.logs || (pod.status?.phase ?? "") != "Running"} onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        setShowLogInfo({
-                                            podName: pod.metadata?.name ?? "",
-                                            containerName: container.name,
-                                        });
+                                        openK8sWin("log", pod.metadata?.name ?? "", container.name);
                                     }}>查看日志</Button>
                                     <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} disabled={!props.myPerm.exec || (pod.status?.phase ?? "") != "Running"} onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        setShowTermInfo({
-                                            podName: pod.metadata?.name ?? "",
-                                            containerName: container.name,
-                                        });
+                                        openK8sWin("term", pod.metadata?.name ?? "", container.name);
                                     }}>打开终端</Button>
                                 </Space>
                             </Form.Item>
@@ -141,17 +146,6 @@ const ImageAndPodList = (props: ImageAndPodListProps) => {
                     ))}
                 </Card>
             ))}
-
-            {showLogInfo !== null && (
-                <LogModal nameSpace={cloudStore.curNameSpace} resourceType={props.resourceType} resourceName={props.resourceName}
-                    podName={showLogInfo.podName} containerName={showLogInfo.containerName}
-                    onCancel={() => setShowLogInfo(null)} />
-            )}
-            {showTermInfo !== null && (
-                <TermModal nameSpace={cloudStore.curNameSpace} resourceType={props.resourceType} resourceName={props.resourceName}
-                    podName={showTermInfo.podName} containerName={showTermInfo.containerName}
-                    onCancel={() => setShowTermInfo(null)} />
-            )}
         </div>
     );
 };
