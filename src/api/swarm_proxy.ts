@@ -15,15 +15,24 @@ export type ServiceInfo = {
     desired_tasks: number;
 };
 
+export type PortInfo = {
+    name: string;
+    protocol: string;
+    target_port: number;
+    publish_port: number;
+    publish_mode: string;
+}
+
 export type TaskInfo = {
     task_id: string;
     name: string;
     label_list: Label[];
     service_id: string;
-    node_id: string;
+    node_name: string;
     status: string;
     container_id: string;
     image: string;
+    port_list: PortInfo[];
     create_time: number;
     update_time: number;
 };
@@ -66,7 +75,7 @@ export type ListServiceResponse = {
 
 export type ListTaskRequest = {
     token: string;
-    name_space: string;
+    service_id_list: string[];
 };
 
 export type ListTaskResponse = {

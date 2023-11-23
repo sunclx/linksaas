@@ -4,6 +4,8 @@ import { request } from '@/utils/request';
 import { gen_one_time_token } from '@/api/project_member';
 import type { RESOURCE_TYPE } from '@/api/k8s_proxy';
 import { RESOURCE_TYPE_DEPLOYMENT, RESOURCE_TYPE_NAMESPACE, RESOURCE_TYPE_STATEFULSET, list_resource, list_resource_perm, get_resource } from '@/api/k8s_proxy';
+import type { ServiceInfo as SwarmServiceInfo, TaskInfo as SwarmTaskInfo, NameSpaceUserPerm } from '@/api/swarm_proxy';
+import { list_name_space, list_service as list_swarm_service, list_task as list_swarm_task, get_name_space_perm } from '@/api/swarm_proxy';
 import type { NamespaceList } from "kubernetes-models/v1";
 import type { ResourcePerm } from "@/api/k8s_proxy";
 import type { DeploymentList, IIoK8sApiAppsV1Deployment, IIoK8sApiAppsV1StatefulSet, StatefulSetList } from "kubernetes-models/apps/v1";
@@ -14,8 +16,7 @@ export default class CloudStore {
         makeAutoObservable(this);
     }
     rootStore: RootStore;
-
-    //k8s相关
+    //公共属性
     private _nameSpaceList: string[] = [];
     private _curNameSpace = "";
 
@@ -33,7 +34,7 @@ export default class CloudStore {
         });
     }
 
-    async loadNameSpaceList() {
+    async loadK8sNameSpaceList() {
         runInAction(() => {
             this._nameSpaceList = [];
             this._curNameSpace = "";
@@ -61,6 +62,30 @@ export default class CloudStore {
         });
     }
 
+    async loadSwarmNameSpaceList() {
+        runInAction(() => {
+            this._nameSpaceList = [];
+            this._curNameSpace = "";
+        });
+        const servAddr = this.rootStore.projectStore.curProject?.setting.swarm_proxy_addr ?? "";
+        const tokenRes = await request(gen_one_time_token({
+            session_id: this.rootStore.userStore.sessionId,
+            project_id: this.rootStore.projectStore.curProjectId,
+        }));
+        const res = await request(list_name_space(servAddr, {
+            token: tokenRes.token,
+        }));
+        runInAction(() => {
+            if (res.name_space_list.includes(this._curNameSpace) == false) {
+                if (res.name_space_list.length != 0) {
+                    this._curNameSpace = res.name_space_list[0];
+                }
+            }
+            this._nameSpaceList = res.name_space_list;
+        });
+    }
+
+    //k8s相关
 
     private _deploymentList: IIoK8sApiAppsV1Deployment[] = [];
     private _deploymentPermList: ResourcePerm[] = [];
@@ -187,6 +212,15 @@ export default class CloudStore {
         if (this._curNameSpace == "") {
             return;
         }
+        if (resourceType == RESOURCE_TYPE_DEPLOYMENT) {
+            runInAction(() => {
+                this._deploymentList = [];
+            });
+        } else if (resourceType == RESOURCE_TYPE_STATEFULSET) {
+            runInAction(() => {
+                this._statefulsetList = [];
+            });
+        }
         const res = await request(get_resource(servAddr, {
             token: tokenRes.token,
             namespace: this._curNameSpace,
@@ -215,5 +249,112 @@ export default class CloudStore {
                 });
             }
         }
+    }
+
+    //swarm相关
+    private _swarmServiceList: SwarmServiceInfo[] = [];
+    private _swarmTaskList: SwarmTaskInfo[] = [];
+    private _swarmUserPermList: NameSpaceUserPerm[] = [];
+
+    get swarmServiceList(): SwarmServiceInfo[] {
+        return this._swarmServiceList;
+    }
+
+    get swarmTaskList(): SwarmTaskInfo[] {
+        return this._swarmTaskList;
+    }
+
+    get swarmUserPermList(): NameSpaceUserPerm[] {
+        return this._swarmUserPermList;
+    }
+
+    get swarmMyPerm(): NameSpaceUserPerm {
+        if (this.rootStore.projectStore.isAdmin) {
+            return {
+                user_id: this.rootStore.userStore.userInfo.userId,
+                update_scale: true,
+                update_image: true,
+                logs: true,
+                exec: true,
+            };
+        }
+        for (const perm of this._swarmUserPermList) {
+            if (perm.user_id == this.rootStore.userStore.userInfo.userId) {
+                return perm;
+            }
+        }
+        return {
+            user_id: this.rootStore.userStore.userInfo.userId,
+            update_scale: false,
+            update_image: false,
+            logs: false,
+            exec: false,
+        };
+    }
+
+    async loadSwarmService() {
+        const servAddr = this.rootStore.projectStore.curProject?.setting.swarm_proxy_addr ?? "";
+        const tokenRes = await request(gen_one_time_token({
+            session_id: this.rootStore.userStore.sessionId,
+            project_id: this.rootStore.projectStore.curProjectId,
+        }));
+        if (this._curNameSpace == "") {
+            return;
+        }
+        runInAction(() => {
+            this._swarmServiceList = [];
+        });
+        const res = await request(list_swarm_service(servAddr, {
+            token: tokenRes.token,
+            name_space: this._curNameSpace,
+        }));
+        runInAction(() => {
+            this._swarmServiceList = res.service_list;
+        });
+    }
+
+    async loadSwarmTask() {
+        const servAddr = this.rootStore.projectStore.curProject?.setting.swarm_proxy_addr ?? "";
+        const tokenRes = await request(gen_one_time_token({
+            session_id: this.rootStore.userStore.sessionId,
+            project_id: this.rootStore.projectStore.curProjectId,
+        }));
+        if (this._curNameSpace == "") {
+            return;
+        }
+        runInAction(() => {
+            this._swarmTaskList = [];
+        });
+        const res = await request(list_swarm_task(servAddr, {
+            token: tokenRes.token,
+            service_id_list: this._swarmServiceList.map(item => item.service_id),
+        }));
+        runInAction(() => {
+            this._swarmTaskList = res.task_list;
+        });
+    }
+
+    async loadSwarmUserPermList() {
+        const servAddr = this.rootStore.projectStore.curProject?.setting.swarm_proxy_addr ?? "";
+        const tokenRes = await request(gen_one_time_token({
+            session_id: this.rootStore.userStore.sessionId,
+            project_id: this.rootStore.projectStore.curProjectId,
+        }));
+        if (this._curNameSpace == "") {
+            return;
+        }
+        if (this._curNameSpace == "") {
+            return;
+        }
+        runInAction(() => {
+            this._swarmUserPermList = [];
+        });
+        const res = await request(get_name_space_perm(servAddr, {
+            token: tokenRes.token,
+            name_space: this._curNameSpace,
+        }));
+        runInAction(() => {
+            this._swarmUserPermList = res.perm.user_perm_list;
+        });
     }
 }
