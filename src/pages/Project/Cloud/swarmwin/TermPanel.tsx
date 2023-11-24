@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { type RESOURCE_TYPE, open_term, read_term, write_term, set_term_size } from "@/api/k8s_proxy";
+import { open_term, read_term, write_term, set_term_size } from "@/api/swarm_proxy";
 import { request } from "@/utils/request";
 import { gen_one_time_token } from "@/api/project_member";
 import { Terminal } from 'xterm';
@@ -12,14 +12,10 @@ export interface TermPanelProps {
     servAddr: string;
     projectId: string;
     nameSpace: string;
-    resourceType: RESOURCE_TYPE;
-    resourceName: string;
-    podName: string;
-    containerName: string;
+    containerId: string;
 }
 
 const TermPanel = (props: TermPanelProps) => {
-
     const termRef = useRef<HTMLDivElement | null>(null);
     const termSize = useSize(termRef);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,7 +26,6 @@ const TermPanel = (props: TermPanelProps) => {
     const [termId, setTermId] = useState("");
 
 
-
     const initTermId = async (term: Terminal) => {
         const sessionId = await get_session();
         const tokenRes = await request(gen_one_time_token({
@@ -39,11 +34,8 @@ const TermPanel = (props: TermPanelProps) => {
         }));
         const openRes = await request(open_term(props.servAddr, {
             token: tokenRes.token,
-            namespace: props.nameSpace,
-            resource_type: props.resourceType,
-            resource_name: props.resourceName,
-            pod_name: props.podName,
-            container_name: props.containerName,
+            name_space: props.nameSpace,
+            container_id: props.containerId,
             shell_cmd: "/bin/sh",
             term_width: term.cols,
             term_height: term.rows,
@@ -121,6 +113,7 @@ const TermPanel = (props: TermPanelProps) => {
     useEffect(() => {
         adjustTerm();
     }, [termSize, shellTerm]);
+
 
     return (
 
