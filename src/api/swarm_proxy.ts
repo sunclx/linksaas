@@ -9,6 +9,7 @@ export type ServiceInfo = {
     service_id: string;
     name: string;
     label_list: Label[];
+    image: string;
     create_time: number;
     update_time: number;
     running_tasks: number;
@@ -31,7 +32,6 @@ export type TaskInfo = {
     node_name: string;
     status: string;
     container_id: string;
-    image: string;
     port_list: PortInfo[];
     create_time: number;
     update_time: number;
@@ -136,9 +136,8 @@ export type SetNameSpacePermResponse = {
 
 
 export type OpenLogRequest = {
-
     token: string;
-    namespace: string;
+    name_space: string;
     container_id: string;
 };
 
@@ -162,7 +161,7 @@ export type ReadLogResponse = {
 
 export type OpenTermRequest = {
     token: string;
-    namespace: string;
+    name_space: string;
     container_id: string;
     shell_cmd: string;
     term_width: number;

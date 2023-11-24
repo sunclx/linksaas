@@ -122,7 +122,49 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                         }} style={{ width: "200px" }} />
                         <Popover trigger="hover" placement="right" content={
                             <div style={{ width: "300px", padding: "10px 10px" }}>
-                                TODO
+                                <p>
+                                    你需要运行swarm API代理，你可以从<a rel="noreferrer" target="_blank" href="https://jihulab.com/linksaas/swarm_api_proxy">这里</a>获取源代码。
+                                </p>
+                                <Card title="相关配置" bordered={false} style={{ width: "100%" }} extra={
+                                    <Button type="link" onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        writeText(`serverUrl: "tcp://your_docker_addr"\ncertPath: ""\nlistenAddr: "0.0.0.0:6002"\nlinkSaasAddr: ${apiAddr}`);
+                                        message.info("复制成功");
+                                    }}>复制</Button>
+                                }>
+                                    <p>serverUrl配置为空时，默认使用unix:///var/run/docker.sock</p>
+                                    <CodeEditor
+                                        value={`serverUrl: "tcp://your_docker_addr"\ncertPath: ""\nlistenAddr: "0.0.0.0:6002"\nlinkSaasAddr: ${apiAddr}`}
+                                        language="yaml"
+                                        readOnly
+                                        style={{
+                                            fontSize: 14,
+                                            backgroundColor: '#f5f5f5',
+                                            height: 100,
+                                        }}
+                                    />
+                                </Card>
+                                <Card title="增加项目访问权限" bordered={false} style={{ width: "100%" }} extra={
+                                    <Button type="link" onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        writeText(`./swarm_api_proxy --config ./proxy.yaml project add ${projectStore.curProjectId}`);
+                                        message.info("复制成功");
+                                    }}>复制</Button>
+                                }>
+                                    <p>你需要运行如下命令:</p>
+                                    <CodeEditor
+                                        value={`./swarm_api_proxy --config ./proxy.yaml project add ${projectStore.curProjectId}`}
+                                        language="bash"
+                                        readOnly
+                                        style={{
+                                            fontSize: 14,
+                                            backgroundColor: '#f5f5f5',
+                                            height: 100,
+                                        }}
+                                    />
+                                </Card>
                             </div>
                         }>
                             <QuestionCircleOutlined />

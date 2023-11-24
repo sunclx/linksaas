@@ -79,13 +79,18 @@ const CloudIndex = () => {
                 )}
                 {activeKey == "swarm" && (
                     <Popover trigger="click" placement="bottom" content={
-                        <div style={{ padding: "10px 10px" }}>
+                        <Space direction="vertical" style={{ padding: "10px 10px" }}>
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                cloudStore.loadSwarmService().then(() => cloudStore.loadSwarmTask());
+                            }}>刷新</Button>
                             <Button type="link" onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 setShowSwarmPermModal(true);
                             }}>{`${projectStore.isAdmin ? "修改" : "查看"}权限`}</Button>
-                        </div>
+                        </Space>
                     }>
                         <MoreOutlined />
                     </Popover>

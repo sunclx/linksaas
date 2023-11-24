@@ -64,7 +64,8 @@ export default ({ command, mode }: ConfigEnv) => {
           apiGrpc: "api_grpc.html",
           apiSwagger: "api_swagger.html",
           apiCustom: "api_custom.html",
-          k8sWin: "k8swin.html"
+          k8sWin: "k8swin.html",
+          swarmWin: "swarmwin.html"
         },
       },
       terserOptions: {
