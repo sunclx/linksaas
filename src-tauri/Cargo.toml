@@ -7,7 +7,7 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.6.2"
+version = "0.6.3"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -29,7 +29,7 @@ libaes = "0.6.5"
 local_api_rust = {git = "https://atomgit.com/openlinksaas/local-api-rust.git", tag = "0.1.17"}
 mktemp = "0.5.0"
 prost = "0.9.0"
-proto_gen_rust = {git = "https://atomgit.com/openlinksaas/proto-gen-rust.git", tag = "0.2.12"}
+proto_gen_rust = {git = "https://atomgit.com/openlinksaas/proto-gen-rust.git", tag = "0.2.13"}
 rand = "0.8.5"
 regex = "1.8.4"
 reqwest = {version = "0.11.12", features = ["blocking"] }

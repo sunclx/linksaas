@@ -96,7 +96,7 @@ import PostEdit from '@/pages/Group/PostEdit';
 import GroupMemberList from '@/pages/Group/MemberList';
 import GroupList from '@/pages/Admin/GroupAdmin/GroupList';
 import RecommendAuditList from '@/pages/Admin/GroupAdmin/RecommendAuditList';
-import NameSpaceDetail from '@/pages/Project/Cloud/NameSpaceDetail';
+import CloudIndex from '@/pages/Project/Cloud/index';
 
 export interface IRouteConfig {
   // 路由路径
@@ -215,7 +215,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     {
       path: prefix + "/cloud",
       title: "私有云列表",
-      component: NameSpaceDetail,
+      component: CloudIndex,
       exact: true,
     },
   ];

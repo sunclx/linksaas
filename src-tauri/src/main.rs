@@ -64,6 +64,7 @@ mod group_post_api_plugin;
 mod group_admin_api_plugin;
 mod group_post_admin_api_plugin;
 mod k8s_proxy_api_plugin;
+mod swarm_proxy_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -453,6 +454,7 @@ fn main() {
         .plugin(group_admin_api_plugin::GroupAdminApiPlugin::new())
         .plugin(group_post_admin_api_plugin::GroupPostAdminApiPlugin::new())
         .plugin(k8s_proxy_api_plugin::K8sProxyApiPlugin::new())
+        .plugin(swarm_proxy_api_plugin::SwarmProxyApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
