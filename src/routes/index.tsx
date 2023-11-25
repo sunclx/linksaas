@@ -213,7 +213,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     },
     {
       path: prefix + "/cloud",
-      title: "私有云列表",
+      title: "研发环境",
       component: CloudIndex,
       exact: true,
     },

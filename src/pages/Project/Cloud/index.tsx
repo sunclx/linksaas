@@ -53,7 +53,7 @@ const CloudIndex = () => {
     }, [activeKey]);
 
     return (
-        <CardWrap title="私有云" halfContent extra={
+        <CardWrap title="研发环境" halfContent extra={
             <Space size="middle">
                 <Segmented options={calcSegOptionList()} value={activeKey} onChange={value => setActiveKey(value.valueOf() as string)} />
                 <span>命名空间</span>

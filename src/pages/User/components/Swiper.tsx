@@ -11,7 +11,7 @@ const Swiper = () => {
         凌鲨
       </div>
       <div className={s.info}>
-        软件研发团队的<b>百宝箱</b>
+        软件研发团队的<b>工具仓库</b>
       </div>
     </div>
   );

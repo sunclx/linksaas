@@ -140,7 +140,7 @@ const Toolbar: React.FC = observer(() => {
       {(projectStore.curProject?.setting.k8s_proxy_addr != "" || projectStore.curProject?.setting.swarm_proxy_addr != "") && (
         <>
           <Divider />
-          <Item id="cloud" pathname={pathname} title="私有云" />
+          <Item id="cloud" pathname={pathname} title="研发环境" />
         </>
       )}
     </div>

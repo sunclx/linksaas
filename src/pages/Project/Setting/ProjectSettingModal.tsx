@@ -73,8 +73,8 @@ const ProjectSettingModal = () => {
                 <Tabs.TabPane key="layout" tab="界面布局" disabled={disableTabs}>
                     {activeKey == "layout" && <LayoutSettingPanel onChange={value => setDisableTabs(value)} title="界面布局" />}
                 </Tabs.TabPane>
-                <Tabs.TabPane key="devcloud" tab="私有云" disabled={disableTabs}>
-                    {activeKey == "devcloud" && <DevCloudSettingPanel onChange={value => setDisableTabs(value)} title="私有云" />}
+                <Tabs.TabPane key="devcloud" tab="研发环境" disabled={disableTabs}>
+                    {activeKey == "devcloud" && <DevCloudSettingPanel onChange={value => setDisableTabs(value)} title="研发环境" />}
                 </Tabs.TabPane>
                 <Tabs.TabPane key="alarm" tab="项目预警" disabled={disableTabs}>
                     {activeKey == "alarm" && <AlarmSettingPanel onChange={value => setDisableTabs(value)} title="项目预警" />}
