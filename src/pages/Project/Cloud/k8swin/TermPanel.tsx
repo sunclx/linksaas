@@ -7,6 +7,8 @@ import "xterm/css/xterm.css";
 import { useSize } from 'ahooks';
 import { FitAddon } from 'xterm-addon-fit';
 import { get_session } from "@/api/user";
+import { Button, Popover, Space, message } from "antd";
+import { writeText, readText } from '@tauri-apps/api/clipboard';
 
 export interface TermPanelProps {
     servAddr: string;
@@ -18,8 +20,12 @@ export interface TermPanelProps {
     containerName: string;
 }
 
-const TermPanel = (props: TermPanelProps) => {
+interface Position {
+    x: number;
+    y: number;
+}
 
+const TermPanel = (props: TermPanelProps) => {
     const termRef = useRef<HTMLDivElement | null>(null);
     const termSize = useSize(termRef);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -28,8 +34,7 @@ const TermPanel = (props: TermPanelProps) => {
     const [fitAddon, setFitAddon] = useState<FitAddon | null>(null);
 
     const [termId, setTermId] = useState("");
-
-
+    const [position, setPosition] = useState<Position | null>();
 
     const initTermId = async (term: Terminal) => {
         const sessionId = await get_session();
@@ -83,12 +88,25 @@ const TermPanel = (props: TermPanelProps) => {
         termRef.current.addEventListener("contextmenu", ev => {
             ev.preventDefault();
             ev.stopPropagation();
+            setPosition(null);
+            setTimeout(() => {
+                setPosition({
+                    x: ev.clientX,
+                    y: ev.clientY,
+                });
+            }, 100);
         });
+        termRef.current.addEventListener("click", () => {
+            setPosition(null);
+        })
         const addon = new FitAddon();
         term.loadAddon(addon);
         setShellTerm(term);
         setFitAddon(addon);
-        term.onKey(ev => writeData(ev.key, destTermId));
+        term.onKey(ev => {
+            writeData(ev.key, destTermId);
+            setPosition(null);
+        });
     };
 
     const adjustTerm = async () => {
@@ -123,8 +141,40 @@ const TermPanel = (props: TermPanelProps) => {
     }, [termSize, shellTerm]);
 
     return (
+        <div style={{ position: "relative" }}>
+            <div style={{ height: "calc(100vh - 2px)" }} ref={termRef} />
+            {position != null && (
+                <div style={{ position: "absolute", left: position.x, top: position.y }}>
+                    <Popover open placement="right" destroyTooltipOnHide showArrow={false} content={
+                        <Space direction="vertical">
+                            <Button type="link" disabled={shellTerm?.getSelection() == ""} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                writeText(shellTerm?.getSelection() ?? "");
+                                message.info("复制成功");
+                                setPosition(null);
+                            }}>复制</Button>
+                            <Button type="link" onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                readText().then(txt => {
+                                    if (txt == null || txt == "") {
+                                        return;
+                                    }
+                                    writeData(txt, termId);
+                                    console.log(txt);
+                                    message.info("粘贴成功");
+                                    setPosition(null);
+                                });
 
-        <div style={{ height: "calc(100vh - 2px)" }} ref={termRef} />
+                            }}>粘贴</Button>
+                        </Space>
+                    } >
+                        <span />
+                    </Popover>
+                </div>
+            )}
+        </div>
     );
 }
 export default TermPanel;

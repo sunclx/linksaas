@@ -129,16 +129,16 @@ async fn update_scale(
 }
 
 #[tauri::command]
-async fn get_name_space_perm(
+async fn get_perm(
     serv_addr: String,
-    request: GetNameSpacePermRequest,
-) -> Result<GetNameSpacePermResponse, String> {
+    request: GetPermRequest,
+) -> Result<GetPermResponse, String> {
     let chan = conn_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
     let mut client = SwarmProxyApiClient::new(chan.unwrap());
-    match client.get_name_space_perm(request).await {
+    match client.get_perm(request).await {
         Ok(response) => {
             return Ok(response.into_inner());
         }
@@ -147,16 +147,16 @@ async fn get_name_space_perm(
 }
 
 #[tauri::command]
-async fn set_name_space_perm(
+async fn set_perm(
     serv_addr: String,
-    request: SetNameSpacePermRequest,
-) -> Result<SetNameSpacePermResponse, String> {
+    request: SetPermRequest,
+) -> Result<SetPermResponse, String> {
     let chan = conn_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
     let mut client = SwarmProxyApiClient::new(chan.unwrap());
-    match client.set_name_space_perm(request).await {
+    match client.set_perm(request).await {
         Ok(response) => {
             return Ok(response.into_inner());
         }
@@ -285,8 +285,8 @@ impl<R: Runtime> SwarmProxyApiPlugin<R> {
                 list_task,
                 update_image,
                 update_scale,
-                get_name_space_perm,
-                set_name_space_perm,
+                get_perm,
+                set_perm,
                 open_log,
                 read_log,
                 open_term,
