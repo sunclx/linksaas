@@ -47,7 +47,7 @@ const ProjectList = () => {
                 </div>
 
             </div>
-            <div style={{ maxHeight: "calc(100vh - 400px)", overflowY: "scroll"}}>
+            <div style={{ maxHeight: "calc(100vh - 260px)", overflowY: "scroll" }}>
                 {projectStore.projectList.map(item => (
                     <div key={item.project_id} className={cls.project_child_menu}>
                         <ProjectItem item={item} />
