@@ -8,9 +8,12 @@ const SwarmPage = () => {
     const cloudStore = useStores('cloudStore');
 
     useEffect(() => {
-        cloudStore.loadSwarmUserPermList();
         cloudStore.loadSwarmService().then(() => cloudStore.loadSwarmTask());
     }, [cloudStore.curNameSpace]);
+
+    useEffect(()=>{
+        cloudStore.loadSwarmUserPermList();
+    },[]);
 
     return (
         <div>
