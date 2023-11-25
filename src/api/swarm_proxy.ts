@@ -37,17 +37,12 @@ export type TaskInfo = {
     update_time: number;
 };
 
-export type NameSpaceUserPerm = {
+export type UserPerm = {
     user_id: string;
     update_scale: boolean;
     update_image: boolean;
     logs: boolean;
     exec: boolean;
-};
-
-export type NameSpacePerm = {
-    name_space: string;
-    user_perm_list: NameSpaceUserPerm[];
 };
 
 export type ListNameSpaceRequest = {
@@ -111,25 +106,23 @@ export type UpdateScaleResponse = {
 };
 
 
-export type GetNameSpacePermRequest = {
+export type GetPermRequest = {
     token: string;
-    name_space: string;
 };
 
-export type GetNameSpacePermResponse = {
+export type GetPermResponse = {
     code: number;
     err_msg: string;
-    perm: NameSpacePerm;
+    user_perm_list: UserPerm[];
 };
 
 
-export type SetNameSpacePermRequest = {
+export type SetPermRequest = {
     token: string;
-    name_space: string;
-    perm: NameSpacePerm;
+    user_perm_list: UserPerm[];
 };
 
-export type SetNameSpacePermResponse = {
+export type SetPermResponse = {
     code: number;
     err_msg: string;
 };
@@ -262,23 +255,23 @@ export async function update_scale(servAddr: string, request: UpdateScaleRequest
     });
 }
 
-//获取命名空间权限
-export async function get_name_space_perm(servAddr: string, request: GetNameSpacePermRequest): Promise<GetNameSpacePermResponse> {
-    const cmd = 'plugin:swarm_proxy_api|get_name_space_perm';
+//获取权限
+export async function get_perm(servAddr: string, request: GetPermRequest): Promise<GetPermResponse> {
+    const cmd = 'plugin:swarm_proxy_api|get_perm';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
-    return invoke<GetNameSpacePermResponse>(cmd, {
+    return invoke<GetPermResponse>(cmd, {
         servAddr,
         request,
     });
 }
 
-//设置命名空间权限
-export async function set_name_space_perm(servAddr: string, request: SetNameSpacePermRequest): Promise<SetNameSpacePermResponse> {
-    const cmd = 'plugin:swarm_proxy_api|set_name_space_perm';
+//设置权限
+export async function set_perm(servAddr: string, request: SetPermRequest): Promise<SetPermResponse> {
+    const cmd = 'plugin:swarm_proxy_api|set_perm';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
-    return invoke<SetNameSpacePermResponse>(cmd, {
+    return invoke<SetPermResponse>(cmd, {
         servAddr,
         request,
     });

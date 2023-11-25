@@ -39,7 +39,6 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
   const [hasNewVersion, setHasNewVersion] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
-  const [hover, setHover] = useState(false);
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
@@ -132,7 +131,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
 
   return (
-    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} >
+    <div>
       <div style={{ height: "4px", backgroundColor: location.pathname.startsWith("/app") ? "#f6f6f8" : "white", borderTop: "1px solid #e8e9ee" }} />
       <Header className={style.layout_header} {...props}
         style={{ backgroundColor: location.pathname.startsWith("/app") ? "#f6f6f8" : "white", boxShadow: "none" }}
@@ -261,17 +260,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           </Space>
         )}
 
-        <div className={style.l} >
-          {hover && <span style={{ color: "#aaa" }} onMouseDown={e => {
-            e.preventDefault();
-            e.stopPropagation();
-            appWindow.startDragging();
-          }} onTouchStart={e => {
-            e.preventDefault();
-            e.stopPropagation();
-            appWindow.startDragging();
-          }}>可拖动窗口</span>}
-        </div>
+        <div className={style.l} />
         <div className={style.r}>
           {props.type == "login" && hasNewVersion == true && (
             <a style={{ marginRight: "20px" }} onClick={e => {

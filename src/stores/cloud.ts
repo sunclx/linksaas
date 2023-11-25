@@ -4,8 +4,8 @@ import { request } from '@/utils/request';
 import { gen_one_time_token } from '@/api/project_member';
 import type { RESOURCE_TYPE } from '@/api/k8s_proxy';
 import { RESOURCE_TYPE_DEPLOYMENT, RESOURCE_TYPE_NAMESPACE, RESOURCE_TYPE_STATEFULSET, list_resource, list_resource_perm, get_resource } from '@/api/k8s_proxy';
-import type { ServiceInfo as SwarmServiceInfo, TaskInfo as SwarmTaskInfo, NameSpaceUserPerm } from '@/api/swarm_proxy';
-import { list_name_space, list_service as list_swarm_service, list_task as list_swarm_task, get_name_space_perm } from '@/api/swarm_proxy';
+import type { ServiceInfo as SwarmServiceInfo, TaskInfo as SwarmTaskInfo, UserPerm as SwarmUserPerm} from '@/api/swarm_proxy';
+import { list_name_space, list_service as list_swarm_service, list_task as list_swarm_task, get_perm as get_swarm_perm} from '@/api/swarm_proxy';
 import type { NamespaceList } from "kubernetes-models/v1";
 import type { ResourcePerm } from "@/api/k8s_proxy";
 import type { DeploymentList, IIoK8sApiAppsV1Deployment, IIoK8sApiAppsV1StatefulSet, StatefulSetList } from "kubernetes-models/apps/v1";
@@ -254,7 +254,7 @@ export default class CloudStore {
     //swarm相关
     private _swarmServiceList: SwarmServiceInfo[] = [];
     private _swarmTaskList: SwarmTaskInfo[] = [];
-    private _swarmUserPermList: NameSpaceUserPerm[] = [];
+    private _swarmUserPermList: SwarmUserPerm[] = [];
 
     get swarmServiceList(): SwarmServiceInfo[] {
         return this._swarmServiceList;
@@ -264,11 +264,11 @@ export default class CloudStore {
         return this._swarmTaskList;
     }
 
-    get swarmUserPermList(): NameSpaceUserPerm[] {
+    get swarmUserPermList(): SwarmUserPerm[] {
         return this._swarmUserPermList;
     }
 
-    get swarmMyPerm(): NameSpaceUserPerm {
+    get swarmMyPerm(): SwarmUserPerm {
         if (this.rootStore.projectStore.isAdmin) {
             return {
                 user_id: this.rootStore.userStore.userInfo.userId,
@@ -340,21 +340,14 @@ export default class CloudStore {
             session_id: this.rootStore.userStore.sessionId,
             project_id: this.rootStore.projectStore.curProjectId,
         }));
-        if (this._curNameSpace == "") {
-            return;
-        }
-        if (this._curNameSpace == "") {
-            return;
-        }
         runInAction(() => {
             this._swarmUserPermList = [];
         });
-        const res = await request(get_name_space_perm(servAddr, {
+        const res = await request(get_swarm_perm(servAddr, {
             token: tokenRes.token,
-            name_space: this._curNameSpace,
         }));
         runInAction(() => {
-            this._swarmUserPermList = res.perm.user_perm_list;
+            this._swarmUserPermList = res.user_perm_list;
         });
     }
 }

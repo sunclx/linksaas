@@ -3,8 +3,8 @@ import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import { Checkbox, Form, Modal, message } from "antd";
 import { gen_one_time_token, type MemberInfo } from "@/api/project_member";
-import type { NameSpaceUserPerm } from "@/api/swarm_proxy";
-import { set_name_space_perm } from "@/api/swarm_proxy";
+import type { UserPerm } from "@/api/swarm_proxy";
+import { set_perm } from "@/api/swarm_proxy";
 import { request } from "@/utils/request";
 
 export interface NameSpacePermModalProps {
@@ -50,13 +50,9 @@ const NameSpacePermModal = (props: NameSpacePermModalProps) => {
             session_id: userStore.sessionId,
             project_id: projectStore.curProjectId,
         }));
-        await request(set_name_space_perm(servAddr, {
+        await request(set_perm(servAddr, {
             token: tokenRes.token,
-            name_space: cloudStore.curNameSpace,
-            perm: {
-                name_space: cloudStore.curNameSpace,
-                user_perm_list: userPermList
-            }
+            user_perm_list: userPermList,
         }));
         message.info("修改权限成功");
         await cloudStore.loadSwarmUserPermList();
@@ -100,7 +96,7 @@ const NameSpacePermModal = (props: NameSpacePermModalProps) => {
                             }
                         ]} value={calcPermStr(item.member)} disabled={item.member.can_admin || !projectStore.isAdmin}
                             onChange={values => {
-                                const newPerm: NameSpaceUserPerm = {
+                                const newPerm: UserPerm = {
                                     user_id: item.member.member_user_id,
                                     update_scale: values.includes("update_scale"),
                                     update_image: values.includes("update_image"),
