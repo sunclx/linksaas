@@ -5,10 +5,11 @@ import { request } from "@/utils/request";
 import { gen_one_time_token } from "@/api/project_member";
 import type { AttrInfo, TraceInfo, SORT_BY } from "@/api/trace_proxy";
 import { list_trace, list_root_span_name, SORT_BY_CONSUME_TIME, SORT_BY_START_TIME } from "@/api/trace_proxy";
-import { Card, Form, Input, Select, Table } from "antd";
+import { Card, Descriptions, Form, Input, List, Popover, Select, Space, Table } from "antd";
 import type { ColumnsType } from 'antd/lib/table';
 import moment from "moment";
 import TraceDetailModal from "./TraceDetailModal";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 export interface TracePageProps {
     svcName: string;
@@ -35,8 +36,8 @@ const TracePage = (props: TracePageProps) => {
             token: tokenRes.token,
             filter_by_service_name: props.svcName != "",
             service_name: props.svcName,
-            filter_by_root_span_name: false,
-            root_span_name: "",
+            filter_by_root_span_name: curRootSpanName != "",
+            root_span_name: curRootSpanName,
             filter_by_attr: filterAttr != null,
             attr: filterAttr == null ? {
                 key: "",
@@ -88,6 +89,25 @@ const TracePage = (props: TracePageProps) => {
             title: "服务名称",
             dataIndex: ["root_span", "service_name"],
             width: 100,
+            render: (_, row: TraceInfo) => (
+                <Space>
+                    {row.root_span.service_name}
+                    <Popover trigger="hover" placement="left" content={
+                        <Descriptions bordered column={1}>
+                            <Descriptions.Item label="属性">
+                                <List rowKey="key" dataSource={row.root_span.attr_list} renderItem={item => (
+                                    <List.Item>
+                                        {item.key}={item.value}
+                                    </List.Item>
+                                )} />
+                            </Descriptions.Item>
+                        </Descriptions>
+                    }>
+                        <InfoCircleOutlined />
+                    </Popover>
+                </Space>
+
+            ),
         },
         {
             title: "开始时间",

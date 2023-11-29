@@ -213,7 +213,7 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                         <Popover trigger="hover" placement="right" content={
                             <div style={{ width: "300px", padding: "10px 10px" }}>
                                 <p>
-                                    你需要运行追踪收集程序，你可以从<a rel="noreferrer" target="_blank" href="https://jihulab.com/linksaas/easy_proxy">这里</a>获取源代码。
+                                    你需要运行追踪收集程序，你可以从<a rel="noreferrer" target="_blank" href="https://jihulab.com/linksaas/easy_trace">这里</a>获取源代码。
                                 </p>
                                 <Card title="相关配置" bordered={false} style={{ width: "100%" }} extra={
                                     <Button type="link" onClick={e => {
