@@ -57,6 +57,24 @@ async fn list_service_name(
 }
 
 #[tauri::command]
+async fn list_root_span_name(
+    serv_addr: String,
+    request: ListRootSpanNameRequest,
+) -> Result<ListRootSpanNameResponse, String> {
+    let chan = conn_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
+    }
+    let mut client = TraceProxyApiClient::new(chan.unwrap());
+    match client.list_root_span_name(request).await {
+        Ok(response) => {
+            return Ok(response.into_inner());
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_trace(
     serv_addr: String,
     request: ListTraceRequest,
@@ -119,6 +137,7 @@ impl<R: Runtime> TraceProxyApiPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 list_service_name,
+                list_root_span_name,
                 list_trace,
                 get_trace,
                 list_span,

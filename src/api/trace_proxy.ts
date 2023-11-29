@@ -13,15 +13,6 @@ export type SORT_BY = number;
 export const SORT_BY_START_TIME: SORT_BY = 0;
 export const SORT_BY_CONSUME_TIME: SORT_BY = 1;
 
-
-export type TraceInfo = {
-    trace_id: string;
-    name: string;
-    version: string;
-    start_time_stamp: number;
-    end_time_stamp: number;
-};
-
 export type AttrInfo = {
     key: string;
     value: string;
@@ -34,16 +25,22 @@ export type EventInfo = {
 };
 
 export type SpanInfo = {
-
     span_id: string;
     parent_span_id: string;
     trace_id: string;
-    name: string;
+    service_name: string;
+    service_version: string;
+    span_name: string;
     start_time_stamp: number;
     end_time_stamp: number;
     span_kind: SPAN_KIND;
     attr_list: AttrInfo[];
     event_list: EventInfo[];
+};
+
+export type TraceInfo = {
+    trace_id: string;
+    root_span: SpanInfo;
 };
 
 export type ListServiceNameRequest = {
@@ -56,11 +53,24 @@ export type ListServiceNameResponse = {
     service_name_list: string[];
 };
 
+export type  ListRootSpanNameRequest = {
+    token: string;
+    filter_by_service_name: boolean;
+    service_name: string;
+};
+
+export type  ListRootSpanNameResponse = {
+    code: number;
+    err_msg: string;
+    root_span_name_list: string[];
+};
 
 export type ListTraceRequest = {
     token: string;
     filter_by_service_name: boolean;
     service_name: string;
+    filter_by_root_span_name: boolean;
+    root_span_name: string;
     filter_by_attr: boolean;
     attr: AttrInfo;
     limit: number;
@@ -103,6 +113,17 @@ export async function list_service_name(servAddr: string, request: ListServiceNa
     console.log(`%c${cmd}`, 'color:#0f0;', request);
 
     return invoke<ListServiceNameResponse>(cmd, {
+        servAddr,
+        request,
+    });
+}
+
+//列出入口名称
+export async function list_root_span_name(servAddr: string, request: ListRootSpanNameRequest): Promise<ListRootSpanNameResponse> {
+    const cmd = 'plugin:trace_proxy_api|list_root_span_name';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+
+    return invoke<ListRootSpanNameResponse>(cmd, {
         servAddr,
         request,
     });

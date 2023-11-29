@@ -10,17 +10,44 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { get_conn_server_addr } from "@/api/main";
 import { writeText } from '@tauri-apps/api/clipboard';
 
+const TRACE_CONFIG_TPL = `listenAddr: "0.0.0.0:6003"
+linkSaasAddr: "__API_ADDR__"
+maxTraceStore: 10000
+project:
+  - "__PROJECT_ID__"
+zipkin:
+  enable: true
+  listenAddr: "0.0.0.0:9411"
+jaeger:
+  enable: true
+  grpcListenAddr: "0.0.0.0:14250"
+  httpListenAddr: "0.0.0.0:14268"
+  thriftCompactListenAddr: "0.0.0.0:6831"
+  thriftBinaryListenAddr: "0.0.0.0:6832"
+skywalking:
+  enable: true
+  grpcListenAddr: "0.0.0.0:11800"
+  httpListenAddr: "0.0.0.0:12800"
+otlp:
+  enable: true
+  grpcListenAddr: "0.0.0.0:4317"
+  httpListenAddr: "0.0.0.0:4318"
+`;
+
 const DevCloudSettingPanel = (props: PanelProps) => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
     const [k8sProxyAddr, setK8sProxyAddr] = useState(projectStore.curProject?.setting.k8s_proxy_addr ?? "");
-    const [swarmProxyAddr,setSwarmProxyAddr] = useState(projectStore.curProject?.setting.swarm_proxy_addr ?? "");
+    const [swarmProxyAddr, setSwarmProxyAddr] = useState(projectStore.curProject?.setting.swarm_proxy_addr ?? "");
+    const [traceProxyAddr, setTraceProxyAddr] = useState(projectStore.curProject?.setting.trace_proxy_addr ?? "");
     const [hasChange, setHasChange] = useState(false);
     const [apiAddr, setApiAddr] = useState("");
 
     const resetConfig = () => {
         setK8sProxyAddr(projectStore.curProject?.setting.k8s_proxy_addr ?? "");
+        setSwarmProxyAddr(projectStore.curProject?.setting.swarm_proxy_addr ?? "");
+        setTraceProxyAddr(projectStore.curProject?.setting.trace_proxy_addr ?? "");
         setHasChange(false);
     }
 
@@ -35,6 +62,7 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                 ...projectStore.curProject.setting,
                 k8s_proxy_addr: k8sProxyAddr,
                 swarm_proxy_addr: swarmProxyAddr,
+                trace_proxy_addr: traceProxyAddr,
             },
         }));
         message.info("保存成功");
@@ -102,6 +130,7 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                                             fontSize: 14,
                                             backgroundColor: '#f5f5f5',
                                             height: 100,
+                                            overflowY: "scroll",
                                         }}
                                     />
                                 </Card>
@@ -133,7 +162,7 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                                         message.info("复制成功");
                                     }}>复制</Button>
                                 }>
-                                    <p>serverUrl配置为空时，默认使用unix:///var/run/docker.sock</p>
+
                                     <CodeEditor
                                         value={`serverUrl: "tcp://your_docker_addr"\ncertPath: ""\nlistenAddr: "0.0.0.0:6002"\nlinkSaasAddr: ${apiAddr}`}
                                         language="yaml"
@@ -142,6 +171,7 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                                             fontSize: 14,
                                             backgroundColor: '#f5f5f5',
                                             height: 100,
+                                            overflowY: "scroll",
                                         }}
                                     />
                                 </Card>
@@ -162,6 +192,46 @@ const DevCloudSettingPanel = (props: PanelProps) => {
                                             fontSize: 14,
                                             backgroundColor: '#f5f5f5',
                                             height: 100,
+                                            overflowY: "scroll",
+                                        }}
+                                    />
+                                </Card>
+                            </div>
+                        }>
+                            <QuestionCircleOutlined />
+                        </Popover>
+                    </Space>
+                </Form.Item>
+                <Form.Item label="链路追踪地址">
+                    <Space>
+                        <Input value={traceProxyAddr} onChange={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setHasChange(true);
+                            setTraceProxyAddr(e.target.value.trim());
+                        }} style={{ width: "200px" }} />
+                        <Popover trigger="hover" placement="right" content={
+                            <div style={{ width: "300px", padding: "10px 10px" }}>
+                                <p>
+                                    你需要运行追踪收集程序，你可以从<a rel="noreferrer" target="_blank" href="https://jihulab.com/linksaas/easy_proxy">这里</a>获取源代码。
+                                </p>
+                                <Card title="相关配置" bordered={false} style={{ width: "100%" }} extra={
+                                    <Button type="link" onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        writeText(TRACE_CONFIG_TPL.replace("__API_ADDR__", apiAddr).replace("__PROJECT_ID__", projectStore.curProjectId));
+                                        message.info("复制成功");
+                                    }}>复制</Button>
+                                }>
+                                    <CodeEditor
+                                        value={TRACE_CONFIG_TPL.replace("__API_ADDR__", apiAddr).replace("__PROJECT_ID__", projectStore.curProjectId)}
+                                        language="yaml"
+                                        readOnly
+                                        style={{
+                                            fontSize: 14,
+                                            backgroundColor: '#f5f5f5',
+                                            height: 200,
+                                            overflowY: "scroll",
                                         }}
                                     />
                                 </Card>
