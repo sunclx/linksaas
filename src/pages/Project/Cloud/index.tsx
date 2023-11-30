@@ -14,6 +14,7 @@ import { request } from "@/utils/request";
 import { gen_one_time_token } from "@/api/project_member";
 import { list_service_name } from "@/api/trace_proxy";
 import TracePage from "./trace/TracePage";
+import s from "./index.module.less";
 
 const CloudIndex = () => {
     const userStore = useStores('userStore');
@@ -46,6 +47,12 @@ const CloudIndex = () => {
                 value: "trace",
             });
         }
+        if (projectStore.curProject?.setting.net_proxy_addr != "") {
+            retList.push({
+                label: "网络穿透",
+                value: "net",
+            });
+        }
         return retList;
     };
 
@@ -59,7 +66,7 @@ const CloudIndex = () => {
             token: tokenRes.token,
         }));
         console.log(res);
-        setSvcNameList(res.service_name_list.filter(item=>item != ""));
+        setSvcNameList(res.service_name_list.filter(item => item != ""));
     };
 
     useEffect(() => {
@@ -67,8 +74,10 @@ const CloudIndex = () => {
             setActiveKey("k8s");
         } else if (projectStore.curProject?.setting.swarm_proxy_addr != "") {
             setActiveKey("swarm");
-        } else if(projectStore.curProject?.setting.trace_proxy_addr != "") {
+        } else if (projectStore.curProject?.setting.trace_proxy_addr != "") {
             setActiveKey("trace");
+        } else if (projectStore.curProject?.setting.net_proxy_addr != "") {
+            setActiveKey("net");
         }
     }, []);
 
@@ -84,9 +93,15 @@ const CloudIndex = () => {
     }, [activeKey]);
 
     return (
-        <CardWrap title="研发环境" halfContent extra={
+        <CardWrap title={
             <Space size="middle">
-                <Segmented options={calcSegOptionList()} value={activeKey} onChange={value => setActiveKey(value.valueOf() as string)} />
+                <span>研发环境</span>
+                <div className={s.wrap}>
+                    <Segmented size="small" options={calcSegOptionList()} value={activeKey} onChange={value => setActiveKey(value.valueOf() as string)} />
+                </div>
+            </Space>
+        } halfContent extra={
+            <Space size="middle">
                 {["k8s", "swarm"].includes(activeKey) && (
                     <>
                         <span>命名空间</span>
@@ -146,7 +161,7 @@ const CloudIndex = () => {
         }>
             {activeKey == "k8s" && <K8sPage />}
             {activeKey == "swarm" && <SwarmPage />}
-            {activeKey == "trace" && <TracePage svcName={curSvcName}/>}
+            {activeKey == "trace" && <TracePage svcName={curSvcName} />}
             {showAddNameSpaceModal == true && (
                 <Modal open title="添加命令空间" footer={null}
                     onCancel={e => {
