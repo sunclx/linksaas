@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import s from "./index.module.less";
 import { Tabs } from 'antd';
-import { AppstoreOutlined, SearchOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, GlobalOutlined, SearchOutlined } from '@ant-design/icons';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH } from '@/utils/constant';
 import AppStorePanel from './components/AppStorePanel';
@@ -31,6 +31,8 @@ const PubRes = () => {
             tab = "appStore"
         } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
             tab = "dockerTemplate"
+        } else if ((appStore.clientCfg?.item_list.length ?? 0) > 0) {
+            tab = appStore.clientCfg?.item_list[0].menu_id ?? "";
         }
     }
 
@@ -77,6 +79,15 @@ const PubRes = () => {
                         )}
                     </Tabs.TabPane>
                 )}
+                {appStore.clientCfg?.item_list.map(item => (
+                    <Tabs.TabPane tab={<h2><GlobalOutlined />&nbsp;{item.name}</h2>} key={item.menu_id}>
+                        {activeKey == item.menu_id && (
+                            <div className={s.content_wrap}>
+                                <iframe src={item.url} width="100%" height="100%" />
+                            </div>
+                        )}
+                    </Tabs.TabPane>
+                ))}
             </Tabs>
         </div>
     );

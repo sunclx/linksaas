@@ -59,7 +59,6 @@ import {
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
 import IssueCreate from '@/pages/Issue/IssueCreate';
-import ExtraMenuPage from '@/pages/ExtraMenuPage';
 import SubscribeList from '@/pages/Project/Record/SubscribeList';
 import AdminLayout from '@/layouts/AdminLayout';
 import UserList from '@/pages/Admin/UserAdmin/UserList';
@@ -214,7 +213,7 @@ const getToolbarRoute = (prefix: string): IRouteConfig[] => {
     },
     {
       path: prefix + "/cloud",
-      title: "私有云列表",
+      title: "研发环境",
       component: CloudIndex,
       exact: true,
     },
@@ -254,11 +253,6 @@ const routesConfig: IRouteConfig[] = [
         title: "公共资源",
         component: PubRes,
         exact: true,
-      },
-      {
-        path: '/app/extra_menu',
-        title: '额外菜单内容',
-        component: ExtraMenuPage,
       },
       {
         path: APP_PROJECT_PATH,

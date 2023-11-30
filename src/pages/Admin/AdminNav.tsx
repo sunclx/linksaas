@@ -268,7 +268,7 @@ const AdminNav = () => {
                 <Collapse.Panel header="界面管理" key="clientCfg">
                     <Menu selectedKeys={clientCfgSelectedKeys} items={[
                         {
-                            label: "额外菜单",
+                            label: "公共资源扩展菜单",
                             key: "menu_admin",
                             disabled: !(permInfo?.menu_perm.read ?? false),
                         },

@@ -130,7 +130,7 @@ const MenuAdmin = () => {
     }, []);
 
     return (
-        <Card title="额外菜单"
+        <Card title="公共资源扩展菜单"
             style={{ height: "calc(100vh - 40px)", overflowY: "scroll" }}
             extra={
                 <Button
