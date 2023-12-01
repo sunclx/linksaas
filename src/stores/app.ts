@@ -1,6 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { platform } from '@tauri-apps/api/os';
 import * as clientCfgApi from '@/api/client_cfg';
+import type { ProxyInfo } from "@/api/net_proxy";
+import { list_all_listen } from "@/api/net_proxy";
 import type { RootStore } from '.';
 
 class AppStore {
@@ -30,6 +32,19 @@ class AppStore {
     const res = await clientCfgApi.get_cfg();
     runInAction(() => {
       this._clientCfg = res;
+    });
+  }
+
+  private _localProxyList: ProxyInfo[] = [];
+
+  get localProxyList(): ProxyInfo[] {
+    return this._localProxyList;
+  }
+
+  async loadLocalProxy() {
+    const res = await list_all_listen();
+    runInAction(() => {
+      this._localProxyList = res.sort((a, b) => a.port - b.port);
     });
   }
 

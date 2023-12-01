@@ -1,3 +1,4 @@
+use crate::net_proxy_api_plugin::stop_all_listen;
 use crate::notice_decode::{decode_notice, new_wrong_session_notice};
 use image::EncodableLayout;
 use libaes::Cipher;
@@ -260,6 +261,8 @@ async fn logout<R: Runtime>(
             if let Err(err) = munu_item.set_enabled(false) {
                 println!("{:?}", err);
             }
+            //移除本地监听
+            stop_all_listen(app_handle).await;
             Ok(response.into_inner())
         }
         Err(status) => Err(status.message().into()),

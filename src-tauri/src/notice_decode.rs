@@ -289,10 +289,16 @@ pub mod client {
     }
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    #[serde(rename_all = "snake_case")]
+    pub struct LocalProxyStopNotice {}
+
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
         WrongSessionNotice(WrongSessionNotice),
         SwitchUserNotice(SwitchUserNotice),
         GitPostHookNotice(GitPostHookNotice),
+        LocalProxyStopNotice(LocalProxyStopNotice),
     }
 }
 
@@ -344,5 +350,11 @@ pub fn new_git_post_hook_notice(project_id: String) -> NoticeMessage {
         client::GitPostHookNotice {
             project_id: project_id,
         },
+    ));
+}
+
+pub fn new_local_proxy_stop_notice() -> NoticeMessage {
+    return NoticeMessage::ClientNotice(client::Notice::LocalProxyStopNotice(
+        client::LocalProxyStopNotice {},
     ));
 }

@@ -15,6 +15,7 @@ import { gen_one_time_token } from "@/api/project_member";
 import { list_service_name } from "@/api/trace_proxy";
 import TracePage from "./trace/TracePage";
 import s from "./index.module.less";
+import NetPage from "./net/NetPage";
 
 const CloudIndex = () => {
     const userStore = useStores('userStore');
@@ -162,6 +163,7 @@ const CloudIndex = () => {
             {activeKey == "k8s" && <K8sPage />}
             {activeKey == "swarm" && <SwarmPage />}
             {activeKey == "trace" && <TracePage svcName={curSvcName} />}
+            {activeKey == "net" && <NetPage />}
             {showAddNameSpaceModal == true && (
                 <Modal open title="添加命令空间" footer={null}
                     onCancel={e => {

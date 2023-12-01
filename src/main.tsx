@@ -68,6 +68,7 @@ const Connect = observer(() => {
     setHasConn(res);
     if (res) {
       appStore.loadClientCfg();
+      appStore.loadLocalProxy();
     }
   };
 
@@ -177,6 +178,7 @@ const App = () => {
   stores.noticeStore.initListen();
   if (stores.userStore.sessionId !== '') {
     stores.appStore.loadClientCfg();
+    stores.appStore.loadLocalProxy();
     stores.projectStore.initLoadProjectList();
   }
   return (

@@ -183,10 +183,13 @@ export namespace client {
     project_id: string;
   };
 
+  export type LocalProxyStopNotice = {};
+
   export type AllNotice = {
     WrongSessionNotice?: WrongSessionNotice;
     SwitchUserNotice?: SwitchUserNotice;
     GitPostHookNotice?: GitPostHookNotice;
+    LocalProxyStopNotice?: LocalProxyStopNotice;
   };
 }
 
