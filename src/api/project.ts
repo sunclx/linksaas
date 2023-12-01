@@ -50,6 +50,7 @@ export type Setting = {
   k8s_proxy_addr: string;
   swarm_proxy_addr: string;
   trace_proxy_addr: string;
+  net_proxy_addr: string;
 };
 
 export type CreateResponse = {

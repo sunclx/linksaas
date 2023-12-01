@@ -211,6 +211,8 @@ class NoticeStore {
       } else {
         this.rootStore.projectStore.showPostHookModal = true;
       }
+    } else if (notice.LocalProxyStopNotice !== undefined) {
+      await this.rootStore.appStore.loadLocalProxy();
     }
   }
 

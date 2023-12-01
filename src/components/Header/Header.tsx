@@ -2,11 +2,11 @@ import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
 import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
-import { Button, Layout, Popover, Progress, Space, Switch, message } from 'antd';
+import { Badge, Button, Layout, Popover, Progress, Space, Switch, Table, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
-import { BugOutlined, EditOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { BugOutlined, CloseCircleFilled, EditOutlined, InfoCircleOutlined, PartitionOutlined } from '@ant-design/icons';
 import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
@@ -19,6 +19,10 @@ import { ENTRY_TYPE_SPRIT } from '@/api/project_entry';
 import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
 import moment from 'moment';
 import { request } from '@/utils/request';
+import type { ColumnsType } from 'antd/lib/table';
+import type { ProxyInfo } from '@/api/net_proxy';
+import { stop_listen } from '@/api/net_proxy';
+
 
 const { Header } = Layout;
 
@@ -100,6 +104,40 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
     }));
     entryStore.updateEntry(entryStore.curEntry?.entry_id ?? "");
   }
+
+  const proxyColumns: ColumnsType<ProxyInfo> = [
+    {
+      title: "端口",
+      width: 60,
+      dataIndex: "port"
+    },
+    {
+      title: "端点名称",
+      width: 80,
+      dataIndex: "endpoint_name",
+    },
+    {
+      title: "项目名称",
+      width: 80,
+      render: (_, row: ProxyInfo) => (
+        <div style={{ width: "80px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={projectStore.getProject(row.project_id)?.basic_info.project_name ?? ""}>
+          {projectStore.getProject(row.project_id)?.basic_info.project_name ?? ""}
+        </div>
+      ),
+    },
+    {
+      title: "",
+      render: (_, row: ProxyInfo) => (
+        <Button type="link" danger icon={<CloseCircleFilled />}
+          style={{ minWidth: 0, padding: "0px 0px" }}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            stop_listen(row.port).then(() => appStore.loadLocalProxy());
+          }} title='停止转发' />
+      ),
+    }
+  ];
 
   useEffect(() => {
     if (props.type == "login") {
@@ -280,6 +318,16 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && projectStore.curProjectId != "" && (
             <Switch checked={appStore.focusMode} onChange={value => appStore.focusMode = value} style={{ marginRight: "20px" }}
               checkedChildren="专注模式" unCheckedChildren="普通模式" />
+          )}
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && (
+            <Popover trigger="click" placement='bottom' content={
+              <Table rowKey="port" dataSource={appStore.localProxyList} columns={proxyColumns} pagination={false}
+                style={{ height: "calc(100vh - 400px)", overflowY: "scroll" }} />
+            }>
+              <Badge count={appStore.localProxyList.length} size='small' dot style={{ left: "16px", top: "2px", backgroundColor: "#777" }}>
+                <PartitionOutlined style={{ marginRight: "20px", fontSize: "18px", color: "#777", cursor: "pointer" }} title='端口转发' />
+              </Badge>
+            </Popover>
           )}
           <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
