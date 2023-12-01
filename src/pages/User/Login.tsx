@@ -39,6 +39,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     appStore.loadClientCfg();
+    appStore.loadLocalProxy();
   }, []);
 
   return (

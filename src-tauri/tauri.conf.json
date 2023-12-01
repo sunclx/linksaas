@@ -36,7 +36,8 @@
         "bin/ssh",
         "bin/netutil",
         "bin/grpcutil",
-        "bin/search"
+        "bin/search",
+        "bin/netproxy"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -112,6 +113,11 @@
           },
           {
             "name":"bin/search",
+            "sidecar": true,
+            "args": true
+          },
+          {
+            "name":"bin/netproxy",
             "sidecar": true,
             "args": true
           }
