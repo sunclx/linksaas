@@ -549,7 +549,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                             </span>}
                             extra={
                                 <Space size="middle">
-                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
+                                    <Button type="link" style={{ minWidth: "0px", padding: "2px 0px" }}
                                         onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
@@ -559,49 +559,50 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                                         e.stopPropagation();
                                         e.preventDefault();
                                     }}>
-                                        <Popover trigger="click" placement="bottom" content={
-                                            <div style={{ padding: "10px 10px" }}>
-                                                <Space direction="vertical">
-                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault();
-                                                        setAnalyseRepo(repo);
-                                                    }}>
-                                                        统计数据
-                                                    </Button>
-                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault();
-                                                        props.onChange();
-                                                    }}>
-                                                        刷新
-                                                    </Button>
-                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault();
-                                                        setLinkProjectRepo(repo);
-                                                    }}>
-                                                        关联项目
-                                                    </Button>
-                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
-                                                        e.stopPropagation();
-                                                        e.preventDefault();
-                                                        setEditRepo(repo);
-                                                    }}>
-                                                        修改设置
-                                                    </Button>
-                                                    <Divider style={{ margin: "0px 0px" }} />
-                                                    <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
-                                                        danger
-                                                        onClick={e => {
+                                        <Popover trigger="click" placement="bottom"
+                                            content={
+                                                <div style={{ padding: "10px 10px" }}>
+                                                    <Space direction="vertical">
+                                                        <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
                                                             e.stopPropagation();
                                                             e.preventDefault();
-                                                            removeRepo(repo.id);
-                                                        }}>删除</Button>
-                                                </Space>
-                                            </div>
-                                        }>
-                                            <MoreOutlined />
+                                                            setAnalyseRepo(repo);
+                                                        }}>
+                                                            统计数据
+                                                        </Button>
+                                                        <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                            e.stopPropagation();
+                                                            e.preventDefault();
+                                                            props.onChange();
+                                                        }}>
+                                                            刷新
+                                                        </Button>
+                                                        <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                            e.stopPropagation();
+                                                            e.preventDefault();
+                                                            setLinkProjectRepo(repo);
+                                                        }}>
+                                                            关联项目
+                                                        </Button>
+                                                        <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }} onClick={e => {
+                                                            e.stopPropagation();
+                                                            e.preventDefault();
+                                                            setEditRepo(repo);
+                                                        }}>
+                                                            修改设置
+                                                        </Button>
+                                                        <Divider style={{ margin: "0px 0px" }} />
+                                                        <Button type="link" style={{ minWidth: "0px", padding: "0px 0px" }}
+                                                            danger
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                e.preventDefault();
+                                                                removeRepo(repo.id);
+                                                            }}>删除</Button>
+                                                    </Space>
+                                                </div>
+                                            }>
+                                            <MoreOutlined style={{ padding: "6px 6px" }} />
                                         </Popover>
                                     </div>
                                 </Space>

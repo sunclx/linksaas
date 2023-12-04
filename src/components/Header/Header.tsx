@@ -108,8 +108,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const proxyColumns: ColumnsType<ProxyInfo> = [
     {
       title: "端口",
-      width: 60,
-      dataIndex: "port"
+      width: 100,
+      render: (_, row: ProxyInfo) => `127.0.0.1:${row.port}`,
     },
     {
       title: "端点名称",
@@ -322,7 +322,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && (
             <Popover trigger="click" placement='bottom' content={
               <Table rowKey="port" dataSource={appStore.localProxyList} columns={proxyColumns} pagination={false}
-                style={{ height: "calc(100vh - 400px)", overflowY: "scroll" }} />
+                style={{ height: "calc(100vh - 400px)", overflowY: "scroll", width: "320px" }} />
             }>
               <Badge count={appStore.localProxyList.length} size='small' dot style={{ left: "16px", top: "2px", backgroundColor: "#777" }}>
                 <PartitionOutlined style={{ marginRight: "20px", fontSize: "18px", color: "#777", cursor: "pointer" }} title='端口转发' />

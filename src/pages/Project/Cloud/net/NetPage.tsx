@@ -8,6 +8,7 @@ import { request } from "@/utils/request";
 import { gen_one_time_token } from "@/api/project_member";
 
 const NetPage = () => {
+    const appStore = useStores('appStore');
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
@@ -44,6 +45,7 @@ const NetPage = () => {
         }));
         await start_listen(servAddr, res.tunnel_id, projectStore.curProjectId, proxyEndPoint.end_point_name, port);
         message.info("监听本地端口成功");
+        appStore.loadLocalProxy();
         setProxyEndPoint(null);
     };
 
