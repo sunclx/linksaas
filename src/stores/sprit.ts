@@ -12,9 +12,20 @@ export default class SpritStore {
     }
     rootStore: RootStore;
 
+    private _spritTab = "";
     private _curSpritVersion: number = 0;
     private _taskList: IssueInfo[] = [];
     private _bugList: IssueInfo[] = [];
+
+    get spritTab(): string {
+        return this._spritTab;
+    }
+
+    set spritTab(val: string) {
+        runInAction(() => {
+            this._spritTab = val;
+        });
+    }
 
     get taskList(): IssueInfo[] {
         return this._taskList;
