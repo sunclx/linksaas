@@ -135,7 +135,7 @@ const TracePage = (props: TracePageProps) => {
             extra={
                 <Form layout="inline">
                     <Form.Item label="入口名称">
-                        <Select value={curRootSpanName} onChange={value => setCurRootSpanName(value)} style={{ width: "150px" }}>
+                        <Select value={curRootSpanName} onChange={value => setCurRootSpanName(value)} style={{ width: "150px" }} showSearch>
                             <Select.Option value="">全部入口</Select.Option>
                             {rootSpanNameList.map(item => (
                                 <Select.Option key={item} value={item}>{item}</Select.Option>
