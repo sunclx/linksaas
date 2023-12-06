@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { useHistory, useLocation } from "react-router-dom";
 import type { LinkInfo, LinkTaskInfo, LinkBugInfo } from "@/stores/linkAux";
 import { LINK_TARGET_TYPE } from "@/stores/linkAux";
 import { get as get_sprit } from "@/api/project_sprit";
@@ -31,13 +30,6 @@ const SpritDetail = () => {
     const memberStore = useStores('memberStore');
     const entryStore = useStores('entryStore');
 
-
-    const location = useLocation();
-    const tabStr = new URLSearchParams(location.search).get('tab') ?? "";
-
-    const history = useHistory();
-
-    const [activeKey, setActiveKey] = useState("");
     const [spritInfo, setSpritInfo] = useState<SpritInfo | null>(null);
     const [selMemberUserId, setSelMemberUserId] = useState("");
     const [refIssueType, setRefIssueType] = useState<ISSUE_TYPE | null>(null);
@@ -90,34 +82,30 @@ const SpritDetail = () => {
     useEffect(() => {
         if (entryStore.curEntry != null) {
             let needChange = false;
-            if (activeKey == "issue" && entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
+            if (spritStore.spritTab == "issue" && entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
                 needChange = true;
-            } else if (activeKey == "kanban" && entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_LIST) {
+            } else if (spritStore.spritTab == "kanban" && entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_LIST) {
                 needChange = true;
-            } else if (activeKey == "gantt" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_gantt_panel == true) {
+            } else if (spritStore.spritTab == "gantt" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_gantt_panel == true) {
                 needChange = true;
-            } else if (activeKey == "burnDown" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_burndown_panel == true) {
+            } else if (spritStore.spritTab == "burnDown" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_burndown_panel == true) {
                 needChange = true;
-            } else if (activeKey == "statistics" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_stat_panel == true) {
+            } else if (spritStore.spritTab == "statistics" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_stat_panel == true) {
                 needChange = true;
-            } else if (activeKey == "summary" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_summary_panel) {
+            } else if (spritStore.spritTab == "summary" && entryStore.curEntry.extra_info.ExtraSpritInfo?.hide_summary_panel) {
                 needChange = true;
-            } else if (tabStr == "") {
+            } else if (spritStore.spritTab == "") {
                 needChange = true;
             }
             if (needChange) {
                 if (entryStore.curEntry.extra_info.ExtraSpritInfo?.issue_list_type == ISSUE_LIST_KANBAN) {
-                    setActiveKey("kanban");
+                    spritStore.spritTab = "kanban";
                 } else {
-                    setActiveKey("issue");
-                }
-            } else {
-                if (tabStr != "") {
-                    setActiveKey(tabStr);
+                    spritStore.spritTab = "issue";
                 }
             }
         }
-    }, [entryStore.curEntry, tabStr]);
+    }, [entryStore.curEntry]);
 
     return (
         <Card bordered={false}
@@ -126,15 +114,15 @@ const SpritDetail = () => {
             <div>
                 {spritInfo != null && (
                     <Tabs
-                        activeKey={activeKey}
+                        activeKey={spritStore.spritTab}
                         type="card"
                         onChange={value => {
-                            history.push(`${location.pathname}?tab=${value}`);
+                            spritStore.spritTab = value;
                         }} tabBarExtraContent={
                             <Space>
                                 <CommentEntry projectId={projectStore.curProjectId} targetType={COMMENT_TARGET_ENTRY}
                                     targetId={entryStore.curEntry?.entry_id ?? ""} myUserId={userStore.userInfo.userId} myAdmin={projectStore.isAdmin} />
-                                {(activeKey == "issue" || activeKey == "kanban") && (
+                                {(spritStore.spritTab == "issue" || spritStore.spritTab == "kanban") && (
                                     <Form layout="inline">
                                         <Form.Item label="过滤成员">
                                             <Select value={selMemberUserId} style={{ width: "120px", marginRight: "20px" }}
@@ -185,7 +173,7 @@ const SpritDetail = () => {
                         }>
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.issue_list_type != ISSUE_LIST_KANBAN && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>列表</span>} key="issue">
-                                {activeKey == "issue" && (
+                                {spritStore.spritTab == "issue" && (
                                     <IssuePanel spritId={entryStore.curEntry?.entry_id ?? ""} startTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
                                         endTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0}
                                         memberId={selMemberUserId} />
@@ -194,30 +182,30 @@ const SpritDetail = () => {
                         )}
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.issue_list_type != ISSUE_LIST_LIST && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>看板</span>} key="kanban">
-                                {activeKey == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo} entryInfo={entryStore.curEntry} />}
+                                {spritStore.spritTab == "kanban" && <KanbanPanel memberId={selMemberUserId} spritInfo={spritInfo} entryInfo={entryStore.curEntry} />}
                             </Tabs.TabPane>
                         )}
 
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_gantt_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>甘特图</span>} key="gantt" disabled={!spritStore.allTimeReady}>
-                                {activeKey == "gantt" && <GanttPanel spritName={entryStore.curEntry?.entry_title ?? ""}
+                                {spritStore.spritTab == "gantt" && <GanttPanel spritName={entryStore.curEntry?.entry_title ?? ""}
                                     startTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.start_time ?? 0}
                                     endTime={entryStore.curEntry?.extra_info.ExtraSpritInfo?.end_time ?? 0} />}
                             </Tabs.TabPane>
                         )}
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_burndown_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>燃尽图</span>} key="burnDown" disabled={!spritStore.allTimeReady}>
-                                {activeKey == "burnDown" && <BurnDownPanel spritInfo={spritInfo} />}
+                                {spritStore.spritTab == "burnDown" && <BurnDownPanel spritInfo={spritInfo} />}
                             </Tabs.TabPane>
                         )}
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_stat_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>统计信息</span>} key="statistics" disabled={!spritStore.allTimeReady}>
-                                {activeKey == "statistics" && <StatPanel />}
+                                {spritStore.spritTab == "statistics" && <StatPanel />}
                             </Tabs.TabPane>
                         )}
                         {entryStore.curEntry?.extra_info.ExtraSpritInfo?.hide_summary_panel == false && (
                             <Tabs.TabPane tab={<span style={{ fontSize: "16px", fontWeight: 500 }}>工作总结</span>} key="summary">
-                                {activeKey == "summary" && <SummaryPanel state={spritInfo.summary_state} />}
+                                {spritStore.spritTab == "summary" && <SummaryPanel state={spritInfo.summary_state} />}
                             </Tabs.TabPane>
                         )}
                     </Tabs>

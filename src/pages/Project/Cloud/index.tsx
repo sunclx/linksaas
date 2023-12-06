@@ -104,28 +104,22 @@ const CloudIndex = () => {
         } halfContent extra={
             <Space size="middle">
                 {["k8s", "swarm"].includes(activeKey) && (
-                    <>
-                        <span>命名空间</span>
-                        <Select value={cloudStore.curNameSpace} onChange={value => {
-                            cloudStore.curNameSpace = value;
-                        }} style={{ width: "100px" }}>
-                            {cloudStore.nameSpaceList.map(item => (
-                                <Select.Option key={item} value={item}>{item}</Select.Option>
-                            ))}
-                        </Select>
-                    </>
+                    <Select value={cloudStore.curNameSpace} onChange={value => {
+                        cloudStore.curNameSpace = value;
+                    }} style={{ width: "100px" }}>
+                        {cloudStore.nameSpaceList.map(item => (
+                            <Select.Option key={item} value={item}>{item}</Select.Option>
+                        ))}
+                    </Select>
                 )}
                 {activeKey == "trace" && (
-                    <>
-                        <span>服务空间</span>
-                        <Select value={curSvcName} onChange={value => setCurSvcName(value)}
-                            style={{ width: "100px" }}>
-                            <Select.Option value="">全部服务</Select.Option>
-                            {svcNameList.map(svcName => (
-                                <Select.Option key={svcName} value={svcName}>{svcName}</Select.Option>
-                            ))}
-                        </Select>
-                    </>
+                    <Select value={curSvcName} onChange={value => setCurSvcName(value)}
+                        style={{ width: "100px" }}>
+                        <Select.Option value="">全部服务</Select.Option>
+                        {svcNameList.map(svcName => (
+                            <Select.Option key={svcName} value={svcName}>{svcName}</Select.Option>
+                        ))}
+                    </Select>
                 )}
                 {activeKey == "k8s" && (
                     <Popover trigger="click" placement="bottom" content={
