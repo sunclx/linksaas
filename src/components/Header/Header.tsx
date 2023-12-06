@@ -107,7 +107,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
   const proxyColumns: ColumnsType<ProxyInfo> = [
     {
-      title: "端口",
+      title: "本地地址",
       width: 100,
       render: (_, row: ProxyInfo) => `127.0.0.1:${row.port}`,
     },

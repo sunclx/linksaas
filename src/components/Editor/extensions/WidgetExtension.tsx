@@ -13,9 +13,9 @@ import { Widget } from './WidgetComponent';
 import type { WIDGET_TYPE } from '../widgets';
 import { WidgetInitDataMap } from '../widgets';
 
-export interface WidgetOptions {}
+export interface WidgetOptions { }
 
-@extension<WidgetOptions>({ defaultOptions: { } })
+@extension<WidgetOptions>({ defaultOptions: {} })
 export class WidgetExtension extends NodeExtension<WidgetOptions> {
   get name() {
     return 'widget' as const;
@@ -30,6 +30,8 @@ export class WidgetExtension extends NodeExtension<WidgetOptions> {
       inline: false,
       draggable: false,
       selectable: false,
+      code: true,
+      isolating: true,
       ...override,
       attrs: {
         ...extra.defaults(),
