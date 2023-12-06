@@ -2,7 +2,7 @@ import type { CheckboxOptionType } from 'antd';
 import type {
     ProjectEvCfg, ExtEvCfg,
     GiteeEvCfg, GitlabEvCfg, IssueEvCfg,
-    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, EntryEvCfg
+    RequirementEvCfg, CodeEvCfg, IdeaEvCfg, DataAnnoEvCfg, ApiCollectionEvCfg, AtomgitEvCfg, EntryEvCfg, HarborEvCfg
 } from '@/api/events_subscribe';
 
 export const projectEvOptionList: CheckboxOptionType[] = [
@@ -1243,6 +1243,66 @@ export const genEntryEvCfgValues = (cfg: EntryEvCfg): string[] => {
     }
     if (cfg.remove) {
         retList.push("remove");
+    }
+    return retList;
+};
+
+export const harborEvOptionList: CheckboxOptionType[] = [
+    {
+        label: "推送工件",
+        value: "push_artifact",
+    },
+    {
+        label: "删除工件",
+        value: "delete_artifact",
+    },
+    {
+        label: "上传chart",
+        value: "upload_chart",
+    },
+    {
+        label: "删除chart",
+        value: "delete_chart",
+    },
+];
+
+export const calcHarborEvCfg = (values: string[] | undefined): HarborEvCfg => {
+    const ret: HarborEvCfg = {
+        push_artifact: false,
+        delete_artifact: false,
+        upload_chart: false,
+        delete_chart: false,
+    };
+    if (values == undefined) {
+        return ret;
+    }
+    values.forEach(value => {
+        if (value == "push_artifact") {
+            ret.push_artifact = true;
+        } else if (value == "delete_artifact") {
+            ret.delete_artifact = true;
+        } else if (value == "upload_chart") {
+            ret.upload_chart = true;
+        } else if (value == "delete_chart") {
+            ret.delete_chart = true;
+        } 
+    });
+    return ret;
+};
+
+export const genHarborEvCfgValues = (cfg: HarborEvCfg): string[] => {
+    const retList: string[] = [];
+    if (cfg.push_artifact) {
+        retList.push("push_artifact");
+    }
+    if (cfg.delete_artifact) {
+        retList.push("delete_artifact");
+    }
+    if (cfg.upload_chart) {
+        retList.push("upload_chart");
+    }
+    if (cfg.delete_chart) {
+        retList.push("delete_chart");
     }
     return retList;
 };

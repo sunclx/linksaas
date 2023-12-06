@@ -15,9 +15,9 @@ import {
     codeEvOptionList, extEvOptionList,
     genCodeEvCfgValues, genExtEvCfgValues, genGiteeEvCfgValues, genGitlabEvCfgValues,
     genIssueEvCfgValues, genProjectEvCfgValues, genRequirementEvCfgValues,
-     giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
-    requirementEvOptionList,  ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
-    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genEntryEvCfgValues, entryEvOptionList
+    giteeEvOptionList, gitlabEvOptionList, issueEvOptionList, projectEvOptionList,
+    requirementEvOptionList, ideaEvOptionList, genIdeaEvCfgValues, dataAnnoEvOptionList, genDataAnnoEvCfgValues,
+    apiCollectionEvOptionList, genApiCollectionEvCfgValues, atomgitEvOptionList, genAtomgitEvCfgValues, genEntryEvCfgValues, entryEvOptionList, genHarborEvCfgValues, harborEvOptionList
 } from "./components/constants";
 import UpdateSubscribeModal from "./components/UpdateSubscribeModal";
 import Dropdown from "antd/lib/dropdown";
@@ -151,6 +151,9 @@ const SubscribeList = () => {
                                         </Form.Item>
                                         <Form.Item label="gitlab事件">
                                             <Checkbox.Group options={gitlabEvOptionList} value={genGitlabEvCfgValues(item.event_cfg.gitlab_ev_cfg)} disabled={true} />
+                                        </Form.Item>
+                                        <Form.Item label="harbor事件">
+                                            <Checkbox.Group options={harborEvOptionList} value={genHarborEvCfgValues(item.event_cfg.harbor_ev_cfg)} disabled={true} />
                                         </Form.Item>
                                         <Form.Item label="需求事件">
                                             <Checkbox.Group options={requirementEvOptionList} value={genRequirementEvCfgValues(item.event_cfg.requirement_ev_cfg)} disabled={true} />

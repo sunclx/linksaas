@@ -13,6 +13,7 @@ import Button from '@/components/Button';
 import iconAtomgit from '@/assets/allIcon/icon-atomgit.png';
 import iconGitee from '@/assets/allIcon/icon-gitee.png';
 import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
+import iconHarbor from '@/assets/allIcon/icon-harbor.png';
 import { runInAction } from 'mobx';
 import AddModal from './components/AddModal';
 
@@ -124,6 +125,15 @@ const ProjectInvite: React.FC = () => {
             localStore.setNewEventSource(API.EVENT_SOURCE_GITLAB);
           }}>
           <img src={iconGitlab} style={{ width: "20px", marginRight: "10px" }} />连接Gitlab
+        </Button>
+        <Button type="default"
+          disabled={projectStore.isClosed}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            localStore.setNewEventSource(API.EVENT_SOURCE_HARBOR);
+          }}>
+          <img src={iconHarbor} style={{ width: "20px", marginRight: "10px" }} />连接Harbor
         </Button>
       </Space>
     }>
