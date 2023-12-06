@@ -1,6 +1,7 @@
 import iconGitee from '@/assets/allIcon/icon-gitee.png';
 import iconAtomgit from '@/assets/allIcon/icon-atomgit.png';
 import iconGitlab from '@/assets/allIcon/icon-gitlab.png';
+import iconHarbor from '@/assets/allIcon/icon-harbor.png';
 import iconApp from '@/assets/allIcon/logo.png';
 import taskIcon from '@/assets/allIcon/icon-task.png';
 import bugIcon from '@/assets/allIcon/icon-bug.png';
@@ -62,6 +63,10 @@ export const EVENT_ICON_LIST = {
   [API.EVENT_TYPE_GITLAB]: {
     title: 'GitLab',
     icon: iconGitlab,
+  },
+  [API.EVENT_TYPE_HARBOR]: {
+    title: 'Harbor',
+    icon: iconHarbor,
   },
   [API.EVENT_TYPE_GITEE]: {
     title: 'Gitee',
