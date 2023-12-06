@@ -142,6 +142,13 @@ export type EntryEvCfg = {
     remove: boolean;
 };
 
+export type HarborEvCfg = {
+    push_artifact: boolean;
+    delete_artifact: boolean;
+    upload_chart: boolean;
+    delete_chart: boolean;
+};
+
 export type EventCfg = {
     project_ev_cfg: ProjectEvCfg;
     ext_ev_cfg: ExtEvCfg;
@@ -155,6 +162,7 @@ export type EventCfg = {
     api_collection_ev_cfg: ApiCollectionEvCfg;
     atomgit_ev_cfg: AtomgitEvCfg;
     entry_ev_cfg: EntryEvCfg;
+    harbor_ev_cfg: HarborEvCfg;
 };
 
 export type SubscribeInfo = {
@@ -272,6 +280,14 @@ export function adjust_event_cfg(cfg: EventCfg): EventCfg {
             close: false,
             remove: false,
         }
+    }
+    if (cfg.harbor_ev_cfg == undefined || cfg.harbor_ev_cfg == null) {
+        cfg.harbor_ev_cfg = {
+            push_artifact: false,
+            delete_artifact: false,
+            upload_chart: false,
+            delete_chart: false,
+        };
     }
     return cfg;
 }

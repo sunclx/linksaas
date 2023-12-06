@@ -14,6 +14,7 @@ import {
     calcExtEvCfg,
     calcGiteeEvCfg,
     calcGitlabEvCfg,
+    calcHarborEvCfg,
     calcIdeaEvCfg,
     calcIssueEvCfg,
     calcProjectEvCfg,
@@ -30,12 +31,14 @@ import {
     genExtEvCfgValues,
     genGiteeEvCfgValues,
     genGitlabEvCfgValues,
+    genHarborEvCfgValues,
     genIdeaEvCfgValues,
     genIssueEvCfgValues,
     genProjectEvCfgValues,
     genRequirementEvCfgValues,
     giteeEvOptionList,
     gitlabEvOptionList,
+    harborEvOptionList,
     ideaEvOptionList,
     issueEvOptionList,
     projectEvOptionList,
@@ -66,6 +69,7 @@ interface FormValue {
     dataAnnoEvCfg: string[] | undefined;
     apiCollectionEvCfg: string[] | undefined;
     entryEvCfg: string[] | undefined;
+    harborEvCfg: string[] | undefined;
 }
 
 const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
@@ -92,6 +96,10 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
     const gitlabEvCfgValues = genGitlabEvCfgValues(props.subscribe.event_cfg.gitlab_ev_cfg);
     const [gitlabEvCfgCheckAll, setGitlabEvCfgCheckAll] = useState(gitlabEvCfgValues.length == gitlabEvOptionList.length);
     const [gitlabEvCfgIndeterminate, setGitlabEvCfgIndeterminate] = useState(gitlabEvCfgValues.length > 0 && gitlabEvCfgValues.length < gitlabEvOptionList.length);
+
+    const harborEvCfgValues = genHarborEvCfgValues(props.subscribe.event_cfg.harbor_ev_cfg);
+    const [harborEvCfgCheckAll, setHarborEvCfgCheckAll] = useState(harborEvCfgValues.length == harborEvOptionList.length);
+    const [harborEvCfgIndeterminate, setHarborEvCfgIndeterminate] = useState(harborEvCfgValues.length > 0 && harborEvCfgValues.length < harborEvOptionList.length);
 
     const issueEvCfgValues = genIssueEvCfgValues(props.subscribe.event_cfg.issue_ev_cfg);
     const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(issueEvCfgValues.length == issueEvOptionList.length);
@@ -145,6 +153,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
                 api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
                 entry_ev_cfg: calcEntryEvCfg(formValue.entryEvCfg),
+                harbor_ev_cfg: calcHarborEvCfg(formValue.harborEvCfg),
             },
         }));
         props.onOk();
@@ -174,6 +183,7 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                     "dataAnnoEvCfg": dataAnnoEvCfgValues,
                     "apiCollectionEvCfg": apiCollectionEvCfgValues,
                     "entryEvCfg": entryEvCfgValues,
+                    "harborEvCfg": harborEvCfgValues,
                 }}>
                     <Form.Item label="订阅名称" name="chatBotName" rules={[{ required: true }]}>
                         <Input defaultValue={props.subscribe.chat_bot_name} />
@@ -329,6 +339,31 @@ const UpdateSubscribeModal: React.FC<UpdateSubscribeModalProps> = (props) => {
                             } else {
                                 setGitlabEvCfgCheckAll(false);
                                 setGitlabEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    <Form.Item label={<Checkbox indeterminate={harborEvCfgIndeterminate} checked={harborEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setHarborEvCfgIndeterminate(false);
+                        if (harborEvCfgCheckAll) {
+                            setHarborEvCfgCheckAll(false);
+                            form.setFieldValue("harborEvCfg", []);
+                        } else {
+                            setHarborEvCfgCheckAll(true);
+                            form.setFieldValue("harborEvCfg", harborEvOptionList.map(item => item.value));
+                        }
+                    }}>harbor事件</Checkbox>} name="harborEvCfg">
+                        <Checkbox.Group options={harborEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setHarborEvCfgCheckAll(false);
+                                setHarborEvCfgIndeterminate(false);
+                            } else if (values.length == harborEvOptionList.length) {
+                                setHarborEvCfgCheckAll(true);
+                                setHarborEvCfgIndeterminate(false);
+                            } else {
+                                setHarborEvCfgCheckAll(false);
+                                setHarborEvCfgIndeterminate(true);
                             }
                         }} />
                     </Form.Item>

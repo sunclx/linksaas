@@ -2182,6 +2182,81 @@ const gitlabEventList: EventDesc[] = [
     },
 ];
 
+const harborEventList: EventDesc[] = [
+    {
+        id: "PushArtifactEvent",
+        name: "推送工件",
+        attrList: [
+            {
+                key: "occur_at",
+                desc: "发生时间",
+            },
+            {
+                key: "operator",
+                desc: "操作人员",
+            },
+            {
+                key: "event_data",
+                desc: "事件数据",
+            },
+        ],
+    },
+    {
+        id: "DeleteArtifactEvent",
+        name: "删除工件",
+        attrList: [
+            {
+                key: "occur_at",
+                desc: "发生时间",
+            },
+            {
+                key: "operator",
+                desc: "操作人员",
+            },
+            {
+                key: "event_data",
+                desc: "事件数据",
+            },
+        ],
+    },
+    {
+        id: "UploadChartEvent",
+        name: "上传chart",
+        attrList: [
+            {
+                key: "occur_at",
+                desc: "发生时间",
+            },
+            {
+                key: "operator",
+                desc: "操作人员",
+            },
+            {
+                key: "event_data",
+                desc: "事件数据",
+            },
+        ],
+    },
+    {
+        id: "DeleteChartEvent",
+        name: "删除chart",
+        attrList: [
+            {
+                key: "occur_at",
+                desc: "发生时间",
+            },
+            {
+                key: "operator",
+                desc: "操作人员",
+            },
+            {
+                key: "event_data",
+                desc: "事件数据",
+            },
+        ],
+    },
+];
+
 const atomgitEventList: EventDesc[] = [
     {
         id: "IssueEvent",
@@ -2747,6 +2822,11 @@ export const eventGroupList: EventGroup[] = [
         id: "GitlabEvent",
         name: "gitlab",
         eventDescList: gitlabEventList,
+    },
+    {
+        id: "HarborEvent",
+        name: "harbor",
+        eventDescList: harborEventList,
     },
     {
         id: "RequirementEvent",

@@ -39,6 +39,7 @@ export const EVENT_TYPE_JIRA: EVENT_TYPE = 105; //jira事件
 export const EVENT_TYPE_CONFLUENCE: EVENT_TYPE = 106; //confluence事件
 export const EVENT_TYPE_JENKINS: EVENT_TYPE = 107; //jenkins事件
 export const EVENT_TYPE_ATOMGIT: EVENT_TYPE = 108; //atomgit事件
+export const EVENT_TYPE_HARBOR: EVENT_TYPE = 109; //harbor事件
 
 type EVENT_REF_TYPE = number;
 

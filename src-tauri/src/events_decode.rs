@@ -779,6 +779,42 @@ pub mod entry {
     }
 }
 
+pub mod harbor {
+    use prost::Message;
+    use proto_gen_rust::events_harbor;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+    pub enum Event {
+        PushArtifactEvent(events_harbor::PushArtifactEvent),
+        DeleteArtifactEvent(events_harbor::DeleteArtifactEvent),
+        UploadChartEvent(events_harbor::UploadChartEvent),
+        DeleteChartEvent(events_harbor::DeleteChartEvent),
+    }
+
+    pub fn decode_event(data: &Any) -> Option<Event> {
+        if data.type_url == events_harbor::PushArtifactEvent::type_url() {
+            if let Ok(ev) = events_harbor::PushArtifactEvent::decode(data.value.as_slice()) {
+                return Some(Event::PushArtifactEvent(ev));
+            }
+        } else if data.type_url == events_harbor::DeleteArtifactEvent::type_url() {
+            if let Ok(ev) = events_harbor::DeleteArtifactEvent::decode(data.value.as_slice()) {
+                return Some(Event::DeleteArtifactEvent(ev));
+            }
+        } else if data.type_url == events_harbor::UploadChartEvent::type_url() {
+            if let Ok(ev) = events_harbor::UploadChartEvent::decode(data.value.as_slice()) {
+                return Some(Event::UploadChartEvent(ev));
+            }
+        } else if data.type_url == events_harbor::DeleteChartEvent::type_url() {
+            if let Ok(ev) = events_harbor::DeleteChartEvent::decode(data.value.as_slice()) {
+                return Some(Event::DeleteChartEvent(ev));
+            }
+        }
+        None
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub enum EventMessage {
     ProjectEvent(project::Event),
@@ -794,6 +830,7 @@ pub enum EventMessage {
     ApiCollectionEvent(api_collection::Event),
     AtomgitEvent(atomgit::Event),
     EntryEvent(entry::Event),
+    HarborEvent(harbor::Event),
     NoopEvent(),
 }
 
@@ -838,6 +875,9 @@ pub fn decode_event(data: &Any) -> Option<EventMessage> {
     }
     if let Some(ret) = entry::decode_event(data) {
         return Some(EventMessage::EntryEvent(ret));
+    }
+    if let Some(ret) = harbor::decode_event(data) {
+        return Some(EventMessage::HarborEvent(ret));
     }
     Some(EventMessage::NoopEvent())
 }
