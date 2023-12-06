@@ -26,6 +26,8 @@ import {
     atomgitEvOptionList,
     calcEntryEvCfg,
     entryEvOptionList,
+    calcHarborEvCfg,
+    harborEvOptionList,
 } from "./constants";
 import { CHAT_BOT_QYWX, CHAT_BOT_DING, CHAT_BOT_FS, create as create_subscribe } from '@/api/events_subscribe';
 import type { CHAT_BOT_TYPE } from '@/api/events_subscribe';
@@ -55,6 +57,7 @@ interface FormValue {
     dataAnnoEvCfg: string[] | undefined;
     apiCollectionEvCfg: string[] | undefined;
     entryEvCfg: string[] | undefined;
+    harborEvCfg: string[] | undefined;
 }
 
 
@@ -80,6 +83,9 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
 
     const [gitlabEvCfgCheckAll, setGitlabEvCfgCheckAll] = useState(false);
     const [gitlabEvCfgIndeterminate, setGitlabEvCfgIndeterminate] = useState(false);
+
+    const [harborEvCfgCheckAll, setHarborEvCfgCheckAll] = useState(false);
+    const [harborEvCfgIndeterminate, setHarborEvCfgIndeterminate] = useState(false);
 
     const [issueEvCfgCheckAll, setIssueEvCfgCheckAll] = useState(false);
     const [issueEvCfgIndeterminate, setIssueEvCfgIndeterminate] = useState(false);
@@ -137,6 +143,7 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                 data_anno_ev_cfg: calcDataAnnoEvCfg(formValue.dataAnnoEvCfg),
                 api_collection_ev_cfg: calcApiCollectionEvCfg(formValue.apiCollectionEvCfg),
                 entry_ev_cfg: calcEntryEvCfg(formValue.entryEvCfg),
+                harbor_ev_cfg: calcHarborEvCfg(formValue.harborEvCfg),
             },
         }));
         props.onOk();
@@ -349,6 +356,33 @@ const CreateSubscribeModal: React.FC<CreateSubscribeModalProps> = (props) => {
                             }
                         }} />
                     </Form.Item>
+
+                    <Form.Item label={<Checkbox indeterminate={harborEvCfgIndeterminate} checked={harborEvCfgCheckAll} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setHarborEvCfgIndeterminate(false);
+                        if (harborEvCfgCheckAll) {
+                            setHarborEvCfgCheckAll(false);
+                            form.setFieldValue("harborEvCfg", []);
+                        } else {
+                            setHarborEvCfgCheckAll(true);
+                            form.setFieldValue("harborEvCfg", harborEvOptionList.map(item => item.value));
+                        }
+                    }}>harbor事件</Checkbox>} name="harborEvCfg">
+                        <Checkbox.Group options={harborEvOptionList} onChange={values => {
+                            if (values.length == 0) {
+                                setHarborEvCfgCheckAll(false);
+                                setHarborEvCfgIndeterminate(false);
+                            } else if (values.length == harborEvOptionList.length) {
+                                setHarborEvCfgCheckAll(true);
+                                setHarborEvCfgIndeterminate(false);
+                            } else {
+                                setHarborEvCfgCheckAll(false);
+                                setHarborEvCfgIndeterminate(true);
+                            }
+                        }} />
+                    </Form.Item>
+                    
                     <Form.Item label={<Checkbox indeterminate={requirementEvCfgIndeterminate} checked={requirementEvCfgCheckAll} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();

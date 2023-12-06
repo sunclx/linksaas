@@ -16,7 +16,7 @@ import { type AllIdeaEvent, get_idea_simple_content } from './events/idea';
 import { type AllApiCollectionEvent, get_api_collection_simple_content } from './events/api_collection';
 import { type AllAtomgitEvent, get_atomgit_simple_content } from './events/atomgit';
 import { type AllEntryEvent, get_entry_simple_content } from './events/entry';
-
+import { type AllHarborEvent, get_harbor_simple_content } from './events/harbor';
 
 export function get_issue_type_str(issue_type: number): string {
   if (issue_type == pi.ISSUE_TYPE_BUG) {
@@ -42,6 +42,7 @@ export class AllEvent {
   ApiCollectionEvent?: AllApiCollectionEvent;
   AtomgitEvent?: AllAtomgitEvent;
   EntryEvent?: AllEntryEvent;
+  HarborEvent?: AllHarborEvent;
 }
 
 export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): LinkInfo[] {
@@ -71,6 +72,8 @@ export function get_simple_content(ev: PluginEvent, skip_prj_name: boolean): Lin
     return get_atomgit_simple_content(ev, skip_prj_name, ev.event_data.AtomgitEvent);
   } else if (ev.event_data.EntryEvent !== undefined) {
     return get_entry_simple_content(ev, skip_prj_name, ev.event_data.EntryEvent);
+  } else if (ev.event_data.HarborEvent !== undefined) {
+    return get_harbor_simple_content(ev, skip_prj_name, ev.event_data.HarborEvent);
   }
   return [new LinkNoneInfo('未知事件')];
 }
