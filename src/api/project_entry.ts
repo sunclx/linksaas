@@ -5,6 +5,7 @@ export const ENTRY_TYPE_SPRIT: ENTRY_TYPE = 0;
 export const ENTRY_TYPE_DOC: ENTRY_TYPE = 1;
 export const ENTRY_TYPE_PAGES: ENTRY_TYPE = 2;
 export const ENTRY_TYPE_BOARD: ENTRY_TYPE = 3;
+export const ENTRY_TYPE_NULL: ENTRY_TYPE = 999;
 
 export type ISSUE_LIST_TYPE = number;
 export const ISSUE_LIST_ALL: ISSUE_LIST_TYPE = 0;
