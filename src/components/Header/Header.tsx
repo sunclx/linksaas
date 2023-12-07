@@ -2,7 +2,7 @@ import { PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { appWindow } from '@tauri-apps/api/window';
 import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
-import { Badge, Button, Layout, Popover, Progress, Space, Switch, Table, message } from 'antd';
+import { Badge, Button, Layout, Popover, Progress, Segmented, Space, Table, message } from 'antd';
 import { observer } from 'mobx-react';
 import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
@@ -107,7 +107,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
   const proxyColumns: ColumnsType<ProxyInfo> = [
     {
-      title: "端口",
+      title: "本地地址",
       width: 100,
       render: (_, row: ProxyInfo) => `127.0.0.1:${row.port}`,
     },
@@ -316,8 +316,25 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </a>
           )}
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && projectStore.curProjectId != "" && (
-            <Switch checked={appStore.focusMode} onChange={value => appStore.focusMode = value} style={{ marginRight: "20px" }}
-              checkedChildren="专注模式" unCheckedChildren="普通模式" />
+            <div className={style.segWrap}>
+              <Segmented options={[
+                {
+                  label: "普通模式",
+                  value: 0,
+                },
+                {
+                  label: "专注模式",
+                  value: 1,
+                }
+              ]} style={{ marginRight: "20px" }} value={appStore.focusMode ? 1 : 0}
+                onChange={value => {
+                  if (value.valueOf() == 1) {
+                    appStore.focusMode = true;
+                  } else {
+                    appStore.focusMode = false;
+                  }
+                }} />
+            </div>
           )}
           {(userStore.sessionId != "" || userStore.adminSessionId != "") && (
             <Popover trigger="click" placement='bottom' content={

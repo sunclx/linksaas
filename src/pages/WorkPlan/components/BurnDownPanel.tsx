@@ -276,7 +276,7 @@ const BurnDownPanel: React.FC<BurnDownPanelProps> = (props) => {
         const retList = totalInfo.dayInfoList.map((item, index) => {
             return {
                 name: `${item.day}`,
-                "预期": (totalInfo.totalEstimate - step * index) / 60.0,
+                "预期": Math.round((totalInfo.totalEstimate - step * index) / 60.0 * 100) / 100,
                 "实际": item.remainMinutes == undefined ? undefined : item.remainMinutes / 60.0,
             };
         });

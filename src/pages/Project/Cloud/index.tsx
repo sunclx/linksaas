@@ -98,7 +98,7 @@ const CloudIndex = () => {
             <Space size="middle">
                 <span>研发环境</span>
                 <div className={s.wrap}>
-                    <Segmented size="small" options={calcSegOptionList()} value={activeKey} onChange={value => setActiveKey(value.valueOf() as string)} />
+                    <Segmented options={calcSegOptionList()} value={activeKey} onChange={value => setActiveKey(value.valueOf() as string)} />
                 </div>
             </Space>
         } halfContent extra={

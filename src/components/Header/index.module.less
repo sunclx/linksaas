@@ -90,3 +90,14 @@ header.layout_header {
   background: url('@/assets/allIcon/no_collect.png');
   background-size: 100% 100%;
 }
+
+.segWrap {
+  :global(.ant-segmented-item) {
+    background-color: white;
+  }
+
+  :global(.ant-segmented-item-selected) {
+    background-color: orange;
+    transition: none;
+  }
+}

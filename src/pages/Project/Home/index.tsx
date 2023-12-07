@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import s from "./index.module.less";
 import { observer } from 'mobx-react';
-import { Card, Divider, Dropdown, Form, Input, List, Select, Space, Switch, Tabs } from "antd";
+import { Card, Divider, Dropdown, Form, Input, List, Segmented, Select, Space, Switch, Tabs } from "antd";
 import { useHistory } from "react-router-dom";
 import { APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type { ENTRY_TYPE, ListParam, EntryInfo } from "@/api/project_entry";
-import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC } from "@/api/project_entry";
+import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_NULL, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD } from "@/api/project_entry";
 import { request } from "@/utils/request";
 import { CreditCardFilled, FilterTwoTone } from "@ant-design/icons";
 import EntryCard from "./EntryCard";
@@ -30,7 +30,7 @@ const ProjectHome = () => {
     const [keyword, setKeyword] = useState("");
     const [showFilterBar, setShowFilterBar] = useState(false);
     const [tagIdList, setTagIdList] = useState<string[]>([]);
-    const [entryTypeList, setEntryTypeList] = useState<ENTRY_TYPE[]>([]);
+    const [entryType, setEntryType] = useState<ENTRY_TYPE>(ENTRY_TYPE_NULL);
 
     const [activeKey, setActiveKey] = useState("open");
     const [filterByWatch, setFilterByWatch] = useState(false);
@@ -48,8 +48,8 @@ const ProjectHome = () => {
                 keyword: keyword,
                 filter_by_mark_remove: true,
                 mark_remove: false,
-                filter_by_entry_type: entryTypeList.length > 0,
-                entry_type_list: entryTypeList,
+                filter_by_entry_type: entryType != ENTRY_TYPE_NULL,
+                entry_type_list: entryType == ENTRY_TYPE_NULL ? [] : [entryType],
             };
         } else if (activeKey == "close") {
             listParam = {
@@ -60,8 +60,8 @@ const ProjectHome = () => {
                 keyword: keyword,
                 filter_by_mark_remove: true,
                 mark_remove: true,
-                filter_by_entry_type: entryTypeList.length > 0,
-                entry_type_list: entryTypeList,
+                filter_by_entry_type: entryType != ENTRY_TYPE_NULL,
+                entry_type_list: entryType == ENTRY_TYPE_NULL ? [] : [entryType],
             };
         }
         if (listParam == null) {
@@ -110,8 +110,8 @@ const ProjectHome = () => {
         if (tagIdList.length != 0) {
             setTagIdList([]);
         }
-        if (entryTypeList.length != 0) {
-            setEntryTypeList([]);
+        if (entryType != ENTRY_TYPE_NULL) {
+            setEntryType(ENTRY_TYPE_NULL);
         }
         if (showFilterBar) {
             setShowFilterBar(false);
@@ -121,7 +121,7 @@ const ProjectHome = () => {
 
     useEffect(() => {
         loadEntryList();
-    }, [curPage, dataVersion, keyword, tagIdList, entryTypeList, activeKey, filterByWatch]);
+    }, [curPage, dataVersion, keyword, tagIdList, entryType, activeKey, filterByWatch]);
 
     useEffect(() => {
         loadSysEntryList();
@@ -207,14 +207,6 @@ const ProjectHome = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item>
-                                <Select mode="multiple" value={entryTypeList} onChange={value => setEntryTypeList(value)}
-                                    allowClear placeholder="过滤内容类型"
-                                    style={{ minWidth: "100px" }} size="large">
-                                    <Select.Option value={ENTRY_TYPE_SPRIT}>工作计划</Select.Option>
-                                    <Select.Option value={ENTRY_TYPE_DOC}>文档</Select.Option>
-                                </Select>
-                            </Form.Item>
                         </Form>
                         <Dropdown.Button type="primary" onClick={e => {
                             e.stopPropagation();
@@ -279,6 +271,31 @@ const ProjectHome = () => {
                         },
                     ]} type="card" tabBarExtraContent={
                         <Form layout="inline">
+                            <Form.Item className={s.seg_wrap} label="内容类型">
+                                <Segmented options={[
+                                    {
+                                        label: "全部",
+                                        value: ENTRY_TYPE_NULL,
+                                    },
+                                    {
+                                        label: "工作计划",
+                                        value: ENTRY_TYPE_SPRIT,
+                                    },
+                                    {
+                                        label: "文档",
+                                        value: ENTRY_TYPE_DOC,
+                                    },
+                                    {
+                                        label: "静态网页",
+                                        value: ENTRY_TYPE_PAGES,
+                                    },
+                                    {
+                                        label: "信息面板",
+                                        value: ENTRY_TYPE_BOARD,
+                                    }
+
+                                ]} value={entryType} onChange={value => setEntryType(value.valueOf() as number)} />
+                            </Form.Item>
                             <Form.Item label="只看我的关注">
                                 <Switch checked={filterByWatch} onChange={value => setFilterByWatch(value)} />
                             </Form.Item>
@@ -286,7 +303,7 @@ const ProjectHome = () => {
                     } />
             </Card>
 
-        </div>
+        </div >
     );
 };
 

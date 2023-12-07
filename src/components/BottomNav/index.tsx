@@ -22,10 +22,11 @@ const RightFloat = observer(() => {
     <div className={s.right_float}>
       <AlarmHeader />
       <div style={{ marginRight: "18px" }}>
-        <Popover trigger={["hover", "click"]} placement="topLeft" destroyTooltipOnHide
+        <Popover trigger="hover" placement="topLeft" destroyTooltipOnHide
+          mouseLeaveDelay={1}
           content={<CommentAndWatchPanel />}>
           <Badge count={projectStore.curProject?.project_status.unread_comment_count} size='small'>
-            <MessageTwoTone style={{ fontSize: "20px", cursor: "pointer" }} twoToneColor={["orange", "white"]} />
+            <MessageTwoTone style={{ fontSize: "20px", cursor: "default" }} twoToneColor={["orange", "white"]} />
           </Badge>
         </Popover>
       </div>
@@ -35,7 +36,8 @@ const RightFloat = observer(() => {
         )}
         {location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) == false && (
           <Popover
-            trigger={["hover", "click"]} placement="topLeft" destroyTooltipOnHide
+            trigger="hover" placement="topLeft" destroyTooltipOnHide
+            mouseLeaveDelay={1}
             content={
               <MemberList />
             }>
