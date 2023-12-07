@@ -15,6 +15,11 @@
   border-radius: 6px;
 }
 
+.active_sub_menu {
+  color: white !important;
+  font-weight: 600;
+}
+
 .workbench_menu {
   color: #aaa;
   margin-left: 4px;
@@ -112,6 +117,7 @@
           vertical-align: text-top;
           background-repeat: no-repeat;
           background-size: contain;
+
           svg {
             color: orange;
             font-size: 20px;
@@ -165,6 +171,17 @@
           text-overflow: ellipsis;
           width: 100px;
           cursor: pointer;
+        }
+      }
+
+      .project_sub_menu {
+        margin-left: 44px;
+        cursor: pointer;
+        color: #aaa;
+
+        &:hover {
+          color: white;
+          font-weight: 600;
         }
       }
     }
@@ -279,6 +296,7 @@
     background-image: -webkit-image-set(url('@/assets/allIcon/icon-add-channel.png') 1x,
         url('@/assets/allIcon/icon-add-channel@2x.png') 2x);
   }
+
   svg {
     color: orange;
   }

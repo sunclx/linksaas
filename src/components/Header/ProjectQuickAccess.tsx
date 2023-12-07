@@ -12,8 +12,8 @@ import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
 import { request } from "@/utils/request";
 import { update_setting } from '@/api/project';
-import { APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
-import { ENTRY_TYPE_DOC, ENTRY_TYPE_SPRIT } from "@/api/project_entry";
+import { APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
+import { ENTRY_TYPE_BOARD, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT } from "@/api/project_entry";
 
 const MENU_KEY_SHOW_INVITE_MEMBER = "invite.member.show";
 const MENU_KEY_MEMBER_PREFIX = "member:";
@@ -42,11 +42,10 @@ const MENU_KEY_LAYOUT_MYWORK_WATCH_TASK = "layout.mywork.watchtask";
 const MENU_KEY_LAYOUT_MYWORK_WATCH_BUG = "layout.mywork.watchbug";
 const MENU_KEY_LAYOUT_OVERVIEW_EXTRA_INFO = "layout.overview.extrainfo";
 
-const MENU_KEY_SHOW_PROJECT_OVERVIEW = "project.overview.show";
-const MENU_KEY_SHOW_MY_WORK = "project.mywork.show";
-const MENU_KEY_SHOW_HOME = "project.home.show";
 const MENU_KEY_ENTRY_CREATE_SPRIT = "project.entry.sprit.create";
 const MENU_KEY_ENTRY_CREATE_DOC = "project.entry.doc.create";
+const MENU_KEY_ENTRY_CREATE_PAGES = "project.entry.pages.create";
+const MENU_KEY_ENTRY_CREATE_BOARD = "project.entry.board.create";
 
 
 const ProjectQuickAccess = () => {
@@ -149,25 +148,6 @@ const ProjectQuickAccess = () => {
         tmpItems.push(memberItem);
 
         tmpItems.push({
-            key: "sysPanel",
-            label: "系统面板",
-            children: [
-                {
-                    key: MENU_KEY_SHOW_HOME,
-                    label: "查看所有面板",
-                },
-                {
-                    key: MENU_KEY_SHOW_MY_WORK,
-                    label: "我的工作",
-                },
-                {
-                    key: MENU_KEY_SHOW_PROJECT_OVERVIEW,
-                    label: "项目概览"
-                }
-            ],
-        });
-
-        tmpItems.push({
             key: "contentEntry",
             label: "内容入口",
             children: [
@@ -178,7 +158,15 @@ const ProjectQuickAccess = () => {
                 {
                     key: MENU_KEY_ENTRY_CREATE_DOC,
                     label: "创建文档",
-                }
+                },
+                {
+                    key: MENU_KEY_ENTRY_CREATE_PAGES,
+                    label: "创建静态网页",
+                },
+                {
+                    key: MENU_KEY_ENTRY_CREATE_BOARD,
+                    label: "创建信息面板",
+                },
             ],
         });
 
@@ -397,21 +385,17 @@ const ProjectQuickAccess = () => {
             case MENU_KEY_SHOW_TOOL_BAR_DATA_ANNO:
                 linkAuxStore.goToDataAnnoList(history);
                 break;
-            case MENU_KEY_SHOW_PROJECT_OVERVIEW:
-                memberStore.showDetailMemberId = "";
-                history.push(APP_PROJECT_OVERVIEW_PATH);
-                break;
-            case MENU_KEY_SHOW_MY_WORK:
-                history.push(APP_PROJECT_MY_WORK_PATH);
-                break;
-            case MENU_KEY_SHOW_HOME:
-                history.push(APP_PROJECT_HOME_PATH);
-                break;
             case MENU_KEY_ENTRY_CREATE_SPRIT:
                 entryStore.createEntryType = ENTRY_TYPE_SPRIT;
                 break;
             case MENU_KEY_ENTRY_CREATE_DOC:
                 entryStore.createEntryType = ENTRY_TYPE_DOC;
+                break;
+            case MENU_KEY_ENTRY_CREATE_PAGES:
+                entryStore.createEntryType = ENTRY_TYPE_PAGES;
+                break;
+            case MENU_KEY_ENTRY_CREATE_BOARD:
+                entryStore.createEntryType = ENTRY_TYPE_BOARD;
                 break;
             default:
                 if (info.key.startsWith(MENU_KEY_LAYOUT_PREFIX)) {

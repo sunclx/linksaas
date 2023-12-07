@@ -130,14 +130,6 @@ const ProjectHome = () => {
 
     useEffect(() => {
         setSysEntryList([
-            {
-                id: "mywork",
-                content: "",
-            },
-            {
-                id: "summary",
-                content: "",
-            },
             ...(entryStore.sysEntryList.map(sysEntry => (
                 {
                     id: sysEntry.entry_id,
@@ -149,41 +141,24 @@ const ProjectHome = () => {
 
     return (
         <div className={s.home_wrap}>
-            <h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;系统面板</h1>
-            <List rowKey="id"
-                grid={{ gutter: 16 }}
-                dataSource={sysEntryList}
-                renderItem={item => (
-                    <List.Item>
-                        {item.id == "mywork" && (
-                            <div className={s.card} style={{ backgroundColor: "#A8E0A3" }} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                history.push(APP_PROJECT_MY_WORK_PATH);
-                            }}>
-                                <h1>我的工作</h1>
-                            </div>
-                        )}
-                        {item.id == "summary" && (
-                            <div className={s.card} style={{ backgroundColor: "#E8EDC9" }}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    history.push(APP_PROJECT_OVERVIEW_PATH);
-                                }}>
-                                <h1>项目概览</h1>
-                            </div>
-                        )}
-                        {["mywork", "summary"].includes(item.id) == false && (
-                            <EntryCard entryInfo={item.content as EntryInfo} onRemove={() => loadEntryList()}
-                                onMarkSys={() => {
-                                    loadSysEntryList();
-                                    loadEntryList();
-                                }} />
-                        )}
-                    </List.Item>
-                )} />
-            <Divider style={{ margin: "4px 0px" }} />
+            {sysEntryList.length > 0 && (
+                <>
+                    <h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;系统面板</h1>
+                    <List rowKey="id"
+                        grid={{ gutter: 16 }}
+                        dataSource={sysEntryList}
+                        renderItem={item => (
+                            <List.Item>
+                                <EntryCard entryInfo={item.content as EntryInfo} onRemove={() => loadEntryList()}
+                                    onMarkSys={() => {
+                                        loadSysEntryList();
+                                        loadEntryList();
+                                    }} />
+                            </List.Item>
+                        )} />
+                    <Divider style={{ margin: "4px 0px" }} />
+                </>
+            )}
             <Card title={<h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;内容面板</h1>}
                 headStyle={{ paddingLeft: "0px" }} bodyStyle={{ padding: "4px 0px" }}
                 bordered={false} extra={
