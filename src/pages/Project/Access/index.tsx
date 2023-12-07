@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import AccessTable from './components/AccessTable';
 import { observer, useLocalObservable } from 'mobx-react';
-import { message, Collapse, Space } from 'antd';
+import { message, Collapse, Space, Empty } from 'antd';
 import CardWrap from '@/components/CardWrap';
 import style from './index.module.less';
 import * as API from '@/api/external_events';
@@ -138,6 +138,7 @@ const ProjectInvite: React.FC = () => {
       </Space>
     }>
       <div className={style.access}>
+        {localStore.externalList.length == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         <Collapse
           activeKey={localStore.activeKey}
           bordered={false}
