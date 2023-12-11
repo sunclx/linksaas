@@ -201,7 +201,14 @@ export async function list_remote(path: string): Promise<LocalRepoRemoteInfo[]> 
 }
 
 export async function clone(path: string, url: string, authType: string, username: string, password: string, privKey: string, callback: (info: CloneProgressInfo) => void): Promise<void> {
-    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "clone", "--auth-type", authType, "--username", username, "--password", password, "--priv-key", privKey, url]);
+    const args = ["--git-path", path, "clone", "--auth-type", authType];
+    if (authType == "privkey") {
+        args.push(...["--priv-key", privKey]);
+    } else if (authType == "password") {
+        args.push(...["--username", username, "--password", password]);
+    }
+    args.push(url);
+    const command = Command.sidecar('bin/gitspy', args);
     command.stdout.on("data", (line: string) => {
         const parts = line.split(":");
         if (parts.length == 3) {
