@@ -353,14 +353,16 @@ const RequirementList = () => {
                                 </Select>
                             </Form.Item>
                             <Form.Item>
-                                <Select style={{ width: 100 }} value={filterTagId} onChange={value => setFilterTagId(value ?? null)}
-                                    placeholder="标签" allowClear>
-                                    {(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_req).map(tag => (
-                                        <Select.Option key={tag.tag_id} value={tag.tag_id}>
-                                            <span style={{ padding: "2px 4px", backgroundColor: tag.bg_color }}>{tag.tag_name}</span>
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                                {(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_req).length > 0 && (
+                                    <Select style={{ width: 100 }} value={filterTagId} onChange={value => setFilterTagId(value ?? null)}
+                                        placeholder="标签" allowClear>
+                                        {(projectStore.curProject?.tag_list ?? []).filter(tag => tag.use_in_req).map(tag => (
+                                            <Select.Option key={tag.tag_id} value={tag.tag_id}>
+                                                <span style={{ padding: "2px 4px", backgroundColor: tag.bg_color }}>{tag.tag_name}</span>
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                )}
                             </Form.Item>
                             <Form.Item>
                                 <Select style={{ width: 100 }} value={filterClosed} onChange={value => setFilterClosed(value ?? null)}

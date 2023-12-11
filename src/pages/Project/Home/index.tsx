@@ -3,7 +3,6 @@ import s from "./index.module.less";
 import { observer } from 'mobx-react';
 import { Card, Divider, Dropdown, Form, Input, List, Segmented, Select, Space, Switch, Tabs } from "antd";
 import { useHistory } from "react-router-dom";
-import { APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import type { ENTRY_TYPE, ListParam, EntryInfo } from "@/api/project_entry";
 import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_NULL, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD } from "@/api/project_entry";
@@ -130,14 +129,6 @@ const ProjectHome = () => {
 
     useEffect(() => {
         setSysEntryList([
-            {
-                id: "mywork",
-                content: "",
-            },
-            {
-                id: "summary",
-                content: "",
-            },
             ...(entryStore.sysEntryList.map(sysEntry => (
                 {
                     id: sysEntry.entry_id,
@@ -149,41 +140,24 @@ const ProjectHome = () => {
 
     return (
         <div className={s.home_wrap}>
-            <h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;系统面板</h1>
-            <List rowKey="id"
-                grid={{ gutter: 16 }}
-                dataSource={sysEntryList}
-                renderItem={item => (
-                    <List.Item>
-                        {item.id == "mywork" && (
-                            <div className={s.card} style={{ backgroundColor: "#A8E0A3" }} onClick={e => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                history.push(APP_PROJECT_MY_WORK_PATH);
-                            }}>
-                                <h1>我的工作</h1>
-                            </div>
-                        )}
-                        {item.id == "summary" && (
-                            <div className={s.card} style={{ backgroundColor: "#E8EDC9" }}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    e.preventDefault();
-                                    history.push(APP_PROJECT_OVERVIEW_PATH);
-                                }}>
-                                <h1>项目概览</h1>
-                            </div>
-                        )}
-                        {["mywork", "summary"].includes(item.id) == false && (
-                            <EntryCard entryInfo={item.content as EntryInfo} onRemove={() => loadEntryList()}
-                                onMarkSys={() => {
-                                    loadSysEntryList();
-                                    loadEntryList();
-                                }} />
-                        )}
-                    </List.Item>
-                )} />
-            <Divider style={{ margin: "4px 0px" }} />
+            {sysEntryList.length > 0 && (
+                <>
+                    <h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;系统面板</h1>
+                    <List rowKey="id"
+                        grid={{ gutter: 16 }}
+                        dataSource={sysEntryList}
+                        renderItem={item => (
+                            <List.Item>
+                                <EntryCard entryInfo={item.content as EntryInfo} onRemove={() => loadEntryList()}
+                                    onMarkSys={() => {
+                                        loadSysEntryList();
+                                        loadEntryList();
+                                    }} />
+                            </List.Item>
+                        )} />
+                    <Divider style={{ margin: "4px 0px" }} />
+                </>
+            )}
             <Card title={<h1 className={s.header}><CreditCardFilled />&nbsp;&nbsp;内容面板</h1>}
                 headStyle={{ paddingLeft: "0px" }} bodyStyle={{ padding: "4px 0px" }}
                 bordered={false} extra={
@@ -197,16 +171,18 @@ const ProjectHome = () => {
                                     setKeyword(e.target.value.trim());
                                 }} placeholder="过滤标题" size="large" allowClear />
                             </Form.Item>
-                            <Form.Item>
-                                <Select mode="multiple" style={{ minWidth: "100px" }} size="large"
-                                    placeholder="过滤标签"
-                                    allowClear value={tagIdList} onChange={value => setTagIdList(value)}>
-                                    {(projectStore.curProject?.tag_list ?? []).filter(item => item.use_in_entry).map(item => (
-                                        <Select.Option key={item.tag_id} value={item.tag_id}>
-                                            <div style={{ backgroundColor: item.bg_color, padding: "0px 4px" }}>{item.tag_name}</div></Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
+                            {(projectStore.curProject?.tag_list ?? []).filter(item => item.use_in_entry).length > 0 && (
+                                <Form.Item>
+                                    <Select mode="multiple" style={{ minWidth: "100px" }} size="large"
+                                        placeholder="过滤标签"
+                                        allowClear value={tagIdList} onChange={value => setTagIdList(value)}>
+                                        {(projectStore.curProject?.tag_list ?? []).filter(item => item.use_in_entry).map(item => (
+                                            <Select.Option key={item.tag_id} value={item.tag_id}>
+                                                <div style={{ backgroundColor: item.bg_color, padding: "0px 4px" }}>{item.tag_name}</div></Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            )}
                         </Form>
                         <Dropdown.Button type="primary" onClick={e => {
                             e.stopPropagation();

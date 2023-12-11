@@ -9,7 +9,7 @@ import MemberSelect from '@/components/MemberSelect';
 import Calendar from './components/Calendar';
 import { timeToDateString } from '@/utils/utils';
 import moment from 'moment';
-import { Collapse, Modal, Input, message, Space, Popover } from 'antd';
+import { Collapse, Modal, Input, message, Space, Popover, Empty } from 'antd';
 import { CaretRightOutlined, MoreOutlined } from '@ant-design/icons';
 import { EVENT_ICON_LIST } from './common';
 import { useStores } from '@/hooks';
@@ -235,7 +235,8 @@ const ProjectRecord: React.FC = () => {
             label={'操作用户'}
           />
         </div>
-
+        
+        {localStore.recordList.length == 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         <Collapse
           activeKey={localStore.activeKey}
           bordered={false}

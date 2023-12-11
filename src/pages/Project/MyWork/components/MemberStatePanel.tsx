@@ -80,7 +80,7 @@ const MemberStatePanel = () => {
 
     return (
         <>
-            <Card title="工作备注" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }} extra={
+            <Card title="我的工作备注" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }} extra={
                 <>
                     {editState == false && (
                         <Button type="primary"
@@ -140,7 +140,7 @@ const MemberStatePanel = () => {
                     </Form.Item>
                 </Form>
             </Card>
-            <Card title="需要帮助" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }} extra={
+            <Card title="我需要帮助" headStyle={{ backgroundColor: "#f5f5f5", fontSize: "16px", fontWeight: 600 }} style={{ marginTop: "10px" }} extra={
                 <>
                     {editHelp == false && (
                         <Button type="primary"

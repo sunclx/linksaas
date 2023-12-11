@@ -141,13 +141,15 @@ const Filtration: FC<FiltrationProps> = observer((props) => {
           </Form.Item>
         )}
         <Form.Item name="tag_id">
-          <Select style={{ width: 100 }} placeholder="标签:" allowClear>
-            {props.tagDefList.map(tagDef => (
-              <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
-                <span style={{ padding: "2px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
-              </Select.Option>
-            ))}
-          </Select>
+          {props.tagDefList.length > 0 && (
+            <Select style={{ width: 100 }} placeholder="标签:" allowClear>
+              {props.tagDefList.map(tagDef => (
+                <Select.Option key={tagDef.tag_id} value={tagDef.tag_id}>
+                  <span style={{ padding: "2px 4px", backgroundColor: tagDef.bg_color }}>{tagDef.tag_name}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          )}
         </Form.Item>
       </Form>
 
