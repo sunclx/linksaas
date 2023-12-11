@@ -3,19 +3,18 @@ import React, { useEffect, useState } from "react";
 import type { LocalRepoInfo, LocalRepoRemoteInfo } from "@/api/local_repo";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
-import { get_repo_status, add_repo, update_repo, list_remote, get_host } from "@/api/local_repo";
-import { uniqId } from "@/utils/utils";
+import { get_repo_status, update_repo, list_remote, get_host } from "@/api/local_repo";
 import { open as shell_open } from '@tauri-apps/api/shell';
 
 interface SetLocalRepoModalProps {
-    repo?: LocalRepoInfo;
+    repo: LocalRepoInfo;
     onCancel: () => void;
     onOk: () => void;
 }
 
 const SetLocalRepoModal: React.FC<SetLocalRepoModalProps> = (props) => {
-    const [name, setName] = useState(props.repo?.name ?? "");
-    const [path, setPath] = useState(props.repo?.path ?? "");
+    const [name, setName] = useState(props.repo.name);
+    const [path, setPath] = useState(props.repo.path);
     const [setting, setSetting] = useState(props.repo?.setting ?? {
         gitlab_protocol: "https",
         gitlab_token: "",
@@ -57,19 +56,6 @@ const SetLocalRepoModal: React.FC<SetLocalRepoModalProps> = (props) => {
         return true;
     };
 
-    const addRepo = async () => {
-        if (await checkRepo() == false) {
-            return;
-        }
-        try {
-            await add_repo(uniqId(), name.trim(), path.trim());
-            props.onOk();
-        } catch (e) {
-            console.log(e);
-            message.error(`${e}`);
-        }
-    };
-
     const updateRepo = async () => {
         if (await checkRepo() == false) {
             return;
@@ -96,8 +82,8 @@ const SetLocalRepoModal: React.FC<SetLocalRepoModalProps> = (props) => {
     }, []);
 
     return (
-        <Modal open title={props.repo == undefined ? "新增本地仓库" : "修改本地仓库"}
-            okText={props.repo == undefined ? "增加" : "修改"} okButtonProps={{ disabled: name.trim() == "" || path.trim() == "" }}
+        <Modal open title={"修改本地仓库"}
+            okText="修改" okButtonProps={{ disabled: name.trim() == "" || path.trim() == "" }}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -106,11 +92,7 @@ const SetLocalRepoModal: React.FC<SetLocalRepoModalProps> = (props) => {
             onOk={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                if (props.repo == undefined) {
-                    addRepo();
-                } else {
-                    updateRepo();
-                }
+                updateRepo();
             }}>
             <Form labelCol={{ span: 5 }}>
                 <Form.Item label="名称">
