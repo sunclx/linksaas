@@ -12,8 +12,8 @@ import { observer } from 'mobx-react';
 import { AppstoreOutlined, DoubleRightOutlined, FolderOutlined } from '@ant-design/icons';
 import Button from '@/components/Button';
 import UserAppList from './components/UserAppList';
-import SetLocalRepoModal from './components/SetLocalRepoModal';
 import LocalRepoList from './components/LocalRepoList';
+import AddRepoModal from './components/AddRepoModal';
 
 
 const Workbench: React.FC = () => {
@@ -61,7 +61,7 @@ const Workbench: React.FC = () => {
                 e.preventDefault();
                 setShowAddRepoModal(true);
               }}>
-                添加本地仓库
+                添加代码仓库
               </Button>
             )}
           </div>
@@ -101,7 +101,7 @@ const Workbench: React.FC = () => {
         />
       )}
       {showAddRepoModal == true && (
-        <SetLocalRepoModal onCancel={() => setShowAddRepoModal(false)} onOk={() => {
+        <AddRepoModal onCancel={() => setShowAddRepoModal(false)} onOk={() => {
           setRepoDataVersion(repoDataVersion + 1);
           setShowAddRepoModal(false);
         }} />

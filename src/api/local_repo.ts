@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { Command } from '@tauri-apps/api/shell';
+import { message } from 'antd';
 
 export type LocalRepoSettingInfo = {
     gitlab_protocol: string;
@@ -99,6 +100,12 @@ export type LocalRepoRemoteInfo = {
     url: string;
 };
 
+export type CloneProgressInfo = {
+    totalObjs: number;
+    recvObjs: number;
+    indexObjs: number;
+};
+
 export async function add_repo(id: string, name: string, path: string): Promise<void> {
     return invoke<void>("plugin:local_repo|add_repo", {
         id,
@@ -191,6 +198,29 @@ export async function list_remote(path: string): Promise<LocalRepoRemoteInfo[]> 
         throw new Error(result.stderr);
     }
     return JSON.parse(result.stdout);
+}
+
+export async function clone(path: string, url: string, authType: string, username: string, password: string, privKey: string, callback: (info: CloneProgressInfo) => void): Promise<void> {
+    const args = ["--git-path", path, "clone", "--auth-type", authType];
+    if (authType == "privkey") {
+        args.push(...["--priv-key", privKey]);
+    } else if (authType == "password") {
+        args.push(...["--username", username, "--password", password]);
+    }
+    args.push(url);
+    const command = Command.sidecar('bin/gitspy', args);
+    command.stdout.on("data", (line: string) => {
+        const parts = line.split(":");
+        if (parts.length == 3) {
+            callback({
+                totalObjs: Math.max(parseInt(parts[0]), 1),
+                recvObjs: parseInt(parts[1]),
+                indexObjs: parseInt(parts[2]),
+            });
+        }
+    });
+    command.stderr.on("data", line => message.error(line));
+    await command.spawn();
 }
 
 export function get_http_url(url: string): string {
