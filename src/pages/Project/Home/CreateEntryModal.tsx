@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { create_doc } from "@/api/project_doc";
 import { create as create_sprit } from "@/api/project_sprit";
-import { ENTRY_TYPE_BOARD, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
+import { ENTRY_TYPE_BOARD, ENTRY_TYPE_DOC, ENTRY_TYPE_FILE, ENTRY_TYPE_PAGES, ENTRY_TYPE_SPRIT, ISSUE_LIST_ALL, ISSUE_LIST_KANBAN, ISSUE_LIST_LIST, create as create_entry } from "@/api/project_entry";
 import { useStores } from "@/hooks";
-import type { EntryPerm, ExtraSpritInfo, CreateRequest } from "@/api/project_entry";
+import type { EntryPerm, ExtraSpritInfo, CreateRequest, ExtraFileInfo } from "@/api/project_entry";
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment, { type Moment } from "moment";
 import s from "./UpdateEntryModal.module.less";
@@ -16,7 +16,7 @@ import { FolderOpenOutlined } from "@ant-design/icons";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { pack_min_app } from "@/api/min_app";
 import { uniqId } from "@/utils/utils";
-import { FILE_OWNER_TYPE_PAGES, set_file_owner, write_file } from "@/api/fs";
+import { FILE_OWNER_TYPE_PAGES, set_file_owner, write_file, get_file_name, FILE_OWNER_TYPE_FILE } from "@/api/fs";
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent } from '@/api/fs';
 import { nanoid } from 'nanoid';
@@ -49,10 +49,13 @@ const CreateEntryModal = () => {
         hide_summary_panel: false,
     });
 
-    const [localPath, setLocalPath] = useState("");
-    const [uploadTraceId, setUploadTraceId] = useState("");
+    const [localPagesPath, setLocalPagesPath] = useState("");
+    const [uploadPagesTraceId, setUploadPagesTraceId] = useState("");
     const [packFileName, setPackFileName] = useState("");
     const [uploadRatio, setUploadRatio] = useState(0);
+
+    const [localFilePath, setLocalFilePath] = useState("");
+    const [uploadFileTraceId, setUploadFileTraceId] = useState("");
 
     const checkDayValid = (day: Moment): boolean => {
         const startTime = spritExtraInfo.start_time;
@@ -61,7 +64,7 @@ const CreateEntryModal = () => {
         return dayTime >= startTime && dayTime <= endTime;
     };
 
-    const choicePath = async () => {
+    const choicePagesPath = async () => {
         const selected = await open_dialog({
             title: "打开本地应用目录",
             directory: true,
@@ -69,22 +72,48 @@ const CreateEntryModal = () => {
         if (selected == null || Array.isArray(selected)) {
             return;
         }
-        setLocalPath(selected);
+        setLocalPagesPath(selected);
+    };
+
+    const choiceFilePath = async () => {
+        const selected = await open_dialog({
+            title: "选择本地文件",
+        });
+        if (selected == null || Array.isArray(selected)) {
+            return;
+        }
+        setLocalFilePath(selected);
     };
 
     const uploadPages = async () => {
         const traceId = uniqId();
-        setUploadTraceId(traceId);
+        setUploadPagesTraceId(traceId);
         try {
-            const path = await pack_min_app(localPath, traceId);
+            const path = await pack_min_app(localPagesPath, traceId);
             const res = await request(write_file(userStore.sessionId, projectStore.curProject?.pages_fs_id ?? "", path, traceId));
             return res.file_id;
         } finally {
             setUploadRatio(0);
-            setUploadTraceId("");
+            setUploadPagesTraceId("");
             setPackFileName("");
         }
     };
+
+    const uploadFile = async (): Promise<ExtraFileInfo> => {
+        const traceId = uniqId();
+        setUploadFileTraceId(traceId);
+        try {
+            const res = await request(write_file(userStore.sessionId, projectStore.curProject?.file_fs_id ?? "", localFilePath, traceId));
+            const fileName = await get_file_name(localFilePath);
+            return {
+                file_id: res.file_id,
+                file_name: fileName,
+            };
+        } finally {
+            setUploadRatio(0);
+            setUploadFileTraceId("");
+        }
+    }
 
     const createEntry = async () => {
         if (title == "" || entryStore.createEntryType == null) {
@@ -92,6 +121,10 @@ const CreateEntryModal = () => {
         }
         let entryId = "";
         let pagesFileId = "";
+        let extraFileInfo: ExtraFileInfo = {
+            file_id: "",
+            file_name: "",
+        };
         if (entryStore.createEntryType == ENTRY_TYPE_PAGES) {
             pagesFileId = await uploadPages();
             entryId = nanoid(32);
@@ -107,7 +140,10 @@ const CreateEntryModal = () => {
                 },
             }));
             entryId = res.doc_id;
-        }else if(entryStore.createEntryType == ENTRY_TYPE_BOARD){
+        } else if (entryStore.createEntryType == ENTRY_TYPE_BOARD) {
+            entryId = nanoid(32);
+        } else if (entryStore.createEntryType == ENTRY_TYPE_FILE) {
+            extraFileInfo = await uploadFile();
             entryId = nanoid(32);
         }
         if (entryId == "" || entryStore.createEntryType == null) {
@@ -135,6 +171,10 @@ const CreateEntryModal = () => {
                     file_id: pagesFileId,
                 },
             }
+        } else if (entryStore.createEntryType == ENTRY_TYPE_FILE) {
+            createReq.extra_info = {
+                ExtraFileInfo: extraFileInfo,
+            }
         }
         await request(create_entry(createReq));
 
@@ -156,6 +196,14 @@ const CreateEntryModal = () => {
         } else if (entryStore.createEntryType == ENTRY_TYPE_BOARD) {
             boardStore.reset();
             history.push(APP_PROJECT_KB_BOARD_PATH);
+        } else if (entryStore.createEntryType == ENTRY_TYPE_FILE) {
+            await request(set_file_owner({
+                session_id: userStore.sessionId,
+                fs_id: projectStore.curProject?.file_fs_id ?? "",
+                file_id: extraFileInfo.file_id,
+                owner_type: FILE_OWNER_TYPE_FILE,
+                owner_id: entryId,
+            }));
         }
         message.info("创建成功");
         entryStore.createEntryType = null;
@@ -163,10 +211,10 @@ const CreateEntryModal = () => {
     };
 
     useEffect(() => {
-        if (uploadTraceId == "") {
+        if (uploadPagesTraceId == "") {
             return;
         }
-        const unListenFn = listen<FsProgressEvent>("uploadFile_" + uploadTraceId, ev => {
+        const unListenFn = listen<FsProgressEvent>("uploadFile_" + uploadPagesTraceId, ev => {
             if (ev.payload.total_step == 0) {
                 setUploadRatio(100);
             } else {
@@ -174,18 +222,37 @@ const CreateEntryModal = () => {
             }
         });
 
-        const unListenFn2 = listen<string>(uploadTraceId, ev => {
+        const unListenFn2 = listen<string>(uploadPagesTraceId, ev => {
             setPackFileName(ev.payload);
         });
+
         return () => {
             unListenFn.then((unListen) => unListen());
             unListenFn2.then((unListen) => unListen());
         };
-    }, [uploadTraceId]);
+    }, [uploadPagesTraceId]);
+
+    useEffect(() => {
+        if (uploadFileTraceId == "") {
+            return;
+        }
+        const unListenFn = listen<FsProgressEvent>("uploadFile_" + uploadFileTraceId, ev => {
+            if (ev.payload.total_step == 0) {
+                setUploadRatio(100);
+            } else {
+                setUploadRatio(Math.round(ev.payload.cur_step * 100 / ev.payload.total_step));
+            }
+        });
+        return () => {
+            unListenFn.then((unListen) => unListen());
+        };
+    }, [uploadFileTraceId]);
 
     return (
         <Modal open title="创建内容"
             okText="创建" okButtonProps={{ disabled: title == "" || packFileName != "" || uploadRatio > 0 }}
+            cancelButtonProps={{ disabled: packFileName != "" || uploadRatio > 0 }}
+            closable={!(packFileName != "" || uploadRatio > 0)}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -196,7 +263,7 @@ const CreateEntryModal = () => {
                 e.preventDefault();
                 createEntry();
             }}>
-            <Form labelCol={{ span: 6 }}>
+            <Form labelCol={{ span: 6 }} disabled={packFileName != "" || uploadRatio > 0}>
                 <Form.Item label="标题">
                     <Input value={title} onChange={e => {
                         e.stopPropagation();
@@ -213,6 +280,7 @@ const CreateEntryModal = () => {
                         <Radio value={ENTRY_TYPE_DOC}>文档</Radio>
                         <Radio value={ENTRY_TYPE_PAGES}>静态网页</Radio>
                         <Radio value={ENTRY_TYPE_BOARD}>信息面板</Radio>
+                        <Radio value={ENTRY_TYPE_FILE}>文件</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item label="所有成员可修改">
@@ -361,15 +429,15 @@ const CreateEntryModal = () => {
                 {entryStore.createEntryType == ENTRY_TYPE_PAGES && (
                     <>
                         <Form.Item label="网页目录" help="目录中需包含index.html">
-                            <Input value={localPath} onChange={e => {
+                            <Input value={localPagesPath} onChange={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                setLocalPath(e.target.value);
+                                setLocalPagesPath(e.target.value);
                             }}
                                 addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    choicePath();
+                                    choicePagesPath();
                                 }} />} />
                         </Form.Item>
                         {uploadRatio == 0 && packFileName != "" && (
@@ -377,6 +445,27 @@ const CreateEntryModal = () => {
                                 {packFileName}
                             </Form.Item>
                         )}
+                        {uploadRatio > 0 && (
+                            <Form.Item label="上传进度">
+                                <Progress percent={uploadRatio} />
+                            </Form.Item>
+                        )}
+                    </>
+                )}
+                {entryStore.createEntryType == ENTRY_TYPE_FILE && (
+                    <>
+                        <Form.Item label="本地文件">
+                            <Input value={localFilePath} onChange={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setLocalFilePath(e.target.value);
+                            }}
+                                addonAfter={<Button type="link" style={{ height: 20 }} icon={<FolderOpenOutlined />} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    choiceFilePath();
+                                }} />} />
+                        </Form.Item>
                         {uploadRatio > 0 && (
                             <Form.Item label="上传进度">
                                 <Progress percent={uploadRatio} />

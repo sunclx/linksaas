@@ -5,6 +5,7 @@ export const ENTRY_TYPE_SPRIT: ENTRY_TYPE = 0;
 export const ENTRY_TYPE_DOC: ENTRY_TYPE = 1;
 export const ENTRY_TYPE_PAGES: ENTRY_TYPE = 2;
 export const ENTRY_TYPE_BOARD: ENTRY_TYPE = 3;
+export const ENTRY_TYPE_FILE: ENTRY_TYPE = 4;
 export const ENTRY_TYPE_NULL: ENTRY_TYPE = 999;
 
 export type ISSUE_LIST_TYPE = number;
@@ -38,10 +39,16 @@ export type ExtraPagesInfo = {
      file_id: string;
 };
 
+export type ExtraFileInfo = {
+    file_id: string;
+    file_name: string;
+};
+
 
 export type ExtraInfo = {
     ExtraSpritInfo?: ExtraSpritInfo;
     ExtraPagesInfo?: ExtraPagesInfo;
+    ExtraFileInfo?: ExtraFileInfo;
 };
 
 export type WatchUser = {
@@ -212,6 +219,28 @@ export type UpdateMarkSysResponse ={
     err_msg: string;
 };
 
+export type RemovePagesRequest = {
+    session_id: string;
+    project_id: string;
+    entry_id: string;
+};
+
+export type RemovePagesResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type RemoveFileRequest = {
+    session_id: string;
+    project_id: string;
+    entry_id: string;
+};
+
+export type RemoveFileResponse = {
+    code: number;
+    err_msg: string;
+};
+
 
 //创建入口
 export async function create(request: CreateRequest): Promise<CreateResponse> {
@@ -299,6 +328,24 @@ export async function update_extra_info(request: UpdateExtraInfoRequest): Promis
     const cmd = 'plugin:project_entry_api|update_extra_info';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<UpdateExtraInfoResponse>(cmd, {
+        request,
+    });
+}
+
+//删除静态网页
+export async function remove_pages(request: RemovePagesRequest): Promise<RemovePagesResponse> {
+    const cmd = 'plugin:project_entry_api|remove_pages';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemovePagesResponse>(cmd, {
+        request,
+    });
+}
+
+//删除文件
+export async function remove_file(request: RemoveFileRequest): Promise<RemoveFileResponse> {
+    const cmd = 'plugin:project_entry_api|remove_file';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemoveFileResponse>(cmd, {
         request,
     });
 }

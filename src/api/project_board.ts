@@ -270,6 +270,18 @@ export type GetEdgeResponse = {
     edge: Edge;
 };
 
+export type RemoveBoardRequest = {
+    session_id: string;
+    project_id: string;
+    board_id: string;
+};
+
+export type RemoveBoardResponse = {
+    code: number,
+    err_msg: string;
+};
+
+
 //创建节点
 export async function create_node(request: CreateNodeRequest): Promise<CreateNodeResponse> {
     const cmd = 'plugin:project_board_api|create_node';
@@ -410,6 +422,15 @@ export async function get_edge(request: GetEdgeRequest): Promise<GetEdgeResponse
     const cmd = 'plugin:project_board_api|get_edge';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetEdgeResponse>(cmd, {
+        request,
+    });
+}
+
+//删除信息面板
+export async function remove_board(request: RemoveBoardRequest): Promise<RemoveBoardResponse> {
+    const cmd = 'plugin:project_board_api|remove_board';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemoveBoardResponse>(cmd, {
         request,
     });
 }
