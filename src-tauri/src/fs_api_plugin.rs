@@ -677,6 +677,33 @@ async fn list_project_fs_status<R: Runtime>(
 }
 
 #[tauri::command]
+async fn gc_project_fs<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GcProjectFsRequest,
+) -> Result<GcProjectFsResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = FsApiClient::new(chan.unwrap());
+    match client.gc_project_fs(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == gc_project_fs_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("gc_project_fs".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        },
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn make_tmp_dir<R: Runtime>(window: Window<R>) -> Result<String, String> {
     if window.label() != "main" {
         return Err("no permission".into());
@@ -713,6 +740,7 @@ impl<R: Runtime> FsApiPlugin<R> {
                 copy_file,
                 get_fs_status,
                 list_project_fs_status,
+                gc_project_fs,
                 save_tmp_file_base64,
                 make_tmp_dir,
                 get_file_name,

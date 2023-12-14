@@ -1,4 +1,4 @@
-import { Card, Table } from "antd";
+import { Button, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
@@ -71,18 +71,32 @@ const ProjectFsList = () => {
     const columns: ColumnsType<FsStatus> = [
         {
             title: "存储类型",
-            width: 100,
             render: (_, row: FsStatus) => getFsLabel(row.fs_id),
         },
         {
             title: "文件数量",
-            width: 80,
             dataIndex: "file_count",
         },
         {
             title: "存储空间",
-            width: 100,
             render: (_, row: FsStatus) => getSizeStr(row.total_file_size),
+        },
+        {
+            title: "上次清理时间",
+        },
+        {
+            title: "操作",
+            width: 100,
+            render: (_, row: FsStatus) => (
+                <Button type="link" disabled={!projectStore.isAdmin} style={{
+                    minWidth: 0,
+                    padding: "0px 0px",
+                }} onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    //TODO
+                }}>清理空间</Button>
+            ),
         }
     ];
 
@@ -91,9 +105,7 @@ const ProjectFsList = () => {
     }, []);
 
     return (
-        <Card title="项目存储空间">
-            <Table rowKey="fs_id" dataSource={fsStatusList} columns={columns} pagination={false} scroll={{ y: 400 }} style={{ width: "300px" }} />
-        </Card>
+        <Table rowKey="fs_id" dataSource={fsStatusList} columns={columns} pagination={false} />
     );
 };
 

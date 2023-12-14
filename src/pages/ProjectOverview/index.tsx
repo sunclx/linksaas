@@ -10,6 +10,7 @@ import { get_port } from "@/api/local_api";
 import MemberInfoPanel from "./components/MemberInfoPanel";
 import BulletinListPanel from "./components/BulletinListPanel";
 import { useStores } from "@/hooks";
+import ProjectFsList from "./components/ProjectFsList";
 
 
 const ProjectOverview = () => {
@@ -61,9 +62,12 @@ const ProjectOverview = () => {
             {(projectStore.curProject?.setting.hide_bulletin ?? false) == false && memberStore.showDetailMemberId == "" && <BulletinListPanel />}
             <MemberInfoPanel />
 
-            {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && memberStore.showDetailMemberId == "" &&(
+            {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && memberStore.showDetailMemberId == "" && (
                 <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
-                    <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["localApi"]}>
+                    <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["storage"]}>
+                        <Collapse.Panel key="storage" header="项目存储">
+                            <ProjectFsList />
+                        </Collapse.Panel>
                         <Collapse.Panel key="localApi" header="本地接口" extra={
                             <Button
                                 title={port == 0 ? "本地服务没有启动" : ""}

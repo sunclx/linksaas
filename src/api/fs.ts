@@ -99,6 +99,9 @@ export type FsStatus = {
     owner_id: string;
     file_count: number;
     total_file_size: number;
+    max_filecount: number;
+    max_total_size: number;
+    last_gc_time: number;
 };
 
 export type GetFsStatusResponse = {
@@ -116,6 +119,19 @@ export type ListProjectFsStatusResponse = {
     code: number;
     err_msg: string;
     fs_status_list: FsStatus[];
+};
+
+export type GcProjectFsRequest = {
+    session_id: string;
+    project_id: string;
+    fs_id: string;
+};
+
+export type GcProjectFsResponse = {
+    code: number;
+    err_msg: string;
+    gc_file_count: number;
+    gc_total_size: number;
 };
 
 
@@ -195,14 +211,27 @@ export async function copy_file(request: CopyFileRequest): Promise<CopyFileRespo
 
 //获取单个文件系统信息
 export async function get_fs_status(request: GetFsStatusRequest): Promise<GetFsStatusResponse> {
-    return invoke<GetFsStatusResponse>("plugin:fs_api|get_fs_status", {
+    const cmd = "plugin:fs_api|get_fs_status";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetFsStatusResponse>(cmd, {
         request: request,
     })
 }
 
 //列出项目中所有文件系统信息
 export async function list_project_fs_status(request: ListProjectFsStatusRequest): Promise<ListProjectFsStatusResponse> {
-    return invoke<ListProjectFsStatusResponse>("plugin:fs_api|list_project_fs_status", {
+    const cmd = "plugin:fs_api|list_project_fs_status";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListProjectFsStatusResponse>(cmd, {
+        request: request,
+    })
+}
+
+//清理项目文件系统
+export async function gc_project_fs(request: GcProjectFsRequest): Promise<GcProjectFsResponse> {
+    const cmd = "plugin:fs_api|gc_project_fs";
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GcProjectFsResponse>(cmd, {
         request: request,
     })
 }
