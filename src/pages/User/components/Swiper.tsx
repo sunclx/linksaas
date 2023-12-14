@@ -11,7 +11,9 @@ const Swiper = () => {
         凌鲨
       </div>
       <div className={s.info}>
-        软件研发团队的<b>工具仓库</b>
+        <div style={{ marginLeft: "50px" }}>为软件研发人员</div>
+        <div style={{ marginLeft: "220px", padding: "10px 0px" }}><b>连接</b></div>
+        <div style={{ marginLeft: "230px" }}>先进工具和知识</div>
       </div>
     </div>
   );
