@@ -5,7 +5,7 @@ import { Card, Divider, Dropdown, Form, Input, List, Segmented, Select, Space, S
 import { useHistory } from "react-router-dom";
 import { useStores } from "@/hooks";
 import type { ENTRY_TYPE, ListParam, EntryInfo } from "@/api/project_entry";
-import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_NULL, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD } from "@/api/project_entry";
+import { list as list_entry, list_sys as list_sys_entry, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_NULL, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD, ENTRY_TYPE_FILE } from "@/api/project_entry";
 import { request } from "@/utils/request";
 import { CreditCardFilled, FilterTwoTone } from "@ant-design/icons";
 import EntryCard from "./EntryCard";
@@ -227,7 +227,7 @@ const ProjectHome = () => {
                     items={[
                         {
                             key: "open",
-                            label: <span style={{ fontSize: "16px" }}>正常状态</span>,
+                            label: <span style={{ fontSize: "16px" }}>内容列表</span>,
                             children: (
                                 <>
                                     {activeKey == "open" && (<>{entryList}</>)}
@@ -237,7 +237,7 @@ const ProjectHome = () => {
                         },
                         {
                             key: "close",
-                            label: <span style={{ fontSize: "16px" }}>只读状态</span>,
+                            label: <span style={{ fontSize: "16px" }}>回收站</span>,
                             children: (
                                 <>
                                     {activeKey == "close" && (<>{entryList}</>)}
@@ -268,6 +268,10 @@ const ProjectHome = () => {
                                     {
                                         label: "信息面板",
                                         value: ENTRY_TYPE_BOARD,
+                                    },
+                                    {
+                                        label: "文件",
+                                        value: ENTRY_TYPE_FILE,
                                     }
 
                                 ]} value={entryType} onChange={value => setEntryType(value.valueOf() as number)} />
