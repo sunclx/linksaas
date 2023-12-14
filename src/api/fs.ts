@@ -107,6 +107,18 @@ export type GetFsStatusResponse = {
     fs_status: FsStatus;
 };
 
+export type ListProjectFsStatusRequest = {
+    session_id: string;
+    project_id: string;
+};
+
+export type ListProjectFsStatusResponse = {
+    code: number;
+    err_msg: string;
+    fs_status_list: FsStatus[];
+};
+
+
 export async function stat_local_file(file_path: string): Promise<number> {
     return invoke<number>('plugin:fs_api|stat_local_file', { filePath: file_path });
 }
@@ -180,8 +192,17 @@ export async function copy_file(request: CopyFileRequest): Promise<CopyFileRespo
         request: request,
     })
 }
+
+//获取单个文件系统信息
 export async function get_fs_status(request: GetFsStatusRequest): Promise<GetFsStatusResponse> {
     return invoke<GetFsStatusResponse>("plugin:fs_api|get_fs_status", {
+        request: request,
+    })
+}
+
+//列出项目中所有文件系统信息
+export async function list_project_fs_status(request: ListProjectFsStatusRequest): Promise<ListProjectFsStatusResponse> {
+    return invoke<ListProjectFsStatusResponse>("plugin:fs_api|list_project_fs_status", {
         request: request,
     })
 }
