@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import s from './index.module.less';
 import ProjectInfoPanel from "./components/ProjectInfoPanel";
 import LocalApi from "./components/LocalApi";
-import { Card, Collapse } from "antd";
+import { Card, Collapse, Popover } from "antd";
 import Button from "@/components/Button";
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 import { get_port } from "@/api/local_api";
@@ -11,6 +11,7 @@ import MemberInfoPanel from "./components/MemberInfoPanel";
 import BulletinListPanel from "./components/BulletinListPanel";
 import { useStores } from "@/hooks";
 import ProjectFsList from "./components/ProjectFsList";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 
 const ProjectOverview = () => {
@@ -65,7 +66,16 @@ const ProjectOverview = () => {
             {(projectStore.curProject?.setting.hide_extra_info ?? false) == false && memberStore.showDetailMemberId == "" && (
                 <Card title={<h1 className={s.head}>其他信息</h1>} style={{ marginTop: "10px" }} headStyle={{ backgroundColor: "#f5f5f5" }}>
                     <Collapse bordered={false} className={s.other_wrap} defaultActiveKey={["storage"]}>
-                        <Collapse.Panel key="storage" header="项目存储">
+                        <Collapse.Panel key="storage" header="项目存储" extra={
+                            <Popover placement="left" trigger="hover" content={
+                                <div style={{padding:"10px 10px"}}>
+                                    <p>只会回收没有任何引用关系的文件。</p>
+                                    <p>一周内创建的文件不管是否被引用，都不会回收。</p>
+                                </div>
+                            }>
+                                <InfoCircleOutlined />
+                            </Popover>
+                        }>
                             <ProjectFsList />
                         </Collapse.Panel>
                         <Collapse.Panel key="localApi" header="本地接口" extra={

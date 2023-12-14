@@ -1,17 +1,22 @@
-import { Button, Table } from "antd";
+import { Button, Descriptions, Modal, Space, Spin, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
 import type { FsStatus } from "@/api/fs";
-import { list_project_fs_status } from "@/api/fs";
+import { list_project_fs_status, gc_project_fs } from "@/api/fs";
 import { request } from "@/utils/request";
 import type { ColumnsType } from 'antd/lib/table';
+import moment from "moment";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const ProjectFsList = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
 
     const [fsStatusList, setFsStatusList] = useState<FsStatus[]>([]);
+    const [gcFsId, setGcFsId] = useState("");
+    const [gcFileCount, setGcFileCount] = useState<number | null>(null);
+    const [gcTotalSize, setGcTotalSize] = useState<number | null>(null);
 
     const loadFsStatusList = async () => {
         const res = await request(list_project_fs_status({
@@ -19,6 +24,17 @@ const ProjectFsList = () => {
             project_id: projectStore.curProjectId,
         }));
         setFsStatusList(res.fs_status_list);
+    };
+
+    const runGcFs = async (fsId: string) => {
+        const res = await request(gc_project_fs({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            fs_id: fsId,
+        }));
+        setGcFileCount(res.gc_file_count);
+        setGcTotalSize(res.gc_total_size);
+        await loadFsStatusList();
     };
 
     const getFsLabel = (fsId: string) => {
@@ -78,23 +94,35 @@ const ProjectFsList = () => {
             dataIndex: "file_count",
         },
         {
+            title: "最大文件数量",
+            render: (_, row: FsStatus) => row.max_filecount <= 0 ? "无限制" : row.max_filecount
+        },
+        {
             title: "存储空间",
             render: (_, row: FsStatus) => getSizeStr(row.total_file_size),
         },
         {
+            title: "最大存储空间",
+            render: (_, row: FsStatus) => row.max_total_size <= 0 ? "无限制" : getSizeStr(row.max_total_size),
+        },
+        {
             title: "上次清理时间",
+            render: (_, row: FsStatus) => row.last_gc_time <= 0 ? "-" : moment(row.last_gc_time).format("YYYY-MM-DD HH:mm"),
         },
         {
             title: "操作",
             width: 100,
             render: (_, row: FsStatus) => (
-                <Button type="link" disabled={!projectStore.isAdmin} style={{
+                <Button type="link" disabled={!projectStore.isAdmin || (moment().valueOf() - row.last_gc_time) < 12 * 2400 * 3600} style={{
                     minWidth: 0,
                     padding: "0px 0px",
                 }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    //TODO
+                    setGcFileCount(null);
+                    setGcTotalSize(null);
+                    setGcFsId(row.fs_id);
+                    runGcFs(row.fs_id);
                 }}>清理空间</Button>
             ),
         }
@@ -105,7 +133,33 @@ const ProjectFsList = () => {
     }, []);
 
     return (
-        <Table rowKey="fs_id" dataSource={fsStatusList} columns={columns} pagination={false} />
+        <>
+            <Table rowKey="fs_id" dataSource={fsStatusList} columns={columns} pagination={false} />
+            {gcFsId != "" && (
+                <Modal open title="清理空间" footer={null} onCancel={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setGcFsId("");
+                }}>
+                    {(gcFileCount == null || gcTotalSize == null) && (
+                        <Space>
+                            <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+                            清理中
+                        </Space>
+                    )}
+                    {gcFileCount != null && gcTotalSize != null && (
+                        <Descriptions column={1} bordered labelStyle={{ width: "150px" }}>
+                            <Descriptions.Item label="回收文件数量">
+                                {gcFileCount}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="回收空间">
+                                {getSizeStr(gcTotalSize)}
+                            </Descriptions.Item>
+                        </Descriptions>
+                    )}
+                </Modal>
+            )}
+        </>
     );
 };
 
