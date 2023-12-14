@@ -625,7 +625,7 @@ async fn copy_file<R: Runtime>(
 #[tauri::command]
 async fn get_fs_status<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
+    window: Window<R>,
     request: GetFsStatusRequest,
 ) -> Result<GetFsStatusResponse, String> {
     let chan = super::get_grpc_chan(&app_handle).await;
@@ -634,7 +634,71 @@ async fn get_fs_status<R: Runtime>(
     }
     let mut client = FsApiClient::new(chan.unwrap());
     match client.get_fs_status(request).await {
-        Ok(response) => Ok(response.into_inner()),
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_fs_status_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("get_fs_status".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        },
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_project_fs_status<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListProjectFsStatusRequest,
+) -> Result<ListProjectFsStatusResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = FsApiClient::new(chan.unwrap());
+    match client.list_project_fs_status(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_project_fs_status_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("list_project_fs_status".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        },
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn gc_project_fs<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GcProjectFsRequest,
+) -> Result<GcProjectFsResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = FsApiClient::new(chan.unwrap());
+    match client.gc_project_fs(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == gc_project_fs_response::Code::WrongSession as i32 {
+                if let Err(err) =
+                    window.emit("notice", new_wrong_session_notice("gc_project_fs".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        },
         Err(status) => Err(status.message().into()),
     }
 }
@@ -675,6 +739,8 @@ impl<R: Runtime> FsApiPlugin<R> {
                 set_file_owner,
                 copy_file,
                 get_fs_status,
+                list_project_fs_status,
+                gc_project_fs,
                 save_tmp_file_base64,
                 make_tmp_dir,
                 get_file_name,
