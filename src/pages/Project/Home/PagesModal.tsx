@@ -56,7 +56,6 @@ const PagesModal = (props: PagesModalProps) => {
         const path = await get_min_app_path(fsId, props.fileId);
 
         const label = "pages:" + props.entryId;
-        console.log(fsId, ok, path);
         if (ok) {
             setStep(STEP_FINISH);
             props.onClose();

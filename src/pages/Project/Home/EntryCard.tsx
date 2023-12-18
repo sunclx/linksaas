@@ -2,7 +2,7 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD } from "@/api/project_entry";
+import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD, ENTRY_TYPE_FILE } from "@/api/project_entry";
 import s from "./EntryCard.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -18,6 +18,7 @@ import htmlIcon from '@/assets/allIcon/icon-html.png';
 import boardIcon from '@/assets/allIcon/icon-board.png';
 import docIcon from '@/assets/channel/doc@2x.png';
 import PagesModal from "./PagesModal";
+import FileModal from "./FileModal";
 
 export interface EntryCardPorps {
     entryInfo: EntryInfo;
@@ -37,6 +38,7 @@ const EntryCard = (props: EntryCardPorps) => {
     const [showCloseModal, setShowCloseModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showPagesModal, setShowPagesModal] = useState(false);
+    const [showFileModal, setShowFileModal] = useState(false);
 
     const watchEntry = async () => {
         await request(watch({
@@ -73,6 +75,8 @@ const EntryCard = (props: EntryCardPorps) => {
             entryStore.curEntry = props.entryInfo;
             boardStore.reset();
             history.push(APP_PROJECT_KB_BOARD_PATH);
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_FILE) {
+            setShowFileModal(true);
         }
     };
 
@@ -85,6 +89,8 @@ const EntryCard = (props: EntryCardPorps) => {
             return "bisque";
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_BOARD) {
             return "gainsboro";
+        } else if (props.entryInfo.entry_type == ENTRY_TYPE_FILE) {
+            return "honeydew";
         }
         return "white";
     };
@@ -111,7 +117,7 @@ const EntryCard = (props: EntryCardPorps) => {
     };
 
     const getBgImage = () => {
-        if (props.entryInfo.entry_type == ENTRY_TYPE_DOC) {
+        if (props.entryInfo.entry_type == ENTRY_TYPE_DOC || props.entryInfo.entry_type == ENTRY_TYPE_FILE) {
             return docIcon;
         } else if (props.entryInfo.entry_type == ENTRY_TYPE_SPRIT) {
             return spritIcon;
@@ -168,7 +174,7 @@ const EntryCard = (props: EntryCardPorps) => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             setShowCloseModal(true);
-                                        }}>进入只读状态</Button>
+                                        }}>移至回收站</Button>
                                     {props.entryInfo.mark_sys == false && (
                                         <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
                                             disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
@@ -197,9 +203,9 @@ const EntryCard = (props: EntryCardPorps) => {
                                             e.stopPropagation();
                                             e.preventDefault();
                                             setRemoveMark(false).then(() => {
-                                                message.info("退出只读状态成功");
+                                                message.info("恢复成功");
                                             });
-                                        }}>退出只读状态</Button>
+                                        }}>恢复</Button>
                                     <Button type="link" danger style={{ minWidth: 0, padding: "0px 0px" }}
                                         disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
                                         onClick={e => {
@@ -220,7 +226,9 @@ const EntryCard = (props: EntryCardPorps) => {
                 e.preventDefault();
                 openEntry();
             }} style={{ width: "180px", display: "block", height: "90px" }}>
-                <h1 className={s.title}>{props.entryInfo.entry_title}</h1>
+                <h1 className={s.title}>
+                    {props.entryInfo.entry_title}
+                </h1>
                 <div className={s.tagList}>
                     {props.entryInfo.mark_sys && (
                         <Tag key="sys" style={{ backgroundColor: "yellow" }}>系统面板</Tag>
@@ -231,9 +239,9 @@ const EntryCard = (props: EntryCardPorps) => {
                 </div>
             </a>
             {showCloseModal == true && (
-                <Modal open title={`进入只读状态`}
+                <Modal open title={`移至回收站`}
                     mask={false}
-                    okText="修改"
+                    okText="移动"
                     onCancel={e => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -244,11 +252,11 @@ const EntryCard = (props: EntryCardPorps) => {
                         e.preventDefault();
                         setRemoveMark(true).then(() => {
                             setShowCloseModal(false);
-                            message.info("进入只读状态成功");
+                            message.info("移至回收站成功");
                         });
                     }}>
-                    <p>设置内容入口&nbsp;{props.entryInfo.entry_title}&nbsp;为只读状态。</p>
-                    <p>进入只读状态后可以在只读状态列表下找到。</p>
+                    <p>移动内容入口&nbsp;{props.entryInfo.entry_title}&nbsp;至回收站。</p>
+                    <p>移至回收站后可以在回收站列表下找到。</p>
                 </Modal>
             )}
             {showRemoveModal == true && (
@@ -261,6 +269,10 @@ const EntryCard = (props: EntryCardPorps) => {
                 <PagesModal fileId={props.entryInfo.extra_info.ExtraPagesInfo?.file_id ?? ""}
                     entryId={props.entryInfo.entry_id} entryTitle={props.entryInfo.entry_title}
                     onClose={() => setShowPagesModal(false)} />
+            )}
+            {showFileModal == true && (
+                <FileModal fileId={props.entryInfo.extra_info.ExtraFileInfo?.file_id ?? ""} fileName={props.entryInfo.extra_info.ExtraFileInfo?.file_name ?? ""}
+                    onClose={() => setShowFileModal(false)} />
             )}
         </Card>
 
