@@ -18,6 +18,7 @@ import GiteeRepo from "./remote_repo/GiteeRepo";
 import GitlabRepo from "./remote_repo/GitLabRepo";
 import GithubRepo from "./remote_repo/GithubRepo";
 import GitcodeRepo from "./remote_repo/GitcodeRepo";
+import LaunchRepoModal from "./LaunchRepoModal";
 
 
 interface LinkProjectModalProps {
@@ -501,6 +502,7 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
     const [editRepo, setEditRepo] = useState<LocalRepoInfo | null>(null);
     const [analyseRepo, setAnalyseRepo] = useState<LocalRepoInfo | null>(null);
     const [linkProjectRepo, setLinkProjectRepo] = useState<LocalRepoInfo | null>(null);
+    const [launchRepo, setLaunchRepo] = useState<LocalRepoInfo | null>(null);
 
     const loadRepoList = async () => {
         try {
@@ -549,6 +551,11 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                             </span>}
                             extra={
                                 <Space size="middle">
+                                    <Button style={{ color: "orange", fontWeight: 500 }} onClick={e => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setLaunchRepo(repo);
+                                    }}>启动开发环境</Button>
                                     <Button type="link" style={{ minWidth: "0px", padding: "2px 0px" }}
                                         onClick={e => {
                                             e.stopPropagation();
@@ -625,6 +632,9 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
             )}
             {linkProjectRepo !== null && (
                 <LinkProjectModal repo={linkProjectRepo} onCancel={() => setLinkProjectRepo(null)} />
+            )}
+            {launchRepo !== null && (
+                <LaunchRepoModal repo={launchRepo} onClose={() => setLaunchRepo(null)} />
             )}
         </>
     );
