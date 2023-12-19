@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { LocalRepoInfo } from "@/api/local_repo";
-import { Button, Modal, Select, Table, Tabs } from "antd";
+import { Button, Modal, Select, Table, Tabs, message } from "antd";
 import type { SimpleDevInfo, DevPkgVersion, DevForwardPort } from "@/api/dev_container";
 import { list_package, load_simple_dev_info, save_simple_dev_info, list_package_version } from "@/api/dev_container";
 import type { ColumnsType } from 'antd/lib/table';
@@ -9,7 +9,7 @@ import { uniqId } from "@/utils/utils";
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { request } from "@/utils/request";
 import { EditNumber } from "@/components/EditCell/EditNumber";
-
+import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
 
 interface PkgVersionItemProps {
     package: string;
@@ -77,7 +77,29 @@ const LaunchRepoModal = (props: LaunchRepoModalProps) => {
         if (hasChange) {
             await save_simple_dev_info(props.repo.path, simpleDevInfo);
         }
-        //TODO 启动
+
+        const pos = await appWindow.innerPosition();
+        const label = `devc:${props.repo.id}`
+        const oldWin = WebviewWindow.getByLabel(label)
+        if (oldWin != null) {
+            oldWin.setAlwaysOnTop(true);
+            setTimeout(() => oldWin.setAlwaysOnTop(false), 1000);
+            message.warn("已启动开发环境");
+            props.onClose();
+            return;
+        }
+        new WebviewWindow(label, {
+            url: `devc.html?repoId=${encodeURIComponent(props.repo.id)}&repoPath=${encodeURIComponent(props.repo.path)}`,
+            width: 800,
+            minWidth: 800,
+            height: 600,
+            minHeight: 600,
+            center: true,
+            title: `开发环境(${props.repo.name})`,
+            resizable: true,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
+        });
         props.onClose();
     };
 

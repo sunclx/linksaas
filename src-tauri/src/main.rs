@@ -339,7 +339,8 @@ fn main() {
                 let label = String::from(win.label());
                 tauri::async_runtime::spawn(async move {
                     min_app_plugin::clear_by_close(app_handle.clone(), label.clone()).await;
-                    pages_plugin::clear_by_close(app_handle, label).await;
+                    pages_plugin::clear_by_close(app_handle, label.clone()).await;
+                    dev_container_api_plugin::clear_by_close(label.clone()).await;
                 });
             }
             _ => {}
