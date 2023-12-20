@@ -9,6 +9,7 @@ import {
     ADMIN_PATH_APPSTORE_APP_SUFFIX,
     ADMIN_PATH_APPSTORE_CATE_SUFFIX,
     ADMIN_PATH_CLIENT_MENU_SUFFIX,
+    ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
     ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
     ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX,
@@ -33,6 +34,7 @@ const AdminNav = () => {
     const [clientCfgSelectedKeys, setClientCfgSelectedKeys] = useState<string[]>([]);
     const [appstoreSelectedKeys, setAppstoreSelectedKeys] = useState<string[]>([]);
     const [dockerTemplateSelectedKeys, setDockerTemplateSelectedKeys] = useState<string[]>([]);
+    const [devContainerSelectedKeys, setDevContainerSelectedKeys] = useState<string[]>([]);
     const [pubSearchSelectedKeys, setPubSearchSelectedKeys] = useState<string[]>([]);
 
     useEffect(() => {
@@ -58,7 +60,7 @@ const AdminNav = () => {
         setGroupSelectedKeys([]);
         if (location.pathname == ADMIN_PATH_GROUP_LIST_SUFFIX) {
             setGroupSelectedKeys(["group_list"]);
-        }else if(location.pathname == ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX){
+        } else if (location.pathname == ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX) {
             setGroupSelectedKeys(["group_audit_list"]);
         }
     }, [location.pathname]);
@@ -85,6 +87,13 @@ const AdminNav = () => {
             setDockerTemplateSelectedKeys(["docker_template_cate"]);
         } else if (location.pathname == ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX) {
             setDockerTemplateSelectedKeys(["docker_template_app"]);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
+        setDevContainerSelectedKeys([]);
+        if (location.pathname == ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX) {
+            setDevContainerSelectedKeys(["dev_container_pkg"]);
         }
     }, [location.pathname]);
 
@@ -116,7 +125,7 @@ const AdminNav = () => {
                     }}><LogoutOutlined />&nbsp;&nbsp;退出</a>
                 </div>
             </div>
-            <Collapse defaultActiveKey={["user", "org", "group", "project", "clientCfg", "appstore", "dockerTemplate", "pubSearch"]}
+            <Collapse defaultActiveKey={["user", "org", "group", "project", "clientCfg", "appstore", "dockerTemplate", "devContainer", "pubSearch"]}
                 style={{ height: "calc(100vh - 132px)", overflowY: "scroll", paddingBottom: "10px" }}>
                 <Collapse.Panel header="用户管理" key="user">
                     <Menu selectedKeys={userSelectedKeys} items={[
@@ -160,7 +169,7 @@ const AdminNav = () => {
                             if (e.selectedKeys.length == 1) {
                                 if (e.selectedKeys[0] == "group_list") {
                                     history.push(ADMIN_PATH_GROUP_LIST_SUFFIX);
-                                }else if(e.selectedKeys[0] == "group_audit_list"){
+                                } else if (e.selectedKeys[0] == "group_audit_list") {
                                     history.push(ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX);
                                 }
                             }
@@ -237,6 +246,23 @@ const AdminNav = () => {
                                     history.push(ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX);
                                 } else if (e.selectedKeys[0] == "docker_template_app") {
                                     history.push(ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX);
+                                }
+                            }
+                        }} />
+                </Collapse.Panel>
+                <Collapse.Panel header="研发环境管理" key="devContainer">
+                    <Menu selectedKeys={devContainerSelectedKeys} items={[
+                        {
+                            label: "软件包管理",
+                            key: "dev_container_pkg",
+                            disabled: !(permInfo?.dev_container_perm.read ?? false),
+                        },
+                    ]}
+                        style={{ borderRightWidth: "0px" }}
+                        onSelect={e => {
+                            if (e.selectedKeys.length == 1) {
+                                if (e.selectedKeys[0] == "dev_container_pkg") {
+                                    history.push(ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX);
                                 }
                             }
                         }} />

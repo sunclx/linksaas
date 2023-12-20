@@ -1,7 +1,7 @@
 {
   "package": {
     "productName": "linksaas",
-    "version": "0.6.13"
+    "version": "0.6.14"
   },
   "build": {
     "distDir": "../dist",
@@ -37,7 +37,8 @@
         "bin/netutil",
         "bin/grpcutil",
         "bin/search",
-        "bin/netproxy"
+        "bin/netproxy",
+        "bin/devc"
       ],
       "copyright": "",
       "category": "DeveloperTool",
@@ -86,6 +87,11 @@
             "args": true
           },
           {
+            "name": "bin/devc",
+            "sidecar": true,
+            "args": true
+          },
+          {
             "name": "bin/redis",
             "sidecar": true
           },
@@ -112,12 +118,12 @@
             "args": true
           },
           {
-            "name":"bin/search",
+            "name": "bin/search",
             "sidecar": true,
             "args": true
           },
           {
-            "name":"bin/netproxy",
+            "name": "bin/netproxy",
             "sidecar": true,
             "args": true
           }

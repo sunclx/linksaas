@@ -76,6 +76,14 @@ export type GroupPerm = {
     audit_recommend: boolean;
 };
 
+export type DevContainerPerm = {
+    read: boolean;
+    add_package: boolean;
+    remove_package: boolean;
+    add_package_version: boolean;
+    remove_package_version: boolean;
+};
+
 
 export type AdminPermInfo = {
     user_perm: UserPerm;
@@ -86,6 +94,7 @@ export type AdminPermInfo = {
     docker_template_perm: DockerTemplatePerm;
     pub_search_perm: PubSearchPerm;
     group_perm: GroupPerm;
+    dev_container_perm: DevContainerPerm;
 };
 
 export type PreAuthRequest = {

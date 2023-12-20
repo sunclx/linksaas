@@ -131,7 +131,7 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
                     <Input value={name} onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        setName(e.target.value.trim());
+                        setName(e.target.value);
                     }} />
                 </Form.Item>
                 <Form.Item label="仓库类型">
