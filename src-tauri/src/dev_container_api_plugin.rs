@@ -82,6 +82,9 @@ pub async fn clear_by_close(label: String) {
         return;
     }
     let find_res = find_res.data;
+    if &find_res.container_id == "" {
+        return;
+    }
     //停止容器
     let cmd = Command::new_sidecar("devc");
     if cmd.is_err() {

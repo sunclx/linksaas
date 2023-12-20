@@ -27,7 +27,7 @@ const StartContainer = (props: StartContainerProps) => {
     }, []);
 
     return (
-        <Card title="启动容器中..." bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "scroll" }}>
+        <Card title="启动容器中(第一次启动需要数分钟)..." bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "scroll", backgroundColor: "black", color: "white" }}>
             <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{logs}</pre>
         </Card>
     );

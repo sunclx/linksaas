@@ -27,7 +27,7 @@ const BuildImage = (props: BuildImageProps) => {
     }, []);
 
     return (
-        <Card title="构建研发镜像中..." bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "scroll" }}>
+        <Card title="构建研发镜像中(需要等待数分钟)..." bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "scroll", backgroundColor: "black", color: "white" }}>
             <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{logs}</pre>
         </Card>
     )

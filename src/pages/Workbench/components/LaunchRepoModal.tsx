@@ -253,7 +253,7 @@ const LaunchRepoModal = (props: LaunchRepoModalProps) => {
     }, []);
 
     return (
-        <Modal open title="启动开发环境" bodyStyle={{ padding: "4px 4px" }}
+        <Modal open title="启动开发环境(需安装Docker)" bodyStyle={{ padding: "4px 4px" }}
             okText={hasChange ? "保存并启动" : "启动"} okButtonProps={{ disabled: simpleDevInfo == null }}
             onCancel={e => {
                 e.stopPropagation();
