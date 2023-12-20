@@ -1,5 +1,5 @@
 import { Card } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Command } from '@tauri-apps/api/shell';
 
 export interface BuildImageProps {
@@ -7,7 +7,7 @@ export interface BuildImageProps {
 }
 
 const BuildImage = (props: BuildImageProps) => {
-
+    const endRef = useRef<HTMLDivElement>(null);
     const [logs, setLogs] = useState("");
 
     const runBuildImage = async () => {
@@ -17,6 +17,7 @@ const BuildImage = (props: BuildImageProps) => {
             const obj = JSON.parse(line);
             if ("stream" in obj) {
                 setLogs(oldValue => oldValue + obj.stream)
+                endRef.current?.scrollIntoView();
             }
         });
         await cmd.spawn();
@@ -28,7 +29,10 @@ const BuildImage = (props: BuildImageProps) => {
 
     return (
         <Card title="构建研发镜像中(需要等待数分钟)..." bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "scroll", backgroundColor: "black", color: "white" }}>
-            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{logs}</pre>
+            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                {logs}
+                <div ref={endRef} />
+            </pre>
         </Card>
     )
 };

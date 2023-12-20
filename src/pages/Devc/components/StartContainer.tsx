@@ -1,5 +1,5 @@
 import { Card } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Command } from '@tauri-apps/api/shell';
 
 export interface StartContainerProps {
@@ -8,7 +8,7 @@ export interface StartContainerProps {
 }
 
 const StartContainer = (props: StartContainerProps) => {
-
+    const endRef = useRef<HTMLDivElement>(null);
     const [logs, setLogs] = useState("");
 
     const startContainer = async () => {
@@ -18,6 +18,7 @@ const StartContainer = (props: StartContainerProps) => {
         });
         cmd.stdout.on("data", line => {
             setLogs(oldValue => oldValue + line);
+            endRef.current?.scrollIntoView();
         });
         await cmd.spawn();
     };
@@ -28,7 +29,10 @@ const StartContainer = (props: StartContainerProps) => {
 
     return (
         <Card title="启动容器中(第一次启动需要数分钟)..." bodyStyle={{ height: "calc(100vh - 40px)", overflowY: "scroll", backgroundColor: "black", color: "white" }}>
-            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>{logs}</pre>
+            <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                {logs}
+                <div ref={endRef}/>
+            </pre>
         </Card>
     );
 };
