@@ -18,9 +18,24 @@ export type DevForwardPort = {
     public: boolean; //是否监听0.0.0.0
 }
 
+export type DevEnv = {
+    id?: string;
+    key: string;
+    value: string;
+};
+
+export type DevExtension = {
+    id: string;
+    display_name: string;
+    desc: string;
+    logo_url: string;
+};
+
 export type SimpleDevInfo = {
     pkg_version_list: DevPkgVersion[];
     forward_port_list: DevForwardPort[];
+    env_list: DevEnv[];
+    extension_list: DevExtension[];
 };
 
 export type ListPackageRequest = {};
@@ -68,6 +83,8 @@ export async function load_simple_dev_info(repoPath: string): Promise<SimpleDevI
         return {
             pkg_version_list: [],
             forward_port_list: [],
+            env_list: [],
+            extension_list: [],
         };
     }
     const data = await readTextFile(path);
@@ -85,12 +102,23 @@ export async function load_simple_dev_info(repoPath: string): Promise<SimpleDevI
         for (const part of retInfo.forward_port_list) {
             part.id = uniqId();
         }
+        if (retInfo.env_list == undefined || retInfo.env_list == null) {
+            retInfo.env_list = [];
+        }
+        for (const part of retInfo.env_list) {
+            part.id = uniqId();
+        }
+        if (retInfo.extension_list == undefined || retInfo.extension_list == null) {
+            retInfo.extension_list = [];
+        }
         return retInfo;
     } catch (e) {
         console.log(e);
         return {
             pkg_version_list: [],
             forward_port_list: [],
+            env_list: [],
+            extension_list: [],
         };
     }
 }
@@ -100,6 +128,8 @@ export async function save_simple_dev_info(repoPath: string, simpleDevInfo: Simp
     const tmpInfo: SimpleDevInfo = {
         pkg_version_list: [],
         forward_port_list: [],
+        env_list: [],
+        extension_list: [],
     };
     for (const srcInfo of simpleDevInfo.pkg_version_list) {
         if (srcInfo.package == "" || srcInfo.version == "") {
@@ -122,6 +152,17 @@ export async function save_simple_dev_info(repoPath: string, simpleDevInfo: Simp
         }
         tmpInfo.forward_port_list.push(destInfo);
     }
+    for (const srcInfo of simpleDevInfo.env_list) {
+        if (srcInfo.key == "" || srcInfo.value == "") {
+            continue;
+        }
+        const destInfo: DevEnv = {
+            key: srcInfo.key,
+            value: srcInfo.value,
+        };
+        tmpInfo.env_list.push(destInfo);
+    }
+    tmpInfo.extension_list = simpleDevInfo.extension_list ?? [];
     const path = `${repoPath}/${DEV_FILE}`;
     await writeTextFile(path, JSON.stringify(tmpInfo));
 }
