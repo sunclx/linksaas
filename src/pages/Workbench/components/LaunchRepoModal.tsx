@@ -134,10 +134,10 @@ const IdeExtensionList = (props: IdeExtensionListProps) => {
                     </List.Item>
                 )} />
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, borderLeft: "1px solid #e4e4e8", paddingLeft: "4px" }}>
                 <Form layout="inline">
                     <Form.Item>
-                        <Input placeholder="搜索插件市场" style={{ width: "160px" }} value={searchValue} onChange={e => {
+                        <Input placeholder="搜索插件市场" style={{ width: "150px" }} value={searchValue} onChange={e => {
                             e.stopPropagation();
                             e.preventDefault();
                             setSearchValue(e.target.value.trim());

@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import { exists, readTextFile, writeTextFile } from '@tauri-apps/api/fs';
+import { exists, readTextFile, writeTextFile, removeFile } from '@tauri-apps/api/fs';
 import { uniqId } from '@/utils/utils';
 
 
@@ -164,5 +164,9 @@ export async function save_simple_dev_info(repoPath: string, simpleDevInfo: Simp
     }
     tmpInfo.extension_list = simpleDevInfo.extension_list ?? [];
     const path = `${repoPath}/${DEV_FILE}`;
-    await writeTextFile(path, JSON.stringify(tmpInfo));
+    const pathExist = await exists(path);
+    if (pathExist) {
+        await removeFile(path);
+    }
+    await writeTextFile(path, JSON.stringify(tmpInfo, undefined, 2));
 }
