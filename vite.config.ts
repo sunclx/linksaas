@@ -65,7 +65,8 @@ export default ({ command, mode }: ConfigEnv) => {
           apiSwagger: "api_swagger.html",
           apiCustom: "api_custom.html",
           k8sWin: "k8swin.html",
-          swarmWin: "swarmwin.html"
+          swarmWin: "swarmwin.html",
+          devc: "devc.html"
         },
       },
       terserOptions: {

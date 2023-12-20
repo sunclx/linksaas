@@ -55,6 +55,7 @@ import {
   APP_GROUP_MEMBER_LIST_PATH,
   ADMIN_PATH_GROUP_LIST_SUFFIX,
   ADMIN_PATH_GROUP_AUDIT_RECOMMEND_SUFFIX,
+  ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX,
 } from '@/utils/constant';
 import KnowledgeBaseLayout from '@/layouts/KnowledgeBaseLayout';
 import ProjectDoc from '@/pages/KnowledgeBase/ProjectDoc';
@@ -96,6 +97,7 @@ import GroupMemberList from '@/pages/Group/MemberList';
 import GroupList from '@/pages/Admin/GroupAdmin/GroupList';
 import RecommendAuditList from '@/pages/Admin/GroupAdmin/RecommendAuditList';
 import CloudIndex from '@/pages/Project/Cloud/index';
+import DevPkgList from '@/pages/Admin/DevContainerAdmin/DevPkgList';
 
 export interface IRouteConfig {
   // 路由路径
@@ -442,6 +444,12 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
         title: "Docker模板管理",
         component: TemplateList,
+        exact: true,
+      },
+      {
+        path: ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX,
+        title: "软件包管理",
+        component: DevPkgList,
         exact: true,
       },
       {

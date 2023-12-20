@@ -55,6 +55,8 @@ export const ADMIN_PATH_CLIENT_MENU_SUFFIX = '/admin/client/menu';
 export const ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX = '/admin/dockertemplate/cate';
 export const ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX = '/admin/dockertemplate/app';
 
+export const ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX = '/admin/devcontainer/pkg';
+
 export const ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX = '/admin/pubSearch/cate';
 export const ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX = '/admin/pubSearch/site';
 

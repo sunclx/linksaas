@@ -67,6 +67,8 @@ mod k8s_proxy_api_plugin;
 mod swarm_proxy_api_plugin;
 mod trace_proxy_api_plugin;
 mod net_proxy_api_plugin;
+mod dev_container_api_plugin;
+mod dev_container_admin_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -337,7 +339,8 @@ fn main() {
                 let label = String::from(win.label());
                 tauri::async_runtime::spawn(async move {
                     min_app_plugin::clear_by_close(app_handle.clone(), label.clone()).await;
-                    pages_plugin::clear_by_close(app_handle, label).await;
+                    pages_plugin::clear_by_close(app_handle, label.clone()).await;
+                    dev_container_api_plugin::clear_by_close(label.clone()).await;
                 });
             }
             _ => {}
@@ -459,6 +462,8 @@ fn main() {
         .plugin(swarm_proxy_api_plugin::SwarmProxyApiPlugin::new())
         .plugin(trace_proxy_api_plugin::TraceProxyApiPlugin::new())
         .plugin(net_proxy_api_plugin::NetProxyApiPlugin::new())
+        .plugin(dev_container_api_plugin::DevContainerApiPlugin::new())
+        .plugin(dev_container_admin_api_plugin::DevContainerAdminApiPlugin::new())
         .invoke_system(String::from(INIT_SCRIPT), window_invoke_responder)
         .register_uri_scheme_protocol("fs", move |app_handle, request| {
             match url::Url::parse(request.uri()) {
