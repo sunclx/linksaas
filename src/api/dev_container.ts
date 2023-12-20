@@ -26,9 +26,9 @@ export type DevEnv = {
 
 export type DevExtension = {
     id: string;
-    display_name: string;
-    desc: string;
-    logo_url: string;
+    display_name?: string;
+    desc?: string;
+    logo_url?: string;
 };
 
 export type SimpleDevInfo = {

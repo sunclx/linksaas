@@ -22,7 +22,7 @@ const ResetDevModal = (props: ResetDevModalProps) => {
                 message.info("重置成功");
                 props.onClose();
             } else {
-                message.error(obj.errMsg);
+                message.error("未安装/启动Docker");
                 setInReset(false);
             }
         } catch (e) {
