@@ -23,7 +23,7 @@ const DevcPrepare = () => {
         if (result.success) {
             setImageExist(result.data ?? false);
         } else {
-            message.error(result.errMsg ?? "");
+            message.error("未安装/启动Docker");
         }
     };
 

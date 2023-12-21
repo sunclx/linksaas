@@ -7,13 +7,14 @@ import { PUB_RES_PATH, USER_LOGIN_PATH, WORKBENCH_PATH } from '@/utils/constant'
 import { useStores } from '@/hooks';
 import Card from './components/Card';
 import InfoCount from './components/InfoCount';
-import { Tabs } from 'antd';
+import { Popover, Space, Tabs } from 'antd';
 import { observer } from 'mobx-react';
-import { AppstoreOutlined, DoubleRightOutlined, FolderOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, DoubleRightOutlined, FolderOutlined, MoreOutlined } from '@ant-design/icons';
 import Button from '@/components/Button';
 import UserAppList from './components/UserAppList';
 import LocalRepoList from './components/LocalRepoList';
 import AddRepoModal from './components/AddRepoModal';
+import ResetDevModal from './components/ResetDevModal';
 
 
 const Workbench: React.FC = () => {
@@ -30,6 +31,7 @@ const Workbench: React.FC = () => {
 
   const [showAddRepoModal, setShowAddRepoModal] = useState(false);
   const [repoDataVersion, setRepoDataVersion] = useState(0);
+  const [showResetDevModal, setShowResetDevModal] = useState(false);
 
   useMemo(() => {
     projectStore.setCurProjectId('');
@@ -56,13 +58,26 @@ const Workbench: React.FC = () => {
                 }}>前往应用市场<DoubleRightOutlined /></Button>
             )}
             {tab == "localRepo" && (
-              <Button style={{ marginRight: "20px" }} onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                setShowAddRepoModal(true);
-              }}>
-                添加代码仓库
-              </Button>
+              <Space>
+                <Button style={{ marginRight: "20px" }} onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowAddRepoModal(true);
+                }}>
+                  添加代码仓库
+                </Button>
+                <Popover trigger="click" placement="bottom" content={
+                  <div style={{ padding: "10px 10px" }}>
+                    <Button type="link" onClick={e => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setShowResetDevModal(true);
+                    }}>重置研发环境</Button>
+                  </div>
+                }>
+                  <MoreOutlined style={{ marginRight: "32px" }} />
+                </Popover>
+              </Space>
             )}
           </div>
         }>
@@ -105,6 +120,9 @@ const Workbench: React.FC = () => {
           setRepoDataVersion(repoDataVersion + 1);
           setShowAddRepoModal(false);
         }} />
+      )}
+      {showResetDevModal == true && (
+        <ResetDevModal onClose={() => setShowResetDevModal(false)} />
       )}
     </div>
   );
