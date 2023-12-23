@@ -160,6 +160,7 @@
         "scope": [
           "**",
           "**/.env",
+          "**/.simple_dev.json",
           "$HOME/.linksaas/**"
         ]
       }
