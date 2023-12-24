@@ -7,7 +7,7 @@ license = "GPL-3.0"
 name = "linksaas"
 repository = ""
 rust-version = "1.57"
-version = "0.6.16"
+version = "0.6.17"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -77,3 +77,4 @@ default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]
+skip-updater = ["tauri/updater"]
