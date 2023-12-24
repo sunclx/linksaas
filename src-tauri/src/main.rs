@@ -51,7 +51,10 @@ mod api_collection_api_plugin;
 mod docker_template_admin_api_plugin;
 mod docker_template_api_plugin;
 mod http_custom_api_plugin;
+
+#[cfg(not(feature = "skip-updater"))]
 mod my_updater;
+
 mod local_repo_plugin;
 mod pub_search_admin_api_plugin;
 mod pub_search_api_plugin;
@@ -265,9 +268,16 @@ async fn init_local_storage() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+#[cfg(not(feature = "skip-updater"))]
 #[tauri::command]
 async fn check_update(app_handle: AppHandle) {
     my_updater::check_update_with_dialog(app_handle).await;
+}
+
+#[cfg(feature = "skip-updater")]
+#[tauri::command]
+async fn check_update(_app_handle: AppHandle) {
+    //do nothing
 }
 
 pub fn window_invoke_responder<R: Runtime>(

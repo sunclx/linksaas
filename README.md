@@ -55,10 +55,19 @@
 
 ![img](screenshot/1.png)
 
+# 开发模式
+
+```bash
+cd src-tauri
+cargo update
+cd ..
+yarn tauri dev -f skip-updater
+```
+
 # 构建项目
 ```bash
 cd src-tauri
 cargo update
 cd ..
-yarn tauri build
+yarn tauri build -f skip-updater
 ```

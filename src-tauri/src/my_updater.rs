@@ -3,12 +3,6 @@ use tauri::{
     AppHandle, Manager, Runtime,
 };
 
-#[cfg(feature = "skip-updater")]
-pub async fn check_update_with_dialog<R: Runtime>(_handle: AppHandle<R>) {
-    //do nothing
-}
-
-#[cfg(not(feature = "skip-updater"))]
 pub async fn check_update_with_dialog<R: Runtime>(handle: AppHandle<R>) {
     let win = handle.get_window("main").unwrap();
     let package_info = handle.package_info().clone();
