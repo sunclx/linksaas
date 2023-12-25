@@ -1,5 +1,8 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export const GLOBAL_APPSTORE_FS_ID = "globalAppStore";
+export const GLOBAL_DOCKER_TEMPLATE_FS_ID = "globalDockerTemplate";
+
 export type FS_OWNER_TYPE = number;
 
 export const FS_OWNER_TYPE_USER: FS_OWNER_TYPE = 0; //用户文件存储

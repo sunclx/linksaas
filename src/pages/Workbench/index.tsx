@@ -88,15 +88,15 @@ const Workbench: React.FC = () => {
             </div>
           )}
         </Tabs.TabPane>
-        {(appStore.clientCfg?.enable_pub_app_store ?? false) == true && userStore.sessionId != "" && (
-          <Tabs.TabPane tab={<h2><AppstoreOutlined />我的微应用</h2>} key="userApp">
-            {tab == "userApp" && (
-              <div className={s.content_wrap}>
-                <UserAppList />
-              </div>
-            )}
-          </Tabs.TabPane>
-        )}
+
+        <Tabs.TabPane tab={<h2><AppstoreOutlined />我的微应用</h2>} key="userApp">
+          {tab == "userApp" && (
+            <div className={s.content_wrap}>
+              <UserAppList />
+            </div>
+          )}
+        </Tabs.TabPane>
+
       </Tabs>
       {passwordModal && (
         <PasswordModal

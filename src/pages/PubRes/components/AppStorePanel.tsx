@@ -16,6 +16,7 @@ import { CommentOutlined, DownloadOutlined, HeartTwoTone, MoreOutlined } from "@
 import { observer } from 'mobx-react';
 import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
 import DebugMinAppModal from "@/components/MinApp/DebugMinAppModal";
+import { GLOBAL_APPSTORE_FS_ID } from "@/api/fs";
 
 const PAGE_SIZE = 12;
 
@@ -90,9 +91,9 @@ const AppStorePanel = () => {
 
     const adjustUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${fileId}/icon.png`;
+            return `https://fs.localhost/${GLOBAL_APPSTORE_FS_ID}/${fileId}/icon.png`;
         } else {
-            return `fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${fileId}/icon.png`;
+            return `fs://localhost/${GLOBAL_APPSTORE_FS_ID}/${fileId}/icon.png`;
         }
     }
 

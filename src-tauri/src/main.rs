@@ -80,8 +80,6 @@ use tauri::{
 };
 use tokio::fs;
 
-const DEFAULT_GRPC_SERVER_ADD: &str = "http://serv.linksaas.pro:5000";
-
 // linksaas://comment/xzx6nmp5WuyhT6lHgIwkZ
 const INIT_SCRIPT: &str = r#"
 Object.defineProperty(window, "__TAURI_POST_MESSAGE__", {

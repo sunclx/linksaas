@@ -4,9 +4,16 @@ use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
+use tauri::async_runtime::Mutex;
+use tauri::Manager;
 use tokio::fs;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+
+const DEFAULT_GRPC_SERVER_ADDR: &str = "http://serv.linksaas.pro:5000";
+
+#[derive(Default)]
+pub struct GlobalServerAddr(pub Mutex<String>);
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 pub struct ServerInfo {
@@ -48,8 +55,8 @@ async fn get_cfg<R: Runtime>(
 }
 
 #[tauri::command]
-async fn add_server<R: Runtime>(app_handle: AppHandle<R>, window: Window<R>, addr: String) {
-    let mut result = list_server(app_handle, window, true).await;
+async fn add_server(addr: String) {
+    let mut result = list_server(true).await;
     result.server_list.push(ServerInfo {
         name: addr.clone(),
         system: false,
@@ -69,8 +76,8 @@ async fn add_server<R: Runtime>(app_handle: AppHandle<R>, window: Window<R>, add
 }
 
 #[tauri::command]
-async fn remove_server<R: Runtime>(app_handle: AppHandle<R>, window: Window<R>, addr: String) {
-    let result = list_server(app_handle, window, true).await;
+async fn remove_server(addr: String) {
+    let result = list_server(true).await;
     let mut server_list: Vec<ServerInfo> = Vec::new();
 
     for info in &(result.server_list) {
@@ -91,8 +98,8 @@ async fn remove_server<R: Runtime>(app_handle: AppHandle<R>, window: Window<R>, 
 }
 
 #[tauri::command]
-async fn set_default_server<R: Runtime>(app_handle: AppHandle<R>, window: Window<R>, addr: String) {
-    let result = list_server(app_handle, window, true).await;
+async fn set_default_server(addr: String) {
+    let result = list_server(true).await;
     let mut server_list: Vec<ServerInfo> = Vec::new();
 
     for info in &(result.server_list) {
@@ -116,11 +123,7 @@ async fn set_default_server<R: Runtime>(app_handle: AppHandle<R>, window: Window
 }
 
 #[tauri::command]
-async fn list_server<R: Runtime>(
-    _app_handle: AppHandle<R>,
-    _window: Window<R>,
-    skip_system: bool,
-) -> ListServerResult {
+async fn list_server(skip_system: bool) -> ListServerResult {
     let mut result = ListServerResult {
         server_list: Vec::new(),
     };
@@ -170,6 +173,44 @@ async fn get_server_cfg() -> Option<String> {
     None
 }
 
+#[tauri::command]
+pub async fn get_global_server_addr<R: Runtime>(app_handle: AppHandle<R>) -> String {
+    let cur_value = app_handle.state::<GlobalServerAddr>().inner();
+    let result = cur_value.0.lock().await;
+    let result = result.clone() ;
+    if &result == "" {
+        return String::from(DEFAULT_GRPC_SERVER_ADDR);
+    }
+    return result;
+}
+
+async fn load_global_server_addr() -> String {
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return String::from(DEFAULT_GRPC_SERVER_ADDR);
+    }
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("global_server.json");
+    if !file_path.exists() {
+        return String::from(DEFAULT_GRPC_SERVER_ADDR);
+    }
+    let f = fs::File::open(file_path).await;
+    if f.is_err() {
+        return String::from(DEFAULT_GRPC_SERVER_ADDR);
+    }
+    let mut f = f.unwrap();
+    let mut data = Vec::new();
+    let result = f.read_to_end(&mut data).await;
+    if result.is_err() {
+        return String::from(DEFAULT_GRPC_SERVER_ADDR);
+    }
+    let result = String::from_utf8(data);
+    if result.is_err() {
+        return String::from(DEFAULT_GRPC_SERVER_ADDR);
+    }
+    return result.unwrap();
+}
+
 pub struct ClientCfgApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -183,6 +224,7 @@ impl<R: Runtime> ClientCfgApiPlugin<R> {
                 remove_server,
                 set_default_server,
                 list_server,
+                get_global_server_addr,
             ]),
         }
     }
@@ -196,7 +238,13 @@ impl<R: Runtime> Plugin<R> for ClientCfgApiPlugin<R> {
         None
     }
 
-    fn initialize(&mut self, _app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+    fn initialize(&mut self, app: &AppHandle<R>, _config: serde_json::Value) -> PluginResult<()> {
+        app.manage(GlobalServerAddr(Default::default()));
+        tauri::async_runtime::block_on(async {
+            let addr = load_global_server_addr().await;
+            let global_addr = app.state::<GlobalServerAddr>().inner();
+            *global_addr.0.lock().await = addr;
+        });
         Ok(())
     }
 

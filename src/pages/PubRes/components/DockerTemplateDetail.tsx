@@ -8,7 +8,7 @@ import { Button, Card, Image, Input, List, Modal, Space, message } from "antd";
 import { DownloadOutlined, LeftOutlined } from "@ant-design/icons";
 import { open as open_shell } from '@tauri-apps/api/shell';
 import AsyncImage from "@/components/AsyncImage";
-import { download_file } from "@/api/fs";
+import { GLOBAL_DOCKER_TEMPLATE_FS_ID, download_file } from "@/api/fs";
 import { check_unpark, unpack_template } from "@/api/docker_template";
 import DockerTemplateModal from "./DockerTemplateModal";
 import UserPhoto from "@/components/Portrait/UserPhoto";
@@ -44,17 +44,17 @@ const DockerTemplateDetail = () => {
 
     const getImageUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/image.png`;
+            return `https://fs.localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/image.png`;
         } else {
-            return `fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/image.png`;
+            return `fs://localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/image.png`;
         }
     };
 
     const prepareTemplate = async (fileId: string) => {
-        const downloadRes = await download_file(userStore.sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", fileId, "", "template.zip");
-        const checkRes = await check_unpark(appStore.clientCfg?.docker_template_fs_id ?? "", fileId);
+        const downloadRes = await download_file(userStore.sessionId, GLOBAL_DOCKER_TEMPLATE_FS_ID, fileId, "", "template.zip");
+        const checkRes = await check_unpark(GLOBAL_DOCKER_TEMPLATE_FS_ID, fileId);
         if (!checkRes) {
-            await unpack_template(appStore.clientCfg?.docker_template_fs_id ?? "", fileId);
+            await unpack_template(GLOBAL_DOCKER_TEMPLATE_FS_ID, fileId);
         }
         if (appStore.isOsWindows) {
             setTemplatePath(`${downloadRes.local_dir}\\template`);

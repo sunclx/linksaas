@@ -8,9 +8,9 @@ import { request } from "@/utils/request";
 import { CommentOutlined, DownloadOutlined, HeartTwoTone, LeftOutlined } from "@ant-design/icons";
 import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
-import { get_cache_file } from '@/api/fs';
+import { GLOBAL_APPSTORE_FS_ID, get_cache_file } from '@/api/fs';
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
-import { add as add_user_app, query_in_store as query_user_app_in_store, remove as remove_user_app } from "@/api/user_app";
+import { add as add_user_app, remove as remove_user_app } from "@/api/user_app";
 import { open as open_shell } from '@tauri-apps/api/shell';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
@@ -141,25 +141,25 @@ const AppStoreDetail = () => {
 
     const preOpenUserApp = async () => {
         //检查文件是否已经下载
-        const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "", "content.zip");
+        const res = await get_cache_file(GLOBAL_APPSTORE_FS_ID, appInfo?.file_id ?? "", "content.zip");
         if (res.exist_in_local == false) {
             setShowDownload({
-                fsId: appStore.clientCfg?.app_store_fs_id ?? "",
+                fsId: GLOBAL_APPSTORE_FS_ID,
                 fileId: appInfo?.file_id ?? "",
             });
             return;
         }
         //检查是否已经解压zip包
-        const ok = await check_unpark(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "");
+        const ok = await check_unpark(GLOBAL_APPSTORE_FS_ID, appInfo?.file_id ?? "");
         if (!ok) {
             setShowDownload({
-                fsId: appStore.clientCfg?.app_store_fs_id ?? "",
+                fsId: GLOBAL_APPSTORE_FS_ID,
                 fileId: appInfo?.file_id ?? "",
             });
             return;
         }
         //打开微应用
-        await openUserApp(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "");
+        await openUserApp(GLOBAL_APPSTORE_FS_ID, appInfo?.file_id ?? "");
     }
 
     const removeUserApp = async () => {

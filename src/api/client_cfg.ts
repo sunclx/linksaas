@@ -22,10 +22,6 @@ export type GetCfgResponse = {
   can_invite: boolean;
   can_register: boolean;
   enable_admin: boolean;
-  enable_pub_app_store: boolean;
-  enable_pub_docker_template: boolean;
-  app_store_fs_id: string;
-  docker_template_fs_id: string;
 };
 
 export type ServerInfo = {

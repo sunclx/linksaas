@@ -49,26 +49,26 @@ const PubRes = () => {
                         </div>
                     )}
                 </Tabs.TabPane>
-                {appStore.clientCfg?.enable_pub_app_store == true && (
-                    <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用市场</h2>} key="appStore">
-                        {activeKey == "appStore" && (
-                            <div className={s.content_wrap}>
-                                {pubResStore.showAppId == "" && <AppStorePanel />}
-                                {pubResStore.showAppId != "" && <AppStoreDetail />}
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
-                {appStore.clientCfg?.enable_pub_docker_template == true && (
-                    <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;Docker模板</h2>} key="dockerTemplate">
-                        {activeKey == "dockerTemplate" && (
-                            <div className={s.content_wrap}>
-                                {pubResStore.dockerAppId == "" && <DockerTemplatePanel />}
-                                {pubResStore.dockerAppId != "" && <DockerTemplateDetail />}
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
+
+                <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用市场</h2>} key="appStore">
+                    {activeKey == "appStore" && (
+                        <div className={s.content_wrap}>
+                            {pubResStore.showAppId == "" && <AppStorePanel />}
+                            {pubResStore.showAppId != "" && <AppStoreDetail />}
+                        </div>
+                    )}
+                </Tabs.TabPane>
+
+
+                <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;Docker模板</h2>} key="dockerTemplate">
+                    {activeKey == "dockerTemplate" && (
+                        <div className={s.content_wrap}>
+                            {pubResStore.dockerAppId == "" && <DockerTemplatePanel />}
+                            {pubResStore.dockerAppId != "" && <DockerTemplateDetail />}
+                        </div>
+                    )}
+                </Tabs.TabPane>
+
                 {appStore.clientCfg?.item_list.map(item => (
                     <Tabs.TabPane tab={<h2><GlobalOutlined />&nbsp;{item.name}</h2>} key={item.menu_id}>
                         {activeKey == item.menu_id && (
