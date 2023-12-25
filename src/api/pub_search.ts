@@ -269,7 +269,7 @@ export function list_site(cateId: string,
 export async function list_my_site(): Promise<Site[]> {
     const cmd = 'plugin:pub_search_api|list_my_site';
     const siteIdList = await invoke<string[]>(cmd, {});
-    if (siteIdList.length == 0) {
+    if (siteIdList.length > 0) {
         return siteIdList.map(siteId => siteList.find(item => item.siteId == siteId)).filter(item => item != undefined) as Site[];
     } else {
         return siteList.filter(item => item.defaultSite);

@@ -1,49 +1,18 @@
 use proto_gen_rust::k8s_proxy_api::k8s_proxy_api_client::K8sProxyApiClient;
 use proto_gen_rust::k8s_proxy_api::*;
-use std::time::Duration;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
-use tonic::transport::{Channel, Endpoint};
+use crate::conn_extern_server;
 
-async fn conn_server(addr: String) -> Result<Channel, String> {
-    let mut u = url::Url::parse(&addr);
-    if u.is_err() {
-        let new_addr = format!("http://{}", addr);
-        u = url::Url::parse(&new_addr);
-        if u.is_err() {
-            return Err(u.err().unwrap().to_string());
-        }
-    }
-    let mut u = u.unwrap();
-    if let Err(_) = u.set_scheme("http") {
-        return Err("set schema failed".into());
-    }
-    if u.port().is_none() {
-        return Err("miss port".into());
-    }
-    let end_point = Endpoint::from_shared(String::from(u));
-    if end_point.is_err() {
-        return Err(end_point.err().unwrap().to_string());
-    }
-    let end_point = end_point.unwrap();
-    let chan = end_point
-        .tcp_keepalive(Some(Duration::new(300, 0)))
-        .connect()
-        .await;
-    if chan.is_err() {
-        return Err(chan.err().unwrap().to_string());
-    }
-    return Ok(chan.unwrap());
-}
 
 #[tauri::command]
 async fn get_resource(
     serv_addr: String,
     request: GetResourceRequest,
 ) -> Result<GetResourceResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -61,7 +30,7 @@ async fn list_resource(
     serv_addr: String,
     request: ListResourceRequest,
 ) -> Result<ListResourceResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -79,7 +48,7 @@ async fn update_image(
     serv_addr: String,
     request: UpdateImageRequest,
 ) -> Result<UpdateImageResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -97,7 +66,7 @@ async fn update_scale(
     serv_addr: String,
     request: UpdateScaleRequest,
 ) -> Result<UpdateScaleResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -115,7 +84,7 @@ async fn list_resource_perm(
     serv_addr: String,
     request: ListResourcePermRequest,
 ) -> Result<ListResourcePermResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -133,7 +102,7 @@ async fn set_resource_perm(
     serv_addr: String,
     request: SetResourcePermRequest,
 ) -> Result<SetResourcePermResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -148,7 +117,7 @@ async fn set_resource_perm(
 
 #[tauri::command]
 async fn open_log(serv_addr: String, request: OpenLogRequest) -> Result<OpenLogResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -163,7 +132,7 @@ async fn open_log(serv_addr: String, request: OpenLogRequest) -> Result<OpenLogR
 
 #[tauri::command]
 async fn read_log(serv_addr: String, request: ReadLogRequest) -> Result<ReadLogResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -181,7 +150,7 @@ async fn open_term(
     serv_addr: String,
     request: OpenTermRequest,
 ) -> Result<OpenTermResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -199,7 +168,7 @@ async fn write_term(
     serv_addr: String,
     request: WriteTermRequest,
 ) -> Result<WriteTermResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -217,7 +186,7 @@ async fn read_term(
     serv_addr: String,
     request: ReadTermRequest,
 ) -> Result<ReadTermResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -235,7 +204,7 @@ async fn set_term_size(
     serv_addr: String,
     request: SetTermSizeRequest,
 ) -> Result<SetTermSizeResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }

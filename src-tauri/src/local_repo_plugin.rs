@@ -29,7 +29,7 @@ async fn encrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> Str
     if token == "" {
         return String::from("");
     }
-    let enc_data = encrypt(app_handle, Vec::from(token)).await;
+    let enc_data = encrypt(app_handle, Vec::from(token), true).await;
     if enc_data.is_err() {
         return String::from("");
     }
@@ -45,7 +45,7 @@ async fn decrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> Str
     if dec_data.is_err() {
         return String::from("");
     }
-    let dec_data = decrypt(app_handle, dec_data.unwrap()).await;
+    let dec_data = decrypt(app_handle, dec_data.unwrap(), true).await;
     if dec_data.is_err() {
         return String::from("");
     }

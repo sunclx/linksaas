@@ -398,9 +398,10 @@ async fn get_user_secret<R: Runtime>(app_handle: AppHandle<R>) -> String {
 pub async fn encrypt<R: Runtime>(
     app_handle: AppHandle<R>,
     data: Vec<u8>,
+    default_secret: bool,
 ) -> Result<Vec<u8>, String> {
     let mut secret = get_user_secret(app_handle).await;
-    if &secret == "" {
+    if &secret == "" || default_secret {
         secret = String::from(UNLOGIN_USER_TOKEN);
     }
     let mut new_secret = [0 as u8; 32];
@@ -422,9 +423,10 @@ pub async fn encrypt<R: Runtime>(
 pub async fn decrypt<R: Runtime>(
     app_handle: AppHandle<R>,
     data: Vec<u8>,
+    default_secret: bool,
 ) -> Result<Vec<u8>, String> {
     let mut secret = get_user_secret(app_handle).await;
-    if &secret == "" {
+    if &secret == "" || default_secret {
         secret = String::from(UNLOGIN_USER_TOKEN);
     }
     let mut new_secret = [0 as u8; 32];
