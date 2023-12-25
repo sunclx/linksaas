@@ -341,6 +341,7 @@ fn main() {
     }
     let tray_menu = SystemTrayMenu::new()
         .add_item(CustomMenuItem::new("switch_user", "切换用户").disabled())
+        .add_item(CustomMenuItem::new("set_global_server", "设置全局服务器"))
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("devtools", "调试"))
         .add_item(CustomMenuItem::new("show_app", "显示界面"))
@@ -397,6 +398,12 @@ fn main() {
                 "switch_user" => {
                     let win = app.get_window("main").unwrap();
                     if let Err(err) = win.emit("notice", notice_decode::new_switch_user_notice()) {
+                        println!("{:?}", err);
+                    }
+                }
+                "set_global_server" => {
+                    let win = app.get_window("main").unwrap();
+                    if let Err(err) = win.emit("notice", notice_decode::new_show_global_server_setting_notice()) {
                         println!("{:?}", err);
                     }
                 }

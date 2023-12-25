@@ -296,6 +296,10 @@ pub mod client {
     #[serde(rename_all = "snake_case")]
     pub struct ShowAdminLoginNotice {}
 
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    #[serde(rename_all = "snake_case")]
+    pub struct ShowGlobalServerSettingNotice{}
+
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
@@ -304,6 +308,7 @@ pub mod client {
         GitPostHookNotice(GitPostHookNotice),
         LocalProxyStopNotice(LocalProxyStopNotice),
         ShowAdminLoginNotice(ShowAdminLoginNotice),
+        ShowGlobalServerSettingNotice(ShowGlobalServerSettingNotice),
     }
 }
 
@@ -367,5 +372,11 @@ pub fn new_local_proxy_stop_notice() -> NoticeMessage {
 pub fn new_show_admin_login_notice() -> NoticeMessage {
     return NoticeMessage::ClientNotice(client::Notice::ShowAdminLoginNotice(
         client::ShowAdminLoginNotice {},
+    ));
+}
+
+pub fn new_show_global_server_setting_notice() -> NoticeMessage {
+    return NoticeMessage::ClientNotice(client::Notice::ShowGlobalServerSettingNotice(
+        client::ShowGlobalServerSettingNotice {},
     ));
 }

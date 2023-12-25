@@ -66,6 +66,19 @@ class AppStore {
     });
   }
 
+  //显示全局服务器设置
+  private _showGlobalServerModal = false;
+
+  get showGlobalServerModal() {
+    return this._showGlobalServerModal;
+  }
+
+  set showGlobalServerModal(val: boolean) {
+    runInAction(() => {
+      this._showGlobalServerModal = val;
+    });
+  }
+
   //专注模式
   private _focusMode = false;
 

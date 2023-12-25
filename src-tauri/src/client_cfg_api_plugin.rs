@@ -1,11 +1,11 @@
 use proto_gen_rust::client_cfg_api::client_cfg_api_client::ClientCfgApiClient;
 use proto_gen_rust::client_cfg_api::*;
+use tauri::async_runtime::Mutex;
+use tauri::Manager;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
-use tauri::async_runtime::Mutex;
-use tauri::Manager;
 use tokio::fs;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -177,15 +177,46 @@ async fn get_server_cfg() -> Option<String> {
 pub async fn get_global_server_addr<R: Runtime>(app_handle: AppHandle<R>) -> String {
     let cur_value = app_handle.state::<GlobalServerAddr>().inner();
     let result = cur_value.0.lock().await;
-    let result = result.clone() ;
+    let result = result.clone();
     if &result == "" {
         return String::from(DEFAULT_GRPC_SERVER_ADDR);
     }
     return result;
 }
 
+#[tauri::command]
+pub async fn set_global_server_addr<R: Runtime>(
+    app_handle: AppHandle<R>,
+    addr: String,
+) -> Result<(), String> {
+    let user_dir = crate::get_base_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
+    }
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    if !file_path.exists() {
+        let result = fs::create_dir_all(&file_path).await;
+        if result.is_err() {
+            return Err(result.err().unwrap().to_string());
+        }
+    }
+    file_path.push("global_server.json");
+    let f = fs::File::create(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let result = f.write_all(addr.as_bytes()).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    let cur_value = app_handle.state::<GlobalServerAddr>().inner();
+    *cur_value.0.lock().await = addr;
+    Ok(())
+}
+
 async fn load_global_server_addr() -> String {
-    let user_dir = crate::get_user_dir();
+    let user_dir = crate::get_base_dir();
     if user_dir.is_none() {
         return String::from(DEFAULT_GRPC_SERVER_ADDR);
     }
@@ -225,6 +256,7 @@ impl<R: Runtime> ClientCfgApiPlugin<R> {
                 set_default_server,
                 list_server,
                 get_global_server_addr,
+                set_global_server_addr,
             ]),
         }
     }

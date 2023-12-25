@@ -213,9 +213,11 @@ class NoticeStore {
       }
     } else if (notice.LocalProxyStopNotice !== undefined) {
       await this.rootStore.appStore.loadLocalProxy();
-    } else if (notice.ShowAdminLoginNotice != undefined) {
+    } else if (notice.ShowAdminLoginNotice !== undefined) {
       this.rootStore.userStore.showUserLogin = null;
       this.rootStore.userStore.showAdminUserLogin = true;
+    } else if (notice.ShowGlobalServerSettingNotice !== undefined) {
+      this.rootStore.appStore.showGlobalServerModal = true;
     }
   }
 

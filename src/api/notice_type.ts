@@ -187,12 +187,15 @@ export namespace client {
 
   export type ShowAdminLoginNotice = {};
 
+  export type ShowGlobalServerSettingNotice = {};
+
   export type AllNotice = {
     WrongSessionNotice?: WrongSessionNotice;
     SwitchUserNotice?: SwitchUserNotice;
     GitPostHookNotice?: GitPostHookNotice;
     LocalProxyStopNotice?: LocalProxyStopNotice;
     ShowAdminLoginNotice?: ShowAdminLoginNotice;
+    ShowGlobalServerSettingNotice?: ShowGlobalServerSettingNotice;
   };
 }
 

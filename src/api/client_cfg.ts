@@ -67,3 +67,11 @@ export async function list_server(skip_system: boolean): Promise<ListServerResul
     skipSystem: skip_system,
   });
 }
+
+export async function get_global_server_addr(): Promise<string> {
+  return invoke<string>('plugin:client_cfg_api|get_global_server_addr', {});
+}
+
+export async function set_global_server_addr(addr: string): Promise<void> {
+  return invoke<void>('plugin:client_cfg_api|set_global_server_addr', { addr: addr });
+}
