@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import React from 'react';
 import { Button, Col, Form, Input, Row } from 'antd';
-
 import s from './reset.module.less';
 import { CheckCircleFilled, LeftOutlined } from '@ant-design/icons';
 import { useSetState } from 'ahooks';
@@ -58,7 +57,6 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
 
   return (
     <div className={s.reset_wrap}>
-      <h1 className={s.title}>重置密码</h1>
       <Form
         className={s.resetform}
         onFinish={async (values) => {
@@ -75,7 +73,7 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
                 };
               });
               setStep((num) => num + 1);
-            } catch (error) {}
+            } catch (error) { }
             return;
           } else {
             setFormValue((val) => {
@@ -84,7 +82,7 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
                 auth_code: values.code,
               };
             });
-            userStore.setIsResetPassword(true);
+            userStore.isResetPassword = true;
             push({
               pathname: WORKBENCH_PATH,
               search: `type=${RESET_TEXT}`,

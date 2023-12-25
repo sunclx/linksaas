@@ -1,6 +1,6 @@
 import { change_passwd, reset_password } from '@/api/user';
 import { useStores } from '@/hooks';
-import type { ResetPasswordType } from '@/pages/User/components/Reset';
+import type { ResetPasswordType } from '@/pages/User/Reset';
 import { request } from '@/utils/request';
 import type { ModalProps } from 'antd';
 import { Button, Form, Input, message } from 'antd';
@@ -38,7 +38,7 @@ const PasswordModal: FC<PasswordModalProps> = ({
       try {
         await request(reset_password(state.user_name, state.auth_code, values.repetition));
         await userStore.callLogin(state.user_name, values.repetition);
-        userStore.setIsResetPassword(false);
+        userStore.isResetPassword = false;
         message.success('密码重置成功');
         if (onSuccess) {
           onSuccess();

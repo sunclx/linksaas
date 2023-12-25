@@ -14,9 +14,14 @@ import { ReactComponent as Quitsvg } from '@/assets/svg/quit.svg';
 import Profile from '../Profile';
 import * as fsApi from '@/api/fs';
 import UserPhoto from '@/components/Portrait/UserPhoto';
+import { useHistory, useLocation } from 'react-router-dom';
+import { PUB_RES_PATH, WORKBENCH_PATH } from '@/utils/constant';
 
 
 const Portrait = ({ ...props }) => {
+  const location = useLocation();
+  const history = useHistory();
+
   const [isSetName, setIsSetName] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showExit, setShowExit] = useState(false);
@@ -76,7 +81,7 @@ const Portrait = ({ ...props }) => {
       <div className={s.portrait_wrap}>
         <div className={s.portrait_img} onClick={() => {
           setPictrueListVisible(true);
-          userStore.setAccountsModal(false);
+          userStore.accountsModal = false;
         }}>
           <UserPhoto logoUri={userStore.userInfo.logoUri ?? ""} />
           <div>更换</div>
@@ -114,7 +119,7 @@ const Portrait = ({ ...props }) => {
           className={s.changePassword}
           onClick={() => {
             setPasswordVisible(true);
-            userStore.setAccountsModal(false);
+            userStore.accountsModal = false;
           }}
         >
           修改密码
@@ -123,7 +128,7 @@ const Portrait = ({ ...props }) => {
           className={s.exit}
           onClick={() => {
             setShowExit(true);
-            userStore.setAccountsModal(false);
+            userStore.accountsModal = false;
           }}
         >
           <Quitsvg />
@@ -139,7 +144,11 @@ const Portrait = ({ ...props }) => {
             onCancel={() => setShowExit(false)}
             onOk={() => {
               userStore.logout();
-              //TODO
+              if (location.pathname.startsWith(WORKBENCH_PATH) || location.pathname.startsWith(PUB_RES_PATH)) {
+                //do nothing
+              } else {
+                history.push(WORKBENCH_PATH);
+              }
             }}
           >
             <p style={{ textAlign: 'center' }}>是否确认退出?</p>
@@ -160,13 +169,12 @@ const Portrait = ({ ...props }) => {
       <div className={s.user} onClick={e => {
         e.stopPropagation();
         e.preventDefault();
-        //TODO
-        alert("xx");
+        userStore.showUserLogin = () => { };
       }}>
         <div className={s.avatar}>
           <UserPhoto logoUri={userStore.userInfo.logoUri ?? ''} />
         </div>
-        <div className={s.name}>未登录</div>
+        <div className={s.name}>请登录</div>
       </div>
     )
   }
@@ -180,7 +188,7 @@ const Portrait = ({ ...props }) => {
         marginLeft: "10px",
         marginTop: "-30px"
       }}
-      onOpenChange={(boo) => userStore.setAccountsModal(boo)}
+      onOpenChange={v => userStore.accountsModal = v}
     >
       {props.children}
     </Popover>

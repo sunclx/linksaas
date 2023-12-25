@@ -28,6 +28,12 @@ class AppStore {
     return this._clientCfg;
   }
 
+  reset() {
+    runInAction(() => {
+      this._clientCfg = undefined;
+    });
+  }
+
   async loadClientCfg() {
     const res = await clientCfgApi.get_cfg();
     runInAction(() => {

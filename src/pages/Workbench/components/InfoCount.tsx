@@ -46,54 +46,49 @@ const InfoCount = () => {
             className={s.account}
             onClick={() => {
               if (userStore.sessionId == "") {
-                //TODO
+                userStore.showUserLogin = () => { };
               } else {
-                userStore.setAccountsModal(true);
+                userStore.accountsModal = true;
               }
 
             }}
           >
-            <img src={memberIcon} alt="" /> {userStore.sessionId == "" ? "登录" : "账号管理"}
+            <img src={memberIcon} alt="" /> {userStore.sessionId == "" ? "请登录" : "账号管理"}
           </div>
         </div>
       </div>
-      <div className={s.right_wrap}>
-        <div className={s.item}>
-          <div>当前待办</div>
-          <div>
-            <Button type='text' style={{ minWidth: 0, padding: "0px 0px", fontSize: "20px", lineHeight: "28px" }}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (userStore.sessionId == "") {
-                  //TODO
-                } else {
+      {userStore.sessionId != "" && (
+        <div className={s.right_wrap}>
+          <div className={s.item}>
+            <div>当前待办</div>
+            <div>
+              <Button type='text' style={{ minWidth: 0, padding: "0px 0px", fontSize: "20px", lineHeight: "28px" }}
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   setShowMyTodoModal(true);
-                }
-              }}>
-              {myTodoCount}
-            </Button>
+                }}>
+                {myTodoCount}
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <div className={s.item}>
-          <div>当前项目数</div>
-          <div>
-            <Button type='text' style={{ minWidth: 0, padding: "0px 0px", fontSize: "20px", lineHeight: "28px" }}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (userStore.sessionId == "") {
-                  //TODO
-                } else {
+          <div className={s.item}>
+            <div>当前项目数</div>
+            <div>
+              <Button type='text' style={{ minWidth: 0, padding: "0px 0px", fontSize: "20px", lineHeight: "28px" }}
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   history.push(APP_PROJECT_MANAGER_PATH);
-                }
-              }}>
-              {projectStore.projectList.filter((item) => !item.closed).length}
-            </Button>
+                }}>
+                {projectStore.projectList.filter((item) => !item.closed).length}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
       {showMyTodoModal == true && (
         <MyTodoListModal onCount={value => setMyTodoCount(value)} onClose={() => setShowMyTodoModal(false)} />
       )}

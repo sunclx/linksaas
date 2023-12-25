@@ -28,7 +28,9 @@ const ProjectList = () => {
                     e.stopPropagation();
                     e.preventDefault();
                     if (userStore.sessionId == "") {
-                        //TODO
+                        userStore.showUserLogin = () => {
+                            history.push(APP_PROJECT_MANAGER_PATH);
+                        };
                     } else {
                         if (appStore.inEdit) {
                             appStore.showCheckLeave(() => {
@@ -46,7 +48,9 @@ const ProjectList = () => {
                         e.stopPropagation();
                         e.preventDefault();
                         if (userStore.sessionId == "") {
-                            //TODO
+                            userStore.showUserLogin = () => {
+                                appStore.showCreateOrJoinProject = true;
+                            };
                         } else {
                             appStore.showCreateOrJoinProject = true;
                         }
