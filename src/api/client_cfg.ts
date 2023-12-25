@@ -24,10 +24,8 @@ export type GetCfgResponse = {
   enable_admin: boolean;
   enable_pub_app_store: boolean;
   enable_pub_docker_template: boolean;
-  enable_pub_search: boolean;
   app_store_fs_id: string;
   docker_template_fs_id: string;
-  pub_search_fs_id: string;
 };
 
 export type ServerInfo = {

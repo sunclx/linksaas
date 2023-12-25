@@ -60,16 +60,6 @@ export type DockerTemplatePerm = {
     remove_comment: boolean;
 };
 
-export type PubSearchPerm = {
-    read: boolean;
-    add_cate: boolean;
-    update_cate: boolean;
-    remove_cate: boolean;
-    add_site: boolean;
-    update_site: boolean;
-    remove_site: boolean;
-};
-
 export type GroupPerm = {
     read: boolean;
     update_group: boolean;
@@ -92,7 +82,6 @@ export type AdminPermInfo = {
     menu_perm: MenuPerm;
     app_store_perm: AppStorePerm;
     docker_template_perm: DockerTemplatePerm;
-    pub_search_perm: PubSearchPerm;
     group_perm: GroupPerm;
     dev_container_perm: DevContainerPerm;
 };
@@ -146,17 +135,6 @@ export async function get_admin_session(): Promise<string> {
 export async function get_admin_perm(): Promise<AdminPermInfo> {
     const cmd = 'plugin:admin_auth_api|get_admin_perm';
     const perm = await invoke<AdminPermInfo>(cmd, {});
-    if (perm.pub_search_perm == undefined) {
-        perm.pub_search_perm = {
-            read: true,
-            add_cate: true,
-            update_cate: true,
-            remove_cate: true,
-            add_site: true,
-            update_site: true,
-            remove_site: true,
-        }
-    }
     return perm
 }
 

@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import { PUB_RES_PATH, USER_LOGIN_PATH, WORKBENCH_PATH } from '@/utils/constant';
+import { PUB_RES_PATH, WORKBENCH_PATH } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import Card from './components/Card';
 import InfoCount from './components/InfoCount';
@@ -105,7 +105,7 @@ const Workbench: React.FC = () => {
           onCancel={(bool) => {
             userStore.logout();
             if (userStore.isResetPassword) {
-              history.push(USER_LOGIN_PATH);
+              history.push("/");
             }
             setPasswordModal(bool);
           }}

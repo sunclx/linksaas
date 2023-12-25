@@ -20,6 +20,9 @@ use tokio::time::sleep;
 use url::Url;
 use uuid::Uuid;
 
+//不要修改这个常量
+const UNLOGIN_USER_TOKEN: &'static str = "VAVPiHGWL6idGXkQ14p9ilvwCoqEQxHw";
+
 #[derive(Default)]
 pub struct CurSession(pub Mutex<Option<String>>);
 
@@ -396,9 +399,9 @@ pub async fn encrypt<R: Runtime>(
     app_handle: AppHandle<R>,
     data: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
-    let secret = get_user_secret(app_handle).await;
+    let mut secret = get_user_secret(app_handle).await;
     if &secret == "" {
-        return Err("miss secret".into());
+        secret = String::from(UNLOGIN_USER_TOKEN);
     }
     let mut new_secret = [0 as u8; 32];
     new_secret[..32].copy_from_slice(secret.as_bytes());
@@ -420,9 +423,9 @@ pub async fn decrypt<R: Runtime>(
     app_handle: AppHandle<R>,
     data: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
-    let secret = get_user_secret(app_handle).await;
+    let mut secret = get_user_secret(app_handle).await;
     if &secret == "" {
-        return Err("miss secret".into());
+        secret = String::from(UNLOGIN_USER_TOKEN);
     }
     let mut new_secret = [0 as u8; 32];
     new_secret[..32].copy_from_slice(secret.as_bytes());

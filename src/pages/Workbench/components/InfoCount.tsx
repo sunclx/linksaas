@@ -23,6 +23,9 @@ const InfoCount = () => {
   const [showMyTodoModal, setShowMyTodoModal] = useState(false);
 
   const loadMyTodoCount = async () => {
+    if (userStore.sessionId == "") {
+      return;
+    }
     const res = await request(get_my_todo_status({
       session_id: userStore.sessionId,
     }));
@@ -31,7 +34,7 @@ const InfoCount = () => {
 
   useEffect(() => {
     loadMyTodoCount();
-  }, []);
+  }, [userStore.sessionId]);
 
   return (
     <div className={s.infoCount_wrap}>
@@ -42,10 +45,15 @@ const InfoCount = () => {
           <div
             className={s.account}
             onClick={() => {
-              userStore.setAccountsModal(true);
+              if (userStore.sessionId == "") {
+                //TODO
+              } else {
+                userStore.setAccountsModal(true);
+              }
+
             }}
           >
-            <img src={memberIcon} alt="" /> 账号管理
+            <img src={memberIcon} alt="" /> {userStore.sessionId == "" ? "登录" : "账号管理"}
           </div>
         </div>
       </div>
@@ -57,7 +65,11 @@ const InfoCount = () => {
               onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                setShowMyTodoModal(true);
+                if (userStore.sessionId == "") {
+                  //TODO
+                } else {
+                  setShowMyTodoModal(true);
+                }
               }}>
               {myTodoCount}
             </Button>
@@ -71,7 +83,11 @@ const InfoCount = () => {
               onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                history.push(APP_PROJECT_MANAGER_PATH);
+                if (userStore.sessionId == "") {
+                  //TODO
+                } else {
+                  history.push(APP_PROJECT_MANAGER_PATH);
+                }
               }}>
               {projectStore.projectList.filter((item) => !item.closed).length}
             </Button>

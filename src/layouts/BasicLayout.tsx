@@ -4,13 +4,10 @@ import type { IRouteConfig } from '@/routes';
 import { WORKBENCH_PATH } from '@/utils/constant';
 import { Layout } from 'antd';
 import classNames from 'classnames';
-import { when } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { useHistory, useLocation } from 'react-router-dom';
-
-
 import Header from '../components/Header';
 import LeftMenu from '../components/LeftMenu';
 import Toolbar from '../components/Toolbar';
@@ -38,19 +35,6 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   useEffect(() => {
     userStore.setIsResetPassword(type === 'resetPassword');
   });
-
-  when(
-    () => !sessionId,
-    () => {
-      // 重置密码
-      if (!userStore.isResetPassword) {
-        history.push('/user/login');
-      }
-    },
-  );
-
-
-  if (!sessionId && !userStore.isResetPassword) return <div />;
 
   return (
     <Layout className={style.basicLayout}>

@@ -347,8 +347,8 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </Popover>
           )}
           <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
-          {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
-          {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
+          <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />
+          <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />
           <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
         </div>
       </Header>

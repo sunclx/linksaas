@@ -25,15 +25,7 @@ const PubRes = () => {
     const urlParams = new URLSearchParams(location.search);
     let tab = urlParams.get('tab') ?? "";
     if (tab == "") {
-        if (appStore.clientCfg?.enable_pub_search == true) {
-            tab = "pubSearch"
-        } else if (appStore.clientCfg?.enable_pub_app_store == true) {
-            tab = "appStore"
-        } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
-            tab = "dockerTemplate"
-        } else if ((appStore.clientCfg?.item_list.length ?? 0) > 0) {
-            tab = appStore.clientCfg?.item_list[0].menu_id ?? "";
-        }
+        tab = "pubSearch";
     }
 
     const [activeKey, setActiveKey] = useState(tab);
@@ -50,15 +42,13 @@ const PubRes = () => {
                     setActiveKey(key);
                     history.push(`${PUB_RES_PATH}?tab=${key}`);
                 }}>
-                {appStore.clientCfg?.enable_pub_search == true && (
-                    <Tabs.TabPane tab={<h2><SearchOutlined />&nbsp;聚合搜索</h2>} key="pubSearch">
-                        {activeKey == "pubSearch" && (
-                            <div className={s.content_wrap}>
-                                <PubSearchPanel />
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
+                <Tabs.TabPane tab={<h2><SearchOutlined />&nbsp;聚合搜索</h2>} key="pubSearch">
+                    {activeKey == "pubSearch" && (
+                        <div className={s.content_wrap}>
+                            <PubSearchPanel />
+                        </div>
+                    )}
+                </Tabs.TabPane>
                 {appStore.clientCfg?.enable_pub_app_store == true && (
                     <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用市场</h2>} key="appStore">
                         {activeKey == "appStore" && (

@@ -56,7 +56,6 @@ mod http_custom_api_plugin;
 mod my_updater;
 
 mod local_repo_plugin;
-mod pub_search_admin_api_plugin;
 mod pub_search_api_plugin;
 mod project_watch_api_plugin;
 mod project_comment_api_plugin;
@@ -456,7 +455,6 @@ fn main() {
         .plugin(docker_template_admin_api_plugin::DockerTemplateAdminApiPlugin::new())
         .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
         .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
-        .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())
         .plugin(project_entry_api_plugin::ProjectEntryApiPlugin::new())
         .plugin(project_watch_api_plugin::ProjectWatchApiPlugin::new())

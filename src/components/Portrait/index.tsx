@@ -11,8 +11,6 @@ import { observer } from 'mobx-react';
 import { request } from '@/utils/request';
 import { update } from '@/api/user';
 import { ReactComponent as Quitsvg } from '@/assets/svg/quit.svg';
-
-import { useHistory } from 'react-router-dom';
 import Profile from '../Profile';
 import * as fsApi from '@/api/fs';
 import UserPhoto from '@/components/Portrait/UserPhoto';
@@ -25,7 +23,6 @@ const Portrait = ({ ...props }) => {
   const userStore = useStores('userStore');
   const [name, setSetName] = useState(userStore.userInfo.displayName);
   const [pictrueListVisible, setPictrueListVisible] = useState(false);
-  const { push } = useHistory();
 
   const changeName = async () => {
     try {
@@ -142,7 +139,7 @@ const Portrait = ({ ...props }) => {
             onCancel={() => setShowExit(false)}
             onOk={() => {
               userStore.logout();
-              push('/user/login');
+              //TODO
             }}
           >
             <p style={{ textAlign: 'center' }}>是否确认退出?</p>
@@ -157,6 +154,22 @@ const Portrait = ({ ...props }) => {
       </div>
     );
   };
+
+  if (userStore.sessionId == "") {
+    return (
+      <div className={s.user} onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        //TODO
+        alert("xx");
+      }}>
+        <div className={s.avatar}>
+          <UserPhoto logoUri={userStore.userInfo.logoUri ?? ''} />
+        </div>
+        <div className={s.name}>未登录</div>
+      </div>
+    )
+  }
   return (
     <Popover
       content={renderContent()}
