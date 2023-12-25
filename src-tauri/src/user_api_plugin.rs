@@ -260,8 +260,12 @@ async fn logout<R: Runtime>(
                 }
             }
             //设置切换用户菜单
-            let munu_item = &app_handle.tray_handle().get_item("switch_user");
-            if let Err(err) = munu_item.set_enabled(false) {
+            let switch_munu_item = &app_handle.tray_handle().get_item("switch_user");
+            if let Err(err) = switch_munu_item.set_enabled(false) {
+                println!("{:?}", err);
+            }
+            let admin_menu_item = &app_handle.tray_handle().get_item("admin");
+            if let Err(err) = admin_menu_item.set_enabled(false) {
                 println!("{:?}", err);
             }
             //移除本地监听

@@ -33,7 +33,16 @@ async fn get_cfg<R: Runtime>(
     }
     let mut client = ClientCfgApiClient::new(chan.unwrap());
     match client.get_cfg(request).await {
-        Ok(response) => Ok(response.into_inner()),
+        Ok(response) => {
+            let response = response.into_inner();
+            if response.enable_admin {
+                let admin_menu_item = &app_handle.tray_handle().get_item("admin");
+                if let Err(err) = admin_menu_item.set_enabled(true) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(response);
+        }
         Err(status) => Err(status.message().into()),
     }
 }
