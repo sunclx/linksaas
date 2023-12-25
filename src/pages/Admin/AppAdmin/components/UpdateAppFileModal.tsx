@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { useStores } from "@/hooks";
 import { uniqId } from "@/utils/utils";
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent } from '@/api/fs';
@@ -21,7 +20,6 @@ interface UpdateAppFileModalProps {
 }
 
 const UpdateAppFileModal: React.FC<UpdateAppFileModalProps> = (props) => {
-    const appStore = useStores('appStore');
     const [uploadId] = useState(uniqId());
     const [localPath, setLocalPath] = useState("");
     const [uploadRatio, setUploadRatio] = useState(0);

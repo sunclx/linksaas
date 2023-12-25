@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import { remove as remove_app } from "@/api/user_app";
-import {query_perm} from "@/api/appstore";
 import { Button, Card, Popover, Modal, message, Space } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
@@ -13,9 +12,10 @@ import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_ap
 import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
 import AsyncImage from "@/components/AsyncImage";
 import DownloadProgressModal from "@/components/MinApp/DownloadProgressModal";
+import type { AppInfo } from "@/api/appstore";
 
 interface UserAppItemProps {
-    appInfo: UserApp;
+    appInfo: AppInfo;
     onRemove: () => void;
 }
 
@@ -51,8 +51,6 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
     }
 
     const openUserApp = async (fsId: string, fileId: string) => {
-        const permRes = await request(query_perm({app_id:props.appInfo.basic_info.app_id_in_store}));
-
         const path = await get_min_app_path(fsId, fileId);
         await start_app({
             project_id: "",
@@ -61,14 +59,14 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
             member_display_name: userStore.userInfo.displayName,
             token_url: "",
             label: "minApp:" + props.appInfo.app_id,
-            title: `${props.appInfo.basic_info.app_name}(微应用)`,
+            title: `${props.appInfo.base_info.app_name}(微应用)`,
             path: path,
-        }, permRes.app_perm);
+        }, props.appInfo.app_perm);
     };
 
     const preOpenUserApp = async () => {
         const appRes = await request(get_app_in_store({
-            app_id: props.appInfo.basic_info.app_id_in_store,
+            app_id: props.appInfo.app_id,
             session_id: userStore.sessionId,
         }));
         //检查文件是否已经下载
@@ -94,7 +92,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
     }
 
     return (
-        <Card title={props.appInfo.basic_info.app_name} bordered={false} extra={
+        <Card title={props.appInfo.base_info.app_name} bordered={false} extra={
             <Popover content={
                 <Space direction="vertical" style={{ padding: "10px 10px" }}>
                     <Button type="link" onClick={e => {
@@ -115,7 +113,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
         }>
             <AsyncImage
                 style={{ width: "80px", cursor: "pointer" }}
-                src={getIconUrl(props.appInfo.basic_info.icon_file_id)}
+                src={getIconUrl(props.appInfo.base_info.icon_file_id)}
                 preview={false}
                 fallback={defaultIcon}
                 onClick={(e) => {
@@ -147,7 +145,7 @@ const UserAppItem: React.FC<UserAppItemProps> = (props) => {
                         e.preventDefault();
                         removeApp();
                     }}>
-                    是否卸载应用&nbsp;{props.appInfo.basic_info.app_name}&nbsp;?
+                    是否卸载应用&nbsp;{props.appInfo.base_info.app_name}&nbsp;?
                 </Modal>
             )}
             {showStoreStatusModal == true && (

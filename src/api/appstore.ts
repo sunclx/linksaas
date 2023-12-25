@@ -168,6 +168,16 @@ export type ListAppResponse = {
     app_info_list: AppInfo[];
 };
 
+export type ListAppByIdRequest = {
+    app_id_list: string[];
+    session_id: string;
+};
+
+export type ListAppByIdResponse = {
+    code: number;
+    err_msg: string;
+    app_info_list: AppInfo[];
+}
 
 export type GetAppRequest = {
     app_id: string;
@@ -294,6 +304,14 @@ export async function list_app(request: ListAppRequest): Promise<ListAppResponse
     });
 }
 
+//按Id列出应用
+export async function list_app_by_id(request: ListAppByIdRequest): Promise<ListAppByIdResponse> {
+    const cmd = 'plugin:appstore_api|list_app_by_id';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListAppByIdResponse>(cmd, {
+        request,
+    });
+}
 
 //获取单个应用
 export async function get_app(request: GetAppRequest): Promise<GetAppResponse> {

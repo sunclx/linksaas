@@ -26,7 +26,6 @@ interface DownloadInfo {
 const AppStoreDetail = () => {
 
     const userStore = useStores('userStore');
-    const appStore = useStores("appStore");
     const pubResStore = useStores('pubResStore');
 
     const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
@@ -101,28 +100,13 @@ const AppStoreDetail = () => {
         if (appInfo == null) {
             return;
         }
-        await request(add_user_app({
-            session_id: userStore.sessionId,
-            basic_info: {
-                app_name: appInfo?.base_info.app_name ?? "",
-                icon_file_id: appInfo?.base_info.icon_file_id ?? "",
-                app_id_in_store: appInfo?.app_id ?? "",
-            },
-        }));
+        await add_user_app(appInfo.app_id);
         setAppInfo({ ...appInfo, install_count: appInfo.install_count + 1, my_install: true });
         pubResStore.incAppDataVersion();
     };
 
     const openUserApp = async (fsId: string, fileId: string) => {
         if (appInfo == null) {
-            return;
-        }
-        const queryRes = await request(query_user_app_in_store({
-            session_id: userStore.sessionId,
-            app_id_in_store: appInfo?.app_id ?? "",
-        }));
-        if (queryRes.app_id_list.length == 0) {
-            message.error("应用不存在");
             return;
         }
 
@@ -133,8 +117,8 @@ const AppStoreDetail = () => {
             member_user_id: userStore.userInfo.userId,
             member_display_name: userStore.userInfo.displayName,
             token_url: "",
-            label: "minApp:" + queryRes.app_id_list[0],
-            title: `${appInfo?.base_info.app_name ?? ""}(微应用)`,
+            label: "minApp:" + appInfo.app_id,
+            title: `${appInfo.base_info.app_name}(微应用)`,
             path: path,
         }, appInfo?.app_perm);
     };
@@ -163,19 +147,11 @@ const AppStoreDetail = () => {
     }
 
     const removeUserApp = async () => {
-        const queryRes = await request(query_user_app_in_store({
-            session_id: userStore.sessionId,
-            app_id_in_store: appInfo?.app_id ?? "",
-        }));
-        for (const appId of queryRes.app_id_list) {
-            await request(remove_user_app({
-                session_id: userStore.sessionId,
-                app_id: appId,
-            }));
+        if (appInfo == null) {
+            return;
         }
-        if (appInfo !== null) {
-            setAppInfo({ ...appInfo, my_install: false });
-        }
+        remove_user_app(appInfo.app_id);
+        setAppInfo({ ...appInfo, my_install: false });
     };
 
     const agreeApp = async (appId: string, newAgree: boolean) => {
