@@ -8,29 +8,38 @@ use tauri::async_runtime::Mutex;
 use tonic::transport::{Channel, Endpoint};
 
 mod admin_auth_api_plugin;
+mod api_collection_api_plugin;
 mod appstore_admin_api_plugin;
 mod appstore_api_plugin;
 mod client_cfg_admin_api_plugin;
 mod client_cfg_api_plugin;
 mod data_anno_project_api_plugin;
 mod data_anno_task_api_plugin;
+mod docker_template_admin_api_plugin;
+mod docker_template_api_plugin;
 mod events_admin_api_plugin;
 mod events_api_plugin;
 mod events_decode;
 mod events_subscribe_api_plugin;
 mod external_events_api_plugin;
 mod fs_api_plugin;
+mod helper;
+mod http_custom_api_plugin;
 mod image_utils;
 mod local_api;
-mod pages_plugin;
-mod helper;
+mod min_app_fs_plugin;
+mod min_app_plugin;
+mod min_app_shell_plugin;
+mod min_app_store_plugin;
 mod notice_decode;
+mod pages_plugin;
 mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
 mod project_bulletin_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
+mod project_entry_api_plugin;
 mod project_idea_api_plugin;
 mod project_issue_api_plugin;
 mod project_member_admin_api_plugin;
@@ -42,36 +51,26 @@ mod short_note_api_plugin;
 mod user_admin_api_plugin;
 mod user_api_plugin;
 mod user_app_api_plugin;
-mod project_entry_api_plugin;
-mod min_app_fs_plugin;
-mod min_app_plugin;
-mod min_app_shell_plugin;
-mod min_app_store_plugin;
-mod api_collection_api_plugin;
-mod docker_template_admin_api_plugin;
-mod docker_template_api_plugin;
-mod http_custom_api_plugin;
 
 #[cfg(not(feature = "skip-updater"))]
 mod my_updater;
 
-mod local_repo_plugin;
-mod pub_search_admin_api_plugin;
-mod pub_search_api_plugin;
-mod project_watch_api_plugin;
-mod project_comment_api_plugin;
-mod project_board_api_plugin;
+mod dev_container_admin_api_plugin;
+mod dev_container_api_plugin;
+mod group_admin_api_plugin;
 mod group_api_plugin;
 mod group_member_api_plugin;
-mod group_post_api_plugin;
-mod group_admin_api_plugin;
 mod group_post_admin_api_plugin;
+mod group_post_api_plugin;
 mod k8s_proxy_api_plugin;
+mod local_repo_plugin;
+mod net_proxy_api_plugin;
+mod project_board_api_plugin;
+mod project_comment_api_plugin;
+mod project_watch_api_plugin;
+mod pub_search_api_plugin;
 mod swarm_proxy_api_plugin;
 mod trace_proxy_api_plugin;
-mod net_proxy_api_plugin;
-mod dev_container_api_plugin;
-mod dev_container_admin_api_plugin;
 
 use std::time::Duration;
 use tauri::http::ResponseBuilder;
@@ -127,18 +126,16 @@ struct GrpcServerAddr(Mutex<String>);
 
 #[tauri::command]
 async fn conn_grpc_server(app_handle: AppHandle, _window: Window, addr: String) -> bool {
-    let mut u = url::Url::parse(&addr);
+    let new_addr = if addr.starts_with("http://") {
+        addr
+    } else {
+        format!("http://{}", &addr)
+    };
+    let u = url::Url::parse(&new_addr);
     if u.is_err() {
-        let new_addr = format!("http://{}", &addr);
-        u = url::Url::parse(&new_addr);
-        if u.is_err() {
-            return false;
-        }
-    }
-    let mut u = u.unwrap();
-    if let Err(_) = u.set_scheme("http") {
         return false;
     }
+    let mut u = u.unwrap();
     if u.port().is_none() {
         if let Err(_) = u.set_port(Some(5000)) {
             return false;
@@ -153,7 +150,7 @@ async fn conn_grpc_server(app_handle: AppHandle, _window: Window, addr: String) 
             let grpc_chan = app_handle.state::<GrpcChan>().inner();
             *grpc_chan.0.lock().await = Some(chan);
             let gprc_server_addr = app_handle.state::<GrpcServerAddr>().inner();
-            *gprc_server_addr.0.lock().await = addr;
+            *gprc_server_addr.0.lock().await = new_addr;
             return true;
         }
     }
@@ -178,6 +175,35 @@ async fn get_grpc_chan<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) -> O
     let grpc_chan = app_handle.state::<GrpcChan>().inner();
     let chan = grpc_chan.0.lock().await;
     return chan.clone();
+}
+
+async fn conn_extern_server(addr: String) -> Result<Channel, String> {
+    let new_addr = if addr.starts_with("http://") {
+        addr
+    } else {
+        format!("http://{}", &addr)
+    };
+    let u = url::Url::parse(&new_addr);
+    if u.is_err() {
+        return Err(u.err().unwrap().to_string());
+    }
+    let u = u.unwrap();
+    if u.port().is_none() {
+        return Err("miss port".into());
+    }
+    let end_point = Endpoint::from_shared(String::from(u));
+    if end_point.is_err() {
+        return Err(end_point.err().unwrap().to_string());
+    }
+    let end_point = end_point.unwrap();
+    let chan = end_point
+        .tcp_keepalive(Some(Duration::new(300, 0)))
+        .connect()
+        .await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap().to_string());
+    }
+    return Ok(chan.unwrap());
 }
 
 fn get_base_dir() -> Option<String> {
@@ -315,6 +341,7 @@ fn main() {
     }
     let tray_menu = SystemTrayMenu::new()
         .add_item(CustomMenuItem::new("switch_user", "切换用户").disabled())
+        .add_item(CustomMenuItem::new("set_global_server", "设置全局服务器"))
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("devtools", "调试"))
         .add_item(CustomMenuItem::new("show_app", "显示界面"))
@@ -369,6 +396,12 @@ fn main() {
                 "switch_user" => {
                     let win = app.get_window("main").unwrap();
                     if let Err(err) = win.emit("notice", notice_decode::new_switch_user_notice()) {
+                        println!("{:?}", err);
+                    }
+                }
+                "set_global_server" => {
+                    let win = app.get_window("main").unwrap();
+                    if let Err(err) = win.emit("notice", notice_decode::new_show_global_server_setting_notice()) {
                         println!("{:?}", err);
                     }
                 }
@@ -456,7 +489,6 @@ fn main() {
         .plugin(docker_template_admin_api_plugin::DockerTemplateAdminApiPlugin::new())
         .plugin(api_collection_api_plugin::ApiCollectionApiPlugin::new())
         .plugin(pub_search_api_plugin::PubSearchApiPlugin::new())
-        .plugin(pub_search_admin_api_plugin::PubSearchAdminApiPlugin::new())
         .plugin(http_custom_api_plugin::HttpCustomApiPlugin::new())
         .plugin(project_entry_api_plugin::ProjectEntryApiPlugin::new())
         .plugin(project_watch_api_plugin::ProjectWatchApiPlugin::new())

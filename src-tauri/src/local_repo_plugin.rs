@@ -1,4 +1,3 @@
-use crate::user_api_plugin::get_user_id;
 use crate::user_api_plugin::{decrypt, encrypt};
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
@@ -30,7 +29,7 @@ async fn encrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> Str
     if token == "" {
         return String::from("");
     }
-    let enc_data = encrypt(app_handle, Vec::from(token)).await;
+    let enc_data = encrypt(app_handle, Vec::from(token), true).await;
     if enc_data.is_err() {
         return String::from("");
     }
@@ -46,7 +45,7 @@ async fn decrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> Str
     if dec_data.is_err() {
         return String::from("");
     }
-    let dec_data = decrypt(app_handle, dec_data.unwrap()).await;
+    let dec_data = decrypt(app_handle, dec_data.unwrap(), true).await;
     if dec_data.is_err() {
         return String::from("");
     }
@@ -57,13 +56,13 @@ async fn decrypt_token<R: Runtime>(app_handle: AppHandle<R>, token: &str) -> Str
     return dec_data.unwrap();
 }
 
-async fn load_data(user_id: &String) -> Result<Vec<LocalRepoInfo>, String> {
+async fn load_data() -> Result<Vec<LocalRepoInfo>, String> {
     let user_dir = crate::get_user_dir();
     if user_dir.is_none() {
         return Err("miss user dir".into());
     }
     let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
-    file_path.push(user_id);
+    file_path.push("all");
     file_path.push("local_repo.json");
     if !file_path.exists() {
         return Ok(Vec::new());
@@ -90,13 +89,13 @@ async fn load_data(user_id: &String) -> Result<Vec<LocalRepoInfo>, String> {
     return Ok(repo_list.unwrap());
 }
 
-async fn save_data(user_id: &String, repo_list: &Vec<LocalRepoInfo>) -> Result<(), String> {
+async fn save_data(repo_list: &Vec<LocalRepoInfo>) -> Result<(), String> {
     let user_dir = crate::get_user_dir();
     if user_dir.is_none() {
         return Err("miss user dir".into());
     }
     let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
-    file_path.push(user_id);
+    file_path.push("all");
     if !file_path.exists() {
         let result = fs::create_dir_all(&file_path).await;
         if result.is_err() {
@@ -123,14 +122,8 @@ async fn save_data(user_id: &String, repo_list: &Vec<LocalRepoInfo>) -> Result<(
 
 //增加本地仓库
 #[tauri::command]
-async fn add_repo<R: Runtime>(
-    app_handle: AppHandle<R>,
-    id: String,
-    name: String,
-    path: String,
-) -> Result<(), String> {
-    let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+async fn add_repo(id: String, name: String, path: String) -> Result<(), String> {
+    let repo_list = load_data().await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }
@@ -147,7 +140,7 @@ async fn add_repo<R: Runtime>(
         setting: None,
     });
 
-    return save_data(&user_id, &repo_list).await;
+    return save_data(&repo_list).await;
 }
 
 #[tauri::command]
@@ -158,8 +151,7 @@ async fn update_repo<R: Runtime>(
     path: String,
     setting: LocalRepoSettingInfo,
 ) -> Result<(), String> {
-    let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+    let repo_list = load_data().await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }
@@ -185,14 +177,13 @@ async fn update_repo<R: Runtime>(
         }
     }
 
-    return save_data(&user_id, &new_repo_list).await;
+    return save_data(&new_repo_list).await;
 }
 
 //删除本地仓库
 #[tauri::command]
-async fn remove_repo<R: Runtime>(app_handle: AppHandle<R>, id: String) -> Result<(), String> {
-    let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+async fn remove_repo(id: String) -> Result<(), String> {
+    let repo_list = load_data().await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }
@@ -203,14 +194,13 @@ async fn remove_repo<R: Runtime>(app_handle: AppHandle<R>, id: String) -> Result
             new_repo_list.push(repo.clone());
         }
     }
-    return save_data(&user_id, &new_repo_list).await;
+    return save_data(&new_repo_list).await;
 }
 
 //列出本地仓库
 #[tauri::command]
 async fn list_repo<R: Runtime>(app_handle: AppHandle<R>) -> Result<Vec<LocalRepoInfo>, String> {
-    let user_id = get_user_id(app_handle.clone()).await;
-    let repo_list = load_data(&user_id).await;
+    let repo_list = load_data().await;
     if repo_list.is_err() {
         return Err(repo_list.err().unwrap());
     }

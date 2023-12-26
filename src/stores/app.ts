@@ -28,6 +28,12 @@ class AppStore {
     return this._clientCfg;
   }
 
+  reset() {
+    runInAction(() => {
+      this._clientCfg = undefined;
+    });
+  }
+
   async loadClientCfg() {
     const res = await clientCfgApi.get_cfg();
     runInAction(() => {
@@ -57,6 +63,19 @@ class AppStore {
   set showCreateOrJoinProject(val: boolean) {
     runInAction(() => {
       this._showCreateOrJoinProject = val;
+    });
+  }
+
+  //显示全局服务器设置
+  private _showGlobalServerModal = false;
+
+  get showGlobalServerModal() {
+    return this._showGlobalServerModal;
+  }
+
+  set showGlobalServerModal(val: boolean) {
+    runInAction(() => {
+      this._showGlobalServerModal = val;
     });
   }
 

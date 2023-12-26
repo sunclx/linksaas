@@ -1,5 +1,8 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+export const GLOBAL_APPSTORE_FS_ID = "globalAppStore";
+export const GLOBAL_DOCKER_TEMPLATE_FS_ID = "globalDockerTemplate";
+
 export type FS_OWNER_TYPE = number;
 
 export const FS_OWNER_TYPE_USER: FS_OWNER_TYPE = 0; //用户文件存储
@@ -31,7 +34,7 @@ export const FILE_OWNER_TYPE_DATA_ANNO: FILE_OWNER_TYPE = 17; //数据标注
 export const FILE_OWNER_TYPE_DOCKER_TEMPLATE: FILE_OWNER_TYPE = 18;
 export const FILE_OWNER_TYPE_API_COLLECTION: FILE_OWNER_TYPE = 19;
 // export const FILE_OWNER_TYPE_RSS_ENTRY: FILE_OWNER_TYPE = 20;
-export const FILE_OWNER_TYPE_SEARCH_SITE: FILE_OWNER_TYPE = 21;
+// export const FILE_OWNER_TYPE_SEARCH_SITE: FILE_OWNER_TYPE = 21;
 // export const FILE_OWNER_TYPE_PIPE_LINE: FILE_OWNER_TYPE = 22;
 export const FILE_OWNER_TYPE_PAGES: FILE_OWNER_TYPE = 23;
 export const FILE_OWNER_TYPE_BOARD: FILE_OWNER_TYPE = 24;

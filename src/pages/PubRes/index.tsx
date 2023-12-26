@@ -25,15 +25,7 @@ const PubRes = () => {
     const urlParams = new URLSearchParams(location.search);
     let tab = urlParams.get('tab') ?? "";
     if (tab == "") {
-        if (appStore.clientCfg?.enable_pub_search == true) {
-            tab = "pubSearch"
-        } else if (appStore.clientCfg?.enable_pub_app_store == true) {
-            tab = "appStore"
-        } else if (appStore.clientCfg?.enable_pub_docker_template == true) {
-            tab = "dockerTemplate"
-        } else if ((appStore.clientCfg?.item_list.length ?? 0) > 0) {
-            tab = appStore.clientCfg?.item_list[0].menu_id ?? "";
-        }
+        tab = "pubSearch";
     }
 
     const [activeKey, setActiveKey] = useState(tab);
@@ -50,35 +42,33 @@ const PubRes = () => {
                     setActiveKey(key);
                     history.push(`${PUB_RES_PATH}?tab=${key}`);
                 }}>
-                {appStore.clientCfg?.enable_pub_search == true && (
-                    <Tabs.TabPane tab={<h2><SearchOutlined />&nbsp;聚合搜索</h2>} key="pubSearch">
-                        {activeKey == "pubSearch" && (
-                            <div className={s.content_wrap}>
-                                <PubSearchPanel />
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
-                {appStore.clientCfg?.enable_pub_app_store == true && (
-                    <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用市场</h2>} key="appStore">
-                        {activeKey == "appStore" && (
-                            <div className={s.content_wrap}>
-                                {pubResStore.showAppId == "" && <AppStorePanel />}
-                                {pubResStore.showAppId != "" && <AppStoreDetail />}
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
-                {appStore.clientCfg?.enable_pub_docker_template == true && (
-                    <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;Docker模板</h2>} key="dockerTemplate">
-                        {activeKey == "dockerTemplate" && (
-                            <div className={s.content_wrap}>
-                                {pubResStore.dockerAppId == "" && <DockerTemplatePanel />}
-                                {pubResStore.dockerAppId != "" && <DockerTemplateDetail />}
-                            </div>
-                        )}
-                    </Tabs.TabPane>
-                )}
+                <Tabs.TabPane tab={<h2><SearchOutlined />&nbsp;聚合搜索</h2>} key="pubSearch">
+                    {activeKey == "pubSearch" && (
+                        <div className={s.content_wrap}>
+                            <PubSearchPanel />
+                        </div>
+                    )}
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<h2><AppstoreOutlined />&nbsp;应用市场</h2>} key="appStore">
+                    {activeKey == "appStore" && (
+                        <div className={s.content_wrap}>
+                            {pubResStore.showAppId == "" && <AppStorePanel />}
+                            {pubResStore.showAppId != "" && <AppStoreDetail />}
+                        </div>
+                    )}
+                </Tabs.TabPane>
+
+
+                <Tabs.TabPane tab={<h2><span style={{ display: "inline-block", verticalAlign: "-3px" }}><DockerSvg style={{ width: "16px", height: "16px" }} /></span>&nbsp;Docker模板</h2>} key="dockerTemplate">
+                    {activeKey == "dockerTemplate" && (
+                        <div className={s.content_wrap}>
+                            {pubResStore.dockerAppId == "" && <DockerTemplatePanel />}
+                            {pubResStore.dockerAppId != "" && <DockerTemplateDetail />}
+                        </div>
+                    )}
+                </Tabs.TabPane>
+
                 {appStore.clientCfg?.item_list.map(item => (
                     <Tabs.TabPane tab={<h2><GlobalOutlined />&nbsp;{item.name}</h2>} key={item.menu_id}>
                         {activeKey == item.menu_id && (

@@ -1,19 +1,13 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-
 import BasicLayout from '@/layouts/BasicLayout';
 import ProjectLayout from '@/layouts/ProjectLayout';
-import UserLayout from '@/layouts/UserLayout';
 import NoFond from '@/pages/NoFond';
-
 import ProjectRecord from '@/pages/Project/Record/Record';
 import ProjectAccess from '@/pages/Project/Access';
 import ProjectAccessView from '@/pages/Project/Access/View';
 import IssueList from '@/pages/Issue/IssueList';
 import IssueDetail from '@/pages/Issue/IssueDetail';
-
-import Login from '@/pages/User/Login';
-import Register from '@/pages/User/Register';
 import Workbench from '@/pages/Workbench';
 import {
   ADMIN_PATH,
@@ -40,8 +34,6 @@ import {
   APP_PROJECT_WORK_PLAN_PATH,
   ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX,
   ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX,
-  ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX,
-  ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
   APP_PROJECT_MY_WORK_PATH,
   APP_PROJECT_HOME_PATH,
   APP_PROJECT_MANAGER_PATH,
@@ -82,8 +74,6 @@ import DataAnnoProjectList from '@/pages/DataAnno/DataAnnoProjectList';
 import TemplateCateList from '@/pages/Admin/DockerTemplateAdmin/TemplateCateList';
 import TemplateList from '@/pages/Admin/DockerTemplateAdmin/TemplateList';
 import ApiCollectionList from '@/pages/ApiCollection/ApiCollectionList';
-import PubSearchCateList from '@/pages/Admin/PubSearchAdmin/PubSearchCateList';
-import PubSearchSiteList from '@/pages/Admin/PubSearchAdmin/PubSearchSiteList';
 import MyWorkLayout from '@/layouts/MyWorkLayout';
 import HomeLayout from '@/layouts/HomeLayout';
 import ProjectManager from '@/pages/ProjectManger';
@@ -346,24 +336,6 @@ const routesConfig: IRouteConfig[] = [
     ],
   },
   {
-    path: '/user',
-    component: UserLayout,
-    title: '用户路由',
-    redirect: '/user/login',
-    routes: [
-      {
-        path: '/user/login',
-        component: Login,
-        title: '登录',
-      },
-      {
-        path: '/user/register',
-        component: Register,
-        title: '注册',
-      },
-    ],
-  },
-  {
     path: ADMIN_PATH,
     title: "管理界面",
     component: AdminLayout,
@@ -450,18 +422,6 @@ const routesConfig: IRouteConfig[] = [
         path: ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX,
         title: "软件包管理",
         component: DevPkgList,
-        exact: true,
-      },
-      {
-        path: ADMIN_PATH_PUB_SEARCH_CATE_SUFFIX,
-        title: "聚合搜索类别管理",
-        component: PubSearchCateList,
-        exact: true,
-      },
-      {
-        path: ADMIN_PATH_PUB_SEARCH_SITE_SUFFIX,
-        title: "聚合搜索站点管理",
-        component: PubSearchSiteList,
         exact: true,
       }
     ]

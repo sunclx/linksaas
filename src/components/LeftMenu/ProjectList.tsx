@@ -17,6 +17,7 @@ const ProjectList = () => {
     const history = useHistory();
 
     const appStore = useStores('appStore');
+    const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const memberStore = useStores('memberStore');
 
@@ -26,12 +27,18 @@ const ProjectList = () => {
                 <div style={{ width: "120px", cursor: "pointer" }} onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    if (appStore.inEdit) {
-                        appStore.showCheckLeave(() => {
+                    if (userStore.sessionId == "") {
+                        userStore.showUserLogin = () => {
                             history.push(APP_PROJECT_MANAGER_PATH);
-                        });
+                        };
                     } else {
-                        history.push(APP_PROJECT_MANAGER_PATH);
+                        if (appStore.inEdit) {
+                            appStore.showCheckLeave(() => {
+                                history.push(APP_PROJECT_MANAGER_PATH);
+                            });
+                        } else {
+                            history.push(APP_PROJECT_MANAGER_PATH);
+                        }
                     }
                 }}>
                     <ProjectOutlined style={{ width: "20px" }} />项目
@@ -40,7 +47,13 @@ const ProjectList = () => {
                     <a className={cls.icon_wrap} onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        appStore.showCreateOrJoinProject = true;
+                        if (userStore.sessionId == "") {
+                            userStore.showUserLogin = () => {
+                                appStore.showCreateOrJoinProject = true;
+                            };
+                        } else {
+                            appStore.showCreateOrJoinProject = true;
+                        }
                     }}>
                         <i><PlusOutlined /></i>
                     </a>

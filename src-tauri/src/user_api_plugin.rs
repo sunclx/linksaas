@@ -20,6 +20,9 @@ use tokio::time::sleep;
 use url::Url;
 use uuid::Uuid;
 
+//不要修改这个常量
+const UNLOGIN_USER_TOKEN: &'static str = "VAVPiHGWL6idGXkQ14p9ilvwCoqEQxHw";
+
 #[derive(Default)]
 pub struct CurSession(pub Mutex<Option<String>>);
 
@@ -257,8 +260,8 @@ async fn logout<R: Runtime>(
                 }
             }
             //设置切换用户菜单
-            let munu_item = &app_handle.tray_handle().get_item("switch_user");
-            if let Err(err) = munu_item.set_enabled(false) {
+            let switch_munu_item = &app_handle.tray_handle().get_item("switch_user");
+            if let Err(err) = switch_munu_item.set_enabled(false) {
                 println!("{:?}", err);
             }
             //移除本地监听
@@ -395,10 +398,11 @@ async fn get_user_secret<R: Runtime>(app_handle: AppHandle<R>) -> String {
 pub async fn encrypt<R: Runtime>(
     app_handle: AppHandle<R>,
     data: Vec<u8>,
+    default_secret: bool,
 ) -> Result<Vec<u8>, String> {
-    let secret = get_user_secret(app_handle).await;
-    if &secret == "" {
-        return Err("miss secret".into());
+    let mut secret = get_user_secret(app_handle).await;
+    if &secret == "" || default_secret {
+        secret = String::from(UNLOGIN_USER_TOKEN);
     }
     let mut new_secret = [0 as u8; 32];
     new_secret[..32].copy_from_slice(secret.as_bytes());
@@ -419,10 +423,11 @@ pub async fn encrypt<R: Runtime>(
 pub async fn decrypt<R: Runtime>(
     app_handle: AppHandle<R>,
     data: Vec<u8>,
+    default_secret: bool,
 ) -> Result<Vec<u8>, String> {
-    let secret = get_user_secret(app_handle).await;
-    if &secret == "" {
-        return Err("miss secret".into());
+    let mut secret = get_user_secret(app_handle).await;
+    if &secret == "" || default_secret {
+        secret = String::from(UNLOGIN_USER_TOKEN);
     }
     let mut new_secret = [0 as u8; 32];
     new_secret[..32].copy_from_slice(secret.as_bytes());

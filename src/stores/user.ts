@@ -36,14 +36,18 @@ class UserStore {
   };
 
   // 帐号管理弹窗
-  accountsModal = false;
+  private _accountsModal = false;
+
+  // 用户登录弹窗
+  private _showUserLogin: null | (() => void) = null;
 
   // 重置密码
-  isResetPassword = false;
+  private _isResetPassword = false;
 
   async logout() {
-    await this.rootStore.projectStore.setCurProjectId("");
-    request(user_logout(this.sessionId));
+    this.rootStore.projectStore.reset();
+    this.rootStore.appStore.reset();
+    const tmpSessionId = this.sessionId;
     runInAction(() => {
       this.sessionId = '';
       this.userInfo = {
@@ -56,7 +60,7 @@ class UserStore {
     });
     sessionStorage.removeItem('sessionId');
     sessionStorage.removeItem('userInfo');
-
+    await request(user_logout(tmpSessionId));
   }
 
   async callLogin(username: string, password: string) {
@@ -78,16 +82,42 @@ class UserStore {
       });
       await showMyShortNote(res.session_id);
     }
+    if (this._showUserLogin != null) {
+      this._showUserLogin();
+      runInAction(() => {
+        this._showUserLogin = null;
+      });
+    }
   }
 
-  setAccountsModal(val: boolean) {
+  get accountsModal() {
+    return this._accountsModal;
+  }
+
+  set accountsModal(val: boolean) {
     runInAction(() => {
-      this.accountsModal = val;
+      this._accountsModal = val;
     });
   }
 
-  setIsResetPassword(boo: boolean) {
-    this.isResetPassword = boo;
+  get showUserLogin() {
+    return this._showUserLogin;
+  }
+
+  set showUserLogin(val: (() => void) | null) {
+    runInAction(() => {
+      this._showUserLogin = val;
+    });
+  }
+
+  get isResetPassword() {
+    return this._isResetPassword;
+  }
+
+  set isResetPassword(val: boolean) {
+    runInAction(() => {
+      this._isResetPassword = val;
+    });
   }
 
   updateDisplayName(val: string) {

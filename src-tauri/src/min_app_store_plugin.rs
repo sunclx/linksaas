@@ -71,7 +71,7 @@ pub async fn set_data<R: Runtime>(
     let db_map = app_handle.state::<StoreMap>().inner();
     let mut db_map = db_map.0.lock().await;
     if let Some(db) = db_map.get_mut(label) {
-        let value = encrypt(app_handle.clone(), value).await;
+        let value = encrypt(app_handle.clone(), value, true).await;
         if value.is_err() {
             return Err(value.err().unwrap());
         }
@@ -105,7 +105,7 @@ pub async fn get_data<R: Runtime>(
         }
         let res = res.unwrap();
         let value = res.to_vec();
-        return decrypt(app_handle.clone(), value).await;
+        return decrypt(app_handle.clone(), value, true).await;
     }
     return Err("no data".into());
 }
@@ -146,7 +146,7 @@ pub async fn list_all<R: Runtime>(
             let key = key.to_vec();
 
             let value = value.to_vec();
-            let value = decrypt(app_handle.clone(), value).await;
+            let value = decrypt(app_handle.clone(), value, true).await;
             if value.is_err() {
                 return Err(value.err().unwrap());
             }

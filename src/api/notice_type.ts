@@ -185,11 +185,14 @@ export namespace client {
 
   export type LocalProxyStopNotice = {};
 
+  export type ShowGlobalServerSettingNotice = {};
+
   export type AllNotice = {
     WrongSessionNotice?: WrongSessionNotice;
     SwitchUserNotice?: SwitchUserNotice;
     GitPostHookNotice?: GitPostHookNotice;
     LocalProxyStopNotice?: LocalProxyStopNotice;
+    ShowGlobalServerSettingNotice?: ShowGlobalServerSettingNotice;
   };
 }
 

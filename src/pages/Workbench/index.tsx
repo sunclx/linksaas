@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import React from 'react';
 import s from './index.module.less';
 import { useHistory, useLocation } from 'react-router-dom';
-import { PUB_RES_PATH, USER_LOGIN_PATH, WORKBENCH_PATH } from '@/utils/constant';
+import { PUB_RES_PATH, WORKBENCH_PATH } from '@/utils/constant';
 import { useStores } from '@/hooks';
 import Card from './components/Card';
 import InfoCount from './components/InfoCount';
@@ -25,7 +25,6 @@ const Workbench: React.FC = () => {
   const [passwordModal, setPasswordModal] = useState(type === 'resetPassword');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
-  const appStore = useStores('appStore');
 
   const tab = urlParams.get('tab') ?? "localRepo";
 
@@ -88,15 +87,15 @@ const Workbench: React.FC = () => {
             </div>
           )}
         </Tabs.TabPane>
-        {appStore.clientCfg?.enable_pub_app_store == true && (
-          <Tabs.TabPane tab={<h2><AppstoreOutlined />我的微应用</h2>} key="userApp">
-            {tab == "userApp" && (
-              <div className={s.content_wrap}>
-                <UserAppList />
-              </div>
-            )}
-          </Tabs.TabPane>
-        )}
+
+        <Tabs.TabPane tab={<h2><AppstoreOutlined />我的微应用</h2>} key="userApp">
+          {tab == "userApp" && (
+            <div className={s.content_wrap}>
+              <UserAppList />
+            </div>
+          )}
+        </Tabs.TabPane>
+
       </Tabs>
       {passwordModal && (
         <PasswordModal
@@ -105,7 +104,7 @@ const Workbench: React.FC = () => {
           onCancel={(bool) => {
             userStore.logout();
             if (userStore.isResetPassword) {
-              history.push(USER_LOGIN_PATH);
+              history.push("/");
             }
             setPasswordModal(bool);
           }}

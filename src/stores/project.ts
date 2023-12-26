@@ -90,6 +90,13 @@ export default class ProjectStore {
     return this._projectMap.get(projectId);
   }
 
+  reset() {
+    runInAction(()=>{
+      this._curProjectId = "";
+      this._projectList = [];
+    });
+  }
+
   async initLoadProjectList() {
     const prjListRes = await request(listProject(this.rootStore.userStore.sessionId, false, false));
     const prjList: WebProjectInfo[] = prjListRes.info_list.map((info) => {

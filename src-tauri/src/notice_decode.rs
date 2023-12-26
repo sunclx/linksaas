@@ -292,6 +292,10 @@ pub mod client {
     #[serde(rename_all = "snake_case")]
     pub struct LocalProxyStopNotice {}
 
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    #[serde(rename_all = "snake_case")]
+    pub struct ShowGlobalServerSettingNotice{}
+
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
@@ -299,6 +303,7 @@ pub mod client {
         SwitchUserNotice(SwitchUserNotice),
         GitPostHookNotice(GitPostHookNotice),
         LocalProxyStopNotice(LocalProxyStopNotice),
+        ShowGlobalServerSettingNotice(ShowGlobalServerSettingNotice),
     }
 }
 
@@ -356,5 +361,11 @@ pub fn new_git_post_hook_notice(project_id: String) -> NoticeMessage {
 pub fn new_local_proxy_stop_notice() -> NoticeMessage {
     return NoticeMessage::ClientNotice(client::Notice::LocalProxyStopNotice(
         client::LocalProxyStopNotice {},
+    ));
+}
+
+pub fn new_show_global_server_setting_notice() -> NoticeMessage {
+    return NoticeMessage::ClientNotice(client::Notice::ShowGlobalServerSettingNotice(
+        client::ShowGlobalServerSettingNotice {},
     ));
 }

@@ -22,12 +22,6 @@ export type GetCfgResponse = {
   can_invite: boolean;
   can_register: boolean;
   enable_admin: boolean;
-  enable_pub_app_store: boolean;
-  enable_pub_docker_template: boolean;
-  enable_pub_search: boolean;
-  app_store_fs_id: string;
-  docker_template_fs_id: string;
-  pub_search_fs_id: string;
 };
 
 export type ServerInfo = {
@@ -72,4 +66,12 @@ export async function list_server(skip_system: boolean): Promise<ListServerResul
   return invoke<ListServerResult>('plugin:client_cfg_api|list_server', {
     skipSystem: skip_system,
   });
+}
+
+export async function get_global_server_addr(): Promise<string> {
+  return invoke<string>('plugin:client_cfg_api|get_global_server_addr', {});
+}
+
+export async function set_global_server_addr(addr: string): Promise<void> {
+  return invoke<void>('plugin:client_cfg_api|set_global_server_addr', { addr: addr });
 }

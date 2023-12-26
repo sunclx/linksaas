@@ -3,7 +3,8 @@ import { observer } from 'mobx-react';
 import s from "./UserAppList.module.less";
 import { List } from "antd";
 import { request } from "@/utils/request";
-import type { App as UserApp } from "@/api/user_app";
+import type { AppInfo } from "@/api/appstore";
+import { list_app_by_id } from "@/api/appstore";
 import { list as list_user_app } from "@/api/user_app";
 import { useStores } from "@/hooks";
 import UserAppItem from "./UserAppItem";
@@ -11,12 +12,15 @@ import UserAppItem from "./UserAppItem";
 const UserAppList = () => {
     const userStore = useStores('userStore');
 
-    const [userAppList, setUserAppList] = useState<UserApp[]>();
+    const [userAppList, setUserAppList] = useState<AppInfo[]>();
 
     const loadUserAppList = async () => {
-        const res = await request(list_user_app({ session_id: userStore.sessionId }));
-        setUserAppList(res.app_list);
-        return res.app_list.length == 0;
+        const appIdList = await list_user_app();
+        const res = await request(list_app_by_id({
+            app_id_list:appIdList,
+            session_id: userStore.sessionId,
+        }));
+        setUserAppList(res.app_info_list);
     };
 
     useEffect(() => {

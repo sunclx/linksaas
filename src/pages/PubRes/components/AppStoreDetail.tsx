@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { AppInfo, AppComment } from "@/api/appstore";
-import { agree_app, cancel_agree_app, get_app, list_comment, add_comment, remove_comment } from "@/api/appstore";
+import { agree_app, cancel_agree_app, get_app, list_comment, add_comment, remove_comment, install_app } from "@/api/appstore";
 import { Button, Card, Descriptions, Dropdown, Input, List, Modal, Space, message } from "antd";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
@@ -8,9 +8,9 @@ import { request } from "@/utils/request";
 import { CommentOutlined, DownloadOutlined, HeartTwoTone, LeftOutlined } from "@ant-design/icons";
 import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
-import { get_cache_file } from '@/api/fs';
+import { GLOBAL_APPSTORE_FS_ID, get_cache_file } from '@/api/fs';
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
-import { add as add_user_app, query_in_store as query_user_app_in_store, remove as remove_user_app } from "@/api/user_app";
+import { list as list_user_app, add as add_user_app, remove as remove_user_app } from "@/api/user_app";
 import { open as open_shell } from '@tauri-apps/api/shell';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
@@ -26,8 +26,9 @@ interface DownloadInfo {
 const AppStoreDetail = () => {
 
     const userStore = useStores('userStore');
-    const appStore = useStores("appStore");
     const pubResStore = useStores('pubResStore');
+
+    const [myAppIdList, setMyAppIdList] = useState<string[]>([]);
 
     const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
     const [showDownload, setShowDownload] = useState<DownloadInfo | null>(null);
@@ -38,6 +39,11 @@ const AppStoreDetail = () => {
     const [curPage, setCurPage] = useState(0);
 
     const [removeCommentInfo, setRemoveCommentInfo] = useState<AppComment | null>(null);
+
+    const loadMyAppIdList = async () => {
+        const res = await list_user_app();
+        setMyAppIdList(res);
+    };
 
     const loadAppInfo = async () => {
         const res = await request(get_app({
@@ -101,28 +107,15 @@ const AppStoreDetail = () => {
         if (appInfo == null) {
             return;
         }
-        await request(add_user_app({
-            session_id: userStore.sessionId,
-            basic_info: {
-                app_name: appInfo?.base_info.app_name ?? "",
-                icon_file_id: appInfo?.base_info.icon_file_id ?? "",
-                app_id_in_store: appInfo?.app_id ?? "",
-            },
-        }));
-        setAppInfo({ ...appInfo, install_count: appInfo.install_count + 1, my_install: true });
+        await add_user_app(appInfo.app_id);
+        await install_app({ app_id: appInfo.app_id });
+        await loadMyAppIdList();
+        setAppInfo({ ...appInfo, install_count: appInfo.install_count + 1 });
         pubResStore.incAppDataVersion();
     };
 
     const openUserApp = async (fsId: string, fileId: string) => {
         if (appInfo == null) {
-            return;
-        }
-        const queryRes = await request(query_user_app_in_store({
-            session_id: userStore.sessionId,
-            app_id_in_store: appInfo?.app_id ?? "",
-        }));
-        if (queryRes.app_id_list.length == 0) {
-            message.error("应用不存在");
             return;
         }
 
@@ -133,49 +126,41 @@ const AppStoreDetail = () => {
             member_user_id: userStore.userInfo.userId,
             member_display_name: userStore.userInfo.displayName,
             token_url: "",
-            label: "minApp:" + queryRes.app_id_list[0],
-            title: `${appInfo?.base_info.app_name ?? ""}(微应用)`,
+            label: "minApp:" + appInfo.app_id,
+            title: `${appInfo.base_info.app_name}(微应用)`,
             path: path,
         }, appInfo?.app_perm);
     };
 
     const preOpenUserApp = async () => {
         //检查文件是否已经下载
-        const res = await get_cache_file(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "", "content.zip");
+        const res = await get_cache_file(GLOBAL_APPSTORE_FS_ID, appInfo?.file_id ?? "", "content.zip");
         if (res.exist_in_local == false) {
             setShowDownload({
-                fsId: appStore.clientCfg?.app_store_fs_id ?? "",
+                fsId: GLOBAL_APPSTORE_FS_ID,
                 fileId: appInfo?.file_id ?? "",
             });
             return;
         }
         //检查是否已经解压zip包
-        const ok = await check_unpark(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "");
+        const ok = await check_unpark(GLOBAL_APPSTORE_FS_ID, appInfo?.file_id ?? "");
         if (!ok) {
             setShowDownload({
-                fsId: appStore.clientCfg?.app_store_fs_id ?? "",
+                fsId: GLOBAL_APPSTORE_FS_ID,
                 fileId: appInfo?.file_id ?? "",
             });
             return;
         }
         //打开微应用
-        await openUserApp(appStore.clientCfg?.app_store_fs_id ?? "", appInfo?.file_id ?? "");
+        await openUserApp(GLOBAL_APPSTORE_FS_ID, appInfo?.file_id ?? "");
     }
 
     const removeUserApp = async () => {
-        const queryRes = await request(query_user_app_in_store({
-            session_id: userStore.sessionId,
-            app_id_in_store: appInfo?.app_id ?? "",
-        }));
-        for (const appId of queryRes.app_id_list) {
-            await request(remove_user_app({
-                session_id: userStore.sessionId,
-                app_id: appId,
-            }));
+        if (appInfo == null) {
+            return;
         }
-        if (appInfo !== null) {
-            setAppInfo({ ...appInfo, my_install: false });
-        }
+        await remove_user_app(appInfo.app_id);
+        await loadMyAppIdList();
     };
 
     const agreeApp = async (appId: string, newAgree: boolean) => {
@@ -208,6 +193,7 @@ const AppStoreDetail = () => {
 
     useEffect(() => {
         loadAppInfo();
+        loadMyAppIdList();
         if (curPage != 0) {
             setCurPage(0);
         } else {
@@ -238,14 +224,16 @@ const AppStoreDetail = () => {
                             <div onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                agreeApp(appInfo.app_id, !appInfo.my_agree);
+                                if (userStore.sessionId != "") {
+                                    agreeApp(appInfo.app_id, !appInfo.my_agree);
+                                }
                             }} style={{ margin: "0px 20px" }}>
-                                <a>
+                                <a style={{ cursor: userStore.sessionId == "" ? "default" : "pointer" }}>
                                     <HeartTwoTone twoToneColor={appInfo.my_agree ? ["red", "red"] : ["#e4e4e8", "#e4e4e8"]} />
                                 </a>
                                 &nbsp;{appInfo.agree_count}
                             </div>
-                            {appInfo.my_install == true && (
+                            {myAppIdList.includes(appInfo.app_id) == true && (
                                 <Dropdown.Button type="primary" menu={{
                                     items: [
                                         {
@@ -260,7 +248,7 @@ const AppStoreDetail = () => {
                                     preOpenUserApp();
                                 }}>运行应用</Dropdown.Button>
                             )}
-                            {appInfo.my_install == false && (
+                            {myAppIdList.includes(appInfo.app_id) == false && (
                                 <Button type="primary" onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
@@ -300,6 +288,7 @@ const AppStoreDetail = () => {
                 <Input.TextArea
                     autoSize={{ minRows: 5, maxRows: 5 }}
                     value={commentContent}
+                    disabled={userStore.sessionId == ""}
                     onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();

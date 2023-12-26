@@ -114,6 +114,44 @@
   }
 }
 
+.user {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  position: relative;
+  // border: 1px solid red;
+
+  .avatar {
+    margin: 0 10px 0 8px;
+    padding-left: 12px;
+    overflow: hidden;
+
+    img {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  }
+
+  .name {
+    color: #888c93;
+    font-size: 12px;
+    line-height: 30px;
+    cursor: pointer;
+  }
+
+  .expand {
+    position: absolute;
+    right: 15px;
+    font-size: 20px;
+    color: white;
+    top: 5px;
+    cursor: pointer;
+  }
+}
+
 :global {
   .ant-popover-inner {
     border-radius: 6px;

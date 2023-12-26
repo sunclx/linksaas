@@ -7,7 +7,7 @@ import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { useStores } from "@/hooks";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { get_admin_session } from '@/api/admin_auth';
-import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE } from "@/api/fs";
+import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE, GLOBAL_APPSTORE_FS_ID } from "@/api/fs";
 import { request } from "@/utils/request";
 import { useCommonEditor } from "@/components/Editor";
 import { update_app } from "@/api/appstore_admin";
@@ -54,12 +54,12 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
             return;
         } else {
             const sessionId = await get_admin_session();
-            const res = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", selectd, ""));
+            const res = await request(write_file(sessionId, GLOBAL_APPSTORE_FS_ID, selectd, ""));
             setIconFileId(res.file_id);
             if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
+                setIconUrl(`https://fs.localhost/${GLOBAL_APPSTORE_FS_ID}/${res.file_id}/x.png`);
             } else {
-                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/x.png`);
+                setIconUrl(`fs://localhost/${GLOBAL_APPSTORE_FS_ID}/${res.file_id}/x.png`);
             }
         }
     };
@@ -74,7 +74,7 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
         if (iconFileId != "" && iconFileId != props.baseInfo.icon_file_id) {
             await request(set_file_owner({
                 session_id: sessionId,
-                fs_id: appStore.clientCfg?.app_store_fs_id ?? "",
+                fs_id: GLOBAL_APPSTORE_FS_ID,
                 file_id: iconFileId,
                 owner_type: FILE_OWNER_TYPE_APP_STORE,
                 owner_id: props.appId,
@@ -98,9 +98,9 @@ const UpdateAppBaseInfoModal: React.FC<UpdateAppBaseInfoModalProps> = (props) =>
     useEffect(() => {
         if (props.baseInfo.icon_file_id != "") {
             if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
+                setIconUrl(`https://fs.localhost/${GLOBAL_APPSTORE_FS_ID}/${props.baseInfo.icon_file_id}/x.png`);
             } else {
-                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${props.baseInfo.icon_file_id}/x.png`);
+                setIconUrl(`fs://localhost/${GLOBAL_APPSTORE_FS_ID}/${props.baseInfo.icon_file_id}/x.png`);
             }
         }
     }, []);

@@ -1,15 +1,13 @@
 use proto_gen_rust::net_proxy_api::net_proxy_api_client::NetProxyApiClient;
 use proto_gen_rust::net_proxy_api::*;
 use std::collections::HashMap;
-use std::time::Duration;
 use tauri::async_runtime::Mutex;
 use tauri::{
     api::process::{Command, CommandChild, CommandEvent},
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, Manager, PageLoadPayload, Runtime, Window,
 };
-use tonic::transport::{Channel, Endpoint};
-
+use crate::conn_extern_server;
 use crate::notice_decode::new_local_proxy_stop_notice;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -28,43 +26,13 @@ pub struct ListenState {
 #[derive(Default)]
 pub struct LocalPortMap(pub Mutex<HashMap<u16, ListenState>>);
 
-async fn conn_server(addr: String) -> Result<Channel, String> {
-    let mut u = url::Url::parse(&addr);
-    if u.is_err() {
-        let new_addr = format!("http://{}", addr);
-        u = url::Url::parse(&new_addr);
-        if u.is_err() {
-            return Err(u.err().unwrap().to_string());
-        }
-    }
-    let mut u = u.unwrap();
-    if let Err(_) = u.set_scheme("http") {
-        return Err("set schema failed".into());
-    }
-    if u.port().is_none() {
-        return Err("miss port".into());
-    }
-    let end_point = Endpoint::from_shared(String::from(u));
-    if end_point.is_err() {
-        return Err(end_point.err().unwrap().to_string());
-    }
-    let end_point = end_point.unwrap();
-    let chan = end_point
-        .tcp_keepalive(Some(Duration::new(300, 0)))
-        .connect()
-        .await;
-    if chan.is_err() {
-        return Err(chan.err().unwrap().to_string());
-    }
-    return Ok(chan.unwrap());
-}
 
 #[tauri::command]
 async fn list_end_point(
     serv_addr: String,
     request: ListEndPointRequest,
 ) -> Result<ListEndPointResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }
@@ -82,7 +50,7 @@ async fn create_tunnel(
     serv_addr: String,
     request: CreateTunnelRequest,
 ) -> Result<CreateTunnelResponse, String> {
-    let chan = conn_server(serv_addr).await;
+    let chan = conn_extern_server(serv_addr).await;
     if chan.is_err() {
         return Err(chan.err().unwrap());
     }

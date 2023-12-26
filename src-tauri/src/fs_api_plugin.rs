@@ -1,6 +1,7 @@
 use proto_gen_rust::fs_api::fs_api_client::FsApiClient;
 use proto_gen_rust::fs_api::*;
 
+use crate::client_cfg_api_plugin::get_global_server_addr;
 use crate::notice_decode::new_wrong_session_notice;
 use futures_util::stream;
 use std::io::Cursor;
@@ -126,7 +127,17 @@ pub async fn download_file<R: Runtime>(
     *download_count += 1;
 
     let notice_name = format!("downloadFile_{}", track_id);
-    let chan = super::get_grpc_chan(&app_handle).await;
+    let chan = if &fs_id  == "globalAppStore" || &fs_id == "globalDockerTemplate" {
+        let serv_addr = get_global_server_addr(app_handle.clone()).await;
+        let tmp_chan = super::conn_extern_server(serv_addr).await;
+        if tmp_chan.is_err() {
+            None
+        }else{
+            Some(tmp_chan.unwrap())
+        }
+    }else {
+        super::get_grpc_chan(&app_handle).await
+    };
     if (&chan).is_none() {
         return Err("no grpc conn".into());
     }

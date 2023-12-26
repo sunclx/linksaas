@@ -9,10 +9,6 @@ export const goBack = (/*history: { goBack: () => void }*/) => {
   createBrowserHistory().goBack();
 };
 
-export const goLogin = (/*history: { goBack: () => void }*/) => {
-  createBrowserHistory().push('/user/login');
-};
-
 export const timeToDateString = (date: number, format: string = 'YYYY-MM-DD HH:mm:ss') => {
   return moment(date).format(format);
 };

@@ -7,7 +7,7 @@ import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import { observer } from 'mobx-react';
 import { get_admin_session } from '@/api/admin_auth';
 import { request } from "@/utils/request";
-import { write_file, set_file_owner, FILE_OWNER_TYPE_DOCKER_TEMPLATE } from "@/api/fs";
+import { write_file, set_file_owner, FILE_OWNER_TYPE_DOCKER_TEMPLATE, GLOBAL_DOCKER_TEMPLATE_FS_ID } from "@/api/fs";
 import { useStores } from "@/hooks";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import AsyncImage from "@/components/AsyncImage";
@@ -46,12 +46,12 @@ const CreateAppModal = (props: CreateAppModalProps) => {
             return;
         }
         const sessionId = await get_admin_session();
-        const res = await request(write_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", selectd, ""));
+        const res = await request(write_file(sessionId, GLOBAL_DOCKER_TEMPLATE_FS_ID, selectd, ""));
         setIconFileId(res.file_id);
         if (appStore.isOsWindows) {
-            setIconUrl(`https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${res.file_id}/x.png`);
+            setIconUrl(`https://fs.localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${res.file_id}/x.png`);
         } else {
-            setIconUrl(`fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${res.file_id}/x.png`);
+            setIconUrl(`fs://localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${res.file_id}/x.png`);
         }
 
     };
@@ -78,7 +78,7 @@ const CreateAppModal = (props: CreateAppModalProps) => {
         if (iconFileId != "") {
             await request(set_file_owner({
                 session_id: sessionId,
-                fs_id: appStore.clientCfg?.docker_template_fs_id ?? "",
+                fs_id: GLOBAL_DOCKER_TEMPLATE_FS_ID,
                 file_id: iconFileId,
                 owner_type: FILE_OWNER_TYPE_DOCKER_TEMPLATE,
                 owner_id: createRes.app_id,

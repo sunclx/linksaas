@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { useStores } from "@/hooks";
 import { uniqId } from "@/utils/utils";
 import { listen } from '@tauri-apps/api/event';
 import type { FsProgressEvent } from '@/api/fs';
@@ -8,7 +7,7 @@ import { Form, Input, Modal, Progress, message } from "antd";
 import Button from "@/components/Button";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
-import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE } from "@/api/fs";
+import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE, GLOBAL_APPSTORE_FS_ID } from "@/api/fs";
 import { request } from "@/utils/request";
 import { get_admin_session } from '@/api/admin_auth';
 import { update_app_file } from "@/api/appstore_admin";
@@ -21,7 +20,6 @@ interface UpdateAppFileModalProps {
 }
 
 const UpdateAppFileModal: React.FC<UpdateAppFileModalProps> = (props) => {
-    const appStore = useStores('appStore');
     const [uploadId] = useState(uniqId());
     const [localPath, setLocalPath] = useState("");
     const [uploadRatio, setUploadRatio] = useState(0);
@@ -46,11 +44,11 @@ const UpdateAppFileModal: React.FC<UpdateAppFileModalProps> = (props) => {
             return;
         }
         const sessionId = await get_admin_session();
-        const uploadRes = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", localPath, uploadId));
+        const uploadRes = await request(write_file(sessionId, GLOBAL_APPSTORE_FS_ID, localPath, uploadId));
 
         await request(set_file_owner({
             session_id: sessionId,
-            fs_id: appStore.clientCfg?.app_store_fs_id ?? "",
+            fs_id: GLOBAL_APPSTORE_FS_ID,
             file_id: uploadRes.file_id,
             owner_type: FILE_OWNER_TYPE_APP_STORE,
             owner_id: props.appId,

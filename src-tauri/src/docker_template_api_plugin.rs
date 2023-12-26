@@ -1,4 +1,3 @@
-use crate::notice_decode::new_wrong_session_notice;
 use async_zip::read::seek::ZipFileReader;
 use async_zip::write::ZipFileWriter;
 use async_zip::{Compression, ZipEntryBuilder};
@@ -11,15 +10,17 @@ use tauri::{
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 
+use crate::client_cfg_api_plugin::get_global_server_addr;
+
 #[tauri::command]
 async fn list_cate<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
     request: ListCateRequest,
 ) -> Result<ListCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DockerTemplateApiClient::new(chan.unwrap());
     match client.list_cate(request).await {
@@ -34,12 +35,12 @@ async fn list_cate<R: Runtime>(
 #[tauri::command]
 async fn list_app_with_template<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
     request: ListAppWithTemplateRequest,
 ) -> Result<ListAppWithTemplateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DockerTemplateApiClient::new(chan.unwrap());
     match client.list_app_with_template(request).await {
@@ -54,24 +55,17 @@ async fn list_app_with_template<R: Runtime>(
 #[tauri::command]
 async fn add_comment<R: Runtime>(
     app_handle: AppHandle<R>,
-    window: Window<R>,
     request: AddCommentRequest,
 ) -> Result<AddCommentResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DockerTemplateApiClient::new(chan.unwrap());
     match client.add_comment(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == add_comment_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("add_comment".into()))
-                {
-                    println!("{:?}", err);
-                }
-            }
             return Ok(inner_resp);
         }
         Err(status) => Err(status.message().into()),
@@ -81,22 +75,17 @@ async fn add_comment<R: Runtime>(
 #[tauri::command]
 async fn remove_comment<R: Runtime>(
     app_handle: AppHandle<R>,
-    window: Window<R>,
     request: RemoveCommentRequest,
 ) -> Result<RemoveCommentResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DockerTemplateApiClient::new(chan.unwrap());
     match client.remove_comment(request).await {
         Ok(response) => {
             let inner_resp = response.into_inner();
-            if inner_resp.code == remove_comment_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("xx".into())) {
-                    println!("{:?}", err);
-                }
-            }
             return Ok(inner_resp);
         }
         Err(status) => Err(status.message().into()),
@@ -106,12 +95,12 @@ async fn remove_comment<R: Runtime>(
 #[tauri::command]
 async fn list_comment<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
     request: ListCommentRequest,
 ) -> Result<ListCommentResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DockerTemplateApiClient::new(chan.unwrap());
     match client.list_comment(request).await {
@@ -126,12 +115,12 @@ async fn list_comment<R: Runtime>(
 #[tauri::command]
 async fn get_app_with_template<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
     request: GetAppWithTemplateRequest,
 ) -> Result<GetAppWithTemplateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DockerTemplateApiClient::new(chan.unwrap());
     match client.get_app_with_template(request).await {

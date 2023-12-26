@@ -7,6 +7,8 @@ use tauri::{
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+use crate::client_cfg_api_plugin::get_global_server_addr;
+
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct FindResult {
@@ -26,12 +28,12 @@ pub struct ExecResult {
 #[tauri::command]
 async fn list_package<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
     request: ListPackageRequest,
 ) -> Result<ListPackageResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DevContainerApiClient::new(chan.unwrap());
     match client.list_package(request).await {
@@ -43,12 +45,12 @@ async fn list_package<R: Runtime>(
 #[tauri::command]
 async fn list_package_version<R: Runtime>(
     app_handle: AppHandle<R>,
-    _window: Window<R>,
     request: ListPackageVersionRequest,
 ) -> Result<ListPackageVersionResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
     }
     let mut client = DevContainerApiClient::new(chan.unwrap());
     match client.list_package_version(request).await {
@@ -105,7 +107,7 @@ pub struct DevContainerApiPlugin<R: Runtime> {
 impl<R: Runtime> DevContainerApiPlugin<R> {
     pub fn new() -> Self {
         Self {
-            invoke_handler: Box::new(tauri::generate_handler![list_package, list_package_version,]),
+            invoke_handler: Box::new(tauri::generate_handler![list_package, list_package_version]),
         }
     }
 }

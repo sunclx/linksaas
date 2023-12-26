@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import React from 'react';
 import { Button, Col, Form, Input, Row } from 'antd';
-
 import s from './reset.module.less';
 import { CheckCircleFilled, LeftOutlined } from '@ant-design/icons';
 import { useSetState } from 'ahooks';
@@ -14,7 +13,7 @@ import { gen_captcha, pre_reset_password } from '@/api/user';
 import { useStores } from '@/hooks';
 
 type ResetProps = {
-  setLoginTab: (boo: boolean) => void;
+  onClose: () => void;
 };
 
 export type ResetPasswordType = {
@@ -24,7 +23,7 @@ export type ResetPasswordType = {
   auth_code: string;
 };
 
-const Reset: FC<ResetProps> = ({ setLoginTab }) => {
+const Reset: FC<ResetProps> = ({ onClose }) => {
   const [hasFeedback, setHasFeedback] = useSetState({
     user_name: false,
     imgcode: false,
@@ -58,7 +57,6 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
 
   return (
     <div className={s.reset_wrap}>
-      <h1 className={s.title}>重置密码</h1>
       <Form
         className={s.resetform}
         onFinish={async (values) => {
@@ -75,7 +73,7 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
                 };
               });
               setStep((num) => num + 1);
-            } catch (error) {}
+            } catch (error) { }
             return;
           } else {
             setFormValue((val) => {
@@ -84,7 +82,7 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
                 auth_code: values.code,
               };
             });
-            userStore.setIsResetPassword(true);
+            userStore.isResetPassword = true;
             push({
               pathname: WORKBENCH_PATH,
               search: `type=${RESET_TEXT}`,
@@ -202,7 +200,7 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
           </Button>
         </Form.Item>
         <Form.Item>
-          <a type="primary" onClick={() => setLoginTab(true)}>
+          <a type="primary" onClick={() => onClose()}>
             <LeftOutlined />
             返回登录
           </a>

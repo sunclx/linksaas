@@ -1,135 +1,107 @@
-use crate::notice_decode::new_wrong_session_notice;
-use proto_gen_rust::user_app_api::user_app_api_client::UserAppApiClient;
-use proto_gen_rust::user_app_api::*;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+use tokio::fs;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+
 #[tauri::command]
-async fn list<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListRequest,
-) -> Result<ListResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+async fn list() -> Result<Vec<String>, String> {
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
     }
-    let mut client = UserAppApiClient::new(chan.unwrap());
-    match client.list(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("list".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("all");
+    file_path.push("user_app.json");
+    if !file_path.exists() {
+        return Ok(Vec::new());
+    }
+    let f = fs::File::open(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let mut data = Vec::new();
+    let result = f.read_to_end(&mut data).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    let json_str = String::from_utf8(data);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
+    let site_list = serde_json::from_str(&json_str);
+    if site_list.is_err() {
+        return Err(site_list.err().unwrap().to_string());
+    }
+    return Ok(site_list.unwrap());
+}
+
+async fn save(app_id_list: Vec<String>) -> Result<(), String> {
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
+    }
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("all");
+    if !file_path.exists() {
+        let result = fs::create_dir_all(&file_path).await;
+        if result.is_err() {
+            return Err(result.err().unwrap().to_string());
         }
-        Err(status) => Err(status.message().into()),
     }
+    file_path.push("user_app.json");
+    let f = fs::File::create(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let json_str = serde_json::to_string(&app_id_list);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
+    let result = f.write_all(json_str.as_bytes()).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    return Ok(());
 }
 
 #[tauri::command]
-async fn get<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: GetRequest,
-) -> Result<GetResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+async fn add(
+    app_id:String,
+) -> Result<(), String> {
+    let app_id_list = list().await;
+    let mut app_id_list = app_id_list.unwrap_or_default();
+
+    if app_id_list.contains(&app_id) {
+        return Ok(());
     }
-    let mut client = UserAppApiClient::new(chan.unwrap());
-    match client.get(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == get_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("get".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
+    app_id_list.insert(0, app_id);
+    return save(app_id_list).await;
 }
 
 #[tauri::command]
-async fn query_in_store<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: QueryInStoreRequest,
-) -> Result<QueryInStoreResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = UserAppApiClient::new(chan.unwrap());
-    match client.query_in_store(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == query_in_store_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("query_in_store".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
+async fn remove(
+    app_id:String,
+) -> Result<(), String> {
+    let app_id_list = list().await;
+    let app_id_list = app_id_list.unwrap_or_default();
 
+    let mut new_id_list = Vec::new();
 
-#[tauri::command]
-async fn add<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AddRequest,
-) -> Result<AddResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = UserAppApiClient::new(chan.unwrap());
-    match client.add(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == add_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("add".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
+    for id in app_id_list.iter() {
+        if id != &app_id{
+            new_id_list.push(id.clone());
         }
-        Err(status) => Err(status.message().into()),
     }
-}
-
-#[tauri::command]
-async fn remove<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: RemoveRequest,
-) -> Result<RemoveResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = UserAppApiClient::new(chan.unwrap());
-    match client.remove(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == remove_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit("notice", new_wrong_session_notice("remove".into())) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
+    
+    return save(new_id_list).await;
 }
 
 
@@ -142,8 +114,6 @@ impl<R: Runtime> UserAppApiPlugin<R> {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
                 list,
-                get,
-                query_in_store,
                 add,
                 remove,
             ]),

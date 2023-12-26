@@ -1,5 +1,5 @@
 import { FolderOpenOutlined } from "@ant-design/icons";
-import { Modal, Form, Input, Button } from "antd";
+import { Form, Input, Button, Space } from "antd";
 import React, { useState } from "react";
 import { open as open_dialog } from '@tauri-apps/api/dialog';
 import { pre_auth, auth, sign } from '@/api/admin_auth';
@@ -9,11 +9,9 @@ import { ADMIN_PATH } from "@/utils/constant";
 import { useStores } from "@/hooks";
 import { runInAction } from "mobx";
 
-interface AdminLoginModalProps {
-    onClose: () => void;
-}
 
-export const AdminLoginModal: React.FC<AdminLoginModalProps> = (props) => {
+
+export const AdminLogin = () => {
     const [form] = Form.useForm();
 
     const history = useHistory();
@@ -41,29 +39,14 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = (props) => {
             admin_session_id: preRes.admin_session_id,
             sign: signRes,
         }));
-        props.onClose();
         runInAction(() => {
             userStore.adminSessionId = preRes.admin_session_id;
         });
+        userStore.showUserLogin = null;
         history.push(ADMIN_PATH);
     };
 
     return (
-        <Modal title="登录管理系统" open
-            okText="登录"
-            okButtonProps={{
-                disabled: userName.trim() == "" || privKey.trim() == "",
-            }}
-            onCancel={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                props.onClose();
-            }}
-            onOk={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                loginAdmin();
-            }}>
             <Form form={form} labelCol={{ span: 5 }} >
                 <Form.Item label="管理员账号" name="userName" rules={[{ required: true }]}>
                     <Input value={userName} onChange={e => {
@@ -85,7 +68,20 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = (props) => {
                         setPrivKey(e.target.value);
                     }} />
                 </Form.Item>
+                <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid #e4e4e8", paddingTop: "10px", marginTop: "10px" }}>
+                        <Space size="large">
+                            <Button onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                userStore.showUserLogin = null;
+                            }}>取消</Button>
+                            <Button type="primary" disabled={ userName == "" || privKey == ""} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                loginAdmin();
+                            }}>登录</Button>
+                        </Space>
+                    </div>
             </Form>
-        </Modal>
     );
 }; 
