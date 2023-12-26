@@ -20,6 +20,8 @@ import { request } from '@/utils/request';
 import type { ColumnsType } from 'antd/lib/table';
 import type { ProxyInfo } from '@/api/net_proxy';
 import { stop_listen } from '@/api/net_proxy';
+import { remove_info_file } from '@/api/local_api';
+import { exit } from '@tauri-apps/api/process';
 
 
 const { Header } = Layout;
@@ -44,8 +46,12 @@ const MyHeader: React.FC<{ style?: React.CSSProperties; className?: string }> = 
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
-      case 'close':
+      case 'hide':
         await appWindow.hide();
+        break;
+      case 'exit':
+        await remove_info_file();
+        await exit(0);
         break;
       case 'minimize':
         await appWindow.minimize();
@@ -340,7 +346,22 @@ const MyHeader: React.FC<{ style?: React.CSSProperties; className?: string }> = 
           <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
           <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />
           <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />
-          <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
+          <Popover trigger="hover" placement="bottom" content={
+            <Space direction="vertical" style={{ padding: "10px 0px" }}>
+              <Button type="link" onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleClick('hide');
+              }}>隐藏应用</Button>
+              <Button type="link" danger onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleClick('exit');
+              }}>关闭应用</Button>
+            </Space>
+          }>
+            <div className={style.btnClose} title="隐藏/关闭窗口" onClick={() => handleClick('hide')} />
+          </Popover>
         </div>
       </Header>
     </div>
