@@ -7,6 +7,7 @@ import type { ServerInfo } from '@/api/client_cfg';
 import { list_server, add_server, remove_server } from '@/api/client_cfg';
 import { conn_grpc_server } from '@/api/main';
 import Reset from "./Reset";
+import { AdminLogin } from "./AdminLogin";
 
 
 const LoginModal = () => {
@@ -20,7 +21,7 @@ const LoginModal = () => {
     const [hasConn, setHasConn] = useState(false);
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
-    const [loginTab, setLoginTab] = useState(true);
+    const [loginTab, setLoginTab] = useState<"login" | "adminLogin" | "reset">("login");
 
     const loadServerList = async () => {
         const res = await list_server(false);
@@ -61,6 +62,15 @@ const LoginModal = () => {
         setUserName(localStorage.getItem(`${defaultAddr}:username`) ?? "");
     };
 
+    const getLoginTagStr = ()=>{
+        if(loginTab == "login"){
+            return "请登录";
+        }else if(loginTab == "reset"){
+            return "重置密码";
+        }else {
+            return "登录管理后台";
+        }
+    }
 
     useEffect(() => {
         loadServerList();
@@ -71,21 +81,13 @@ const LoginModal = () => {
     }, [defaultAddr]);
 
     return (
-        <Modal title={loginTab ? "请登录" : "重置密码"} open
-            okText="登录" okButtonProps={{ disabled: (!hasConn) || userName == "" || password == "" }}
+        <Modal title={getLoginTagStr()} open footer={null}
             onCancel={e => {
                 e.stopPropagation();
                 e.preventDefault();
                 userStore.showUserLogin = null;
-            }}
-            onOk={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                userStore.callLogin(userName, password).then(() => {
-                    localStorage.setItem(`${defaultAddr}:username`, userName);
-                });
             }}>
-            {loginTab == true && (
+            {loginTab == "login" && (
                 <Form labelCol={{ span: 3 }}>
                     <Form.Item label="服务器" >
                         <Select
@@ -170,7 +172,7 @@ const LoginModal = () => {
                                 <a onClick={(e) => {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    setLoginTab(false);
+                                    setLoginTab("reset");
                                 }}>
                                     忘记密码
                                 </a>
@@ -180,11 +182,35 @@ const LoginModal = () => {
                                     注册新账号
                                 </a>
                             )}
+                            {appStore.clientCfg?.enable_admin == true && (
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setLoginTab("adminLogin");
+                                }}>管理后台</a>
+                            )}
+                        </Space>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid #e4e4e8", paddingTop: "10px", marginTop: "10px" }}>
+                        <Space size="large">
+                            <Button onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                userStore.showUserLogin = null;
+                            }}>取消</Button>
+                            <Button type="primary" disabled={(!hasConn) || userName == "" || password == ""} onClick={e => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                userStore.callLogin(userName, password).then(() => {
+                                    localStorage.setItem(`${defaultAddr}:username`, userName);
+                                });
+                            }}>登录</Button>
                         </Space>
                     </div>
                 </Form>
             )}
-            {loginTab == false && (<Reset setLoginTab={setLoginTab} />)}
+            {loginTab == "reset" && (<Reset onClose={() => setLoginTab("login")} />)}
+            {loginTab == "adminLogin" && (<AdminLogin />)}
         </Modal>
     );
 };

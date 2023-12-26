@@ -185,8 +185,6 @@ export namespace client {
 
   export type LocalProxyStopNotice = {};
 
-  export type ShowAdminLoginNotice = {};
-
   export type ShowGlobalServerSettingNotice = {};
 
   export type AllNotice = {
@@ -194,7 +192,6 @@ export namespace client {
     SwitchUserNotice?: SwitchUserNotice;
     GitPostHookNotice?: GitPostHookNotice;
     LocalProxyStopNotice?: LocalProxyStopNotice;
-    ShowAdminLoginNotice?: ShowAdminLoginNotice;
     ShowGlobalServerSettingNotice?: ShowGlobalServerSettingNotice;
   };
 }

@@ -13,7 +13,7 @@ import { gen_captcha, pre_reset_password } from '@/api/user';
 import { useStores } from '@/hooks';
 
 type ResetProps = {
-  setLoginTab: (boo: boolean) => void;
+  onClose: () => void;
 };
 
 export type ResetPasswordType = {
@@ -23,7 +23,7 @@ export type ResetPasswordType = {
   auth_code: string;
 };
 
-const Reset: FC<ResetProps> = ({ setLoginTab }) => {
+const Reset: FC<ResetProps> = ({ onClose }) => {
   const [hasFeedback, setHasFeedback] = useSetState({
     user_name: false,
     imgcode: false,
@@ -200,7 +200,7 @@ const Reset: FC<ResetProps> = ({ setLoginTab }) => {
           </Button>
         </Form.Item>
         <Form.Item>
-          <a type="primary" onClick={() => setLoginTab(true)}>
+          <a type="primary" onClick={() => onClose()}>
             <LeftOutlined />
             返回登录
           </a>

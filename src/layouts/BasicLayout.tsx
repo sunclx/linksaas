@@ -13,7 +13,6 @@ import LeftMenu from '../components/LeftMenu';
 import Toolbar from '../components/Toolbar';
 import style from './style.module.less';
 import LoginModal from '@/pages/User/LoginModal';
-import { AdminLoginModal } from '@/pages/User/AdminLoginModal';
 import GlobalServerModal from '@/components/GlobalSetting/GlobalServerModal';
 
 const { Content } = Layout;
@@ -55,9 +54,6 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
         {curProjectId != '' && <BottomNav />}
       </Layout>
       {userStore.showUserLogin && <LoginModal />}
-      {userStore.showAdminUserLogin && <AdminLoginModal onClose={() => {
-        userStore.showAdminUserLogin = false;
-      }} />}
       {appStore.showGlobalServerModal && <GlobalServerModal />}
     </Layout>
   );

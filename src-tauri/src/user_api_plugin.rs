@@ -264,10 +264,6 @@ async fn logout<R: Runtime>(
             if let Err(err) = switch_munu_item.set_enabled(false) {
                 println!("{:?}", err);
             }
-            let admin_menu_item = &app_handle.tray_handle().get_item("admin");
-            if let Err(err) = admin_menu_item.set_enabled(false) {
-                println!("{:?}", err);
-            }
             //移除本地监听
             stop_all_listen(app_handle).await;
             Ok(response.into_inner())

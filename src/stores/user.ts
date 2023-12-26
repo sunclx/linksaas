@@ -40,8 +40,6 @@ class UserStore {
 
   // 用户登录弹窗
   private _showUserLogin: null | (() => void) = null;
-  // 管理员登录弹窗
-  private _showAdminUserLogin = false;
 
   // 重置密码
   private _isResetPassword = false;
@@ -109,16 +107,6 @@ class UserStore {
   set showUserLogin(val: (() => void) | null) {
     runInAction(() => {
       this._showUserLogin = val;
-    });
-  }
-
-  get showAdminUserLogin() {
-    return this._showAdminUserLogin;
-  }
-
-  set showAdminUserLogin(val: boolean) {
-    runInAction(() => {
-      this._showAdminUserLogin = val;
     });
   }
 

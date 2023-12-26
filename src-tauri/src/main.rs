@@ -349,8 +349,6 @@ fn main() {
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("check_update", "检查更新"))
         .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(CustomMenuItem::new("admin", "管理后台").disabled())
-        .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new("exit_app", "退出"));
     let app = tauri::Builder::default()
         .manage(GrpcChan(Default::default()))
@@ -404,12 +402,6 @@ fn main() {
                 "set_global_server" => {
                     let win = app.get_window("main").unwrap();
                     if let Err(err) = win.emit("notice", notice_decode::new_show_global_server_setting_notice()) {
-                        println!("{:?}", err);
-                    }
-                }
-                "admin" => {
-                    let win = app.get_window("main").unwrap();
-                    if let Err(err) = win.emit("notice", notice_decode::new_show_admin_login_notice()) {
                         println!("{:?}", err);
                     }
                 }
