@@ -78,7 +78,6 @@ export type AppInfo = {
     agree_count: number;
     comment_count: number;
     my_agree: boolean;
-    my_install: boolean;
 };
 
 export type ListAppParam = {
@@ -188,6 +187,15 @@ export type GetAppResponse = {
     code: number;
     err_msg: string;
     app_info: AppInfo;
+};
+
+export type InstallAppRequest = {
+    app_id: string;
+};
+
+export type InstallAppResponse = {
+    code: number;
+    err_msg: string;
 };
 
 export type QueryPermRequest = {
@@ -318,6 +326,15 @@ export async function get_app(request: GetAppRequest): Promise<GetAppResponse> {
     const cmd = 'plugin:appstore_api|get_app';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<GetAppResponse>(cmd, {
+        request,
+    });
+}
+
+//安装应用(增加安装计数值)
+export async function install_app(request: InstallAppRequest): Promise<InstallAppResponse> {
+    const cmd = 'plugin:appstore_api|install_app';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<InstallAppResponse>(cmd, {
         request,
     });
 }

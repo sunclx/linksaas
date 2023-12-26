@@ -84,7 +84,7 @@ export type AdminPermInfo = {
     docker_template_perm: DockerTemplatePerm;
     group_perm: GroupPerm;
     dev_container_perm: DevContainerPerm;
-    official_site: boolean;
+    global_server: boolean;
 };
 
 export type PreAuthRequest = {

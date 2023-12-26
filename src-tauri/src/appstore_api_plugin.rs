@@ -127,6 +127,26 @@ async fn get_app<R: Runtime>(
 }
 
 #[tauri::command]
+async fn install_app<R: Runtime>(
+    app_handle: AppHandle<R>,
+    request: InstallAppRequest,
+) -> Result<InstallAppResponse, String> {
+    let serv_addr = get_global_server_addr(app_handle).await;
+    let chan = super::conn_extern_server(serv_addr).await;
+    if chan.is_err() {
+        return Err(chan.err().unwrap());
+    }
+    let mut client = AppstoreApiClient::new(chan.unwrap());
+    match client.install_app(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn query_perm<R: Runtime>(
     app_handle: AppHandle<R>,
     request: QueryPermRequest,
@@ -280,6 +300,7 @@ impl<R: Runtime> AppstoreApiPlugin<R> {
                 list_app,
                 list_app_by_id,
                 get_app,
+                install_app,
                 query_perm,
                 get_cate_path,
                 agree_app,

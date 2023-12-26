@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { AppInfo, AppComment } from "@/api/appstore";
-import { agree_app, cancel_agree_app, get_app, list_comment, add_comment, remove_comment } from "@/api/appstore";
+import { agree_app, cancel_agree_app, get_app, list_comment, add_comment, remove_comment, install_app } from "@/api/appstore";
 import { Button, Card, Descriptions, Dropdown, Input, List, Modal, Space, message } from "antd";
 import { observer } from 'mobx-react';
 import { useStores } from "@/hooks";
@@ -10,7 +10,7 @@ import AppPermPanel from "@/pages/Admin/AppAdmin/components/AppPermPanel";
 import { ReadOnlyEditor } from "@/components/Editor";
 import { GLOBAL_APPSTORE_FS_ID, get_cache_file } from '@/api/fs';
 import { check_unpark, get_min_app_path, start as start_app } from '@/api/min_app';
-import { add as add_user_app, remove as remove_user_app } from "@/api/user_app";
+import { list as list_user_app, add as add_user_app, remove as remove_user_app } from "@/api/user_app";
 import { open as open_shell } from '@tauri-apps/api/shell';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import moment from "moment";
@@ -28,6 +28,8 @@ const AppStoreDetail = () => {
     const userStore = useStores('userStore');
     const pubResStore = useStores('pubResStore');
 
+    const [myAppIdList, setMyAppIdList] = useState<string[]>([]);
+
     const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
     const [showDownload, setShowDownload] = useState<DownloadInfo | null>(null);
     const [commentContent, setCommentContent] = useState("");
@@ -37,6 +39,11 @@ const AppStoreDetail = () => {
     const [curPage, setCurPage] = useState(0);
 
     const [removeCommentInfo, setRemoveCommentInfo] = useState<AppComment | null>(null);
+
+    const loadMyAppIdList = async () => {
+        const res = await list_user_app();
+        setMyAppIdList(res);
+    };
 
     const loadAppInfo = async () => {
         const res = await request(get_app({
@@ -101,7 +108,9 @@ const AppStoreDetail = () => {
             return;
         }
         await add_user_app(appInfo.app_id);
-        setAppInfo({ ...appInfo, install_count: appInfo.install_count + 1, my_install: true });
+        await install_app({ app_id: appInfo.app_id });
+        await loadMyAppIdList();
+        setAppInfo({ ...appInfo, install_count: appInfo.install_count + 1 });
         pubResStore.incAppDataVersion();
     };
 
@@ -150,8 +159,8 @@ const AppStoreDetail = () => {
         if (appInfo == null) {
             return;
         }
-        remove_user_app(appInfo.app_id);
-        setAppInfo({ ...appInfo, my_install: false });
+        await remove_user_app(appInfo.app_id);
+        await loadMyAppIdList();
     };
 
     const agreeApp = async (appId: string, newAgree: boolean) => {
@@ -184,6 +193,7 @@ const AppStoreDetail = () => {
 
     useEffect(() => {
         loadAppInfo();
+        loadMyAppIdList();
         if (curPage != 0) {
             setCurPage(0);
         } else {
@@ -221,7 +231,7 @@ const AppStoreDetail = () => {
                                 </a>
                                 &nbsp;{appInfo.agree_count}
                             </div>
-                            {appInfo.my_install == true && (
+                            {myAppIdList.includes(appInfo.app_id) == true && (
                                 <Dropdown.Button type="primary" menu={{
                                     items: [
                                         {
@@ -236,7 +246,7 @@ const AppStoreDetail = () => {
                                     preOpenUserApp();
                                 }}>运行应用</Dropdown.Button>
                             )}
-                            {appInfo.my_install == false && (
+                            {myAppIdList.includes(appInfo.app_id) == false && (
                                 <Button type="primary" onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
@@ -276,6 +286,7 @@ const AppStoreDetail = () => {
                 <Input.TextArea
                     autoSize={{ minRows: 5, maxRows: 5 }}
                     value={commentContent}
+                    disabled={userStore.sessionId == ""}
                     onChange={e => {
                         e.stopPropagation();
                         e.preventDefault();
