@@ -191,72 +191,78 @@ const AdminNav = () => {
                         }}
                     />
                 </Collapse.Panel>
-                <Collapse.Panel header="应用管理" key="appstore">
-                    <Menu selectedKeys={appstoreSelectedKeys} items={[
-                        {
-                            label: "管理类别",
-                            key: "app_cate",
-                            disabled: !(permInfo?.app_store_perm.read ?? false),
-                        },
-                        {
-                            label: "管理应用",
-                            key: "app_app",
-                            disabled: !(permInfo?.app_store_perm.read ?? false),
-                        },
-                    ]}
-                        style={{ borderRightWidth: "0px" }}
-                        onSelect={e => {
-                            if (e.selectedKeys.length == 1) {
-                                if (e.selectedKeys[0] == "app_cate") {
-                                    history.push(ADMIN_PATH_APPSTORE_CATE_SUFFIX);
-                                } else if (e.selectedKeys[0] == "app_app") {
-                                    history.push(ADMIN_PATH_APPSTORE_APP_SUFFIX);
+                {permInfo?.global_server == true && (
+                    <Collapse.Panel header="应用管理" key="appstore">
+                        <Menu selectedKeys={appstoreSelectedKeys} items={[
+                            {
+                                label: "管理类别",
+                                key: "app_cate",
+                                disabled: !(permInfo?.app_store_perm.read ?? false),
+                            },
+                            {
+                                label: "管理应用",
+                                key: "app_app",
+                                disabled: !(permInfo?.app_store_perm.read ?? false),
+                            },
+                        ]}
+                            style={{ borderRightWidth: "0px" }}
+                            onSelect={e => {
+                                if (e.selectedKeys.length == 1) {
+                                    if (e.selectedKeys[0] == "app_cate") {
+                                        history.push(ADMIN_PATH_APPSTORE_CATE_SUFFIX);
+                                    } else if (e.selectedKeys[0] == "app_app") {
+                                        history.push(ADMIN_PATH_APPSTORE_APP_SUFFIX);
+                                    }
                                 }
+                            }}
+                        />
+                    </Collapse.Panel>
+                )}
+                {permInfo?.global_server == true && (
+                    <Collapse.Panel header="Docker模板管理" key="dockerTemplate">
+                        <Menu selectedKeys={dockerTemplateSelectedKeys} items={[
+                            {
+                                label: "管理类别",
+                                key: "docker_template_cate",
+                                disabled: !(permInfo?.docker_template_perm.read ?? false),
+                            },
+                            {
+                                label: "管理模板",
+                                key: "docker_template_app",
+                                disabled: !(permInfo?.docker_template_perm.read ?? false),
                             }
-                        }}
-                    />
-                </Collapse.Panel>
-                <Collapse.Panel header="Docker模板管理" key="dockerTemplate">
-                    <Menu selectedKeys={dockerTemplateSelectedKeys} items={[
-                        {
-                            label: "管理类别",
-                            key: "docker_template_cate",
-                            disabled: !(permInfo?.docker_template_perm.read ?? false),
-                        },
-                        {
-                            label: "管理模板",
-                            key: "docker_template_app",
-                            disabled: !(permInfo?.docker_template_perm.read ?? false),
-                        }
-                    ]}
-                        style={{ borderRightWidth: "0px" }}
-                        onSelect={e => {
-                            if (e.selectedKeys.length == 1) {
-                                if (e.selectedKeys[0] == "docker_template_cate") {
-                                    history.push(ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX);
-                                } else if (e.selectedKeys[0] == "docker_template_app") {
-                                    history.push(ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX);
+                        ]}
+                            style={{ borderRightWidth: "0px" }}
+                            onSelect={e => {
+                                if (e.selectedKeys.length == 1) {
+                                    if (e.selectedKeys[0] == "docker_template_cate") {
+                                        history.push(ADMIN_PATH_DOCKER_TEMPLATE_CATE_SUFFIX);
+                                    } else if (e.selectedKeys[0] == "docker_template_app") {
+                                        history.push(ADMIN_PATH_DOCKER_TEMPLATE_APP_SUFFIX);
+                                    }
                                 }
-                            }
-                        }} />
-                </Collapse.Panel>
-                <Collapse.Panel header="研发环境管理" key="devContainer">
-                    <Menu selectedKeys={devContainerSelectedKeys} items={[
-                        {
-                            label: "软件包管理",
-                            key: "dev_container_pkg",
-                            disabled: !(permInfo?.dev_container_perm.read ?? false),
-                        },
-                    ]}
-                        style={{ borderRightWidth: "0px" }}
-                        onSelect={e => {
-                            if (e.selectedKeys.length == 1) {
-                                if (e.selectedKeys[0] == "dev_container_pkg") {
-                                    history.push(ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX);
+                            }} />
+                    </Collapse.Panel>
+                )}
+                {permInfo?.global_server == true && (
+                    <Collapse.Panel header="研发环境管理" key="devContainer">
+                        <Menu selectedKeys={devContainerSelectedKeys} items={[
+                            {
+                                label: "软件包管理",
+                                key: "dev_container_pkg",
+                                disabled: !(permInfo?.dev_container_perm.read ?? false),
+                            },
+                        ]}
+                            style={{ borderRightWidth: "0px" }}
+                            onSelect={e => {
+                                if (e.selectedKeys.length == 1) {
+                                    if (e.selectedKeys[0] == "dev_container_pkg") {
+                                        history.push(ADMIN_PATH_DEV_CONTAINER_PKG_SUFFIX);
+                                    }
                                 }
-                            }
-                        }} />
-                </Collapse.Panel>
+                            }} />
+                    </Collapse.Panel>
+                )}
                 <Collapse.Panel header="界面管理" key="clientCfg">
                     <Menu selectedKeys={clientCfgSelectedKeys} items={[
                         {
