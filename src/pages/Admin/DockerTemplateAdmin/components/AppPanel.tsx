@@ -7,7 +7,7 @@ import { useStores } from "@/hooks";
 import type { ColumnsType } from 'antd/es/table';
 import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import moment from "moment";
-import { download_file } from "@/api/fs";
+import { GLOBAL_DOCKER_TEMPLATE_FS_ID, download_file } from "@/api/fs";
 import { open as shell_open } from '@tauri-apps/api/shell';
 import CreateVersionModal from "./CreateVersionModal";
 import { EditText } from "@/components/EditCell/EditText";
@@ -45,9 +45,9 @@ const AppPanel = (props: AppPanelProps) => {
 
     const getIconUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/x.png`;
+            return `https://fs.localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/x.png`;
         } else {
-            return `fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/x.png`;
+            return `fs://localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/x.png`;
         }
     }
 
@@ -55,7 +55,7 @@ const AppPanel = (props: AppPanelProps) => {
         const sessionId = await get_admin_session();
         setCurDownloadFileId(fileId);
         try {
-            const res = await download_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", fileId, "", "template.zip");
+            const res = await download_file(sessionId, GLOBAL_DOCKER_TEMPLATE_FS_ID, fileId, "", "template.zip");
             if (res.exist_in_local) {
                 shell_open(res.local_dir);
             }
@@ -97,10 +97,10 @@ const AppPanel = (props: AppPanelProps) => {
             return;
         }
         const sessionId = await get_admin_session();
-        const res = await request(write_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", selectd, ""));
+        const res = await request(write_file(sessionId, GLOBAL_DOCKER_TEMPLATE_FS_ID, selectd, ""));
         await request(set_file_owner({
             session_id: sessionId,
-            fs_id: appStore.clientCfg?.docker_template_fs_id ?? "",
+            fs_id: GLOBAL_DOCKER_TEMPLATE_FS_ID,
             file_id: res.file_id,
             owner_type: FILE_OWNER_TYPE_DOCKER_TEMPLATE,
             owner_id: props.appInfo.app_info.app_id,
@@ -134,20 +134,20 @@ const AppPanel = (props: AppPanelProps) => {
         //上传图片
         const sessionId = await get_admin_session();
         const thumbUploadRes = await request(write_thumb_image_file(sessionId,
-            appStore.clientCfg?.docker_template_fs_id ?? "", selectd, "", 200, 150));
+            GLOBAL_DOCKER_TEMPLATE_FS_ID, selectd, "", 200, 150));
         const rawUploadRes = await request(write_file(sessionId,
-            appStore.clientCfg?.docker_template_fs_id ?? "", selectd, ""));
+            GLOBAL_DOCKER_TEMPLATE_FS_ID, selectd, ""));
         //设置owner
         await set_file_owner({
             session_id: sessionId,
-            fs_id: appStore.clientCfg?.docker_template_fs_id ?? "",
+            fs_id: GLOBAL_DOCKER_TEMPLATE_FS_ID,
             file_id: thumbUploadRes.file_id,
             owner_type: FILE_OWNER_TYPE_DOCKER_TEMPLATE,
             owner_id: props.appInfo.app_info.app_id,
         });
         await set_file_owner({
             session_id: sessionId,
-            fs_id: appStore.clientCfg?.docker_template_fs_id ?? "",
+            fs_id: GLOBAL_DOCKER_TEMPLATE_FS_ID,
             file_id: rawUploadRes.file_id,
             owner_type: FILE_OWNER_TYPE_DOCKER_TEMPLATE,
             owner_id: props.appInfo.app_info.app_id,
@@ -168,9 +168,9 @@ const AppPanel = (props: AppPanelProps) => {
 
     const getImageUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/image.png`;
+            return `https://fs.localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/image.png`;
         } else {
-            return `fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/image.png`;
+            return `fs://localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/image.png`;
         }
     };
 

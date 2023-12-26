@@ -4,17 +4,16 @@ import type { IRouteConfig } from '@/routes';
 import { WORKBENCH_PATH } from '@/utils/constant';
 import { Layout } from 'antd';
 import classNames from 'classnames';
-import { when } from 'mobx';
 import { observer } from 'mobx-react';
 import React, { useEffect } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { useHistory, useLocation } from 'react-router-dom';
-
-
 import Header from '../components/Header';
 import LeftMenu from '../components/LeftMenu';
 import Toolbar from '../components/Toolbar';
 import style from './style.module.less';
+import LoginModal from '@/pages/User/LoginModal';
+import GlobalServerModal from '@/components/GlobalSetting/GlobalServerModal';
 
 const { Content } = Layout;
 
@@ -22,7 +21,6 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
   const history = useHistory();
   const { pathname } = useLocation();
 
-  const { sessionId } = useStores('userStore');
   const userStore = useStores('userStore');
   const { curProjectId } = useStores('projectStore');
   const noticeStore = useStores('noticeStore');
@@ -36,21 +34,8 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
 
 
   useEffect(() => {
-    userStore.setIsResetPassword(type === 'resetPassword');
+    userStore.isResetPassword = (type === 'resetPassword');
   });
-
-  when(
-    () => !sessionId,
-    () => {
-      // 重置密码
-      if (!userStore.isResetPassword) {
-        history.push('/user/login');
-      }
-    },
-  );
-
-
-  if (!sessionId && !userStore.isResetPassword) return <div />;
 
   return (
     <Layout className={style.basicLayout}>
@@ -63,11 +48,13 @@ const BasicLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
             pathname !== WORKBENCH_PATH && style.showbottomnav,
           )}
         >
-          {renderRoutes(route.routes, { sessionId, projectId: curProjectId })}
+          {renderRoutes(route.routes, { sessionId: userStore.sessionId, projectId: curProjectId })}
         </Content>
         {curProjectId && <Toolbar />}
         {curProjectId != '' && <BottomNav />}
       </Layout>
+      {userStore.showUserLogin && <LoginModal />}
+      {appStore.showGlobalServerModal && <GlobalServerModal />}
     </Layout>
   );
 };

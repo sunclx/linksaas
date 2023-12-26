@@ -23,6 +23,7 @@ import SelectAppCateModal from "./components/SelectAppCateModal";
 import UpdateAppPermModal from "./components/UpdateAppPermModal";
 import AsyncImage from "@/components/AsyncImage";
 import CommentListModal from "./components/CommentListModal";
+import { GLOBAL_APPSTORE_FS_ID } from "@/api/fs";
 
 const PAGE_SIZE = 10;
 
@@ -95,9 +96,9 @@ const AppList = () => {
                 let iconUrl = "";
                 if (row.base_info.icon_file_id != "") {
                     if (appStore.isOsWindows) {
-                        iconUrl = `https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${row.base_info.icon_file_id}/x.png`;
+                        iconUrl = `https://fs.localhost/${GLOBAL_APPSTORE_FS_ID}/${row.base_info.icon_file_id}/x.png`;
                     } else {
-                        iconUrl = `fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${row.base_info.icon_file_id}/x.png`;
+                        iconUrl = `fs://localhost/${GLOBAL_APPSTORE_FS_ID}/${row.base_info.icon_file_id}/x.png`;
                     }
                 }
                 return (

@@ -1,184 +1,157 @@
-use crate::notice_decode::new_wrong_session_notice;
-use proto_gen_rust::pub_search_api::pub_search_api_client::PubSearchApiClient;
-use proto_gen_rust::pub_search_api::*;
 use tauri::{
     plugin::{Plugin, Result as PluginResult},
     AppHandle, Invoke, PageLoadPayload, Runtime, Window,
 };
 
+use tokio::fs;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+
 #[tauri::command]
-async fn list_site_cate<R: Runtime>(
-    app_handle: AppHandle<R>,
-    _window: Window<R>,
-    request: ListSiteCateRequest,
-) -> Result<ListSiteCateResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+async fn list_my_site() -> Result<Vec<String>, String> {
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
     }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.list_site_cate(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("all");
+    file_path.push("pub_search_site.json");
+    if !file_path.exists() {
+        return Ok(Vec::new());
     }
+    let f = fs::File::open(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let mut data = Vec::new();
+    let result = f.read_to_end(&mut data).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    let json_str = String::from_utf8(data);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
+    let site_list = serde_json::from_str(&json_str);
+    if site_list.is_err() {
+        return Err(site_list.err().unwrap().to_string());
+    }
+    return Ok(site_list.unwrap());
 }
 
 #[tauri::command]
-async fn list_site<R: Runtime>(
-    app_handle: AppHandle<R>,
-    _window: Window<R>,
-    request: ListSiteRequest,
-) -> Result<ListSiteResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+async fn set_my_site(site_list: Vec<String>) -> Result<(), String> {
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
     }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.list_site(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            return Ok(inner_resp);
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("all");
+    if !file_path.exists() {
+        let result = fs::create_dir_all(&file_path).await;
+        if result.is_err() {
+            return Err(result.err().unwrap().to_string());
         }
-        Err(status) => Err(status.message().into()),
     }
+    file_path.push("pub_search_site.json");
+    let f = fs::File::create(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let json_str = serde_json::to_string(&site_list);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
+    let result = f.write_all(json_str.as_bytes()).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    return Ok(());
 }
 
 #[tauri::command]
-async fn get_site<R: Runtime>(
-    app_handle: AppHandle<R>,
-    _window: Window<R>,
-    request: GetSiteRequest,
-) -> Result<GetSiteResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+async fn get_search_history() -> Result<Vec<String>, String> {
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
     }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.get_site(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("all");
+    file_path.push("pub_search_history.json");
+    if !file_path.exists() {
+        return Ok(Vec::new());
     }
+    let f = fs::File::open(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let mut data = Vec::new();
+    let result = f.read_to_end(&mut data).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    let json_str = String::from_utf8(data);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
+    let site_list = serde_json::from_str(&json_str);
+    if site_list.is_err() {
+        return Err(site_list.err().unwrap().to_string());
+    }
+    return Ok(site_list.unwrap());
 }
 
 #[tauri::command]
-async fn list_my_site<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: ListMySiteRequest,
-) -> Result<ListMySiteResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
+async fn add_search_history(keyword: String) -> Result<(), String> {
+    let history_list = get_search_history().await;
+    let mut history_list = history_list.unwrap_or_default();
+    if history_list.contains(&keyword) {
+        return Ok(());
     }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.list_my_site(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == list_my_site_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("list_my_site".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
+    if &keyword == "" {
+        return Ok(());
+    }
+    history_list.push(keyword);
+
+    while history_list.len() > 100 {
+        history_list.remove(0);
+    }
+
+    let user_dir = crate::get_user_dir();
+    if user_dir.is_none() {
+        return Err("miss user dir".into());
+    }
+    let mut file_path = std::path::PathBuf::from(user_dir.unwrap());
+    file_path.push("all");
+    if !file_path.exists() {
+        let result = fs::create_dir_all(&file_path).await;
+        if result.is_err() {
+            return Err(result.err().unwrap().to_string());
         }
-        Err(status) => Err(status.message().into()),
     }
+    file_path.push("pub_search_history.json");
+    let f = fs::File::create(file_path).await;
+    if f.is_err() {
+        return Err(f.err().unwrap().to_string());
+    }
+    let mut f = f.unwrap();
+    let json_str = serde_json::to_string(&history_list);
+    if json_str.is_err() {
+        return Err(json_str.err().unwrap().to_string());
+    }
+    let json_str = json_str.unwrap();
+    let result = f.write_all(json_str.as_bytes()).await;
+    if result.is_err() {
+        return Err(result.err().unwrap().to_string());
+    }
+    return Ok(());
 }
-
-#[tauri::command]
-async fn set_my_site<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: SetMySiteRequest,
-) -> Result<SetMySiteResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.set_my_site(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == set_my_site_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("set_my_site".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-#[tauri::command]
-async fn add_search_history<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: AddSearchHistoryRequest,
-) -> Result<AddSearchHistoryResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.add_search_history(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == add_search_history_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("add_search_history".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
-
-#[tauri::command]
-async fn get_search_history<R: Runtime>(
-    app_handle: AppHandle<R>,
-    window: Window<R>,
-    request: GetSearchHistoryRequest,
-) -> Result<GetSearchHistoryResponse, String> {
-    let chan = super::get_grpc_chan(&app_handle).await;
-    if (&chan).is_none() {
-        return Err("no grpc conn".into());
-    }
-    let mut client = PubSearchApiClient::new(chan.unwrap());
-    match client.get_search_history(request).await {
-        Ok(response) => {
-            let inner_resp = response.into_inner();
-            if inner_resp.code == get_search_history_response::Code::WrongSession as i32 {
-                if let Err(err) = window.emit(
-                    "notice",
-                    new_wrong_session_notice("get_search_history".into()),
-                ) {
-                    println!("{:?}", err);
-                }
-            }
-            return Ok(inner_resp);
-        }
-        Err(status) => Err(status.message().into()),
-    }
-}
-
 
 pub struct PubSearchApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
@@ -188,13 +161,10 @@ impl<R: Runtime> PubSearchApiPlugin<R> {
     pub fn new() -> Self {
         Self {
             invoke_handler: Box::new(tauri::generate_handler![
-                list_site_cate,
-                list_site,
-                get_site,
                 list_my_site,
-                set_my_site,
-                add_search_history,
                 get_search_history,
+                add_search_history,
+                set_my_site,
             ]),
         }
     }

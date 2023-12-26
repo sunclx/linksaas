@@ -13,7 +13,7 @@ import { createBrowserHistory } from 'history';
 import { appWindow, getAll as getAllWindow } from '@tauri-apps/api/window';
 import { request } from '@/utils/request';
 import { get as get_issue } from '@/api/project_issue';
-import { APP_PROJECT_HOME_PATH, USER_LOGIN_PATH } from '@/utils/constant';
+import { APP_PROJECT_HOME_PATH } from '@/utils/constant';
 import { message } from 'antd';
 import { COMMENT_TARGET_API_COLL, COMMENT_TARGET_DATA_ANNO, type COMMENT_TARGET_TYPE } from '@/api/project_comment';
 
@@ -180,7 +180,7 @@ class NoticeStore {
         runInAction(() => {
           this.rootStore.userStore.adminSessionId = "";
         });
-        this.history.push(USER_LOGIN_PATH);
+        this.history.push("/");
       } else {
         // this.rootStore.userStore.logout();
         message.warn("会话失效");
@@ -213,6 +213,8 @@ class NoticeStore {
       }
     } else if (notice.LocalProxyStopNotice !== undefined) {
       await this.rootStore.appStore.loadLocalProxy();
+    } else if (notice.ShowGlobalServerSettingNotice !== undefined) {
+      this.rootStore.appStore.showGlobalServerModal = true;
     }
   }
 

@@ -1,10 +1,8 @@
-import { useStores } from "@/hooks";
 import { SearchOutlined } from "@ant-design/icons";
 import { AutoComplete, Button, Card, Checkbox, Empty, List, Modal, Space, Tabs, message } from "antd";
 import React, { useEffect, useState } from "react";
 import type { Site, SiteCate } from '@/api/pub_search';
 import { list_my_site, get_search_history, add_search_history, set_my_site, list_site_cate, list_site } from '@/api/pub_search';
-import { request } from "@/utils/request";
 import AsyncImage from "@/components/AsyncImage";
 import { open as shell_open, Command } from '@tauri-apps/api/shell';
 import { uniqId } from "@/utils/utils";
@@ -64,8 +62,6 @@ interface AddModalProps {
 }
 
 const AddModal = (props: AddModalProps) => {
-    const appStore = useStores('appStore');
-    const userStore = useStores('userStore');
 
     const [cateList, setCateList] = useState<SiteCate[]>([]);
     const [curCateId, setCurCateId] = useState("");
@@ -73,40 +69,26 @@ const AddModal = (props: AddModalProps) => {
     const [newSiteIdList, setNewSiteIdList] = useState<string[]>(props.siteIdList);
 
     const loadCateList = async () => {
-        const res = await list_site_cate({});
-        setCateList(res.cate_list);
-        if (res.cate_list.length > 0) {
-            const index = res.cate_list.findIndex(item => item.cate_id == curCateId);
+        const res = await list_site_cate();
+        setCateList(res);
+        if (res.length > 0) {
+            const index = res.findIndex(item => item.cateId == curCateId);
             if (index == -1) {
-                setCurCateId(res.cate_list[0].cate_id);
+                setCurCateId(res[0].cateId);
             }
         }
     };
 
-    const getIconUrl = (iconFileId: string) => {
-        if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.pub_search_fs_id ?? ""}/${iconFileId}/image`;
-        } else {
-            return `fs://localhost/${appStore.clientCfg?.pub_search_fs_id ?? ""}/${iconFileId}/image`;
-        }
-    };
-
     const addSite = async () => {
-        await request(set_my_site({
-            session_id: userStore.sessionId,
-            site_id_list: newSiteIdList,
-        }));
+        await set_my_site(newSiteIdList);
         props.onOk();
         message.info("添加搜索站点成功");
     };
 
     const loadSiteList = async () => {
         setSiteList([]);
-        const res = await list_site({
-            filter_by_cate_id: true,
-            cate_id: curCateId,
-        });
-        setSiteList(res.site_list);
+        const res = await list_site(curCateId);
+        setSiteList(res);
     };
 
     useEffect(() => {
@@ -133,23 +115,23 @@ const AddModal = (props: AddModalProps) => {
             <Tabs type='card' onChange={key => setCurCateId(key)}
                 style={{ height: "calc(100vh - 400px)" }}
                 items={cateList.map(item => ({
-                    key: item.cate_id,
-                    label: item.cate_name,
+                    key: item.cateId,
+                    label: item.cateName,
                     children: <List grid={{ gutter: 16 }} dataSource={siteList}
                         renderItem={innerItem => (
                             <List.Item style={{ width: 150 }}>
-                                <Checkbox disabled={props.siteIdList.includes(innerItem.site_id)} checked={newSiteIdList.includes(innerItem.site_id)}
+                                <Checkbox disabled={props.siteIdList.includes(innerItem.siteId)} checked={newSiteIdList.includes(innerItem.siteId)}
                                     onChange={e => {
                                         e.preventDefault();
                                         if (e.target.checked) {
-                                            setNewSiteIdList([...newSiteIdList, innerItem.site_id]);
+                                            setNewSiteIdList([...newSiteIdList, innerItem.siteId]);
                                         } else {
-                                            setNewSiteIdList(newSiteIdList.filter(tmpItem => tmpItem != innerItem.site_id));
+                                            setNewSiteIdList(newSiteIdList.filter(tmpItem => tmpItem != innerItem.siteId));
                                         }
                                     }}>
                                     <Space>
-                                        <AsyncImage useRawImg={true} src={getIconUrl(innerItem.icon_file_id)} style={{ width: "20px" }} />
-                                        <div style={{ whiteSpace: "nowrap" }}>{innerItem.site_name}</div>
+                                        <AsyncImage useRawImg={true} src={`/static/images/pubsearch/${innerItem.siteId}.png`} style={{ width: "20px" }} />
+                                        <div style={{ whiteSpace: "nowrap" }}>{innerItem.siteName}</div>
                                     </Space>
                                 </Checkbox>
                             </List.Item>
@@ -160,9 +142,6 @@ const AddModal = (props: AddModalProps) => {
 }
 
 const PubSearchPanel = () => {
-    const appStore = useStores('appStore');
-    const userStore = useStores('userStore');
-
     const [activeKey, setActiveKey] = useState("");
     const [searchStrList, setSearchStrList] = useState<string[]>([]);
     const [tmpKeyword, setTmpKeyword] = useState("");
@@ -172,28 +151,23 @@ const PubSearchPanel = () => {
     const [showAddModal, setShowAddModal] = useState(false);
 
     const loadSiteList = async () => {
-        const res = await request(list_my_site({ session_id: userStore.sessionId }));
-        setSitelList(res.site_list);
-        if (res.site_list.length > 0) {
-            const index = res.site_list.findIndex(item => item.site_id == activeKey);
+        const res = await list_my_site();
+        setSitelList(res);
+        if (res.length > 0) {
+            const index = res.findIndex(item => item.siteId == activeKey);
             if (index == -1) {
-                setActiveKey(res.site_list[0].site_id);
+                setActiveKey(res[0].siteId);
             }
         }
     };
 
     const loadHistoryList = async () => {
-        const res = await request(get_search_history({
-            session_id: userStore.sessionId,
-        }));
-        setSearchStrList(res.search_str_list);
+        const res = await get_search_history();
+        setSearchStrList(res);
     };
 
     const addSearchHistory = async (kw: string) => {
-        await request(add_search_history({
-            session_id: userStore.sessionId,
-            search_str: kw,
-        }));
+        await add_search_history(kw);
         await loadHistoryList();
     }
 
@@ -201,11 +175,8 @@ const PubSearchPanel = () => {
         if (siteList.length <= 1) {
             return;
         }
-        const newSiteIdList = siteList.filter(item => item.site_id != siteId).map(item => item.site_id);
-        await request(set_my_site({
-            session_id: userStore.sessionId,
-            site_id_list: newSiteIdList,
-        }));
+        const newSiteIdList = siteList.filter(item => item.siteId != siteId).map(item => item.siteId);
+        await set_my_site(newSiteIdList);
         await loadSiteList();
         message.info("移除搜索站点成功");
     }
@@ -221,13 +192,6 @@ const PubSearchPanel = () => {
         }
     };
 
-    const getIconUrl = (iconFileId: string) => {
-        if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.pub_search_fs_id ?? ""}/${iconFileId}/image`;
-        } else {
-            return `fs://localhost/${appStore.clientCfg?.pub_search_fs_id ?? ""}/${iconFileId}/image`;
-        }
-    };
 
     useEffect(() => {
         loadSiteList();
@@ -263,13 +227,13 @@ const PubSearchPanel = () => {
                 activeKey={activeKey}
                 onEdit={onEdit} items={siteList.map(item => (
                     {
-                        key: item.site_id,
+                        key: item.siteId,
                         closeIcon: siteList.length > 1 ? undefined : <span />,
                         disabled: keyword == "",
                         label: (
                             <Space>
-                                <AsyncImage useRawImg={true} width="16px" src={getIconUrl(item.icon_file_id)} />
-                                {item.site_name}
+                                <AsyncImage useRawImg={true} width="16px" src={`/static/images/pubsearch/${item.siteId}.png`} />
+                                {item.siteName}
                             </Space>
                         ),
                         children: (
@@ -277,20 +241,20 @@ const PubSearchPanel = () => {
                                 {keyword == "" && (
                                     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
                                 )}
-                                {item.site_id == activeKey && keyword != "" && (
+                                {item.siteId == activeKey && keyword != "" && (
                                     <Card bordered={false} extra={
                                         <Button type="link" onClick={e => {
                                             e.stopPropagation();
                                             e.preventDefault();
-                                            shell_open(item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword)));
+                                            shell_open(item.searchTpl.replace("KEYWORD", encodeURIComponent(keyword)));
                                         }}>使用浏览器打开</Button>}>
-                                        {item.use_browser == true && (
-                                            <SearchProxy src={item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword))} />
+                                        {item.useProxy == true && (
+                                            <SearchProxy src={item.searchTpl.replace("KEYWORD", encodeURIComponent(keyword))} />
                                         )}
-                                        {item.use_browser == false && (
+                                        {item.useProxy == false && (
                                             <iframe style={{ width: "calc(100vw - 250px)", height: "calc(100vh - 300px)", overflow: "scroll" }}
                                                 referrerPolicy="no-referrer"
-                                                src={item.search_tpl.replace("KEYWORD", encodeURIComponent(keyword))} />
+                                                src={item.searchTpl.replace("KEYWORD", encodeURIComponent(keyword))} />
                                         )}
                                     </Card>
                                 )}
@@ -299,7 +263,7 @@ const PubSearchPanel = () => {
                     }
                 ))} />
             {showAddModal == true && (
-                <AddModal siteIdList={siteList.map(item => item.site_id)} onCancel={() => setShowAddModal(false)}
+                <AddModal siteIdList={siteList.map(item => item.siteId)} onCancel={() => setShowAddModal(false)}
                     onOk={() => {
                         setShowAddModal(false);
                         loadSiteList();

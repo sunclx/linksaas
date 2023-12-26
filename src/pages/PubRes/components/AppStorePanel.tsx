@@ -16,6 +16,8 @@ import { CommentOutlined, DownloadOutlined, HeartTwoTone, MoreOutlined } from "@
 import { observer } from 'mobx-react';
 import StoreStatusModal from "@/components/MinApp/StoreStatusModal";
 import DebugMinAppModal from "@/components/MinApp/DebugMinAppModal";
+import { GLOBAL_APPSTORE_FS_ID } from "@/api/fs";
+import { list as list_user_app } from "@/api/user_app";
 
 const PAGE_SIZE = 12;
 
@@ -23,6 +25,8 @@ const AppStorePanel = () => {
     const userStore = useStores('userStore');
     const appStore = useStores('appStore');
     const pubResStore = useStores('pubResStore');
+
+    const [myAppIdList, setMyAppIdList] = useState<string[]>([]);
 
     const [appList, setAppList] = useState<AppInfo[]>([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -55,6 +59,11 @@ const AppStorePanel = () => {
         }
     };
 
+    const loadMyAppIdList = async () => {
+        const res = await list_user_app();
+        setMyAppIdList(res);
+    };
+
     const loadAppList = async () => {
         let osScope = OS_SCOPE_LINUX;
         const p = await platform();
@@ -85,14 +94,14 @@ const AppStorePanel = () => {
 
         setTotalCount(res.total_count);
         setAppList(res.app_info_list);
-
+        await loadMyAppIdList();
     };
 
     const adjustUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${fileId}/icon.png`;
+            return `https://fs.localhost/${GLOBAL_APPSTORE_FS_ID}/${fileId}/icon.png`;
         } else {
-            return `fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${fileId}/icon.png`;
+            return `fs://localhost/${GLOBAL_APPSTORE_FS_ID}/${fileId}/icon.png`;
         }
     }
 
@@ -233,9 +242,11 @@ const AppStorePanel = () => {
                                     <div onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        agreeApp(app.app_id, !app.my_agree);
+                                        if (userStore.sessionId != "") {
+                                            agreeApp(app.app_id, !app.my_agree);
+                                        }
                                     }}>
-                                        <a>
+                                        <a style={{ cursor: userStore.sessionId == "" ? "default" : "pointer" }}>
                                             <HeartTwoTone twoToneColor={app.my_agree ? ["red", "red"] : ["black", "#e4e4e8"]} />
                                         </a>
                                         &nbsp;{app.agree_count}
@@ -250,7 +261,7 @@ const AppStorePanel = () => {
                                         e.preventDefault();
                                         pubResStore.showAppId = app.app_id;
                                     }} />
-                                {app.my_install == true && (
+                                {myAppIdList.includes(app.app_id) && (
                                     <div style={{ width: "80px", textAlign: "center", fontSize: "16px", fontWeight: 600 }}>已安装</div>
                                 )}
                             </Space>

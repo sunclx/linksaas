@@ -5,7 +5,7 @@ import defaultIcon from '@/assets/allIcon/app-default-icon.png';
 import SelectAppCate from "./SelectAppCate";
 import { get_admin_session } from '@/api/admin_auth';
 import { open as open_dialog } from '@tauri-apps/api/dialog';
-import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE } from "@/api/fs";
+import { write_file, set_file_owner, FILE_OWNER_TYPE_APP_STORE, GLOBAL_APPSTORE_FS_ID } from "@/api/fs";
 import { useStores } from "@/hooks";
 import { observer } from 'mobx-react';
 import { request } from "@/utils/request";
@@ -89,12 +89,12 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
             return;
         } else {
             const sessionId = await get_admin_session();
-            const res = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", selectd, ""));
+            const res = await request(write_file(sessionId, GLOBAL_APPSTORE_FS_ID, selectd, ""));
             setIconFileId(res.file_id);
             if (appStore.isOsWindows) {
-                setIconUrl(`https://fs.localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/image`);
+                setIconUrl(`https://fs.localhost/${GLOBAL_APPSTORE_FS_ID}/${res.file_id}/image`);
             } else {
-                setIconUrl(`fs://localhost/${appStore.clientCfg?.app_store_fs_id ?? ""}/${res.file_id}/image`);
+                setIconUrl(`fs://localhost/${GLOBAL_APPSTORE_FS_ID}/${res.file_id}/image`);
             }
         }
     };
@@ -125,7 +125,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         }
         //上传文件
         const sessionId = await get_admin_session();
-        const uploadRes = await request(write_file(sessionId, appStore.clientCfg?.app_store_fs_id ?? "", localPath, uploadId));
+        const uploadRes = await request(write_file(sessionId, GLOBAL_APPSTORE_FS_ID, localPath, uploadId));
         //上传应用信息
         await flushEditorContent();
         const content = editorRef.current?.getContent() ?? { type: 'doc' };
@@ -151,7 +151,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         if (iconFileId != "") {
             await request(set_file_owner({
                 session_id: sessionId,
-                fs_id: appStore.clientCfg?.app_store_fs_id ?? "",
+                fs_id: GLOBAL_APPSTORE_FS_ID,
                 file_id: iconFileId,
                 owner_type: FILE_OWNER_TYPE_APP_STORE,
                 owner_id: addRes.app_id,
@@ -159,7 +159,7 @@ const AddAppModal: React.FC<AddAppModalProps> = (props) => {
         }
         await request(set_file_owner({
             session_id: sessionId,
-            fs_id: appStore.clientCfg?.app_store_fs_id ?? "",
+            fs_id: GLOBAL_APPSTORE_FS_ID,
             file_id: uploadRes.file_id,
             owner_type: FILE_OWNER_TYPE_APP_STORE,
             owner_id: addRes.app_id,

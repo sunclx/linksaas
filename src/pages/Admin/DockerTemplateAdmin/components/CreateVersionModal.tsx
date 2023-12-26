@@ -6,7 +6,7 @@ import { useStores } from "@/hooks";
 import { exists } from '@tauri-apps/api/fs';
 import { pack_template } from "@/api/docker_template";
 import { create_template } from "@/api/docker_template_admin";
-import { write_file, set_file_owner, FILE_OWNER_TYPE_DOCKER_TEMPLATE } from "@/api/fs";
+import { write_file, set_file_owner, FILE_OWNER_TYPE_DOCKER_TEMPLATE, GLOBAL_DOCKER_TEMPLATE_FS_ID } from "@/api/fs";
 import { get_admin_session } from "@/api/admin_auth";
 import { request } from "@/utils/request";
 
@@ -48,7 +48,7 @@ const CreateVersionModal = (props: CreateVersionModalProps) => {
         const sessionId = await get_admin_session();
         try {
             const fileName = await pack_template(localPath);
-            const uploadRes = await write_file(sessionId, appStore.clientCfg?.docker_template_fs_id ?? "", fileName, "");
+            const uploadRes = await write_file(sessionId, GLOBAL_DOCKER_TEMPLATE_FS_ID, fileName, "");
             if (uploadRes.code != 0) {
                 message.error(uploadRes.err_msg);
                 throw new Error(uploadRes.err_msg);
@@ -61,7 +61,7 @@ const CreateVersionModal = (props: CreateVersionModalProps) => {
             }));
             await set_file_owner({
                 session_id: sessionId,
-                fs_id: appStore.clientCfg?.docker_template_fs_id ?? "",
+                fs_id: GLOBAL_DOCKER_TEMPLATE_FS_ID,
                 file_id: uploadRes.file_id,
                 owner_type: FILE_OWNER_TYPE_DOCKER_TEMPLATE,
                 owner_id: props.appId,

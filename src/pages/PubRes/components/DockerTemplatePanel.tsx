@@ -11,6 +11,7 @@ import { useStores } from "@/hooks";
 import { observer } from 'mobx-react';
 import { open as open_shell } from '@tauri-apps/api/shell';
 import AsyncImage from "@/components/AsyncImage";
+import { GLOBAL_DOCKER_TEMPLATE_FS_ID } from "@/api/fs";
 
 const PAGE_SIZE = 10;
 
@@ -45,9 +46,9 @@ const DockerTemplatePanel = () => {
 
     const getIconUrl = (fileId: string) => {
         if (appStore.isOsWindows) {
-            return `https://fs.localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/x.png`;
+            return `https://fs.localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/x.png`;
         } else {
-            return `fs://localhost/${appStore.clientCfg?.docker_template_fs_id ?? ""}/${fileId}/x.png`;
+            return `fs://localhost/${GLOBAL_DOCKER_TEMPLATE_FS_ID}/${fileId}/x.png`;
         }
     }
 

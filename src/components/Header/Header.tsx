@@ -4,10 +4,8 @@ import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
 import { Badge, Button, Layout, Popover, Progress, Segmented, Space, Table, message } from 'antd';
 import { observer } from 'mobx-react';
-import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
 import { BugOutlined, CloseCircleFilled, EditOutlined, InfoCircleOutlined, PartitionOutlined } from '@ant-design/icons';
-import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
@@ -22,6 +20,8 @@ import { request } from '@/utils/request';
 import type { ColumnsType } from 'antd/lib/table';
 import type { ProxyInfo } from '@/api/net_proxy';
 import { stop_listen } from '@/api/net_proxy';
+import { remove_info_file } from '@/api/local_api';
+import { exit } from '@tauri-apps/api/process';
 
 
 const { Header } = Layout;
@@ -29,7 +29,7 @@ const { Header } = Layout;
 let windowSize: PhysicalSize = new PhysicalSize(1300, 750);
 let windowPostion: PhysicalPosition = new PhysicalPosition(0, 0);
 
-const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className?: string }> = ({
+const MyHeader: React.FC<{ style?: React.CSSProperties; className?: string }> = ({
   ...props
 }) => {
   const history = useHistory();
@@ -46,13 +46,12 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
   const handleClick = async function handleClick(type: string) {
     switch (type) {
-      case 'close':
-        if (userStore.sessionId == "" && userStore.adminSessionId == "") {
-          await remove_info_file();
-          await exit(0);
-        } else {
-          await appWindow.hide();
-        }
+      case 'hide':
+        await appWindow.hide();
+        break;
+      case 'exit':
+        await remove_info_file();
+        await exit(0);
         break;
       case 'minimize':
         await appWindow.minimize();
@@ -140,11 +139,9 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   ];
 
   useEffect(() => {
-    if (props.type == "login") {
-      checkUpdate().then(res => {
-        setHasNewVersion(res.shouldUpdate);
-      });
-    }
+    checkUpdate().then(res => {
+      setHasNewVersion(res.shouldUpdate);
+    });
   }, []);
 
   useEffect(() => {
@@ -300,7 +297,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
         <div className={style.l} />
         <div className={style.r}>
-          {props.type == "login" && hasNewVersion == true && (
+          {hasNewVersion == true && (
             <a style={{ marginRight: "20px" }} onClick={e => {
               e.stopPropagation();
               e.preventDefault();
@@ -347,9 +344,24 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
             </Popover>
           )}
           <a href="https://atomgit.com/openlinksaas/desktop/issues" target="_blank" rel="noreferrer" style={{ marginRight: "20px" }} title="报告缺陷"><BugOutlined /></a>
-          {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />}
-          {(userStore.sessionId != "" || userStore.adminSessionId != "") && <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />}
-          <div className={style.btnClose} onClick={() => handleClick('close')} title="关闭" />
+          <div className={style.btnMinimize} onClick={() => handleClick('minimize')} title="最小化" />
+          <div className={style.btnMaximize} onClick={() => handleClick('maximize')} title="最大化/恢复" />
+          <Popover trigger="hover" placement="bottom" content={
+            <Space direction="vertical" style={{ padding: "10px 0px" }}>
+              <Button type="link" onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleClick('hide');
+              }}>隐藏应用</Button>
+              <Button type="link" danger onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleClick('exit');
+              }}>关闭应用</Button>
+            </Space>
+          }>
+            <div className={style.btnClose} title="隐藏/关闭窗口" onClick={() => handleClick('hide')} />
+          </Popover>
         </div>
       </Header>
     </div>

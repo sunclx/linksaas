@@ -52,10 +52,18 @@ const LeftMenu: React.FC = () => {
         <div style={{ borderBottom: "2px dotted #333", margin: "5px 24px", paddingTop: "5px" }} />
         <ProjectList />
         <div style={{ borderTop: "2px dotted #333", margin: "5px 24px" }} />
+
         <div className={`${cls.workbench_menu} ${location.pathname.startsWith(APP_GROUP_PATH) ? cls.active_menu : ""}`}
           onClick={e => {
             e.stopPropagation();
             e.preventDefault();
+            if (userStore.sessionId == "") {
+              userStore.showUserLogin = () => {
+                history.push(APP_GROUP_HOME_PATH);
+                projectStore.setCurProjectId("");
+              };
+              return;
+            }
             if (appStore.inEdit) {
               appStore.showCheckLeave(() => {
                 history.push(APP_GROUP_HOME_PATH);
@@ -68,27 +76,22 @@ const LeftMenu: React.FC = () => {
           }}>
           <TeamOutlined />&nbsp;兴趣小组
         </div>
-        {(appStore.clientCfg?.enable_pub_app_store == true
-          || appStore.clientCfg?.enable_pub_docker_template == true
-          || appStore.clientCfg?.enable_pub_search == true
-          || (appStore.clientCfg?.item_list.length ?? 0) > 0) && (
-            <div className={`${cls.workbench_menu} ${location.pathname.startsWith(PUB_RES_PATH) ? cls.active_menu : ""}`}
-              onClick={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (appStore.inEdit) {
-                  appStore.showCheckLeave(() => {
-                    history.push(PUB_RES_PATH);
-                    projectStore.setCurProjectId("");
-                  });
-                  return;
-                }
+        <div className={`${cls.workbench_menu} ${location.pathname.startsWith(PUB_RES_PATH) ? cls.active_menu : ""}`}
+          onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (appStore.inEdit) {
+              appStore.showCheckLeave(() => {
                 history.push(PUB_RES_PATH);
                 projectStore.setCurProjectId("");
-              }}>
-              <GlobalOutlined />&nbsp;公共资源
-            </div>
-          )}
+              });
+              return;
+            }
+            history.push(PUB_RES_PATH);
+            projectStore.setCurProjectId("");
+          }}>
+          <GlobalOutlined />&nbsp;公共资源
+        </div>
       </div>
     </Sider>
   );
