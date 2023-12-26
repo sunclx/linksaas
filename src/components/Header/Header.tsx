@@ -4,10 +4,8 @@ import React, { useEffect, useState } from 'react';
 import style from './index.module.less';
 import { Badge, Button, Layout, Popover, Progress, Segmented, Space, Table, message } from 'antd';
 import { observer } from 'mobx-react';
-import { exit } from '@tauri-apps/api/process';
 import { useStores } from '@/hooks';
 import { BugOutlined, CloseCircleFilled, EditOutlined, InfoCircleOutlined, PartitionOutlined } from '@ant-design/icons';
-import { remove_info_file } from '@/api/local_api';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
@@ -47,12 +45,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   const handleClick = async function handleClick(type: string) {
     switch (type) {
       case 'close':
-        if (userStore.sessionId == "" && userStore.adminSessionId == "") {
-          await remove_info_file();
-          await exit(0);
-        } else {
-          await appWindow.hide();
-        }
+        await appWindow.hide();
         break;
       case 'minimize':
         await appWindow.minimize();
