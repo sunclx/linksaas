@@ -242,9 +242,11 @@ const AppStorePanel = () => {
                                     <div onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();
-                                        agreeApp(app.app_id, !app.my_agree);
+                                        if (userStore.sessionId != "") {
+                                            agreeApp(app.app_id, !app.my_agree);
+                                        }
                                     }}>
-                                        <a>
+                                        <a style={{ cursor: userStore.sessionId == "" ? "default" : "pointer" }}>
                                             <HeartTwoTone twoToneColor={app.my_agree ? ["red", "red"] : ["black", "#e4e4e8"]} />
                                         </a>
                                         &nbsp;{app.agree_count}

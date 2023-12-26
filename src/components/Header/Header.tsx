@@ -27,7 +27,7 @@ const { Header } = Layout;
 let windowSize: PhysicalSize = new PhysicalSize(1300, 750);
 let windowPostion: PhysicalPosition = new PhysicalPosition(0, 0);
 
-const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className?: string }> = ({
+const MyHeader: React.FC<{ style?: React.CSSProperties; className?: string }> = ({
   ...props
 }) => {
   const history = useHistory();
@@ -133,11 +133,9 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
   ];
 
   useEffect(() => {
-    if (props.type == "login") {
-      checkUpdate().then(res => {
-        setHasNewVersion(res.shouldUpdate);
-      });
-    }
+    checkUpdate().then(res => {
+      setHasNewVersion(res.shouldUpdate);
+    });
   }, []);
 
   useEffect(() => {
@@ -293,7 +291,7 @@ const MyHeader: React.FC<{ type?: string; style?: React.CSSProperties; className
 
         <div className={style.l} />
         <div className={style.r}>
-          {props.type == "login" && hasNewVersion == true && (
+          {hasNewVersion == true && (
             <a style={{ marginRight: "20px" }} onClick={e => {
               e.stopPropagation();
               e.preventDefault();
