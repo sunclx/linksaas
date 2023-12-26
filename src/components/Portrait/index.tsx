@@ -22,10 +22,13 @@ const Portrait = ({ ...props }) => {
   const location = useLocation();
   const history = useHistory();
 
+  const appStore = useStores('appStore');
+  const userStore = useStores('userStore');
+
   const [isSetName, setIsSetName] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showExit, setShowExit] = useState(false);
-  const userStore = useStores('userStore');
+  
   const [name, setSetName] = useState(userStore.userInfo.displayName);
   const [pictrueListVisible, setPictrueListVisible] = useState(false);
 
@@ -127,6 +130,10 @@ const Portrait = ({ ...props }) => {
         <div
           className={s.exit}
           onClick={() => {
+            if(appStore.inEdit){
+              message.info("请先保存修改内容");
+              return;
+            }
             setShowExit(true);
             userStore.accountsModal = false;
           }}
