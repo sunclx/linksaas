@@ -57,6 +57,7 @@ export type LocalRepoFileDiffInfo = {
     old_content: string;
     new_file_name: string;
     new_content: string;
+    delta_type: string;
 };
 
 export type LocalRepoAnalyseCommitInfo = {
@@ -104,6 +105,57 @@ export type CloneProgressInfo = {
     totalObjs: number;
     recvObjs: number;
     indexObjs: number;
+};
+
+//git pro相关属性
+
+export type HeadInfo = {
+    commit_id: string;
+};
+
+export type BranchInfo = {
+    name: string;
+    upstream: string;
+    commit_id: string;
+}
+
+export type TagInfo = {
+    name: string;
+    commit_id: string;
+}
+
+export type RemoteInfo = {
+    name: string;
+    url: string;
+}
+
+export type GitInfo = {
+    head: HeadInfo,
+    branch_list: BranchInfo[];
+    tag_list: TagInfo[];
+    remote_list: RemoteInfo[];
+};
+
+export type GitUserInfo = {
+    name: string;
+    email: string;
+    timestamp: number;
+};
+
+export type CommitGraphInfo = {
+    refs: string[];
+    hash: string;
+    hash_abbrev: string;
+    tree: string;
+    tree_abbrev: string;
+    parents: string[];
+    parents_abbrev: string[];
+    author: GitUserInfo,
+    committer: GitUserInfo,
+    subject: string;
+    body: string;
+    notes: string;
+    stats: unknown; //特殊处理，不计算，太消耗计算时间
 };
 
 export async function add_repo(id: string, name: string, path: string): Promise<void> {
@@ -221,6 +273,24 @@ export async function clone(path: string, url: string, authType: string, usernam
     });
     command.stderr.on("data", line => message.error(line));
     await command.spawn();
+}
+
+export async function get_git_info(path: string): Promise<GitInfo> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "info"]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return JSON.parse(result.stdout);
+}
+
+export async function list_commit_graph(path: string, commitId: string): Promise<CommitGraphInfo[]> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "commit-graph", commitId]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return JSON.parse(result.stdout);
 }
 
 export function get_http_url(url: string): string {

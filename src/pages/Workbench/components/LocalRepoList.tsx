@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import type { LocalRepoInfo, LocalRepoStatusInfo, LocalRepoBranchInfo, LocalRepoTagInfo, LocalRepoCommitInfo, LocalRepoAnalyseInfo, LocalRepoRemoteInfo } from "@/api/local_repo";
 import { list_repo, remove_repo, get_repo_status, list_repo_branch, list_repo_tag, list_repo_commit, analyse, list_remote, get_http_url, get_host } from "@/api/local_repo";
 import { open as open_dir } from '@tauri-apps/api/shell';
-import { BranchesOutlined, EditOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
+import { BranchesOutlined, EditOutlined, ExportOutlined, MoreOutlined, NodeIndexOutlined, QuestionCircleOutlined, TagOutlined } from "@ant-design/icons";
 import SetLocalRepoModal from "./SetLocalRepoModal";
 import type { ColumnsType } from 'antd/lib/table';
 import { WebviewWindow, appWindow } from '@tauri-apps/api/window';
@@ -525,6 +525,28 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
         }
     };
 
+    const openGitPro = async (repo: LocalRepoInfo) => {
+        const label = `gitpro:${repo.id}`;
+        const view = WebviewWindow.getByLabel(label);
+        if (view != null) {
+            message.warn("已打开窗口");
+            return;
+        }
+        const pos = await appWindow.innerPosition();
+        new WebviewWindow(label, {
+            url: `gitpro.html?id=${encodeURIComponent(repo.id)}`,
+            width: 800,
+            minWidth: 800,
+            height: 600,
+            minHeight: 600,
+            center: true,
+            title: `${repo.name}(${repo.path})`,
+            resizable: true,
+            x: pos.x + Math.floor(Math.random() * 200),
+            y: pos.y + Math.floor(Math.random() * 200),
+        });
+    };
+
     useEffect(() => {
         loadRepoList();
     }, [props.repoVersion]);
@@ -542,12 +564,17 @@ const LocalRepoList: React.FC<LocalRepoListProps> = (props) => {
                     {repoList.map(repo => (
                         <Collapse.Panel key={repo.id} header={
                             <span>
-                                {repo.name}({repo.path})
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    openGitPro(repo);
+                                }}>{repo.name}({repo.path})&nbsp;<ExportOutlined /></a>
                                 <a style={{ padding: "10px 20px" }} onClick={e => {
                                     e.stopPropagation();
                                     e.preventDefault();
                                     setEditRepo(repo);
                                 }}><EditOutlined /></a>
+
                             </span>}
                             extra={
                                 <Space size="middle">
