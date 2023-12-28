@@ -111,6 +111,7 @@ export type CloneProgressInfo = {
 
 export type HeadInfo = {
     commit_id: string;
+    branch_name: string;
 };
 
 export type BranchInfo = {

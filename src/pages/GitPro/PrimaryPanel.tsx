@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
-import { Card, Menu } from "antd";
+import { Button, Card, Menu, message } from "antd";
 import { useGitProStores } from "./stores";
 import { get_git_info } from "@/api/local_repo";
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
+import { ReloadOutlined } from "@ant-design/icons";
 
 
 const PrimaryPanel = () => {
@@ -22,7 +23,7 @@ const PrimaryPanel = () => {
         gitProStore.commitIdForGraph = gitInfo.head.commit_id;
 
         const headItemData: ItemType = {
-            label: "HEAD",
+            label: `HEAD(${gitInfo.head.branch_name})`,
             key: "head",
             onClick: () => {
                 gitProStore.commitIdForGraph = gitInfo.head.commit_id;
@@ -54,6 +55,7 @@ const PrimaryPanel = () => {
                 key: `tag:${item.name}`,
                 style: { backgroundColor: "white" },
                 onClick: () => {
+                    console.log(item);
                     gitProStore.commitIdForGraph = item.commit_id;
                     gitProStore.curCommit = null;
                     gitProStore.curDiffFile = null;
@@ -85,7 +87,13 @@ const PrimaryPanel = () => {
 
     return (
         <div>
-            <Card title="仓库信息" bodyStyle={{ overflowY: "scroll", height: "calc(100vh - 40px)" }}>
+            <Card title="仓库信息" bodyStyle={{ overflowY: "scroll", height: "calc(100vh - 40px)" }} extra={
+                <Button type="link" icon={<ReloadOutlined />} title="刷新仓库信息" onClick={e=>{
+                    e.stopPropagation();
+                    e.preventDefault();
+                    initInfoTreeData().then(()=>message.info("已刷新仓库信息"));
+                }}/>
+            }>
                 <Menu items={infoItemList} mode="inline" defaultOpenKeys={["branch", "remote"]} selectedKeys={[activeKey]}
                     onSelect={(info) => {
                         if (!(info.key == "remote" || info.key.startsWith("remote:"))) {
