@@ -12,6 +12,7 @@ type UserInfo = {
   displayName: string;
   logoUri: string;
   userFsId: string;
+  testAccount: boolean;
 };
 
 class UserStore {
@@ -33,6 +34,7 @@ class UserStore {
     displayName: '',
     logoUri: '',
     userFsId: '',
+    testAccount: false,
   };
 
   // 帐号管理弹窗
@@ -56,6 +58,7 @@ class UserStore {
         displayName: '',
         logoUri: '',
         userFsId: '',
+        testAccount: false,
       };
     });
     sessionStorage.removeItem('sessionId');
@@ -76,6 +79,7 @@ class UserStore {
           displayName: res.user_info.basic_info.display_name,
           logoUri: res.user_info.basic_info.logo_uri,
           userFsId: res.user_info.user_fs_id,
+          testAccount: res.user_info.test_account,
         };
         sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo));
         this.rootStore.projectStore.initLoadProjectList();

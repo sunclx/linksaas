@@ -1,10 +1,7 @@
-import { Button, message, Popover, Modal } from 'antd';
+import { message, Popover, Modal } from 'antd';
 import { useState } from 'react';
 import React from 'react';
 import s from './index.module.less';
-import iconEdit from '@/assets/allIcon/icon-edit.png';
-import Input from 'antd/lib/input/Input';
-import { CheckOutlined } from '@ant-design/icons';
 import PasswordModal from '../PasswordModal';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
@@ -16,6 +13,7 @@ import * as fsApi from '@/api/fs';
 import UserPhoto from '@/components/Portrait/UserPhoto';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PUB_RES_PATH, WORKBENCH_PATH } from '@/utils/constant';
+import { EditText } from '../EditCell/EditText';
 
 
 const Portrait = ({ ...props }) => {
@@ -25,25 +23,25 @@ const Portrait = ({ ...props }) => {
   const appStore = useStores('appStore');
   const userStore = useStores('userStore');
 
-  const [isSetName, setIsSetName] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showExit, setShowExit] = useState(false);
-  
-  const [name, setSetName] = useState(userStore.userInfo.displayName);
+
   const [pictrueListVisible, setPictrueListVisible] = useState(false);
 
-  const changeName = async () => {
+  const changeName = async (value: string) => {
     try {
       await request(
         update(userStore.sessionId, {
-          display_name: name,
+          display_name: value,
           logo_uri: userStore.userInfo.logoUri,
         }),
       );
-      userStore.updateDisplayName(name);
+      userStore.updateDisplayName(value);
       message.success('修改昵称成功');
-      setIsSetName(false);
-    } catch (error) { }
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   const uploadFile = async (data: string | null) => {
@@ -82,36 +80,24 @@ const Portrait = ({ ...props }) => {
   const renderContent = () => {
     return (
       <div className={s.portrait_wrap}>
-        <div className={s.portrait_img} onClick={() => {
-          setPictrueListVisible(true);
-          userStore.accountsModal = false;
-        }}>
+        <div className={s.portrait_img}
+          style={{ cursor: userStore.userInfo.testAccount ? "default" : "pointer" }}
+          onClick={() => {
+            if (userStore.userInfo.testAccount) {
+              return;
+            }
+            setPictrueListVisible(true);
+            userStore.accountsModal = false;
+          }}>
           <UserPhoto logoUri={userStore.userInfo.logoUri ?? ""} />
-          <div>更换</div>
-          {/* </Popover> */}
+          {userStore.userInfo.testAccount == false && <div>更换</div>}
         </div>
         <div className={s.content_wrap}>
           <div className={s.content_itme}>
             <span>昵 &nbsp;&nbsp; 称</span>
-            {!isSetName ? (
-              <div>
-                {name}
-                <img src={iconEdit} alt="" onClick={() => setIsSetName(true)} />
-              </div>
-            ) : (
-              <div className={s.name_input_wrap}>
-                <Input
-                  type="text"
-                  value={name}
-                  onChange={(e) => {
-                    setSetName(e.target.value);
-                  }}
-                />
-                <Button type="primary" disabled={!name.length} onClick={changeName}>
-                  <CheckOutlined />
-                </Button>
-              </div>
-            )}
+            <EditText editable={!userStore.userInfo.testAccount} content={userStore.userInfo.displayName} showEditIcon onChange={async value => {
+              return changeName(value);
+            }} width='120px' />
           </div>
           <div className={s.content_itme}>
             <span>用户名</span>
@@ -120,7 +106,11 @@ const Portrait = ({ ...props }) => {
         </div>
         <div
           className={s.changePassword}
+          style={{ cursor: userStore.userInfo.testAccount ? "default" : "pointer", color: userStore.userInfo.testAccount ? "gray" : "black" }}
           onClick={() => {
+            if (userStore.userInfo.testAccount) {
+              return;
+            }
             setPasswordVisible(true);
             userStore.accountsModal = false;
           }}
@@ -130,7 +120,7 @@ const Portrait = ({ ...props }) => {
         <div
           className={s.exit}
           onClick={() => {
-            if(appStore.inEdit){
+            if (appStore.inEdit) {
               message.info("请先保存修改内容");
               return;
             }
@@ -151,6 +141,7 @@ const Portrait = ({ ...props }) => {
             onCancel={() => setShowExit(false)}
             onOk={() => {
               userStore.logout();
+              setShowExit(false);
               if (location.pathname.startsWith(WORKBENCH_PATH) || location.pathname.startsWith(PUB_RES_PATH)) {
                 //do nothing
               } else {
