@@ -9,6 +9,7 @@ export interface EditTextProps {
     onChange: (content: string) => Promise<boolean>;
     showEditIcon: boolean;
     textDecoration?: string;
+    width?: string;
     onClick?: () => void;
 }
 
@@ -23,7 +24,7 @@ export const EditText: React.FC<EditTextProps> = (props) => {
             if (props.editable) {
                 setInEdit(true);
             }
-        }}>
+        }} style={{ width: props.width ?? "auto" }}>
             {!inEdit && (
                 <span title={content} style={{ cursor: props.editable ? "pointer" : "default", textDecorationLine: props.textDecoration ?? "none" }}>
                     {content == "" ? "-" : <>
@@ -43,7 +44,7 @@ export const EditText: React.FC<EditTextProps> = (props) => {
             {inEdit && (
                 <Input value={content}
                     autoFocus={true}
-                    style={{ width: "calc(100% - 50px)" }} suffix={<>
+                    style={{ width: props.width ?? "calc(100% - 50px)" }} suffix={<>
                         <a onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();

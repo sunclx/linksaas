@@ -11,6 +11,7 @@ export type UserPerm = {
     read: boolean;
     create: boolean;
     set_state: boolean;
+    set_test_account: boolean;
     reset_password: boolean;
     access_event: boolean;
 };

@@ -22,6 +22,7 @@ export type GetCfgResponse = {
   can_invite: boolean;
   can_register: boolean;
   enable_admin: boolean;
+  login_prompt: string;
 };
 
 export type ServerInfo = {
