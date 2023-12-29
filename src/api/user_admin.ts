@@ -63,6 +63,17 @@ export type AdminSetStateResponse = {
     err_msg: string;
 };
 
+export type AdminSetTestAccountRequest  = {
+    admin_session_id: string;
+    user_id: string;
+    test_account: boolean;
+};
+
+export type AdminSetTestAccountResponse  = {
+    code: number;
+    err_msg: string;
+};
+
 
 export type AdminCreateRequest = {
     admin_session_id: string;
@@ -70,6 +81,7 @@ export type AdminCreateRequest = {
     basic_info: BasicUserInfo;
     user_state: USER_STATE;
     password: string;
+    test_account: boolean;
 };
 
 export type AdminCreateResponse = {
@@ -131,6 +143,15 @@ export async function set_state(request: AdminSetStateRequest): Promise<AdminSet
     const cmd = 'plugin:user_admin_api|set_state';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<AdminSetStateResponse>(cmd, {
+        request,
+    });
+}
+
+//设置体验账号状态
+export async function set_test_account(request: AdminSetTestAccountRequest): Promise<AdminSetTestAccountResponse> {
+    const cmd = 'plugin:user_admin_api|set_test_account';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<AdminSetTestAccountResponse>(cmd, {
         request,
     });
 }

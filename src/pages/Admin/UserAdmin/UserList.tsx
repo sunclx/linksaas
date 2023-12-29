@@ -62,6 +62,11 @@ const UserList = () => {
             width: 150,
         },
         {
+            title: "体验账号",
+            width: 100,
+            render: (_, row: UserInfo) => row.test_account ? "是" : "否",
+        },
+        {
             title: "状态",
             width: 100,
             render: (_, row: UserInfo) => (

@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import { uniqId } from "@/utils/utils";
 import { WarningOutlined } from "@ant-design/icons";
-import { Card, Empty, Form, Input, Space, message } from "antd";
+import { Card, Checkbox, Empty, Form, Input, Space, message } from "antd";
 import React, { useState } from "react";
 import { create as create_user, exist as exist_user } from '@/api/user_admin';
 import { request } from "@/utils/request";
@@ -17,6 +17,7 @@ interface NewUserInfo {
     displayName: string;
     password: string;
     userExist: boolean;
+    testAccount: boolean;
 };
 
 const CreateUser = () => {
@@ -84,6 +85,7 @@ const CreateUser = () => {
                     },
                     user_state: USER_STATE_NORMAL,
                     password: newUser.password,
+                    test_account: newUser.testAccount,
                 }));
             } catch (e) {
                 console.log(e);
@@ -127,7 +129,17 @@ const CreateUser = () => {
             setNewUserList(tmpList);
             updateCanSave(tmpList);
         }
-    }
+    };
+
+    const updateTestAccount = (id: string, testAccount: boolean) => {
+        const tmpList = newUserList.slice();
+        const index = tmpList.findIndex(item => item.id == id);
+        if (index != -1) {
+            tmpList[index].testAccount = testAccount;
+            setNewUserList(tmpList);
+            updateCanSave(tmpList);
+        }
+    };
 
     const removeNewUser = (id: string) => {
         const tmpList = newUserList.filter(item => item.id != id);
@@ -150,6 +162,7 @@ const CreateUser = () => {
                             displayName: "",
                             password: "",
                             userExist: false,
+                            testAccount: false,
                         });
                         setNewUserList(tmpList);
                     }}>新增用户</Button>
@@ -194,6 +207,12 @@ const CreateUser = () => {
                                             e.preventDefault();
                                             updatePassword(item.id, e.target.value);
                                         }} />
+                                </Form.Item>
+                                <Form.Item label="体验账号">
+                                    <Checkbox checked={item.testAccount} onChange={e => {
+                                        e.stopPropagation();
+                                        updateTestAccount(item.id, e.target.checked);
+                                    }} />
                                 </Form.Item>
                             </Form>
                             <Button type="link" onClick={e => {

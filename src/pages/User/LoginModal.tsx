@@ -62,12 +62,12 @@ const LoginModal = () => {
         setUserName(localStorage.getItem(`${defaultAddr}:username`) ?? "");
     };
 
-    const getLoginTagStr = ()=>{
-        if(loginTab == "login"){
+    const getLoginTagStr = () => {
+        if (loginTab == "login") {
             return "请登录";
-        }else if(loginTab == "reset"){
+        } else if (loginTab == "reset") {
             return "重置密码";
-        }else {
+        } else {
             return "登录管理后台";
         }
     }
@@ -152,7 +152,7 @@ const LoginModal = () => {
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="用户名">
+                    <Form.Item label="用户名" help={appStore.clientCfg?.login_prompt ?? ""}>
                         <Input value={userName} onChange={e => {
                             e.stopPropagation();
                             e.preventDefault();

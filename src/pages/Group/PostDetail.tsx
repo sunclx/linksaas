@@ -160,7 +160,7 @@ const PostDetail = () => {
                     <Card bordered={false} title={<span style={{ fontSize: "18px", fontWeight: 600 }}>评论列表</span>} headStyle={{ paddingLeft: "0px" }}
                         extra={
                             <>
-                                {groupStore.curPostKey?.user_perm.can_add_comment && (
+                                {groupStore.curPostKey?.user_perm.can_add_comment && userStore.userInfo.testAccount == false && (
                                     <Button onClick={e => {
                                         e.stopPropagation();
                                         e.preventDefault();

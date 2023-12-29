@@ -43,6 +43,7 @@ export type UserInfo = {
   update_time: number;
   user_fs_id: string;
   user_state: USER_STATE;
+  test_account: boolean;
 };
 
 export type LoginResponse = {

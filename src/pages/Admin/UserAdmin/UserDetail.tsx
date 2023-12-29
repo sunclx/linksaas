@@ -8,7 +8,7 @@ import s from './UserDetail.module.less';
 import { EditSelect } from "@/components/EditCell/EditSelect";
 import { useHistory, useLocation } from 'react-router-dom';
 import { request } from '@/utils/request';
-import { get as get_user, reset_password, set_state } from '@/api/user_admin';
+import { get as get_user, reset_password, set_state, set_test_account } from '@/api/user_admin';
 import moment from 'moment';
 import { list as list_project } from '@/api/project_admin';
 import type { ProjectInfo } from '@/api/project';
@@ -175,72 +175,99 @@ const UserDetail = () => {
 
     return (
         <div className={s.content_wrap}>
-            <Descriptions title={
-                <Space>
-                    <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        history.goBack();
-                    }}><LeftOutlined /></a>
-                    <span>用户详情</span>
-                </Space>
-            } bordered>
-                <Descriptions.Item label="用户名">{userInfo?.user_name ?? ""}</Descriptions.Item>
-                <Descriptions.Item label="昵称">{userInfo?.basic_info.display_name ?? ""}</Descriptions.Item>
-                <Descriptions.Item label="状态">
-                    <EditSelect editable={permInfo?.user_perm.set_state ?? false} curValue={userInfo?.user_state ?? USER_STATE_NORMAL} itemList={[
-                        {
-                            label: "正常",
-                            value: USER_STATE_NORMAL,
-                            color: "black",
-                        },
-                        {
-                            label: "禁用",
-                            value: USER_STATE_FORBIDDEN,
-                            color: "black",
-                        },
-                    ]} onChange={async (value) => {
-                        try {
-                            const sessionId = await get_admin_session();
-                            await request(set_state({
-                                admin_session_id: sessionId,
-                                user_id: state.userId,
-                                user_state: value as number,
-                            }));
-                            return true;
-                        } catch (e) {
-                            console.log(e);
-                        }
-                        return false;
-                    }} showEditIcon={true} allowClear={false} />
-                </Descriptions.Item>
-                <Descriptions.Item label="密码">
-                    ******
-                    {permInfo?.user_perm.reset_password == true && (
-                        <Button type="link" onClick={e => {
+            {userInfo != null && permInfo != null && (
+                <Descriptions title={
+                    <Space>
+                        <a onClick={e => {
                             e.stopPropagation();
                             e.preventDefault();
-                            setShowResetModal(true);
-                        }}>重设密码</Button>
-                    )}
-                </Descriptions.Item>
-                <Descriptions.Item label="创建时间">{userInfo != null && moment(userInfo.create_time).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
-                <Descriptions.Item label="更新时间">{userInfo != null && moment(userInfo.update_time).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
-                <Descriptions.Item label="所在项目" span={3}>
-                    <Card extra={
-                        <Button disabled={!(permInfo?.project_member_perm.add ?? false)}
-                            onClick={e => {
+                            history.goBack();
+                        }}><LeftOutlined /></a>
+                        <span>用户详情({userInfo.user_name})</span>
+                    </Space>
+                } bordered>
+                    <Descriptions.Item label="昵称">{userInfo.basic_info.display_name}</Descriptions.Item>
+                    <Descriptions.Item label="体验账号">
+                        <EditSelect editable={permInfo.user_perm.set_test_account} curValue={userInfo.test_account ? 1 : 0} itemList={[
+                            {
+                                label: "是",
+                                value: 1,
+                                color: "black",
+                            },
+                            {
+                                label: "否",
+                                value: 0,
+                                color: "black",
+                            },
+                        ]} onChange={async (value) => {
+                            try {
+                                const sessionId = await get_admin_session();
+                                await request(set_test_account({
+                                    admin_session_id: sessionId,
+                                    user_id: state.userId,
+                                    test_account: value == 1,
+                                }));
+                                return true;
+                            } catch (e) {
+                                console.log(e);
+                            }
+                            return false;
+                        }} showEditIcon={true} allowClear={false} />
+                    </Descriptions.Item>
+                    <Descriptions.Item label="状态">
+                        <EditSelect editable={permInfo.user_perm.set_state} curValue={userInfo.user_state} itemList={[
+                            {
+                                label: "正常",
+                                value: USER_STATE_NORMAL,
+                                color: "black",
+                            },
+                            {
+                                label: "禁用",
+                                value: USER_STATE_FORBIDDEN,
+                                color: "black",
+                            },
+                        ]} onChange={async (value) => {
+                            try {
+                                const sessionId = await get_admin_session();
+                                await request(set_state({
+                                    admin_session_id: sessionId,
+                                    user_id: state.userId,
+                                    user_state: value as number,
+                                }));
+                                return true;
+                            } catch (e) {
+                                console.log(e);
+                            }
+                            return false;
+                        }} showEditIcon={true} allowClear={false} />
+                    </Descriptions.Item>
+                    <Descriptions.Item label="密码">
+                        ******
+                        {permInfo?.user_perm.reset_password == true && (
+                            <Button type="link" onClick={e => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                setShowSelectPrjModal(true);
-                            }}>
-                            <PlusOutlined />&nbsp;&nbsp;加入项目
-                        </Button>}>
-                        <Table rowKey="project_id" columns={prjColumns} dataSource={projectList} pagination={false} />
-                    </Card>
-                </Descriptions.Item>
-
-            </Descriptions>
+                                setShowResetModal(true);
+                            }}>重设密码</Button>
+                        )}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="创建时间">{userInfo != null && moment(userInfo.create_time).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
+                    <Descriptions.Item label="更新时间">{userInfo != null && moment(userInfo.update_time).format("YYYY-MM-DD HH:mm:ss")}</Descriptions.Item>
+                    <Descriptions.Item label="所在项目" span={3}>
+                        <Card extra={
+                            <Button disabled={!(permInfo.project_member_perm.add)}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowSelectPrjModal(true);
+                                }}>
+                                <PlusOutlined />&nbsp;&nbsp;加入项目
+                            </Button>}>
+                            <Table rowKey="project_id" columns={prjColumns} dataSource={projectList} pagination={false} />
+                        </Card>
+                    </Descriptions.Item>
+                </Descriptions>
+            )}
             {showResetModal == true && (
                 <Modal open title="重设密码"
                     okText="更新密码"
