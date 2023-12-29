@@ -95,7 +95,7 @@ const PrimaryPanel = () => {
     useEffect(() => {
         initInfoTreeData();
         checkUnCommit();
-    }, [gitProStore.repoInfo]);
+    }, [gitProStore.repoInfo, gitProStore.dataVersion]);
 
     return (
         <div>

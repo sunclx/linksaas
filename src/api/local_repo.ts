@@ -312,6 +312,15 @@ export async function remove_from_index(path: string, filePathList: string[]): P
     return;
 }
 
+export async function run_commit(path: string, msg: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "commit", msg]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return;
+}
+
 export function get_http_url(url: string): string {
     if (url.startsWith("http")) {
         if (url.endsWith(".git")) {

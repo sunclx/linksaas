@@ -10,6 +10,7 @@ class StateStore {
     }
 
     private _repoInfo: LocalRepoInfo | null = null;
+    private _dataVersion = 0;
 
     get repoInfo() {
         return this._repoInfo;
@@ -24,6 +25,16 @@ class StateStore {
                 });
             }
         }
+    }
+
+    get dataVersion() {
+        return this._dataVersion;
+    }
+
+    incDataVersion() {
+        runInAction(() => {
+            this._dataVersion += 1;
+        });
     }
 
     private _commitIdForGraph = "";
