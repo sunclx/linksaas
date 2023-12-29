@@ -21,7 +21,7 @@ export type LocalRepoInfo = {
 
 export type LocalRepoPathStatusInfo = {
     path: string;
-    status: string;
+    status: string[];
 };
 
 export type LocalRepoStatusInfo = {
@@ -292,6 +292,24 @@ export async function list_commit_graph(path: string, commitId: string): Promise
         throw new Error(result.stderr);
     }
     return JSON.parse(result.stdout);
+}
+
+export async function add_to_index(path: string, filePathList: string[]): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "add-to-index", ...filePathList]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return;
+}
+
+export async function remove_from_index(path: string, filePathList: string[]): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "remove-from-index", ...filePathList]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return;
 }
 
 export function get_http_url(url: string): string {

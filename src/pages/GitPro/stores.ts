@@ -60,6 +60,18 @@ class StateStore {
             this._curDiffFile = val;
         });
     }
+
+    private _showCommitProcess = false;
+
+    get showCommitProcess() {
+        return this._showCommitProcess;
+    }
+
+    set showCommitProcess(val: boolean) {
+        runInAction(() => {
+            this._showCommitProcess = val;
+        });
+    }
 }
 
 const stores = React.createContext(new StateStore());

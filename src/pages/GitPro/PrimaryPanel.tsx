@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { Button, Card, Menu, message } from "antd";
 import { useGitProStores } from "./stores";
-import { get_git_info } from "@/api/local_repo";
+import { get_git_info, get_repo_status } from "@/api/local_repo";
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
 import { ReloadOutlined } from "@ant-design/icons";
 
@@ -12,6 +12,15 @@ const PrimaryPanel = () => {
 
     const [infoItemList, setInfoItemList] = useState<ItemType[]>([]);
     const [activeKey, setActiveKey] = useState("head");
+    const [hasUnCommit, setHasUnCommit] = useState(false);
+
+    const checkUnCommit = async () => {
+        if (gitProStore.repoInfo == null) {
+            return;
+        }
+        const res = await get_repo_status(gitProStore.repoInfo.path);
+        setHasUnCommit(res.path_list.length > 0);
+    };
 
     const initInfoTreeData = async () => {
         if (gitProStore.repoInfo == null) {
@@ -26,6 +35,7 @@ const PrimaryPanel = () => {
             label: `HEAD(${gitInfo.head.branch_name})`,
             key: "head",
             onClick: () => {
+                gitProStore.showCommitProcess = false;
                 gitProStore.commitIdForGraph = gitInfo.head.commit_id;
                 gitProStore.curCommit = null;
                 gitProStore.curDiffFile = null;
@@ -40,6 +50,7 @@ const PrimaryPanel = () => {
                 key: `branch:${item.name}`,
                 style: { backgroundColor: "white" },
                 onClick: () => {
+                    gitProStore.showCommitProcess = false;
                     gitProStore.commitIdForGraph = item.commit_id;
                     gitProStore.curCommit = null;
                     gitProStore.curDiffFile = null;
@@ -55,7 +66,7 @@ const PrimaryPanel = () => {
                 key: `tag:${item.name}`,
                 style: { backgroundColor: "white" },
                 onClick: () => {
-                    console.log(item);
+                    gitProStore.showCommitProcess = false;
                     gitProStore.commitIdForGraph = item.commit_id;
                     gitProStore.curCommit = null;
                     gitProStore.curDiffFile = null;
@@ -83,17 +94,32 @@ const PrimaryPanel = () => {
 
     useEffect(() => {
         initInfoTreeData();
+        checkUnCommit();
     }, [gitProStore.repoInfo]);
 
     return (
         <div>
             <Card title="仓库信息" bodyStyle={{ overflowY: "scroll", height: "calc(100vh - 40px)" }} extra={
-                <Button type="link" icon={<ReloadOutlined />} title="刷新仓库信息" onClick={e=>{
+                <Button type="link" icon={<ReloadOutlined />} title="刷新仓库信息" onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    initInfoTreeData().then(()=>message.info("已刷新仓库信息"));
-                }}/>
+                    checkUnCommit();
+                    initInfoTreeData().then(() => message.info("已刷新仓库信息"));
+                }} />
             }>
+                {hasUnCommit == true && (
+                    <div style={{ textAlign: "center", backgroundColor: "#e4e4e8", fontSize: "14px", padding: "6px 0px" }}>
+                        <a style={{ color: "red" }} onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setActiveKey("");
+                            gitProStore.commitIdForGraph = "";
+                            gitProStore.curCommit = null;
+                            gitProStore.curDiffFile = null;
+                            gitProStore.showCommitProcess = true;
+                        }}>未提交文件</a>
+                    </div>
+                )}
                 <Menu items={infoItemList} mode="inline" defaultOpenKeys={["branch", "remote"]} selectedKeys={[activeKey]}
                     onSelect={(info) => {
                         if (!(info.key == "remote" || info.key.startsWith("remote:"))) {
