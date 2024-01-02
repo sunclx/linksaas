@@ -1,4 +1,4 @@
-import { Button, Form, Input, Space } from "antd";
+import { Button, Form, Input, Space, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { gen_captcha, pre_register, register } from "@/api/user";
 import { request } from "@/utils/request";
@@ -66,6 +66,7 @@ const Register = (props: RegisterProps) => {
             passwd: password,
         }));
         props.onOk(userName);
+        message.info("注册成功");
     };
 
     useEffect(() => {
