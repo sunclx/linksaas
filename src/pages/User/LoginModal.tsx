@@ -8,6 +8,7 @@ import { list_server, add_server, remove_server } from '@/api/client_cfg';
 import { conn_grpc_server } from '@/api/main';
 import Reset from "./Reset";
 import { AdminLogin } from "./AdminLogin";
+import Register from "./Register";
 
 
 const LoginModal = () => {
@@ -21,7 +22,7 @@ const LoginModal = () => {
     const [hasConn, setHasConn] = useState(false);
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
-    const [loginTab, setLoginTab] = useState<"login" | "adminLogin" | "reset">("login");
+    const [loginTab, setLoginTab] = useState<"login" | "adminLogin" | "reset" | "register">("login");
 
     const loadServerList = async () => {
         const res = await list_server(false);
@@ -67,6 +68,8 @@ const LoginModal = () => {
             return "请登录";
         } else if (loginTab == "reset") {
             return "重置密码";
+        } else if (loginTab == "register") {
+            return "注册账号";
         } else {
             return "登录管理后台";
         }
@@ -178,7 +181,11 @@ const LoginModal = () => {
                                 </a>
                             )}
                             {appStore.clientCfg?.can_register == true && (
-                                <a href="https://www.linksaas.pro/register" target="_blank" rel="noreferrer">
+                                <a onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setLoginTab("register");
+                                }}>
                                     注册新账号
                                 </a>
                             )}
@@ -211,6 +218,12 @@ const LoginModal = () => {
             )}
             {loginTab == "reset" && (<Reset onClose={() => setLoginTab("login")} />)}
             {loginTab == "adminLogin" && (<AdminLogin />)}
+            {loginTab == "register" && (<Register
+                onCancel={() => setLoginTab("login")}
+                onOk={name => {
+                    setLoginTab("login");
+                    setUserName(name);
+                }} />)}
         </Modal>
     );
 };
