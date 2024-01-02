@@ -3,6 +3,10 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import type { CommitGraphInfo, LocalRepoInfo, LocalRepoFileDiffInfo } from "@/api/local_repo";
 import { list_repo } from "@/api/local_repo";
 
+export type MainMenuItem = {
+    menuType: "none" | "gitGraph" | "commitProcess" | "stashList";
+    menuValue: string;
+};
 
 class StateStore {
     constructor() {
@@ -10,6 +14,7 @@ class StateStore {
     }
 
     private _repoInfo: LocalRepoInfo | null = null;
+    private _dataVersion = 0;
 
     get repoInfo() {
         return this._repoInfo;
@@ -26,26 +31,36 @@ class StateStore {
         }
     }
 
-    private _commitIdForGraph = "";
-
-    get commitIdForGraph() {
-        return this._commitIdForGraph;
+    get dataVersion() {
+        return this._dataVersion;
     }
 
-    set commitIdForGraph(val: string) {
+    incDataVersion() {
         runInAction(() => {
-            this._commitIdForGraph = val;
+            this._dataVersion += 1;
         });
     }
 
-    private _curCommit: CommitGraphInfo | null = null;
+    private _mainItem: MainMenuItem = { menuType: "none", menuValue: "" };
+
+    get mainItem() {
+        return this._mainItem;
+    }
+
+    set mainItem(val: MainMenuItem) {
+        runInAction(() => {
+            this._mainItem = val;
+        });
+    }
+
+    private _curCommit: CommitGraphInfo | string | null = null;
     private _curDiffFile: LocalRepoFileDiffInfo | null = null;
 
     get curCommit() {
         return this._curCommit;
     }
 
-    set curCommit(val: CommitGraphInfo | null) {
+    set curCommit(val: CommitGraphInfo | string | null) {
         runInAction(() => {
             this._curCommit = val;
         });
