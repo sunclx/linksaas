@@ -25,8 +25,8 @@ const GitProApp = () => {
                 <PrimaryPanel />
             </Layout.Sider>
             <Layout.Content style={{ backgroundColor: "white" }}>
-                {gitProStore.commitIdForGraph !== "" && <GraphPanel />}
-                {gitProStore.showCommitProcess && <ProcessCommitPanel />}
+                {gitProStore.mainItem.menuType == "gitGraph" && <GraphPanel />}
+                {gitProStore.mainItem.menuType == "commitProcess" && <ProcessCommitPanel />}
             </Layout.Content>
         </Layout>
     );

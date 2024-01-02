@@ -12,71 +12,105 @@ const PrimaryPanel = () => {
 
     const [infoItemList, setInfoItemList] = useState<ItemType[]>([]);
     const [activeKey, setActiveKey] = useState("head");
-    const [hasUnCommit, setHasUnCommit] = useState(false);
-
-    const checkUnCommit = async () => {
-        if (gitProStore.repoInfo == null) {
-            return;
-        }
-        const res = await get_repo_status(gitProStore.repoInfo.path);
-        setHasUnCommit(res.path_list.length > 0);
-    };
 
     const initInfoTreeData = async () => {
         if (gitProStore.repoInfo == null) {
             return;
         }
+        const statusRes = await get_repo_status(gitProStore.repoInfo.path);
+
         setActiveKey("head");
         const gitInfo = await get_git_info(gitProStore.repoInfo.path);
 
-        gitProStore.commitIdForGraph = gitInfo.head.commit_id;
-
-        const headItemData: ItemType = {
-            label: `HEAD(${gitInfo.head.branch_name})`,
-            key: "head",
-            onClick: () => {
-                gitProStore.showCommitProcess = false;
-                gitProStore.commitIdForGraph = gitInfo.head.commit_id;
-                gitProStore.curCommit = null;
-                gitProStore.curDiffFile = null;
-            },
+        gitProStore.mainItem = {
+            menuType: "gitGraph",
+            menuValue: gitInfo.head.commit_id,
         };
 
-        const branchItemData: ItemType = {
-            label: "分支",
-            key: "branch",
-            children: gitInfo.branch_list.map(item => ({
-                label: item.name,
-                key: `branch:${item.name}`,
-                style: { backgroundColor: "white" },
-                onClick: () => {
-                    gitProStore.showCommitProcess = false;
-                    gitProStore.commitIdForGraph = item.commit_id;
-                    gitProStore.curCommit = null;
-                    gitProStore.curDiffFile = null;
+        const workDirItemData: ItemType = {
+            label: "工作目录",
+            key: "workDir",
+            type: "group",
+            children: [
+                {
+                    label: `HEAD(${gitInfo.head.branch_name})`,
+                    key: "head",
+                    onClick: () => {
+                        gitProStore.mainItem = {
+                            menuType: "gitGraph",
+                            menuValue: gitInfo.head.commit_id,
+                        };
+                        gitProStore.curCommit = null;
+                        gitProStore.curDiffFile = null;
+                    },
                 },
-            })),
-        };
+                {
+                    label: "未提交文件",
+                    key: "uncommit",
+                    disabled: statusRes.path_list.length == 0,
+                    onClick: () => {
+                        gitProStore.mainItem = {
+                            menuType: "commitProcess",
+                            menuValue: "",
+                        };
+                        gitProStore.curCommit = null;
+                        gitProStore.curDiffFile = null;
+                    },
+                },
+                {
+                    label: "暂存记录",
+                    key: "stash",
+                    //TODO
+                },
+            ],
+        }
 
-        const tagItemData: ItemType = {
-            label: "标记",
-            key: "tag",
-            children: gitInfo.tag_list.map(item => ({
-                label: item.name,
-                key: `tag:${item.name}`,
-                style: { backgroundColor: "white" },
-                onClick: () => {
-                    gitProStore.showCommitProcess = false;
-                    gitProStore.commitIdForGraph = item.commit_id;
-                    gitProStore.curCommit = null;
-                    gitProStore.curDiffFile = null;
+        const branchAndTagItemData: ItemType = {
+            label: "分支/标记",
+            key: "branchAndTag",
+            type: "group",
+            children: [
+                {
+                    label: "分支",
+                    key: "branch",
+                    children: gitInfo.branch_list.map(item => ({
+                        label: item.name,
+                        key: `branch:${item.name}`,
+                        style: { backgroundColor: "white" },
+                        onClick: () => {
+                            gitProStore.mainItem = {
+                                menuType: "gitGraph",
+                                menuValue: item.commit_id,
+                            };
+                            gitProStore.curCommit = null;
+                            gitProStore.curDiffFile = null;
+                        },
+                    })),
                 },
-            }))
+                {
+                    label: "标记",
+                    key: "tag",
+                    children: gitInfo.tag_list.map(item => ({
+                        label: item.name,
+                        key: `tag:${item.name}`,
+                        style: { backgroundColor: "white" },
+                        onClick: () => {
+                            gitProStore.mainItem = {
+                                menuType: "gitGraph",
+                                menuValue: item.commit_id,
+                            };
+                            gitProStore.curCommit = null;
+                            gitProStore.curDiffFile = null;
+                        },
+                    })),
+                }
+            ],
         };
 
         const remoteItemData: ItemType = {
             label: "远程仓库",
             key: "remote",
+            type: "group",
             children: gitInfo.remote_list.map(item => ({
                 label: <span title={`${item.url}`}>{item.name}</span>,
                 key: `remote:${item.name}`,
@@ -84,9 +118,8 @@ const PrimaryPanel = () => {
         };
 
         const treeData: ItemType[] = [
-            headItemData,
-            branchItemData,
-            tagItemData,
+            workDirItemData,
+            branchAndTagItemData,
             remoteItemData,
         ];
         setInfoItemList(treeData);
@@ -94,7 +127,6 @@ const PrimaryPanel = () => {
 
     useEffect(() => {
         initInfoTreeData();
-        checkUnCommit();
     }, [gitProStore.repoInfo, gitProStore.dataVersion]);
 
     return (
@@ -103,24 +135,10 @@ const PrimaryPanel = () => {
                 <Button type="link" icon={<ReloadOutlined />} title="刷新仓库信息" onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    checkUnCommit();
                     initInfoTreeData().then(() => message.info("已刷新仓库信息"));
                 }} />
             }>
-                {hasUnCommit == true && (
-                    <div style={{ textAlign: "center", backgroundColor: "#e4e4e8", fontSize: "14px", padding: "6px 0px" }}>
-                        <a style={{ color: "red" }} onClick={e => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setActiveKey("");
-                            gitProStore.commitIdForGraph = "";
-                            gitProStore.curCommit = null;
-                            gitProStore.curDiffFile = null;
-                            gitProStore.showCommitProcess = true;
-                        }}>未提交文件</a>
-                    </div>
-                )}
-                <Menu items={infoItemList} mode="inline" defaultOpenKeys={["branch", "remote"]} selectedKeys={[activeKey]}
+                <Menu items={infoItemList} mode="inline" defaultOpenKeys={["branch"]} selectedKeys={[activeKey]}
                     onSelect={(info) => {
                         if (!(info.key == "remote" || info.key.startsWith("remote:"))) {
                             setActiveKey(info.key);

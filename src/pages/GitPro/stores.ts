@@ -3,6 +3,10 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import type { CommitGraphInfo, LocalRepoInfo, LocalRepoFileDiffInfo } from "@/api/local_repo";
 import { list_repo } from "@/api/local_repo";
 
+export type MainMenuItem = {
+    menuType: "none" | "gitGraph" | "commitProcess";
+    menuValue: string;
+};
 
 class StateStore {
     constructor() {
@@ -37,15 +41,15 @@ class StateStore {
         });
     }
 
-    private _commitIdForGraph = "";
+    private _mainItem: MainMenuItem = { menuType: "none", menuValue: "" };
 
-    get commitIdForGraph() {
-        return this._commitIdForGraph;
+    get mainItem() {
+        return this._mainItem;
     }
 
-    set commitIdForGraph(val: string) {
+    set mainItem(val: MainMenuItem) {
         runInAction(() => {
-            this._commitIdForGraph = val;
+            this._mainItem = val;
         });
     }
 
@@ -69,18 +73,6 @@ class StateStore {
     set curDiffFile(val: LocalRepoFileDiffInfo | null) {
         runInAction(() => {
             this._curDiffFile = val;
-        });
-    }
-
-    private _showCommitProcess = false;
-
-    get showCommitProcess() {
-        return this._showCommitProcess;
-    }
-
-    set showCommitProcess(val: boolean) {
-        runInAction(() => {
-            this._showCommitProcess = val;
         });
     }
 }
