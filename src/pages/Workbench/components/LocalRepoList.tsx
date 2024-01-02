@@ -430,7 +430,7 @@ const LocalRepoPanel: React.FC<LocalRepoPanelProps> = (props) => {
                                 {item.path}
                             </div>
                             <div style={{ flex: 1 }}>
-                                {item.status}
+                                {item.status.join(",")}
                             </div>
                         </div>
                     </List.Item>

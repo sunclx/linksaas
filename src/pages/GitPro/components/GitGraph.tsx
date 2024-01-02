@@ -11,7 +11,7 @@ const GitGraph = () => {
     const graphRef = useRef<HTMLDivElement>(null);
 
     const initGraph = async () => {
-        if (gitProStore.repoInfo == null || gitProStore.commitIdForGraph == "" || graphRef.current == null) {
+        if (gitProStore.repoInfo == null || gitProStore.mainItem.menuType != "gitGraph" || graphRef.current == null) {
             return;
         }
         graphRef.current.innerText = "";
@@ -52,7 +52,7 @@ const GitGraph = () => {
                 tag: {},
             },
         });
-        const commitList = await list_commit_graph(gitProStore.repoInfo.path, gitProStore.commitIdForGraph);
+        const commitList = await list_commit_graph(gitProStore.repoInfo.path, gitProStore.mainItem.menuValue);
         for (const commit of commitList) {
             const options = commit as any as CommitOptions;
             options.onClick = () => {
@@ -69,11 +69,11 @@ const GitGraph = () => {
 
     useEffect(() => {
         initGraph();
-    }, [gitProStore.repoInfo, gitProStore.commitIdForGraph, graphRef]);
+    }, [gitProStore.repoInfo, gitProStore.mainItem, graphRef]);
 
     return (
         <div style={{ height: gitProStore.curDiffFile == null ? "100vh" : "50vh" }} className={s.graphWrap}>
-            {gitProStore.commitIdForGraph != "" && <div ref={graphRef} />}
+            {gitProStore.mainItem.menuValue != "" && <div ref={graphRef} />}
         </div>
     );
 };

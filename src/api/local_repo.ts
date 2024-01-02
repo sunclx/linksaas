@@ -21,7 +21,7 @@ export type LocalRepoInfo = {
 
 export type LocalRepoPathStatusInfo = {
     path: string;
-    status: string;
+    status: string[];
 };
 
 export type LocalRepoStatusInfo = {
@@ -43,6 +43,11 @@ export type LocalRepoTagInfo = {
     commit_summary: string;
     commit_time: number;
 }
+
+export type LocalRepoStashInfo = {
+    commit_id: string;
+    commit_summary: string;
+};
 
 export type LocalRepoCommitInfo = {
     id: string;
@@ -253,6 +258,64 @@ export async function list_remote(path: string): Promise<LocalRepoRemoteInfo[]> 
     return JSON.parse(result.stdout);
 }
 
+export async function list_stash(path: string): Promise<LocalRepoStashInfo[]> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "list-stash"]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return JSON.parse(result.stdout);
+}
+
+export async function apply_stash(path: string, commitId: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "apply-stash", commitId]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function drop_stash(path: string, commitId: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "drop-stash", commitId]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function save_stash(path: string, msg: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "save-stash", msg]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function checkout_branch(path: string, branch: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "checkout-branch", branch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function create_branch(path: string, srcBranch: string, destBranch: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "create-branch", srcBranch, destBranch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function remove_branch(path: string, branch: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "remove-branch", branch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+
 export async function clone(path: string, url: string, authType: string, username: string, password: string, privKey: string, callback: (info: CloneProgressInfo) => void): Promise<void> {
     const args = ["--git-path", path, "clone", "--auth-type", authType];
     if (authType == "privkey") {
@@ -292,6 +355,33 @@ export async function list_commit_graph(path: string, commitId: string): Promise
         throw new Error(result.stderr);
     }
     return JSON.parse(result.stdout);
+}
+
+export async function add_to_index(path: string, filePathList: string[]): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "add-to-index", ...filePathList]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return;
+}
+
+export async function remove_from_index(path: string, filePathList: string[]): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "remove-from-index", ...filePathList]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return;
+}
+
+export async function run_commit(path: string, msg: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "commit", msg]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+    return;
 }
 
 export function get_http_url(url: string): string {
