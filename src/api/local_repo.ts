@@ -291,6 +291,31 @@ export async function save_stash(path: string, msg: string): Promise<void> {
     }
 }
 
+export async function checkout_branch(path: string, branch: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "checkout-branch", branch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function create_branch(path: string, srcBranch: string, destBranch: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "create-branch", srcBranch, destBranch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function remove_branch(path: string, branch: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "remove-branch", branch]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+
 export async function clone(path: string, url: string, authType: string, username: string, password: string, privKey: string, callback: (info: CloneProgressInfo) => void): Promise<void> {
     const args = ["--git-path", path, "clone", "--auth-type", authType];
     if (authType == "privkey") {

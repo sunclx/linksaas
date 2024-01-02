@@ -80,7 +80,11 @@ const CommitAndFileList = () => {
                             e.preventDefault();
                             gitProStore.curDiffFile = item;
                         }}>
-                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                        <pre style={{
+                            whiteSpace: "pre-wrap", wordWrap: "break-word",
+                            backgroundColor: `${item.old_file_name}:${item.new_file_name}` == `${gitProStore.curDiffFile?.old_file_name}:${gitProStore.curDiffFile?.new_file_name}` ? "#e4e4e8" : "white",
+                            padding: "4px 10px", borderRadius: "10px"
+                        }}>
                             {item.old_file_name}=&gt;{item.new_file_name}({item.delta_type})
                         </pre>
                     </List.Item>
