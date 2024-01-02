@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { useGitProStores } from "./stores";
 import { Button, Card, Divider, Form, Input, Modal, Select, Space, Transfer } from "antd";
-import { get_repo_status, add_to_index, remove_from_index, run_commit } from "@/api/local_repo";
+import { get_repo_status, add_to_index, remove_from_index, run_commit, save_stash } from "@/api/local_repo";
 import { MinusCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { uniqId } from "@/utils/utils";
 
@@ -19,6 +19,52 @@ type FootItem = {
     value: string;
 };
 
+interface StashModalProps {
+    onClose: () => void;
+}
+
+const StashModal = observer((props: StashModalProps) => {
+    const gitProStore = useGitProStores();
+
+    const [msg, setMsg] = useState("");
+
+    const saveStash = async () => {
+        if (gitProStore.repoInfo == null) {
+            return;
+        }
+        await save_stash(gitProStore.repoInfo.path, msg);
+        props.onClose();
+        gitProStore.incDataVersion();
+    };
+
+    return (
+        <Modal open title="暂存文件"
+            okButtonProps={{ disabled: msg == "" }}
+            onCancel={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                props.onClose();
+            }}
+            onOk={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                saveStash();
+            }}>
+            <p>说明:未提交的所有文件都会被暂存！</p>
+            <Form>
+                <Form.Item label="暂存说明">
+                    <Input value={msg} onChange={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setMsg(e.target.value.trim());
+                    }} />
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+});
+
+
 const ProcessCommitPanel = () => {
     const gitProStore = useGitProStores();
 
@@ -30,6 +76,7 @@ const ProcessCommitPanel = () => {
     const [footItemList, setFootItemList] = useState<FootItem[]>([]);
     const [showCommitModal, setShowCommitModal] = useState(false);
     const [commitMsg, setCommitMsg] = useState("");
+    const [showStashModal, setShowStashModal] = useState(false);
 
     const loadFileStatus = async () => {
         if (gitProStore.repoInfo == null) {
@@ -105,7 +152,7 @@ ${footerList.join("\n")}`;
                     onClick={e => {
                         e.stopPropagation();
                         e.preventDefault();
-                        //TODO
+                        setShowStashModal(true);
                     }}>暂存文件</Button>
                 <Button type="primary" disabled={fileStatusList.filter(item => item.status.startsWith("INDEX_")).length == 0 || commitSubject == ""}
                     onClick={e => {
@@ -234,6 +281,7 @@ ${footerList.join("\n")}`;
                     }} />
                 </Modal>
             )}
+            {showStashModal == true && (<StashModal onClose={() => setShowStashModal(false)} />)}
         </Card>
     );
 };

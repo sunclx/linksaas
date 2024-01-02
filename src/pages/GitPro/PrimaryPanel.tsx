@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { Button, Card, Menu, message } from "antd";
 import { useGitProStores } from "./stores";
-import { get_git_info, get_repo_status } from "@/api/local_repo";
+import { get_git_info, get_repo_status, list_stash } from "@/api/local_repo";
 import type { ItemType } from "antd/lib/menu/hooks/useItems";
 import { ReloadOutlined } from "@ant-design/icons";
 
@@ -18,6 +18,7 @@ const PrimaryPanel = () => {
             return;
         }
         const statusRes = await get_repo_status(gitProStore.repoInfo.path);
+        const stashRes = await list_stash(gitProStore.repoInfo.path);
 
         setActiveKey("head");
         const gitInfo = await get_git_info(gitProStore.repoInfo.path);
@@ -60,7 +61,15 @@ const PrimaryPanel = () => {
                 {
                     label: "暂存记录",
                     key: "stash",
-                    //TODO
+                    disabled: stashRes.length == 0,
+                    onClick: () => {
+                        gitProStore.mainItem = {
+                            menuType: "stashList",
+                            menuValue: "",
+                        };
+                        gitProStore.curCommit = null;
+                        gitProStore.curDiffFile = null;
+                    },
                 },
             ],
         }

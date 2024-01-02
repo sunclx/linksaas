@@ -17,7 +17,13 @@ const CommitAndFileList = () => {
             setFileList([]);
             return;
         }
-        const res = await get_commit_change(gitProStore.repoInfo.path, gitProStore.curCommit.hash);
+        let commitId = "";
+        if (typeof (gitProStore.curCommit) == "object") {
+            commitId = gitProStore.curCommit.hash;
+        } else {
+            commitId = gitProStore.curCommit;
+        }
+        const res = await get_commit_change(gitProStore.repoInfo.path, commitId);
         setFileList(res);
     };
 
@@ -27,7 +33,7 @@ const CommitAndFileList = () => {
 
     return (
         <div style={{ height: gitProStore.curDiffFile == null ? "100vh" : "50vh", overflowY: "scroll", backgroundColor: "white" }}>
-            {gitProStore.curCommit != null && (
+            {gitProStore.curCommit != null && typeof gitProStore.curCommit == "object" && (
                 <Card title="提交信息" extra={
                     <Button type="link" icon={<CloseOutlined />} style={{ padding: "0px 0px" }} onClick={e => {
                         e.stopPropagation();
@@ -55,7 +61,18 @@ const CommitAndFileList = () => {
                     </Descriptions>
                 </Card>
             )}
-            <Card title="修改文件列表">
+            <Card title="修改文件列表" extra={
+                <>
+                    {gitProStore.mainItem.menuType == "stashList" && (
+                        <Button type="link" icon={<CloseOutlined />} style={{ padding: "0px 0px" }} onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            gitProStore.curCommit = null;
+                            gitProStore.curDiffFile = null;
+                        }} />
+                    )}
+                </>
+            }>
                 <List dataSource={fileList} renderItem={item => (
                     <List.Item key={`${item.old_file_name}:${item.new_file_name}`} style={{ cursor: "pointer" }}
                         onClick={e => {

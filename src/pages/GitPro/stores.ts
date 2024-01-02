@@ -4,7 +4,7 @@ import type { CommitGraphInfo, LocalRepoInfo, LocalRepoFileDiffInfo } from "@/ap
 import { list_repo } from "@/api/local_repo";
 
 export type MainMenuItem = {
-    menuType: "none" | "gitGraph" | "commitProcess";
+    menuType: "none" | "gitGraph" | "commitProcess" | "stashList";
     menuValue: string;
 };
 
@@ -53,14 +53,14 @@ class StateStore {
         });
     }
 
-    private _curCommit: CommitGraphInfo | null = null;
+    private _curCommit: CommitGraphInfo | string | null = null;
     private _curDiffFile: LocalRepoFileDiffInfo | null = null;
 
     get curCommit() {
         return this._curCommit;
     }
 
-    set curCommit(val: CommitGraphInfo | null) {
+    set curCommit(val: CommitGraphInfo | string | null) {
         runInAction(() => {
             this._curCommit = val;
         });
