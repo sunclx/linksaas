@@ -87,7 +87,7 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
     };
 
     const cloneRepo = async () => {
-        setCloneProgress(null)
+        setCloneProgress(null);
         try {
             await clone_repo(localPath, remoteUrl, authType, username, password, privKey, info => {
                 setCloneProgress(info);
@@ -104,6 +104,7 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
         } catch (e) {
             console.log(e);
             message.error(`${e}`);
+            setCloneProgress(null);
         }
     };
 
@@ -211,10 +212,10 @@ const AddRepoModal: React.FC<AddRepoModalProps> = (props) => {
                         {cloneProgress != null && (
                             <>
                                 <Form.Item label="下载进度">
-                                    <Progress percent={Math.round(cloneProgress.recvObjs * 100 / cloneProgress.totalObjs)} />
+                                    <Progress percent={cloneProgress.totalObjs == 0 ? 100 : Math.round(cloneProgress.recvObjs * 100 / cloneProgress.totalObjs)} />
                                 </Form.Item>
                                 <Form.Item label="索引进度">
-                                    <Progress percent={Math.round(cloneProgress.indexObjs * 100 / cloneProgress.totalObjs)} />
+                                    <Progress percent={cloneProgress.totalObjs == 0 ? 100 : Math.round(cloneProgress.indexObjs * 100 / cloneProgress.totalObjs)} />
                                 </Form.Item>
                             </>
                         )}

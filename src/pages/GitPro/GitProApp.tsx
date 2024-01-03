@@ -7,6 +7,7 @@ import PrimaryPanel from "./PrimaryPanel";
 import GraphPanel from "./GraphPanel";
 import ProcessCommitPanel from "./ProcessCommitPanel";
 import StashPanel from "./StashPanel";
+import RemotePanel from "./RemotePanel";
 
 const GitProApp = () => {
     const location = useLocation();
@@ -29,6 +30,7 @@ const GitProApp = () => {
                 {gitProStore.mainItem.menuType == "gitGraph" && <GraphPanel />}
                 {gitProStore.mainItem.menuType == "commitProcess" && <ProcessCommitPanel />}
                 {gitProStore.mainItem.menuType == "stashList" && <StashPanel />}
+                {gitProStore.mainItem.menuType == "remote" && <RemotePanel />}
             </Layout.Content>
         </Layout>
     );
