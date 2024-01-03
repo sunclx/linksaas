@@ -1,11 +1,12 @@
 import React from "react";
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { CommitGraphInfo, LocalRepoInfo, LocalRepoFileDiffInfo } from "@/api/local_repo";
+import type { CommitGraphInfo, LocalRepoInfo, LocalRepoFileDiffInfo, GitInfo } from "@/api/local_repo";
 import { list_repo } from "@/api/local_repo";
 
 export type MainMenuItem = {
-    menuType: "none" | "gitGraph" | "commitProcess" | "stashList";
+    menuType: "none" | "gitGraph" | "commitProcess" | "stashList" | "remote";
     menuValue: string;
+    menuExtraValue?: string;
 };
 
 class StateStore {
@@ -14,6 +15,7 @@ class StateStore {
     }
 
     private _repoInfo: LocalRepoInfo | null = null;
+    private _gitInfo: GitInfo | null = null;
     private _dataVersion = 0;
 
     get repoInfo() {
@@ -29,6 +31,16 @@ class StateStore {
                 });
             }
         }
+    }
+
+    get gitInfo() {
+        return this._gitInfo;
+    }
+
+    set gitInfo(val: GitInfo | null) {
+        runInAction(() => {
+            this._gitInfo = val;
+        });
     }
 
     get dataVersion() {
