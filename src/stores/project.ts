@@ -30,8 +30,8 @@ export class WebProjectStatus {
       this.new_event_count +
       this.alarm_hit_count +
       this.alarm_alert_count +
-      this.bulletin_count +
-      this.unread_comment_count
+      this.bulletin_count
+      // this.unread_comment_count
     );
   }
 }
