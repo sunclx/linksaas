@@ -200,8 +200,12 @@ export async function get_repo_status(path: string): Promise<LocalRepoStatusInfo
     return JSON.parse(result.stdout);
 }
 
-export async function list_repo_branch(path: string): Promise<LocalRepoBranchInfo[]> {
-    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "list-branch"]);
+export async function list_repo_branch(path: string, remote: boolean = false): Promise<LocalRepoBranchInfo[]> {
+    const args = ["--git-path", path, "list-branch"];
+    if (remote) {
+        args.push("--remote");
+    }
+    const command = Command.sidecar('bin/gitspy', args);
     const result = await command.execute();
     if (result.code != 0) {
         throw new Error(result.stderr);
@@ -219,7 +223,7 @@ export async function list_repo_tag(path: string): Promise<LocalRepoTagInfo[]> {
     }
     const retList = JSON.parse(result.stdout) as LocalRepoTagInfo[];
     retList.sort((a, b) => b.commit_time - a.commit_time);
-    return retList;
+    return retList.map(item => ({ ...item, name: item.name.startsWith("refs/tags/") ? item.name.substring("refs/tags/".length) : item.name }));
 }
 
 export async function list_repo_commit(path: string, branch: string): Promise<LocalRepoCommitInfo[]> {
@@ -307,8 +311,29 @@ export async function create_branch(path: string, srcBranch: string, destBranch:
     }
 }
 
-export async function remove_branch(path: string, branch: string): Promise<void> {
-    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "remove-branch", branch]);
+export async function remove_branch(path: string, branch: string, force: boolean = false): Promise<void> {
+    const args = ["--git-path", path, "remove-branch"];
+    if (force) {
+        args.push("--force");
+    }
+    args.push(branch);
+    const command = Command.sidecar('bin/gitspy', args);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function remove_tag(path: string, tag: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "remove-tag", tag]);
+    const result = await command.execute();
+    if (result.code != 0) {
+        throw new Error(result.stderr);
+    }
+}
+
+export async function create_tag(path: string, tag: string, commitId: string, msg: string): Promise<void> {
+    const command = Command.sidecar('bin/gitspy', ["--git-path", path, "create-tag", tag, commitId, msg]);
     const result = await command.execute();
     if (result.code != 0) {
         throw new Error(result.stderr);
@@ -329,7 +354,30 @@ export async function clone(path: string, url: string, authType: string, usernam
         const parts = line.split(":");
         if (parts.length == 3) {
             callback({
-                totalObjs: Math.max(parseInt(parts[0]), 1),
+                totalObjs: parseInt(parts[0]),
+                recvObjs: parseInt(parts[1]),
+                indexObjs: parseInt(parts[2]),
+            });
+        }
+    });
+    command.stderr.on("data", line => message.error(line));
+    await command.spawn();
+}
+
+export async function fetch_remote(path: string, remoteName: string, authType: string, username: string, password: string, privKey: string, callback: (info: CloneProgressInfo) => void): Promise<void> {
+    const args = ["--git-path", path, "fetch-remote", "--auth-type", authType];
+    if (authType == "privkey") {
+        args.push(...["--priv-key", privKey]);
+    } else if (authType == "password") {
+        args.push(...["--username", username, "--password", password]);
+    }
+    args.push(remoteName);
+    const command = Command.sidecar('bin/gitspy', args);
+    command.stdout.on("data", (line: string) => {
+        const parts = line.split(":");
+        if (parts.length == 3) {
+            callback({
+                totalObjs: parseInt(parts[0]),
                 recvObjs: parseInt(parts[1]),
                 indexObjs: parseInt(parts[2]),
             });
@@ -345,7 +393,9 @@ export async function get_git_info(path: string): Promise<GitInfo> {
     if (result.code != 0) {
         throw new Error(result.stderr);
     }
-    return JSON.parse(result.stdout);
+    const retItem = JSON.parse(result.stdout) as GitInfo;
+    retItem.tag_list = retItem.tag_list.map(item => ({ ...item, name: item.name.startsWith("refs/tags/") ? item.name.substring("refs/tags/".length) : item.name }));
+    return retItem;
 }
 
 export async function list_commit_graph(path: string, commitId: string): Promise<CommitGraphInfo[]> {

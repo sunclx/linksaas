@@ -72,7 +72,7 @@ const GitGraph = () => {
     }, [gitProStore.repoInfo, gitProStore.mainItem, graphRef]);
 
     return (
-        <div style={{ height: gitProStore.curDiffFile == null ? "100vh" : "50vh" }} className={s.graphWrap}>
+        <div style={{ height: gitProStore.curDiffFile == null ? "calc(100vh - 45px)" : "calc(50vh - 45px)" }} className={s.graphWrap}>
             {gitProStore.mainItem.menuValue != "" && <div ref={graphRef} />}
         </div>
     );
