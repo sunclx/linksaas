@@ -271,6 +271,43 @@ pub mod board {
     }
 }
 
+pub mod chat {
+    use prost::Message;
+    use proto_gen_rust::google::protobuf::Any;
+    use proto_gen_rust::notices_chat;
+    use proto_gen_rust::TypeUrl;
+
+    #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
+    pub enum Notice {
+        UpdateGroupNotice(notices_chat::UpdateGroupNotice),
+        UpdateGroupMemberNotice(notices_chat::UpdateGroupMemberNotice),
+        LeaveGroupNotice(notices_chat::LeaveGroupNotice),
+        NewMsgNotice(notices_chat::NewMsgNotice),
+    }
+
+    pub fn decode_notice(data: &Any) -> Option<Notice> {
+        if data.type_url == notices_chat::UpdateGroupNotice::type_url() {
+            if let Ok(notice) = notices_chat::UpdateGroupNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateGroupNotice(notice));
+            }
+        } else if data.type_url == notices_chat::UpdateGroupMemberNotice::type_url() {
+            if let Ok(notice) = notices_chat::UpdateGroupMemberNotice::decode(data.value.as_slice())
+            {
+                return Some(Notice::UpdateGroupMemberNotice(notice));
+            }
+        } else if data.type_url == notices_chat::LeaveGroupNotice::type_url() {
+            if let Ok(notice) = notices_chat::LeaveGroupNotice::decode(data.value.as_slice()) {
+                return Some(Notice::LeaveGroupNotice(notice));
+            }
+        } else if data.type_url == notices_chat::NewMsgNotice::type_url() {
+            if let Ok(notice) = notices_chat::NewMsgNotice::decode(data.value.as_slice()) {
+                return Some(Notice::NewMsgNotice(notice));
+            }
+        }
+        None
+    }
+}
+
 pub mod client {
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
@@ -294,8 +331,7 @@ pub mod client {
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     #[serde(rename_all = "snake_case")]
-    pub struct ShowGlobalServerSettingNotice{}
-
+    pub struct ShowGlobalServerSettingNotice {}
 
     #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
     pub enum Notice {
@@ -314,6 +350,7 @@ pub enum NoticeMessage {
     IdeaNotice(idea::Notice),
     CommentNotice(comment::Notice),
     BoardNotice(board::Notice),
+    ChatNotice(chat::Notice),
     ClientNotice(client::Notice),
 }
 
@@ -334,6 +371,9 @@ pub fn decode_notice(data: &Any) -> Option<NoticeMessage> {
     }
     if let Some(ret) = board::decode_notice(data) {
         return Some(NoticeMessage::BoardNotice(ret));
+    }
+    if let Some(ret) = chat::decode_notice(data) {
+        return Some(NoticeMessage::ChatNotice(ret));
     }
     None
 }

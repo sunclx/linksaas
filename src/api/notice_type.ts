@@ -297,6 +297,36 @@ export namespace board {
   };
 }
 
+export namespace chat {
+
+  export type UpdateGroupNotice = {
+    project_id: string;
+    chat_group_id: string;
+  };
+
+  export type UpdateGroupMemberNotice = {
+    project_id: string;
+    chat_group_id: string;
+  };
+
+  export type LeaveGroupNotice = {
+    project_id: string;
+    chat_group_id: string;
+  };
+
+  export type NewMsgNotice = {
+    project_id: string;
+    chat_group_id: string;
+  };
+
+  export type AllNotice = {
+    UpdateGroupNotice?: UpdateGroupNotice;
+    UpdateGroupMemberNotice?: UpdateGroupMemberNotice;
+    LeaveGroupNotice?: LeaveGroupNotice;
+    NewMsgNotice?: NewMsgNotice;
+  };
+}
+
 export type AllNotice = {
   ProjectNotice?: project.AllNotice;
   IssueNotice?: issue.AllNotice;
@@ -304,4 +334,5 @@ export type AllNotice = {
   IdeaNotice?: idea.AllNotice;
   CommentNotice?: comment.AllNotice;
   BoardNotice?: board.AllNotice;
+  ChatNotice?: chat.AllNotice;
 };
