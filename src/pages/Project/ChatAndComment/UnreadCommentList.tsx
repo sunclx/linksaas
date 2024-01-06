@@ -79,9 +79,9 @@ const UnreadCommentList = () => {
                         } else if (row.target_type == COMMENT_TARGET_BUG) {
                             linkAuxStore.goToLink(new LinkBugInfo("", projectStore.curProjectId, row.target_id), history).then(() => setShowUnReadInfo(row));
                         } else if (row.target_type == COMMENT_TARGET_API_COLL) {
-                            linkAuxStore.goToLink(new LinkApiCollInfo("", projectStore.curProjectId, row.target_id), history).then(() => setShowUnReadInfo(row));
+                            linkAuxStore.goToLink(new LinkApiCollInfo("", projectStore.curProjectId, row.target_id, true), history);
                         } else if (row.target_type == COMMENT_TARGET_DATA_ANNO) {
-                            linkAuxStore.goToLink(new LinkDataAnnoInfo("", projectStore.curProjectId, row.target_id), history).then(() => setShowUnReadInfo(row));
+                            linkAuxStore.goToLink(new LinkDataAnnoInfo("", projectStore.curProjectId, row.target_id, true), history);
                         }
                     }}>{row.title}</a>
             ),

@@ -18,6 +18,7 @@ class ApiStore {
     private _remoteAddr = "";
     private _canEdit = false;
     private _canAdmin = false;
+    private _showComment = false;
     private _userId = "";
 
     get projectId(): string {
@@ -66,6 +67,16 @@ class ApiStore {
     set canAdmin(val: boolean) {
         runInAction(() => {
             this._canAdmin = val;
+        });
+    }
+
+    get showComment(): boolean {
+        return this._showComment;
+    }
+
+    set showComment(val: boolean) {
+        runInAction(() => {
+            this._showComment = val;
         });
     }
 

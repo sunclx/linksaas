@@ -15,11 +15,12 @@ export interface CommentEntryProps {
     targetId: string;
     myUserId: string;
     myAdmin: boolean;
+    defaultOpen?: boolean;
 }
 
 const CommentEntry = (props: CommentEntryProps) => {
     const [hasUnRead, setHasUnRead] = useState(false);
-    const [openCommentModal, setOpenCommentModal] = useState(false);
+    const [openCommentModal, setOpenCommentModal] = useState(props.defaultOpen ?? false);
 
     const checkHasUnread = async () => {
         const sessionId = await get_session();

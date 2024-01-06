@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Badge, Divider, Tooltip } from 'antd';
+import { Badge, Divider, Switch, Tooltip } from 'antd';
 
 import style from './index.module.less';
 import { useStores } from '@/hooks';
@@ -87,6 +87,8 @@ const Toolbar: React.FC = observer(() => {
           <Badge count={10} style={{ padding: '0 3px', height: '16px', lineHeight: '16px' }}>
             <MessageTwoTone style={{ fontSize: "24px" }} twoToneColor={projectStore.showChatAndComment ? ["white", "orange"] : ["white", "#929CB0"]} />
           </Badge>
+          <br/>
+          <Switch size='small' checked={projectStore.showChatAndComment}/>
         </div>
       </Tooltip>
 
