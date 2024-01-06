@@ -26,7 +26,7 @@ import { exit } from '@tauri-apps/api/process';
 
 const { Header } = Layout;
 
-let windowSize: PhysicalSize = new PhysicalSize(1300, 750);
+let windowSize: PhysicalSize = new PhysicalSize(1400, 750);
 let windowPostion: PhysicalPosition = new PhysicalPosition(0, 0);
 
 const MyHeader: React.FC<{ style?: React.CSSProperties; className?: string }> = ({

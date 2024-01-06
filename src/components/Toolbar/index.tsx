@@ -6,6 +6,7 @@ import style from './index.module.less';
 import { useStores } from '@/hooks';
 import { observer } from 'mobx-react';
 import { APP_PROJECT_HOME_PATH, APP_PROJECT_KB_BOARD_PATH, APP_PROJECT_KB_DOC_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH, APP_PROJECT_WORK_PLAN_PATH, PROJECT_SETTING_TAB } from '@/utils/constant';
+import { MessageTwoTone } from '@ant-design/icons';
 
 
 const Item: React.FC<{ id: string; pathname: string; title: string; badge?: number }> = observer((props) => {
@@ -73,6 +74,23 @@ const Toolbar: React.FC = observer(() => {
 
   return (
     <div className={style.toolbar}>
+      <Tooltip title={<span>项目沟通</span>}
+        placement="left"
+        color="orange"
+        overlayInnerStyle={{ color: 'black' }}
+      >
+        <div style={{ textAlign: "center", padding: "10px 0px", cursor: "pointer" }} onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          projectStore.showChatAndComment = !projectStore.showChatAndComment;
+        }}>
+          <Badge count={10} style={{ padding: '0 3px', height: '16px', lineHeight: '16px' }}>
+            <MessageTwoTone style={{ fontSize: "24px" }} twoToneColor={projectStore.showChatAndComment ? ["white", "orange"] : ["white", "#929CB0"]} />
+          </Badge>
+        </div>
+      </Tooltip>
+
+      <Divider />
 
       <Item
         id="idea"

@@ -71,6 +71,7 @@ export default class ProjectStore {
 
       this.setCodeCommentInfo("", "");
       this.showProjectSetting = null;
+      this.showChatAndComment = false;
     }
   }
 
@@ -91,7 +92,7 @@ export default class ProjectStore {
   }
 
   reset() {
-    runInAction(()=>{
+    runInAction(() => {
       this._curProjectId = "";
       this._projectList = [];
     });
@@ -431,6 +432,19 @@ export default class ProjectStore {
   set showPostHookModal(val: boolean) {
     runInAction(() => {
       this._showPostHookModal = val;
+    });
+  }
+
+  //显示沟通和评论
+  private _showChatAndComment: boolean = false;
+
+  get showChatAndComment(): boolean {
+    return this._showChatAndComment;
+  }
+
+  set showChatAndComment(val: boolean) {
+    runInAction(() => {
+      this._showChatAndComment = val;
     });
   }
 }

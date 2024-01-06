@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { COMMENT_TARGET_TYPE } from "@/api/project_comment";
-import { check_un_read,remove_un_read } from "@/api/project_comment";
+import { check_un_read } from "@/api/project_comment";
 import { Badge, Button } from "antd";
 import { MessageTwoTone } from "@ant-design/icons";
 import { get_session } from "@/api/user";
@@ -32,18 +32,6 @@ const CommentEntry = (props: CommentEntryProps) => {
         setHasUnRead(res.has_un_read);
     };
 
-    const removeUnRead = async () => {
-        const sessionId = await get_session();
-        
-        await request(remove_un_read({
-            session_id: sessionId,
-            project_id: props.projectId,
-            target_type: props.targetType,
-            target_id: props.targetId,
-        }));
-        setHasUnRead(false);
-    };
-
     useEffect(() => {
         checkHasUnread();
     }, [props.targetId]);
@@ -70,7 +58,6 @@ const CommentEntry = (props: CommentEntryProps) => {
             <Button type="text" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
                 e.stopPropagation();
                 e.preventDefault();
-                removeUnRead();
                 setOpenCommentModal(true);
             }}>
                 <Badge count={hasUnRead ? 1 : 0} dot={true}>
@@ -79,8 +66,8 @@ const CommentEntry = (props: CommentEntryProps) => {
             </Button>
             {openCommentModal == true && (
                 <CommentModal projectId={props.projectId} targetType={props.targetType} targetId={props.targetId}
-                    onCancel={() => setOpenCommentModal(false)} 
-                    myUserId={props.myUserId} myAdmin={props.myAdmin}/>
+                    onCancel={() => setOpenCommentModal(false)}
+                    myUserId={props.myUserId} myAdmin={props.myAdmin} />
             )}
         </div>
     );

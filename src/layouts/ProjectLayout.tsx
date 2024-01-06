@@ -10,6 +10,7 @@ import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';
 import GitPostHookModal from '@/pages/Project/ProjectTool/GitPostHookModal';
 import UpdateEntryModal from '@/pages/Project/Home/UpdateEntryModal';
 import CreateEntryModal from '@/pages/Project/Home/CreateEntryModal';
+import ChatAndCommentPanel from '@/pages/Project/ChatAndComment';
 
 
 
@@ -20,7 +21,16 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
 
     return (
         <div className={style.projectLayout}>
-            {renderRoutes(route.routes)}
+            <div style={{ flex: 1 }}>
+                {renderRoutes(route.routes)}
+            </div>
+            {projectStore.showChatAndComment && (
+                <div style={{ width: "300px", marginRight: "60px", backgroundColor: "white", borderLeft: "1px solid #e4e4e8" }}>
+                    <ChatAndCommentPanel />
+                </div>
+            )}
+            {projectStore.showChatAndComment == false && <div style={{ width: "60px" }} />}
+
             {projectStore.codeCommentThreadId != "" && (
                 <CodeCommentThreadModal threadId={projectStore.codeCommentThreadId} commentId={projectStore.codeCommentId} />
             )}
@@ -28,13 +38,13 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
                 <ProjectSettingModal />
             )}
             {projectStore.curProjectId != "" && ideaStore.showCreateIdea == true && (
-                <CreateIdeaModal/>
+                <CreateIdeaModal />
             )}
             {projectStore.curProjectId != "" && projectStore.showPostHookModal == true && (
-                <GitPostHookModal/>
+                <GitPostHookModal />
             )}
             {projectStore.curProjectId != "" && entryStore.editEntryId != "" && (
-                <UpdateEntryModal/>
+                <UpdateEntryModal />
             )}
             {entryStore.createEntryType != null && (
                 <CreateEntryModal />

@@ -40,6 +40,22 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
             </div>
             {item.project_id == projectStore.curProjectId && (
                 <div>
+                    <div className={`${cls.project_sub_menu} ${location.pathname.startsWith(APP_PROJECT_HOME_PATH) ? cls.active_sub_menu : ""}`}
+                        onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (appStore.inEdit) {
+                                appStore.showCheckLeave(() => {
+                                    projectStore.setCurProjectId(item.project_id).then(() => {
+                                        history.push(APP_PROJECT_HOME_PATH);
+                                    });
+                                });
+                                return;
+                            }
+                            projectStore.setCurProjectId(item.project_id).then(() => {
+                                history.push(APP_PROJECT_HOME_PATH);
+                            });
+                        }}><CaretRightFilled />内容面板</div>
                     <div className={`${cls.project_sub_menu} ${location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) ? cls.active_sub_menu : ""}`}
                         onClick={e => {
                             e.stopPropagation();
