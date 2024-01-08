@@ -94,26 +94,28 @@ const WriteDocInner = observer((props: WriteDocInnerProps) => {
   }, []);
 
   return (
-    <Card bordered={false} extra={
-      <Space size="large">
-        <Button
-          type="default"
-          onClick={e => {
-            e.stopPropagation();
-            e.preventDefault();
-            appStore.inEdit = false;
-          }}>取消</Button>
-        <Button
-          type="primary"
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            updateDoc();
-          }}
-        >
-          保存
-        </Button>
-      </Space>}>
+    <Card bordered={false}
+      bodyStyle={{ width: projectStore.showChatAndComment ? "calc(100vw - 560px)" : "calc(100vw - 260px)" }}
+      extra={
+        <Space size="large">
+          <Button
+            type="default"
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              appStore.inEdit = false;
+            }}>取消</Button>
+          <Button
+            type="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              updateDoc();
+            }}
+          >
+            保存
+          </Button>
+        </Space>}>
       <div className={s.doc_wrap}>
         <div className={classNames(s.read_doc, "_docContext")}>{props.editor}</div>
         {editorStore.tocList.length > 0 && <DocTocPanel />}

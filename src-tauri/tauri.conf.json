@@ -169,9 +169,9 @@
       {
         "label": "main",
         "title": "",
-        "width": 1400,
+        "width": 1500,
         "height": 750,
-        "minWidth": 1400,
+        "minWidth": 1500,
         "minHeight": 750,
         "resizable": true,
         "fullscreen": false,

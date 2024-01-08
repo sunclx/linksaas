@@ -165,3 +165,14 @@ export function get_content_state(state: RemirrorJSON): ContentState {
         extensionCount: extensionList.length,
     };
 }
+
+export function get_content_text(state: RemirrorJSON | string): string {
+    let tmpState = state;
+    if (typeof state == "string") {
+        tmpState = JSON.parse(state);
+    }
+    const textList: string[] = [];
+    const extensionList: string[] = [];
+    calc_doc_state(textList, extensionList, tmpState as RemirrorJSON);
+    return textList.join(" ");
+}

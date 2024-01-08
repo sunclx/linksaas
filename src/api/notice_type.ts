@@ -317,6 +317,7 @@ export namespace chat {
   export type NewMsgNotice = {
     project_id: string;
     chat_group_id: string;
+    chat_msg_id: string;
   };
 
   export type AllNotice = {

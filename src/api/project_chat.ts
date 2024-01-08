@@ -7,6 +7,7 @@ export const LIST_MSG_AFTER: LIST_MSG_TYPE = 1;
 
 export type ChatMsgInfo = {
     chat_msg_id: string;
+    chat_group_id: string;
     content: string;
     send_user_id: string;
     send_display_name: string;
@@ -29,9 +30,9 @@ export type ChatGroupInfo = {
     owner_user_id: string;
     owner_display_name: string;
     owner_logo_uri: string;
-    last_msg_list: ChatMsgInfo[];
     user_perm: UserPerm;
     unread_count: number;
+    sort_value: number;
 };
 
 export type ChatGroupMemberInfo = {
@@ -184,8 +185,31 @@ export type ListMsgRequest = {
 export type ListMsgResponse = {
     code: number;
     err_msg: string;
-    last_msg_id: string;
     msg_list: ChatMsgInfo[];
+};
+
+export type ListAllLastMsgRequest = {
+    session_id: string;
+    project_id: string;
+};
+
+export type ListAllLastMsgResponse = {
+    code: number;
+    err_msg: string;
+    msg_list: ChatMsgInfo[];
+};
+
+export type GetMsgRequest = {
+    session_id: string;
+    project_id: string;
+    chat_group_id: string;
+    chat_msg_id: string;
+};
+
+export type GetMsgResponse = {
+    code: number;
+    err_msg: string;
+    msg: ChatMsgInfo;
 };
 
 export type ClearUnreadRequest = {
@@ -307,6 +331,23 @@ export async function list_msg(request: ListMsgRequest): Promise<ListMsgResponse
     });
 }
 
+//列出所有最后消息
+export async function list_all_last_msg(request: ListAllLastMsgRequest): Promise<ListAllLastMsgResponse> {
+    const cmd = 'plugin:project_chat_api|list_all_last_msg';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListAllLastMsgResponse>(cmd, {
+        request,
+    });
+}
+
+//获取消息
+export async function get_msg(request: GetMsgRequest): Promise<GetMsgResponse> {
+    const cmd = 'plugin:project_chat_api|get_msg';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetMsgResponse>(cmd, {
+        request,
+    });
+}
 //清除未读状态
 export async function clear_unread(request: ClearUnreadRequest): Promise<ClearUnreadResponse> {
     const cmd = 'plugin:project_chat_api|clear_unread';

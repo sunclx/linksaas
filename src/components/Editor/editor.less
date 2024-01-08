@@ -4,6 +4,10 @@
   cursor: default;
 }
 
+.remirror-theme {
+  overflow-x: visible;
+}
+
 .remirror-theme .ProseMirror p,
 .remirror-theme .ProseMirror h1,
 .remirror-theme .ProseMirror h2,
@@ -64,6 +68,11 @@
   max-height: 300px;
 }
 
+._chatContext .remirror-editor {
+  min-height: 100px !important;
+  max-height: 300px;
+}
+
 ._projectEditContext .remirror-editor {
   min-height: 170px;
   max-height: 170px;
@@ -106,7 +115,7 @@
 }
 
 .remirror-floating-popover {
-  z-index: 100;
+  z-index: 9000;
 }
 
 .remirror-group {
@@ -158,25 +167,6 @@
   height: 0;
 }
 
-.remirror-toolbar {
-  display: flex;
-  flex-direction: row;
-
-  overflow-y: auto;
-}
-
-.remirror-toolbar>*:not(:first-child) {
-  margin: 0 0 0 0.5em;
-}
-
-.remirror-toolbar[aria-orientation='vertical'] {
-  display: inline-flex;
-  flex-direction: column;
-}
-
-.remirror-toolbar[aria-orientation='vertical']>*:not(:first-child) {
-  margin: 0.5em 0 0;
-}
 
 .remirror-theme .remirror-toolbar {
   overflow-y: hidden !important;
@@ -448,11 +438,13 @@
 
 .remirror-toolbar .link-btn {
   background-image: url(@/assets/editor/link.png);
+  margin-left: 8px;
 }
 
 .remirror-toolbar .link-active-btn {
   background-image: url(@/assets/editor/link.png);
   background-color: #d0d0d0;
+  margin-left: 8px;
 }
 
 .channel-editor-virew {

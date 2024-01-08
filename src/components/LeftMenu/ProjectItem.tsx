@@ -19,7 +19,7 @@ const ProjectItem: React.FC<{ item: WebProjectInfo }> = ({ item }) => {
         <div className={cls.project_child_wrap}>
             <div className={`${cls.project_child_title} ${item.closed && cls.close} ${item.project_id == projectStore.curProjectId ? cls.active_menu : ""}`}>
                 {item.project_id !== projectStore.curProjectId &&
-                    <Badge count={item.project_status.total_count} className={cls.badge} />
+                    <Badge count={item.project_status.total_count + item.chat_store.totalUnread} className={cls.badge} />
                 }
 
                 <span className={cls.name} onClick={e => {

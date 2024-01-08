@@ -84,11 +84,11 @@ const Toolbar: React.FC = observer(() => {
           e.preventDefault();
           projectStore.showChatAndComment = !projectStore.showChatAndComment;
         }}>
-          <Badge count={10} style={{ padding: '0 3px', height: '16px', lineHeight: '16px' }}>
+          <Badge count={(projectStore.curProject?.project_status.unread_comment_count ?? 0) + (projectStore.curProject?.chat_store.totalUnread ?? 0)} style={{ padding: '0 3px', height: '16px', lineHeight: '16px' }}>
             <MessageTwoTone style={{ fontSize: "24px" }} twoToneColor={projectStore.showChatAndComment ? ["white", "orange"] : ["white", "#929CB0"]} />
           </Badge>
-          <br/>
-          <Switch size='small' checked={projectStore.showChatAndComment}/>
+          <br />
+          <Switch size='small' checked={projectStore.showChatAndComment} />
         </div>
       </Tooltip>
 

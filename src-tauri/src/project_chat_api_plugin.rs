@@ -156,9 +156,10 @@ async fn update_group_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == update_group_member_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("update_group_member".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_group_member".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -210,9 +211,10 @@ async fn change_group_owner<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == change_group_owner_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("change_group_owner".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("change_group_owner".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -237,9 +239,10 @@ async fn list_group_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_group_member_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_group_member".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_group_member".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -264,9 +267,10 @@ async fn list_all_group_member<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_all_group_member_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_all_group_member".into()))
-                {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_all_group_member".into()),
+                ) {
                     println!("{:?}", err);
                 }
             }
@@ -291,8 +295,7 @@ async fn send_msg<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == send_msg_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("send_msg".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("send_msg".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -318,8 +321,61 @@ async fn list_msg<R: Runtime>(
         Ok(response) => {
             let inner_resp = response.into_inner();
             if inner_resp.code == list_msg_response::Code::WrongSession as i32 {
-                if let Err(err) =
-                    window.emit("notice", new_wrong_session_notice("list_msg".into()))
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("list_msg".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_all_last_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListAllLastMsgRequest,
+) -> Result<ListAllLastMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChatApiClient::new(chan.unwrap());
+    match client.list_all_last_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_all_last_msg_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_all_last_msg".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetMsgRequest,
+) -> Result<GetMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChatApiClient::new(chan.unwrap());
+    match client.get_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_msg_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_msg".into()))
                 {
                     println!("{:?}", err);
                 }
@@ -357,7 +413,6 @@ async fn clear_unread<R: Runtime>(
     }
 }
 
-
 pub struct ProjectChatApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -378,8 +433,9 @@ impl<R: Runtime> ProjectChatApiPlugin<R> {
                 list_all_group_member,
                 send_msg,
                 list_msg,
+                list_all_last_msg,
+                get_msg,
                 clear_unread,
-                
             ]),
         }
     }
