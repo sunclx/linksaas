@@ -17,7 +17,6 @@ export type ChatMsgInfo = {
 
 export type UserPerm = {
     can_change_owner: boolean;
-    can_update_member: boolean;
     can_leave: boolean;
     can_update: boolean;
     can_remove: boolean;

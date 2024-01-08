@@ -133,7 +133,7 @@ const ChatAndCommentPanel = () => {
                                 )}
                                 {projectStore.curProjectId != "" && projectStore.curProject?.chat_store.curGroupId != "" && (
                                     <Space>
-                                        {(projectStore.curProject?.chat_store.curGroup?.groupInfo.user_perm.can_update_member ?? false) == true && (
+                                        {(projectStore.curProject?.chat_store.curGroup?.groupInfo.user_perm.can_update ?? false) == true && (
                                             <Button type="link" icon={<UserSwitchOutlined />} style={{ minWidth: 0, padding: "0px 0px" }}
                                                 onClick={e => {
                                                     e.stopPropagation();

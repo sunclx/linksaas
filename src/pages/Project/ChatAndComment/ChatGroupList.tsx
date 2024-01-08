@@ -23,7 +23,10 @@ const ChatGroupList = () => {
                 }}>
                 <Card title={
                     <Popover trigger="hover" placement="bottomLeft" content={<GroupMemberList chatGroupId={item.groupInfo.chat_group_id} />}>
-                        {item.groupInfo.title}({item.memberList.length}人)
+                        <div title={item.groupInfo.title}
+                            style={{ fontSize: "16px", fontWeight: 700, width: "150px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>
+                            ({item.memberList.length}人){item.groupInfo.title}
+                        </div>
                     </Popover>}
                     style={{ width: "100%" }} bordered={false}
                     headStyle={{ border: "none", padding: "0px 10px" }}
