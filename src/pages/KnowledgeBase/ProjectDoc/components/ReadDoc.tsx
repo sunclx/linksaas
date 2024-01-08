@@ -18,14 +18,14 @@ const ReadDoc: React.FC = () => {
 
   return (
     <Card extra={<RenderDocBtns keyWordList={matchKeywordList} />} bordered={false}
-      bodyStyle={{ paddingBottom: "0px", width: projectStore.showChatAndComment ? "calc(100vw - 660px)" : "calc(100vw - 260px)" }}>
+      bodyStyle={{ paddingBottom: "0px", width: projectStore.showChatAndComment ? "calc(100vw - 560px)" : "calc(100vw - 260px)" }}>
       <div className={s.doc_wrap}>
+        {editorStore.tocList.length > 0 && <DocTocPanel />}
         <div className={s.read_doc}>
           {<ReadOnlyEditor content={docStore.curDoc?.base_info.content ?? ""} keywordList={ideaStore.keywordList}
             keywordCallback={(kwList) => setMatchKeywordList(kwList)}
             tocCallback={(result) => editorStore.tocList = result} />}
         </div>
-        {editorStore.tocList.length > 0 && <DocTocPanel />}
       </div>
     </Card>
   );

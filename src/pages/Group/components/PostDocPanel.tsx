@@ -8,14 +8,15 @@ import { useStores } from '@/hooks';
 const PostTocPanel = () => {
     const editorStore = useStores('editorStore');
 
-    useEffect(()=>{
-        return ()=>{
+    useEffect(() => {
+        return () => {
             editorStore.tocList = [];
         };
-    },[]);
+    }, []);
 
     return (
         <div className={s.toc}>
+            <h1>标题列表</h1>
             {editorStore.tocList.map((toc, index) => (
                 <div key={index} title={toc.title} style={{ paddingLeft: 20 * toc.level, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     <a onClick={e => {

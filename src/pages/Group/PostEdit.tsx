@@ -157,6 +157,7 @@ const PostEditInner = observer((props: PostEditInnerProps) => {
                 </Space>
             }>
             <div className={s.post_wrap}>
+                {editStore.tocList.length > 0 && <PostTocPanel />}
                 <div className={classNames(s.post, "_postContext")}>
                     {props.editor}
                     <Form style={{ marginTop: "10px" }}>
@@ -166,7 +167,6 @@ const PostEditInner = observer((props: PostEditInnerProps) => {
                         </Form.Item>
                     </Form>
                 </div>
-                {editStore.tocList.length > 0 && <PostTocPanel />}
             </div>
             {appStore.checkLeave && <ActionModal
                 open={appStore.checkLeave}

@@ -117,8 +117,8 @@ const WriteDocInner = observer((props: WriteDocInnerProps) => {
           </Button>
         </Space>}>
       <div className={s.doc_wrap}>
-        <div className={classNames(s.read_doc, "_docContext")}>{props.editor}</div>
         {editorStore.tocList.length > 0 && <DocTocPanel />}
+        <div className={classNames(s.read_doc, "_docContext")}>{props.editor}</div>
       </div>
       {appStore.checkLeave && <ActionModal
         open={appStore.checkLeave}
