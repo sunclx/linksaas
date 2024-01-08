@@ -1,10 +1,11 @@
 import React from "react";
 import { observer } from 'mobx-react';
-import { Badge, Card, List, Space } from "antd";
+import { Badge, Card, List, Popover, Space } from "antd";
 import { useStores } from "@/hooks";
 import moment from 'moment';
 import UserPhoto from "@/components/Portrait/UserPhoto";
 import { get_content_text } from "@/components/Editor";
+import GroupMemberList from "./components/GroupMemberList";
 
 
 const ChatGroupList = () => {
@@ -20,7 +21,11 @@ const ChatGroupList = () => {
                         projectStore.curProject.chat_store.curGroupId = item.groupInfo.chat_group_id;
                     }
                 }}>
-                <Card title={<span>{item.groupInfo.title}({item.memberList.length}人)</span>} style={{ width: "100%" }} bordered={false}
+                <Card title={
+                    <Popover trigger="hover" placement="bottomLeft" content={<GroupMemberList chatGroupId={item.groupInfo.chat_group_id} />}>
+                        {item.groupInfo.title}({item.memberList.length}人)
+                    </Popover>}
+                    style={{ width: "100%" }} bordered={false}
                     headStyle={{ border: "none", padding: "0px 10px" }}
                     bodyStyle={{ padding: "0px 10px" }}
                     extra={
@@ -37,8 +42,7 @@ const ChatGroupList = () => {
                     {item.lastMsg != null && (
                         <Space style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "250px" }}>
                             <UserPhoto logoUri={item.lastMsg.send_logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
-                            {item.lastMsg.send_display_name}
-                            &nbsp;&nbsp;
+                            <span>{item.lastMsg.send_display_name}:</span>
                             <div title={get_content_text(item.lastMsg.content)}>{get_content_text(item.lastMsg.content)}</div>
                         </Space>
                     )}

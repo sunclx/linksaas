@@ -198,6 +198,9 @@ export default class ProjectChatStore {
         const tmpList = this._chatGroupList.filter(item => item.groupInfo.chat_group_id != groupId);
         runInAction(() => {
             this._chatGroupList = tmpList;
+            if (this._curGroupId == groupId) {
+                this._curGroupId = "";
+            }
         });
     }
 
@@ -313,6 +316,10 @@ export default class ProjectChatStore {
 
     get curGroup(): ChatGroupWithMember | undefined {
         return this._chatGroupList.find(item => item.groupInfo.chat_group_id == this._curGroupId);
+    }
+
+    getGroup(groupId: string): ChatGroupWithMember | undefined {
+        return this._chatGroupList.find(item => item.groupInfo.chat_group_id == groupId);
     }
 
     async onNewMsg(groupId: string, msgId: string) {

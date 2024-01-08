@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { observer } from 'mobx-react';
-import { Button, Card, List, Popover, Space } from "antd";
+import { Button, Card, Popover, Space } from "antd";
 import { useStores } from "@/hooks";
 import { InfoCircleOutlined, RollbackOutlined } from "@ant-design/icons";
-import UserPhoto from "@/components/Portrait/UserPhoto";
 import { get_content_text, useCommonEditor } from "@/components/Editor";
 import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
 import { LIST_MSG_AFTER, LIST_MSG_BEFORE, send_msg, clear_unread } from "@/api/project_chat";
 import { request } from "@/utils/request";
 import ChatMsgItem from "./components/ChatMsgItem";
+import GroupMemberList from "./components/GroupMemberList";
 
 const ChatMsgList = () => {
     const userStore = useStores("userStore");
     const projectStore = useStores('projectStore');
-    const memberStore = useStores("memberStore");
+
 
     const msgListDiv = useRef<HTMLDivElement>(null);
     const [hasContent, setHasContent] = useState(false);
@@ -152,32 +152,7 @@ const ChatMsgList = () => {
             headStyle={{ padding: "0px 0px" }} bordered={false}
             bodyStyle={{ height: "calc(100vh - 181px)", padding: "0px 0px", display: "flex", flexDirection: "column" }}
             extra={
-                <Popover trigger="hover" placement="bottomLeft" content={
-                    <div style={{ width: "300px", padding: "10px 10px" }}>
-                        <h1 style={{ fontSize: "18px", fontWeight: 600 }}>在线成员</h1>
-                        <List grid={{ gutter: 16 }}
-                            dataSource={(projectStore.curProject?.chat_store.curGroup?.memberList ?? []).filter(member => memberStore.getMember(member.member_user_id)?.member.online == true)}
-                            renderItem={item => (
-                                <List.Item key={item.member_user_id}>
-                                    <Space>
-                                        <UserPhoto logoUri={item.member_logo_uri} style={{ width: "16px", borderRadius: "10px" }} />
-                                        {item.member_display_name}
-                                    </Space>
-                                </List.Item>
-                            )} />
-                        <h1 style={{ fontSize: "18px", fontWeight: 600 }}>离线成员</h1>
-                        <List grid={{ gutter: 16 }}
-                            dataSource={(projectStore.curProject?.chat_store.curGroup?.memberList ?? []).filter(member => memberStore.getMember(member.member_user_id)?.member.online == false)}
-                            renderItem={item => (
-                                <List.Item key={item.member_user_id}>
-                                    <Space>
-                                        <UserPhoto logoUri={item.member_logo_uri} style={{ width: "16px", borderRadius: "10px", filter: "grayscale(100%)" }} />
-                                        {item.member_display_name}
-                                    </Space>
-                                </List.Item>
-                            )} />
-                    </div>
-                }>
+                <Popover trigger="hover" placement="bottomLeft" content={<GroupMemberList chatGroupId={projectStore.curProject?.chat_store.curGroupId ?? ""} />}>
                     <span style={{ cursor: "default" }}><InfoCircleOutlined />&nbsp;{projectStore.curProject?.chat_store.curGroup?.memberList.length ?? 0}人&nbsp;&nbsp;</span>
                 </Popover>
             }>

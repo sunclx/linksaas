@@ -1,13 +1,13 @@
-import { Badge, Space, Tabs, message } from "antd";
+import { Badge, Modal, Popover, Space, Tabs, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import UnreadCommentList from "./UnreadCommentList";
 import { useStores } from "@/hooks";
 import ChatGroupList from "./ChatGroupList";
 import Button from "@/components/Button";
-import { PlusOutlined, UserSwitchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, LogoutOutlined, MoreOutlined, PlusOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import SelectGroupMemberModal from "./components/SelectGroupMemberModal";
-import { create_group, update_group, update_group_member } from "@/api/project_chat";
+import { create_group, update_group, update_group_member, leave_group, remove_group } from "@/api/project_chat";
 import { request } from "@/utils/request";
 import ChatMsgList from "./ChatMsgList";
 
@@ -18,6 +18,8 @@ const ChatAndCommentPanel = () => {
     const [activeKey, setActiveKey] = useState("chat");
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
     const [showUpdateGroupModal, setShowUpdateGroupModal] = useState(false);
+    const [showLeaveGroupModal, setShowLeaveGroupModal] = useState(false);
+    const [showRemoveGroupModal, setShowRemoveGroupModal] = useState(false);
 
     const createChatGroup = async (newTitle: string, newUserIdList: string[]) => {
         if (newUserIdList.length < 2) {
@@ -52,6 +54,30 @@ const ChatAndCommentPanel = () => {
         projectStore.curProject?.chat_store.onUpdateMember(projectStore.curProject?.chat_store.curGroupId ?? "");
         message.info("更新成功");
     }
+
+    const leaveGroup = async () => {
+        const groupId = projectStore.curProject?.chat_store.curGroupId ?? "";
+        await request(leave_group({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            chat_group_id: groupId,
+        }));
+        await projectStore.curProject?.chat_store.onLeaveGroup(groupId);
+        setShowLeaveGroupModal(false);
+        message.info("离开沟通群成功");
+    };
+
+    const removeGroup = async () => {
+        const groupId = projectStore.curProject?.chat_store.curGroupId ?? "";
+        await request(remove_group({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            chat_group_id: groupId,
+        }));
+        await projectStore.curProject?.chat_store.onLeaveGroup(groupId);
+        setShowRemoveGroupModal(false);
+        message.info("删除沟通群成功");
+    };
 
     return (
         <>
@@ -115,6 +141,32 @@ const ChatAndCommentPanel = () => {
                                                     setShowUpdateGroupModal(true);
                                                 }} />
                                         )}
+                                        {projectStore.curProject?.chat_store.curGroupId != projectStore.curProject?.default_chat_group_id && (
+                                            <Popover trigger="click" placement="left" content={
+                                                <Space direction="vertical">
+                                                    <Button type="link" danger icon={<LogoutOutlined />}
+                                                        disabled={(projectStore.curProject?.chat_store.curGroup?.groupInfo.user_perm.can_leave ?? false) == false}
+                                                        onClick={e => {
+                                                            e.stopPropagation();
+                                                            e.preventDefault();
+                                                            setShowLeaveGroupModal(true);
+                                                        }}>
+                                                        退出沟通群
+                                                    </Button>
+                                                    <Button type="link" danger icon={<DeleteOutlined />}
+                                                        disabled={(projectStore.curProject?.chat_store.curGroup?.groupInfo.user_perm.can_remove ?? false) == false}
+                                                        onClick={e => {
+                                                            e.stopPropagation();
+                                                            e.preventDefault();
+                                                            setShowRemoveGroupModal(true);
+                                                        }}>
+                                                        删除沟通群
+                                                    </Button>
+                                                </Space>
+                                            }>
+                                                <MoreOutlined />
+                                            </Popover>
+                                        )}
                                     </Space>
 
                                 )}
@@ -131,6 +183,38 @@ const ChatAndCommentPanel = () => {
                 <SelectGroupMemberModal onCancel={() => setShowUpdateGroupModal(false)} onOk={(newTitle, newUserIdList) => {
                     updateChatGroup(newTitle, newUserIdList).then(() => setShowUpdateGroupModal(false));
                 }} />
+            )}
+            {showLeaveGroupModal == true && projectStore.curProject != undefined && projectStore.curProject.chat_store.curGroup != undefined && (
+                <Modal open title="离开沟通群"
+                    okText="离开" okButtonProps={{ danger: true }}
+                    onCancel={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowLeaveGroupModal(false);
+                    }}
+                    onOk={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        leaveGroup();
+                    }}>
+                    是否离开沟通群{projectStore.curProject.chat_store.curGroup.groupInfo.title}?
+                </Modal>
+            )}
+            {showRemoveGroupModal == true && projectStore.curProject != undefined && projectStore.curProject.chat_store.curGroup != undefined && (
+                <Modal open title="删除沟通群"
+                    okText="删除" okButtonProps={{ danger: true }}
+                    onCancel={e=>{
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowRemoveGroupModal(false);
+                    }}
+                    onOk={e=>{
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeGroup();
+                    }}>
+                    是否删除沟通群{projectStore.curProject.chat_store.curGroup.groupInfo.title}?
+                </Modal>
             )}
         </>
     );
