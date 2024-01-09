@@ -22,6 +22,7 @@ const SwaggerPage = () => {
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
     const editStr = urlParams.get("edit") ?? "";
     const canAdminStr = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
+    const showCommentStr = (urlParams.get("showComment") ?? "false").toLocaleLowerCase();
 
     const [spec, setSpec] = useState<object | null>(null);
     const [addr, setAddr] = useState("");
@@ -82,7 +83,8 @@ const SwaggerPage = () => {
             <div style={{ height: "30px", display: "flex", justifyContent: "flex-end" }}>
                 <Space>
                     <CommentEntry projectId={projectId} targetType={COMMENT_TARGET_API_COLL}
-                        targetId={apiCollId} myUserId={userId} myAdmin={canAdminStr == "true"} />
+                        targetId={apiCollId} myUserId={userId} myAdmin={canAdminStr == "true"}
+                        defaultOpen={showCommentStr == "true"} />
                     {spec !== null && (
                         <>
                             <span>{addr}</span>

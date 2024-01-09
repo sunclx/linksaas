@@ -21,6 +21,7 @@ const DataAnnoDetail = () => {
     const projectId = urlParams.get("projectId") ?? "";
     const annoProjectId = urlParams.get("annoProjectId") ?? "";
     const adminStr = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
+    const showCommentStr = (urlParams.get("showComment") ?? "false").toLocaleLowerCase();
     const fsId = urlParams.get("fsId") ?? "";
 
     const [annoProjectInfo, setAnnoProjectInfo] = useState<dataAnnoPrjApi.AnnoProjectInfo | null>(null);
@@ -106,7 +107,8 @@ const DataAnnoDetail = () => {
                         <div style={{ marginRight: "20px" }}>
                             <Space>
                                 <CommentEntry projectId={projectId} targetType={COMMENT_TARGET_DATA_ANNO}
-                                    targetId={annoProjectId} myUserId={userId} myAdmin={adminStr == "true"} />
+                                    targetId={annoProjectId} myUserId={userId} myAdmin={adminStr == "true"}
+                                    defaultOpen={showCommentStr == "true"} />
 
                                 {activeKey == "adminMember" && (
                                     <Button onClick={e => {

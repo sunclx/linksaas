@@ -17,6 +17,7 @@ const GrpcPage = () => {
     const fsId = urlParams.get("fsId") ?? "";
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
     const canAdminStr = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
+    const showCommentStr = (urlParams.get("showComment") ?? "false").toLocaleLowerCase();
 
     const [protoPath, setProtoPath] = useState("");
     const [secure, setSecure] = useState(false);
@@ -66,7 +67,7 @@ const GrpcPage = () => {
                                 const tmpList = curMethodList.filter(item => !(item.serviceName == method.serviceName && item.method.methodName == method.method.methodName));
                                 setCurMethodList(tmpList);
                             }}
-                                projectId={projectId} canAdmin={canAdminStr == "true"} apiCollId={apiCollId} userId={userId}
+                                projectId={projectId} canAdmin={canAdminStr == "true"} apiCollId={apiCollId} userId={userId} showComment={showCommentStr == "true"}
                             />
                         )}
 

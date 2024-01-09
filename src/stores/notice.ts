@@ -58,6 +58,8 @@ class NoticeStore {
           this.processCommentNotice(notice.CommentNotice);
         } else if (notice.BoardNotice !== undefined) {
           this.processBoardNotice(notice.BoardNotice);
+        } else if (notice.ChatNotice !== undefined) {
+          this.processChatNotice(notice.ChatNotice);
         }
       } catch (e) {
         console.log(e);
@@ -163,6 +165,34 @@ class NoticeStore {
           to_handle_id: notice.RemoveEdgeNotice.to_handle_id,
         });
       }
+    }
+  }
+
+  private async processChatNotice(notice: NoticeType.chat.AllNotice) {
+    if (notice.UpdateGroupNotice !== undefined) {
+      const curProject = this.rootStore.projectStore.getProject(notice.UpdateGroupNotice.project_id);
+      if (curProject == undefined) {
+        return;
+      }
+      await curProject.chat_store.onUpdateGroup(notice.UpdateGroupNotice.chat_group_id);
+    } else if (notice.UpdateGroupMemberNotice !== undefined) {
+      const curProject = this.rootStore.projectStore.getProject(notice.UpdateGroupMemberNotice.project_id);
+      if (curProject == undefined) {
+        return;
+      }
+      await curProject.chat_store.onUpdateMember(notice.UpdateGroupMemberNotice.chat_group_id);
+    } else if (notice.LeaveGroupNotice !== undefined) {
+      const curProject = this.rootStore.projectStore.getProject(notice.LeaveGroupNotice.project_id);
+      if (curProject == undefined) {
+        return;
+      }
+      await curProject.chat_store.onLeaveGroup(notice.LeaveGroupNotice.chat_group_id);
+    } else if (notice.NewMsgNotice != undefined) {
+      const curProject = this.rootStore.projectStore.getProject(notice.NewMsgNotice.project_id);
+      if (curProject == undefined) {
+        return;
+      }
+      await curProject.chat_store.onNewMsg(notice.NewMsgNotice.chat_group_id,notice.NewMsgNotice.chat_msg_id);
     }
   }
 

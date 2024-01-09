@@ -147,6 +147,7 @@ const PostDetail = () => {
                 </Space>
             }>
             <div className={s.post_wrap}>
+                {editStore.tocList.length > 0 && <PostTocPanel />}
                 <div className={s.post}>
                     {content !== null && (
                         <ReadOnlyEditor content={content} tocCallback={result => editStore.tocList = result} />
@@ -178,7 +179,7 @@ const PostDetail = () => {
                         )} pagination={{ total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
                     </Card>
                 </div>
-                {editStore.tocList.length > 0 && <PostTocPanel />}
+
             </div>
             {showAddComment == true && (
                 <EditCommentModal onCancel={() => setShowAddComment(false)}

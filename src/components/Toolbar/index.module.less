@@ -46,4 +46,25 @@
   :global(.ant-divider) {
     margin: 0;
   }
+
+  :global(.ant-switch-checked) {
+    background-color: orange;
+  }
+
+  :global(.ant-switch-small) {
+    height: 8px;
+  }
+
+  :global(.ant-switch-small .ant-switch-handle) {
+    width: 6px;
+    height: 6px;
+  }
+
+  :global(.ant-switch-handle) {
+    top: 1px;
+  }
+
+  :global(.ant-switch-small.ant-switch-checked .ant-switch-handle){
+    left: calc(100% - 8px);
+  }
 }

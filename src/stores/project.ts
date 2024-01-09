@@ -10,6 +10,7 @@ import type { History } from 'history';
 import { get_alarm_state } from "@/api/project_alarm";
 import { list_key as list_bulletin_key } from "@/api/project_bulletin";
 import { get_un_read_state } from "@/api/project_comment";
+import ProjectChatStore from './project_chat';
 
 export class WebProjectStatus {
   constructor() {
@@ -39,6 +40,7 @@ export class WebProjectStatus {
 export type WebProjectInfo = ProjectInfo & {
   project_status: WebProjectStatus;
   tag_list: TagInfo[];
+  chat_store: ProjectChatStore;
 };
 
 export default class ProjectStore {
@@ -71,6 +73,7 @@ export default class ProjectStore {
 
       this.setCodeCommentInfo("", "");
       this.showProjectSetting = null;
+      this.showChatAndComment = false;
     }
   }
 
@@ -91,7 +94,7 @@ export default class ProjectStore {
   }
 
   reset() {
-    runInAction(()=>{
+    runInAction(() => {
       this._curProjectId = "";
       this._projectList = [];
     });
@@ -104,6 +107,7 @@ export default class ProjectStore {
         ...info,
         project_status: new WebProjectStatus(),
         tag_list: [],
+        chat_store: new ProjectChatStore(this.rootStore, info.project_id),
       };
     });
     const prjMap: Map<string, WebProjectInfo> = new Map();
@@ -328,11 +332,21 @@ export default class ProjectStore {
     if (res) {
       const status = await this.clacProjectStatus(projectId);
       const tagList = await this.listTag(projectId);
-      const prj = { ...res.info, project_status: status, tag_list: tagList };
+      let prj: WebProjectInfo | null = null;
+
+      const tmpList = this._projectList.slice()
+      const index = tmpList.findIndex((item) => item.project_id == projectId);
+      if (index == -1) {
+        prj = { ...res.info, project_status: status, tag_list: tagList, chat_store: new ProjectChatStore(this.rootStore, projectId) };
+      } else {
+        prj = { ...res.info, project_status: status, tag_list: tagList, chat_store: tmpList[index].chat_store };
+
+      }
       runInAction(() => {
+        if (prj == null) {
+          return;
+        }
         this._projectMap.set(prj.project_id, prj);
-        const tmpList = this._projectList.slice()
-        const index = tmpList.findIndex((item) => item.project_id == prj.project_id);
         if (index == -1) {
           tmpList.unshift(prj);
         } else {
@@ -432,5 +446,22 @@ export default class ProjectStore {
     runInAction(() => {
       this._showPostHookModal = val;
     });
+  }
+
+  //显示沟通和评论
+  private _showChatAndComment: boolean = false;
+
+  get showChatAndComment(): boolean {
+    return this._showChatAndComment;
+  }
+
+  set showChatAndComment(val: boolean) {
+    runInAction(() => {
+      this._showChatAndComment = val;
+    });
+    if (val) {
+      this.curProject?.chat_store.loadGroupMember();
+      this.curProject?.chat_store.loadLastMsg();
+    }
   }
 }

@@ -40,7 +40,8 @@ const ApiList = () => {
             })} tabBarExtraContent={
                 <div style={{ marginRight: "20px" }}>
                     <CommentEntry projectId={store.api.projectId} targetType={COMMENT_TARGET_API_COLL}
-                        targetId={store.api.apiCollId} myUserId={store.api.userId} myAdmin={store.api.canAdmin} />
+                        targetId={store.api.apiCollId} myUserId={store.api.userId} myAdmin={store.api.canAdmin}
+                        defaultOpen={store.api.showComment} />
                 </div>
             } />
     );

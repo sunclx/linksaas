@@ -74,6 +74,12 @@ const MemberInfoPanel = () => {
         loadRoleList();
     }, [projectStore.curProjectId]);
 
+    useEffect(() => {
+        if (memberStore.showDetailMemberId != "") {
+            setActiveKey(memberStore.showDetailMemberId);
+        }
+    }, [memberStore.showDetailMemberId]);
+
     return (
         <>
             <Collapse bordered={true} className={s.member_list_wrap} defaultActiveKey="memberInfo">

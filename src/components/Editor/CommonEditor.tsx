@@ -36,6 +36,7 @@ export interface UseCommonEditorAttrs {
   historyInToolbar: boolean;
   clipboardInToolbar: boolean;
   commonInToolbar: boolean;
+  enableLink?: boolean;
   widgetInToolbar: boolean;
   showReminder: boolean;
   tocCallback?: (tocList: TocInfo[]) => void;
@@ -108,7 +109,7 @@ export const useCommonEditor = (attrs: UseCommonEditorAttrs) => {
       <AllStyledComponent>
         <Remirror manager={manager} initialContent={state} placeholder={attrs?.placeholder ?? "请输入......"}>
           <Toolbar items={toolbarItems} />
-          <FloatToolBar enableLink={attrs.commonInToolbar} />
+          <FloatToolBar enableLink={attrs.enableLink == true || attrs.commonInToolbar} />
           {attrs.showReminder && (
             <Reminder enabled={showReminder} />
           )}

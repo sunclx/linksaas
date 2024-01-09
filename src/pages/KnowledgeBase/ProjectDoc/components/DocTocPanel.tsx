@@ -15,6 +15,7 @@ const DocTocPanel = () => {
     
     return (
         <div className={s.toc}>
+            <h1>标题列表</h1>
             {editorStore.tocList.map((toc, index) => (
                 <div key={index} title={toc.title} style={{ paddingLeft: 20 * toc.level, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     <a onClick={e => {
