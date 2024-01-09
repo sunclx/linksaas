@@ -85,7 +85,8 @@ const SelectGroupMemberModal = (props: SelectGroupMemberModalProps) => {
                                 const tmpList = targetKeys.filter(item => moveKeys.includes(item) == false);
                                 setTargetKeys(tmpList);
                             }
-                        }} />
+                        }}
+                        filterOption={(value, row) => row.displayName.includes(value)} />
                 </Form.Item>
             </Form>
         </Modal>
