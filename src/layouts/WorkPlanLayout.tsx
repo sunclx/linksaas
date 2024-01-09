@@ -6,16 +6,20 @@ import WorkPlan from '@/pages/WorkPlan';
 import { APP_PROJECT_WORK_PLAN_PATH } from '@/utils/constant';
 import style from './style.module.less';
 import { renderRoutes } from 'react-router-config';
+import { useStores } from '@/hooks';
 
 const WorkPlanLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
-    const { pathname } = useLocation();
+  const projectStore = useStores('projectStore');
+  const { pathname } = useLocation();
 
-    return (<>
-        <WorkPlan />
-        {pathname != APP_PROJECT_WORK_PLAN_PATH && (
-      <div className={style.toolsModel}>{renderRoutes(route.routes)}</div>
-    )}
-    </>);
+  return (
+    <div style={{ width: projectStore.showChatAndComment ? "calc(100vw - 560px)" : "calc(100vw - 260px)" }}>
+      <WorkPlan />
+      {pathname != APP_PROJECT_WORK_PLAN_PATH && (
+        <div className={style.toolsModel}>{renderRoutes(route.routes)}</div>
+      )}
+    </div>
+  );
 };
 
 export default observer(WorkPlanLayout);

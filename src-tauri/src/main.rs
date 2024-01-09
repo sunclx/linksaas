@@ -37,6 +37,7 @@ mod project_admin_api_plugin;
 mod project_alarm_api_plugin;
 mod project_api_plugin;
 mod project_bulletin_api_plugin;
+mod project_chat_api_plugin;
 mod project_code_api_plugin;
 mod project_doc_api_plugin;
 mod project_entry_api_plugin;
@@ -401,7 +402,10 @@ fn main() {
                 }
                 "set_global_server" => {
                     let win = app.get_window("main").unwrap();
-                    if let Err(err) = win.emit("notice", notice_decode::new_show_global_server_setting_notice()) {
+                    if let Err(err) = win.emit(
+                        "notice",
+                        notice_decode::new_show_global_server_setting_notice(),
+                    ) {
                         println!("{:?}", err);
                     }
                 }
@@ -477,6 +481,7 @@ fn main() {
         .plugin(appstore_api_plugin::AppstoreApiPlugin::new())
         .plugin(appstore_admin_api_plugin::AppstoreAdminApiPlugin::new())
         .plugin(user_app_api_plugin::UserAppApiPlugin::new())
+        .plugin(project_chat_api_plugin::ProjectChatApiPlugin::new())
         .plugin(project_code_api_plugin::ProjectCodeApiPlugin::new())
         .plugin(project_idea_api_plugin::ProjectIdeaApiPlugin::new())
         .plugin(project_tool_api_plugin::ProjectToolApiPlugin::new())

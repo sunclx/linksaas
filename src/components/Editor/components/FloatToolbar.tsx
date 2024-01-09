@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { FloatingWrapper, useActive, useAttrs } from '@remirror/react';
-import Toolbar from './Toolbar';
 import { useCommands, useHelpers, useRemirrorContext } from '@remirror/react';
 import { LinkSelect } from '.';
 import type { LinkInfo } from '@/stores/linkAux';
-import { Select, Tooltip, Popover } from 'antd';
+import { Select, Tooltip, Popover, Space } from 'antd';
 import { CompactPicker } from 'react-color';
 import type { TextColorAttributes } from '@remirror/extension-text-color';
 import type { TextHighlightAttributes } from '@remirror/extension-text-highlight';
@@ -61,7 +60,7 @@ const headAndLinkItem = (
   <ToolbarGroup
     key="headAndLink"
     items={[<LinkBtn key="link" />]}
-    separator={true}
+    separator={false}
   />
 );
 
@@ -80,6 +79,7 @@ const FontSize = () => {
         commands.setFontSize(value);
       }}
       className={s.select}
+      dropdownStyle={{ zIndex: 9000 }}
     >
       {[12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40].map((item) => (
         <Select.Option value={item} key={item}>
@@ -212,7 +212,7 @@ const fontItem = (
   <ToolbarGroup
     key="font"
     items={[<FontSize key="fontSize" />, <FontColor key="fontColor" />, <FontHightLight key="fontHightLight" />]}
-    separator={true}
+    separator={false}
   />
 );
 
@@ -362,17 +362,18 @@ export interface FloatToolBarProps {
 }
 
 const FloatToolBar = (props: FloatToolBarProps) => {
-  const itemList = [];
-  if (props.enableLink) {
-    itemList.push(headAndLinkItem);
-  }
-  itemList.push(fontItem);
-  itemList.push(formatItem);
-
   return (
-    <FloatingWrapper displayArrow={true} positioner="selection" placement="auto" enabled>
-      <Toolbar items={itemList}/>
-    </FloatingWrapper>
+    <FloatingWrapper displayArrow={true} positioner="selection" placement="bottom-start" enabled>
+      <div className='remirror-toolbar' style={{ display: "block", height: "62px", margin: "2px 0px" }}>
+        <Space>
+          {props.enableLink && (<>
+            {headAndLinkItem}
+          </>)}
+          {fontItem}
+        </Space>
+        {formatItem}
+      </div>
+    </FloatingWrapper >
   );
 };
 

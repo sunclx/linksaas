@@ -117,6 +117,9 @@ export type ProjectInfo = {
   pages_fs_id: string;
   board_fs_id: string;
   file_fs_id: string;
+
+  default_chat_group_id: string;
+
   // default_doc_space_id: string;
   user_project_perm: UserProjectPerm;
   setting: Setting;

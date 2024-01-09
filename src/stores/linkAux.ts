@@ -243,31 +243,35 @@ export class LinkEntryInfo {
 }
 
 export class LinkApiCollInfo {
-  constructor(content: string, projectId: string, apiCollId: string) {
+  constructor(content: string, projectId: string, apiCollId: string, showComment: boolean = true) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_API_COLL;
     this.linkContent = content;
     this.projectId = projectId;
     this.apiCollId = apiCollId;
+    this.showComment = showComment;
   }
 
   linkTargeType: LINK_TARGET_TYPE;
   linkContent: string;
   projectId: string;
   apiCollId: string;
+  showComment: boolean;
 }
 
 export class LinkDataAnnoInfo {
-  constructor(content: string, projectId: string, annoProjectId: string) {
+  constructor(content: string, projectId: string, annoProjectId: string, showComment: boolean = true) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_DATA_ANNO;
     this.linkContent = content;
     this.projectId = projectId;
     this.annoProjectId = annoProjectId;
+    this.showComment = showComment;
   }
 
   linkTargeType: LINK_TARGET_TYPE;
   linkContent: string;
   projectId: string;
   annoProjectId: string;
+  showComment: boolean;
 }
 
 export class LinkImageInfo {
@@ -457,7 +461,7 @@ class LinkAuxStore {
       if (this.rootStore.projectStore.curProjectId != apiCollLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(apiCollLink.projectId);
       }
-      if(this.rootStore.projectStore.curProject?.setting.disable_api_collection == true){
+      if (this.rootStore.projectStore.curProject?.setting.disable_api_collection == true) {
         message.error("已关闭接口集合功能");
         return;
       }
@@ -466,17 +470,17 @@ class LinkAuxStore {
         project_id: apiCollLink.projectId,
         api_coll_id: apiCollLink.apiCollId,
       }));
-      await this.openApiCollPage(res.info.api_coll_id, res.info.name + "(只读模式)", res.info.api_coll_type, res.info.default_addr, false, this.rootStore.projectStore.isAdmin);
+      await this.openApiCollPage(res.info.api_coll_id, res.info.name + "(只读模式)", res.info.api_coll_type, res.info.default_addr, false, this.rootStore.projectStore.isAdmin, apiCollLink.showComment);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_DATA_ANNO) {
       const dataAnnoLink = link as LinkDataAnnoInfo;
       if (this.rootStore.projectStore.curProjectId != dataAnnoLink.projectId) {
         await this.rootStore.projectStore.setCurProjectId(dataAnnoLink.projectId);
       }
-      if(this.rootStore.projectStore.curProject?.setting.disable_data_anno == true){
+      if (this.rootStore.projectStore.curProject?.setting.disable_data_anno == true) {
         message.error("已关闭数据标注功能");
         return;
       }
-      await this.openAnnoProjectPage(dataAnnoLink.annoProjectId, dataAnnoLink.linkContent);
+      await this.openAnnoProjectPage(dataAnnoLink.annoProjectId, dataAnnoLink.linkContent, dataAnnoLink.showComment);
     } else if (link.linkTargeType == LINK_TARGET_TYPE.LINK_TARGET_EXTERNE) {
       const externLink = link as LinkExterneInfo;
       let destUrl = externLink.destUrl;
@@ -627,34 +631,34 @@ class LinkAuxStore {
   }
 
   //打开接口集合页面
-  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string, canEdit: boolean, canAdmin: boolean) {
+  async openApiCollPage(apiCollId: string, name: string, apiCollType: API_COLL_TYPE, defaultAddr: string, canEdit: boolean, canAdmin: boolean, showComment: boolean = false) {
     const label = `apiColl:${apiCollId}`;
     const pos = await appWindow.innerPosition();
     if (apiCollType == API_COLL_GRPC) {
       new WebviewWindow(label, {
         title: `${name}(GRPC)`,
-        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}`,
+        url: `api_grpc.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}&showComment=${showComment}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
     } else if (apiCollType == API_COLL_OPENAPI) {
       new WebviewWindow(label, {
         title: `${name}(OPENAPI/SWAGGER)`,
-        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}`,
+        url: `api_swagger.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&fsId=${this.rootStore.projectStore.curProject?.api_coll_fs_id ?? ""}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}&showComment=${showComment}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
     } else if (apiCollType == API_COLL_CUSTOM) {
       new WebviewWindow(label, {
         title: `${name}(自定义接口)`,
-        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}`,
+        url: `api_custom.html?projectId=${this.rootStore.projectStore.curProjectId}&apiCollId=${apiCollId}&remoteAddr=${defaultAddr}&edit=${canEdit}&admin=${canAdmin}&showComment=${showComment}`,
         x: pos.x + Math.floor(Math.random() * 200),
         y: pos.y + Math.floor(Math.random() * 200),
       });
     }
   }
 
-  async openAnnoProjectPage(annoProjectId: string, annoName: string) {
+  async openAnnoProjectPage(annoProjectId: string, annoName: string, showComment: boolean = false) {
     const label = `dataAnno:${annoProjectId}`
     const view = WebviewWindow.getByLabel(label);
     if (view != null) {
@@ -672,7 +676,7 @@ class LinkAuxStore {
 
     new WebviewWindow(label, {
       title: `标注项目(${annoName})`,
-      url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}`,
+      url: `data_anno.html?projectId=${projectStore.curProjectId}&annoProjectId=${annoProjectId}&admin=${projectStore.isAdmin}&fsId=${projectStore.curProject?.data_anno_fs_id ?? ""}&showComment=${showComment}`,
       width: 1000,
       minWidth: 800,
       height: 800,

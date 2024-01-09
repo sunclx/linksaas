@@ -15,6 +15,7 @@ const CustomPage = () => {
     const remoteAddr = urlParams.get("remoteAddr") ?? "";
     const editStr = urlParams.get("edit") ?? "";
     const canAdmin = (urlParams.get("admin") ?? "false").toLocaleLowerCase();
+    const showComment = (urlParams.get("showComment") ?? "false").toLocaleLowerCase();
 
     const store = useCustomStores();
 
@@ -25,6 +26,7 @@ const CustomPage = () => {
         store.api.projectId = projectId;
         store.api.remoteAddr = remoteAddr;
         store.api.canAdmin = canAdmin == "true";
+        store.api.showComment = showComment == "true";
         get_user_id().then(userId => store.api.userId = userId);
         store.api.initUser().then(() => {
             store.api.loadApiCollInfo();

@@ -18,6 +18,7 @@ export interface MethodCallListProps {
     protoPath: string;
     curMethodList: MethodWithServiceInfo[];
     onClose: (method: MethodWithServiceInfo) => void;
+    showComment?: boolean;
 }
 
 const MethodCallList = (props: MethodCallListProps) => {
@@ -67,7 +68,8 @@ const MethodCallList = (props: MethodCallListProps) => {
             }} tabBarExtraContent={
                 <div style={{ marginRight: "20px" }}>
                     <CommentEntry projectId={props.projectId} targetType={COMMENT_TARGET_API_COLL}
-                        targetId={props.apiCollId} myUserId={props.userId} myAdmin={props.canAdmin} />
+                        targetId={props.apiCollId} myUserId={props.userId} myAdmin={props.canAdmin}
+                        defaultOpen={props.showComment ?? false} />
                 </div>
             } />
     );

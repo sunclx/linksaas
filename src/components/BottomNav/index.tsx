@@ -1,4 +1,4 @@
-import { Button, Popover, Tooltip } from 'antd';
+import { Button,Popover,Tooltip } from 'antd';
 import React from 'react';
 import s from './index.module.less';
 import {
@@ -11,10 +11,8 @@ import { observer } from 'mobx-react';
 import AlarmHeader from './AlarmHeader';
 import ProjectTipList from '../Header/ProjectTipList';
 import MemberList from './MemberList';
-import { useLocation } from 'react-router-dom';
 
 const RightFloat = observer(() => {
-  const location = useLocation();
   const projectStore = useStores('projectStore');
 
   return (
