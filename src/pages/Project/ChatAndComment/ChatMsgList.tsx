@@ -22,6 +22,7 @@ const ChatMsgList = () => {
     const { editor, editorRef } = useCommonEditor({
         content: "",
         fsId: "",
+        enableLink: true,
         ownerType: FILE_OWNER_TYPE_NONE,
         ownerId: "",
         projectId: projectStore.curProjectId,
@@ -150,7 +151,7 @@ const ChatMsgList = () => {
             </Space>
         }
             headStyle={{ padding: "0px 0px" }} bordered={false}
-            bodyStyle={{ height: "calc(100vh - 181px)", padding: "0px 0px", display: "flex", flexDirection: "column" }}
+            bodyStyle={{ height: "calc(100vh - 185px)", padding: "0px 0px", display: "flex", flexDirection: "column" }}
             extra={
                 <Popover trigger="hover" placement="bottomLeft" content={<GroupMemberList chatGroupId={projectStore.curProject?.chat_store.curGroupId ?? ""} />}>
                     <span style={{ cursor: "default" }}><InfoCircleOutlined />&nbsp;{projectStore.curProject?.chat_store.curGroup?.memberList.length ?? 0}人&nbsp;&nbsp;</span>
