@@ -211,6 +211,19 @@ export type GetMsgResponse = {
     msg: ChatMsgInfo;
 };
 
+export type GetLastMsgRequest ={
+    session_id: string;
+    project_id: string;
+    chat_group_id: string;
+};
+
+export type GetLastMsgResponse ={
+    code: number;
+    err_msg: string;
+    has_msg: boolean;
+    msg: ChatMsgInfo;
+};
+
 export type ClearUnreadRequest = {
     session_id: string;
     project_id: string;
@@ -347,6 +360,16 @@ export async function get_msg(request: GetMsgRequest): Promise<GetMsgResponse> {
         request,
     });
 }
+
+//获取最后消息
+export async function get_last_msg(request: GetLastMsgRequest): Promise<GetLastMsgResponse> {
+    const cmd = 'plugin:project_chat_api|get_last_msg';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetLastMsgResponse>(cmd, {
+        request,
+    });
+}
+
 //清除未读状态
 export async function clear_unread(request: ClearUnreadRequest): Promise<ClearUnreadResponse> {
     const cmd = 'plugin:project_chat_api|clear_unread';

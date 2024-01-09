@@ -387,6 +387,32 @@ async fn get_msg<R: Runtime>(
 }
 
 #[tauri::command]
+async fn get_last_msg<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetLastMsgRequest,
+) -> Result<GetLastMsgResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChatApiClient::new(chan.unwrap());
+    match client.get_last_msg(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_last_msg_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("get_last_msg".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn clear_unread<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -435,6 +461,7 @@ impl<R: Runtime> ProjectChatApiPlugin<R> {
                 list_msg,
                 list_all_last_msg,
                 get_msg,
+                get_last_msg,
                 clear_unread,
             ]),
         }

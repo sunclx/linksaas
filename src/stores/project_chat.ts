@@ -1,7 +1,7 @@
 import type { RootStore } from './index';
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { ChatGroupInfo, ChatGroupMemberInfo, ChatMsgInfo, LIST_MSG_TYPE } from "@/api/project_chat";
-import { list_group, get_group, list_group_member, list_all_group_member, list_all_last_msg, get_msg, list_msg, LIST_MSG_BEFORE, LIST_MSG_AFTER } from "@/api/project_chat";
+import { list_group, get_group, list_group_member, list_all_group_member, list_all_last_msg, get_msg, list_msg, get_last_msg, LIST_MSG_BEFORE, LIST_MSG_AFTER } from "@/api/project_chat";
 import { request } from '@/utils/request';
 
 const MAC_MSG_CACHE_SIZE = 60;
@@ -181,9 +181,20 @@ export default class ProjectChatStore {
             newGroup.memberList = memberRes.member_list;
         }
 
+
         let tmpList = this._chatGroupList.slice();
         const index = tmpList.findIndex(item => item.groupInfo.chat_group_id == groupId);
         if (index == -1) {
+            if (this.hasInitLastMsg) {
+                const lastMsgRes = await request(get_last_msg({
+                    session_id: this.rootStore.userStore.sessionId,
+                    project_id: this.curProjectId,
+                    chat_group_id: groupId,
+                }));
+                if (lastMsgRes.has_msg) {
+                    newGroup.lastMsg = lastMsgRes.msg;
+                }
+            }
             tmpList.push(newGroup);
         } else {
             tmpList[index] = newGroup;
