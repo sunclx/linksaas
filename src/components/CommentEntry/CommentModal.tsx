@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { COMMENT_TARGET_TYPE, Comment } from "@/api/project_comment";
-import { add_comment, list_comment } from "@/api/project_comment";
+import { add_comment, list_comment, remove_un_read } from "@/api/project_comment";
 import { Button, List, Modal, message } from "antd";
 import { is_empty_doc, useCommonEditor } from "../Editor";
 import { FILE_OWNER_TYPE_NONE } from "@/api/fs";
@@ -23,7 +23,6 @@ export interface CommentModalProps {
 const PAGE_SIZE = 10;
 
 const CommentModal = (props: CommentModalProps) => {
-
     const [commentList, setCommentList] = useState<Comment[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [curPage, setCurPage] = useState(0);
@@ -80,9 +79,23 @@ const CommentModal = (props: CommentModalProps) => {
         }
     };
 
+    const removeUnread = async () => {
+        const sessionId = await get_session();
+        await request(remove_un_read({
+            session_id: sessionId,
+            project_id: props.projectId,
+            target_type: props.targetType,
+            target_id: props.targetId,
+        }));
+    };
+
     useEffect(() => {
         loadCommentList();
     }, [curPage, props.targetId, dataVersion]);
+
+    useEffect(() => {
+        removeUnread();
+    }, []);
 
     useEffect(() => {
         const unListenFn = listen<NoticeType.AllNotice>("notice", ev => {
