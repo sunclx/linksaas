@@ -25,8 +25,10 @@ const ProjectLayout: React.FC<{ route: IRouteConfig }> = ({ route }) => {
                 {renderRoutes(route.routes)}
             </div>
             {projectStore.showChatAndComment && (
-                <div style={{ width: "300px", marginRight: "60px", backgroundColor: "white", borderLeft: "1px solid #e4e4e8" }}>
-                    <ChatAndCommentPanel />
+                <div style={{ width: "300px", marginRight: "60px", borderLeft: "1px solid #e4e4e8" }}>
+                    <div style={{ width: "290px", backgroundColor: "white",margin:"5px 5px",height:"calc(100vh - 96px)",borderRadius:"10px" }}>
+                        <ChatAndCommentPanel />
+                    </div>
                 </div>
             )}
             {projectStore.showChatAndComment == false && <div style={{ width: "60px" }} />}

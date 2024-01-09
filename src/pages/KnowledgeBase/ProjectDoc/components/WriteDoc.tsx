@@ -95,7 +95,7 @@ const WriteDocInner = observer((props: WriteDocInnerProps) => {
 
   return (
     <Card bordered={false}
-      bodyStyle={{ width: projectStore.showChatAndComment ? "calc(100vw - 560px)" : "calc(100vw - 260px)" }}
+      bodyStyle={{ width: projectStore.showChatAndComment ? "calc(100vw - 570px)" : "calc(100vw - 260px)" }}
       extra={
         <Space size="large">
           <Button

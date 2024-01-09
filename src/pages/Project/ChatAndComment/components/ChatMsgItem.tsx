@@ -25,10 +25,10 @@ const ChatMsgItem = (props: ChatMsgItemProps) => {
 
     return (
         <Card title={
-            <Space>
-                <UserPhoto logoUri={props.msg.send_logo_uri} style={{ width: "20px", borderRadius: "10px", margin: "0px 10px", }} />
+            <Space size="small">
+                <UserPhoto logoUri={props.msg.send_logo_uri} style={{ width: "20px", borderRadius: "10px", margin: "0px 0px", }} />
                 {props.msg.send_display_name}
-                {moment(props.msg.send_time).format("YYYY-MM-DD HH:mm:ss")}
+                {moment(props.msg.send_time).format("YYYY-MM-DD HH:mm")}
             </Space>
         } style={{ width: "100%" }} bordered={false} headStyle={{ border: "none", padding: "0px 10px" }}
             bodyStyle={{ padding: "0px 10px" }}
