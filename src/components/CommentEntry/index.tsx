@@ -67,7 +67,10 @@ const CommentEntry = (props: CommentEntryProps) => {
             </Button>
             {openCommentModal == true && (
                 <CommentModal projectId={props.projectId} targetType={props.targetType} targetId={props.targetId}
-                    onCancel={() => setOpenCommentModal(false)}
+                    onCancel={() => {
+                        setOpenCommentModal(false);
+                        checkHasUnread();
+                    }}
                     myUserId={props.myUserId} myAdmin={props.myAdmin} />
             )}
         </div>

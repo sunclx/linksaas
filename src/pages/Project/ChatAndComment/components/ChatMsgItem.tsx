@@ -52,7 +52,7 @@ const ChatMsgItem = (props: ChatMsgItemProps) => {
                     )}
                 </>
             }>
-            <div style={{ marginLeft: "40px", marginRight: "10px", padding: "10px", backgroundColor: "#f8f8f8", borderRadius: "4px" }}>
+            <div style={{ marginLeft: "26px", marginRight: "10px", padding: "10px", backgroundColor: "#f8f8f8", borderRadius: "4px" }}>
                 <ReadOnlyEditor content={props.msg.content} keywordList={ideaStore.keywordList} keywordCallback={kwList => setIdeaKwList(kwList)} />
             </div>
         </Card>

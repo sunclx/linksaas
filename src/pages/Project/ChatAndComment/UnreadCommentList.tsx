@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react';
 import { Table } from "antd";
 import {
-    type UnReadInfo, list_un_read, remove_un_read,
+    type UnReadInfo, list_un_read,
     COMMENT_TARGET_ENTRY, COMMENT_TARGET_REQUIRE_MENT, COMMENT_TARGET_TASK, COMMENT_TARGET_BUG, COMMENT_TARGET_API_COLL, COMMENT_TARGET_DATA_ANNO
 } from "@/api/project_comment";
 import { useStores } from "@/hooks";
@@ -36,16 +36,6 @@ const UnreadCommentList = () => {
         }));
         setTotalCount(res.total_count);
         setUnReadInfoList(res.un_read_info_list);
-    };
-
-    const removeUnRead = async (info: UnReadInfo) => {
-        await request(remove_un_read({
-            session_id: userStore.sessionId,
-            project_id: projectStore.curProjectId,
-            target_type: info.target_type,
-            target_id: info.target_id,
-        }));
-        await loadUnReadInfoList();
     };
 
     const columns: ColumnsType<UnReadInfo> = [
@@ -86,22 +76,19 @@ const UnreadCommentList = () => {
                     }}>{row.title}</a>
             ),
         },
-        {
-            title: "操作",
-            width: 80,
-            render: (_, row: UnReadInfo) => (
-                <a onClick={e => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    removeUnRead(row);
-                }}>标记为已读</a>
-            ),
-        }
     ];
 
     useEffect(() => {
+        if (curPage != 0) {
+            setCurPage(0);
+        } else {
+            loadUnReadInfoList();
+        }
+    }, [projectStore.curProjectId, projectStore.curProject?.project_status.unread_comment_count]);
+
+    useEffect(() => {
         loadUnReadInfoList();
-    }, [projectStore.curProjectId, curPage]);
+    }, [curPage]);
 
     return (
         <div>
