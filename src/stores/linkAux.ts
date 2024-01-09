@@ -243,7 +243,7 @@ export class LinkEntryInfo {
 }
 
 export class LinkApiCollInfo {
-  constructor(content: string, projectId: string, apiCollId: string, showComment: boolean = true) {
+  constructor(content: string, projectId: string, apiCollId: string, showComment: boolean = false) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_API_COLL;
     this.linkContent = content;
     this.projectId = projectId;
@@ -259,7 +259,7 @@ export class LinkApiCollInfo {
 }
 
 export class LinkDataAnnoInfo {
-  constructor(content: string, projectId: string, annoProjectId: string, showComment: boolean = true) {
+  constructor(content: string, projectId: string, annoProjectId: string, showComment: boolean = false) {
     this.linkTargeType = LINK_TARGET_TYPE.LINK_TARGET_DATA_ANNO;
     this.linkContent = content;
     this.projectId = projectId;
