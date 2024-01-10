@@ -102,6 +102,7 @@ export interface ChatMsgItemProps {
 const ChatMsgItem = (props: ChatMsgItemProps) => {
     const history = useHistory();
 
+    const appStore = useStores("appStore");
     const userStore = useStores("userStore");
     const ideaStore = useStores("ideaStore");
     const projectStore = useStores("projectStore");
@@ -145,7 +146,9 @@ const ChatMsgItem = (props: ChatMsgItemProps) => {
                 onMouseEnter={e => {
                     e.stopPropagation();
                     e.preventDefault();
-                    setCurTime(moment().valueOf());
+                    if (appStore.clientCfg != undefined) {
+                        setCurTime(moment().valueOf() - appStore.clientCfg.client_time + appStore.clientCfg.server_time);
+                    }
                     setHover(true);
                 }}
                 onMouseLeave={e => {
@@ -164,7 +167,7 @@ const ChatMsgItem = (props: ChatMsgItemProps) => {
                 )}
                 <ReadOnlyEditor content={props.msg.content} keywordList={ideaStore.keywordList} keywordCallback={kwList => setIdeaKwList(kwList)} />
                 {props.msg.has_changed && (
-                    <div style={{ position: "absolute", right: "4px", bottom: "4px",color:"blue" }}>(内容经过修改)</div>
+                    <div style={{ position: "absolute", right: "4px", bottom: "4px", color: "blue" }}>(内容经过修改)</div>
                 )}
             </div>
             {showEditModal == true && (
