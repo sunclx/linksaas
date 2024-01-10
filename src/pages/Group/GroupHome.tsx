@@ -18,6 +18,7 @@ const GroupHome = () => {
     const userStore = useStores('userStore');
     const projectStore = useStores('projectStore');
     const groupStore = useStores('groupStore');
+    const appStore = useStores('appStore');
 
     const [activeKey, setActiveKey] = useState("recommend");
     const [groupInfoList, setGroupInfoList] = useState<GroupInfo[]>([]);
@@ -60,6 +61,7 @@ const GroupHome = () => {
 
     useMemo(() => {
         projectStore.setCurProjectId('');
+        appStore.focusMode = false;
         groupStore.curGroup = null;
         groupStore.curPostKey = null;
     }, []);

@@ -127,6 +127,7 @@ const ProjectManager = () => {
 
     useMemo(() => {
         projectStore.setCurProjectId('');
+        appStore.focusMode = false;
     }, []);
 
     return (
