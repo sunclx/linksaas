@@ -320,11 +320,18 @@ export namespace chat {
     chat_msg_id: string;
   };
 
+  export type UpdateMsgNotice = {
+    project_id: string;
+    chat_group_id: string;
+    chat_msg_id: string;
+  };
+
   export type AllNotice = {
     UpdateGroupNotice?: UpdateGroupNotice;
     UpdateGroupMemberNotice?: UpdateGroupMemberNotice;
     LeaveGroupNotice?: LeaveGroupNotice;
     NewMsgNotice?: NewMsgNotice;
+    UpdateMsgNotice?: UpdateMsgNotice;
   };
 }
 

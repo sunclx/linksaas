@@ -283,6 +283,7 @@ pub mod chat {
         UpdateGroupMemberNotice(notices_chat::UpdateGroupMemberNotice),
         LeaveGroupNotice(notices_chat::LeaveGroupNotice),
         NewMsgNotice(notices_chat::NewMsgNotice),
+        UpdateMsgNotice(notices_chat::UpdateMsgNotice),
     }
 
     pub fn decode_notice(data: &Any) -> Option<Notice> {
@@ -302,6 +303,10 @@ pub mod chat {
         } else if data.type_url == notices_chat::NewMsgNotice::type_url() {
             if let Ok(notice) = notices_chat::NewMsgNotice::decode(data.value.as_slice()) {
                 return Some(Notice::NewMsgNotice(notice));
+            }
+        } else if data.type_url == notices_chat::UpdateMsgNotice::type_url() {
+            if let Ok(notice) = notices_chat::UpdateMsgNotice::decode(data.value.as_slice()) {
+                return Some(Notice::UpdateMsgNotice(notice));
             }
         }
         None

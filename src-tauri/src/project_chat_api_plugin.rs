@@ -307,6 +307,32 @@ async fn send_msg<R: Runtime>(
 }
 
 #[tauri::command]
+async fn update_msg_content<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateMsgContentRequest,
+) -> Result<UpdateMsgContentResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectChatApiClient::new(chan.unwrap());
+    match client.update_msg_content(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_msg_content_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit("notice", new_wrong_session_notice("update_msg_content".into()))
+                {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
 async fn list_msg<R: Runtime>(
     app_handle: AppHandle<R>,
     window: Window<R>,
@@ -458,6 +484,7 @@ impl<R: Runtime> ProjectChatApiPlugin<R> {
                 list_group_member,
                 list_all_group_member,
                 send_msg,
+                update_msg_content,
                 list_msg,
                 list_all_last_msg,
                 get_msg,

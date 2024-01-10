@@ -13,6 +13,8 @@ export type ChatMsgInfo = {
     send_display_name: string;
     send_logo_uri: string;
     send_time: number;
+    has_changed: boolean;
+    change_dead_line_time: number;
 };
 
 export type UserPerm = {
@@ -172,6 +174,19 @@ export type SendMsgResponse = {
     chat_msg_id: string;
 };
 
+export type UpdateMsgContentRequest = {
+    session_id: string;
+    project_id: string;
+    chat_group_id: string;
+    chat_msg_id: string;
+    content: string;
+}
+
+export type UpdateMsgContentResponse = {
+    code: number;
+    err_msg: string;
+}
+
 export type ListMsgRequest = {
     session_id: string;
     project_id: string;
@@ -211,13 +226,13 @@ export type GetMsgResponse = {
     msg: ChatMsgInfo;
 };
 
-export type GetLastMsgRequest ={
+export type GetLastMsgRequest = {
     session_id: string;
     project_id: string;
     chat_group_id: string;
 };
 
-export type GetLastMsgResponse ={
+export type GetLastMsgResponse = {
     code: number;
     err_msg: string;
     has_msg: boolean;
@@ -330,6 +345,15 @@ export async function send_msg(request: SendMsgRequest): Promise<SendMsgResponse
     const cmd = 'plugin:project_chat_api|send_msg';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<SendMsgResponse>(cmd, {
+        request,
+    });
+}
+
+//更新消息内容
+export async function update_msg_content(request: UpdateMsgContentRequest): Promise<UpdateMsgContentResponse> {
+    const cmd = 'plugin:project_chat_api|update_msg_content';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateMsgContentResponse>(cmd, {
         request,
     });
 }
