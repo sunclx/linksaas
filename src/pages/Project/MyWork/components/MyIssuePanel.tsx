@@ -157,8 +157,6 @@ const WatchIssueList = (props: WatchIssueListProps) => {
 
 
 const MyTaskPanel = () => {
-    const projectStore = useStores('projectStore');
-
     const [activeKey, setActiveKey] = useState("myTask");
 
     const getTabItems = () => {
@@ -187,32 +185,30 @@ const MyTaskPanel = () => {
             }
         ];
 
-        if (projectStore.curProject?.setting.hide_watch_task == false) {
-            retList.push({
-                key: "watchTask",
-                label: "关注任务",
-                children: (
-                    <>
-                        {activeKey == "watchTask" && (
-                            <WatchIssueList issueType={ISSUE_TYPE_TASK} />
-                        )}
-                    </>
-                ),
-            });
-        }
-        if (projectStore.curProject?.setting.hide_watch_bug == false) {
-            retList.push({
-                key: "watchBug",
-                label: "关注缺陷",
-                children: (
-                    <>
-                        {activeKey == "watchBug" && (
-                            <WatchIssueList issueType={ISSUE_TYPE_BUG} />
-                        )}
-                    </>
-                ),
-            });
-        }
+        retList.push({
+            key: "watchTask",
+            label: "关注任务",
+            children: (
+                <>
+                    {activeKey == "watchTask" && (
+                        <WatchIssueList issueType={ISSUE_TYPE_TASK} />
+                    )}
+                </>
+            ),
+        });
+
+        retList.push({
+            key: "watchBug",
+            label: "关注缺陷",
+            children: (
+                <>
+                    {activeKey == "watchBug" && (
+                        <WatchIssueList issueType={ISSUE_TYPE_BUG} />
+                    )}
+                </>
+            ),
+        });
+
         return retList;
     };
 
