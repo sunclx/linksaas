@@ -105,12 +105,7 @@ type SetMemberRoleResponse = {
   err_msg: string;
 };
 
-export type ExtraStateInfo = {
-  state_desc: string;
-  state_end_time: number;
-  state_remain_hour: number;
-  need_help_desc: string;
-};
+
 
 
 export type MemberInfo = {
@@ -118,7 +113,6 @@ export type MemberInfo = {
   member_user_id: string;
   role_id: string;
   role_name: string;
-  extra_state_info?: ExtraStateInfo;
   last_event_id: string;
   create_time: number;
   update_time: number;
@@ -142,29 +136,6 @@ type GetMemberResponse = {
   code: number;
   err_msg: string;
   member: MemberInfo;
-};
-
-export type UpdateStateDescRequest = {
-  session_id: string;
-  project_id: string;
-  state_desc: string;
-  state_remain_hour: number;
-};
-
-export type UpdateStateDescResponse = {
-  code: number;
-  err_msg: string;
-};
-
-export type UpdateNeedHelpDescRequest = {
-  session_id: string;
-  project_id: string;
-  need_help_desc: string;
-};
-
-export type UpdateNeedHelpDescResponse = {
-  code: number;
-  err_msg: string;
 };
 
 export type GenOneTimeTokenRequest = {
@@ -398,24 +369,6 @@ export async function get_member(
   console.log(`%c${cmd}`, 'color:#0f0;', request);
 
   return invoke<GetMemberResponse>(cmd, {
-    request,
-  });
-}
-
-//更新状态描述
-export async function update_state_desc(request: UpdateStateDescRequest): Promise<UpdateStateDescResponse> {
-  const cmd = 'plugin:project_member_api|update_state_desc';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<UpdateStateDescResponse>(cmd, {
-    request,
-  });
-}
-
-//更新需要帮助描述
-export async function update_need_help_desc(request: UpdateNeedHelpDescRequest): Promise<UpdateNeedHelpDescResponse> {
-  const cmd = 'plugin:project_member_api|update_need_help_desc';
-  console.log(`%c${cmd}`, 'color:#0f0;', request);
-  return invoke<UpdateNeedHelpDescResponse>(cmd, {
     request,
   });
 }
