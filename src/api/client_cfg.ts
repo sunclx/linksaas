@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
+import moment from 'moment';
 
 export type ExtraMenuItem = {
   name: string;
@@ -23,6 +24,8 @@ export type GetCfgResponse = {
   can_register: boolean;
   enable_admin: boolean;
   login_prompt: string;
+  server_time: number;
+  client_time: number; //本地属性，非服务端返回
 };
 
 export type ServerInfo = {
@@ -41,9 +44,11 @@ export type ListServerResult = {
  * * 在左侧显示的额外功能板块
  */
 export async function get_cfg(): Promise<GetCfgResponse> {
-  return invoke<GetCfgResponse>('plugin:client_cfg_api|get_cfg', {
+  const res = await invoke<GetCfgResponse>('plugin:client_cfg_api|get_cfg', {
     request: {},
   });
+  res.client_time = moment().valueOf();
+  return res;
 }
 
 export async function add_server(addr: string): Promise<void> {

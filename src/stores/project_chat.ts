@@ -378,6 +378,36 @@ export default class ProjectChatStore {
         }
     }
 
+    async onUpdateMsg(groupId: string, msgId: string) {
+        if (!this.hasInitLastMsg) {
+            return;
+        }
+        const getRes = await request(get_msg({
+            session_id: this.rootStore.userStore.sessionId,
+            project_id: this.curProjectId,
+            chat_group_id: groupId,
+            chat_msg_id: msgId,
+        }));
+        //检查是否更新lastMsg
+        const tmpGroupList = this._chatGroupList.slice();
+        const groupIndex = tmpGroupList.findIndex(item => item.groupInfo.chat_group_id == groupId);
+        if (groupIndex != -1 && (tmpGroupList[groupIndex].lastMsg?.chat_msg_id ?? "") == msgId) {
+            tmpGroupList[groupIndex].lastMsg = getRes.msg;
+            runInAction(() => {
+                this._chatGroupList = tmpGroupList;
+            });
+        }
+        //检查消息列表
+        const tmpMsgList = this._curGroupMsgList.slice();
+        const msgIndex = tmpMsgList.findIndex(item => item.chat_msg_id == msgId);
+        if (msgIndex != -1) {
+            tmpMsgList[msgIndex] = getRes.msg;
+            runInAction(() => {
+                this._curGroupMsgList = tmpMsgList;
+            });
+        }
+    }
+
     hasLastMsg(): boolean {
         const index = this._curGroupMsgList.findIndex(item => item.chat_msg_id == this.curGroup?.lastMsg?.chat_msg_id);
         return index != -1;
