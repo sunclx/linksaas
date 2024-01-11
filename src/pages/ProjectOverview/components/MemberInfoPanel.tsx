@@ -17,7 +17,6 @@ import moment from "moment";
 import { SHORT_NOTE_BUG, SHORT_NOTE_TASK } from "@/api/short_note";
 import { LinkBugInfo, LinkTaskInfo } from "@/stores/linkAux";
 import InviteListModal from "./InviteListModal";
-import { ReadOnlyEditor } from "@/components/Editor";
 
 const MemberInfoPanel = () => {
     const history = useHistory();
@@ -236,14 +235,6 @@ const MemberInfoPanel = () => {
 
                                             </Descriptions.Item>
                                         )}
-                                        <Descriptions.Item label="工作备注" span={2}>
-                                            {(member.member.extra_state_info?.state_end_time ?? 0) > moment().valueOf() && (
-                                                <ReadOnlyEditor content={member.member.extra_state_info?.state_desc ?? ""} />
-                                            )}
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label="需要帮助" span={2}>
-                                            <ReadOnlyEditor content={member.member.extra_state_info?.need_help_desc ?? ""} />
-                                        </Descriptions.Item>
                                         {member.short_note_list.length > 0 && (
                                             <Descriptions.Item label="桌面便签" span={2}>
                                                 {member.short_note_list.map(item => (

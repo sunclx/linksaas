@@ -193,6 +193,12 @@ class NoticeStore {
         return;
       }
       await curProject.chat_store.onNewMsg(notice.NewMsgNotice.chat_group_id,notice.NewMsgNotice.chat_msg_id);
+    } else if(notice.UpdateMsgNotice != undefined){
+      const curProject = this.rootStore.projectStore.getProject(notice.UpdateMsgNotice.project_id);
+      if (curProject == undefined) {
+        return;
+      }
+      await curProject.chat_store.onUpdateMsg(notice.UpdateMsgNotice.chat_group_id,notice.UpdateMsgNotice.chat_msg_id);
     }
   }
 

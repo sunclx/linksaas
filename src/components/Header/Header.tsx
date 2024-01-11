@@ -5,7 +5,7 @@ import style from './index.module.less';
 import { Badge, Button, Layout, Popover, Progress, Segmented, Space, Table, message } from 'antd';
 import { observer } from 'mobx-react';
 import { useStores } from '@/hooks';
-import { BugOutlined, CloseCircleFilled, EditOutlined, InfoCircleOutlined, PartitionOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, BugOutlined, CloseCircleFilled, EditOutlined, InfoCircleOutlined, PartitionOutlined } from '@ant-design/icons';
 import { checkUpdate } from '@tauri-apps/api/updater';
 import { check_update } from '@/api/main';
 import { listen } from '@tauri-apps/api/event';
@@ -183,80 +183,91 @@ const MyHeader: React.FC<{ style?: React.CSSProperties; className?: string }> = 
             appWindow.startDragging();
           }
         }} data-drag>
-        {projectStore.curProjectId != "" && (
-          <div>
-            <ProjectQuickAccess />
-            {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == true && (
-              <span style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</span>
-            )}
-            {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false && (
-              <Button type="link"
-                style={{ minWidth: 0, padding: "0px 0px" }}
-                onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  if (appStore.inEdit) {
-                    appStore.showCheckLeave(() => {
+        <div style={{ display: "flex", paddingLeft: "10px" }}>
+          {(userStore.sessionId != "" || userStore.adminSessionId != "") && (
+            <Button icon={<ArrowLeftOutlined style={{ color: "black" }} />}
+              style={{ borderRadius: "20px", marginTop: "7px", backgroundColor: "deepskyblue", height: "24px", minWidth: "0px", width: "24px" }}
+              onClick={e => {
+                e.stopPropagation();
+                e.preventDefault();
+                history.goBack();
+              }} title="返回上一个界面" />
+          )}
+          {projectStore.curProjectId != "" && (
+            <div>
+              <ProjectQuickAccess />
+              {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == true && (
+                <span style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</span>
+              )}
+              {location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false && (
+                <Button type="link"
+                  style={{ minWidth: 0, padding: "0px 0px" }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (appStore.inEdit) {
+                      appStore.showCheckLeave(() => {
+                        entryStore.reset();
+                        history.push(APP_PROJECT_HOME_PATH);
+                      });
+                    } else {
                       entryStore.reset();
                       history.push(APP_PROJECT_HOME_PATH);
-                    });
-                  } else {
-                    entryStore.reset();
-                    history.push(APP_PROJECT_HOME_PATH);
-                  }
-                }} >
-                <span style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</span>
-              </Button>
-            )}
+                    }
+                  }} >
+                  <span style={{ fontSize: "16px", fontWeight: 600 }}>{projectStore.curProject?.basic_info.project_name ?? ""}</span>
+                </Button>
+              )}
 
-            <Space size="small" style={{ fontSize: "16px", marginLeft: "10px", lineHeight: "26px", cursor: "default" }}>
-              {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) && (
-                <>
-                  <span>/</span>
-                  <span>我的工作</span>
-                </>
-              )}
-              {location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) && (
-                <>
-                  <span>/</span>
-                  <span>项目概览</span>
-                </>
-              )}
-              {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) == false && location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) == false
-                && location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false
-                && entryStore.curEntry != null && (
+              <Space size="small" style={{ fontSize: "16px", marginLeft: "10px", lineHeight: "26px", cursor: "default" }}>
+                {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) && (
                   <>
                     <span>/</span>
-                    <Popover trigger={["hover", "click"]} placement='top' content={<EntryPopover entryInfo={entryStore.curEntry} />}>
-                      <InfoCircleOutlined />
-                    </Popover>
-                    <span>
-                      <a onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        if (entryStore.curEntry?.my_watch == true) {
-                          unwatchEntry();
-                        } else {
-                          watchEntry();
-                        }
-                      }}>
-                        <span className={(entryStore.curEntry?.my_watch ?? false) ? style.isCollect : style.noCollect} />
-                      </a>
-                    </span>
-                    <div style={{ maxWidth: "200px", textOverflow: "clip", overflow: "hidden", whiteSpace: "nowrap" }} title={genEntryTitle()}>{genEntryTitle()}</div>
-                    {entryStore.curEntry.can_update && (
-                      <Button type="link" icon={<EditOutlined />} style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        entryStore.editEntryId = entryStore.curEntry?.entry_id ?? "";
-                      }} />
-                    )}
-
+                    <span>我的工作</span>
                   </>
                 )}
-            </Space>
-          </div>
-        )}
+                {location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) && (
+                  <>
+                    <span>/</span>
+                    <span>项目概览</span>
+                  </>
+                )}
+                {location.pathname.startsWith(APP_PROJECT_MY_WORK_PATH) == false && location.pathname.startsWith(APP_PROJECT_OVERVIEW_PATH) == false
+                  && location.pathname.startsWith(APP_PROJECT_HOME_PATH) == false
+                  && entryStore.curEntry != null && (
+                    <>
+                      <span>/</span>
+                      <Popover trigger={["hover", "click"]} placement='top' content={<EntryPopover entryInfo={entryStore.curEntry} />}>
+                        <InfoCircleOutlined />
+                      </Popover>
+                      <span>
+                        <a onClick={e => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          if (entryStore.curEntry?.my_watch == true) {
+                            unwatchEntry();
+                          } else {
+                            watchEntry();
+                          }
+                        }}>
+                          <span className={(entryStore.curEntry?.my_watch ?? false) ? style.isCollect : style.noCollect} />
+                        </a>
+                      </span>
+                      <div style={{ maxWidth: "200px", textOverflow: "clip", overflow: "hidden", whiteSpace: "nowrap" }} title={genEntryTitle()}>{genEntryTitle()}</div>
+                      {entryStore.curEntry.can_update && (
+                        <Button type="link" icon={<EditOutlined />} style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          entryStore.editEntryId = entryStore.curEntry?.entry_id ?? "";
+                        }} />
+                      )}
+
+                    </>
+                  )}
+              </Space>
+            </div>
+          )}
+        </div>
         {location.pathname.startsWith(APP_GROUP_PATH) && (
           <Space style={{ paddingLeft: "10px", fontSize: "16px", fontWeight: 600 }}>
             {groupStore.curGroup !== null && (

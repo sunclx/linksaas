@@ -23,9 +23,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
     const [hideBulletin, setHideBulletin] = useState(projectStore.curProject?.setting.hide_bulletin ?? false);
     const [hideExtraInfo, setHideExtraInfo] = useState(projectStore.curProject?.setting.hide_extra_info ?? false);
 
-    const [hideWatchTask, setHideWatchTask] = useState(projectStore.curProject?.setting.hide_watch_task ?? false);
-    const [hideWatchBug, setHideWatchBug] = useState(projectStore.curProject?.setting.hide_watch_bug ?? false);
-
     const [hasChange, setHasChange] = useState(false);
 
     const resetConfig = () => {
@@ -54,8 +51,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                 hide_project_info: hideProjectInfo,
                 hide_bulletin: hideBulletin,
                 hide_extra_info: hideExtraInfo,
-                hide_watch_task: hideWatchTask,
-                hide_watch_bug: hideWatchBug,
             },
         }));
         message.info("保存成功");
@@ -106,20 +101,6 @@ const LayoutSettingPanel: React.FC<PanelProps> = (props) => {
                             setDisableExtEvent(e.target.checked);
                             setHasChange(true);
                         }}>关闭第三方接入入口</Checkbox>
-                    </Space>
-                </Form.Item>
-                <Form.Item label="我的工作">
-                    <Space direction="vertical">
-                        <Checkbox checked={hideWatchTask} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchTask(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注任务</Checkbox>
-                        <Checkbox checked={hideWatchBug} onChange={e => {
-                            e.stopPropagation();
-                            setHideWatchBug(e.target.checked);
-                            setHasChange(true);
-                        }}>隐藏关注缺陷</Checkbox>
                     </Space>
                 </Form.Item>
                 <Form.Item label="项目概览">

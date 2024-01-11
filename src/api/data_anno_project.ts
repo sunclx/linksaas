@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-
 export type ANNO_TYPE = number;
 
 export const ANNO_TYPE_AUDIO_CLASSIFI: ANNO_TYPE = 0;

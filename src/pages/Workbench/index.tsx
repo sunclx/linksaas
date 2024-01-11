@@ -25,6 +25,7 @@ const Workbench: React.FC = () => {
   const [passwordModal, setPasswordModal] = useState(type === 'resetPassword');
   const userStore = useStores('userStore');
   const projectStore = useStores('projectStore');
+  const appStore = useStores('appStore');
 
   const tab = urlParams.get('tab') ?? "localRepo";
 
@@ -34,6 +35,7 @@ const Workbench: React.FC = () => {
 
   useMemo(() => {
     projectStore.setCurProjectId('');
+    appStore.focusMode = false;
   }, []);
 
   return (

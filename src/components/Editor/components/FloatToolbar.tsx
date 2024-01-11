@@ -42,6 +42,10 @@ const LinkBtn = observer(() => {
           showTask={projectStore.curProjectId != ""}
           showBug={projectStore.curProjectId != ""}
           showDoc={projectStore.curProjectId != ""}
+          showBoard={projectStore.curProjectId != ""}
+          showSprit={projectStore.curProjectId != ""}
+          showApiColl={(projectStore.curProject?.setting.disable_api_collection ?? false) == false}
+          showDataAnno={(projectStore.curProject?.setting.disable_data_anno ?? false) == false}
           showExterne={true}
           onOk={(link) => {
             setShowModal(false);
