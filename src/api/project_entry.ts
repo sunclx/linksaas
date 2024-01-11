@@ -93,24 +93,30 @@ export type ListParam = {
 };
 
 export type FolderInfo = {
-     folder_id: string;
-     folder_title: string;
-     parent_folder_id: string;
-     sub_entry_count: number;
-     sub_folder_count: number;
-     create_user_id: string;
-     create_display_name: string;
-     create_logo_uri: string;
-     create_time: number;
-     update_user_id: string;
-     update_display_name: string;
-     update_logo_uri: string;
-     update_time: number;
-     can_update: boolean;
-     can_remove: boolean;
+    folder_id: string;
+    folder_title: string;
+    parent_folder_id: string;
+    sub_entry_count: number;
+    sub_folder_count: number;
+    create_user_id: string;
+    create_display_name: string;
+    create_logo_uri: string;
+    create_time: number;
+    update_user_id: string;
+    update_display_name: string;
+    update_logo_uri: string;
+    update_time: number;
+    can_update: boolean;
+    can_remove: boolean;
 };
 
-export type  FolderPathItem  ={
+export type EntryOrFolderInfo = {
+    id: string;
+    is_folder: boolean;
+    value: EntryInfo | FolderInfo;
+};
+
+export type FolderPathItem = {
     folder_id: string;
     folder_title: string;
     parent_folder_id: string;

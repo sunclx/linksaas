@@ -13,8 +13,6 @@ import { EditTag } from "@/components/EditCell/EditTag";
 import moment from 'moment';
 import { useHistory } from "react-router-dom";
 import { LinkApiCollInfo, LinkDataAnnoInfo, LinkEntryInfo, LinkRequirementInfo } from "@/stores/linkAux";
-import PagesModal from "../../Home/PagesModal";
-import FileModal from "../../Home/FileModal";
 import type { Tab } from "rc-tabs/lib/interface";
 import type { RequirementInfo } from "@/api/project_requirement";
 import { REQ_SORT_UPDATE_TIME, list_requirement } from "@/api/project_requirement";
@@ -22,6 +20,8 @@ import type { ApiCollInfo } from "@/api/api_collection";
 import { API_COLL_CUSTOM, API_COLL_GRPC, API_COLL_OPENAPI, list as list_api_coll } from "@/api/api_collection";
 import type { AnnoProjectInfo } from "@/api/data_anno_project";
 import { ANNO_TYPE_AUDIO_CLASSIFI, ANNO_TYPE_AUDIO_SEG, ANNO_TYPE_AUDIO_SEG_TRANS, ANNO_TYPE_AUDIO_TRANS, ANNO_TYPE_IMAGE_BBOX_OBJ_DETECT, ANNO_TYPE_IMAGE_BRUSH_SEG, ANNO_TYPE_IMAGE_CIRCULAR_OBJ_DETECT, ANNO_TYPE_IMAGE_CLASSIFI, ANNO_TYPE_IMAGE_KEYPOINT, ANNO_TYPE_IMAGE_POLYGON_SEG, ANNO_TYPE_TEXT_CLASSIFI, ANNO_TYPE_TEXT_NER, ANNO_TYPE_TEXT_SUMMARY, list as list_data_anno } from "@/api/data_anno_project";
+import PagesModal from "@/pages/Project/Home/components/PagesModal";
+import FileModal from "@/pages/Project/Home/components/FileModal";
 
 type EntryColumnType = ColumnType<EntryInfo> & {
     entryType?: ENTRY_TYPE;

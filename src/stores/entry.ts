@@ -1,6 +1,6 @@
 import type { RootStore } from './index';
 import { makeAutoObservable, runInAction } from 'mobx';
-import type { EntryInfo, ENTRY_TYPE } from "@/api/project_entry";
+import type { EntryInfo, ENTRY_TYPE, EntryOrFolderInfo } from "@/api/project_entry";
 import { get as get_entry } from "@/api/project_entry";
 import { request } from '@/utils/request';
 
@@ -13,7 +13,7 @@ export default class EntryStore {
 
     private _curEntry: EntryInfo | null = null;
     private _editEntryId = "";
-    private _entryList: EntryInfo[] = [];
+    private _entryOrFolderList: EntryOrFolderInfo[] = [];
     private _sysEntryList: EntryInfo[] = [];
     private _createEntryType: ENTRY_TYPE | null = null;
     private _curFolderId = "";
@@ -57,13 +57,13 @@ export default class EntryStore {
         });
     }
 
-    get entryList(): EntryInfo[] {
-        return this._entryList;
+    get entryOrFolderList(): EntryOrFolderInfo[] {
+        return this._entryOrFolderList;
     }
 
-    set entryList(val: EntryInfo[]) {
+    set entryOrFolderList(val: EntryOrFolderInfo[]) {
         runInAction(() => {
-            this._entryList = val;
+            this._entryOrFolderList = val;
         });
     }
 
@@ -118,11 +118,15 @@ export default class EntryStore {
             if (entryId == (this._curEntry?.entry_id ?? "")) {
                 this._curEntry = res.entry;
             }
-            const tmpList = this._entryList.slice();
-            const index = tmpList.findIndex(item => item.entry_id == entryId);
+            const tmpList = this._entryOrFolderList.slice();
+            const index = tmpList.findIndex(item => item.is_folder == false && (item.value as EntryInfo).entry_id == entryId);
             if (index != -1) {
-                tmpList[index] = res.entry;
-                this._entryList = tmpList;
+                tmpList[index] = {
+                    id: res.entry.entry_id,
+                    is_folder: false,
+                    value: res.entry,
+                };
+                this._entryOrFolderList = tmpList;
             }
 
             const tmpList2 = this._sysEntryList.slice();
