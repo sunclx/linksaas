@@ -36,7 +36,7 @@ export type ExtraSpritInfo = {
 };
 
 export type ExtraPagesInfo = {
-     file_id: string;
+    file_id: string;
 };
 
 export type ExtraFileInfo = {
@@ -67,6 +67,7 @@ export type EntryInfo = {
     entry_perm: EntryPerm;
     mark_remove: boolean;
     mark_sys: boolean;
+    parent_folder_id: string;
     create_user_id: string;
     create_display_name: string;
     create_logo_uri: string;
@@ -91,6 +92,30 @@ export type ListParam = {
     entry_type_list: ENTRY_TYPE[];
 };
 
+export type FolderInfo = {
+     folder_id: string;
+     folder_title: string;
+     parent_folder_id: string;
+     sub_entry_count: number;
+     sub_folder_count: number;
+     create_user_id: string;
+     create_display_name: string;
+     create_logo_uri: string;
+     create_time: number;
+     update_user_id: string;
+     update_display_name: string;
+     update_logo_uri: string;
+     update_time: number;
+     can_update: boolean;
+     can_remove: boolean;
+};
+
+export type  FolderPathItem  ={
+    folder_id: string;
+    folder_title: string;
+    parent_folder_id: string;
+};
+
 export type CreateRequest = {
     session_id: string;
     project_id: string;
@@ -99,6 +124,7 @@ export type CreateRequest = {
     entry_title: string;
     tag_id_list: string[];
     entry_perm: EntryPerm;
+    parent_folder_id: string;
     extra_info?: ExtraInfo;
 };
 
@@ -146,7 +172,6 @@ export type UpdateTagResponse = {
     code: number;
     err_msg: string;
 };
-
 
 export type UpdateTitleRequest = {
     session_id: string;
@@ -214,7 +239,7 @@ export type UpdateMarkSysRequest = {
     mark_sys: boolean;
 };
 
-export type UpdateMarkSysResponse ={
+export type UpdateMarkSysResponse = {
     code: number;
     err_msg: string;
 };
@@ -239,6 +264,108 @@ export type RemoveFileRequest = {
 export type RemoveFileResponse = {
     code: number;
     err_msg: string;
+};
+
+export type CreateFolderRequest = {
+    session_id: string;
+    project_id: string;
+    folder_title: string;
+    parent_folder_id: string;
+};
+
+export type CreateFolderResponse = {
+    code: number;
+    err_msg: string;
+    folder_id: string;
+};
+
+
+export type UpdateFolderTitleRequest = {
+    session_id: string;
+    project_id: string;
+    folder_id: string;
+    folder_title: string;
+};
+
+export type UpdateFolderTitleResponse = {
+    code: number;
+    err_msg: string;
+};
+
+export type SetParentFolderRequest = {
+    session_id: string;
+    project_id: string;
+    folder_or_entry_id: string;
+    is_folder: boolean;
+    parent_folder_id: string;
+};
+
+export type SetParentFolderResponse = {
+    code: number;
+    err_msg: string;
+};
+
+
+export type RemoveFolderRequest = {
+    session_id: string;
+    project_id: string;
+    folder_id: string;
+};
+
+export type RemoveFolderResponse = {
+    code: number;
+    err_msg: string;
+};
+
+
+export type ListSubFolderRequest = {
+    session_id: string;
+    project_id: string;
+    parent_folder_id: string;
+};
+
+export type ListSubFolderResponse = {
+    code: number;
+    err_msg: string;
+    folder_list: FolderInfo[];
+};
+
+
+export type ListSubEntryRequest = {
+    session_id: string;
+    project_id: string;
+    parent_folder_id: string;
+};
+
+export type ListSubEntryResponse = {
+    code: number;
+    err_msg: string;
+    entry_list: EntryInfo[];
+};
+
+
+export type ListAllFolderRequest = {
+    session_id: string;
+    project_id: string;
+};
+
+export type ListAllFolderResponse = {
+    code: number;
+    err_msg: string;
+    item_list: FolderPathItem[];
+};
+
+
+export type GetFolderPathRequest = {
+    session_id: string;
+    project_id: string;
+    folder_id: string;
+};
+
+export type GetFolderPathResponse = {
+    code: number;
+    err_msg: string;
+    path_list: FolderPathItem[];
 };
 
 
@@ -346,6 +473,78 @@ export async function remove_file(request: RemoveFileRequest): Promise<RemoveFil
     const cmd = 'plugin:project_entry_api|remove_file';
     console.log(`%c${cmd}`, 'color:#0f0;', request);
     return invoke<RemoveFileResponse>(cmd, {
+        request,
+    });
+}
+
+//创建目录
+export async function create_folder(request: CreateFolderRequest): Promise<CreateFolderResponse> {
+    const cmd = 'plugin:project_entry_api|create_folder';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<CreateFolderResponse>(cmd, {
+        request,
+    });
+}
+
+//修改目录标题
+export async function update_folder_title(request: UpdateFolderTitleRequest): Promise<UpdateFolderTitleResponse> {
+    const cmd = 'plugin:project_entry_api|update_folder_title';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<UpdateFolderTitleResponse>(cmd, {
+        request,
+    });
+}
+
+//设置父目录
+export async function set_parent_folder(request: SetParentFolderRequest): Promise<SetParentFolderResponse> {
+    const cmd = 'plugin:project_entry_api|set_parent_folder';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<SetParentFolderResponse>(cmd, {
+        request,
+    });
+}
+
+//删除目录
+export async function remove_folder(request: RemoveFolderRequest): Promise<RemoveFolderResponse> {
+    const cmd = 'plugin:project_entry_api|remove_folder';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<RemoveFolderResponse>(cmd, {
+        request,
+    });
+}
+
+//列出子目录
+export async function list_sub_folder(request: ListSubFolderRequest): Promise<ListSubFolderResponse> {
+    const cmd = 'plugin:project_entry_api|list_sub_folder';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListSubFolderResponse>(cmd, {
+        request,
+    });
+}
+
+//列出子项目
+export async function list_sub_entry(request: ListSubEntryRequest): Promise<ListSubEntryResponse> {
+    const cmd = 'plugin:project_entry_api|list_sub_entry';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListSubEntryResponse>(cmd, {
+        request,
+    });
+}
+
+//列出所有目录
+export async function list_all_folder(request: ListAllFolderRequest): Promise<ListAllFolderResponse> {
+    const cmd = 'plugin:project_entry_api|list_all_folder';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<ListAllFolderResponse>(cmd, {
+        request,
+    });
+}
+
+//获取目录路径
+export async function get_folder_path(request: GetFolderPathRequest): Promise<GetFolderPathResponse> {
+    const cmd = 'plugin:project_entry_api|get_folder_path';
+    console.log(`%c${cmd}`, 'color:#0f0;', request);
+    return invoke<GetFolderPathResponse>(cmd, {
         request,
     });
 }

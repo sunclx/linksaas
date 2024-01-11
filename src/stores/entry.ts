@@ -16,6 +16,7 @@ export default class EntryStore {
     private _entryList: EntryInfo[] = [];
     private _sysEntryList: EntryInfo[] = [];
     private _createEntryType: ENTRY_TYPE | null = null;
+    private _curFolderId = "";
     private _dataVersion = 0;
 
     reset() {
@@ -23,6 +24,16 @@ export default class EntryStore {
             this._curEntry = null;
             this._editEntryId = "";
             this._createEntryType = null;
+        });
+    }
+
+    get curFolderId() {
+        return this._curFolderId;
+    }
+
+    set curFolderId(val: string) {
+        runInAction(() => {
+            this._curFolderId = val;
         });
     }
 

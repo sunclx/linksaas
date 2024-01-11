@@ -156,6 +156,7 @@ const CreateEntryModal = () => {
             entry_type: entryStore.createEntryType,
             entry_title: title,
             tag_id_list: tagIdList,
+            parent_folder_id: entryStore.curFolderId,
             entry_perm: {
                 update_for_all: entryPerm.update_for_all,
                 extra_update_user_id_list: entryPerm.update_for_all ? [] : entryPerm.extra_update_user_id_list,
