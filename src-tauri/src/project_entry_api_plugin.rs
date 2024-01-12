@@ -327,6 +327,230 @@ async fn remove_file<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn create_folder<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: CreateFolderRequest,
+) -> Result<CreateFolderResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.create_folder(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == create_folder_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("create_folder".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn update_folder_title<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: UpdateFolderTitleRequest,
+) -> Result<UpdateFolderTitleResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.update_folder_title(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == update_folder_title_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("update_folder_title".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn set_parent_folder<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: SetParentFolderRequest,
+) -> Result<SetParentFolderResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.set_parent_folder(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == set_parent_folder_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("set_parent_folder".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn remove_folder<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: RemoveFolderRequest,
+) -> Result<RemoveFolderResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.remove_folder(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == remove_folder_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("remove_folder".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_sub_folder<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListSubFolderRequest,
+) -> Result<ListSubFolderResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.list_sub_folder(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_sub_folder_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_sub_folder".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_sub_entry<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListSubEntryRequest,
+) -> Result<ListSubEntryResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.list_sub_entry(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_sub_entry_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_sub_entry".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn list_all_folder<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: ListAllFolderRequest,
+) -> Result<ListAllFolderResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.list_all_folder(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == list_all_folder_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("list_all_folder".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
+#[tauri::command]
+async fn get_folder_path<R: Runtime>(
+    app_handle: AppHandle<R>,
+    window: Window<R>,
+    request: GetFolderPathRequest,
+) -> Result<GetFolderPathResponse, String> {
+    let chan = super::get_grpc_chan(&app_handle).await;
+    if (&chan).is_none() {
+        return Err("no grpc conn".into());
+    }
+    let mut client = ProjectEntryApiClient::new(chan.unwrap());
+    match client.get_folder_path(request).await {
+        Ok(response) => {
+            let inner_resp = response.into_inner();
+            if inner_resp.code == get_folder_path_response::Code::WrongSession as i32 {
+                if let Err(err) = window.emit(
+                    "notice",
+                    new_wrong_session_notice("get_folder_path".into()),
+                ) {
+                    println!("{:?}", err);
+                }
+            }
+            return Ok(inner_resp);
+        }
+        Err(status) => Err(status.message().into()),
+    }
+}
+
 pub struct ProjectEntryApiPlugin<R: Runtime> {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync + 'static>,
 }
@@ -347,6 +571,14 @@ impl<R: Runtime> ProjectEntryApiPlugin<R> {
                 update_mark_sys,
                 remove_pages,
                 remove_file,
+                create_folder,
+                update_folder_title,
+                set_parent_folder,
+                remove_folder,
+                list_sub_folder,
+                list_sub_entry,
+                list_all_folder,
+                get_folder_path,
             ]),
         }
     }
