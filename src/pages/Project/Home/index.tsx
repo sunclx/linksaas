@@ -167,10 +167,11 @@ const ProjectHome = () => {
                             onMarkSys={() => {
                                 loadSysEntryList();
                                 loadEntryList();
-                            }} />
+                            }} canMove={activeKey == "folder" && projectStore.isAdmin} />
                     )}
                     {item.is_folder == true && (
-                        <FolderCard folderInfo={item.value as FolderInfo} onRemove={() => loadFolderList()} />
+                        <FolderCard folderInfo={item.value as FolderInfo} onRemove={() => loadFolderList()} canMove={activeKey == "folder" && projectStore.isAdmin}
+                            onMove={() => loadFolderList()} />
                     )}
                 </List.Item>
             )} pagination={activeKey == "folder" ? false : { total: totalCount, current: curPage + 1, pageSize: PAGE_SIZE, onChange: page => setCurPage(page - 1), hideOnSinglePage: true }} />
@@ -229,7 +230,7 @@ const ProjectHome = () => {
                                     onMarkSys={() => {
                                         loadSysEntryList();
                                         loadEntryList();
-                                    }} />
+                                    }} canMove={false} />
                             </List.Item>
                         )} />
                     <Divider style={{ margin: "4px 0px" }} />

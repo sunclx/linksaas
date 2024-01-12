@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { FolderInfo } from "@/api/project_entry";
-import { remove_folder } from "@/api/project_entry";
+import { remove_folder, set_parent_folder } from "@/api/project_entry";
 import { Button, Card, Modal, Popover, Space, message } from "antd";
 import { useStores } from "@/hooks";
 import s from "./Card.module.less";
@@ -10,11 +10,14 @@ import { EditOutlined, InfoCircleOutlined, MoreOutlined } from "@ant-design/icon
 import UpdateFolderModal from "./components/UpdateFolderModal";
 import { request } from "@/utils/request";
 import FolderPopover from "./components/FolderPopover";
+import MoveToFolderModal from "./components/MoveToFolderModal";
 
 
 export interface FolderCardProps {
     folderInfo: FolderInfo;
+    canMove: boolean;
     onRemove: () => void;
+    onMove: () => void;
 }
 
 const FolderCard = (props: FolderCardProps) => {
@@ -24,6 +27,7 @@ const FolderCard = (props: FolderCardProps) => {
 
     const [showEditModal, setShowEditModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showMoveModal, setShowMoveModal] = useState(false);
 
     const removeFolder = async () => {
         await request(remove_folder({
@@ -33,6 +37,19 @@ const FolderCard = (props: FolderCardProps) => {
         }));
         message.info("删除成功");
         props.onRemove();
+    };
+
+    const moveToFolder = async (parentFolderId: string) => {
+        await request(set_parent_folder({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            folder_or_entry_id: props.folderInfo.folder_id,
+            is_folder: true,
+            parent_folder_id: parentFolderId,
+        }));
+        setShowMoveModal(false);
+        props.onMove();
+        message.info("移动成功");
     };
 
     return (
@@ -59,6 +76,13 @@ const FolderCard = (props: FolderCardProps) => {
                     )}
                     <Popover trigger="click" placement="bottom" content={
                         <Space direction="vertical" style={{ padding: "10px 10px" }}>
+                            {props.canMove && (
+                                <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setShowMoveModal(true);
+                                }}>移动到目录</Button>
+                            )}
                             <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
                                 disabled={!props.folderInfo.can_remove} danger
                                 onClick={e => {
@@ -107,6 +131,9 @@ const FolderCard = (props: FolderCardProps) => {
                     }}>
                     是否删除目录&nbsp;{props.folderInfo.folder_title}?
                 </Modal>
+            )}
+            {showMoveModal == true && (
+                <MoveToFolderModal skipFolderId={props.folderInfo.folder_id} onCancel={() => setShowMoveModal(false)} onOk={folderId => moveToFolder(folderId)} />
             )}
         </Card>
     );

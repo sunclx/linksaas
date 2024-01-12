@@ -2,7 +2,7 @@ import { Button, Card, Modal, Popover, Space, Tag, message } from "antd";
 import React, { useState } from "react";
 import { observer } from 'mobx-react';
 import type { EntryInfo } from "@/api/project_entry";
-import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD, ENTRY_TYPE_FILE } from "@/api/project_entry";
+import { update_mark_remove, update_mark_sys, ENTRY_TYPE_SPRIT, ENTRY_TYPE_DOC, ENTRY_TYPE_PAGES, ENTRY_TYPE_BOARD, ENTRY_TYPE_FILE, set_parent_folder } from "@/api/project_entry";
 import s from "./Card.module.less";
 import { useStores } from "@/hooks";
 import { request } from "@/utils/request";
@@ -19,9 +19,11 @@ import boardIcon from '@/assets/allIcon/icon-board.png';
 import docIcon from '@/assets/channel/doc@2x.png';
 import PagesModal from "./components/PagesModal";
 import FileModal from "./components/FileModal";
+import MoveToFolderModal from "./components/MoveToFolderModal";
 
 export interface EntryCardPorps {
     entryInfo: EntryInfo;
+    canMove: boolean;
     onRemove: () => void;
     onMarkSys: () => void;
 }
@@ -39,6 +41,7 @@ const EntryCard = (props: EntryCardPorps) => {
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showPagesModal, setShowPagesModal] = useState(false);
     const [showFileModal, setShowFileModal] = useState(false);
+    const [showMoveModal, setShowMoveModal] = useState(false);
 
     const watchEntry = async () => {
         await request(watch({
@@ -129,6 +132,19 @@ const EntryCard = (props: EntryCardPorps) => {
         return "";
     };
 
+    const moveToFolder = async (parentFolderId: string) => {
+        await request(set_parent_folder({
+            session_id: userStore.sessionId,
+            project_id: projectStore.curProjectId,
+            folder_or_entry_id: props.entryInfo.entry_id,
+            is_folder: false,
+            parent_folder_id: parentFolderId,
+        }));
+        setShowMoveModal(false);
+        entryStore.incDataVersion();
+        message.info("移动成功");
+    };
+
     return (
         <Card title={
             <Space size="small">
@@ -168,6 +184,13 @@ const EntryCard = (props: EntryCardPorps) => {
                         <Space direction="vertical" style={{ padding: "10px 10px" }}>
                             {props.entryInfo.mark_remove == false && (
                                 <>
+                                    {props.canMove && (
+                                        <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }} onClick={e => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setShowMoveModal(true);
+                                        }}>移动到目录</Button>
+                                    )}
                                     <Button type="link" style={{ minWidth: 0, padding: "0px 0px" }}
                                         disabled={!(projectStore.isAdmin || (props.entryInfo.create_user_id == userStore.userInfo.userId))}
                                         onClick={e => {
@@ -273,6 +296,9 @@ const EntryCard = (props: EntryCardPorps) => {
             {showFileModal == true && (
                 <FileModal fileId={props.entryInfo.extra_info.ExtraFileInfo?.file_id ?? ""} fileName={props.entryInfo.extra_info.ExtraFileInfo?.file_name ?? ""}
                     onClose={() => setShowFileModal(false)} />
+            )}
+            {showMoveModal == true && (
+                <MoveToFolderModal onCancel={() => setShowMoveModal(false)} onOk={folderId => moveToFolder(folderId)} />
             )}
         </Card>
 
