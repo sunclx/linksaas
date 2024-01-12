@@ -13,6 +13,7 @@ import { unixTipList } from '@/pages/Project/Setting/components/TipListSettingPa
 import randomColor from 'randomcolor';
 import { FILE_OWNER_TYPE_NONE } from '@/api/fs';
 import { flushEditorContent } from '../Editor/common';
+import { create_folder } from '@/api/project_entry';
 
 type CreatedProjectProps = {
   visible: boolean;
@@ -47,7 +48,7 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
 
   const createProject = async () => {
     await flushEditorContent();
-    
+
     const content = editorRef.current?.getContent() ?? { type: "doc" };
 
     const data: BasicProjectInfo = {
@@ -78,6 +79,16 @@ const CreatedOrJoinProject: FC<CreatedProjectProps> = (props) => {
           use_in_idea: false,
           use_in_sprit_summary: true,
           use_in_entry: false,
+        }));
+      }
+
+      //创建默认目录
+      for (const folderTitle of ["工作计划", "文档", "静态网页", "信息面板", "文件"]) {
+        await request(create_folder({
+          session_id: userStore.sessionId,
+          project_id: res.project_id,
+          folder_title: folderTitle,
+          parent_folder_id: "",
         }));
       }
 

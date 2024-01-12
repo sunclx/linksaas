@@ -12,7 +12,6 @@ import { listen } from '@tauri-apps/api/event';
 import { APP_GROUP_HOME_PATH, APP_GROUP_PATH, APP_GROUP_POST_LIST_PATH, APP_PROJECT_HOME_PATH, APP_PROJECT_MY_WORK_PATH, APP_PROJECT_OVERVIEW_PATH } from '@/utils/constant';
 import { useHistory, useLocation } from 'react-router-dom';
 import ProjectQuickAccess from './ProjectQuickAccess';
-import EntryPopover from '@/pages/Project/Home/EntryPopover';
 import { ENTRY_TYPE_SPRIT } from '@/api/project_entry';
 import { watch, unwatch, WATCH_TARGET_ENTRY } from "@/api/project_watch";
 import moment from 'moment';
@@ -22,6 +21,7 @@ import type { ProxyInfo } from '@/api/net_proxy';
 import { stop_listen } from '@/api/net_proxy';
 import { remove_info_file } from '@/api/local_api';
 import { exit } from '@tauri-apps/api/process';
+import EntryPopover from '@/pages/Project/Home/components/EntryPopover';
 
 
 const { Header } = Layout;

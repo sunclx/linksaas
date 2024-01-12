@@ -8,9 +8,9 @@ import CodeCommentThreadModal from '@/pages/Project/Code/CodeCommentThreadModal'
 import ProjectSettingModal from '@/pages/Project/Setting/ProjectSettingModal';
 import CreateIdeaModal from '@/pages/Idea/components/CreateIdeaModal';
 import GitPostHookModal from '@/pages/Project/ProjectTool/GitPostHookModal';
-import UpdateEntryModal from '@/pages/Project/Home/UpdateEntryModal';
-import CreateEntryModal from '@/pages/Project/Home/CreateEntryModal';
+import UpdateEntryModal from '@/pages/Project/Home/components/UpdateEntryModal';
 import ChatAndCommentPanel from '@/pages/Project/ChatAndComment';
+import CreateEntryModal from '@/pages/Project/Home/components/CreateEntryModal';
 
 
 
